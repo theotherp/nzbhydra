@@ -5,7 +5,7 @@ from config import cfg
 
 
 from config import init
-init("ResultProcessing.duplicateSizeThreshold", 0.1, float)
+init("ResultProcessing.duplicateSizeThresholdInPercent", 0.1, float)
 init("ResultProcessing.duplicateAgeThreshold", 36000, int)
 
 def get_api_result_as_dicts(search_results):
@@ -42,6 +42,7 @@ def find_duplicates(results):
     sorted_results = sorted(results, key=lambda x: x.title)
     grouped_by_title = groupby(sorted_results, key=lambda x: x.title)
 
+    # TODO this could probably be more comprehensible but all solutions I found use sets(so hashing) for comparison but we need a "fuzzy" uniqueness check
     for key, group in grouped_by_title:
         seen = set()
         group = list(group)
@@ -66,8 +67,8 @@ def test_for_duplicate(search_result_1, search_result_2):
     
     if search_result_1.title != search_result_2.title:
         return False
-    size_threshold = cfg.section("ResultProcessing").get("duplicateSizeThresholdInPercent", 0.1)
-    age_threshold = cfg.section("ResultProcessing").get("duplicateAgeThreshold", 36000)
+    size_threshold = cfg["ResultProcessing.duplicateSizeThresholdInPercent"]
+    age_threshold = cfg["ResultProcessing.duplicateAgeThreshold"]
     size_difference = search_result_1.size - search_result_2.size
     size_average = (search_result_1.size + search_result_2.size) / 2
 
@@ -75,7 +76,6 @@ def test_for_duplicate(search_result_1, search_result_2):
     same_size = size_difference_percent <= size_threshold
     same_age = abs(search_result_1.age - search_result_2.age) <= age_threshold
 
-    # TODO this could probably be more comprehensible but all solutions I found use sets(so hashing) for comparison but we need a "fuzzy" uniqueness check
     # If all nweznab providers would provide poster/group in their infos then this would be a lot easier and more precise
     # We could also use something to combine several values to a score, say that if a two posts have the exact size their age may differe more or combine relative and absolute size comparison
     if same_size and same_age:
@@ -100,6 +100,9 @@ def process_for_internal_api(results):
     :type results: list[NzbSearchResult]
     """
     results, duplicates = find_duplicates(results)
+    #Will be sorted by GUI later anyway but makes debugging easier
+    results = sorted(results, key=lambda x: x.age)
+    duplicates = sorted(duplicates, key=lambda x: x.age)
     dic_to_return = {"results": serialize_nzb_search_result(results).data, "duplicates": serialize_nzb_search_result(duplicates).data}
     return dic_to_return
 

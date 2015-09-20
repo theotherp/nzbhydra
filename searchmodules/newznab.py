@@ -10,7 +10,7 @@ from search_module import SearchModule
 from config import init
 
 
-def getAgeFromPubdate(pubdate):
+def get_age_from_pubdate(pubdate):
     timepub = datetime.datetime.fromtimestamp(email.utils.mktime_tz(email.utils.parsedate_tz(pubdate)))
     timenow = now()
     dt = timenow - timepub
@@ -80,7 +80,7 @@ class NewzNab(SearchModule):
             entry.title = item["title"]
             entry.link = item["link"]
             entry.pubDate = item["pubDate"]
-            entry.age = getAgeFromPubdate(item["pubDate"])
+            entry.age = get_age_from_pubdate(item["pubDate"])
             entry.provider = self.name
             entry.attributes = []
 

@@ -57,8 +57,8 @@ class MyTestCase(unittest.TestCase):
         #nzbsorg
         with open("tests/mock/nzbsorg_q_avengers_3results.json") as f:
             entries = n.process_query_result(f.read())
-        from nzbmetasearch import render_search_results_for_api
-        from nzbmetasearch import app
+        from nzbhydra import render_search_results_for_api
+        from nzbhydra import app
         with app.test_request_context("/"):
             xhtml = render_search_results_for_api(entries)
     
