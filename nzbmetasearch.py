@@ -98,11 +98,10 @@ init("main.port", 5050, int)
 init("main.host", "0.0.0.0", str)
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='nzbhydra 0.0.1')
-    print(arguments)
+    
     if "--config" in arguments:
-        logger.info("Loading config from %s" % arguments["--config"])
         from config import reload
-        reload(arguments["--config"])
+        cfg = reload(arguments["--config"])
         #cfg.read(arguments["--config"])
         #cfg.sync()
     port = cfg["main.port"]

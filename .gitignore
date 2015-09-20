@@ -1,11 +1,4 @@
-/realsettings.cfg 
-/*.log
 
-/tests/mock/xml/*
-/tests/mock/nzbclubrss_q_avengers.xml
-/tests/mock/*.xml
-/tests/mock/*.json
-/tests/mock/*.html
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -66,4 +59,13 @@ docs/_build/
 # PyBuilder
 target/
 
+/realsettings.cfg 
+/*.log
+/tests/mock/xml/*
+/tests/mock/nzbclubrss_q_avengers.xml
+/tests/mock/*.xml
+/tests/mock/*.json
+/tests/mock/*.html
+
 # Created by .ignore support plugin (hsz.mobi)
+

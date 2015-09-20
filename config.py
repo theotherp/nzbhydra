@@ -14,11 +14,11 @@ def init(path, value, type):
 
 #We load the config from the given filename and re-init all the settings that were initialized before so the types are kept
 def reload(filename):
-    new_cfg = profig.Config(filename)
-    new_cfg.sync()
+    global cfg
+    cfg = profig.Config(filename)
+    cfg.sync()
     for i in inits:
-        new_cfg.init(i["path"], i["value"], i["type"])
-    return new_cfg
-    #cfg.read(filename)
+        cfg.init(i["path"], i["value"], i["type"])
+    return cfg
 
         
