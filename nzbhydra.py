@@ -9,18 +9,17 @@ Options:
 """
 from functools import wraps
 from pprint import pprint
-
 from docopt import docopt
 from flask import Flask, render_template, request, jsonify, Response
 from webargs import Arg
-
 from webargs.flaskparser import use_args
-
 from werkzeug.exceptions import Unauthorized
-
 from config import cfg, init, get_config
 import log
 from search import Search
+
+import requests
+requests.packages.urllib3.disable_warnings()
 
 logger = None 
 search = None
@@ -79,7 +78,7 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return not get_config()["main.auth"] or (username == get_config()["main.username"] and password == get_config()["main.password"])
+    return (username == get_config()["main.username"] and password == get_config()["main.password"])
 
 
 def authenticate():
@@ -92,9 +91,10 @@ def authenticate():
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not check_auth(auth.username, auth.password):
-            return authenticate()
+        if get_config()["main.auth"]:
+            auth = request.authorization
+            if not auth or not check_auth(auth.username, auth.password):
+                return authenticate()
         return f(*args, **kwargs)
 
     return decorated
