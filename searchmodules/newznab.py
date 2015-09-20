@@ -7,6 +7,7 @@ from datestuff import now
 from nzb_search_result import NzbSearchResult
 
 from search_module import SearchModule
+from config import init
 
 
 def getAgeFromPubdate(pubdate):
@@ -17,6 +18,9 @@ def getAgeFromPubdate(pubdate):
 
 
 class NewzNab(SearchModule):
+    
+    #TODO init of config which is dynmic with its path
+    
     def __init__(self, config_section):
         super(NewzNab, self).__init__(config_section)
         self.module_name = "NewzNab"

@@ -4,7 +4,7 @@ from webargs import Arg
 from webargs.flaskparser import use_args
 from api import serialize_nzb_search_result
 
-from config import cfg
+from config import cfg, init
 import log
 from search import Search
 
@@ -83,7 +83,9 @@ def internal_api(args):
     
 
 
+init("main.port", 5050, int)
+init("main.host", "0.0.0.0", str)
 if __name__ == '__main__':
-    port = cfg.section("main").get("port", 5050)
-    host = cfg.section("main").get("host", "0.0.0.0")
+    port = cfg.section("main").get("port")
+    host = cfg.section("main").get("host")
     app.run(host=host, port=port, debug=True)

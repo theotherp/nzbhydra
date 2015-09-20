@@ -33,3 +33,6 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(logging_captor.records[1].message, "Using apikey <XXX>")
         self.assertEqual(logging_captor.records[2].message, "Configured username is <XXX>")
         self.assertEqual(logging_captor.records[3].message, "<XXX>")
+        
+        logger.error("An error that should be visible on the console")
+        logger.info("A text that should not be added to the log file but not be visible on the console")

@@ -1,10 +1,12 @@
 # Get dict from object and remove all values that won't be contained in newznab api result
 from itertools import groupby
-
 from marshmallow import Schema, fields
-
 from config import cfg
 
+
+from config import init
+init("ResultProcessing.duplicateSizeThreshold", 0.1, float)
+init("ResultProcessing.duplicateAgeThreshold", 36000, int)
 
 def get_api_result_as_dicts(search_results):
     dicts = []
@@ -61,8 +63,7 @@ def test_for_duplicate(search_result_1, search_result_2):
     :type search_result_1: NzbSearchResult
     :type search_result_2: NzbSearchResult
     """
-    cfg.section("ResultProcessing").init("duplicateSizeThreshold", 0.1, float)
-    cfg.section("ResultProcessing").init("duplicateAgeThreshold", 36000, int)
+    
     if search_result_1.title != search_result_2.title:
         return False
     size_threshold = cfg.section("ResultProcessing").get("duplicateSizeThresholdInPercent", 0.1)
