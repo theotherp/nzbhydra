@@ -3,8 +3,7 @@ from itertools import groupby
 import logging
 from requests.exceptions import ReadTimeout, RequestException
 
-from config import cfg, init
-from nzb_search_result import NzbSearchResult
+from config import cfg, init, get_config
 from searchmodules import binsearch
 from searchmodules import newznab
 
@@ -26,7 +25,7 @@ class Search:
     # Load from config and initialize all configured providers using the loaded modules
     def read_providers_from_config(self):
         providers = []
-        for configSection in cfg.section("search_providers").sections():
+        for configSection in get_config().section("search_providers").sections():
             if not configSection.get("search_module") in search_modules:
                 raise AttributeError("Unknown search module")
             provider = search_modules[configSection.get("search_module")]
@@ -58,32 +57,41 @@ class Search:
         return self.execute_search_queries(queries_by_provider)
 
     def execute_search_queries(self, queries_by_provider):
-        results = []
+        search_results = []
         results_by_provider = {}
         futures = []
         providers_by_future = {}
         for provider, queries in queries_by_provider.items():
             results_by_provider[provider] = []
             for query in queries:
-                future = self.session.get(query, timeout=cfg["searching.timeout"])
+                logger.debug("Requesting URL %s with timeout %d" % (query, get_config()["searching.timeout"]))
+                future = self.session.get(query, timeout=get_config()["searching.timeout"], verify=False)
                 futures.append(future)
                 providers_by_future[future] = provider
 
+        query_results = []
+        
         
         for f in concurrent.futures.as_completed(futures):
             try: 
-                result = f.result() #timeout
+                result = f.result() 
                 provider = providers_by_future[f]
                 
                 if result.status_code != 200:
                     # todo handle this more specific
                     logger.warn("Error while calling %s" % result.url)
                 else:
-                    results.extend(provider.process_query_result(result.text))
+                    query_results.append({"provider": provider, "result": result})
             except RequestException as e:
                 logger.error("Error while trying to process query URL: %s" % e)
             except Exception:
                 logger.exception("Error while trying to process query URL")
+                pass
+        
+        for query_result in query_results:
+            provider = query_result["provider"]
+            result = query_result["result"]
+            search_results.extend(provider.process_query_result(result.text))
             
         
         # handle errors / timeouts (log, perhaps pause usage for some time when offline)
@@ -91,6 +99,6 @@ class Search:
         
         
         
-        return results
+        return search_results
                 
         

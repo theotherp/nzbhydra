@@ -1,15 +1,15 @@
 import unittest
+from config import get_config
 
 from nzb_search_result import NzbSearchResult
 
 
 class MyTestCase(unittest.TestCase):
     def testTestForDuplicate(self):
-        from config import cfg
         from api import test_for_duplicate
 
-        cfg.section("ResultProcessing")["duplicateSizeThresholdInPercent"] = 1
-        age_threshold = cfg.section("ResultProcessing").get("duplicateAgeThreshold", 36000)
+        get_config().section("ResultProcessing")["duplicateSizeThresholdInPercent"] = 1
+        age_threshold = get_config().section("ResultProcessing").get("duplicateAgeThreshold", 36000)
 
         # same title, age and size
         result1 = NzbSearchResult(title="A title", age=0, size=1)
@@ -56,8 +56,8 @@ class MyTestCase(unittest.TestCase):
         from config import cfg
         from api import find_duplicates
     
-        cfg.section("ResultProcessing")["duplicateSizeThresholdInPercent"] = 1
-        age_threshold = cfg.section("ResultProcessing").get("duplicateAgeThreshold", 36000)
+        get_config().section("ResultProcessing")["duplicateSizeThresholdInPercent"] = 1
+        age_threshold = get_config().section("ResultProcessing").get("duplicateAgeThreshold", 36000)
     
         # same title, age and size
         result1 = NzbSearchResult(title="A title", age=0, size=1)

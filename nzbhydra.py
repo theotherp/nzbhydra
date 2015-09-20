@@ -13,16 +13,17 @@ from pprint import pprint
 from docopt import docopt
 from flask import Flask, render_template, request, jsonify, Response
 from webargs import Arg
+
 from webargs.flaskparser import use_args
 
 from werkzeug.exceptions import Unauthorized
 
-from config import cfg, init
+from config import cfg, init, get_config
 import log
 from search import Search
 
-logger = log.setup_custom_logger('root')
-search = Search()
+logger = None 
+search = None
 app = Flask(__name__)
 
 api_args = {
@@ -78,7 +79,7 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return not cfg["main.auth"] or (username == cfg["main.username"] and password == cfg["main.password"])
+    return not get_config()["main.auth"] or (username == get_config()["main.username"] and password == get_config()["main.password"])
 
 
 def authenticate():
@@ -142,11 +143,18 @@ init("main.port", 5050, int)
 init("main.host", "0.0.0.0", str)
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='nzbhydra 0.0.1')
-
     if "--config" in arguments:
         from config import reload
 
-        cfg = reload(arguments["--config"])
-    port = cfg["main.port"]
-    host = cfg["main.host"]
-    app.run(host=host, port=port, debug=True)
+        filename = arguments["--config"]
+        reload(filename)
+    port = get_config()["main.port"]
+    host = get_config()["main.host"]
+    
+    #Now we can init what we need. I'm stll not sure if all this shouldn't be handled differently / easier (order of appearance in modules, dependency problems, etc)
+    logger = log.setup_custom_logger('root')
+    logger.info("Started")
+    search = Search()
+    
+    
+    app.run(host=host, port=port, debug=False)

@@ -1,8 +1,7 @@
 # Get dict from object and remove all values that won't be contained in newznab api result
 from itertools import groupby
 from marshmallow import Schema, fields
-from config import cfg
-
+from config import get_config
 
 from config import init
 init("ResultProcessing.duplicateSizeThresholdInPercent", 0.1, float)
@@ -67,8 +66,8 @@ def test_for_duplicate(search_result_1, search_result_2):
     
     if search_result_1.title != search_result_2.title:
         return False
-    size_threshold = cfg["ResultProcessing.duplicateSizeThresholdInPercent"]
-    age_threshold = cfg["ResultProcessing.duplicateAgeThreshold"]
+    size_threshold = get_config()["ResultProcessing.duplicateSizeThresholdInPercent"]
+    age_threshold = get_config()["ResultProcessing.duplicateAgeThreshold"]
     size_difference = search_result_1.size - search_result_2.size
     size_average = (search_result_1.size + search_result_2.size) / 2
 

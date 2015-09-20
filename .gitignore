@@ -5,6 +5,4 @@ realsettingsmockproviders.cfg
 /tests/mock/*.xml
 /tests/mock/*.json
 /tests/mock/*.html
-
-
-
+*.log
