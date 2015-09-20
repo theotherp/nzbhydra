@@ -1,5 +1,16 @@
+"""NZB Hydra
+Usage:
+    nzbhydra.py [--config=configfile]
+
+Options:
+  
+  --config=<configfile>
+  
+"""
 from pprint import pprint
+from docopt import docopt
 from flask import Flask, render_template, request, jsonify
+import profig
 from webargs import Arg
 from webargs.flaskparser import use_args
 from api import serialize_nzb_search_result
@@ -86,6 +97,14 @@ def internal_api(args):
 init("main.port", 5050, int)
 init("main.host", "0.0.0.0", str)
 if __name__ == '__main__':
-    port = cfg.section("main").get("port")
-    host = cfg.section("main").get("host")
-    app.run(host=host, port=port, debug=True)
+    arguments = docopt(__doc__, version='nzbhydra 0.0.1')
+    print(arguments)
+    if "--config" in arguments:
+        logger.info("Loading config from %s" % arguments["--config"])
+        from config import reload
+        reload(arguments["--config"])
+        #cfg.read(arguments["--config"])
+        #cfg.sync()
+    port = cfg["main.port"]
+    host = cfg["main.host"]
+    app.run(host=host, port=port, debug=False)
