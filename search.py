@@ -1,8 +1,9 @@
 import concurrent
 from itertools import groupby
 import logging
+from requests.exceptions import ReadTimeout, RequestException
 
-from config import cfg
+from config import cfg, init
 from nzb_search_result import NzbSearchResult
 from searchmodules import binsearch
 from searchmodules import newznab
@@ -13,7 +14,7 @@ from searchmodules import newznab
 search_modules = {"binsearch": binsearch, "newznab": newznab}
 logger = logging.getLogger('root')
 
-
+init("searching.timeout", 5, int)
 class Search:
     from requests_futures.sessions import FuturesSession
     
@@ -64,30 +65,32 @@ class Search:
         for provider, queries in queries_by_provider.items():
             results_by_provider[provider] = []
             for query in queries:
-                future = self.session.get(query)
+                future = self.session.get(query, timeout=cfg["searching.timeout"])
                 futures.append(future)
                 providers_by_future[future] = provider
 
-        for f in concurrent.futures.as_completed(futures, timeout=5):
-            result = f.result()
-            provider = providers_by_future[f]
+        
+        for f in concurrent.futures.as_completed(futures):
+            try: 
+                result = f.result() #timeout
+                provider = providers_by_future[f]
+                
+                if result.status_code != 200:
+                    # todo handle this more specific
+                    logger.warn("Error while calling %s" % result.url)
+                else:
+                    results.extend(provider.process_query_result(result.text))
+            except RequestException as e:
+                logger.error("Error while trying to process query URL: %s" % e)
+            except Exception:
+                logger.exception("Error while trying to process query URL")
             
-            if result.status_code != 200:
-                # todo handle this more specific
-                logger.warn("Error while calling %s" % result.url)
-            else:
-                results.extend(provider.process_query_result(result.text))
-
+        
         # handle errors / timeouts (log, perhaps pause usage for some time when offline)
         # then filter results, throw away passworded (if configured), etc.
-
-
-        # then attempt to recognize duplicates and mark them (if we have provider priority scores include them )
-        # if the result is used by an external api duplicates will be handled by them (probably better)
-        # if we show the results on our on page we can then group them
-
-
-
-        # then return results
+        
+        
+        
         return results
+                
         

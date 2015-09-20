@@ -58,7 +58,6 @@ docs/_build/
 target/
 
 *.cfg 
-*.log
 /tests/mock/xml/*
 /tests/mock/nzbclubrss_q_avengers.xml
 /tests/mock/*.xml
