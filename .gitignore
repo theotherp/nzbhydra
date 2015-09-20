@@ -57,8 +57,8 @@ docs/_build/
 # PyBuilder
 target/
 
-/realsettings.cfg 
-/*.log
+*.cfg 
+*.log
 /tests/mock/xml/*
 /tests/mock/nzbclubrss_q_avengers.xml
 /tests/mock/*.xml
