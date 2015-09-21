@@ -134,7 +134,6 @@ def internal_api(args):
     if results is not None:
         results = process_for_internal_api(results)
         return jsonify(results)
-    pprint(request)
     return "hello internal api"
 
 
@@ -149,8 +148,6 @@ if __name__ == '__main__':
     print("Loading settings from %s" % settings_file)
     config.load(settings_file)
     
-    
-    #Now we can init what we need. I'm stll not sure if all this shouldn't be handled differently / easier (order of appearance in modules, dependency problems, etc)
     logger = log.setup_custom_logger('root')
     logger.info("Started")
     search.read_providers_from_config()

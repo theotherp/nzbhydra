@@ -1,14 +1,19 @@
+import config
+
+needs_config = False
+
 class SearchModule(object):
     # regarding quality:
     # possibly use newznab qualities as base, map for other providers (nzbclub etc)
 
-    # TODO:
-    # limit accesses per provider (not module) per day
 
     def __init__(self, cfg):
         self.module_name = "Abstract search module"
         self.config = cfg
         self.config.init("name", "")
+        self.search_types = ["tv", "movie", "general"] #todo: init settings like this that are only used in subsections
+        self.supports_queries = True
+         
 
     # Access to most basic functions
     def get_search_urls(self, query):
@@ -40,8 +45,6 @@ class SearchModule(object):
         #   priority score
         #   base url
         #   search url?
+        #   enabled for which search types?
         #
         #   to be extended by e.g. newznab, for example apikey
-
-
-# Code starts here

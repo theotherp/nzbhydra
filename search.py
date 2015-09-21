@@ -3,41 +3,57 @@ import logging
 
 from requests.exceptions import RequestException
 from requests_futures.sessions import FuturesSession
+
 import config
-from searchmodules import binsearch
-from searchmodules import newznab
-
-
+from searchmodules import binsearch, newznab, womble
 
 
 # TODO: I would like to use plugins for this but couldn't get this to work with pluginbase due to import errors, probably import loops or whatever. I hate pythons import system 
-search_modules = {"binsearch": binsearch, "newznab": newznab}
+search_modules = {"binsearch": binsearch, "newznab": newznab, "womble": womble}
 logger = logging.getLogger('root')
 
 config.init("searching.timeout", 5, int)
-
-
 
 session = FuturesSession()
 providers = []
 
 
+def pick_providers(search_type=None, query_needed=True):
+    picked_providers = []
+    # todo: perhaps a provider is disabled because we reached the api limit or because it's offline and we're waiting some time or whatever
+    for provider in providers:
+        provider_ok = True
+        if search_type:
+            provider_ok = provider_ok and search_type in provider.search_types
+        if query_needed:
+            provider_ok = provider_ok and provider.supports_queries
+        if provider_ok:
+            picked_providers.append(provider)
+
+    return picked_providers
+
+
 # Load from config and initialize all configured providers using the loaded modules
 def read_providers_from_config():
     global providers
+    providers = []
+    
     for configSection in config.cfg.section("search_providers").sections():
-        if not configSection.get("search_module") in search_modules:
-            raise AttributeError("Unknown search module")
-        provider = search_modules[configSection.get("search_module")]
-        provider = provider.get_instance(configSection)
-        providers.append(provider)
+        if not configSection.get("module"):
+            raise AttributeError("Provider section without module %s" % configSection)
+        if not configSection.get("module") in search_modules:
+            raise AttributeError("Unknown search module %s" % configSection.get("module"))
+        if configSection.get("enabled"):
+            provider = search_modules[configSection.get("module")]
+            provider = provider.get_instance(configSection)
+            providers.append(provider)
     return providers
 
 
 def search(query, categories=None):
-    logger.info("Searching for query %s" % query)
+    logger.info("Searching for query '%s'" % query)
     queries_by_provider = {}
-    for p in providers:
+    for p in pick_providers(search_type="general"):
         queries_by_provider[p] = p.get_search_urls(query, categories)
     return execute_search_queries(queries_by_provider)
     # make a general query, probably only done by the gui
@@ -46,7 +62,7 @@ def search(query, categories=None):
 def search_show(identifier=None, season=None, episode=None, quality=None):
     logger.info("Searching for tv show")
     queries_by_provider = {}
-    for p in providers:
+    for p in pick_providers(search_type="tv"):
         queries_by_provider[p] = p.get_showsearch_urls(identifier, season, episode, quality)
     return execute_search_queries(queries_by_provider)
 
@@ -54,7 +70,7 @@ def search_show(identifier=None, season=None, episode=None, quality=None):
 def search_movie(identifier, categories):
     logger.info("Searching for movie")
     queries_by_provider = {}
-    for p in providers:
+    for p in pick_providers(search_type="movie"):
         queries_by_provider[p] = p.get_moviesearch_urls(identifier, categories)
     return execute_search_queries(queries_by_provider)
 

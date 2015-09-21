@@ -67,13 +67,14 @@ def test_for_duplicate(search_result_1, search_result_2):
     if search_result_1.title != search_result_2.title:
         return False
     size_threshold = config.cfg["ResultProcessing.duplicateSizeThresholdInPercent"]
-    age_threshold = config.cfg["ResultProcessing.duplicateAgeThreshold"]
     size_difference = search_result_1.size - search_result_2.size
     size_average = (search_result_1.size + search_result_2.size) / 2
-
     size_difference_percent = abs(size_difference / size_average) * 100
+    
+    #TODO: Ignore age threshold if no precise date is known or calculate in score (if we have sth like that...) 
+    age_threshold = config.cfg["ResultProcessing.duplicateAgeThreshold"]
     same_size = size_difference_percent <= size_threshold
-    same_age = abs(search_result_1.age - search_result_2.age) <= age_threshold
+    same_age = abs(search_result_1.epoch - search_result_2.epoch) <= age_threshold
 
     # If all nweznab providers would provide poster/group in their infos then this would be a lot easier and more precise
     # We could also use something to combine several values to a score, say that if a two posts have the exact size their age may differe more or combine relative and absolute size comparison
@@ -86,6 +87,10 @@ class NzbSearchResultSchema(Schema):
     link = fields.String()
     age = fields.Integer()
     pubDate = fields.String()
+    epoch = fields.Integer()
+    pubdate_utc = fields.String()
+    age_days = fields.Integer()
+    age_precise = fields.Boolean()
     provider = fields.String()
     guid = fields.String()
     size = fields.Integer()
@@ -100,8 +105,8 @@ def process_for_internal_api(results):
     """
     results, duplicates = find_duplicates(results)
     #Will be sorted by GUI later anyway but makes debugging easier
-    results = sorted(results, key=lambda x: x.age)
-    duplicates = sorted(duplicates, key=lambda x: x.age)
+    results = sorted(results, key=lambda x: x.epoch, reverse=True)
+    duplicates = sorted(duplicates, key=lambda x: x.epoch, reverse=True)
     dic_to_return = {"results": serialize_nzb_search_result(results).data, "duplicates": serialize_nzb_search_result(duplicates).data}
     return dic_to_return
 

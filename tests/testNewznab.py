@@ -1,5 +1,6 @@
 from pprint import pprint
 import unittest
+from freezegun import freeze_time
 
 from searchmodules.newznab import NewzNab
 
@@ -13,6 +14,7 @@ class MyTestCase(unittest.TestCase):
     cfg["search_providers.1.base_url"] = "https://nzbs.org"
     cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
     
+    @freeze_time("2015-09-20 14:00:00", tz_offset=-4)
     def testParseJsonToNzbSearchResult(self):
         from config import cfg
         n = NewzNab(cfg)
@@ -26,6 +28,9 @@ class MyTestCase(unittest.TestCase):
         assert entries[0].title == "Avengers.Age.Of.Ultron.2015.FRENCH.720p.BluRay.x264-Goatlove"
         assert entries[0].size == 6719733587
         assert entries[0].guid == "9c9d30fa2767e05ffd387db52d318ad7"
+        self.assertEqual(entries[0].age_days, 1)
+        self.assertEqual(entries[0].epoch, 1442581037)
+        self.assertEqual(entries[0].pubdate_utc, "2015-09-18T12:57:17Z")
         
         assert entries[1].title == "Avengers.Age.of.Ultron.2015.1080p.BluRay.x264.AC3.5.1-BUYMORE"
         assert entries[1].size == 4910931143

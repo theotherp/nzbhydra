@@ -3,57 +3,80 @@ import unittest
 from furl import furl
 import profig
 import requests
-from nzb_search_result import NzbSearchResult
-
-from search import Search
+import sys
 import search
-from searchmodules.newznab import get_instance, NewzNab
+import config
+
+import logging
+logging.getLogger("root").addHandler(logging.StreamHandler(sys.stdout))
+logging.getLogger("root").setLevel("DEBUG")
+
+from searchmodules.newznab import NewzNab
 
 
 
 class MyTestCase(unittest.TestCase):
-    from config import cfg
-    cfg = profig.Config('testsettings.cfg')
     
-    cfg["search_providers.1.search_module"] = "newznab"
-    cfg["search_providers.1.name"] = "NZBs.org"
-    cfg["search_providers.1.apikey"] = "apikeynzbsorg"
-    cfg["search_providers.1.base_url"] = "https://nzbs.org"
-    cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
+    config.cfg = profig.Config()
     
-    cfg["search_providers.2.search_module"] = "newznab"
-    cfg["search_providers.2.name"] = "DOGNzb"
-    cfg["search_providers.2.apikey"] = "apikeydognzb"
-    cfg["search_providers.2.base_url"] = "https://dognzb.cr"
-    cfg["search_providers.2.query_url"] = "http://127.0.0.1:5001/dognzb"
+    config.cfg["searching.timeout"] = 5
     
-    cfg.sync()
+    config.cfg["search_providers.1.enabled"] = True
+    config.cfg["search_providers.1.module"] = "newznab"
+    config.cfg["search_providers.1.name"] = "NZBs.org"
+    config.cfg["search_providers.1.apikey"] = "apikeynzbsorg"
+    config.cfg["search_providers.1.base_url"] = "https://nzbs.org"
+    config.cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
+    config.cfg["search_providers.1.search_types"] = "general, tv, movie"
+    
+    config.cfg["search_providers.2.enabled"] = True
+    config.cfg["search_providers.2.module"] = "newznab"
+    config.cfg["search_providers.2.name"] = "DOGNzb"
+    config.cfg["search_providers.2.apikey"] = "apikeydognzb"
+    config.cfg["search_providers.2.base_url"] = "https://dognzb.cr"
+    config.cfg["search_providers.2.query_url"] = "http://127.0.0.1:5001/dognzb"
+    config.cfg["search_providers.2.search_types"] = "general, tv"
+    
+    config.cfg["search_providers.3.enabled"] = True
+    config.cfg["search_providers.3.module"] = "womble"
+    config.cfg["search_providers.3.name"] = "womble"
+    config.cfg["search_providers.3.base_url"] = "http://www.newshost.co.za"
+    config.cfg["search_providers.3.query_url"] = "http://www.newshost.co.za/rss"
+    config.cfg["search_providers.3.search_types"] = "tv"
+    config.cfg["search_providers.3.supports_queries"] = False
     
     def test_search_module_loading(self):
-        assert len(search.search_modules) == 2
+        self.assertEqual(3, len(search.search_modules))
         
-    def test_config(self):
-        s = Search()
-        providers = s.read_providers_from_config()
-        assert len(providers) == 2
-        for p in providers:
-            print("Provider: " + p.name)
-            
-    def testSearchQueries(self):
+    def test_read_providers(self):
+        providers = search.read_providers_from_config()
+        self.assertEqual(3, len(providers))
         
-        s = Search()
-        s.providers = [NewzNab(self.cfg.section("search_providers").section("1"))]
-        #TODO
+    def test_pick_providers(self):
+        search.read_providers_from_config()
+        providers = search.pick_providers("general")
+        self.assertEqual(2, len(providers))
+        
+        #Providers with tv search and which support queries (actually searching for particular releases)
+        providers = search.pick_providers("tv")
+        self.assertEqual(2, len(providers))
+        
+        #Providers with tv search, including those that only provide a list of latest releases 
+        providers = search.pick_providers("tv", False)
+        self.assertEqual(3, len(providers))
+        
+        providers = search.pick_providers("movie")
+        self.assertEqual(1, len(providers))
+        self.assertEqual("NZBs.org", providers[0].name)
         
     def testSearch(self):
-        s = Search()
-        results = s.search("avengers")
-        self.assertEqual(200, len(results))
+        search.read_providers_from_config()
+        results = search.search("avengers")
+        assert len(results) > 190 #fuzzy...
         
         
     def testSearchResultsToDict(self):
-        from config import cfg
-        n = NewzNab(cfg)
+        n = NewzNab(config.cfg)
         #nzbsorg
         with open("tests/mock/nzbsorg_q_avengers_3results.json") as f:
             entries = n.process_query_result(f.read())

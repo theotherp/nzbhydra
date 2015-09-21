@@ -1,26 +1,28 @@
+import calendar
 import datetime
 import email
+import time
 
 from furl import furl
 
 from datestuff import now
 from nzb_search_result import NzbSearchResult
-
 from search_module import SearchModule
-from config import init
 
 
 def get_age_from_pubdate(pubdate):
     timepub = datetime.datetime.fromtimestamp(email.utils.mktime_tz(email.utils.parsedate_tz(pubdate)))
     timenow = now()
     dt = timenow - timepub
-    return int(dt.total_seconds())
+    epoch = calendar.timegm(time.gmtime(email.utils.mktime_tz(email.utils.parsedate_tz(pubdate))))
+    pubdate_utc = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(email.utils.mktime_tz(email.utils.parsedate_tz(pubdate))))
+    age_days = int(dt.days)
+    return epoch, pubdate_utc, int(age_days)
 
 
 class NewzNab(SearchModule):
-    
-    #TODO init of config which is dynmic with its path
-    
+    # TODO init of config which is dynmic with its path
+
     def __init__(self, config_section):
         super(NewzNab, self).__init__(config_section)
         self.module_name = "NewzNab"
@@ -30,7 +32,9 @@ class NewzNab(SearchModule):
         self.apikey = config_section.get("apikey")
         self.username = config_section.get("username")
         self.password = config_section.get("password")
-        
+        self.search_types = config_section.get("search_types")
+        self.supports_queries = config_section.get("supports_queries", True)
+
     def build_base_url(self, action, categories=None):
         url = furl(self.query_url).add({"apikey": self.apikey, "o": "json", "extended": 1, "t": action})
         if categories is not None:
@@ -51,9 +55,8 @@ class NewzNab(SearchModule):
             query.add({"ep": episode})
         if season is not None:
             query.add({"season": season})
-        #todo quality/categories
+        # todo quality/categories
         return [query.url]
-        
 
     def get_moviesearch_urls(self, identifier=None, categories=None):
         query = self.build_base_url("movie", categories)
@@ -80,7 +83,8 @@ class NewzNab(SearchModule):
             entry.title = item["title"]
             entry.link = item["link"]
             entry.pubDate = item["pubDate"]
-            entry.age = get_age_from_pubdate(item["pubDate"])
+            entry.epoch, entry.pubdate_utc, entry.age_days = get_age_from_pubdate(item["pubDate"])
+            entry.precise_date = True
             entry.provider = self.name
             entry.attributes = []
 
@@ -96,7 +100,7 @@ class NewzNab(SearchModule):
                         # First category is always the general one, this is what we want
                         # entry.category = self.getCategory(i["@attributes"]["value"])
                         entry.category = "TODO category"  # TODO
-                #Store all the extra attributes, we will return them later for external apis
+                # Store all the extra attributes, we will return them later for external apis
                 entry.attributes.append({"name": i["@attributes"]["name"], "value": i["@attributes"]["value"]})
 
             entries.append(entry)
