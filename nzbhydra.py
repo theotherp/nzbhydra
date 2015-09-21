@@ -7,23 +7,22 @@ Options:
   --config=<configfile>
   
 """
+import config
 from functools import wraps
 from pprint import pprint
-from configobj import ConfigObj
 from docopt import docopt
 from flask import Flask, render_template, request, jsonify, Response
 from webargs import Arg
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
-import config
+
 import log
-from search import Search
+import search
 
 import requests
 requests.packages.urllib3.disable_warnings()
 
 logger = None 
-search = None
 app = Flask(__name__)
 
 api_args = {
@@ -79,7 +78,7 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return username == config.cfg["main"]["username"] and password == config.cfg["main"]["password"]
+    return username == config.cfg["main.username"] and password == config.cfg["main.password"]
 
 
 def authenticate():
@@ -92,7 +91,7 @@ def authenticate():
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if config.cfg["main"].as_bool("auth"):
+        if config.cfg["main.auth"]:
             auth = request.authorization
             if not auth or not check_auth(auth.username, auth.password):
                 return authenticate()
@@ -110,8 +109,7 @@ def base():
 @app.route('/api')
 @use_args(api_args)
 def api(args):
-    if "apikey" not in args or args["apikey"] != config.cfg["main"]["apikey"]:
-        print("Hallo")
+    if config.cfg["main.apikey"] and ("apikey" not in args or args["apikey"] != config.cfg["main.apikey"]):
         raise Unauthorized("API key not provided or invalid")
     if args["t"] == "search":
         results = search.search(args["q"], args["cat"])
@@ -144,18 +142,19 @@ config.init("main.port", 5050, int)
 config.init("main.host", "0.0.0.0", str)
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='nzbhydra 0.0.1')
-    if "--config" in arguments:
-        filename = arguments["--config"]
-        if filename:
-            config.reload(filename)
-        
-    port = config.cfg["main"].as_int("port")
-    host = config.cfg["main"]["host"]
+    settings_file = "settings.cfg"
+    if arguments["--config"]:
+        settings_file = arguments["--config"]
+    
+    print("Loading settings from %s" % settings_file)
+    config.load(settings_file)
+    
     
     #Now we can init what we need. I'm stll not sure if all this shouldn't be handled differently / easier (order of appearance in modules, dependency problems, etc)
     logger = log.setup_custom_logger('root')
     logger.info("Started")
-    search = Search()
+    search.read_providers_from_config()
     
-    
+    port = config.cfg["main.port"]
+    host = config.cfg["main.host"]
     app.run(host=host, port=port, debug=True)

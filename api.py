@@ -66,8 +66,8 @@ def test_for_duplicate(search_result_1, search_result_2):
     
     if search_result_1.title != search_result_2.title:
         return False
-    size_threshold = config.cfg["ResultProcessing"]["duplicateSizeThresholdInPercent"]
-    age_threshold = config.cfg["ResultProcessing"]["duplicateAgeThreshold"]
+    size_threshold = config.cfg["ResultProcessing.duplicateSizeThresholdInPercent"]
+    age_threshold = config.cfg["ResultProcessing.duplicateAgeThreshold"]
     size_difference = search_result_1.size - search_result_2.size
     size_average = (search_result_1.size + search_result_2.size) / 2
 
