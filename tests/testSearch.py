@@ -15,17 +15,17 @@ class MyTestCase(unittest.TestCase):
     from config import cfg
     cfg = profig.Config('testsettings.cfg')
     
-    cfg["search_providers.1.search_module"] = "newznab"
-    cfg["search_providers.1.name"] = "NZBs.org"
-    cfg["search_providers.1.apikey"] = "apikeynzbsorg"
-    cfg["search_providers.1.base_url"] = "https://nzbs.org"
-    cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
+    cfg["search_providers"]["1"]["search_module"] = "newznab"
+    cfg["search_providers"]["1"]["name"] = "NZBs.org"
+    cfg["search_providers"]["1"]["apikey"] = "apikeynzbsorg"
+    cfg["search_providers"]["1"]["base_url"] = "https://nzbs.org"
+    cfg["search_providers"]["1"]["query_url"] = "http://127.0.0.1:5001/nzbsorg"
     
-    cfg["search_providers.2.search_module"] = "newznab"
-    cfg["search_providers.2.name"] = "DOGNzb"
-    cfg["search_providers.2.apikey"] = "apikeydognzb"
-    cfg["search_providers.2.base_url"] = "https://dognzb.cr"
-    cfg["search_providers.2.query_url"] = "http://127.0.0.1:5001/dognzb"
+    cfg["search_providers"]["2"]["search_module"] = "newznab"
+    cfg["search_providers"]["2"]["name"] = "DOGNzb"
+    cfg["search_providers"]["2"]["apikey"] = "apikeydognzb"
+    cfg["search_providers"]["2"]["base_url"] = "https://dognzb.cr"
+    cfg["search_providers"]["2"]["query_url"] = "http://127.0.0.1:5001/dognzb"
     
     cfg.sync()
     

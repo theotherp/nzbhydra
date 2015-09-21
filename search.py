@@ -1,9 +1,9 @@
 import concurrent
-from itertools import groupby
+
 import logging
 from requests.exceptions import ReadTimeout, RequestException
 
-from config import cfg, init, get_config
+import config
 from searchmodules import binsearch
 from searchmodules import newznab
 
@@ -13,7 +13,7 @@ from searchmodules import newznab
 search_modules = {"binsearch": binsearch, "newznab": newznab}
 logger = logging.getLogger('root')
 
-init("searching.timeout", 5, int)
+config.init("searching.timeout", 5, int)
 class Search:
     from requests_futures.sessions import FuturesSession
     
@@ -25,11 +25,11 @@ class Search:
     # Load from config and initialize all configured providers using the loaded modules
     def read_providers_from_config(self):
         providers = []
-        for configSection in get_config().section("search_providers").sections():
-            if not configSection.get("search_module") in search_modules:
+        for config_section in config.cfg["search_providers"].values():
+            if not config_section["search_module"] in search_modules:
                 raise AttributeError("Unknown search module")
-            provider = search_modules[configSection.get("search_module")]
-            provider = provider.get_instance(configSection)
+            provider = search_modules[config_section.get("search_module")]
+            provider = provider.get_instance(config_section)
             providers.append(provider)
         return providers
 
@@ -64,8 +64,8 @@ class Search:
         for provider, queries in queries_by_provider.items():
             results_by_provider[provider] = []
             for query in queries:
-                logger.debug("Requesting URL %s with timeout %d" % (query, get_config()["searching.timeout"]))
-                future = self.session.get(query, timeout=get_config()["searching.timeout"], verify=False)
+                logger.debug("Requesting URL %s with timeout %d" % (query, config.cfg["searching"]["timeout"]))
+                future = self.session.get(query, timeout=config.cfg["searching"]["timeout"], verify=False)
                 futures.append(future)
                 providers_by_future[future] = provider
 

@@ -8,7 +8,7 @@ class SearchModule(object):
     def __init__(self, cfg):
         self.module_name = "Abstract search module"
         self.config = cfg
-        self.config.init("name", "")
+        
 
     # Access to most basic functions
     def get_search_urls(self, query):

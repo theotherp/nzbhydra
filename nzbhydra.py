@@ -9,12 +9,13 @@ Options:
 """
 from functools import wraps
 from pprint import pprint
+from configobj import ConfigObj
 from docopt import docopt
 from flask import Flask, render_template, request, jsonify, Response
 from webargs import Arg
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
-from config import cfg, init, get_config
+import config
 import log
 from search import Search
 
@@ -69,16 +70,16 @@ def render_search_results_for_api(search_results):
     return render_template("api.html", channel={}, items=search_results)
 
 
-init("main.username", "nzbhydra", str)
-init("main.password", "hailhydra", str)
-init("main.auth", True, bool)
+config.init("main.username", "nzbhydra", str)
+config.init("main.password", "hailhydra", str)
+config.init("main.auth", True, bool)
 
 
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return (username == get_config()["main.username"] and password == get_config()["main.password"])
+    return username == config.cfg["main"]["username"] and password == config.cfg["main"]["password"]
 
 
 def authenticate():
@@ -91,7 +92,7 @@ def authenticate():
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if get_config()["main.auth"]:
+        if config.cfg["main"].as_bool("auth"):
             auth = request.authorization
             if not auth or not check_auth(auth.username, auth.password):
                 return authenticate()
@@ -109,7 +110,7 @@ def base():
 @app.route('/api')
 @use_args(api_args)
 def api(args):
-    if "apikey" not in args or args["apikey"] != cfg["main.apikey"]:
+    if "apikey" not in args or args["apikey"] != config.cfg["main"]["apikey"]:
         print("Hallo")
         raise Unauthorized("API key not provided or invalid")
     if args["t"] == "search":
@@ -139,17 +140,17 @@ def internal_api(args):
     return "hello internal api"
 
 
-init("main.port", 5050, int)
-init("main.host", "0.0.0.0", str)
+config.init("main.port", 5050, int)
+config.init("main.host", "0.0.0.0", str)
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='nzbhydra 0.0.1')
     if "--config" in arguments:
-        from config import reload
-
         filename = arguments["--config"]
-        reload(filename)
-    port = get_config()["main.port"]
-    host = get_config()["main.host"]
+        if filename:
+            config.reload(filename)
+        
+    port = config.cfg["main"].as_int("port")
+    host = config.cfg["main"]["host"]
     
     #Now we can init what we need. I'm stll not sure if all this shouldn't be handled differently / easier (order of appearance in modules, dependency problems, etc)
     logger = log.setup_custom_logger('root')
@@ -157,4 +158,4 @@ if __name__ == '__main__':
     search = Search()
     
     
-    app.run(host=host, port=port, debug=False)
+    app.run(host=host, port=port, debug=True)
