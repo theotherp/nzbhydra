@@ -8,6 +8,7 @@ import config
 from searchmodules import binsearch, newznab, womble
 
 
+
 # TODO: I would like to use plugins for this but couldn't get this to work with pluginbase due to import errors, probably import loops or whatever. I hate pythons import system 
 search_modules = {"binsearch": binsearch, "newznab": newznab, "womble": womble}
 logger = logging.getLogger('root')
@@ -18,18 +19,13 @@ session = FuturesSession()
 providers = []
 
 
-def pick_providers(search_type=None, query_needed=True):
-    picked_providers = []
+def pick_providers(search_type=None, query_needed=True, identifier_key=None):
+    picked_providers = providers
     # todo: perhaps a provider is disabled because we reached the api limit or because it's offline and we're waiting some time or whatever
-    for provider in providers:
-        provider_ok = True
-        if search_type:
-            provider_ok = provider_ok and search_type in provider.search_types
-        if query_needed:
-            provider_ok = provider_ok and provider.supports_queries
-        if provider_ok:
-            picked_providers.append(provider)
 
+    picked_providers = [p for p in picked_providers if not search_type or search_type in p.search_types]
+    picked_providers = [p for p in picked_providers if not query_needed or p.supports_queries]
+    picked_providers = [p for p in picked_providers if not identifier_key or identifier_key in p.search_ids]
     return picked_providers
 
 
@@ -37,13 +33,13 @@ def pick_providers(search_type=None, query_needed=True):
 def read_providers_from_config():
     global providers
     providers = []
-    
+
     for configSection in config.cfg.section("search_providers").sections():
         if not configSection.get("module"):
             raise AttributeError("Provider section without module %s" % configSection)
         if not configSection.get("module") in search_modules:
             raise AttributeError("Unknown search module %s" % configSection.get("module"))
-        if configSection.get("enabled"):
+        if configSection.get("enabled", True):
             provider = search_modules[configSection.get("module")]
             provider = provider.get_instance(configSection)
             providers.append(provider)
@@ -53,25 +49,25 @@ def read_providers_from_config():
 def search(query, categories=None):
     logger.info("Searching for query '%s'" % query)
     queries_by_provider = {}
-    for p in pick_providers(search_type="general"):
+    for p in pick_providers(search_type="general", query_needed=True):
         queries_by_provider[p] = p.get_search_urls(query, categories)
     return execute_search_queries(queries_by_provider)
     # make a general query, probably only done by the gui
 
 
-def search_show(identifier=None, season=None, episode=None, quality=None):
+def search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
     logger.info("Searching for tv show")
     queries_by_provider = {}
-    for p in pick_providers(search_type="tv"):
-        queries_by_provider[p] = p.get_showsearch_urls(identifier, season, episode, quality)
+    for p in pick_providers(search_type="tv", query_needed=query is not None, identifier_key=identifier_key):
+        queries_by_provider[p] = p.get_showsearch_urls(query, identifier_key, identifier_value, season, episode, categories)
     return execute_search_queries(queries_by_provider)
 
 
-def search_movie(identifier, categories):
+def search_movie(query=None, identifier_key=None, identifier_value=None, categories=None):
     logger.info("Searching for movie")
     queries_by_provider = {}
-    for p in pick_providers(search_type="movie"):
-        queries_by_provider[p] = p.get_moviesearch_urls(identifier, categories)
+    for p in pick_providers(search_type="movie", query_needed=query is not None, identifier_key=identifier_key):
+        queries_by_provider[p] = p.get_moviesearch_urls(query, identifier_key, identifier_value, categories)
     return execute_search_queries(queries_by_provider)
 
 

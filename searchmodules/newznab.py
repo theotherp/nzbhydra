@@ -1,6 +1,7 @@
 import calendar
 import datetime
 import email
+import logging
 import time
 
 from furl import furl
@@ -8,6 +9,7 @@ from furl import furl
 from datestuff import now
 from nzb_search_result import NzbSearchResult
 from search_module import SearchModule
+logger = logging.getLogger('root')
 
 
 def get_age_from_pubdate(pubdate):
@@ -32,8 +34,9 @@ class NewzNab(SearchModule):
         self.apikey = config_section.get("apikey")
         self.username = config_section.get("username")
         self.password = config_section.get("password")
-        self.search_types = config_section.get("search_types")
+        self.search_types = config_section.get("search_types", ["general", "tv", "movie"])
         self.supports_queries = config_section.get("supports_queries", True)
+        self.search_ids = config_section.get("search_ids", ["tvdbid", "rid", "imdbid"])
 
     def build_base_url(self, action, categories=None):
         url = furl(self.query_url).add({"apikey": self.apikey, "o": "json", "extended": 1, "t": action})
@@ -47,16 +50,25 @@ class NewzNab(SearchModule):
             f = f.add("cat", categories)
         return [f.url]
 
-    def get_showsearch_urls(self, identifier=None, season=None, episode=None, categories=None):
-        query = self.build_base_url("tvsearch", categories)
-        if identifier is not None:
-            query.add({"rid": identifier})
-        if episode is not None:
-            query.add({"ep": episode})
-        if season is not None:
-            query.add({"season": season})
-        # todo quality/categories
-        return [query.url]
+    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
+        if query is None:
+            url = self.build_base_url("tvsearch", categories)
+            if identifier_key is not None:
+                url.add({identifier_key: identifier_value})
+            if episode is not None:
+                url.add({"ep": episode})
+            if season is not None:
+                url.add({"season": season})
+        else:
+            url = self.build_base_url("search", categories).add({"q": query})
+        
+        if categories is None:
+            categories = [5000]
+        
+        url.add({"cat": ",".join(str(x) for x in categories)})
+            
+        
+        return [url.url]
 
     def get_moviesearch_urls(self, identifier=None, categories=None):
         query = self.build_base_url("movie", categories)

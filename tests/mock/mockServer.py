@@ -1,6 +1,6 @@
 import os
 from time import sleep
-from flask import Flask, send_file
+from flask import Flask, send_file, request
 from webargs.flaskparser import use_args
 
 from webargs import core, Arg
@@ -26,7 +26,9 @@ api_args = {
     "imbdid": Arg(str),
     "tvdbid": Arg(str),  #nzbs.org
     "season": Arg(str),
-    "ep": Arg(str)
+    "ep": Arg(str),
+    "sec": Arg(str), #womble
+    "fr": Arg(str), #womble
 
     #TODO: Support comments, music search, book search, details, etc(?)
 
@@ -51,21 +53,28 @@ def nzbclubrss():
     #todo
     pass
 
+@app.route('/womble')
+@use_args(api_args)
+def womble(args):
+    return handle_request("womble", args)
+
     
 def handle_request(provider, args):
     keys_sorted = sorted(args.keys())
     keys_sorted.remove("apikey")
     keys_sorted.remove("extended")
     keys_sorted.remove("o")
+    keys_sorted.remove("fr")
     filename = provider
     for arg in keys_sorted:
         if args[arg] is not None:
             filename = "%s--%s-%s" % (filename, arg, args[arg])
-    filename += ".json"
-    
-    if os.path.exists(filename):
+    if os.path.exists(filename + ".json"):
         print("Sending " + filename)
-        return send_file(filename, "application/javascript")
+        return send_file(filename + ".json", "application/javascript")
+    if os.path.exists(filename + ".xml"):
+        print("Sending " + filename)
+        return send_file(filename + ".xml")
     else:
         print("Cannot find respose " + filename)
         return "Unknown request", 404

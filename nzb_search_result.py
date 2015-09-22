@@ -1,17 +1,23 @@
 class NzbSearchResult:
-    def __init__(self, title=None, link=None, age=None, provider=None, guid=None, size=None, categories=None, attributes=None):
+    def __init__(self, title=None, link=None, provider=None, guid=None, size=None, category=None, attributes=[], epoch=None, pubdate_utc=None, age_days=None):
         self.title = title
         self.link = link
-        self.age = age  #In seconds
-        self.age_precise = False #Set to false if the age is not received from a pubdate but from an age. That might influence duplicity check
+        self.epoch = epoch
+        self.pubdate_utc = pubdate_utc
+        self.age_days = age_days
+        self.age_precise = True #Set to false if the age is not received from a pubdate but from an age. That might influence duplicity check
         self.provider = provider
         self.guid = guid
         self.size = size
-        self.categories = categories
+        self.category = category
         self.description = None
         self.comments = None
-        self.pubDate = None
         self.attributes = attributes
+        self.search_types = [] #"general", "tv", "movie"
+        self.supports_queries = True #Providers might only provide a feed of the latest releases, e.g. womble
+        self.search_ids = [] #"tvdbid", "rid", "imdbid"
+        
+        
         
 
     def __repr__(self):

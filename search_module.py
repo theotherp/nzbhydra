@@ -22,13 +22,13 @@ class SearchModule(object):
         # using general queries
         pass
 
-    def get_showsearch_urls(self, identifier=None, season=None, episode=None, categories=None):
+    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
         # to extend
         # if module supports it, search specifically for show, otherwise make sure we create a query that searches
         # for for s01e01, 1x1 etc
         pass
 
-    def get_searchmovie_urls(self, identifier=None, title=None, quality=None):
+    def get_moviesearch_urls(self, identifier=None, title=None, categories=None):
         # to extend
         # if module doesnt support it possibly use (configurable) size restrictions when searching
         pass

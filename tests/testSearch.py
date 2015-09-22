@@ -28,6 +28,7 @@ class MyTestCase(unittest.TestCase):
     config.cfg["search_providers.1.base_url"] = "https://nzbs.org"
     config.cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
     config.cfg["search_providers.1.search_types"] = "general, tv, movie"
+    config.cfg["search_providers.1.search_ids"] = "tvdbid, rid, imdbid"
     
     config.cfg["search_providers.2.enabled"] = True
     config.cfg["search_providers.2.module"] = "newznab"
@@ -36,6 +37,7 @@ class MyTestCase(unittest.TestCase):
     config.cfg["search_providers.2.base_url"] = "https://dognzb.cr"
     config.cfg["search_providers.2.query_url"] = "http://127.0.0.1:5001/dognzb"
     config.cfg["search_providers.2.search_types"] = "general, tv"
+    config.cfg["search_providers.2.search_ids"] = "tvdbid, rid"
     
     config.cfg["search_providers.3.enabled"] = True
     config.cfg["search_providers.3.module"] = "womble"
@@ -44,6 +46,7 @@ class MyTestCase(unittest.TestCase):
     config.cfg["search_providers.3.query_url"] = "http://www.newshost.co.za/rss"
     config.cfg["search_providers.3.search_types"] = "tv"
     config.cfg["search_providers.3.supports_queries"] = False
+    config.cfg["search_providers.3.search_ids"] = ""
     
     def test_search_module_loading(self):
         self.assertEqual(3, len(search.search_modules))
@@ -54,20 +57,30 @@ class MyTestCase(unittest.TestCase):
         
     def test_pick_providers(self):
         search.read_providers_from_config()
-        providers = search.pick_providers("general")
+        providers = search.pick_providers(search_type="general")
         self.assertEqual(2, len(providers))
         
         #Providers with tv search and which support queries (actually searching for particular releases)
-        providers = search.pick_providers("tv")
+        providers = search.pick_providers(search_type="tv", query_needed=True)
         self.assertEqual(2, len(providers))
         
         #Providers with tv search, including those that only provide a list of latest releases 
-        providers = search.pick_providers("tv", False)
+        providers = search.pick_providers(search_type="tv", query_needed=False)
         self.assertEqual(3, len(providers))
         
-        providers = search.pick_providers("movie")
+        providers = search.pick_providers(search_type="movie")
         self.assertEqual(1, len(providers))
         self.assertEqual("NZBs.org", providers[0].name)
+        
+        providers = search.pick_providers(identifier_key="tvdbid")
+        self.assertEqual(2, len(providers))
+        self.assertEqual("NZBs.org", providers[0].name)
+        self.assertEqual("DOGNzb", providers[1].name)
+        
+        providers = search.pick_providers("tv", identifier_key="imdbid")
+        self.assertEqual(1, len(providers))
+        self.assertEqual("NZBs.org", providers[0].name)
+        
         
     def testSearch(self):
         search.read_providers_from_config()
@@ -87,7 +100,150 @@ class MyTestCase(unittest.TestCase):
     
     
     
-    def getMock(self, action, category=None, rid=None, imdbid=None, season=None, episode=None, q=None):
+    def testTvSearch(self):
+        config.cfg["search_providers.1.enabled"] = True
+        config.cfg["search_providers.1.module"] = "newznab"
+        config.cfg["search_providers.1.name"] = "NZBs.org"
+        config.cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
+        config.cfg["search_providers.1.search_types"] = "general, tv, movie"
+        config.cfg["search_providers.1.search_ids"] = "tvdbid, rid, imdbid"
+        
+        config.cfg["search_providers.2.enabled"] = True
+        config.cfg["search_providers.2.module"] = "newznab"
+        config.cfg["search_providers.2.name"] = "DOGNzb"
+        config.cfg["search_providers.2.query_url"] = "http://127.0.0.1:5001/dognzb"
+        config.cfg["search_providers.2.search_types"] = "general, tv"
+        config.cfg["search_providers.2.search_ids"] = "tvdbid, rid"
+        
+        config.cfg["search_providers.3.enabled"] = True
+        config.cfg["search_providers.3.module"] = "womble"
+        config.cfg["search_providers.3.name"] = "womble"
+        config.cfg["search_providers.3.query_url"] = "http://www.newshost.co.za/rss"
+        config.cfg["search_providers.3.search_types"] = "tv"
+        config.cfg["search_providers.3.supports_queries"] = False
+        config.cfg["search_providers.3.search_ids"] = []
+        
+        from unittest.mock import MagicMock
+        search.execute_search_queries = MagicMock(return_value=[])
+        #General search, only providers which support queries
+        search.search("aquery")
+        args = search.execute_search_queries.call_args[0][0] #mock returns a tuple, with the directional arguments as tuple first, of which we want the first (and only) argument, our actual arguments, which is a dict module:[urls]
+        args = [args[y] for y in sorted(args, key=lambda x: x.name)] #Url lists, sorted by name of provider because the order might be random
+        
+        url = args[0][0]
+        web_args = url.split("?")[1].split("&")
+        assert "t=search" in web_args
+        assert "apikey=apikeydognzb" in web_args
+        assert "q=aquery" in web_args
+        
+        url = args[1][0]
+        web_args = url.split("?")[1].split("&") #and then we get all arguments because we cannot check against the url because furl builds it somewhat randomly
+        assert "t=search" in web_args
+        assert "apikey=apikeynzbsorg" in web_args
+        assert "q=aquery" in web_args
+        self.assertEqual(5, len(web_args)) #other args: o=json & extended=1
+        
+        
+        
+        #TV search without any specifics (return all lates releases), this includes wombles
+        search.search_show()
+        args = search.execute_search_queries.call_args[0][0]
+        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
+        self.assertEqual(3, len(args)) #3 providers
+        
+        url = args[0][0]
+        web_args = url.split("?")[1].split("&")
+        assert "t=tvsearch" in web_args
+        assert "apikey=apikeydognzb" in web_args
+                
+        url = args[1][0] 
+        web_args = url.split("?")[1].split("&") 
+        assert "t=tvsearch" in web_args
+        assert "apikey=apikeynzbsorg" in web_args
+        assert "cat=5000" in web_args #no category provided, so we just added 5000 
+        self.assertEqual(5, len(web_args)) #other args: o=json & extended=1      
+        
+        url = args[2][0]
+        web_args = url.split("?")[1].split("&")
+        assert "http://www.newshost.co.za/rss" in url
+        self.assertEqual(1, len(web_args)) #only disable pretty titles
+        
+        
+        
+        #TV search with a query (not using identifiers), so no wombles
+        search.search_show(query="aquery")
+        args = search.execute_search_queries.call_args[0][0]
+        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
+        self.assertEqual(2, len(args)) #2 providers
+        
+        url = args[0][0] 
+        web_args = url.split("?")[1].split("&") 
+        assert "t=search" in web_args
+        assert "q=aquery" in web_args
+        assert "apikey=apikeydognzb" in web_args
+        
+        url = args[1][0]
+        web_args = url.split("?")[1].split("&")
+        assert "t=search" in web_args
+        assert "apikey=apikeynzbsorg" in web_args
+        assert "q=aquery" in web_args
+        assert "cat=5000" in web_args #no category provided, so we just added 5000
+        self.assertEqual(6, len(web_args)) #other args: o=json & extended=1
+        
+        
+        
+        #TV search with tvdbid, so no wombles
+        search.search_show(identifier_key="tvdbid", identifier_value="12345")
+        args = search.execute_search_queries.call_args[0][0] 
+        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
+        self.assertEqual(2, len(args)) #2 providers
+        
+        url = args[0][0] 
+        web_args = url.split("?")[1].split("&") 
+        assert "t=tvsearch" in web_args
+        assert "apikey=apikeydognzb" in web_args
+        assert "tvdbid=12345" in web_args
+        assert "cat=5000" in web_args #no category provided, so we just added 5000
+        self.assertEqual(6, len(web_args)) #other args: o=json & extended=1
+        
+        url = args[1][0]
+        web_args = url.split("?")[1].split("&")
+        assert "t=tvsearch" in web_args
+        assert "tvdbid=12345" in web_args
+        assert "apikey=apikeynzbsorg" in web_args
+        
+        
+        #TV search with tvdbid and season and episode
+        search.search_show(identifier_key="tvdbid", identifier_value="12345", season=1, episode=2)
+        args = search.execute_search_queries.call_args[0][0] 
+        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
+        self.assertEqual(2, len(args)) #2 providers
+        
+        url = args[0][0] 
+        web_args = url.split("?")[1].split("&") 
+        assert "t=tvsearch" in web_args
+        assert "apikey=apikeydognzb" in web_args
+        assert "tvdbid=12345" in web_args
+        assert "season=1" in web_args
+        assert "ep=2" in web_args
+        assert "cat=5000" in web_args #no category provided, so we just added 5000
+        self.assertEqual(8, len(web_args)) #other args: o=json & extended=1
+        
+        url = args[1][0]
+        web_args = url.split("?")[1].split("&")
+        assert "t=tvsearch" in web_args
+        assert "tvdbid=12345" in web_args
+        assert "season=1" in web_args
+        assert "ep=2" in web_args
+        assert "apikey=apikeynzbsorg" in web_args
+        
+        
+        
+        
+    
+    
+    #For creating test data
+    def getMockResponse(self, action, category=None, rid=None, imdbid=None, season=None, episode=None, q=None):
         query = furl("https://nzbs.org/api").add({"apikey": "", "t": action, "o": "json", "extended": 1})
         if rid is not None:
             query.add({"rid": rid})
