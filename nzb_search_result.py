@@ -24,4 +24,7 @@ class NzbSearchResult:
         return "Title: {}. PubDate: {}. Size: {}. Provider: {}".format(self.title, self.pubdate_utc, self.size, self.provider)
     
     def __eq__(self, other_nzb_search_result):
-        return self.title == other_nzb_search_result.title and self.link == other_nzb_search_result.link and self.provider == other_nzb_search_result.provider and self.guid == other_nzb_search_result.guid  
+        return self.title == other_nzb_search_result.title and self.link == other_nzb_search_result.link and self.provider == other_nzb_search_result.provider and self.guid == other_nzb_search_result.guid
+    
+    def __hash__(self):
+        return hash(self.title) ^ hash(self.provider) ^ hash(self.guid)

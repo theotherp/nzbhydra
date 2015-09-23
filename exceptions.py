@@ -1,7 +1,7 @@
 class NzbHydraException(Exception):
     def __init__(self, message=None):
         super(NzbHydraException, self).__init__(message)
-
+        
 
 class ProviderAuthException(NzbHydraException):
     # The provider indicated that the authentication failed. This provider should not be user until the problem is solved.

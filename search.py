@@ -7,12 +7,12 @@ from werkzeug.exceptions import HTTPException
 
 import config
 from exceptions import ProviderConnectionException, ProviderAuthException, NzbHydraException, ProviderAccessException
-from searchmodules import binsearch, newznab, womble
+from searchmodules import binsearch, newznab, womble, nzbclub
 
 
 
 # TODO: I would like to use plugins for this but couldn't get this to work with pluginbase due to import errors, probably import loops or whatever. I hate pythons import system 
-search_modules = {"binsearch": binsearch, "newznab": newznab, "womble": womble}
+search_modules = {"binsearch": binsearch, "newznab": newznab, "womble": womble, "nzbclub": nzbclub}
 logger = logging.getLogger('root')
 
 config.init("searching.timeout", 5, int)
@@ -90,7 +90,6 @@ def execute_search_queries(queries_by_provider):
 
     for f in concurrent.futures.as_completed(futures):
         try:
-            
             result = f.result()
             provider = providers_by_future[f]
 
@@ -102,13 +101,13 @@ def execute_search_queries(queries_by_provider):
             
         except ProviderAuthException as e:
             logger.error("Unable to authorize with %s: %s" % (e.search_module, e.message))
-            pass #todo
+            pass #todo disable provider
         except ProviderConnectionException as e:
             logger.error("Unable to connect with %s: %s" % (e.search_module, e.message))
-            pass #todo
+            pass #todo pause provider
         except ProviderAccessException as e:
             logger.error("Unable to access %s: %s" % (e.search_module, e.message))
-            pass #todo
+            pass #todo pause provider
         except Exception as e:
             logger.exception("An error error occurred while searching.", e)
         
@@ -116,12 +115,14 @@ def execute_search_queries(queries_by_provider):
     for query_result in query_results:
         provider = query_result["provider"]
         result = query_result["result"]
-        search_results.extend(provider.process_query_result(result.text))
+        try:
+            processed_results = provider.process_query_result(result.text)
+        except Exception as e:
+            logger.exception("Error while processing search results from provider %s" % provider, e)
+        search_results.extend(processed_results)
 
-
-    # handle errors / timeouts (log, perhaps pause usage for some time when offline)
-    # then filter results, throw away passworded (if configured), etc.
-
+    #todo: add information about the providers / search results / etc. so we can show them in the gui later
+    #for example how long the provider took for responses, if the search was successful, how many items per provider, etc. to a degree those calculations can also be done by the gui later
 
 
     return search_results

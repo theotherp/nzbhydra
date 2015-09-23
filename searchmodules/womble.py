@@ -17,7 +17,7 @@ class Womble(SearchModule):
     def __init__(self, config_section):
         super(Womble, self).__init__(config_section)
         self.module_name = "womble"
-        self.name = config_section.get("name", "Womble's NZB Index")
+        self.name = "Womble's NZB Index"
         self.query_url = config_section.get("query_url", "http://www.newshost.co.za/rss/")
         self.base_url = config_section.get("base_url", "http://www.newshost.co.za/")
         self.search_types = ["tv"]  # will need to check this but I think is mainly/only used for tv shows
@@ -66,7 +66,7 @@ class Womble(SearchModule):
             
             entry = NzbSearchResult()
             entry.title = title.text
-            entry.url = url.attrib["url"]
+            entry.link = url.attrib["url"]
             
             p = re.compile("(.*)\(Size:(\d*)")
             m = p.search(elem.find("description").text)

@@ -28,24 +28,6 @@ class MyTestCase(unittest.TestCase):
         except NotImplementedError:
             pass
         
-        try:
-            w.get_showsearch_urls(identifier="123")
-            self.fail("Expected an error")
-        except NotImplementedError:
-            pass
-        
-        try:
-            w.get_showsearch_urls(season=1)
-            self.fail("Expected an error")
-        except NotImplementedError:
-            pass
-        
-        try:
-            w.get_showsearch_urls(episode=1)
-            self.fail("Expected an error")
-        except NotImplementedError:
-            pass
-        
         
         w.get_showsearch_urls()
         
@@ -79,7 +61,7 @@ class MyTestCase(unittest.TestCase):
         with open("tests/mock/womble--sec-tv-dvd.xml") as f:
             entries = w.process_query_result(f.read())
             self.assertEqual("Blackish.S01E24.DVDRip.X264-OSiTV", entries[0].title)
-            self.assertEqual("http://www.newshost.co.za/nzb/79d/Blackish.S01E24.DVDRip.X264-OSiTV.nzb", entries[0].url)
+            self.assertEqual("http://www.newshost.co.za/nzb/79d/Blackish.S01E24.DVDRip.X264-OSiTV.nzb", entries[0].link)
             self.assertEqual(336592896, entries[0].size)
             self.assertEqual(5030, entries[0].category)
             self.assertEqual("http://www.newshost.co.za/nzb/79d/Blackish.S01E24.DVDRip.X264-OSiTV.nzb", entries[0].guid)

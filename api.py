@@ -68,6 +68,7 @@ def find_duplicates(results):
                 if j not in seen:
                     if test_for_duplicate(group[i], group[j]):
                         seen.add(i)
+                        #uniques.append(group[i])
             if i not in seen:
                 uniques.append(group[i])
             else:
@@ -92,7 +93,7 @@ def test_for_duplicate(search_result_1, search_result_2):
     # TODO: Ignore age threshold if no precise date is known or calculate in score (if we have sth like that...) 
     age_threshold = config.cfg["ResultProcessing.duplicateAgeThreshold"]
     same_size = size_difference_percent <= size_threshold
-    same_age = abs(search_result_1.epoch - search_result_2.epoch) <= age_threshold
+    same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold #epoch difference (ms) to minutes
 
     # If all nweznab providers would provide poster/group in their infos then this would be a lot easier and more precise
     # We could also use something to combine several values to a score, say that if a two posts have the exact size their age may differe more or combine relative and absolute size comparison
@@ -103,7 +104,6 @@ def test_for_duplicate(search_result_1, search_result_2):
 class NzbSearchResultSchema(Schema):
     title = fields.String()
     link = fields.String()
-    age = fields.Integer()
     pubDate = fields.String()
     epoch = fields.Integer()
     pubdate_utc = fields.String()
@@ -112,7 +112,7 @@ class NzbSearchResultSchema(Schema):
     provider = fields.String()
     guid = fields.String()
     size = fields.Integer()
-    categories = fields.String()
+    categories = fields.String()#wthy the fuc doesnt this work with fields.Integer(many=True) 
 
 
 def process_for_internal_api(results):
