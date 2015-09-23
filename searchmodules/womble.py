@@ -60,8 +60,8 @@ class Womble(SearchModule):
         for elem in tree.iter('item'):
             title = elem.find("title")
             url = elem.find("enclosure")
-            pubDate = elem.find("pubDate")
-            if title is None or url is None or pubDate is None:
+            pubdate = elem.find("pubDate")
+            if title is None or url is None or pubdate is None:
                 continue
             
             entry = NzbSearchResult()
@@ -82,10 +82,10 @@ class Womble(SearchModule):
                 
             entry.guid = elem.find("guid").text
             
-            pubDate = arrow.get(pubDate.text, 'M/DD/YYYY h:mm:ss A')
-            entry.epoch = pubDate.timestamp
-            entry.pubdate_utc = str(pubDate)
-            entry.age_days = (arrow.utcnow() - pubDate).days
+            pubdate = arrow.get(pubdate.text, 'M/DD/YYYY h:mm:ss A')
+            entry.epoch = pubdate.timestamp
+            entry.pubdate_utc = str(pubdate)
+            entry.age_days = (arrow.utcnow() - pubdate).days
              
             entries.append(entry)
             

@@ -7,6 +7,7 @@ import time
 from furl import furl
 
 from datestuff import now
+from exceptions import ProviderAuthException, ProviderAccessException
 from nzb_search_result import NzbSearchResult
 from search_module import SearchModule
 logger = logging.getLogger('root')
@@ -37,6 +38,9 @@ class NewzNab(SearchModule):
         self.search_types = config_section.get("search_types", ["general", "tv", "movie"])
         self.supports_queries = config_section.get("supports_queries", True)
         self.search_ids = config_section.get("search_ids", ["tvdbid", "rid", "imdbid"])
+        
+    def __repr__(self):
+        return "Provider: %s" % self.name
 
     def build_base_url(self, action):
         url = furl(self.query_url).add({"apikey": self.apikey, "o": "json", "extended": 1, "t": action})
@@ -121,6 +125,21 @@ class NewzNab(SearchModule):
             entry.categories = sorted(entry.categories) #Sort to make the general category appear first
             entries.append(entry)
         return entries
+    
+    def check_auth(self, body):
+        #TODO: unfortunately in case of an auth problem newznab doesn't return json even if requested. So this would be easier/better if we used XML responses instead of json
+        if '<error code="100"' in body:
+            raise ProviderAuthException("The API key seems to be incorrect.", self)
+        if '<error code="101"' in body:
+            raise ProviderAuthException("The account seems to be suspended.", self)
+        if '<error code="102"' in body:
+            raise ProviderAuthException("You're not allowed to use the API.", self)
+        if '<error code="910"' in body:
+            raise ProviderAccessException("The API seems to be disabled for the moment.", self)
+        if '<error code=' in body:
+            raise ProviderAccessException("Unknown error while trying to access the provider.", self)
+        
+            
 
 
 def get_instance(config_section):

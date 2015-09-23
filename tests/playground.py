@@ -2,11 +2,17 @@ import unittest
 import profig
 
 
-class MyTestCase(unittest.TestCase):
-    
-    def testProfigLists(self):
-        cfg = profig.Config()
-        cfg["a.list.test"] = ["a", "b"]
-        cfg.write("test")
-        print(cfg["test"])
-    
+class Ex1(Exception):
+    pass
+
+
+class Ex2(Exception):
+    pass
+
+try:
+    raise Ex1()
+except Ex1:
+    print("Caught ex1 and will raise 2")
+    raise Ex2()
+except Ex2:
+    print("Caught ex2")

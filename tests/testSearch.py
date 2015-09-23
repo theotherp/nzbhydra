@@ -93,11 +93,6 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(1, len(providers))
         self.assertEqual("NZBs.org", providers[0].name)
 
-    def testSearch(self):
-        search.read_providers_from_config()
-        results = search.search("avengers")
-        # assert len(results) > 190 #fuzzy...
-
     def testSearchResultsToDict(self):
         n = NewzNab(config.cfg)
         # nzbsorg
@@ -407,6 +402,48 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual("myTitle", result.title)
         assert 2000 in result.categories
         assert 2040 in result.categories
+        
+        
+    @responses.activate
+    def testSearchExceptions(self):
+        config.cfg["search_providers.1.enabled"] = True
+        config.cfg["search_providers.1.module"] = "newznab"
+        config.cfg["search_providers.1.name"] = "NZBs.org"
+        config.cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
+        config.cfg["search_providers.1.search_types"] = "general, tv, movie"
+        config.cfg["search_providers.1.search_ids"] = "tvdbid, rid, imdbid"
+
+        config.cfg["search_providers.2.enabled"] = False
+
+        config.cfg["search_providers.3.enabled"] = False
+
+        # movie search without any specifics (return all latest releases)
+        search.read_providers_from_config()
+        
+        from tests.testLogger import LoggingCaptor
+        from log import setup_custom_logger
+        logger = setup_custom_logger("root")
+        logging_captor = LoggingCaptor()
+        logger.addHandler(logging_captor)
+        
+        with responses.RequestsMock() as rsps:
+            url_re = re.compile(r'.*')
+            rsps.add(responses.GET, url_re,
+                          body='<error code="100" description="Incorrect user credentials"/>', status=200,
+                          content_type='application/json')        
+            search.search_movie()
+            assert any("The API key seems to be incorrect" in s for s in logging_captor.messages)
+        
+        with responses.RequestsMock() as rsps:
+            logging_captor.messages = []
+            url_re = re.compile(r'.*')
+            rsps.add(responses.GET, url_re,
+                          body='', status=404,
+                          content_type='application/json')        
+            search.search_movie()
+            assert any("Unable to connect with" in s for s in logging_captor.messages)
+            
+        
 
 
 

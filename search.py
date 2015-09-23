@@ -3,8 +3,10 @@ import logging
 
 from requests.exceptions import RequestException
 from requests_futures.sessions import FuturesSession
+from werkzeug.exceptions import HTTPException
 
 import config
+from exceptions import ProviderConnectionException, ProviderAuthException, NzbHydraException, ProviderAccessException
 from searchmodules import binsearch, newznab, womble
 
 
@@ -88,19 +90,28 @@ def execute_search_queries(queries_by_provider):
 
     for f in concurrent.futures.as_completed(futures):
         try:
+            
             result = f.result()
             provider = providers_by_future[f]
 
             if result.status_code != 200:
-                # todo handle this more specific
-                logger.warn("Error while calling %s" % result.url)
+                raise ProviderConnectionException("Unable to connect to provider. Status code: %d" % result.status_code, provider)
             else:
+                provider.check_auth(result.text)
                 query_results.append({"provider": provider, "result": result})
-        except RequestException as e:
-            logger.error("Error while trying to process query URL: %s" % e)
-        except Exception:
-            logger.exception("Error while trying to process query URL")
-            pass
+            
+        except ProviderAuthException as e:
+            logger.error("Unable to authorize with %s: %s" % (e.search_module, e.message))
+            pass #todo
+        except ProviderConnectionException as e:
+            logger.error("Unable to connect with %s: %s" % (e.search_module, e.message))
+            pass #todo
+        except ProviderAccessException as e:
+            logger.error("Unable to access %s: %s" % (e.search_module, e.message))
+            pass #todo
+        except Exception as e:
+            logger.exception("An error error occurred while searching.", e)
+        
 
     for query_result in query_results:
         provider = query_result["provider"]

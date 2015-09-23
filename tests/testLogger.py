@@ -5,10 +5,12 @@ class LoggingCaptor(logging.StreamHandler):
     def __init__(self):
         logging.StreamHandler.__init__(self)
         self.records = []
+        self.messages = []
         
     
     def emit(self, record):
         self.records.append(record)
+        self.messages.append(record.msg)
 
 class MyTestCase(unittest.TestCase):
     def testThatSensitiveDataIsRemoved(self):

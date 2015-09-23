@@ -34,6 +34,10 @@ class SearchModule(object):
 
     def process_query_result(self, result):
         return []
+        
+    def check_auth(self, body=""):
+        #check the response body to see if request was authenticated. If yes, do nothing, if no, raise exception 
+        pass
 
 
         # information, perhaps if we provide basic information, get the info link for a uid, get base url, etc
