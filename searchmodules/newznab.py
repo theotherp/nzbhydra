@@ -38,21 +38,19 @@ class NewzNab(SearchModule):
         self.supports_queries = config_section.get("supports_queries", True)
         self.search_ids = config_section.get("search_ids", ["tvdbid", "rid", "imdbid"])
 
-    def build_base_url(self, action, categories=None):
+    def build_base_url(self, action):
         url = furl(self.query_url).add({"apikey": self.apikey, "o": "json", "extended": 1, "t": action})
-        if categories is not None:
-            url.add({"cat": categories})
         return url
 
     def get_search_urls(self, query, categories=None):
         f = self.build_base_url("search").add({"q": query})
         if categories is not None:
-            f = f.add("cat", categories)
+            f.add({"cat": ",".join(str(x) for x in categories)})
         return [f.url]
 
     def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
         if query is None:
-            url = self.build_base_url("tvsearch", categories)
+            url = self.build_base_url("tvsearch")
             if identifier_key is not None:
                 url.add({identifier_key: identifier_value})
             if episode is not None:
@@ -60,7 +58,7 @@ class NewzNab(SearchModule):
             if season is not None:
                 url.add({"season": season})
         else:
-            url = self.build_base_url("search", categories).add({"q": query})
+            url = self.build_base_url("search").add({"q": query})
         
         if categories is None:
             categories = [5000]
@@ -70,11 +68,20 @@ class NewzNab(SearchModule):
         
         return [url.url]
 
-    def get_moviesearch_urls(self, identifier=None, categories=None):
-        query = self.build_base_url("movie", categories)
-        if identifier is not None:
-            query.add({"imdbid": identifier})
-        return [query.url]
+    def get_moviesearch_urls(self, query=None, identifier_key=None, identifier_value=None, categories=None):
+        if query is None:
+            url = self.build_base_url("movie")
+            if identifier_key is not None:
+                url.add({identifier_key: identifier_value})
+        else:
+            url = self.build_base_url("search").add({"q": query})
+        
+        if categories is None:
+            categories = [2000]
+        
+        url.add({"cat": ",".join(str(x) for x in categories)})
+        
+        return [url.url]
 
     def process_query_result(self, json_response):
         import json
@@ -100,7 +107,7 @@ class NewzNab(SearchModule):
             entry.provider = self.name
             entry.attributes = []
 
-            entry.category = None
+            entry.categories = []
             for i in item["attr"]:
                 if i["@attributes"]["name"] == "size":
                     entry.size = int(i["@attributes"]["value"])
@@ -108,13 +115,10 @@ class NewzNab(SearchModule):
                 elif i["@attributes"]["name"] == "guid":
                     entry.guid = i["@attributes"]["value"]
                 elif i["@attributes"]["name"] == "category":
-                    if entry.category is None:
-                        # First category is always the general one, this is what we want
-                        # entry.category = self.getCategory(i["@attributes"]["value"])
-                        entry.category = "TODO category"  # TODO
+                    entry.categories.append(int(i["@attributes"]["value"]))
                 # Store all the extra attributes, we will return them later for external apis
                 entry.attributes.append({"name": i["@attributes"]["name"], "value": i["@attributes"]["value"]})
-
+            entry.categories = sorted(entry.categories) #Sort to make the general category appear first
             entries.append(entry)
         return entries
 

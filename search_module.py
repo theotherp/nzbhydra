@@ -1,6 +1,5 @@
-import config
-
 needs_config = False
+
 
 class SearchModule(object):
     # regarding quality:
@@ -11,9 +10,9 @@ class SearchModule(object):
         self.module_name = "Abstract search module"
         self.config = cfg
         self.config.init("name", "")
-        self.search_types = ["tv", "movie", "general"] #todo: init settings like this that are only used in subsections
+        self.search_types = ["tv", "movie", "general"]  # todo: init settings like this that are only used in subsections
         self.supports_queries = True
-         
+        self.search_ids = [] #"tvdbid", "rid", "imdbid"
 
     # Access to most basic functions
     def get_search_urls(self, query):
@@ -28,7 +27,7 @@ class SearchModule(object):
         # for for s01e01, 1x1 etc
         pass
 
-    def get_moviesearch_urls(self, identifier=None, title=None, categories=None):
+    def get_moviesearch_urls(self, query=None, identifier_key=None, identifier_value=None, categories=None):
         # to extend
         # if module doesnt support it possibly use (configurable) size restrictions when searching
         pass

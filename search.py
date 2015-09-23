@@ -56,7 +56,7 @@ def search(query, categories=None):
 
 
 def search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
-    logger.info("Searching for tv show")
+    logger.info("Searching for tv show") #todo: extend
     queries_by_provider = {}
     for p in pick_providers(search_type="tv", query_needed=query is not None, identifier_key=identifier_key):
         queries_by_provider[p] = p.get_showsearch_urls(query, identifier_key, identifier_value, season, episode, categories)
@@ -64,7 +64,7 @@ def search_show(query=None, identifier_key=None, identifier_value=None, season=N
 
 
 def search_movie(query=None, identifier_key=None, identifier_value=None, categories=None):
-    logger.info("Searching for movie")
+    logger.info("Searching for movie") #todo:extend
     queries_by_provider = {}
     for p in pick_providers(search_type="movie", query_needed=query is not None, identifier_key=identifier_key):
         queries_by_provider[p] = p.get_moviesearch_urls(query, identifier_key, identifier_value, categories)
