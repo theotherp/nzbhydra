@@ -36,53 +36,65 @@ class MyTestCase(unittest.TestCase):
     config.cfg["search_providers.1.enabled"] = True
     config.cfg["search_providers.1.module"] = "newznab"
     config.cfg["search_providers.1.name"] = "NZBs.org"
-    config.cfg["search_providers.1.apikey"] = "apikeynzbsorg"
-    config.cfg["search_providers.1.base_url"] = "https://nzbs.org"
     config.cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
-    config.cfg["search_providers.1.search_types"] = "general, tv, movie"
-    config.cfg["search_providers.1.search_ids"] = "tvdbid, rid, imdbid"
+    config.cfg["search_providers.1.apikey"] = "apikeynzbsorg"
+    config.cfg["search_providers.1.search_types"] = ["general", "tv", "movie"]
+    config.cfg["search_providers.1.search_ids"] = ["tvdbid", "rid", "imdbid"]
+    config.cfg["search_providers.1.category_search"] = True
 
     config.cfg["search_providers.2.enabled"] = True
     config.cfg["search_providers.2.module"] = "newznab"
     config.cfg["search_providers.2.name"] = "DOGNzb"
-    config.cfg["search_providers.2.apikey"] = "apikeydognzb"
-    config.cfg["search_providers.2.base_url"] = "https://dognzb.cr"
     config.cfg["search_providers.2.query_url"] = "http://127.0.0.1:5001/dognzb"
-    config.cfg["search_providers.2.search_types"] = "general, tv"
-    config.cfg["search_providers.2.search_ids"] = "tvdbid, rid"
+    config.cfg["search_providers.2.apikey"] = "apikeydognzb"
+    config.cfg["search_providers.2.search_types"] = ["general", "tv"]
+    config.cfg["search_providers.2.search_ids"] = ["tvdbid", "rid"]
+    config.cfg["search_providers.2.category_search"] = True
+                                                  
 
     config.cfg["search_providers.3.enabled"] = True
     config.cfg["search_providers.3.module"] = "womble"
     config.cfg["search_providers.3.name"] = "womble"
-    config.cfg["search_providers.3.base_url"] = "http://www.newshost.co.za"
     config.cfg["search_providers.3.query_url"] = "http://www.newshost.co.za/rss"
-    config.cfg["search_providers.3.search_types"] = "tv"
+    config.cfg["search_providers.3.search_types"] = ["tv"]
     config.cfg["search_providers.3.supports_queries"] = False
-    config.cfg["search_providers.3.search_ids"] = ""
+    config.cfg["search_providers.3.search_ids"] = []
+    config.cfg["search_providers.3.category_search"] = True
+    
+    config.cfg["search_providers.4.enabled"] = True
+    config.cfg["search_providers.4.module"] = "nzbclub"
+    config.cfg["search_providers.4.name"] = "nzbclub"
+    config.cfg["search_providers.4.query_url"] = "https://member.nzbclub.com/nzbfeeds.aspx"
+    config.cfg["search_providers.4.search_types"] = ["general", "tv", "movie"]
+    config.cfg["search_providers.4.supports_queries"] = True
+    config.cfg["search_providers.4.search_ids"] = []
+    config.cfg["search_providers.4.generate_queries"] = True
+    config.cfg["search_providers.4.category_search"] = False
 
     def test_search_module_loading(self):
-        self.assertEqual(3, len(search.search_modules))
+        self.assertEqual(4, len(search.search_modules))
 
     def test_read_providers(self):
         providers = search.read_providers_from_config()
-        self.assertEqual(3, len(providers))
+        self.assertEqual(4, len(providers))
 
     def test_pick_providers(self):
         search.read_providers_from_config()
         providers = search.pick_providers(search_type="general")
-        self.assertEqual(2, len(providers))
+        self.assertEqual(3, len(providers))
 
         # Providers with tv search and which support queries (actually searching for particular releases)
-        providers = search.pick_providers(search_type="tv", query_needed=True)
-        self.assertEqual(2, len(providers))
+        providers = search.pick_providers(search_type="tv", query_supplied=True)
+        self.assertEqual(3, len(providers))
 
-        # Providers with tv search, including those that only provide a list of latest releases 
-        providers = search.pick_providers(search_type="tv", query_needed=False)
+        # Providers with tv search, including those that only provide a list of latest releases (womble) but excluding the one that needs a query (nzbclub) 
+        providers = search.pick_providers(search_type="tv", query_supplied=False)
         self.assertEqual(3, len(providers))
 
         providers = search.pick_providers(search_type="movie")
-        self.assertEqual(1, len(providers))
+        self.assertEqual(2, len(providers))
         self.assertEqual("NZBs.org", providers[0].name)
+        self.assertEqual("NZBClub", providers[1].name)
 
         providers = search.pick_providers(identifier_key="tvdbid")
         self.assertEqual(2, len(providers))
@@ -104,27 +116,6 @@ class MyTestCase(unittest.TestCase):
             xhtml = render_search_results_for_api(entries)
 
     def testGeneralSearchProviderSelectionAndUrlBuilding(self):
-        config.cfg["search_providers.1.enabled"] = True
-        config.cfg["search_providers.1.module"] = "newznab"
-        config.cfg["search_providers.1.name"] = "NZBs.org"
-        config.cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
-        config.cfg["search_providers.1.search_types"] = "general, tv, movie"
-        config.cfg["search_providers.1.search_ids"] = "tvdbid, rid, imdbid"
-
-        config.cfg["search_providers.2.enabled"] = True
-        config.cfg["search_providers.2.module"] = "newznab"
-        config.cfg["search_providers.2.name"] = "DOGNzb"
-        config.cfg["search_providers.2.query_url"] = "http://127.0.0.1:5001/dognzb"
-        config.cfg["search_providers.2.search_types"] = "general, tv"
-        config.cfg["search_providers.2.search_ids"] = "tvdbid, rid"
-
-        config.cfg["search_providers.3.enabled"] = True
-        config.cfg["search_providers.3.module"] = "womble"
-        config.cfg["search_providers.3.name"] = "womble"
-        config.cfg["search_providers.3.query_url"] = "http://www.newshost.co.za/rss"
-        config.cfg["search_providers.3.search_types"] = "tv"
-        config.cfg["search_providers.3.supports_queries"] = False
-        config.cfg["search_providers.3.search_ids"] = []
 
         search.read_providers_from_config()
 
@@ -135,15 +126,20 @@ class MyTestCase(unittest.TestCase):
         search.search("aquery")
         args = search.execute_search_queries.call_args[0][0]  # mock returns a tuple, with the directional arguments as tuple first, of which we want the first (and only) argument, our actual arguments, which is a dict module:[urls]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]  # Url lists, sorted by name of provider because the order might be random
-        self.assertEqual(2, len(args))  # both newznab providers
+        self.assertEqual(3, len(args))  # both newznab providers and nzbclub
 
-        url = args[0][0]
+        url = args[0][0] #nzbclub
         web_args = url.split("?")[1].split("&")
         assert "t=search" in web_args
         assert "apikey=apikeydognzb" in web_args
         assert "q=aquery" in web_args
-
+        
         url = args[1][0]
+        web_args = url.split("?")[1].split("&")
+        assert "nzbclub" in url
+        assert "q=aquery" in web_args
+
+        url = args[2][0]
         web_args = url.split("?")[1].split("&")  # and then we get all arguments because we cannot check against the url because furl builds it somewhat randomly
         assert "t=search" in web_args
         assert "apikey=apikeynzbsorg" in web_args
@@ -151,27 +147,6 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(5, len(web_args))  # other args: o=json & extended=1
 
     def testTvSearchProviderSelectionAndUrlBuilding(self):
-        config.cfg["search_providers.1.enabled"] = True
-        config.cfg["search_providers.1.module"] = "newznab"
-        config.cfg["search_providers.1.name"] = "NZBs.org"
-        config.cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
-        config.cfg["search_providers.1.search_types"] = "general, tv, movie"
-        config.cfg["search_providers.1.search_ids"] = "tvdbid, rid, imdbid"
-
-        config.cfg["search_providers.2.enabled"] = True
-        config.cfg["search_providers.2.module"] = "newznab"
-        config.cfg["search_providers.2.name"] = "DOGNzb"
-        config.cfg["search_providers.2.query_url"] = "http://127.0.0.1:5001/dognzb"
-        config.cfg["search_providers.2.search_types"] = "general, tv"
-        config.cfg["search_providers.2.search_ids"] = "tvdbid, rid"
-
-        config.cfg["search_providers.3.enabled"] = True
-        config.cfg["search_providers.3.module"] = "womble"
-        config.cfg["search_providers.3.name"] = "womble"
-        config.cfg["search_providers.3.query_url"] = "http://www.newshost.co.za/rss"
-        config.cfg["search_providers.3.search_types"] = "tv"
-        config.cfg["search_providers.3.supports_queries"] = False
-        config.cfg["search_providers.3.search_ids"] = []
 
         search.read_providers_from_config()
 
@@ -182,7 +157,7 @@ class MyTestCase(unittest.TestCase):
         search.search_show()
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(3, len(args))  # 3 providers
+        self.assertEqual(4, len(args))  # 4 providers
 
         url = args[0][0]
         web_args = url.split("?")[1].split("&")
@@ -269,30 +244,10 @@ class MyTestCase(unittest.TestCase):
         assert "season=1" in web_args
         assert "ep=2" in web_args
         assert "apikey=apikeynzbsorg" in web_args
+        
+        
 
     def testMovieSearchProviderSelectionAndUrlBuilding(self):
-        config.cfg["search_providers.1.enabled"] = True
-        config.cfg["search_providers.1.module"] = "newznab"
-        config.cfg["search_providers.1.name"] = "NZBs.org"
-        config.cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
-        config.cfg["search_providers.1.search_types"] = "general, tv, movie"
-        config.cfg["search_providers.1.search_ids"] = "tvdbid, rid, imdbid"
-
-        config.cfg["search_providers.2.enabled"] = True
-        config.cfg["search_providers.2.module"] = "newznab"
-        config.cfg["search_providers.2.name"] = "DOGNzb"
-        config.cfg["search_providers.2.query_url"] = "http://127.0.0.1:5001/dognzb"
-        config.cfg["search_providers.2.search_types"] = "general, tv"
-        config.cfg["search_providers.2.search_ids"] = "tvdbid, rid"
-
-        config.cfg["search_providers.3.enabled"] = True
-        config.cfg["search_providers.3.module"] = "womble"
-        config.cfg["search_providers.3.name"] = "womble"
-        config.cfg["search_providers.3.query_url"] = "http://www.newshost.co.za/rss"
-        config.cfg["search_providers.3.search_types"] = "tv"
-        config.cfg["search_providers.3.supports_queries"] = False
-        config.cfg["search_providers.3.search_ids"] = []
-
         search.read_providers_from_config()
 
         from unittest.mock import MagicMock
@@ -302,7 +257,7 @@ class MyTestCase(unittest.TestCase):
         search.search_movie()
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(1, len(args))  # only nzbsorg supports movie search (in this test case)
+        self.assertEqual(1, len(args))  # only nzbsorg and supports general movie search without query (in this test
 
         url = args[0][0]
         web_args = url.split("?")[1].split("&")
@@ -317,9 +272,14 @@ class MyTestCase(unittest.TestCase):
         search.search_movie(query="aquery")
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(1, len(args))
+        self.assertEqual(2, len(args))
+        
+        url = args[0][0] 
+        web_args = url.split("?")[1].split("&")
+        assert "nzbclub" in url
+        assert "q=aquery" in web_args
 
-        url = args[0][0]
+        url = args[1][0]
         web_args = url.split("?")[1].split("&")
         assert "t=search" in web_args
         assert "q=aquery" in web_args
@@ -333,9 +293,15 @@ class MyTestCase(unittest.TestCase):
         search.search_movie(identifier_key="imdbid", identifier_value="12345")
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(1, len(args))  # 2 providers
+        self.assertEqual(2, len(args))  # 2 providers
 
         url = args[0][0]
+        web_args = url.split("?")[1].split("&")
+        assert "nzbclub" in url
+        assert "q=movie.title" in web_args
+        
+
+        url = args[1][0]
         web_args = url.split("?")[1].split("&")
         assert "t=movie" in web_args
         assert "imdbid=12345" in web_args
@@ -348,9 +314,14 @@ class MyTestCase(unittest.TestCase):
         search.search_movie(identifier_key="imdbid", identifier_value="12345", categories=[2040])
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(1, len(args))  # 2 providers
-
+        self.assertEqual(2, len(args))  # 2 providers
+        
         url = args[0][0]
+        web_args = url.split("?")[1].split("&")
+        assert "nzbclub" in url
+        assert "q=movie.title" in web_args
+
+        url = args[1][0]
         web_args = url.split("?")[1].split("&")
         assert "t=movie" in web_args
         assert "imdbid=12345" in web_args

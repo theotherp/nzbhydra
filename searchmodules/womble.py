@@ -21,8 +21,9 @@ class Womble(SearchModule):
         self.query_url = config_section.get("query_url", "http://www.newshost.co.za/rss/")
         self.base_url = config_section.get("base_url", "http://www.newshost.co.za/")
         self.search_types = ["tv"]  # will need to check this but I think is mainly/only used for tv shows
-        self.supports_queries = config_section.get("supports_queries", False)  # Only as support for general tv search
+        self.supports_queries =False  # Only as support for general tv search
         self.search_ids = config_section.get("search_ids", [])
+        self.needs_queries = False
 
     def build_base_url(self):
         url = furl(self.query_url).add({"fr": "false"})

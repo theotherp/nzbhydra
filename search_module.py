@@ -6,13 +6,17 @@ class SearchModule(object):
     # possibly use newznab qualities as base, map for other providers (nzbclub etc)
 
 
-    def __init__(self, cfg):
+    def __init__(self, config_section):
         self.module_name = "Abstract search module"
-        self.config = cfg
-        self.config.init("name", "")
+        self.config = config_section
         self.search_types = ["tv", "movie", "general"]  # todo: init settings like this that are only used in subsections
         self.supports_queries = True
         self.search_ids = [] #"tvdbid", "rid", "imdbid"
+        self.search_types = config_section.get("search_types", ["general", "tv", "movie"])
+        self.supports_queries = config_section.get("supports_queries", True)
+        self.search_ids = config_section.get("search_ids", ["tvdbid", "rid", "imdbid"])
+        self.generate_queries = config_section.get("generate_queries", True)#If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for providers which don't support id-based searches
+        self.category_search = config_section.get("category_search", False) #If true the provider supports searching in a given category (possibly without any query or id)
 
     # Access to most basic functions
     def get_search_urls(self, query):

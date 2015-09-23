@@ -38,6 +38,7 @@ class NewzNab(SearchModule):
         self.search_types = config_section.get("search_types", ["general", "tv", "movie"])
         self.supports_queries = config_section.get("supports_queries", True)
         self.search_ids = config_section.get("search_ids", ["tvdbid", "rid", "imdbid"])
+        self.needs_queries = False
         
     def __repr__(self):
         return "Provider: %s" % self.name

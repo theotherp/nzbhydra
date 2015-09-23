@@ -3,6 +3,7 @@ import re
 import arrow
 from furl import furl
 import xml.etree.ElementTree as ET
+from exceptions import ProviderIllegalSearchException
 from nzb_search_result import NzbSearchResult
 
 from search_module import SearchModule
@@ -20,10 +21,12 @@ class NzbClub(SearchModule):
         self.name = "NZBClub"
         self.query_url = config_section.get("query_url", "https://member.nzbclub.com/nzbfeeds.aspx")
         self.base_url = config_section.get("base_url", "https://member.nzbclub.com")
-        self.search_types = ["general"]  
+        self.search_types = config_section.get("search_types", ["general", "tv", "movie"])  
         self.supports_queries = config_section.get("supports_queries", True)  
         self.search_ids = config_section.get("search_ids", [])
         self.max_results = config_section.get("max_results", 100)
+        self.generate_queries = config_section.get("generate_queries", True)
+        self.needs_queries = True #We can only search using queries
         
 
     def build_base_url(self):
@@ -34,11 +37,15 @@ class NzbClub(SearchModule):
         return [self.build_base_url().add({"q": query}).tostr()]
 
     def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
-        raise NotImplementedError("This provider does not support queries")
+        if query is None:
+            raise ProviderIllegalSearchException("Attempted to search without a query although this provider only supports query-based searches", self)
+        return self.get_search_urls(query, categories)
 
 
-    def get_moviesearch_urls(self, identifier=None, title=None, categories=None):
-        raise NotImplementedError("This provider does not movie search")
+    def get_moviesearch_urls(self, query, identifier_key, identifier_value, categories):
+        if query is None:
+            raise ProviderIllegalSearchException("Attempted to search without a query although this provider only supports query-based searches", self)
+        return self.get_search_urls(query, categories)
 
     def process_query_result(self, xml):
         entries = []

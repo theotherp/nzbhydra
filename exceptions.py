@@ -1,7 +1,15 @@
 class NzbHydraException(Exception):
     def __init__(self, message=None):
         super(NzbHydraException, self).__init__(message)
-        
+
+
+class ProviderIllegalSearchException(NzbHydraException):
+    # Thrown if an internal sanity check fails, for example if we tried to execute an id based search on a provider that doesn't support it
+    def __init__(self, message, search_module):
+        super(NzbHydraException, self).__init__(message)
+        self.message = message
+        self.search_module = search_module
+
 
 class ProviderAuthException(NzbHydraException):
     # The provider indicated that the authentication failed. This provider should not be user until the problem is solved.
@@ -17,11 +25,11 @@ class ProviderAccessException(NzbHydraException):
         super(NzbHydraException, self).__init__(message)
         self.message = message
         self.search_module = search_module
-        
+
 
 class ProviderConnectionException(NzbHydraException):
     # The connection to the provider failed. We should probably wait some time until we use it again but don't assume it's a permanent problem
     def __init__(self, message, search_module):
         super(NzbHydraException, self).__init__(message)
         self.message = message
-        self.search_module = search_module 
+        self.search_module = search_module
