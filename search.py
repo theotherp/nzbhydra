@@ -2,6 +2,8 @@ import concurrent
 import logging
 from furl import furl
 import requests
+import database
+from database import Provider, ProviderSearch
 
 from requests_futures.sessions import FuturesSession
 
@@ -65,66 +67,46 @@ def search(query, categories=None):
     # make a general query, probably only done by the gui
 
 
-def search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
-    logger.info("Searching for tv show")  # todo: extend
+
+def pick_providers_and_search(search_type, search_function, query=None, identifier_key=None, identifier_value=None, categories=None, **kwargs):
+    #The search_type is used to determine the providers, the search function is the function that is called using the supplied parameters, for every provider we found 
     queries_by_provider = {}
-    #TODO: This is 90% the same code as for search_movie, pull the logic out
-    picked_providers = pick_providers(search_type="tv", query_supplied=query is not None or identifier_key is not None, identifier_key=identifier_key, allow_query_generation=True)
+    picked_providers = pick_providers(search_type=search_type, query_supplied=query is not None or identifier_key is not None, identifier_key=identifier_key, allow_query_generation=True)
     
+    #If we have no query, we can still try to generate one for the providers which don't support query based searches, but only if we have an identifier.
     providers_that_allow_query_generation = []
     if query is None and identifier_key is not None:
-        #If we have no query, we can still try to generate one for the providers which don't support query based searches, but only if we have an identifier.
         providers_that_allow_query_generation = [x for x in picked_providers if x.generate_queries and identifier_key not in x.search_ids]
-        if any(providers_that_allow_query_generation):
+        if any(providers_that_allow_query_generation) and config.cfg.get("searching.allow_query_generation", True): #todo init
             try:
                 generated_query = title_from_id(identifier_key, identifier_value)
                           
                 if categories is not None:
                     pass #todo if so configured attempt to map categories to strings?
                 
+                logger.info("Generated query for movie search from identifier %s=%s: %s" % (identifier_key, identifier_value, generated_query))
+                
                 #and then finally use the generated query
                 for p in providers_that_allow_query_generation:
-                    queries_by_provider[p] = p.get_showsearch_urls(generated_query, identifier_key, identifier_value, season, episode, categories)
+                    queries_by_provider[p] = getattr(p, search_function)(query=generated_query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, **kwargs)
             except ExternalApiInfoException as e:
                 logger.error("Error while retrieving the title to the supplied identifier %s: %s" % (identifier_key, e.message))
     
     #Get movie search urls from those providers that support search by id
     for p in [x for x in picked_providers if x not in providers_that_allow_query_generation]:
-        queries_by_provider[p] = p.get_showsearch_urls(query, identifier_key, identifier_value, season, episode, categories)
+        queries_by_provider[p] = getattr(p, search_function)(query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, **kwargs)
         
-    
     return execute_search_queries(queries_by_provider)
-        
-    
 
+
+def search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
+    logger.info("Searching for show")  # todo:extend
+    return pick_providers_and_search("tv", "get_showsearch_urls", *(), query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, season=season, episode=episode)
+    
 
 def search_movie(query=None, identifier_key=None, identifier_value=None, categories=None):
     logger.info("Searching for movie")  # todo:extend
-    queries_by_provider = {}
-    picked_providers = pick_providers(search_type="movie", query_supplied=query is not None or identifier_key is not None, identifier_key=identifier_key, allow_query_generation=True)
-
-    providers_that_allow_query_generation = []
-    if query is None and identifier_key is not None:
-        #If we have no query, we can still try to generate one for the providers which don't support query based searches, but only if we have an identifier.
-        providers_that_allow_query_generation = [x for x in picked_providers if x.generate_queries and identifier_key not in x.search_ids]
-        if any(providers_that_allow_query_generation):
-            try:
-                generated_query = title_from_id(identifier_key, identifier_value)
-                          
-                if categories is not None:
-                    pass #todo if so configured attempt to map categories to strings?
-                
-                #and then finally use the generated query
-                for p in providers_that_allow_query_generation:
-                    queries_by_provider[p] = p.get_moviesearch_urls(generated_query, identifier_key, identifier_value, categories)
-            except ExternalApiInfoException as e:
-                logger.error("Error while retrieving the title to the supplied identifier %s: %s" % (identifier_key, e.message))
-    
-    #Get movie search urls from those providers that support search by id
-    for p in [x for x in picked_providers if x not in providers_that_allow_query_generation]:
-        queries_by_provider[p] = p.get_moviesearch_urls(query, identifier_key, identifier_value, categories)
-    
-    return execute_search_queries(queries_by_provider)
+    return pick_providers_and_search("movie", "get_moviesearch_urls", *(), query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories)
 
 
 def title_from_id(identifier_key, identifier_value):
@@ -165,14 +147,20 @@ def execute_search_queries(queries_by_provider):
 
     for f in concurrent.futures.as_completed(futures):
         try:
+            
             result = f.result()
             provider = providers_by_future[f]
-
+            
+            provider_db = Provider.get(name=provider)
+            psearch = ProviderSearch(provider=provider_db)
+            print(result.elapsed.microseconds / 1000) #todo store response time
+            
             if result.status_code != 200:
                 raise ProviderConnectionException("Unable to connect to provider. Status code: %d" % result.status_code, provider)
             else:
                 provider.check_auth(result.text)
                 query_results.append({"provider": provider, "result": result})
+                
 
         except ProviderAuthException as e:
             logger.error("Unable to authorize with %s: %s" % (e.search_module, e.message))

@@ -9,6 +9,7 @@ class SearchModule(object):
     def __init__(self, config_section):
         self.module_name = "Abstract search module"
         self.config = config_section
+        self.enabled = config_section.get("enabled", False)
         self.search_types = ["tv", "movie", "general"]  # todo: init settings like this that are only used in subsections
         self.supports_queries = True
         self.search_ids = [] #"tvdbid", "rid", "imdbid"
@@ -42,7 +43,9 @@ class SearchModule(object):
     def check_auth(self, body=""):
         #check the response body to see if request was authenticated. If yes, do nothing, if no, raise exception 
         pass
-
+        
+    def get_nfo(self, guid):
+        pass
 
         # information, perhaps if we provide basic information, get the info link for a uid, get base url, etc
 

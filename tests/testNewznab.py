@@ -14,6 +14,12 @@ class MyTestCase(unittest.TestCase):
     cfg["search_providers.1.base_url"] = "https://nzbs.org"
     cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
     
+    cfg["search_providers.2.search_module"] = "newznab"
+    cfg["search_providers.2.name"] = "DOGNzb"
+    cfg["search_providers.2.apikey"] = "apikeydognzb"
+    cfg["search_providers.2.base_url"] = "https://dognzb.cr"
+    cfg["search_providers.2.query_url"] = "http://127.0.0.1:5001/dognzb"
+    
     @freeze_time("2015-09-20 14:00:00", tz_offset=-4)
     def testParseJsonToNzbSearchResult(self):
         from config import cfg
@@ -28,9 +34,9 @@ class MyTestCase(unittest.TestCase):
         assert entries[0].title == "Avengers.Age.Of.Ultron.2015.FRENCH.720p.BluRay.x264-Goatlove"
         assert entries[0].size == 6719733587
         assert entries[0].guid == "9c9d30fa2767e05ffd387db52d318ad7"
-        self.assertEqual(entries[0].age_days, 1)
+        self.assertEqual(entries[0].age_days, 2)
         self.assertEqual(entries[0].epoch, 1442581037)
-        self.assertEqual(entries[0].pubdate_utc, "2015-09-18T12:57:17Z")
+        self.assertEqual(entries[0].pubdate_utc, "2015-09-18T12:57:17+00:00")
         
         assert entries[1].title == "Avengers.Age.of.Ultron.2015.1080p.BluRay.x264.AC3.5.1-BUYMORE"
         assert entries[1].size == 4910931143
@@ -81,7 +87,7 @@ class MyTestCase(unittest.TestCase):
         assert "t=tvsearch" in query
         assert "o=json" in query
         
-        queries = nzbsorg.get_showsearch_urls(categories="5432")
+        queries = nzbsorg.get_showsearch_urls(categories=[5432])
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
@@ -90,7 +96,7 @@ class MyTestCase(unittest.TestCase):
         assert "cat=5432" in query
         assert "o=json" in query
         
-        queries = nzbsorg.get_showsearch_urls("8511")
+        queries = nzbsorg.get_showsearch_urls(identifier_key="rid", identifier_value="8511")
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
@@ -99,7 +105,7 @@ class MyTestCase(unittest.TestCase):
         assert "rid=8511" in query
         assert "o=json" in query
         
-        queries = nzbsorg.get_showsearch_urls("8511", "1")
+        queries = nzbsorg.get_showsearch_urls(identifier_key="rid", identifier_value="8511", season="1")
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
@@ -109,7 +115,7 @@ class MyTestCase(unittest.TestCase):
         assert "o=json" in query
         assert "season=1" in query
         
-        queries = nzbsorg.get_showsearch_urls("8511", "1", "2")
+        queries = nzbsorg.get_showsearch_urls(identifier_key="rid", identifier_value="8511", season="1", episode="2")
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
@@ -120,7 +126,7 @@ class MyTestCase(unittest.TestCase):
         assert "season=1" in query
         assert "ep=2" in query
         
-        queries = nzbsorg.get_moviesearch_urls("12345678")
+        queries = nzbsorg.get_moviesearch_urls(identifier_key="imdbid", identifier_value="12345678")
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
@@ -129,7 +135,7 @@ class MyTestCase(unittest.TestCase):
         assert "imdbid=12345678" in query
         assert "o=json" in query
         
-        queries = nzbsorg.get_moviesearch_urls("12345678", "5432")
+        queries = nzbsorg.get_moviesearch_urls(identifier_key="imdbid", identifier_value="12345678", categories=[5432])
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
@@ -138,3 +144,8 @@ class MyTestCase(unittest.TestCase):
         assert "imdbid=12345678" in query
         assert "o=json" in query
         assert "cat=5432" in query
+        
+    def testGetNfo(self):
+        dog = NewzNab(self.cfg.section("search_providers").section("2"))
+        nfo = dog.get_nfo("b4ba74ecb5f5962e98ad3c40c271dcc8")
+        assert "Road Hard" in nfo

@@ -24,7 +24,8 @@ api_args = {
     "rid": Arg(str),
     "genre": Arg(str),
     "imbdid": Arg(str),
-    "tvdbid": Arg(str),  # nzbs.org
+    "tvdbid": Arg(str),
+    "id": Arg(str),  
     "season": Arg(str),
     "ep": Arg(str),
     "sec": Arg(str),  # womble

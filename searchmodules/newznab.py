@@ -3,13 +3,17 @@ import datetime
 import email
 import logging
 import time
-
+import arrow
+import xml.etree.ElementTree as ET
+import requests
+import re
 from furl import furl
 
 from datestuff import now
 from exceptions import ProviderAuthException, ProviderAccessException
 from nzb_search_result import NzbSearchResult
 from search_module import SearchModule
+
 logger = logging.getLogger('root')
 
 
@@ -26,6 +30,7 @@ def get_age_from_pubdate(pubdate):
 class NewzNab(SearchModule):
     # TODO init of config which is dynmic with its path
 
+    #todo feature: read caps from server on first run and store them in the config/database
     def __init__(self, config_section):
         super(NewzNab, self).__init__(config_section)
         self.module_name = "NewzNab"
@@ -36,15 +41,18 @@ class NewzNab(SearchModule):
         self.username = config_section.get("username")
         self.password = config_section.get("password")
         self.search_types = config_section.get("search_types", ["general", "tv", "movie"])
-        self.supports_queries = config_section.get("supports_queries", True)
+        self.supports_queries = True
         self.search_ids = config_section.get("search_ids", ["tvdbid", "rid", "imdbid"])
         self.needs_queries = False
+        self.generate_queries = config_section.get("generate_queries", False) #Could be set true, but not needed if searching using ids
+        self.category_search = True
+        
         
     def __repr__(self):
         return "Provider: %s" % self.name
 
-    def build_base_url(self, action):
-        url = furl(self.query_url).add({"apikey": self.apikey, "o": "json", "extended": 1, "t": action})
+    def build_base_url(self, action, o="json", extended=1):
+        url = furl(self.query_url).add({"apikey": self.apikey, "o": o, "extended": extended, "t": action})
         return url
 
     def get_search_urls(self, query, categories=None):
@@ -107,7 +115,10 @@ class NewzNab(SearchModule):
             entry.title = item["title"]
             entry.link = item["link"]
             entry.pubDate = item["pubDate"]
-            entry.epoch, entry.pubdate_utc, entry.age_days = get_age_from_pubdate(item["pubDate"])
+            pubdate = arrow.get(entry.pubDate, '"ddd, DD MMM YYYY HH:mm:ss Z')
+            entry.epoch = pubdate.timestamp
+            entry.pubdate_utc = str(pubdate)
+            entry.age_days = (arrow.utcnow() - pubdate).days
             entry.precise_date = True
             entry.provider = self.name
             entry.attributes = []
@@ -139,6 +150,29 @@ class NewzNab(SearchModule):
             raise ProviderAccessException("The API seems to be disabled for the moment.", self)
         if '<error code=' in body:
             raise ProviderAccessException("Unknown error while trying to access the provider.", self)
+        
+    def get_nfo(self, guid):
+        #try to get raw nfo. if it is xml the provider doesn't actually return raw nfos (I'm looking at you, DOGNzb)
+        url = self.build_base_url("getnfo", o="xml", extended=0).add({"id": guid})
+        response = requests.get(url)
+        nfo = response.text #todo error handling
+        if "<?xml" in nfo:
+            #parse
+            try:
+                tree = ET.fromstring(nfo)
+            except Exception as e:
+                logger.exception("Error parsing NFO response", e)
+                return []
+            for elem in tree.iter('item'):
+                nfo = elem.find("description").text
+                #And replace line breaks by html brs
+                #nfo = re.sub("\\\\n", "<br>", nfo)
+                return nfo
+        else:
+            #Return it and hope that it's the NFO...
+            return nfo
+        
+        
         
             
 

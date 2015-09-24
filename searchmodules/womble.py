@@ -21,9 +21,13 @@ class Womble(SearchModule):
         self.query_url = config_section.get("query_url", "http://www.newshost.co.za/rss/")
         self.base_url = config_section.get("base_url", "http://www.newshost.co.za/")
         self.search_types = ["tv"]  # will need to check this but I think is mainly/only used for tv shows
-        self.supports_queries =False  # Only as support for general tv search
+        self.supports_queries = False  # Only as support for general tv search
         self.search_ids = config_section.get("search_ids", [])
         self.needs_queries = False
+        self.enabled = config_section.get("enabled", True)
+        self.generate_queries = config_section.get("generate_queries", False) #Doesn't matter because supports_queries is False
+        self.needs_queries = False # Doesn't even allow them
+        self.category_search = True #Same
 
     def build_base_url(self):
         url = furl(self.query_url).add({"fr": "false"})
@@ -38,12 +42,14 @@ class Womble(SearchModule):
             raise NotImplementedError("This provider does not support specific searches")
         if categories:
             for c in categories:
-                if c in (5000, 5020):  # SD
+                if c in (5000, 5020):  # all
                     urls.append(self.build_base_url().tostr())
                 if c == 5030:  # SD
                     urls.append(self.build_base_url().add({"sec": "tv-dvd"}).tostr())
+                    urls.append(self.build_base_url().add({"sec": "tv-sd"}).tostr())
                 if c == 5040:  # HD
                     urls.append(self.build_base_url().add({"sec": "tv-x264"}).tostr())
+                    urls.append(self.build_base_url().add({"sec": "tv-hd"}).tostr())
         else:
             urls.append(self.build_base_url().tostr())
         return urls

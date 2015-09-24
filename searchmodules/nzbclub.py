@@ -19,18 +19,19 @@ class NzbClub(SearchModule):
         super(NzbClub, self).__init__(config_section)
         self.module_name = "nzbclub"
         self.name = "NZBClub"
+        self.enabled = config_section.get("enabled", True)
         self.query_url = config_section.get("query_url", "https://member.nzbclub.com/nzbfeeds.aspx")
         self.base_url = config_section.get("base_url", "https://member.nzbclub.com")
         self.search_types = config_section.get("search_types", ["general", "tv", "movie"])  
         self.supports_queries = config_section.get("supports_queries", True)  
         self.search_ids = config_section.get("search_ids", [])
-        self.max_results = config_section.get("max_results", 100)
+        self.max_results = config_section.get("max_results", 250)
         self.generate_queries = config_section.get("generate_queries", True)
         self.needs_queries = True #We can only search using queries
         
 
     def build_base_url(self):
-        url = furl(self.query_url).add({"ig": "2", "rpp": self.max_results, "st": 5, "ns": 1, "sn":1}) #I need to find out wtf these values are
+        url = furl(self.query_url).add({"ig": "2", "rpp": self.max_results, "st": 5, "ns": 1, "sn": 1}) #I need to find out wtf these values are
         return url
 
     def get_search_urls(self, query, categories=None):

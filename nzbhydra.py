@@ -18,7 +18,7 @@ from werkzeug.exceptions import Unauthorized
 
 import log
 import search
-
+import database
 import requests
 requests.packages.urllib3.disable_warnings()
 
@@ -116,7 +116,7 @@ def api(args):
         return render_search_results_for_api(results)
     if args["t"] == "tvsearch":
         #search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None)
-        identifier_key = "rid" if args["rid"] else ["tvdbid"] if args["tvdbid"] else None
+        identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
         identifier_value = args[identifier_key] if identifier_key else None
         results = search.search_show(args["q"], identifier_key, identifier_value, args["season"], args["ep"], args["cat"])
         return render_search_results_for_api(results)

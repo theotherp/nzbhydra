@@ -359,6 +359,22 @@ class MyTestCase(unittest.TestCase):
         assert "apikey=apikeynzbsorg" in web_args
         assert "cat=2040" in web_args
         self.assertEqual(6, len(web_args))  # other args: o=json & extended=1
+        
+        
+        
+        #Finally a test where we disable query generation
+        # movie search with imdbid, so a query should be generated for and used by nzbclub
+        config.cfg["searching.allow_query_generation"] = False
+        url_re = re.compile(r'.*omdbapi.*')
+        responses.add(responses.GET, url_re,
+                      body=json.dumps({"Title": "American Beauty"}), status=200,
+                      content_type='application/json')
+        search.search_movie(identifier_key="imdbid", identifier_value="tt0169547")
+        args = search.execute_search_queries.call_args[0][0]
+        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
+        self.assertEqual(1, len(args))  # Only nzbs,org
+        
+        config.cfg["searching.allow_query_generation"] = True #set back for later tests
 
     @responses.activate
     def testSearchExecution(self):

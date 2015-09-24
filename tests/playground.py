@@ -1,18 +1,9 @@
-import unittest
-import profig
+import database
+from database import Provider
+database.db.drop_tables([Provider])
+database.db.create_tables([Provider])
+
+p = Provider(name="Hallo")
+p.save()
 
 
-class Ex1(Exception):
-    pass
-
-
-class Ex2(Exception):
-    pass
-
-try:
-    raise Ex1()
-except Ex1:
-    print("Caught ex1 and will raise 2")
-    raise Ex2()
-except Ex2:
-    print("Caught ex2")
