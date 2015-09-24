@@ -1,24 +1,20 @@
-from pprint import pprint
 import re
 import unittest
 import sys
 import logging
-from flask import json
-
-from furl import furl
 import profig
 import requests
 import responses
-
 import search
 import config
+from pprint import pprint
+from searchmodules.newznab import NewzNab
+from flask import json
+from furl import furl
 from tests import mockbuilder
 
 logging.getLogger("root").addHandler(logging.StreamHandler(sys.stdout))
 logging.getLogger("root").setLevel("DEBUG")
-
-from searchmodules.newznab import NewzNab
-
 
 
 
@@ -146,6 +142,8 @@ class MyTestCase(unittest.TestCase):
         assert "q=aquery" in web_args
         self.assertEqual(5, len(web_args))  # other args: o=json & extended=1
 
+
+    @responses.activate
     def testTvSearchProviderSelectionAndUrlBuilding(self):
 
         search.read_providers_from_config()
@@ -153,11 +151,11 @@ class MyTestCase(unittest.TestCase):
         from unittest.mock import MagicMock
         search.execute_search_queries = MagicMock(return_value=[])
 
-        # TV search without any specifics (return all lates releases), this includes wombles
+        # TV search without any specifics (return all lates releases), this includes wombles but excludes nzbclub 
         search.search_show()
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(4, len(args))  # 4 providers
+        self.assertEqual(3, len(args))  # 3 providers (no nzbsorg
 
         url = args[0][0]
         web_args = url.split("?")[1].split("&")
@@ -182,15 +180,24 @@ class MyTestCase(unittest.TestCase):
         search.search_show(query="aquery")
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(2, len(args))  # 2 providers
+        self.assertEqual(3, len(args))  # 3 providers
 
         url = args[0][0]
+        assert "dognzb" in url
         web_args = url.split("?")[1].split("&")
         assert "t=search" in web_args
         assert "q=aquery" in web_args
         assert "apikey=apikeydognzb" in web_args
-
+        
         url = args[1][0]
+        assert "nzbclub" in url
+        web_args = url.split("?")[1].split("&")
+        assert "q=aquery" in web_args
+        
+
+        
+        url = args[2][0]
+        assert "nzbs" in url
         web_args = url.split("?")[1].split("&")
         assert "t=search" in web_args
         assert "apikey=apikeynzbsorg" in web_args
@@ -199,54 +206,73 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(6, len(web_args))  # other args: o=json & extended=1
 
 
+        url_re = re.compile(r'.*tvmaze.*')
+        responses.add(responses.GET, url_re,
+                      body=json.dumps({"name": "Breaking Bad"}), status=200,
+                      content_type='application/json')
+
 
         # TV search with tvdbid, so no wombles
-        search.search_show(identifier_key="tvdbid", identifier_value="12345")
+        search.search_show(identifier_key="tvdbid", identifier_value="81189")
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(2, len(args))  # 2 providers
+        self.assertEqual(3, len(args))  # 2 providers
 
         url = args[0][0]
+        assert "dognzb" in url
         web_args = url.split("?")[1].split("&")
         assert "t=tvsearch" in web_args
         assert "apikey=apikeydognzb" in web_args
-        assert "tvdbid=12345" in web_args
+        assert "tvdbid=81189" in web_args
         assert "cat=5000" in web_args  # no category provided, so we just added 5000
         self.assertEqual(6, len(web_args))  # other args: o=json & extended=1
-
+        
         url = args[1][0]
+        assert "nzbclub" in url
+        web_args = url.split("?")[1].split("&")
+        assert "q=Breaking+Bad" in web_args
+
+        url = args[2][0]
+        assert "nzbs" in url
         web_args = url.split("?")[1].split("&")
         assert "t=tvsearch" in web_args
-        assert "tvdbid=12345" in web_args
+        assert "tvdbid=81189" in web_args
         assert "apikey=apikeynzbsorg" in web_args
 
 
         # TV search with tvdbid and season and episode
-        search.search_show(identifier_key="tvdbid", identifier_value="12345", season=1, episode=2)
+        search.search_show(identifier_key="tvdbid", identifier_value="81189", season=1, episode=2)
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(2, len(args))  # 2 providers
+        self.assertEqual(3, len(args))  # 2 providers
 
         url = args[0][0]
+        assert "dognzb" in url
         web_args = url.split("?")[1].split("&")
         assert "t=tvsearch" in web_args
         assert "apikey=apikeydognzb" in web_args
-        assert "tvdbid=12345" in web_args
+        assert "tvdbid=81189" in web_args
         assert "season=1" in web_args
         assert "ep=2" in web_args
         assert "cat=5000" in web_args  # no category provided, so we just added 5000
         self.assertEqual(8, len(web_args))  # other args: o=json & extended=1
-
+        
         url = args[1][0]
+        assert "nzbclub" in url
+        web_args = url.split("?")[1].split("&")
+        assert "q=Breaking+Bad" in web_args
+
+        url = args[2][0]
+        assert "nzbs" in url
         web_args = url.split("?")[1].split("&")
         assert "t=tvsearch" in web_args
-        assert "tvdbid=12345" in web_args
+        assert "tvdbid=81189" in web_args
         assert "season=1" in web_args
         assert "ep=2" in web_args
         assert "apikey=apikeynzbsorg" in web_args
         
         
-
+    @responses.activate
     def testMovieSearchProviderSelectionAndUrlBuilding(self):
         search.read_providers_from_config()
 
@@ -289,8 +315,12 @@ class MyTestCase(unittest.TestCase):
 
 
 
-        # movie search with imdbid
-        search.search_movie(identifier_key="imdbid", identifier_value="12345")
+        # movie search with imdbid, so a query should be generated for and used by nzbclub
+        url_re = re.compile(r'.*omdbapi.*')
+        responses.add(responses.GET, url_re,
+                      body=json.dumps({"Title": "American Beauty"}), status=200,
+                      content_type='application/json')
+        search.search_movie(identifier_key="imdbid", identifier_value="tt0169547")
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(2, len(args))  # 2 providers
@@ -298,20 +328,20 @@ class MyTestCase(unittest.TestCase):
         url = args[0][0]
         web_args = url.split("?")[1].split("&")
         assert "nzbclub" in url
-        assert "q=movie.title" in web_args
+        assert "q=American+Beauty" in web_args
         
 
         url = args[1][0]
         web_args = url.split("?")[1].split("&")
         assert "t=movie" in web_args
-        assert "imdbid=12345" in web_args
+        assert "imdbid=tt0169547" in web_args
         assert "apikey=apikeynzbsorg" in web_args
         assert "cat=2000" in web_args
         self.assertEqual(6, len(web_args))  # other args: o=json & extended=1
 
 
         # movie search with imdbid and category
-        search.search_movie(identifier_key="imdbid", identifier_value="12345", categories=[2040])
+        search.search_movie(identifier_key="imdbid", identifier_value="tt0169547", categories=[2040])
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(2, len(args))  # 2 providers
@@ -319,12 +349,13 @@ class MyTestCase(unittest.TestCase):
         url = args[0][0]
         web_args = url.split("?")[1].split("&")
         assert "nzbclub" in url
-        assert "q=movie.title" in web_args
+        assert "q=American+Beauty" in web_args
+        #todo category transformation for query based providers
 
         url = args[1][0]
         web_args = url.split("?")[1].split("&")
         assert "t=movie" in web_args
-        assert "imdbid=12345" in web_args
+        assert "imdbid=tt0169547" in web_args
         assert "apikey=apikeynzbsorg" in web_args
         assert "cat=2040" in web_args
         self.assertEqual(6, len(web_args))  # other args: o=json & extended=1

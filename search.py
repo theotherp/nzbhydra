@@ -1,10 +1,12 @@
 import concurrent
 import logging
+from furl import furl
+import requests
 
 from requests_futures.sessions import FuturesSession
 
 import config
-from exceptions import ProviderConnectionException, ProviderAuthException, ProviderAccessException
+from exceptions import ProviderConnectionException, ProviderAuthException, ProviderAccessException, ExternalApiInfoException
 from searchmodules import binsearch, newznab, womble, nzbclub
 
 
@@ -66,9 +68,34 @@ def search(query, categories=None):
 def search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
     logger.info("Searching for tv show")  # todo: extend
     queries_by_provider = {}
-    for p in pick_providers(search_type="tv", query_supplied=query is not None, identifier_key=identifier_key):
+    #TODO: This is 90% the same code as for search_movie, pull the logic out
+    picked_providers = pick_providers(search_type="tv", query_supplied=query is not None or identifier_key is not None, identifier_key=identifier_key, allow_query_generation=True)
+    
+    providers_that_allow_query_generation = []
+    if query is None and identifier_key is not None:
+        #If we have no query, we can still try to generate one for the providers which don't support query based searches, but only if we have an identifier.
+        providers_that_allow_query_generation = [x for x in picked_providers if x.generate_queries and identifier_key not in x.search_ids]
+        if any(providers_that_allow_query_generation):
+            try:
+                generated_query = title_from_id(identifier_key, identifier_value)
+                          
+                if categories is not None:
+                    pass #todo if so configured attempt to map categories to strings?
+                
+                #and then finally use the generated query
+                for p in providers_that_allow_query_generation:
+                    queries_by_provider[p] = p.get_showsearch_urls(generated_query, identifier_key, identifier_value, season, episode, categories)
+            except ExternalApiInfoException as e:
+                logger.error("Error while retrieving the title to the supplied identifier %s: %s" % (identifier_key, e.message))
+    
+    #Get movie search urls from those providers that support search by id
+    for p in [x for x in picked_providers if x not in providers_that_allow_query_generation]:
         queries_by_provider[p] = p.get_showsearch_urls(query, identifier_key, identifier_value, season, episode, categories)
+        
+    
     return execute_search_queries(queries_by_provider)
+        
+    
 
 
 def search_movie(query=None, identifier_key=None, identifier_value=None, categories=None):
@@ -81,19 +108,44 @@ def search_movie(query=None, identifier_key=None, identifier_value=None, categor
         #If we have no query, we can still try to generate one for the providers which don't support query based searches, but only if we have an identifier.
         providers_that_allow_query_generation = [x for x in picked_providers if x.generate_queries and identifier_key not in x.search_ids]
         if any(providers_that_allow_query_generation):
-            #todo actually retrieve title
-            generated_query = "movie.title"
-            if categories is not None:
-                pass #todo if so configured attempt to map categories to strings?
+            try:
+                generated_query = title_from_id(identifier_key, identifier_value)
+                          
+                if categories is not None:
+                    pass #todo if so configured attempt to map categories to strings?
+                
+                #and then finally use the generated query
+                for p in providers_that_allow_query_generation:
+                    queries_by_provider[p] = p.get_moviesearch_urls(generated_query, identifier_key, identifier_value, categories)
+            except ExternalApiInfoException as e:
+                logger.error("Error while retrieving the title to the supplied identifier %s: %s" % (identifier_key, e.message))
     
     #Get movie search urls from those providers that support search by id
     for p in [x for x in picked_providers if x not in providers_that_allow_query_generation]:
         queries_by_provider[p] = p.get_moviesearch_urls(query, identifier_key, identifier_value, categories)
-        
-    #and then from all providers for which we generated the query
-    for p in providers_that_allow_query_generation:
-        queries_by_provider[p] = p.get_moviesearch_urls(generated_query, identifier_key, identifier_value, categories)
+    
     return execute_search_queries(queries_by_provider)
+
+
+def title_from_id(identifier_key, identifier_value):
+    if identifier_key is None or identifier_value is None:
+        raise AttributeError("Neither identifier key nor value were supplied")
+    try:
+        if identifier_key == "imdbid":
+            if identifier_value[0:2] != "tt":
+                identifier_value = "tt%s" % identifier_value
+            omdb = requests.get(furl("http://www.omdbapi.com").add({"i": identifier_value, "plot": "short", "r": "json"}).url)
+            return omdb.json()["Title"]
+        
+        if identifier_key not in ("rid", "tvdbid"):
+            raise AttributeError("Unknown identifier %s" % identifier_key)
+        
+        tvmaze_key = "tvrage" if identifier_key == "rid" else "thetvdb"
+        tvmaze = requests.get(furl("http://api.tvmaze.com/lookup/shows").add({tvmaze_key: identifier_value}).url)
+        return tvmaze.json()["name"]
+        
+    except Exception as e:
+        raise ExternalApiInfoException("Unable to retrieve title by id %s and value %s: %s" % (identifier_key, identifier_value, e))
 
 
 def execute_search_queries(queries_by_provider):
