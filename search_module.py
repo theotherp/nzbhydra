@@ -1,4 +1,5 @@
-needs_config = False
+import json
+from database import Provider
 
 
 class SearchModule(object):
@@ -6,18 +7,39 @@ class SearchModule(object):
     # possibly use newznab qualities as base, map for other providers (nzbclub etc)
 
 
-    def __init__(self, config_section):
-        self.module_name = "Abstract search module"
-        self.config = config_section
-        self.enabled = config_section.get("enabled", False)
-        self.search_types = ["tv", "movie", "general"]  # todo: init settings like this that are only used in subsections
+    def __init__(self, provider):
+        self.provider = provider  # Database object of this module
+        self.name = self.provider.name
+        self.module = "Abstract search module"
+        
+        self.generate_queries = provider.generate_queries  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for providers which don't support id-based searches
+        
         self.supports_queries = True
-        self.search_ids = [] #"tvdbid", "rid", "imdbid"
-        self.search_types = config_section.get("search_types", ["general", "tv", "movie"])
-        self.supports_queries = config_section.get("supports_queries", True)
-        self.search_ids = config_section.get("search_ids", ["tvdbid", "rid", "imdbid"])
-        self.generate_queries = config_section.get("generate_queries", True)#If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for providers which don't support id-based searches
-        self.category_search = config_section.get("category_search", False) #If true the provider supports searching in a given category (possibly without any query or id)
+        self.needs_queries = False
+        self.category_search = True  # If true the provider supports searching in a given category (possibly without any query or id)
+    
+    @property
+    def query_url(self):
+        return self.provider.query_url
+        
+    @property
+    def base_url(self):
+        return self.provider.base_url
+    
+    
+    @property
+    def settings(self):
+        return json.loads(self.provider.settings)
+        
+    @property
+    def search_types(self):
+        return json.loads(self.provider.search_types)
+    
+    @property
+    def search_ids(self):
+        return json.loads(self.provider.search_ids)
+    
+
 
     # Access to most basic functions
     def get_search_urls(self, query):
@@ -39,11 +61,11 @@ class SearchModule(object):
 
     def process_query_result(self, result):
         return []
-        
+
     def check_auth(self, body=""):
-        #check the response body to see if request was authenticated. If yes, do nothing, if no, raise exception 
+        # check the response body to see if request was authenticated. If yes, do nothing, if no, raise exception 
         pass
-        
+
     def get_nfo(self, guid):
         pass
 
@@ -58,3 +80,7 @@ class SearchModule(object):
         #   enabled for which search types?
         #
         #   to be extended by e.g. newznab, for example apikey
+
+
+def get_instance(provider):
+    return SearchModule(provider)

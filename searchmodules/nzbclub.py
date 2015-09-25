@@ -1,3 +1,4 @@
+import json
 import logging
 import re
 import arrow
@@ -15,19 +16,19 @@ logger = logging.getLogger('root')
 class NzbClub(SearchModule):
     # TODO init of config which is dynmic with its path
 
-    def __init__(self, config_section):
-        super(NzbClub, self).__init__(config_section)
-        self.module_name = "nzbclub"
+    def __init__(self, provider):
+        super(NzbClub, self).__init__(provider)
+        self.module = "nzbclub"
         self.name = "NZBClub"
-        self.enabled = config_section.get("enabled", True)
-        self.query_url = config_section.get("query_url", "https://member.nzbclub.com/nzbfeeds.aspx")
-        self.base_url = config_section.get("base_url", "https://member.nzbclub.com")
-        self.search_types = config_section.get("search_types", ["general", "tv", "movie"])  
-        self.supports_queries = config_section.get("supports_queries", True)  
-        self.search_ids = config_section.get("search_ids", [])
-        self.max_results = config_section.get("max_results", 250)
-        self.generate_queries = config_section.get("generate_queries", True)
-        self.needs_queries = True #We can only search using queries
+        
+        self.supports_queries = True #We can only search using queries
+        self.needs_queries = True
+        self.category_search = True
+        
+    @property
+    def max_results(self):
+        
+        return json.loads(self.provider.settings).get("max_results", 250)
         
 
     def build_base_url(self):
@@ -83,5 +84,5 @@ class NzbClub(SearchModule):
         return entries
 
 
-def get_instance(config_section):
-    return NzbClub(config_section)
+def get_instance(provider):
+    return NzbClub(provider)

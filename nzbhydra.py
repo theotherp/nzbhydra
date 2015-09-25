@@ -1,10 +1,11 @@
 """NZB Hydra
 Usage:
-    nzbhydra.py [--config=configfile]
+    nzbhydra.py [--config=<configfile>] [--database=<dbfile>]
 
 Options:
   
   --config=<configfile>
+  --database=<dbfile>
   
 """
 import config
@@ -145,14 +146,21 @@ config.init("main.host", "0.0.0.0", str)
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='nzbhydra 0.0.1')
     settings_file = "settings.cfg"
+    database_file = "nzbhydra.db"
     if arguments["--config"]:
         settings_file = arguments["--config"]
+    if arguments["--database"]:
+        database_file = arguments["--database"]
     
     print("Loading settings from %s" % settings_file)
     config.load(settings_file)
     
     logger = log.setup_custom_logger('root')
-    logger.info("Started")
+    
+    logger.info("Loading database file %s" % database_file)
+    database.db.init(database_file)
+    database.db.connect()
+    
     search.read_providers_from_config()
     
     port = config.cfg["main.port"]

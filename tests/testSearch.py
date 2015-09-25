@@ -9,12 +9,28 @@ import search
 import config
 from pprint import pprint
 from searchmodules.newznab import NewzNab
-from flask import json
 from furl import furl
 from tests import mockbuilder
+import json
+from peewee import OperationalError, SqliteDatabase
+import database
+from database import Provider
+from tests.db_prepare import set_and_drop 
+
 
 logging.getLogger("root").addHandler(logging.StreamHandler(sys.stdout))
 logging.getLogger("root").setLevel("DEBUG")
+
+set_and_drop()
+
+Provider(module="newznab", name="NZBs.org", query_url="http://127.0.0.1:5001/nzbsorg", base_url="http://127.0.0.1:5001/nzbsorg", settings=json.dumps({"apikey": "apikeynzbsorg"}), search_types=json.dumps(["tv", "general", "movie"]), search_ids=json.dumps(["imdbid", "tvdbid", "rid"])).save()
+
+Provider(module="newznab", name="DOGNzb", query_url="http://127.0.0.1:5001/dognzb", base_url="http://127.0.0.1:5001/dognzb", settings=json.dumps({"apikey": "apikeydognzb"}), search_types=json.dumps(["tv", "general"]), search_ids=json.dumps(["tvdbid", "rid"])).save()
+
+Provider(module="nzbclub", name="nzbclub", query_url="https://member.nzbclub.com/nzbfeeds.aspx", base_url="http://127.0.0.1:5001/nzbclub", search_types=json.dumps(["general", "tv", "movie"]), generate_queries=True).save()
+
+Provider(module="womble", name="womble", query_url="http://www.newshost.co.za/rss", base_url="http://127.0.0.1:5001/womble", search_types=json.dumps(["tv"])).save()
+
 
 
 
@@ -29,46 +45,8 @@ class MyTestCase(unittest.TestCase):
 
     config.cfg["searching.timeout"] = 5
 
-    config.cfg["search_providers.1.enabled"] = True
-    config.cfg["search_providers.1.module"] = "newznab"
-    config.cfg["search_providers.1.name"] = "NZBs.org"
-    config.cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
-    config.cfg["search_providers.1.apikey"] = "apikeynzbsorg"
-    config.cfg["search_providers.1.search_types"] = ["general", "tv", "movie"]
-    config.cfg["search_providers.1.search_ids"] = ["tvdbid", "rid", "imdbid"]
-    config.cfg["search_providers.1.category_search"] = True
-
-    config.cfg["search_providers.2.enabled"] = True
-    config.cfg["search_providers.2.module"] = "newznab"
-    config.cfg["search_providers.2.name"] = "DOGNzb"
-    config.cfg["search_providers.2.query_url"] = "http://127.0.0.1:5001/dognzb"
-    config.cfg["search_providers.2.apikey"] = "apikeydognzb"
-    config.cfg["search_providers.2.search_types"] = ["general", "tv"]
-    config.cfg["search_providers.2.search_ids"] = ["tvdbid", "rid"]
-    config.cfg["search_providers.2.category_search"] = True
-                                                  
-
-    config.cfg["search_providers.3.enabled"] = True
-    config.cfg["search_providers.3.module"] = "womble"
-    config.cfg["search_providers.3.name"] = "womble"
-    config.cfg["search_providers.3.query_url"] = "http://www.newshost.co.za/rss"
-    config.cfg["search_providers.3.search_types"] = ["tv"]
-    config.cfg["search_providers.3.supports_queries"] = False
-    config.cfg["search_providers.3.search_ids"] = []
-    config.cfg["search_providers.3.category_search"] = True
-    
-    config.cfg["search_providers.4.enabled"] = True
-    config.cfg["search_providers.4.module"] = "nzbclub"
-    config.cfg["search_providers.4.name"] = "nzbclub"
-    config.cfg["search_providers.4.query_url"] = "https://member.nzbclub.com/nzbfeeds.aspx"
-    config.cfg["search_providers.4.search_types"] = ["general", "tv", "movie"]
-    config.cfg["search_providers.4.supports_queries"] = True
-    config.cfg["search_providers.4.search_ids"] = []
-    config.cfg["search_providers.4.generate_queries"] = True
-    config.cfg["search_providers.4.category_search"] = False
-
     def test_search_module_loading(self):
-        self.assertEqual(4, len(search.search_modules))
+        self.assertEqual(3, len(search.search_modules))
 
     def test_read_providers(self):
         providers = search.read_providers_from_config()
@@ -101,15 +79,6 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(1, len(providers))
         self.assertEqual("NZBs.org", providers[0].name)
 
-    def testSearchResultsToDict(self):
-        n = NewzNab(config.cfg)
-        # nzbsorg
-        with open("tests/mock/nzbsorg_q_avengers_3results.json") as f:
-            entries = n.process_query_result(f.read())
-        from nzbhydra import render_search_results_for_api
-        from nzbhydra import app
-        with app.test_request_context("/"):
-            xhtml = render_search_results_for_api(entries)
 
     def testGeneralSearchProviderSelectionAndUrlBuilding(self):
 

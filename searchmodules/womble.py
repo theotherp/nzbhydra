@@ -14,20 +14,16 @@ logger = logging.getLogger('root')
 class Womble(SearchModule):
     # TODO init of config which is dynmic with its path
 
-    def __init__(self, config_section):
-        super(Womble, self).__init__(config_section)
-        self.module_name = "womble"
+    def __init__(self, provider):
+        super(Womble, self).__init__(provider)
+        self.module = "womble"
         self.name = "Womble's NZB Index"
-        self.query_url = config_section.get("query_url", "http://www.newshost.co.za/rss/")
-        self.base_url = config_section.get("base_url", "http://www.newshost.co.za/")
-        self.search_types = ["tv"]  # will need to check this but I think is mainly/only used for tv shows
-        self.supports_queries = False  # Only as support for general tv search
-        self.search_ids = config_section.get("search_ids", [])
+        
+        self.generate_queries = False #Doesn't matter because supports_queries is False
         self.needs_queries = False
-        self.enabled = config_section.get("enabled", True)
-        self.generate_queries = config_section.get("generate_queries", False) #Doesn't matter because supports_queries is False
         self.needs_queries = False # Doesn't even allow them
         self.category_search = True #Same
+        self.supports_queries = False  # Only as support for general tv search
 
     def build_base_url(self):
         url = furl(self.query_url).add({"fr": "false"})
@@ -99,5 +95,5 @@ class Womble(SearchModule):
         return entries
 
 
-def get_instance(config_section):
-    return Womble(config_section)
+def get_instance(provider):
+    return Womble(provider)

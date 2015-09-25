@@ -1,32 +1,31 @@
+import json
 from pprint import pprint
+import re
 import unittest
 from freezegun import freeze_time
+import responses
+from database import Provider
 
 from searchmodules.newznab import NewzNab
+from tests.db_prepare import set_and_drop
 
 
 class MyTestCase(unittest.TestCase):
-    from config import cfg
-    
-    cfg["search_providers.1.search_module"] = "newznab"
-    cfg["search_providers.1.name"] = "NZBs.org"
-    cfg["search_providers.1.apikey"] = "apikeynzbsorg"
-    cfg["search_providers.1.base_url"] = "https://nzbs.org"
-    cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
-    
-    cfg["search_providers.2.search_module"] = "newznab"
-    cfg["search_providers.2.name"] = "DOGNzb"
-    cfg["search_providers.2.apikey"] = "apikeydognzb"
-    cfg["search_providers.2.base_url"] = "https://dognzb.cr"
-    cfg["search_providers.2.query_url"] = "http://127.0.0.1:5001/dognzb"
+
+    def setUp(self):    
+        set_and_drop()    
+        self.nzbsorg = Provider(module="newznab", name="NZBs.org", query_url="http://127.0.0.1:5001/nzbsorg", base_url="http://127.0.0.1:5001/nzbsorg", settings=json.dumps({"apikey": "apikeynzbsorg"}), search_types=json.dumps(["tv", "general", "movie"]), search_ids=json.dumps(["imdbid", "tvdbid", "rid"]))
+        self.nzbsorg.save()
+        self.dognzb = Provider(module="newznab", name="DOGNzb", query_url="http://127.0.0.1:5001/dognzb", base_url="http://127.0.0.1:5001/dognzb", settings=json.dumps({"apikey": "apikeydognzb"}), search_types=json.dumps(["tv", "general"]), search_ids=json.dumps(["tvdbid", "rid"]))
+        self.dognzb.save()
     
     @freeze_time("2015-09-20 14:00:00", tz_offset=-4)
     def testParseJsonToNzbSearchResult(self):
-        from config import cfg
-        n = NewzNab(cfg)
+        
+        n = NewzNab(self.nzbsorg)
         
         #nzbsorg
-        with open("tests/mock/nzbsorg_q_avengers_3results.json") as f:
+        with open("mock/nzbsorg_q_avengers_3results.json") as f:
             entries = n.process_query_result(f.read())
         pprint(entries)
         assert len(entries) == 3
@@ -47,8 +46,9 @@ class MyTestCase(unittest.TestCase):
         assert entries[2].guid == "41b305ac99507f70ed6a10e45177065c"
         
         
+        n = NewzNab(self.dognzb)
         #dognzb
-        with open("tests/mock/dognzb_q_avengers_3results.json") as f:
+        with open("mock/dognzb_q_avengers_3results.json") as f:
             entries = n.process_query_result(f.read())
         pprint(entries)
         assert len(entries) == 3
@@ -68,7 +68,7 @@ class MyTestCase(unittest.TestCase):
     
     def testNewznabSearchQueries(self):
         
-        nzbsorg = NewzNab(self.cfg.section("search_providers").section("1"))
+        nzbsorg = NewzNab(self.nzbsorg)
         
         queries = nzbsorg.get_search_urls("aquery")
         assert len(queries) == 1
@@ -145,7 +145,16 @@ class MyTestCase(unittest.TestCase):
         assert "o=json" in query
         assert "cat=5432" in query
         
+        
+    @responses.activate
     def testGetNfo(self):
-        dog = NewzNab(self.cfg.section("search_providers").section("2"))
-        nfo = dog.get_nfo("b4ba74ecb5f5962e98ad3c40c271dcc8")
-        assert "Road Hard" in nfo
+        with open("mock/dognzb--id-b4ba74ecb5f5962e98ad3c40c271dcc8--t-getnfo.xml", encoding="latin-1") as f:
+            xml = f.read()
+            
+            url_re = re.compile(r'.*')
+            responses.add(responses.GET, url_re,
+                          body=xml, status=200,
+                          content_type='application/x-html')
+            dog = NewzNab(self.dognzb)
+            nfo = dog.get_nfo("b4ba74ecb5f5962e98ad3c40c271dcc8")
+            assert "Road Hard" in nfo

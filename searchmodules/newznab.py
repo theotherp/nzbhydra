@@ -31,21 +31,27 @@ class NewzNab(SearchModule):
     # TODO init of config which is dynmic with its path
 
     #todo feature: read caps from server on first run and store them in the config/database
-    def __init__(self, config_section):
-        super(NewzNab, self).__init__(config_section)
-        self.module_name = "NewzNab"
-        self.name = config_section.get("name")
-        self.query_url = config_section.get("query_url")
-        self.base_url = config_section.get("base_url")
-        self.apikey = config_section.get("apikey")
-        self.username = config_section.get("username")
-        self.password = config_section.get("password")
-        self.search_types = config_section.get("search_types", ["general", "tv", "movie"])
-        self.supports_queries = True
-        self.search_ids = config_section.get("search_ids", ["tvdbid", "rid", "imdbid"])
-        self.needs_queries = False
-        self.generate_queries = config_section.get("generate_queries", False) #Could be set true, but not needed if searching using ids
+    def __init__(self, provider):
+        """
+
+        :type provider: NewznabProvider
+        """
+        super(NewzNab, self).__init__(provider)
+        self.module = "newznab"
         self.category_search = True
+        
+    
+    @property
+    def apikey(self):
+        return self.settings.get("apikey", "")  
+    
+    @property
+    def username(self):
+        return self.provider.settings.get()["username"]
+    
+    @property
+    def password(self):
+        return self.provider.settings.get()["password"]
         
         
     def __repr__(self):
@@ -177,5 +183,5 @@ class NewzNab(SearchModule):
             
 
 
-def get_instance(config_section):
-    return NewzNab(config_section)
+def get_instance(provider):
+    return NewzNab(provider)

@@ -1,21 +1,19 @@
 import concurrent
 import logging
+
 from furl import furl
 import requests
-import database
-from database import Provider, ProviderSearch
-
 from requests_futures.sessions import FuturesSession
 
+from database import Provider, ProviderSearch
 import config
 from exceptions import ProviderConnectionException, ProviderAuthException, ProviderAccessException, ExternalApiInfoException
-from searchmodules import binsearch, newznab, womble, nzbclub
+from searchmodules import newznab, womble, nzbclub
 
 
 
-
-# TODO: I would like to use plugins for this but couldn't get this to work with pluginbase due to import errors, probably import loops or whatever. I hate pythons import system 
-search_modules = {"binsearch": binsearch, "newznab": newznab, "womble": womble, "nzbclub": nzbclub}
+# TODO: I would like to use plugins for this but couldn't get this to work with pluginbase. Would also need a concept to work with the database
+search_modules = {"newznab": newznab, "womble": womble, "nzbclub": nzbclub}
 logger = logging.getLogger('root')
 
 config.init("searching.timeout", 5, int)
@@ -25,19 +23,31 @@ providers = []
 
 
 def pick_providers(search_type=None, query_supplied=True, identifier_key=None, allow_query_generation=False):
-    picked_providers = providers
+    picked_providers = []
+
+    for p in providers:
+        pick = True
+        pick = pick and (not query_supplied or p.supports_queries)
+        pick = pick and (query_supplied or not p.needs_queries)
+        pick = pick and (search_type is None or search_type in p.search_types)
+        pick = pick and (identifier_key is None or identifier_key in p.search_ids or (allow_query_generation and p.generate_queries))
+        
+        if pick:
+            picked_providers.append(p)
+
     # todo: perhaps a provider is disabled because we reached the api limit or because it's offline and we're waiting some time or whatever
-    # If we have a query we only pick those providers that actually support queries (so no wombles)
-    picked_providers = [p for p in picked_providers if not query_supplied or p.supports_queries]
-    
-    # If we don't have a query (either as text search or with an id or a category) we only pick those providers that dont need one, i.e. support returning a general release list (so no nzbclub)
-    picked_providers = [p for p in picked_providers if query_supplied or not p.needs_queries]
-    
-    # If we have a certain search type only pick those providers that are to be used for it
-    picked_providers = [p for p in picked_providers if search_type is None or search_type in p.search_types]
-    
-    # If we use id based search only pick those providers that either support it or where we're allowed to generate queries (that means we retrieve the title of the show or movie and do a text based query)    
-    picked_providers = [p for p in picked_providers if identifier_key is None or identifier_key in p.search_ids or (allow_query_generation and p.generate_queries)]
+    # # If we have a query we only pick those providers that actually support queries (so no wombles)
+    # picked_providers = [p for p in picked_providers if not query_supplied or p.supports_queries]
+    # 
+    # 
+    # # If we don't have a query (either as text search or with an id or a category) we only pick those providers that dont need one, i.e. support returning a general release list (so no nzbclub)
+    # picked_providers = [p for p in picked_providers if query_supplied or not p.needs_queries]
+    # 
+    # # If we have a certain search type only pick those providers that are to be used for it
+    # picked_providers = [p for p in picked_providers if search_type is None or search_type in p.search_types]
+    # 
+    # # If we use id based search only pick those providers that either support it or where we're allowed to generate queries (that means we retrieve the title of the show or movie and do a text based query)    
+    # picked_providers = [p for p in picked_providers if identifier_key is None or identifier_key in p.search_ids or (allow_query_generation and p.generate_queries)]
     return picked_providers
 
 
@@ -46,15 +56,14 @@ def read_providers_from_config():
     global providers
     providers = []
 
-    for configSection in config.cfg.section("search_providers").sections():
-        if not configSection.get("module"):
-            raise AttributeError("Provider section without module %s" % configSection)
-        if not configSection.get("module") in search_modules:
-            raise AttributeError("Unknown search module %s" % configSection.get("module"))
-        if configSection.get("enabled", True):
-            provider = search_modules[configSection.get("module")]
-            provider = provider.get_instance(configSection)
-            providers.append(provider)
+    for provider in Provider().select():
+        if provider.module not in search_modules.keys():
+            pass  # todo raise exception
+
+        module = search_modules[provider.module]
+        provider_instance = module.get_instance(provider)
+        providers.append(provider_instance)
+
     return providers
 
 
@@ -67,42 +76,41 @@ def search(query, categories=None):
     # make a general query, probably only done by the gui
 
 
-
 def pick_providers_and_search(search_type, search_function, query=None, identifier_key=None, identifier_value=None, categories=None, **kwargs):
-    #The search_type is used to determine the providers, the search function is the function that is called using the supplied parameters, for every provider we found 
+    # The search_type is used to determine the providers, the search function is the function that is called using the supplied parameters, for every provider we found 
     queries_by_provider = {}
     picked_providers = pick_providers(search_type=search_type, query_supplied=query is not None or identifier_key is not None, identifier_key=identifier_key, allow_query_generation=True)
-    
-    #If we have no query, we can still try to generate one for the providers which don't support query based searches, but only if we have an identifier.
+
+    # If we have no query, we can still try to generate one for the providers which don't support query based searches, but only if we have an identifier.
     providers_that_allow_query_generation = []
     if query is None and identifier_key is not None:
         providers_that_allow_query_generation = [x for x in picked_providers if x.generate_queries and identifier_key not in x.search_ids]
-        if any(providers_that_allow_query_generation) and config.cfg.get("searching.allow_query_generation", True): #todo init
+        if any(providers_that_allow_query_generation) and config.cfg.get("searching.allow_query_generation", True):  # todo init
             try:
                 generated_query = title_from_id(identifier_key, identifier_value)
-                          
+
                 if categories is not None:
-                    pass #todo if so configured attempt to map categories to strings?
-                
+                    pass  # todo if so configured attempt to map categories to strings?
+
                 logger.info("Generated query for movie search from identifier %s=%s: %s" % (identifier_key, identifier_value, generated_query))
-                
-                #and then finally use the generated query
+
+                # and then finally use the generated query
                 for p in providers_that_allow_query_generation:
                     queries_by_provider[p] = getattr(p, search_function)(query=generated_query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, **kwargs)
             except ExternalApiInfoException as e:
                 logger.error("Error while retrieving the title to the supplied identifier %s: %s" % (identifier_key, e.message))
-    
-    #Get movie search urls from those providers that support search by id
+
+    # Get movie search urls from those providers that support search by id
     for p in [x for x in picked_providers if x not in providers_that_allow_query_generation]:
         queries_by_provider[p] = getattr(p, search_function)(query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, **kwargs)
-        
+
     return execute_search_queries(queries_by_provider)
 
 
 def search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
     logger.info("Searching for show")  # todo:extend
     return pick_providers_and_search("tv", "get_showsearch_urls", *(), query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, season=season, episode=episode)
-    
+
 
 def search_movie(query=None, identifier_key=None, identifier_value=None, categories=None):
     logger.info("Searching for movie")  # todo:extend
@@ -118,14 +126,14 @@ def title_from_id(identifier_key, identifier_value):
                 identifier_value = "tt%s" % identifier_value
             omdb = requests.get(furl("http://www.omdbapi.com").add({"i": identifier_value, "plot": "short", "r": "json"}).url)
             return omdb.json()["Title"]
-        
+
         if identifier_key not in ("rid", "tvdbid"):
             raise AttributeError("Unknown identifier %s" % identifier_key)
-        
+
         tvmaze_key = "tvrage" if identifier_key == "rid" else "thetvdb"
         tvmaze = requests.get(furl("http://api.tvmaze.com/lookup/shows").add({tvmaze_key: identifier_value}).url)
         return tvmaze.json()["name"]
-        
+
     except Exception as e:
         raise ExternalApiInfoException("Unable to retrieve title by id %s and value %s: %s" % (identifier_key, identifier_value, e))
 
@@ -147,20 +155,20 @@ def execute_search_queries(queries_by_provider):
 
     for f in concurrent.futures.as_completed(futures):
         try:
-            
+
             result = f.result()
             provider = providers_by_future[f]
-            
-            provider_db = Provider.get(name=provider)
+
+            provider_db = provider.provider
             psearch = ProviderSearch(provider=provider_db)
-            print(result.elapsed.microseconds / 1000) #todo store response time
-            
+            print(result.elapsed.microseconds / 1000)  # todo store response time
+
             if result.status_code != 200:
                 raise ProviderConnectionException("Unable to connect to provider. Status code: %d" % result.status_code, provider)
             else:
                 provider.check_auth(result.text)
                 query_results.append({"provider": provider, "result": result})
-                
+
 
         except ProviderAuthException as e:
             logger.error("Unable to authorize with %s: %s" % (e.search_module, e.message))
