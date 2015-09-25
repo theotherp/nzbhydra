@@ -1,3 +1,4 @@
+*.db
 *.cfg
 realsettingsmockproviders.cfg
 /tests/mock/xml/*
