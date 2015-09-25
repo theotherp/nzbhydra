@@ -43,7 +43,7 @@ class NewzNab(SearchModule):
     
     @property
     def apikey(self):
-        return self.settings.get("apikey", "")  
+        return self.provider.settings.get("apikey", "")  
     
     @property
     def username(self):

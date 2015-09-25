@@ -26,18 +26,17 @@ class SearchModule(object):
     def base_url(self):
         return self.provider.base_url
     
-    
     @property
     def settings(self):
-        return json.loads(self.provider.settings)
+        return self.provider.settings
         
     @property
     def search_types(self):
-        return json.loads(self.provider.search_types)
+        return self.provider.search_types
     
     @property
     def search_ids(self):
-        return json.loads(self.provider.search_ids)
+        return self.provider.search_ids
     
 
 

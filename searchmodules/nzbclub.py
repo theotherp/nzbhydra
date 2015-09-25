@@ -28,7 +28,7 @@ class NzbClub(SearchModule):
     @property
     def max_results(self):
         
-        return json.loads(self.provider.settings).get("max_results", 250)
+        return self.settings.get("max_results", 250)
         
 
     def build_base_url(self):

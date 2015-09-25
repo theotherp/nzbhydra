@@ -23,13 +23,13 @@ logging.getLogger("root").setLevel("DEBUG")
 
 set_and_drop()
 
-Provider(module="newznab", name="NZBs.org", query_url="http://127.0.0.1:5001/nzbsorg", base_url="http://127.0.0.1:5001/nzbsorg", settings=json.dumps({"apikey": "apikeynzbsorg"}), search_types=json.dumps(["tv", "general", "movie"]), search_ids=json.dumps(["imdbid", "tvdbid", "rid"])).save()
+Provider(module="newznab", name="NZBs.org", query_url="http://127.0.0.1:5001/nzbsorg", base_url="http://127.0.0.1:5001/nzbsorg", settings={"apikey": "apikeynzbsorg"}, search_types=["tv", "general", "movie"], search_ids=["imdbid", "tvdbid", "rid"]).save()
 
-Provider(module="newznab", name="DOGNzb", query_url="http://127.0.0.1:5001/dognzb", base_url="http://127.0.0.1:5001/dognzb", settings=json.dumps({"apikey": "apikeydognzb"}), search_types=json.dumps(["tv", "general"]), search_ids=json.dumps(["tvdbid", "rid"])).save()
+Provider(module="newznab", name="DOGNzb", query_url="http://127.0.0.1:5001/dognzb", base_url="http://127.0.0.1:5001/dognzb", settings={"apikey": "apikeydognzb"}, search_types=["tv", "general"], search_ids=["tvdbid", "rid"]).save()
 
-Provider(module="nzbclub", name="nzbclub", query_url="https://member.nzbclub.com/nzbfeeds.aspx", base_url="http://127.0.0.1:5001/nzbclub", search_types=json.dumps(["general", "tv", "movie"]), generate_queries=True).save()
+Provider(module="nzbclub", name="nzbclub", query_url="https://member.nzbclub.com/nzbfeeds.aspx", base_url="http://127.0.0.1:5001/nzbclub", search_types=["general", "tv", "movie"], generate_queries=True).save()
 
-Provider(module="womble", name="womble", query_url="http://www.newshost.co.za/rss", base_url="http://127.0.0.1:5001/womble", search_types=json.dumps(["tv"])).save()
+Provider(module="womble", name="womble", query_url="http://www.newshost.co.za/rss", base_url="http://127.0.0.1:5001/womble", search_types=["tv"]).save()
 
 
 
@@ -54,6 +54,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_pick_providers(self):
         search.read_providers_from_config()
+        Provider().select().count()
         providers = search.pick_providers(search_type="general")
         self.assertEqual(3, len(providers))
 
@@ -93,18 +94,18 @@ class MyTestCase(unittest.TestCase):
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]  # Url lists, sorted by name of provider because the order might be random
         self.assertEqual(3, len(args))  # both newznab providers and nzbclub
 
-        url = args[0][0] #nzbclub
+        url = args[0]["queries"][0] #nzbclub
         web_args = url.split("?")[1].split("&")
         assert "t=search" in web_args
         assert "apikey=apikeydognzb" in web_args
         assert "q=aquery" in web_args
         
-        url = args[1][0]
+        url = args[1]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "nzbclub" in url
         assert "q=aquery" in web_args
 
-        url = args[2][0]
+        url = args[2]["queries"][0]
         web_args = url.split("?")[1].split("&")  # and then we get all arguments because we cannot check against the url because furl builds it somewhat randomly
         assert "t=search" in web_args
         assert "apikey=apikeynzbsorg" in web_args
@@ -126,19 +127,19 @@ class MyTestCase(unittest.TestCase):
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(3, len(args))  # 3 providers (no nzbsorg
 
-        url = args[0][0]
+        url = args[0]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "t=tvsearch" in web_args
         assert "apikey=apikeydognzb" in web_args
 
-        url = args[1][0]
+        url = args[1]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "t=tvsearch" in web_args
         assert "apikey=apikeynzbsorg" in web_args
         assert "cat=5000" in web_args  # no category provided, so we just added 5000 
         self.assertEqual(5, len(web_args))  # other args: o=json & extended=1      
 
-        url = args[2][0]
+        url = args[2]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "http://www.newshost.co.za/rss" in url
         self.assertEqual(1, len(web_args))  # only disable pretty titles
@@ -151,21 +152,21 @@ class MyTestCase(unittest.TestCase):
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(3, len(args))  # 3 providers
 
-        url = args[0][0]
+        url = args[0]["queries"][0]
         assert "dognzb" in url
         web_args = url.split("?")[1].split("&")
         assert "t=search" in web_args
         assert "q=aquery" in web_args
         assert "apikey=apikeydognzb" in web_args
         
-        url = args[1][0]
+        url = args[1]["queries"][0]
         assert "nzbclub" in url
         web_args = url.split("?")[1].split("&")
         assert "q=aquery" in web_args
         
 
         
-        url = args[2][0]
+        url = args[2]["queries"][0]
         assert "nzbs" in url
         web_args = url.split("?")[1].split("&")
         assert "t=search" in web_args
@@ -177,7 +178,7 @@ class MyTestCase(unittest.TestCase):
 
         url_re = re.compile(r'.*tvmaze.*')
         responses.add(responses.GET, url_re,
-                      body=json.dumps({"name": "Breaking Bad"}), status=200,
+                      body={"name": "Breaking Bad"}, status=200,
                       content_type='application/json')
 
 
@@ -185,9 +186,9 @@ class MyTestCase(unittest.TestCase):
         search.search_show(identifier_key="tvdbid", identifier_value="81189")
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(3, len(args))  # 2 providers
+        self.assertEqual(3, len(args))  # 
 
-        url = args[0][0]
+        url = args[0]["queries"][0]
         assert "dognzb" in url
         web_args = url.split("?")[1].split("&")
         assert "t=tvsearch" in web_args
@@ -196,12 +197,12 @@ class MyTestCase(unittest.TestCase):
         assert "cat=5000" in web_args  # no category provided, so we just added 5000
         self.assertEqual(6, len(web_args))  # other args: o=json & extended=1
         
-        url = args[1][0]
+        url = args[1]["queries"][0]
         assert "nzbclub" in url
         web_args = url.split("?")[1].split("&")
         assert "q=Breaking+Bad" in web_args
 
-        url = args[2][0]
+        url = args[2]["queries"][0]
         assert "nzbs" in url
         web_args = url.split("?")[1].split("&")
         assert "t=tvsearch" in web_args
@@ -215,7 +216,7 @@ class MyTestCase(unittest.TestCase):
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(3, len(args))  # 2 providers
 
-        url = args[0][0]
+        url = args[0]["queries"][0]
         assert "dognzb" in url
         web_args = url.split("?")[1].split("&")
         assert "t=tvsearch" in web_args
@@ -226,12 +227,12 @@ class MyTestCase(unittest.TestCase):
         assert "cat=5000" in web_args  # no category provided, so we just added 5000
         self.assertEqual(8, len(web_args))  # other args: o=json & extended=1
         
-        url = args[1][0]
+        url = args[1]["queries"][0]
         assert "nzbclub" in url
         web_args = url.split("?")[1].split("&")
         assert "q=Breaking+Bad" in web_args
 
-        url = args[2][0]
+        url = args[2]["queries"][0]
         assert "nzbs" in url
         web_args = url.split("?")[1].split("&")
         assert "t=tvsearch" in web_args
@@ -254,7 +255,7 @@ class MyTestCase(unittest.TestCase):
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(1, len(args))  # only nzbsorg and supports general movie search without query (in this test
 
-        url = args[0][0]
+        url = args[0]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "t=movie" in web_args
         assert "apikey=apikeynzbsorg" in web_args
@@ -269,12 +270,12 @@ class MyTestCase(unittest.TestCase):
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(2, len(args))
         
-        url = args[0][0] 
+        url = args[0]["queries"][0] 
         web_args = url.split("?")[1].split("&")
         assert "nzbclub" in url
         assert "q=aquery" in web_args
 
-        url = args[1][0]
+        url = args[1]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "t=search" in web_args
         assert "q=aquery" in web_args
@@ -287,20 +288,20 @@ class MyTestCase(unittest.TestCase):
         # movie search with imdbid, so a query should be generated for and used by nzbclub
         url_re = re.compile(r'.*omdbapi.*')
         responses.add(responses.GET, url_re,
-                      body=json.dumps({"Title": "American Beauty"}), status=200,
+                      body={"Title": "American Beauty"}, status=200,
                       content_type='application/json')
         search.search_movie(identifier_key="imdbid", identifier_value="tt0169547")
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(2, len(args))  # 2 providers
 
-        url = args[0][0]
+        url = args[0]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "nzbclub" in url
         assert "q=American+Beauty" in web_args
         
 
-        url = args[1][0]
+        url = args[1]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "t=movie" in web_args
         assert "imdbid=tt0169547" in web_args
@@ -315,13 +316,13 @@ class MyTestCase(unittest.TestCase):
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(2, len(args))  # 2 providers
         
-        url = args[0][0]
+        url = args[0]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "nzbclub" in url
         assert "q=American+Beauty" in web_args
         #todo category transformation for query based providers
 
-        url = args[1][0]
+        url = args[1]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "t=movie" in web_args
         assert "imdbid=tt0169547" in web_args
@@ -336,7 +337,7 @@ class MyTestCase(unittest.TestCase):
         config.cfg["searching.allow_query_generation"] = False
         url_re = re.compile(r'.*omdbapi.*')
         responses.add(responses.GET, url_re,
-                      body=json.dumps({"Title": "American Beauty"}), status=200,
+                      body={"Title": "American Beauty"}, status=200,
                       content_type='application/json')
         search.search_movie(identifier_key="imdbid", identifier_value="tt0169547")
         args = search.execute_search_queries.call_args[0][0]

@@ -13,7 +13,7 @@ class MyTestCase(unittest.TestCase):
     
     def setUp(self):    
         set_and_drop()    
-        self.nzbclub = Provider(module="nzbclub", name="nzbclub", query_url="https://member.nzbclub.com/nzbfeeds.aspx", base_url="http://127.0.0.1:5001/nzbclub", search_types=json.dumps(["general", "tv", "movie"]), generate_queries=True)
+        self.nzbclub = Provider(module="nzbclub", name="nzbclub", query_url="https://member.nzbclub.com/nzbfeeds.aspx", base_url="http://127.0.0.1:5001/nzbclub", search_types=["general", "tv", "movie"], generate_queries=True)
         self.nzbclub.save()
     
     @freeze_time("2015-09-20 14:00:00", tz_offset=-4)

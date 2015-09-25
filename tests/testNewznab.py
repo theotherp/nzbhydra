@@ -14,9 +14,9 @@ class MyTestCase(unittest.TestCase):
 
     def setUp(self):    
         set_and_drop()    
-        self.nzbsorg = Provider(module="newznab", name="NZBs.org", query_url="http://127.0.0.1:5001/nzbsorg", base_url="http://127.0.0.1:5001/nzbsorg", settings=json.dumps({"apikey": "apikeynzbsorg"}), search_types=json.dumps(["tv", "general", "movie"]), search_ids=json.dumps(["imdbid", "tvdbid", "rid"]))
+        self.nzbsorg = Provider(module="newznab", name="NZBs.org", query_url="http://127.0.0.1:5001/nzbsorg", base_url="http://127.0.0.1:5001/nzbsorg", settings={"apikey": "apikeynzbsorg"}, search_types=["tv", "general", "movie"], search_ids=["imdbid", "tvdbid", "rid"])
         self.nzbsorg.save()
-        self.dognzb = Provider(module="newznab", name="DOGNzb", query_url="http://127.0.0.1:5001/dognzb", base_url="http://127.0.0.1:5001/dognzb", settings=json.dumps({"apikey": "apikeydognzb"}), search_types=json.dumps(["tv", "general"]), search_ids=json.dumps(["tvdbid", "rid"]))
+        self.dognzb = Provider(module="newznab", name="DOGNzb", query_url="http://127.0.0.1:5001/dognzb", base_url="http://127.0.0.1:5001/dognzb", settings={"apikey": "apikeydognzb"}, search_types=["tv", "general"], search_ids=["tvdbid", "rid"])
         self.dognzb.save()
     
     @freeze_time("2015-09-20 14:00:00", tz_offset=-4)

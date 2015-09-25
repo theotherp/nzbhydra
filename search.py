@@ -134,7 +134,8 @@ def title_from_id(identifier_key, identifier_value):
         if identifier_key == "imdbid":
             if identifier_value[0:2] != "tt":
                 identifier_value = "tt%s" % identifier_value
-            omdb = requests.get(furl("http://www.omdbapi.com").add({"i": identifier_value, "plot": "short", "r": "json"}).url)
+            url = furl("http://www.omdbapi.com").add({"i": identifier_value, "plot": "short", "r": "json"}).tostr()
+            omdb = requests.get(url) #todo weird bug here
             return omdb.json()["Title"]
 
         if identifier_key not in ("rid", "tvdbid"):
