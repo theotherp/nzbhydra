@@ -1,24 +1,15 @@
 import json
-from peewee import OperationalError
 import database
-from database import Provider
+from database import Provider, ProviderSearch, ProviderApiAccess, ProviderSearchApiAccess
+from tests.db_prepare import set_and_drop
 
-tables = [Provider]
+set_and_drop("nzbhydra.db", [Provider, ProviderSearch, ProviderApiAccess, ProviderSearchApiAccess])
 
-for t in tables:
-    try:
-        database.db.drop_table(t)
-    except OperationalError as e:
-        pass
-    
-for t in tables:
-    try:
-        database.db.create_table(t)
-    except OperationalError as e:
-        pass
+database.db.init("nzbhydra.db")
+database.db.connect()
 
 
-Provider(module="newznab", name="dognzb", query_url="http://127.0.0.1:5001/dognzb", base_url="http://127.0.0.1:5001/dognzb", search_types=json.dumps(["general", "tv", "movie"])).save()
-Provider(module="nzbclub", name="nzbclub", query_url="http://127.0.0.1:5001/nzbclub", base_url="http://127.0.0.1:5001/nzbclub", search_types=json.dumps(["general", "tv", "movie"])).save()
-
-
+nzbsorg = Provider(module="newznab", name="NZBs.org", query_url="http://127.0.0.1:5001/nzbsorg", base_url="http://127.0.0.1:5001/nzbsorg", settings=json.dumps({"apikey": "apikeynzbsorg"}), search_types=json.dumps(["tv", "general", "movie"]), search_ids=json.dumps(["imdbid", "tvdbid", "rid"]))
+nzbsorg.save()
+dognzb = Provider(module="newznab", name="DOGNzb", query_url="http://127.0.0.1:5001/dognzb", base_url="http://127.0.0.1:5001/dognzb", settings=json.dumps({"apikey": "apikeydognzb"}), search_types=json.dumps(["tv", "general"]), search_ids=json.dumps(["tvdbid", "rid"]))
+dognzb.save()

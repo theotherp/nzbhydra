@@ -1,13 +1,15 @@
 import concurrent
+import json
 import logging
+import arrow
 
 from furl import furl
 import requests
 from requests_futures.sessions import FuturesSession
 
-from database import Provider, ProviderSearch
+from database import Provider, ProviderSearch, ProviderApiAccess, ProviderSearchApiAccess
 import config
-from exceptions import ProviderConnectionException, ProviderAuthException, ProviderAccessException, ExternalApiInfoException
+from exceptions import ProviderConnectionException, ProviderAuthException, ProviderAccessException, ExternalApiInfoException, ProviderResultParsingException
 from searchmodules import newznab, womble, nzbclub
 
 
@@ -71,7 +73,9 @@ def search(query, categories=None):
     logger.info("Searching for query '%s'" % query)
     queries_by_provider = {}
     for p in pick_providers(search_type="general", query_supplied=True):
-        queries_by_provider[p] = p.get_search_urls(query, categories)
+        queries = p.get_search_urls(query, categories)
+        dbentry = ProviderSearch(provider=p.provider, query=query)
+        queries_by_provider[p] = {"queries": queries, "dbsearchentry": dbentry}
     return execute_search_queries(queries_by_provider)
     # make a general query, probably only done by the gui
 
@@ -96,13 +100,19 @@ def pick_providers_and_search(search_type, search_function, query=None, identifi
 
                 # and then finally use the generated query
                 for p in providers_that_allow_query_generation:
-                    queries_by_provider[p] = getattr(p, search_function)(query=generated_query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, **kwargs)
+                    
+                    queries = getattr(p, search_function)(query=generated_query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, **kwargs)
+                    
+                    dbentry = ProviderSearch(provider=p.provider, query=generated_query, query_generated=True, identifier_key=identifier_key, identifier_value=identifier_value, categories=json.dumps(categories))
+                    queries_by_provider[p] = {"queries": queries, "dbsearchentry": dbentry}
             except ExternalApiInfoException as e:
                 logger.error("Error while retrieving the title to the supplied identifier %s: %s" % (identifier_key, e.message))
 
     # Get movie search urls from those providers that support search by id
     for p in [x for x in picked_providers if x not in providers_that_allow_query_generation]:
-        queries_by_provider[p] = getattr(p, search_function)(query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, **kwargs)
+        queries = getattr(p, search_function)(query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, **kwargs)
+        dbentry = ProviderSearch(provider=p.provider, query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=json.dumps(categories))
+        queries_by_provider[p] = {"queries": queries, "dbsearchentry": dbentry}
 
     return execute_search_queries(queries_by_provider)
 
@@ -139,60 +149,66 @@ def title_from_id(identifier_key, identifier_value):
 
 
 def execute_search_queries(queries_by_provider):
+    #TODO: Probably this could be handled a lot more comprehensively with classes instead of many dicts and lists
     search_results = []
-    results_by_provider = {}
     futures = []
     providers_by_future = {}
-    for provider, queries in queries_by_provider.items():
-        results_by_provider[provider] = []
-        for query in queries:
+    dbsearchentries_by_provider = {}
+    
+    for provider, query_and_dbentry in queries_by_provider.items():
+        #For every query...
+        for query in query_and_dbentry["queries"]:
             logger.debug("Requesting URL %s with timeout %d" % (query, config.cfg["searching.timeout"]))
+            # ... we create a request  
             future = session.get(query, timeout=config.cfg["searching.timeout"], verify=False)
             futures.append(future)
+            # ... and store its provider so we know which provider should handle the result
             providers_by_future[future] = provider
-
-    query_results = []
-
+        
+        dbsearchentries_by_provider[provider] = query_and_dbentry["dbsearchentry"]
+    
     for f in concurrent.futures.as_completed(futures):
+        provider = providers_by_future[f]
+        psearch = dbsearchentries_by_provider[provider]
+        psearch.save()
+        papiaccess = ProviderApiAccess(provider=provider.provider, type="search")
+        papiaccess.save()
+        ProviderSearchApiAccess(search=psearch, api_access=papiaccess).save() #So we can later see which/how many accesses the search caused and how they went
         try:
-
             result = f.result()
-            provider = providers_by_future[f]
 
-            provider_db = provider.provider
-            psearch = ProviderSearch(provider=provider_db)
-            print(result.elapsed.microseconds / 1000)  # todo store response time
-
+            papiaccess.response_time = result.elapsed.microseconds / 1000
             if result.status_code != 200:
                 raise ProviderConnectionException("Unable to connect to provider. Status code: %d" % result.status_code, provider)
             else:
                 provider.check_auth(result.text)
-                query_results.append({"provider": provider, "result": result})
-
+                papiaccess.response_successful = True
+                
+                try:
+                    parsed_results = provider.process_query_result(result.text)
+                    psearch.results = len(parsed_results)
+                    search_results.extend(parsed_results)
+                    psearch.successful = True
+                except Exception as e:
+                    logger.exception("Error while processing search results from provider %s" % provider, e)
+                    raise ProviderResultParsingException("Error while parsing the results from provider %s" % provider, e)
 
         except ProviderAuthException as e:
             logger.error("Unable to authorize with %s: %s" % (e.search_module, e.message))
+            papiaccess.error = "Authorization error :%s" % e.message
             pass  # todo disable provider
         except ProviderConnectionException as e:
             logger.error("Unable to connect with %s: %s" % (e.search_module, e.message))
+            papiaccess.error = "Connection error :%s" % e.message
             pass  # todo pause provider
         except ProviderAccessException as e:
             logger.error("Unable to access %s: %s" % (e.search_module, e.message))
+            papiaccess.error = "Access error :%s" % e.message
             pass  # todo pause provider
         except Exception as e:
             logger.exception("An error error occurred while searching.", e)
-
-    for query_result in query_results:
-        provider = query_result["provider"]
-        result = query_result["result"]
-        try:
-            processed_results = provider.process_query_result(result.text)
-        except Exception as e:
-            logger.exception("Error while processing search results from provider %s" % provider, e)
-        search_results.extend(processed_results)
-
-    # todo: add information about the providers / search results / etc. so we can show them in the gui later
-    # for example how long the provider took for responses, if the search was successful, how many items per provider, etc. to a degree those calculations can also be done by the gui later
-
+            papiaccess.error = "Unknown error :%s" % e.message
+        psearch.save()
+        papiaccess.save()
 
     return search_results

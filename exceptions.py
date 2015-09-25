@@ -41,3 +41,12 @@ class ProviderConnectionException(NzbHydraException):
         super(NzbHydraException, self).__init__(message)
         self.message = message
         self.search_module = search_module
+
+
+class ProviderResultParsingException(NzbHydraException):
+    # The connection to the provider was successful but we were unable to parse the returned results
+    def __init__(self, message, search_module):
+        super(NzbHydraException, self).__init__(message)
+        self.message = message
+        self.search_module = search_module
+
