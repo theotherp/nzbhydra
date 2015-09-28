@@ -1,9 +1,10 @@
 class NzbHydraException(Exception):
-    def __init__(self, message=None):
+    def __init__(self, message=None, exception=None):
         super(NzbHydraException, self).__init__(message)
         
 
 class ExternalApiInfoException(NzbHydraException):
+    
     # An error occurred while contacting an external info API (tvdaze, omdbapi, etc) or parsing its returned data
     def __init__(self, message):
         super(NzbHydraException, self).__init__(message)

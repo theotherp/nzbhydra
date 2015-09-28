@@ -2,6 +2,9 @@ import re
 import unittest
 import sys
 import logging
+import datetime
+import arrow
+from freezegun import freeze_time
 import profig
 import requests
 import responses
@@ -22,21 +25,20 @@ logging.getLogger("root").addHandler(logging.StreamHandler(sys.stdout))
 logging.getLogger("root").setLevel("DEBUG")
 
 set_and_drop()
-
 Provider(module="newznab", name="NZBs.org", query_url="http://127.0.0.1:5001/nzbsorg", base_url="http://127.0.0.1:5001/nzbsorg", settings={"apikey": "apikeynzbsorg"}, search_types=["tv", "general", "movie"], search_ids=["imdbid", "tvdbid", "rid"]).save()
-
 Provider(module="newznab", name="DOGNzb", query_url="http://127.0.0.1:5001/dognzb", base_url="http://127.0.0.1:5001/dognzb", settings={"apikey": "apikeydognzb"}, search_types=["tv", "general"], search_ids=["tvdbid", "rid"]).save()
-
 Provider(module="nzbclub", name="nzbclub", query_url="https://member.nzbclub.com/nzbfeeds.aspx", base_url="http://127.0.0.1:5001/nzbclub", search_types=["general", "tv", "movie"], generate_queries=True).save()
-
 Provider(module="womble", name="womble", query_url="http://www.newshost.co.za/rss", base_url="http://127.0.0.1:5001/womble", search_types=["tv"]).save()
-
-
 
 
 class MyTestCase(unittest.TestCase):
     def setUp(self):
         self.oldExecute_search_queries = search.execute_search_queries
+        database.ProviderStatus.delete().execute()
+        database.ProviderSearch.delete().execute()
+        database.ProviderSearchApiAccess.delete().execute()
+        
+        
 
     def tearDown(self):
         search.execute_search_queries = self.oldExecute_search_queries
@@ -177,12 +179,10 @@ class MyTestCase(unittest.TestCase):
 
 
         url_re = re.compile(r'.*tvmaze.*')
-        responses.add(responses.GET, url_re,
-                      body={"name": "Breaking Bad"}, status=200,
-                      content_type='application/json')
+        responses.add(responses.GET, url_re, body=json.dumps({"name": "Breaking Bad"}), status=200, content_type='application/json')
 
 
-        # TV search with tvdbid, so no wombles
+        # TV search with tvdbid, allow query generation, so no wombles or nzbclub
         search.search_show(identifier_key="tvdbid", identifier_value="81189")
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
@@ -200,8 +200,8 @@ class MyTestCase(unittest.TestCase):
         url = args[1]["queries"][0]
         assert "nzbclub" in url
         web_args = url.split("?")[1].split("&")
-        assert "q=Breaking+Bad" in web_args
-
+        #todo query generation
+        
         url = args[2]["queries"][0]
         assert "nzbs" in url
         web_args = url.split("?")[1].split("&")
@@ -288,7 +288,7 @@ class MyTestCase(unittest.TestCase):
         # movie search with imdbid, so a query should be generated for and used by nzbclub
         url_re = re.compile(r'.*omdbapi.*')
         responses.add(responses.GET, url_re,
-                      body={"Title": "American Beauty"}, status=200,
+                      body=json.dumps({"Title": "American Beauty"}), status=200,
                       content_type='application/json')
         search.search_movie(identifier_key="imdbid", identifier_value="tt0169547")
         args = search.execute_search_queries.call_args[0][0]
@@ -394,17 +394,6 @@ class MyTestCase(unittest.TestCase):
         
     @responses.activate
     def testSearchExceptions(self):
-        config.cfg["search_providers.1.enabled"] = True
-        config.cfg["search_providers.1.module"] = "newznab"
-        config.cfg["search_providers.1.name"] = "NZBs.org"
-        config.cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
-        config.cfg["search_providers.1.search_types"] = "general, tv, movie"
-        config.cfg["search_providers.1.search_ids"] = "tvdbid, rid, imdbid"
-
-        config.cfg["search_providers.2.enabled"] = False
-
-        config.cfg["search_providers.3.enabled"] = False
-
         # movie search without any specifics (return all latest releases)
         search.read_providers_from_config()
         
@@ -433,7 +422,28 @@ class MyTestCase(unittest.TestCase):
             
         
 
-
+    def testHandleProviderFailureAndSuccess(self):            
+        provider_model = Provider.get(Provider.name == "NZBs.org")
+        with freeze_time("2015-09-20 14:00:00", tz_offset=-4):
+            search.handle_provider_failure(provider_model)
+            #First error, so level 1
+            self.assertEqual(1, provider_model.status.get().level)
+            now = arrow.utcnow()
+            first_failure = arrow.get(arrow.get(provider_model.status.get().first_failure))
+            disabled_until = arrow.get(provider_model.status.get().disabled_until)
+            self.assertEqual(now, first_failure)
+            self.assertEqual(now.replace(minutes=+search.disable_periods[1]), disabled_until)
+            
+            search.handle_provider_failure(provider_model)
+            self.assertEqual(2, provider_model.status.get().level)
+            disabled_until = arrow.get(provider_model.status.get().disabled_until)
+            self.assertEqual(now.replace(minutes=+search.disable_periods[2]), disabled_until)
+            
+            search.handle_provider_success(provider_model)
+            self.assertEqual(1, provider_model.status.get().level)
+            self.assertEqual(arrow.get(0), provider_model.status.get().disabled_until)
+            self.assertIsNone(provider_model.status.get().reason)
+        
 
         
 

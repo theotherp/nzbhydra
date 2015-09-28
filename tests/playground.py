@@ -1,10 +1,10 @@
 import json
 import database
-from database import Provider, ProviderSearch, ProviderApiAccess, ProviderSearchApiAccess
+from database import Provider, ProviderSearch, ProviderApiAccess, ProviderSearchApiAccess, ProviderStatus
 from searchmodules.newznab import NewzNab
 from tests.db_prepare import set_and_drop 
 
-set_and_drop("nzbhydra.db", [Provider, ProviderSearch, ProviderApiAccess, ProviderSearchApiAccess])
+set_and_drop("nzbhydra.db", [Provider, ProviderSearch, ProviderApiAccess, ProviderSearchApiAccess, ProviderStatus])
 
 database.db.init("nzbhydra.db")
 database.db.connect()

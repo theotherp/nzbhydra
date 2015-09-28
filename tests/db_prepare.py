@@ -1,9 +1,9 @@
 from peewee import OperationalError
-from database import Provider, ProviderApiAccess, ProviderSearchApiAccess, ProviderSearch
+from database import Provider, ProviderApiAccess, ProviderSearchApiAccess, ProviderSearch, ProviderStatus
 import database
 
 
-def set_and_drop(dbfile="tests.db", tables=[Provider, ProviderApiAccess, ProviderSearchApiAccess, ProviderSearch]):
+def set_and_drop(dbfile="tests.db", tables=[Provider, ProviderApiAccess, ProviderSearchApiAccess, ProviderSearch, ProviderStatus]):
     database.db.init(dbfile)
     database.db.connect()
 
