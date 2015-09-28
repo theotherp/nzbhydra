@@ -53,27 +53,29 @@ def find_duplicates(results):
     :type results: list[NzbSearchResult]
     """
     # TODO we might want to be able to specify more precisely what item we pick of a group of duplicates, for example by indexer priority 
-    uniques = []
-    duplicates = []
+
     # Sort and group by title. We only need to check the items in each individual group against each other because we only consider items with the same title as possible duplicates
     sorted_results = sorted(results, key=lambda x: x.title)
     grouped_by_title = groupby(sorted_results, key=lambda x: x.title)
+    grouped_by_sameness = []
 
-    # TODO this could probably be more comprehensible but all solutions I found use sets(so hashing) for comparison but we need a "fuzzy" uniqueness check
     for key, group in grouped_by_title:
-        seen = set()
+        seen2 = set()
         group = list(group)
         for i in range(len(group)):
+            if group[i] in seen2:
+                continue
+            seen2.add(group[i])
+            same_results = [group[i]]  # All elements in this list are duplicates of each other 
             for j in range(i + 1, len(group)):
-                if j not in seen:
-                    if test_for_duplicate(group[i], group[j]):
-                        seen.add(i)
-                        #uniques.append(group[i])
-            if i not in seen:
-                uniques.append(group[i])
-            else:
-                duplicates.append(group[i])
-    return uniques, duplicates
+                if group[j] in seen2:
+                    continue
+                seen2.add(group[j])
+                if test_for_duplicate(group[i], group[j]):
+                    same_results.append(group[j])
+            grouped_by_sameness.append(same_results)
+
+    return grouped_by_sameness
 
 
 def test_for_duplicate(search_result_1, search_result_2):
@@ -90,10 +92,10 @@ def test_for_duplicate(search_result_1, search_result_2):
     size_average = (search_result_1.size + search_result_2.size) / 2
     size_difference_percent = abs(size_difference / size_average) * 100
 
-    # TODO: Ignore age threshold if no precise date is known or calculate in score (if we have sth like that...) 
+    # TODO: Ignore age threshold if no precise date is known or account for score (if we have sth like that...) 
     age_threshold = config.cfg["ResultProcessing.duplicateAgeThreshold"]
     same_size = size_difference_percent <= size_threshold
-    same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold #epoch difference (ms) to minutes
+    same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold  # epoch difference (ms) to minutes
 
     # If all nweznab providers would provide poster/group in their infos then this would be a lot easier and more precise
     # We could also use something to combine several values to a score, say that if a two posts have the exact size their age may differe more or combine relative and absolute size comparison
@@ -112,7 +114,7 @@ class NzbSearchResultSchema(Schema):
     provider = fields.String()
     guid = fields.String()
     size = fields.Integer()
-    categories = fields.String()#wthy the fuc doesnt this work with fields.Integer(many=True) 
+    categories = fields.String()  # wthy the fuc doesnt this work with fields.Integer(many=True) 
 
 
 def process_for_internal_api(results):
@@ -121,12 +123,13 @@ def process_for_internal_api(results):
 
     :type results: list[NzbSearchResult]
     """
-    results, duplicates = find_duplicates(results)
+    grouped_by_sameness = find_duplicates(results)
     # Will be sorted by GUI later anyway but makes debugging easier
-    results = sorted(results, key=lambda x: x.epoch, reverse=True)
-    duplicates = sorted(duplicates, key=lambda x: x.epoch, reverse=True)
-    dic_to_return = {"results": serialize_nzb_search_result(results).data, "duplicates": serialize_nzb_search_result(duplicates).data}
-    return dic_to_return
+    results = sorted(grouped_by_sameness, key=lambda x: x[0].epoch, reverse=True)
+    serialized = []
+    for g in results:
+        serialized.append(serialize_nzb_search_result(g).data)
+    return {"results": serialized}
 
 
 def serialize_nzb_search_result(result):

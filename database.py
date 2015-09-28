@@ -36,7 +36,7 @@ class Provider(Model):
     generate_queries = BooleanField(default=False)
     query_url = CharField()
     base_url = CharField()
-    search_types = JSONField(default=[])  # todo: getters/setters for these
+    search_types = JSONField(default=[])
     search_ids = JSONField(default=[])
 
     class Meta:

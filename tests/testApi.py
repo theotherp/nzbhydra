@@ -1,3 +1,4 @@
+from pprint import pprint
 import unittest
 import config
 
@@ -53,88 +54,27 @@ class MyTestCase(unittest.TestCase):
 
 
     def testFindDuplicates(self):
-        from config import cfg
         from api import find_duplicates
     
         config.cfg.section("ResultProcessing")["duplicateSizeThresholdInPercent"] = 1
         age_threshold = 120
         config.cfg["ResultProcessing.duplicateAgeThreshold"] = age_threshold
     
-        # same title, age and size
-        result1 = NzbSearchResult(title="A title", epoch=0, size=1, provider="1")
-        result2 = NzbSearchResult(title="A title", epoch=0, size=1, provider="2")
-        results, duplicates = find_duplicates([result1, result2])
-        assert len(results) == 1
-        assert len(duplicates) == 1
-        self.assertEqual(results[0], result2)
-        self.assertEqual(duplicates[0], result1)
-    
-        # different title, same age and size
-        result1 = NzbSearchResult(title="A title", epoch=0, size=0)
-        result2 = NzbSearchResult(title="Another title", epoch=0, size=0)
-        results, duplicates = find_duplicates([result1, result2])
-        assert len(results) == 2
-        assert len(duplicates) == 0
-        self.assertEqual(results[0], result1)
-        self.assertEqual(results[1], result2)
-    
-        # same title and age, size in threshold
-        result1 = NzbSearchResult(title="A title", epoch=0, size=101)
-        result2 = NzbSearchResult(title="A title", epoch=0, size=100)
-        results, duplicates = find_duplicates([result1, result2])
-        assert len(results) == 1
-        assert len(duplicates) == 1
-        self.assertEqual(results[0], result2)
-        self.assertEqual(duplicates[0], result1)
-    
-        # same title and size, age in threshold
-        result1 = NzbSearchResult(title="A title", epoch=0, size=1)
-        result2 = NzbSearchResult(title="A title", epoch=age_threshold * 1000 * 60 - 1, size=1)
-        results, duplicates = find_duplicates([result1, result2])
-        assert len(results) == 1
-        assert len(duplicates) == 1
-        self.assertEqual(results[0], result1)
-        self.assertEqual(duplicates[0], result2)
-    
-        # same title and age, size outside of threshold -> duplicate
-        result1 = NzbSearchResult(title="A title", epoch=0, size=1)
-        result2 = NzbSearchResult(title="A title", epoch=0, size=2)
-        results, duplicates = find_duplicates([result1, result2])
-        assert len(results) == 2
-        assert len(duplicates) == 0
-        self.assertEqual(results[0], result1)
-        self.assertEqual(results[1], result2)
-    
-        # same title and size, age outside of threshold -> duplicate
-        result1 = NzbSearchResult(title="A title", epoch=0, size=1)
-        result2 = NzbSearchResult(title="A title", epoch=age_threshold * 1000 * 60 + 1, size=1)
-        results, duplicates = find_duplicates([result1, result2])
-        assert len(results) == 2
-        assert len(duplicates) == 0
-        self.assertEqual(results[0], result1)
-        self.assertEqual(results[1], result2)
-    
-        # same title, age and size inside of threshold
-        result1 = NzbSearchResult(title="A title", epoch=0, size=101)
-        result2 = NzbSearchResult(title="A title", epoch=age_threshold * 1000 * 60 - 1, size=100)
-        results, duplicates = find_duplicates([result1, result2])
-        assert len(results) == 1
-        assert len(duplicates) == 1
-        self.assertEqual(results[0], result1)
-        self.assertEqual(duplicates[0], result2)
-    
-        # same title, age and size outside of threshold -> duplicate
-        result1 = NzbSearchResult(title="A title", epoch=0, size=1)
-        result2 = NzbSearchResult(title="A title", epoch=age_threshold * 1000 * 60 + 1, size=2)
-        results, duplicates = find_duplicates([result1, result2])
-        assert len(results) == 2
-        assert len(duplicates) == 0
-        self.assertEqual(results[0], result1)
-        self.assertEqual(results[1], result2)
         
-        # same title, age and size
-        result1 = NzbSearchResult(title="A title", epoch=0, size=1, provider="1")
-        results, duplicates = find_duplicates([result1])
-        assert len(results) == 1
-        self.assertEqual(results[0], result1)
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, provider="1")
+        result2 = NzbSearchResult(title="Title2", epoch=0, size=1, provider="2")
+        result3 = NzbSearchResult(title="Title2", epoch=0, size=1, provider="3") # same as the one before
+        result4 = NzbSearchResult(title="Title3", epoch=0, size=1, provider="4")
+        result5 = NzbSearchResult(title="Title1", epoch=0, size=1, provider="5") # same as the first
+        result6 = NzbSearchResult(title="Title4", epoch=0, size=1, provider="6")
+        results = find_duplicates([result1, result2, result3, result4, result5, result6])
+        self.assertEqual(4, len(results))
+        self.assertEqual(2, len(results[0]))
+        self.assertEqual(2, len(results[1]))
+        self.assertEqual(1, len(results[2]))
+        self.assertEqual(1, len(results[3]))
+        
+        
+    
+
         
