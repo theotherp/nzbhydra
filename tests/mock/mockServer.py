@@ -1,4 +1,5 @@
 import os
+from time import sleep
 
 from flask import Flask, send_file
 from webargs.flaskparser import use_args
@@ -58,6 +59,7 @@ def apinzbsorg(args):
 @app.route('/dognzb')
 @use_args(api_args)
 def apidog(args):
+    sleep(2)
     return handle_request("dognzb", args)
 
 

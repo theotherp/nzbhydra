@@ -130,12 +130,10 @@ class SearchModule(object):
             try:
                 psearch = ProviderSearch(provider=self.provider, query=query)
                 psearch.save()
-                self.logger.debug("Requesting URL %s with timeout %d" % (query, config.cfg["searching.timeout"]))
-                # ... we create a request  
+                papiaccess = ProviderApiAccess(provider=self.provider, type="search")
+                self.logger.debug("Requesting URL %s with timeout %d" % (query, config.cfg["searching.timeout"]))  
                 executed_queries.add(query)
                 request = requests.get(query, timeout=config.cfg["searching.timeout"], verify=False)          
-                
-                papiaccess = ProviderApiAccess(provider=self.provider, type="search")
                 papiaccess.save()
                 ProviderSearchApiAccess(search=psearch, api_access=papiaccess).save()  # So we can later see which/how many accesses the search caused and how they went
                 
@@ -144,6 +142,7 @@ class SearchModule(object):
                     raise ProviderConnectionException("Unable to connect to provider. Status code: %d" % request.status_code, self)
                 else:
                     self.check_auth(request.text)
+                    self.logger.debug("Successfully loaded URL %s" % request.url)
                     papiaccess.response_successful = True
     
                     try:
