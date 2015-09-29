@@ -53,7 +53,7 @@ class Womble(SearchModule):
     def get_moviesearch_urls(self, identifier=None, title=None, categories=None):
         raise NotImplementedError("This provider does not movie search")
 
-    def process_query_result(self, xml):
+    def process_query_result(self, xml, query):
         entries = []
         try:
             tree = ET.fromstring(xml)
@@ -92,7 +92,7 @@ class Womble(SearchModule):
              
             entries.append(entry)
             
-        return entries
+        return {"entries": entries, "queries": []}
 
 
 def get_instance(provider):

@@ -1,4 +1,5 @@
 import concurrent
+from concurrent.futures import ThreadPoolExecutor
 import json
 import logging
 
@@ -141,7 +142,7 @@ def title_from_id(identifier_key, identifier_value):
             if identifier_value[0:2] != "tt":
                 identifier_value = "tt%s" % identifier_value
             url = furl("http://www.omdbapi.com").add({"i": identifier_value, "plot": "short", "r": "json"}).tostr()
-            omdb = requests.get(url)  # todo weird bug here
+            omdb = requests.get(url)
             return omdb.json()["Title"]
 
         if identifier_key not in ("rid", "tvdbid"):
@@ -156,110 +157,24 @@ def title_from_id(identifier_key, identifier_value):
         raise ExternalApiInfoException(e)
 
 
-disable_periods = [0, 15, 30, 60, 3 * 60, 6 * 60, 12 * 60, 24 * 60]
 
 
-def handle_provider_success(provider_model):
-    #Deescalate level by 1 (or stay at 0) and reset reason and disable-time
-    try:
-        provider_status = provider_model.status.get()
-    except ProviderStatus.DoesNotExist:
-        provider_status = ProviderStatus(provider=provider_model)
-    if provider_status.level > 0:
-        provider_status.level -= 1
-    provider_status.reason = None
-    provider_status.disabled_until = arrow.get(0) #Because I'm too dumb to set it to None/null
-    provider_status.save()
 
 
-def handle_provider_failure(provider_model, reason=None, disable_permanently=False):
-    #Escalate level by 1. Set disabled-time according to level so that with increased level the time is further in the future
-    try:
-        provider_status = provider_model.status.get()
-    except ProviderStatus.DoesNotExist:
-        provider_status = ProviderStatus(provider=provider_model)
-
-    if provider_status.level == 0:
-        provider_status.first_failure = arrow.utcnow()
-
-    provider_status.latest_failure = arrow.utcnow()
-    provider_status.reason = reason  # Overwrite the last reason if one is set, should've been logged anyway
-    if disable_permanently:
-        provider_status.disabled_permanently = True
-    else:
-        provider_status.level = min(len(disable_periods) - 1, provider_status.level + 1)
-        provider_status.disabled_until = arrow.utcnow().replace(minutes=disable_periods[provider_status.level])
-
-
-    provider_status.save()
-
+def execute(provider, queries):
+    return provider.execute_queries(queries)
 
 def execute_search_queries(queries_by_provider):
     # TODO: Probably this could be handled a lot more comprehensively with classes instead of many dicts and lists
     search_results = []
-    futures = []
-    providers_by_future = {}
-    dbsearchentries_by_provider = {}
 
-    for provider, query_and_dbentry in queries_by_provider.items():
-        # For every query...
-        for query in query_and_dbentry["queries"]:
-            logger.debug("Requesting URL %s with timeout %d" % (query, config.cfg["searching.timeout"]))
-            # ... we create a request  
-            future = session.get(query, timeout=config.cfg["searching.timeout"], verify=False)
-            futures.append(future)
-            # ... and store its provider so we know which provider should handle the result
-            providers_by_future[future] = provider
 
-        dbsearchentries_by_provider[provider] = query_and_dbentry["dbsearchentry"]
-
-    for f in concurrent.futures.as_completed(futures):
-        provider = providers_by_future[f]
-        psearch = dbsearchentries_by_provider[provider]
-        psearch.save()
-        papiaccess = ProviderApiAccess(provider=provider.provider, type="search")
-        papiaccess.save()
-        ProviderSearchApiAccess(search=psearch, api_access=papiaccess).save()  # So we can later see which/how many accesses the search caused and how they went
-        try:
-            result = f.result()
-
-            papiaccess.response_time = result.elapsed.microseconds / 1000
-            if result.status_code != 200:
-                raise ProviderConnectionException("Unable to connect to provider. Status code: %d" % result.status_code, provider)
-            else:
-                provider.check_auth(result.text)
-                papiaccess.response_successful = True
-
-                try:
-                    parsed_results = provider.process_query_result(result.text)
-                    psearch.results = len(parsed_results)
-                    search_results.extend(parsed_results)
-                    psearch.successful = True
-                    handle_provider_success(provider.provider)
-                except Exception as e:
-                    logger.exception("Error while processing search results from provider %s" % provider, e)
-                    raise ProviderResultParsingException("Error while parsing the results from provider %s" % provider)
-
-        except ProviderAuthException as e:
-            logger.error("Unable to authorize with %s: %s" % (e.search_module, e.message))
-            papiaccess.error = "Authorization error :%s" % e.message
-            handle_provider_failure(provider.provider, reason="Authentication failed", disable_permanently=True)
-
-        except ProviderConnectionException as e:
-            logger.error("Unable to connect with %s: %s" % (e.search_module, e.message))
-            papiaccess.error = "Connection error :%s" % e.message
-            handle_provider_failure(provider.provider, reason="Connection failed")
-        except ProviderAccessException as e:
-            logger.error("Unable to access %s: %s" % (e.search_module, e.message))
-            papiaccess.error = "Access error :%s" % e.message
-            handle_provider_failure(provider.provider, reason="Access failed")
-        except ProviderResultParsingException as e:
-            papiaccess.error = "Access error :%s" % e.message
-            handle_provider_failure(provider.provider, reason="Parsing results failed")
-        except Exception as e:
-            logger.exception("An error error occurred while searching.", e)
-            papiaccess.error = "Unknown error :%s" % e
-        psearch.save()
-        papiaccess.save()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        futures = []
+        for provider, query_and_dbentry in queries_by_provider.items():
+            futures.append(executor.submit(execute, provider, query_and_dbentry["queries"]))
+        for f in concurrent.futures.as_completed(futures):
+            results = f.result()
+            search_results.extend(results)
 
     return search_results

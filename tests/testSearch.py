@@ -14,6 +14,7 @@ from furl import furl
 
 import search
 import config
+import search_module
 from tests import mockbuilder
 import database
 from database import Provider
@@ -107,7 +108,7 @@ class MyTestCase(unittest.TestCase):
         assert "t=search" in web_args
         assert "apikey=apikeynzbsorg" in web_args
         assert "q=aquery" in web_args
-        self.assertEqual(5, len(web_args))  # other args: o=json & extended=1
+        self.assertEqual(7, len(web_args))  # other args: o=json & extended=1 & offset & limit
 
     @responses.activate
     def testTvSearchProviderSelectionAndUrlBuilding(self):
@@ -133,7 +134,7 @@ class MyTestCase(unittest.TestCase):
         assert "t=tvsearch" in web_args
         assert "apikey=apikeynzbsorg" in web_args
         assert "cat=5000" in web_args  # no category provided, so we just added 5000 
-        self.assertEqual(5, len(web_args))  # other args: o=json & extended=1      
+        self.assertEqual(7, len(web_args))  # other args: o=json & extended=1 & offset & limit      
 
         url = args[2]["queries"][0]
         web_args = url.split("?")[1].split("&")
@@ -167,7 +168,6 @@ class MyTestCase(unittest.TestCase):
         assert "apikey=apikeynzbsorg" in web_args
         assert "q=aquery" in web_args
         assert "cat=5000" in web_args  # no category provided, so we just added 5000
-        self.assertEqual(6, len(web_args))  # other args: o=json & extended=1
 
         url_re = re.compile(r'.*tvmaze.*')
         responses.add(responses.GET, url_re, body=json.dumps({"name": "Breaking Bad"}), status=200, content_type='application/json')
@@ -186,7 +186,6 @@ class MyTestCase(unittest.TestCase):
         assert "apikey=apikeydognzb" in web_args
         assert "tvdbid=81189" in web_args
         assert "cat=5000" in web_args  # no category provided, so we just added 5000
-        self.assertEqual(6, len(web_args))  # other args: o=json & extended=1
 
         url = args[1]["queries"][0]
         assert "nzbclub" in url
@@ -216,7 +215,6 @@ class MyTestCase(unittest.TestCase):
         assert "season=1" in web_args
         assert "ep=2" in web_args
         assert "cat=5000" in web_args  # no category provided, so we just added 5000
-        self.assertEqual(8, len(web_args))  # other args: o=json & extended=1
 
         url = args[1]["queries"][0]
         assert "nzbclub" in url
@@ -250,8 +248,7 @@ class MyTestCase(unittest.TestCase):
         assert "t=movie" in web_args
         assert "apikey=apikeynzbsorg" in web_args
         assert "cat=2000" in web_args  # no category provided, so we just added 2000
-        self.assertEqual(5, len(web_args))  # other args: o=json & extended=1      
-
+        
 
 
         # movie search with a query 
@@ -271,7 +268,6 @@ class MyTestCase(unittest.TestCase):
         assert "q=aquery" in web_args
         assert "apikey=apikeynzbsorg" in web_args
         assert "cat=2000" in web_args  # no category provided, so we just added 2000
-        self.assertEqual(6, len(web_args))  # other args: o=json & extended=1
 
 
 
@@ -296,7 +292,6 @@ class MyTestCase(unittest.TestCase):
         assert "imdbid=tt0169547" in web_args
         assert "apikey=apikeynzbsorg" in web_args
         assert "cat=2000" in web_args
-        self.assertEqual(6, len(web_args))  # other args: o=json & extended=1
 
 
         # movie search with imdbid and category
@@ -317,9 +312,6 @@ class MyTestCase(unittest.TestCase):
         assert "imdbid=tt0169547" in web_args
         assert "apikey=apikeynzbsorg" in web_args
         assert "cat=2040" in web_args
-        self.assertEqual(6, len(web_args))  # other args: o=json & extended=1
-
-
 
         # Finally a test where we disable query generation
         # movie search with imdbid, so a query should be generated for and used by nzbclub
@@ -337,29 +329,6 @@ class MyTestCase(unittest.TestCase):
 
     @responses.activate
     def testSearchExecution(self):
-
-        config.cfg["search_providers.1.enabled"] = True
-        config.cfg["search_providers.1.module"] = "newznab"
-        config.cfg["search_providers.1.name"] = "NZBs.org"
-        config.cfg["search_providers.1.query_url"] = "http://127.0.0.1:5001/nzbsorg"
-        config.cfg["search_providers.1.search_types"] = "general, tv, movie"
-        config.cfg["search_providers.1.search_ids"] = "tvdbid, rid, imdbid"
-
-        config.cfg["search_providers.2.enabled"] = True
-        config.cfg["search_providers.2.module"] = "newznab"
-        config.cfg["search_providers.2.name"] = "DOGNzb"
-        config.cfg["search_providers.2.query_url"] = "http://127.0.0.1:5001/dognzb"
-        config.cfg["search_providers.2.search_types"] = "general, tv"
-        config.cfg["search_providers.2.search_ids"] = "tvdbid, rid"
-
-        config.cfg["search_providers.3.enabled"] = True
-        config.cfg["search_providers.3.module"] = "womble"
-        config.cfg["search_providers.3.name"] = "womble"
-        config.cfg["search_providers.3.query_url"] = "http://www.newshost.co.za/rss"
-        config.cfg["search_providers.3.search_types"] = "tv"
-        config.cfg["search_providers.3.supports_queries"] = False
-        config.cfg["search_providers.3.search_ids"] = []
-
 
         # movie search without any specifics (return all latest releases)
         search.read_providers_from_config()
@@ -410,21 +379,22 @@ class MyTestCase(unittest.TestCase):
     def testHandleProviderFailureAndSuccess(self):
         provider_model = Provider.get(Provider.name == "NZBs.org")
         with freeze_time("2015-09-20 14:00:00", tz_offset=-4):
-            search.handle_provider_failure(provider_model)
+            sm = search_module.SearchModule(provider_model)
+            sm.handle_provider_failure(provider_model)
             # First error, so level 1
             self.assertEqual(1, provider_model.status.get().level)
             now = arrow.utcnow()
             first_failure = arrow.get(arrow.get(provider_model.status.get().first_failure))
             disabled_until = arrow.get(provider_model.status.get().disabled_until)
             self.assertEqual(now, first_failure)
-            self.assertEqual(now.replace(minutes=+search.disable_periods[1]), disabled_until)
+            self.assertEqual(now.replace(minutes=+sm.disable_periods[1]), disabled_until)
 
-            search.handle_provider_failure(provider_model)
+            sm.handle_provider_failure()
             self.assertEqual(2, provider_model.status.get().level)
             disabled_until = arrow.get(provider_model.status.get().disabled_until)
-            self.assertEqual(now.replace(minutes=+search.disable_periods[2]), disabled_until)
+            self.assertEqual(now.replace(minutes=+sm.disable_periods[2]), disabled_until)
 
-            search.handle_provider_success(provider_model)
+            sm.handle_provider_success()
             self.assertEqual(1, provider_model.status.get().level)
             self.assertEqual(arrow.get(0), provider_model.status.get().disabled_until)
             self.assertIsNone(provider_model.status.get().reason)

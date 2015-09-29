@@ -7,6 +7,7 @@ import responses
 from database import Provider
 
 from searchmodules.newznab import NewzNab
+from tests import mockbuilder
 from tests.db_prepare import set_and_drop
 
 
@@ -26,11 +27,10 @@ class MyTestCase(unittest.TestCase):
         
         #nzbsorg
         with open("mock/nzbsorg_q_avengers_3results.json") as f:
-            entries = n.process_query_result(f.read())
-        pprint(entries)
-        assert len(entries) == 3
+            entries = n.process_query_result(f.read(), "aquery")["entries"]
+        self.assertEqual(3, len(entries))
         
-        assert entries[0].title == "Avengers.Age.Of.Ultron.2015.FRENCH.720p.BluRay.x264-Goatlove"
+        self.assertEqual(entries[0].title, "Avengers.Age.Of.Ultron.2015.FRENCH.720p.BluRay.x264-Goatlove")
         assert entries[0].size == 6719733587
         assert entries[0].guid == "9c9d30fa2767e05ffd387db52d318ad7"
         self.assertEqual(entries[0].age_days, 2)
@@ -50,7 +50,7 @@ class MyTestCase(unittest.TestCase):
         n = NewzNab(self.dognzb)
         #dognzb
         with open("mock/dognzb_q_avengers_3results.json") as f:
-            entries = n.process_query_result(f.read())
+            entries = n.process_query_result(f.read(), "aquery")["entries"]
         pprint(entries)
         assert len(entries) == 3
         
@@ -159,3 +159,26 @@ class MyTestCase(unittest.TestCase):
             dog = NewzNab(self.dognzb)
             nfo = dog.get_nfo("b4ba74ecb5f5962e98ad3c40c271dcc8")
             assert "Road Hard" in nfo
+            
+    @responses.activate
+    def testOffsetStuff(self):
+        nzbsorg = NewzNab(self.nzbsorg)
+        
+        mockitem_nzbs = []
+        for i in range(100):
+            mockitem_nzbs.append(mockbuilder.buildNewznabItem("myId", "myTitle", "myGuid", "http://nzbs.org/myId.nzb", None, None, 12345, "NZBs.org", [2000, 2040]))
+        mockresponse_nzbs1 = mockbuilder.buildNewznabResponse("NZBs.org", mockitem_nzbs, offset=0, total=200)
+        
+        mockitem_nzbs.clear()
+        for i in range(100):
+            mockitem_nzbs.append(mockbuilder.buildNewznabItem("myId", "myTitle", "myGuid", "http://nzbs.org/myId.nzb", None, None, 12345, "NZBs.org", [2000, 2040]))
+        mockresponse_nzbs2 = mockbuilder.buildNewznabResponse("NZBs.org", mockitem_nzbs, offset=100, total=200)
+
+        r = nzbsorg.process_query_result(json.dumps(mockresponse_nzbs1), "http://127.0.0.1:5001/nzbsorg/q=whatever&offset=0&limit=0")
+        further_queries = r["queries"]
+        self.assertEqual(1, len(further_queries))
+        assert "offset=100" in further_queries[0]
+        
+        r = nzbsorg.process_query_result(json.dumps(mockresponse_nzbs2), "http://127.0.0.1:5001/nzbsorg/q=whatever&offset=0&limit=0")
+        further_queries = r["queries"]
+        self.assertEqual(0, len(further_queries))

@@ -113,7 +113,7 @@ class Binsearch(SearchModule):
 
             entries.append(entry)
 
-        return entries
+        return {"entries": entries, "queries": []}
 
 def get_instance(provider):
     return Binsearch(provider)

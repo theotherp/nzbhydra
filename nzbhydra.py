@@ -8,6 +8,7 @@ Options:
   --database=<dbfile>
   
 """
+import argparse
 import config
 from functools import wraps
 from pprint import pprint
@@ -72,6 +73,7 @@ def render_search_results_for_api(search_results):
 
 config.init("main.username", "nzbhydra", str)
 config.init("main.password", "hailhydra", str)
+config.init("main.apikey", "hailhydra", str)
 config.init("main.auth", True, bool)
 
 
@@ -147,13 +149,16 @@ config.init("main.host", "0.0.0.0", str)
 
 def run():
     global logger
-    arguments = docopt(__doc__, version='nzbhydra 0.0.1')
-    settings_file = "settings.cfg"
-    database_file = "nzbhydra.db"
-    if arguments["--config"]:
-        settings_file = arguments["--config"]
-    if arguments["--database"]:
-        database_file = arguments["--database"]
+    parser = argparse.ArgumentParser(description='Demo')
+    parser.add_argument('--config', action='store', help='Settings file to load', default="settings.cfg")
+    parser.add_argument('--database', action='store', help='Database file to load', default="nzbhydra.db")
+    parser.add_argument('--host', action='store', help='Host to run on', default="127.0.0.1")
+    parser.add_argument('--port', action='store', help='Port to run on', default=5050, type=int)
+    args = parser.parse_args()
+    
+    settings_file = args.config
+    database_file = args.database
+    
     print("Loading settings from %s" % settings_file)
     config.load(settings_file)
     logger = log.setup_custom_logger('root')
@@ -162,8 +167,8 @@ def run():
     database.db.init(database_file)
     database.db.connect()
     search.read_providers_from_config()
-    port = config.cfg["main.port"]
-    host = config.cfg["main.host"]
+    port = config.cfg["main.port"] if args.port is not None else args.port
+    host = config.cfg["main.host"] if args.host is not None else args.host
     app.run(host=host, port=port, debug=True)
 
 

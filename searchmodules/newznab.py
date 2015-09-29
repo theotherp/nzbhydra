@@ -40,13 +40,14 @@ class NewzNab(SearchModule):
         super(NewzNab, self).__init__(provider)
         self.module = "newznab"
         self.category_search = True
+        self.limit = 100
         
         
     def __repr__(self):
         return "Provider: %s" % self.name
 
     def build_base_url(self, action, o="json", extended=1):
-        url = furl(self.provider.settings.get("query_url")).add({"apikey": self.provider.settings.get("apikey"), "o": o, "extended": extended, "t": action})
+        url = furl(self.provider.settings.get("query_url")).add({"apikey": self.provider.settings.get("apikey"), "o": o, "extended": extended, "t": action, "limit": self.limit, "offset": 0})
         return url
 
     def get_search_urls(self, query, categories=None):
@@ -90,14 +91,17 @@ class NewzNab(SearchModule):
         
         return [url.url]
 
-    def process_query_result(self, json_response):
+    test = 0
+
+    def process_query_result(self, json_response, query):
         import json
-        # from Helpers import getAgeFromPubdate
-        # from Helpers import sizeof_readable
 
         entries = []
+        queries = []
         json_result = json.loads(json_response)
-        if "0" == json_result["channel"]["response"]["@attributes"]["total"]:
+        total = int(json_result["channel"]["response"]["@attributes"]["total"])
+        offset = int(json_result["channel"]["response"]["@attributes"]["offset"])
+        if "0" == total:
             return entries
 
         result_items = json_result["channel"]["item"]
@@ -132,7 +136,16 @@ class NewzNab(SearchModule):
                 entry.attributes.append({"name": i["@attributes"]["name"], "value": i["@attributes"]["value"]})
             entry.categories = sorted(entry.categories) #Sort to make the general category appear first
             entries.append(entry)
-        return entries
+            
+        offset += self.limit
+        if offset < total and offset < 400:
+            f = furl(query)
+            query = f.remove("offset").add({"offset": offset}) 
+            queries.append(query.url)
+            
+            return {"entries": entries, "queries": queries}
+        
+        return {"entries": entries, "queries": []}
     
     def check_auth(self, body):
         #TODO: unfortunately in case of an auth problem newznab doesn't return json even if requested. So this would be easier/better if we used XML responses instead of json

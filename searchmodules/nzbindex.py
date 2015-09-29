@@ -48,7 +48,7 @@ class NzbIndex(SearchModule):
             raise ProviderIllegalSearchException("Attempted to search without a query although this provider only supports query-based searches", self)
         return self.get_search_urls(query, categories)
 
-    def process_query_result(self, xml):
+    def process_query_result(self, xml, query):
         entries = []
         try:
             tree = ET.fromstring(xml)
@@ -88,7 +88,7 @@ class NzbIndex(SearchModule):
              
             entries.append(entry)
             
-        return entries
+        return {"entries": entries, "queries": []}
 
 
 def get_instance(provider):

@@ -110,10 +110,10 @@ def handle_request(provider, args):
         return send_file(filename + ".json", "application/javascript")
     if os.path.exists(filename + ".xml"):
         print("Sending " + filename)
-        return send_file(filename + ".xml")
+        return send_file(filename + ".xml", "application/xm")
     if os.path.exists(filename + ".html"):
         print("Sending " + filename)
-        return send_file(filename + ".html")
+        return send_file(filename + ".html", "text/html")
     else:
         print("Cannot find respose " + filename)
         return "Unknown request", 404

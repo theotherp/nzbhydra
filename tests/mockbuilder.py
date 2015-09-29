@@ -49,7 +49,9 @@ def buildNewznabItem(id=None, title=None, guid=None, link=None, pubdate=None, de
     }
 
 
-def buildNewznabResponse(title, items):
+def buildNewznabResponse(title, items, offset=0, total=None):
+    if total is None:
+        total = str(len(items))
     return {"@attributes": "2.0",
             "channel":
                 {
@@ -58,8 +60,8 @@ def buildNewznabResponse(title, items):
                     "uuid": "uuid",
                     "response": {
                         "@attributes": {
-                            "offset": "0",
-                            "total": str(len(items))}
+                            "offset": str(offset),
+                            "total": total}
                     },
                     "item": items
                 }
