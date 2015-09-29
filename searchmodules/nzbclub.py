@@ -23,6 +23,7 @@ class NzbClub(SearchModule):
         self.supports_queries = True #We can only search using queries
         self.needs_queries = True
         self.category_search = False
+        #https://www.nzbclub.com/nzbrss.aspx
         
     @property
     def max_results(self):
@@ -63,7 +64,14 @@ class NzbClub(SearchModule):
                 continue
             
             entry = NzbSearchResult()
-            entry.title = title.text
+            p = re.compile(r'"(.*)"') 
+            m = p.search(title.text)
+            if m:
+                entry.title = m.group(1)
+            else:
+                entry.title = title.text
+            
+            
             entry.link = url.attrib["url"]
             entry.size = int(url.attrib["length"])
             entry.provider = self.name

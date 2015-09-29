@@ -18,3 +18,6 @@ dognzb.save()
 
 nzbindex = Provider(module="nzbindex", name="NZBIndex", query_url="http://127.0.0.1:5001/nzbindex", base_url="http://127.0.0.1:5001/nzbindex", settings={}, search_types=["general"], search_ids=[])
 nzbindex.save()
+
+nzbclub = Provider(module="nzbclub", name="NZBClub", query_url="http://127.0.0.1:5001/nzbclub", base_url="http://127.0.0.1:5001/nzbclub", settings={}, search_types=["general"], search_ids=[])
+nzbclub.save()
