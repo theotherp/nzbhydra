@@ -7,63 +7,57 @@ module.exports = function (grunt) {
 			options: {
 				clean: false
 			}, bootstrap: {
-				src: 'bootstrap:main', dest: 'static/lib/bootstrap/'
+				src: 'bootstrap:main', dest: 'nzbhydra/static/lib/bootstrap/'
 			}, jquery: {
-				src: 'jquery:main', dest: 'static/lib/jquery/'
+				src: 'jquery:main', dest: 'nzbhydra/static/lib/jquery/'
 			}, jqueryui: {
-				src: 'jquery-ui:main', dest: 'static/lib/jquery-ui/'
+				src: 'jquery-ui:main', dest: 'nzbhydra/static/lib/jquery-ui/'
 			}, angular: {
-				src: 'angular:main', dest: 'static/lib/angular/'
+				src: 'angular:main', dest: 'nzbhydra/static/lib/angular/'
 			}, angularcookie: {
-				src: 'angular-cookie:main', dest: 'static/lib/angular-cookie/'
+				src: 'angular-cookie:main', dest: 'nzbhydra/static/lib/angular-cookie/'
 			}, angularbootstrap: {
-				src: 'angular-bootstrap:main', dest: 'static/lib/angular-bootstrap/'
+				src: 'angular-bootstrap:main', dest: 'nzbhydra/static/lib/angular-bootstrap/'
 			}, angularroute: {
-				src: 'angular-route:main', dest: 'static/lib/angular-route/'
+				src: 'angular-route:main', dest: 'nzbhydra/static/lib/angular-route/'
 			}, angularloadingbar: {
-				src: 'angular-loading-bar:main', dest: 'static/lib/angular-loadingbar/'
+				src: 'angular-loading-bar:main', dest: 'nzbhydra/static/lib/angular-loadingbar/'
 			}, angulargrowl2: {
-				src: 'angular-growl-2:main', dest: 'static/lib/angular-growl-2/'
+				src: 'angular-growl-2:main', dest: 'nzbhydra/static/lib/angular-growl-2/'
 			}, angularanimate: {
-				src: 'angular-animate:main', dest: 'static/lib/angular-animate/'
+				src: 'angular-animate:main', dest: 'nzbhydra/static/lib/angular-animate/'
 			}, animatecss: {
-				src: 'animate-css:main', dest: 'static/lib/animate-css/'
+				src: 'animate-css:main', dest: 'nzbhydra/static/lib/animate-css/'
 			}, typicons: {
-				src: 'typicons:main', dest: 'static/lib/typicons/'
+				src: 'typicons:main', dest: 'nzbhydra/static/lib/typicons/'
 			}, underscore: {
-				src: 'underscore:main', dest: 'static/lib/underscore/'
+				src: 'underscore:main', dest: 'nzbhydra/static/lib/underscore/'
 			}, momentjs: {
-				src: 'momentjs:main', dest: 'static/lib/momentjs/'
+				src: 'momentjs:main', dest: 'nzbhydra/static/lib/momentjs/'
 			}, angularfilter: {
-				src: 'angular-filter:main', dest: 'static/lib/angular-filter/'
+				src: 'angular-filter:main', dest: 'nzbhydra/static/lib/angular-filter/'
 			}, reactrouter: {
-				src: 'react-router:main', dest: 'static/lib/react-router/'
-			}, angularuicalendar: {
-				src: 'angular-ui-calendar:main', dest: 'static/lib/angular-ui-calendar/'
-			}, fullcalendar: {
-				src: 'fullcalendar:main', dest: 'static/lib/fullcalendar/'
+				src: 'react-router:main', dest: 'nzbhydra/static/lib/react-router/'
 			}, angularbusy: {
-				src: 'angular-busy:main', dest: 'static/lib/angular-busy/'
+				src: 'angular-busy:main', dest: 'nzbhydra/static/lib/angular-busy/'
 			}, rest: {
 				options: {
-					destPrefix: 'static/lib'
+					destPrefix: 'nzbhydra/static/lib'
 				}, files: {
 					src: 'bootstrap/bootstrap-theme.css',
 					src: 'bootstrap/bootstrap.css.map',
 					src: 'bootstrap/glyphicons-halflings-regular.woff2',
 					src: 'bootstrap/bootstrap-theme.css.map',
 					src: 'angular-bootstrap/ui-bootstrap-tlps.js',
-					src: 'superagent/superagent.js',
-					'fullcalendar/gcal.js': 'fullcalendar/dist/gcal.js',
-					'filesize/filesize.js': 'filesize/lib/filesize.js'
+					src: 'superagent/superagent.js'
 				}
 			}
 		},
 		
 		bower_concat: {
 			all: {
-				dest: 'static/lib/concatted.js',
-				cssDest: 'static/lib/concatted.css',
+				dest: 'nzbhydra/static/lib/concatted.js',
+				cssDest: 'nzbhydra/static/lib/concatted.css',
 				mainFiles: {
 					'angular-bootstrap': 'ui-bootstrap-tpls.js',
 					'superagent': 'superagent.js',
@@ -78,7 +72,7 @@ module.exports = function (grunt) {
 				singleQuotes: true
 			}, your_target: {
 				files: [{
-					expand: true, src: ['static/js/**/*.js']
+					expand: true, src: ['nzbhydra/static/js/**/*.js']
 				}]
 			}
 		},
@@ -87,9 +81,9 @@ module.exports = function (grunt) {
 			options: {
 				'no-write': false
 			},
-			static: ["static/*.*"],
-			dist: ["dist/**/*.js", "dist/**/*.css", "dist/index.html", "dist/js/views/**/*.*", "dist/html/*.*"],
-			distaftermin: ['dist/lib/**', 'dist/js/**/*.js', 'dist/css/crapture.css', 'dist/css/bootstrap.css', '!dist/js/allTheCrap*.js', '!dist/js/libs*.js']
+			static: ["nzbhydra/static/*.*"],
+			dist: ["nzbhydra/dist/**/*.js", "nzbhydra/dist/**/*.css", "nzbhydra/dist/index.html", "nzbhydra/dist/js/views/**/*.*", "nzbhydra/dist/html/*.*"],
+			distaftermin: ['nzbhydra/dist/lib/**', 'nzbhydra/dist/js/**/*.js', 'nzbhydra/dist/css/nzbhydra.css', 'nzbhydra/dist/css/bootstrap.css', '!nzbhydra/dist/js/nzbhydra*.js', '!nzbhydra/dist/js/libs*.js']
 		},
 		
 
@@ -98,7 +92,7 @@ module.exports = function (grunt) {
 
 		copy: {
 			statictodist: {
-				files: [{expand: true, flatten: false, cwd: 'static/', src: ['**'], dest: 'dist/'}]
+				files: [{expand: true, flatten: false, cwd: 'nzbhydra/static/', src: ['**'], dest: 'nzbhydra/dist/'}]
 			}
 		},	
 		
@@ -106,10 +100,10 @@ module.exports = function (grunt) {
 			crapture: {
 				options: {
 					strictMath: true,
-					paths: ["static/less"]
+					paths: ["nzbhydra/static/less"]
 				},
 				files: {
-      				'static/css/crapture.css': 'static/less/crapture.less'
+      				'nzbhydra/static/css/crapture.css': 'nzbhydra/static/less/nzbhydra.less'
     			}
 			},
 			bootstrap: {
@@ -117,7 +111,7 @@ module.exports = function (grunt) {
 					strictMath: true
 				},
 				files: {
-					'static/css/bootstrap.css': 'static/less/bootstrap/bootstrap.less'
+					'nzbhydra/static/css/bootstrap.css': 'nzbhydra/static/less/bootstrap/nzbhydra.less'
 				}
 			}
 		},
@@ -130,29 +124,29 @@ module.exports = function (grunt) {
 			source: {
         		files: [{
 					src: [
-						'dist/css/allTheCrap.css',
-						'dist/js/allTheCrap.js',
-			 			'dist/js/libs.js',
-						'dist/js/views/**/*.html',
-						'dist/html/*.html'
+						'nzbhydra/dist/css/nzbhydra.css',
+						'nzbhydra/dist/js/nzbhydra.js',
+			 			'nzbhydra/dist/js/libs.js',
+						'nzbhydra/dist/js/views/**/*.html',
+						'nzbhydra/dist/html/*.html'
 					]
 				}]
 			}
 		},
 
 		useminPrepare: {
-			html: 'dist/index.html',
+			html: 'nzbhydra/dist/index.html',
 			options: {
 				dest: 'dist'
 			}
 		},
 		
 		usemin: {
-			html: 'dist/index.html',
-			views: 'dist/js/**/*.js',
-			generalHtml: 'dist/js/**/*.js',
+			html: 'nzbhydra/dist/index.html',
+			views: 'nzbhydra/dist/js/**/*.js',
+			generalHtml: 'nzbhydra/dist/js/**/*.js',
 			options: {
-				assetsDirs: ['js', 'css', 'dist/css', 'dist/js', 'dist'],
+				assetsDirs: ['js', 'css', 'nzbhydra/dist/css', 'nzbhydra/dist/js', 'dist'],
 				patterns: {
 					views: [
 						[/templateUrl[ =:]+["|'](\/js\/views\/[a-z]*\/[a-zA-Z0-9]*\.html)["|']/img, 'Template replacement in js files']
@@ -168,25 +162,17 @@ module.exports = function (grunt) {
 		
 		watch: {			
 			mystuff: {
-				files: ['static/**/*.*', '!static/less/**/*.less'], tasks: ['shell'], options: {
+				files: ['nzbhydra/static/**/*.*', '!nzbhydra/static/less/**/*.less'], tasks: ['shell'], options: {
 					livereload: true
 				}
 			},
 			
 			crapLess: {
-				files: ['static/less/crapture.less'], tasks: ['less:crapture', 'shell']
+				files: ['nzbhydra/static/less/nzbhydra.less'], tasks: ['less:nzbhydra', 'shell']
 			},
 			
 			bootstrapLess: {
-				files: ['static/less/bootstrap/**/*.less'], tasks: ['less:bootstrap']
-			}
-		},
-
-		shell: {
-			options: {
-				stderr: true
-			}, target: {
-				command: 'rsync -avzhe  \'ssh -p 2222\' static vagrant@127.0.0.1:/home/vagrant/pyCrapTest'
+				files: ['nzbhydra/static/less/bootstrap/**/*.less'], tasks: ['less:bootstrap']
 			}
 		}
 
