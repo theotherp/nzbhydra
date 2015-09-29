@@ -1,3 +1,5 @@
+/node_modules
+/bower_components
 *.db
 *.cfg
 realsettingsmockproviders.cfg
