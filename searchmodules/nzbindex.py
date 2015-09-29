@@ -14,7 +14,6 @@ logger = logging.getLogger('root')
 
 # Probably only as RSS supply, not for searching. Will need to do a (config) setting defining that. When searches without specifier are done we can include indexers like that
 class NzbIndex(SearchModule):
-    # TODO init of config which is dynmic with its path
 
     def __init__(self, provider):
         super(NzbIndex, self).__init__(provider)

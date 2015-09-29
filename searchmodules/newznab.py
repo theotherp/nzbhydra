@@ -30,7 +30,6 @@ def get_age_from_pubdate(pubdate):
 
 
 class NewzNab(SearchModule):
-    # TODO init of config which is dynmic with its path
 
     #todo feature: read caps from server on first run and store them in the config/database
     def __init__(self, provider):

@@ -17,6 +17,8 @@ class SearchModule(object):
         self.supports_queries = True
         self.needs_queries = False
         self.category_search = True  # If true the provider supports searching in a given category (possibly without any query or id)
+        
+    
     
     @property
     def query_url(self):
@@ -37,6 +39,8 @@ class SearchModule(object):
     @property
     def search_ids(self):
         return self.provider.search_ids
+    
+    
     
 
 

@@ -13,7 +13,6 @@ logger = logging.getLogger('root')
 
 
 class Binsearch(SearchModule):
-    # TODO init of config which is dynmic with its path
 
     def __init__(self, provider):
         super(Binsearch, self).__init__(provider)
@@ -31,7 +30,11 @@ class Binsearch(SearchModule):
         return self.settings.get("max_results", 250)
 
     def build_base_url(self):
-        url = furl(self.query_url).add({"max": "250", "adv_g": self.max_results, "adv_age": 2500, "postdate": "date"})
+        url = furl(self.query_url).add({"max": self.max_results, 
+                                        "adv_col": "on", # collections only 
+                                        "postdate": "date", # show pubDate, not age
+                                        "adv_nfo": "off" #if enabled only show results with nfo file #todo make configurable
+                                        })
         return url
 
     def get_search_urls(self, query, categories=None):
