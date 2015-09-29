@@ -27,8 +27,7 @@ class NzbClub(SearchModule):
         
     @property
     def max_results(self):
-        
-        return self.settings.get("max_results", 250)
+        return self.getsettings.get("max_results", 250)
         
 
     def build_base_url(self):
@@ -64,7 +63,7 @@ class NzbClub(SearchModule):
                 continue
             
             entry = NzbSearchResult()
-            p = re.compile(r'"(.*).(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"') 
+            p = re.compile(r'"(.*)"') 
             m = p.search(title.text)
             if m:
                 entry.title = m.group(1)

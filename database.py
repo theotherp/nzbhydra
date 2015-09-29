@@ -33,11 +33,6 @@ class Provider(Model):
     module = CharField()
     enabled = BooleanField(default=True)
     settings = JSONField(default={})
-    generate_queries = BooleanField(default=False)
-    query_url = CharField()
-    base_url = CharField()
-    search_types = JSONField(default=[])
-    search_ids = JSONField(default=[])
 
     class Meta:
         database = db

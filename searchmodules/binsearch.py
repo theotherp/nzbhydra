@@ -24,13 +24,9 @@ class Binsearch(SearchModule):
         self.category_search = False
         # https://www.nzbclub.com/nzbrss.aspx
 
-    @property
-    def max_results(self):
-
-        return self.settings.get("max_results", 250)
 
     def build_base_url(self):
-        url = furl(self.query_url).add({"max": self.max_results, 
+        url = furl(self.query_url).add({"max": self.provider.settings.get("max_results", 250), 
                                         "adv_col": "on", # collections only 
                                         "postdate": "date", # show pubDate, not age
                                         "adv_nfo": "off" #if enabled only show results with nfo file #todo make configurable

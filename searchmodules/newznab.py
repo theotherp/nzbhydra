@@ -41,25 +41,12 @@ class NewzNab(SearchModule):
         self.module = "newznab"
         self.category_search = True
         
-    
-    @property
-    def apikey(self):
-        return self.provider.settings.get("apikey", "")  
-    
-    @property
-    def username(self):
-        return self.provider.settings.get()["username"]
-    
-    @property
-    def password(self):
-        return self.provider.settings.get()["password"]
-        
         
     def __repr__(self):
         return "Provider: %s" % self.name
 
     def build_base_url(self, action, o="json", extended=1):
-        url = furl(self.query_url).add({"apikey": self.apikey, "o": o, "extended": extended, "t": action})
+        url = furl(self.provider.settings.get("query_url")).add({"apikey": self.provider.settings.get("apikey"), "o": o, "extended": extended, "t": action})
         return url
 
     def get_search_urls(self, query, categories=None):

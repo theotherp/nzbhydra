@@ -19,7 +19,7 @@ class Womble(SearchModule):
         self.module = "womble"
         self.name = "Womble's NZB Index"
         
-        self.generate_queries = False #Doesn't matter because supports_queries is False
+        self.getsettings["generate_queries"] = False #Doesn't matter because supports_queries is False
         self.needs_queries = False
         self.needs_queries = False # Doesn't even allow them
         self.category_search = True #Same

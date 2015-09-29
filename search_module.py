@@ -12,7 +12,7 @@ class SearchModule(object):
         self.name = self.provider.name
         self.module = "Abstract search module"
         
-        self.generate_queries = provider.generate_queries  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for providers which don't support id-based searches
+          
         
         self.supports_queries = True
         self.needs_queries = False
@@ -22,23 +22,27 @@ class SearchModule(object):
     
     @property
     def query_url(self):
-        return self.provider.query_url
+        return self.provider.settings.get("query_url")
         
     @property
     def base_url(self):
-        return self.provider.base_url
+        return self.provider.settings.get("base_url")
     
     @property
-    def settings(self):
+    def getsettings(self):
         return self.provider.settings
         
     @property
     def search_types(self):
-        return self.provider.search_types
+        return self.provider.settings.get("search_types")
     
     @property
     def search_ids(self):
-        return self.provider.search_ids
+        return self.provider.settings.get("search_ids")
+    
+    @property
+    def generate_queries(self):
+        return self.provider.settings.get("generate_queries") # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for providers which don't support id-based searches
     
     
     
