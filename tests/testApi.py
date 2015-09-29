@@ -16,6 +16,11 @@ class MyTestCase(unittest.TestCase):
         result1 = NzbSearchResult(title="A title", epoch=0, size=1)
         result2 = NzbSearchResult(title="A title", epoch=0, size=1)
         assert test_for_duplicate(result1, result2)
+        
+        # same title with differing case, age and size
+        result1 = NzbSearchResult(title="A title", epoch=0, size=1)
+        result2 = NzbSearchResult(title="A TITLE", epoch=0, size=1)
+        assert test_for_duplicate(result1, result2)
 
         # different title, same age and size
         result1 = NzbSearchResult(title="A title", epoch=0, size=1)
@@ -65,7 +70,7 @@ class MyTestCase(unittest.TestCase):
         result2 = NzbSearchResult(title="Title2", epoch=0, size=1, provider="2")
         result3 = NzbSearchResult(title="Title2", epoch=0, size=1, provider="3") # same as the one before
         result4 = NzbSearchResult(title="Title3", epoch=0, size=1, provider="4")
-        result5 = NzbSearchResult(title="Title1", epoch=0, size=1, provider="5") # same as the first
+        result5 = NzbSearchResult(title="TITLE1", epoch=0, size=1, provider="5") # same as the first but with different case
         result6 = NzbSearchResult(title="Title4", epoch=0, size=1, provider="6")
         results = find_duplicates([result1, result2, result3, result4, result5, result6])
         self.assertEqual(4, len(results))

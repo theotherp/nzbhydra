@@ -5,12 +5,14 @@ import logging
 import time
 import arrow
 import xml.etree.ElementTree as ET
+from requests import RequestException
 import requests
 import re
 from furl import furl
+from database import ProviderApiAccess
 
 from datestuff import now
-from exceptions import ProviderAuthException, ProviderAccessException
+from exceptions import ProviderAuthException, ProviderAccessException, ProviderConnectionException
 from nzb_search_result import NzbSearchResult
 from search_module import SearchModule
 
@@ -160,27 +162,29 @@ class NewzNab(SearchModule):
     def get_nfo(self, guid):
         #try to get raw nfo. if it is xml the provider doesn't actually return raw nfos (I'm looking at you, DOGNzb)
         url = self.build_base_url("getnfo", o="xml", extended=0).add({"id": guid})
-        response = requests.get(url)
-        nfo = response.text #todo error handling
-        if "<?xml" in nfo:
-            #parse
-            try:
-                tree = ET.fromstring(nfo)
-            except Exception as e:
-                logger.exception("Error parsing NFO response", e)
-                return []
-            for elem in tree.iter('item'):
-                nfo = elem.find("description").text
-                #And replace line breaks by html brs
-                #nfo = re.sub("\\\\n", "<br>", nfo)
-                return nfo
-        else:
-            #Return it and hope that it's the NFO...
-            return nfo
-        
-        
-        
+        papiaccess = ProviderApiAccess(provider=self.provider, type="nfo")
+        try:
+            response = requests.get(url)
+            if response.status_code != 200:
+                raise ProviderConnectionException("Error while retrieving NFO for ID %s. Returned status code:" % (guid, response.status_code), self)
+            papiaccess.response_time = response.elapsed.microseconds / 1000
             
+            nfo = response.text
+            if "<?xml" in nfo:
+                tree = ET.fromstring(nfo)
+                for elem in tree.iter('item'):
+                    nfo = elem.find("description").text
+            #otherwise we just hope it's the nfo...
+        except RequestException:
+            raise ProviderConnectionException("Error while connecting.", self)
+        except ProviderConnectionException as e:
+            logger.exception("Error while connecting to %s" % self, e)
+            papiaccess.error = "Error while retrieving NFO for ID %s." % guid
+            papiaccess.save()
+            raise
+        
+        papiaccess.save()
+        return nfo    
 
 
 def get_instance(provider):

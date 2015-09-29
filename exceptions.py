@@ -50,4 +50,4 @@ class ProviderResultParsingException(NzbHydraException):
         super(NzbHydraException, self).__init__(message)
         self.message = message
         self.search_module = search_module
-
+        

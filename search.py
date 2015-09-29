@@ -10,13 +10,13 @@ from requests_futures.sessions import FuturesSession
 from database import Provider, ProviderSearch, ProviderApiAccess, ProviderSearchApiAccess, ProviderStatus
 import config
 from exceptions import ProviderConnectionException, ProviderAuthException, ProviderAccessException, ExternalApiInfoException, ProviderResultParsingException
-from searchmodules import newznab, womble, nzbclub
+from searchmodules import newznab, womble, nzbclub, nzbindex
 
 
 
 
 # TODO: I would like to use plugins for this but couldn't get this to work with pluginbase. Would also need a concept to work with the database
-search_modules = {"newznab": newznab, "womble": womble, "nzbclub": nzbclub}
+search_modules = {"newznab": newznab, "womble": womble, "nzbclub": nzbclub, "nzbindex": nzbindex}
 logger = logging.getLogger('root')
 
 config.init("searching.timeout", 5, int)

@@ -30,12 +30,18 @@ api_args = {
     "ep": Arg(str),
     "sec": Arg(str),  # womble
     "fr": Arg(str),  # womble
+
     "ig": Arg(str),  # nzbclub
     "rpp": Arg(str),  # nzbclub
     "st": Arg(str),  # nzbclub
     "sp": Arg(str),  # nzbclub
     "ns": Arg(str),  # nzbclub
 
+    "more": Arg(str),  # nzbindex
+    "sort": Arg(str),  # nzbindex
+    "max": Arg(str),  # nzbindex
+    
+    
     # TODO: Support comments, music search, book search, details, etc(?)
 
 }
@@ -69,6 +75,12 @@ def womble(args):
     return handle_request("womble", args)
 
 
+@app.route('/nzbindex')
+@use_args(api_args)
+def nzbindex(args):
+    return handle_request("nzbindex", args)
+
+
 def handle_request(provider, args):
     keys_sorted = sorted(args.keys())
     keys_sorted.remove("apikey")
@@ -80,6 +92,9 @@ def handle_request(provider, args):
     keys_sorted.remove("st")
     keys_sorted.remove("sp")
     keys_sorted.remove("ns")
+    keys_sorted.remove("sort")
+    keys_sorted.remove("max")
+    keys_sorted.remove("more")
     filename = provider
     for arg in keys_sorted:
         if args[arg] is not None:

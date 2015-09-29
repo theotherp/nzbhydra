@@ -12,26 +12,27 @@ from search_module import SearchModule
 logger = logging.getLogger('root')
 
 
-class NzbClub(SearchModule):
+# Probably only as RSS supply, not for searching. Will need to do a (config) setting defining that. When searches without specifier are done we can include indexers like that
+class NzbIndex(SearchModule):
     # TODO init of config which is dynmic with its path
 
     def __init__(self, provider):
-        super(NzbClub, self).__init__(provider)
-        self.module = "nzbclub"
-        self.name = "NZBClub"
+        super(NzbIndex, self).__init__(provider)
+        self.module = "nzbindex"
+        self.name = "NZBIndex"
         
         self.supports_queries = True #We can only search using queries
         self.needs_queries = True
         self.category_search = False
         
+        
     @property
     def max_results(self):
-        
         return self.settings.get("max_results", 250)
         
 
     def build_base_url(self):
-        url = furl(self.query_url).add({"ig": "2", "rpp": self.max_results, "st": 5, "ns": 1, "sn": 1}) #I need to find out wtf these values are
+        url = furl(self.query_url).add({"more": "1", "max": self.max_results}) 
         return url
 
     def get_search_urls(self, query, categories=None):
@@ -63,7 +64,15 @@ class NzbClub(SearchModule):
                 continue
             
             entry = NzbSearchResult()
-            entry.title = title.text
+            p = re.compile(r'"(.*)(\.[a-zA-Z0-9]{3,4})"') #Attempt to find the title in quotation marks and if it exists don't take the extension. This part is more likely to be helpful then he beginning
+            m = p.search(title.text)
+            if m:
+                entry.title = m.group(1)
+                if len(entry.title) > 4 and entry.title[-7:] == "-sample":
+                    entry.title = entry.title[:-7]
+            else:
+                entry.title = title.text
+                
             entry.link = url.attrib["url"]
             entry.size = int(url.attrib["length"])
             entry.provider = self.name
@@ -84,4 +93,4 @@ class NzbClub(SearchModule):
 
 
 def get_instance(provider):
-    return NzbClub(provider)
+    return NzbIndex(provider)
