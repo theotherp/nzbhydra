@@ -1,4 +1,3 @@
-# Get dict from object and remove all values that won't be contained in newznab api result
 from itertools import groupby
 
 from marshmallow import Schema, fields
@@ -18,7 +17,7 @@ categories = {'Console': {'code': [1000, 1010, 1020, 1030, 1040, 1050, 1060, 107
               'TV': {'code': [5000, 5020], 'pretty': 'TV'},
               'TV_SD': {'code': [5030], 'pretty': 'SD'},
               'TV_HD': {'code': [5040], 'pretty': 'HD'},
-              'XXX': {'code': [6000, 6010, 6020, 6030, 6040], 'pretty': 'XXX'},
+              'XXX': {'code': [6000, 6010, 6020, 6030, 6040, 6050], 'pretty': 'XXX'},
               'Other': {'code': [7000, 7010], 'pretty': 'Other'},
               'Ebook': {'code': [7020], 'pretty': 'Ebook'},
               'Comics': {'code': [7030], 'pretty': 'Comics'},

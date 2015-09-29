@@ -50,13 +50,15 @@ class NewzNab(SearchModule):
         url = furl(self.provider.settings.get("query_url")).add({"apikey": self.provider.settings.get("apikey"), "o": o, "extended": extended, "t": action, "limit": self.limit, "offset": 0})
         return url
 
-    def get_search_urls(self, query, categories=None):
-        f = self.build_base_url("search").add({"q": query})
+    def get_search_urls(self, query=None, categories=None):
+        f = self.build_base_url("search")
+        if query is not None :
+            f = f.add({"q": query})
         if categories is not None:
             f.add({"cat": ",".join(str(x) for x in categories)})
         return [f.url]
 
-    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
+    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, categories=None, season=None, episode=None, ):
         if query is None:
             url = self.build_base_url("tvsearch")
             if identifier_key is not None:
@@ -76,7 +78,7 @@ class NewzNab(SearchModule):
         
         return [url.url]
 
-    def get_moviesearch_urls(self, query=None, identifier_key=None, identifier_value=None, categories=None):
+    def get_moviesearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, categories=None):
         if query is None:
             url = self.build_base_url("movie")
             if identifier_key is not None:

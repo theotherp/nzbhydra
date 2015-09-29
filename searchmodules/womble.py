@@ -29,12 +29,12 @@ class Womble(SearchModule):
         url = furl(self.query_url).add({"fr": "false"})
         return url
 
-    def get_search_urls(self, query, categories=None):
+    def get_search_urls(self, generated_query=None, query=None, categories=None):
         raise NotImplementedError("This provider does not support queries")
 
-    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
+    def get_showsearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
         urls = []
-        if identifier_key or season or episode:
+        if generated_query or query or identifier_key or season or episode:
             raise NotImplementedError("This provider does not support specific searches")
         if categories:
             for c in categories:

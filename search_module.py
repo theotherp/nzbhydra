@@ -53,19 +53,19 @@ class SearchModule(object):
         return self.provider.settings.get("api_hits_reset")
 
     # Access to most basic functions
-    def get_search_urls(self, query):
+    def get_search_urls(self, query=None, generated_query=None):
         # return url(s) to search. Url is then retrieved and result is returned if OK
         # we can return multiple urls in case a module needs to make multiple requests (e.g. when searching for a show
         # using general queries
         pass
 
-    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
+    def get_showsearch_urls(self, query=None, generated_query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
         # to extend
         # if module supports it, search specifically for show, otherwise make sure we create a query that searches
         # for for s01e01, 1x1 etc
         pass
 
-    def get_moviesearch_urls(self, query=None, identifier_key=None, identifier_value=None, categories=None):
+    def get_moviesearch_urls(self, query=None, generated_query=None, identifier_key=None, identifier_value=None, categories=None):
         # to extend
         # if module doesnt support it possibly use (configurable) size restrictions when searching
         pass

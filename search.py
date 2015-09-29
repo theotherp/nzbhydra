@@ -106,7 +106,7 @@ def pick_providers_and_generate_queries(search_type, search_function, query=None
 
                 # and then finally use the generated query
                 for p in providers_that_allow_query_generation:
-                    queries = getattr(p, search_function)(query=generated_query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, **kwargs)
+                    queries = getattr(p, search_function)(generated_query=generated_query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, **kwargs)
 
                     dbentry = ProviderSearch(provider=p.provider, query=generated_query, query_generated=True, identifier_key=identifier_key, identifier_value=identifier_value, categories=json.dumps(categories))
                     queries_by_provider[p] = {"queries": queries, "dbsearchentry": dbentry}

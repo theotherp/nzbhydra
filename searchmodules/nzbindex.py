@@ -27,26 +27,32 @@ class NzbIndex(SearchModule):
         
     @property
     def max_results(self):
-        return self.settings.get("max_results", 250)
+        return self.getsettings.get("max_results", 250)
         
 
     def build_base_url(self):
         url = furl(self.query_url).add({"more": "1", "max": self.max_results}) 
         return url
 
-    def get_search_urls(self, query, categories=None):
+    def get_search_urls(self, query=None, categories=None):
         return [self.build_base_url().add({"q": query}).tostr()]
 
-    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
-        if query is None:
+    def get_showsearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
+        if query is None and generated_query is None:
             raise ProviderIllegalSearchException("Attempted to search without a query although this provider only supports query-based searches", self)
-        return self.get_search_urls(query, categories)
+        if generated_query and season is not None:
+            #Restrict query if generated and season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
+            if episode is not None:
+                generated_query = "%s s%02de%02d | %dx%02d" % (generated_query, season, episode, season, episode)
+            else:
+                generated_query = '%s s%02d | "season %d"' % (generated_query, season, season)
+        return self.get_search_urls(query if query else generated_query, categories)
 
 
-    def get_moviesearch_urls(self, query, identifier_key, identifier_value, categories):
-        if query is None:
+    def get_moviesearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, categories=None):
+        if query is None and generated_query is None:
             raise ProviderIllegalSearchException("Attempted to search without a query although this provider only supports query-based searches", self)
-        return self.get_search_urls(query, categories)
+        return self.get_search_urls(query if query else generated_query, categories)
 
     def process_query_result(self, xml, query):
         entries = []
