@@ -81,6 +81,12 @@ def nzbindex(args):
     return handle_request("nzbindex", args)
 
 
+@app.route('/binsearch')
+@use_args(api_args)
+def binsearch(args):
+    return handle_request("binsearch", args)
+
+
 def handle_request(provider, args):
     keys_sorted = sorted(args.keys())
     keys_sorted.remove("apikey")
@@ -105,6 +111,9 @@ def handle_request(provider, args):
     if os.path.exists(filename + ".xml"):
         print("Sending " + filename)
         return send_file(filename + ".xml")
+    if os.path.exists(filename + ".html"):
+        print("Sending " + filename)
+        return send_file(filename + ".html")
     else:
         print("Cannot find respose " + filename)
         return "Unknown request", 404

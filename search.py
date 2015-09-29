@@ -258,7 +258,7 @@ def execute_search_queries(queries_by_provider):
             handle_provider_failure(provider.provider, reason="Parsing results failed")
         except Exception as e:
             logger.exception("An error error occurred while searching.", e)
-            papiaccess.error = "Unknown error :%s" % e.message
+            papiaccess.error = "Unknown error :%s" % e
         psearch.save()
         papiaccess.save()
 

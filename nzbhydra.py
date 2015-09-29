@@ -143,7 +143,10 @@ def internal_api(args):
 
 config.init("main.port", 5050, int)
 config.init("main.host", "0.0.0.0", str)
-if __name__ == '__main__':
+
+
+def run():
+    global logger
     arguments = docopt(__doc__, version='nzbhydra 0.0.1')
     settings_file = "settings.cfg"
     database_file = "nzbhydra.db"
@@ -151,19 +154,18 @@ if __name__ == '__main__':
         settings_file = arguments["--config"]
     if arguments["--database"]:
         database_file = arguments["--database"]
-    
     print("Loading settings from %s" % settings_file)
     config.load(settings_file)
-    
     logger = log.setup_custom_logger('root')
     logger.info("Started")
-    
     logger.info("Loading database file %s" % database_file)
     database.db.init(database_file)
     database.db.connect()
-    
     search.read_providers_from_config()
-    
     port = config.cfg["main.port"]
     host = config.cfg["main.host"]
     app.run(host=host, port=port, debug=True)
+
+
+if __name__ == '__main__':
+    run()

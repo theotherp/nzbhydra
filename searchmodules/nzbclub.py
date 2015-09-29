@@ -64,7 +64,7 @@ class NzbClub(SearchModule):
                 continue
             
             entry = NzbSearchResult()
-            p = re.compile(r'"(.*)"') 
+            p = re.compile(r'"(.*)(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"') 
             m = p.search(title.text)
             if m:
                 entry.title = m.group(1)

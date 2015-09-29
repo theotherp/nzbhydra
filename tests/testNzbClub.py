@@ -40,7 +40,7 @@ class MyTestCase(unittest.TestCase):
     @freeze_time("2015-09-24 14:00:00", tz_offset=-4)
     def testProcess_results(self):
         w = NzbClub(self.nzbclub)
-        with open("mock/nzbclub--q-avengers.xml") as f:
+        with open("mock/nzbclub--q-avengers.xml", encoding="latin-1") as f:
             entries = w.process_query_result(f.read())
             self.assertEqual('Avengers.Age.of.Ultron.2015.720p.BluRay.x264.YIFY', entries[0].title)
             self.assertEqual("http://www.nzbclub.com/nzb_get/60269450/Avengers Age of Ultron 720p BrRip x264 YIFY Avengers Age of Ultron 2015 720p BluRay x264 YIFY.nzb", entries[0].link)
