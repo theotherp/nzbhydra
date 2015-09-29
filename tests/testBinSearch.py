@@ -42,21 +42,19 @@ class MyTestCase(unittest.TestCase):
     # # todo
     # 
     # 
-    #@freeze_time("2015-09-28 14:00:00", tz_offset=-4)
+    #@freeze_time("2015-09-30 14:00:00", tz_offset=-4)
     def testProcess_results(self):
         w = Binsearch(self.binsearch)
         with open("mock/binsearch--q-avengers.html", encoding="latin-1") as f:
             body = f.read()
             entries = w.process_query_result(body)
-            self.assertEqual('Avengers_Age_of_Ultron_2015_1080p_BluRay_x264-SPARKS 20_10_2015', entries[0].title)
-            self.assertEqual("http://nzbindex.com/download/125731784/Avengers-Age-of-Ultron-2015-1080p-BluRay-x264-SPARKS-20-10-2015.nzb", entries[0].link)
-            self.assertEqual(1024268, entries[0].size)
-            self.assertEqual("http://nzbindex.com/release/125731784/Avengers-Age-of-Ultron-2015-1080p-BluRay-x264-SPARKS-20-10-2015.nzb", entries[0].guid)
-            self.assertEqual(1443237605, entries[0].epoch)
-            self.assertEqual("2015-09-26T05:20:05+02:00", entries[0].pubdate_utc)
-            self.assertEqual(2, entries[0].age_days)
-            
-            self.assertEqual("Hulk.Smash.Avengers.Limited.Series.4.of.5.Jul.2012.SCAN.Comic.eBook-iNTENSiTY [COMPRESSED]", entries[1].title)
-            
-            self.assertEqual("avengers.assemble.s02e25.new.frontier.720p.hdtv.x264-w4f", entries[2].title)
+            self.assertEqual('MARVELS.AVENGERS.AGE.OF.ULTRON. 3D.TOPBOT.TrueFrench.1080p.X264.AC3.5.1-JKF.mkv', entries[0].title)
+            self.assertEqual("https://www.binsearch.info/fcgi/nzb.fcgi?q=176073735", entries[0].link)
+            self.assertEqual(13110387671, entries[0].size)
+            self.assertEqual("176073735", entries[0].guid)
+            self.assertEqual(1440720000, entries[0].epoch)
+            self.assertEqual("2015-08-28T00:00:00+00:00", entries[0].pubdate_utc)
+            self.assertEqual(32, entries[0].age_days)
+            self.assertFalse(entries[0].age_precise)
+            self.assertEqual("Ramer@marmer.com <Clown_nez>", entries[0].poster)
             

@@ -64,7 +64,7 @@ class NzbIndex(SearchModule):
                 continue
             
             entry = NzbSearchResult()
-            p = re.compile(r'"(.*)(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"') #Attempt to find the title in quotation marks and if it exists don't take the extension. This part is more likely to be helpful then he beginning
+            p = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"') #Attempt to find the title in quotation marks and if it exists don't take the extension. This part is more likely to be helpful then he beginning
             m = p.search(title.text)
             if m:
                 entry.title = m.group(1)

@@ -140,6 +140,8 @@ class NewzNab(SearchModule):
                     entry.guid = i["@attributes"]["value"]
                 elif i["@attributes"]["name"] == "category":
                     entry.categories.append(int(i["@attributes"]["value"]))
+                elif i["@attributes"]["name"] == "poster":
+                    entry.poster = (i["@attributes"]["value"])
                 # Store all the extra attributes, we will return them later for external apis
                 entry.attributes.append({"name": i["@attributes"]["name"], "value": i["@attributes"]["value"]})
             entry.categories = sorted(entry.categories) #Sort to make the general category appear first

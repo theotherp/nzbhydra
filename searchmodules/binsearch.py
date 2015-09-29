@@ -3,7 +3,6 @@ import re
 
 import arrow
 from bs4 import BeautifulSoup
-
 from furl import furl
 
 from exceptions import ProviderIllegalSearchException
@@ -13,8 +12,6 @@ from search_module import SearchModule
 logger = logging.getLogger('root')
 
 
-# todo: disable for external api or implement nzb downloading because it doesnt have direct nzb links
-# also doesn't close its <td> tags which makes it veeeery hard to parse with BS
 class Binsearch(SearchModule):
     # TODO init of config which is dynmic with its path
 
@@ -53,30 +50,49 @@ class Binsearch(SearchModule):
     def process_query_result(self, html):
         entries = []
         soup = BeautifulSoup(html, 'html.parser')
-        table = soup.find("table", attrs = {'id': 'r2'})
-        for tr in table.find_all("tr"):
+
+        main_table = soup.find('table', attrs={'id': 'r2'})
+
+        if not main_table:
+            return
+
+        items = main_table.find_all('tr')
+
+        for row in items:
             entry = NzbSearchResult()
-            
-                
-            title = tr.find('span', attrs = {'class': 's'})
-            if not title: 
+            title = row.find('span', attrs={'class': 's'})
+
+            if title is None: 
                 continue
-            
-            entry.guid = tr.find("checkbox", attrs={'type': 'checkbox'})["name"]
-            entry.url = "https://www.binsearch.info/fcgi/nzb.fcgi?q=%s" & entry.guid
-        
-            title = tr.find("span").getText()
-            p = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"')
+            title = title.text
+                
+            p = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"') 
             m = p.search(title)
             if m:
-                title = m.group(1)
-            entry.title = title
-            print(entry.title)
+                entry.title = m.group(1)
+            else:
+                entry.title = title
+
+            entry.guid = row.find("input", attrs={"type": "checkbox"})["name"]
+            entry.link = "https://www.binsearch.info/fcgi/nzb.fcgi?q=%s" % entry.guid
+            info = row.find("span", attrs={"class": "d"})
+            if info is None:
+                continue
+                
+            collection_link = info.find("a")["href"] #'/?b=MARVELS.AVENGERS.AGE.OF.ULTRON.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250'
+            m = re.compile(r"&p=(.*)&").search(collection_link)
+            if m:
+                poster = m.group(1)
+                poster = poster.replace("%40", "@")
+                poster = poster.replace("%28", "<")
+                poster = poster.replace("%29", ">")
+                poster = poster.replace("+", " ")
+                entry.poster = poster
+            #Size
             p = re.compile(r"size: ([0-9]+\.[0-9]+).(GB|MB)")
-            description = tr.find_all("span")[1].getText()
-            m = p.search(description)
+            m = p.search(info.text)
             if not m:
-                logger.debug("Unable to find size information in %s" % description)
+                logger.debug("Unable to find size information in %s" % info.text)
                 continue
             size = float(m.group(1))
             unit = m.group(2)
@@ -85,21 +101,20 @@ class Binsearch(SearchModule):
             else:
                 size = size * 1024 * 1024 * 1024
             entry.size = int(size)
-            print(size)
 
+            #Age
             p = re.compile(r"(\d{2}\-\w{3}\-\d{4})")
-            m = p.search(tr.getText())
+            m = p.search(row.find_all("td")[-1:][0].text)
             if m:
-                pubdate = arrow.get(m.group(1), '"DD-MMM-YYYY')
+                pubdate = arrow.get(m.group(1), "DD-MMM-YYYY")
                 entry.epoch = pubdate.timestamp
                 entry.pubdate_utc = str(pubdate)
                 entry.age_days = (arrow.utcnow() - pubdate).days
                 entry.age_precise = False
-                
+
             entries.append(entry)
 
         return entries
-
 
 def get_instance(provider):
     return Binsearch(provider)
