@@ -52,3 +52,52 @@ body {
 .caret-reversed {
   transform: rotate(180deg);
 }
+
+.search-input {
+  width: 80%;
+}
+
+.episode-input {
+  border-left-width: 0px !important;
+  border-right-width:0px !important;
+  border-radius: 0;
+}
+
+.episode-input:focus {
+  border-width: 0px !important;
+}
+
+.season-input {
+  border-radius: 0;
+}
+
+.search-border {
+  border-bottom-right-radius: @border-radius-base !important;
+  border-top-right-radius: @border-radius-base !important;
+  //border-right-width: 0px !important;
+}
+
+.search-category-button {
+  min-width: 105px; //Enough for "Movies HD"
+  text-align: left;
+}
+
+.by-id-checkbox {
+  
+  font-size: @font-size-base;
+  
+  color: @input-color;
+  background-color: @input-bg;
+  background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+  border: 1px solid @input-border;
+  border-right: 0px;
+  
+  
+  border-radius: @input-border-radius; // Note: This has no effect on <select>s in some browsers, due to the limited stylability of <select>s in CSS.
+
+
+  // Reset height for `textarea`s
+  textarea& {
+    height: auto;
+  }
+}

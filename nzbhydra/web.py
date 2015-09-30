@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, send_file
 from werkzeug.exceptions import Unauthorized
 from nzbhydra.api import process_for_internal_api
-from nzbhydra import config, search
+from nzbhydra import config, search, infos
 from functools import wraps
 from pprint import pprint
 from flask import Flask, render_template, request, jsonify, Response
@@ -14,6 +14,7 @@ app = Flask(__name__)
 api_args = {
     # Todo: Throw exception on unsupported actions
     # TODO: validate using own code, web_args' return is not very helpful. On the other side the api is only consumed by us or external tools which better know what they're doing...
+    "input": Arg(str),
     "apikey": Arg(str),
     "t": Arg(str),
     "q": Arg(str),
@@ -28,7 +29,7 @@ api_args = {
     "maxage": Arg(str),
     "rid": Arg(str),
     "genre": Arg(str),
-    "imbdid": Arg(str),
+    "imdbid": Arg(str),
     "tvdbid": Arg(str),  # nzbs.org
     "season": Arg(str),
     "ep": Arg(str)
@@ -120,7 +121,22 @@ def internal_api(args):
     if args["t"] == "search":
         results = search.search(args["q"], args["cat"])
     if args["t"] == "tvsearch":
-        results = search.search_show(args["rid"], args["season"], args["ep"], args["cat"])
+        #search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
+        key = None
+        value = None
+        if "tvdbid" in args:
+            key = "tvdbid"
+            value = args[key]
+            
+        results = search.search_show(args["q"], key, value, args["season"], args["ep"], args["cat"])
+    if args["t"] == "moviesearch":
+        results = search.search_movie(args["q"], args["imdbid"], args["cat"])
+    if args["t"] == "autocompletemovie":
+        results = infos.find_movie_ids(args["input"])
+        return jsonify({"results": results})
+    if args["t"] == "autocompleteseries":
+        results = infos.find_series_ids(args["input"])
+        return jsonify({"results": results})
     if results is not None:
         results = process_for_internal_api(results)
         return jsonify(results)  # Flask cannot return lists

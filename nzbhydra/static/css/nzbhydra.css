@@ -45,3 +45,37 @@ body {
 .caret-reversed {
   transform: rotate(180deg);
 }
+.search-input {
+  width: 80%;
+}
+.episode-input {
+  border-left-width: 0px !important;
+  border-right-width: 0px !important;
+  border-radius: 0;
+}
+.episode-input:focus {
+  border-width: 0px !important;
+}
+.season-input {
+  border-radius: 0;
+}
+.search-border {
+  border-bottom-right-radius: 4px !important;
+  border-top-right-radius: 4px !important;
+}
+.search-category-button {
+  min-width: 105px;
+  text-align: left;
+}
+.by-id-checkbox {
+  font-size: 14px;
+  color: #272b30;
+  background-color: #ffffff;
+  background-image: none;
+  border: 1px solid #cccccc;
+  border-right: 0px;
+  border-radius: 4px;
+}
+textarea.by-id-checkbox {
+  height: auto;
+}

@@ -129,9 +129,9 @@ def search_show(query=None, identifier_key=None, identifier_value=None, season=N
     return execute_search_queries(queries_by_provider)
 
 
-def search_movie(query=None, identifier_key=None, identifier_value=None, categories=None):
+def search_movie(query=None, imbdbid=None, categories=None):
     logger.info("Searching for movie")  # todo:extend
-    queries_by_provider = pick_providers_and_generate_queries("movie", "get_moviesearch_urls", *(), query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories)
+    queries_by_provider = pick_providers_and_generate_queries("movie", "get_moviesearch_urls", *(), query=query, identifier_key="imdbid" if imbdbid is not None else None, identifier_value=imbdbid, categories=categories)
     return execute_search_queries(queries_by_provider)
 
 

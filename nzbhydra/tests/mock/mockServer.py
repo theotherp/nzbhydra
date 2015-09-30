@@ -24,7 +24,7 @@ api_args = {
     "maxage": Arg(str),
     "rid": Arg(str),
     "genre": Arg(str),
-    "imbdid": Arg(str),
+    "imdbid": Arg(str),
     "tvdbid": Arg(str),
     "id": Arg(str),  
     "season": Arg(str),
@@ -102,6 +102,11 @@ def handle_request(provider, args):
     keys_sorted.remove("sort")
     keys_sorted.remove("max")
     keys_sorted.remove("more")
+    
+    if args["offset"] == "0":
+        keys_sorted.remove("offset")
+        keys_sorted.remove("limit")
+    
     filename = provider
     for arg in keys_sorted:
         if args[arg] is not None:
