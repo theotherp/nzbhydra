@@ -1,0 +1,1329 @@
+{
+  "@attributes": {
+    "version": "2.0"
+  },
+  "channel": {
+    "title": "NZBs(dot)ORG API Movie Search",
+    "description": "NZBs(dot)ORG Feed",
+    "link": "https:\/\/nzbs.org\/",
+    "language": "en-gb",
+    "webMaster": "admin@nzbs.org (NZBs(dot)ORG)",
+    "category": {},
+    "image": {
+      "url": "https:\/\/nzbs.org\/\/templates\/default\/images\/banner.jpg",
+      "title": "NZBs(dot)ORG",
+      "link": "https:\/\/nzbs.org\/",
+      "description": "Visit NZBs(dot)ORG - Home of the NZB Harvester"
+    },
+    "response": {
+      "@attributes": {
+        "offset": "0",
+        "total": "31"
+      }
+    },
+    "item": [
+      {
+        "title": "Spy.2015.UNRATED.FRENCH.BDRip.x264-COUAC",
+        "guid": "1b0fee7e8fe4d73d01d7478d87edff28",
+        "link": "https:\/\/nzbs.org\/getnzb\/1b0fee7e8fe4d73d01d7478d87edff28.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/1b0fee7e8fe4d73d01d7478d87edff28#comments",
+        "pubDate": "Fri, 18 Sep 2015 07:07:22 +0000",
+        "category": "Movies-Foreign",
+        "description": "Spy.2015.UNRATED.FRENCH.BDRip.x264-COUAC",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/1b0fee7e8fe4d73d01d7478d87edff28.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1153584839",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1153584839"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "1b0fee7e8fe4d73d01d7478d87edff28"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy 2015 720p BRRip HEVC x265 AC3-SANTi",
+        "guid": "0f523517250e3f876313d90237272c57",
+        "link": "https:\/\/nzbs.org\/getnzb\/0f523517250e3f876313d90237272c57.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/0f523517250e3f876313d90237272c57#comments",
+        "pubDate": "Thu, 17 Sep 2015 01:21:38 +0000",
+        "category": "Movies-x264",
+        "description": "Spy 2015 720p BRRip HEVC x265 AC3-SANTi",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/0f523517250e3f876313d90237272c57.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2038570377",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2038570377"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "0f523517250e3f876313d90237272c57"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy 2015 BRRip XviD AC3-SANTi",
+        "guid": "6e9fe0944c074f9a879d6e85c19d074e",
+        "link": "https:\/\/nzbs.org\/getnzb\/6e9fe0944c074f9a879d6e85c19d074e.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/6e9fe0944c074f9a879d6e85c19d074e#comments",
+        "pubDate": "Wed, 16 Sep 2015 18:53:35 +0000",
+        "category": "Movies-XviD",
+        "description": "Spy 2015 BRRip XviD AC3-SANTi",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/6e9fe0944c074f9a879d6e85c19d074e.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2022840865",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2022840865"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "6e9fe0944c074f9a879d6e85c19d074e"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.EXTENDED.720p.WEB-DL.DD5.1.H264-RARBG",
+        "guid": "c5c501c408bfe571ca5d72741253ac35",
+        "link": "https:\/\/nzbs.org\/getnzb\/c5c501c408bfe571ca5d72741253ac35.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/c5c501c408bfe571ca5d72741253ac35#comments",
+        "pubDate": "Wed, 16 Sep 2015 11:55:05 +0000",
+        "category": "Movies-Other",
+        "description": "Spy.2015.EXTENDED.720p.WEB-DL.DD5.1.H264-RARBG",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/c5c501c408bfe571ca5d72741253ac35.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "4954082795",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2050"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "4954082795"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "c5c501c408bfe571ca5d72741253ac35"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.1080p.BluRay.x264-SPARKS",
+        "guid": "3c9a1e28ace1d55a341238397f04bbcd",
+        "link": "https:\/\/nzbs.org\/getnzb\/3c9a1e28ace1d55a341238397f04bbcd.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/3c9a1e28ace1d55a341238397f04bbcd#comments",
+        "pubDate": "Tue, 15 Sep 2015 10:43:46 +0000",
+        "category": "Movies-x264",
+        "description": "Spy.2015.1080p.BluRay.x264-SPARKS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/3c9a1e28ace1d55a341238397f04bbcd.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "12078707898",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "12078707898"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "3c9a1e28ace1d55a341238397f04bbcd"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.1080p.BluRay.x264-NL",
+        "guid": "e966431d4520b19cc167ec0cce7eba60",
+        "link": "https:\/\/nzbs.org\/getnzb\/e966431d4520b19cc167ec0cce7eba60.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/e966431d4520b19cc167ec0cce7eba60#comments",
+        "pubDate": "Tue, 15 Sep 2015 08:00:16 +0000",
+        "category": "Movies-x264",
+        "description": "Spy.2015.1080p.BluRay.x264-NL",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e966431d4520b19cc167ec0cce7eba60.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "12115037011",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "12115037011"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e966431d4520b19cc167ec0cce7eba60"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.1080p.BluRay.x264-SPARKS",
+        "guid": "bf3a9872cc0a2460f5a95063880f8426",
+        "link": "https:\/\/nzbs.org\/getnzb\/bf3a9872cc0a2460f5a95063880f8426.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/bf3a9872cc0a2460f5a95063880f8426#comments",
+        "pubDate": "Tue, 15 Sep 2015 06:16:08 +0000",
+        "category": "Movies-x264",
+        "description": "Spy.2015.1080p.BluRay.x264-SPARKS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/bf3a9872cc0a2460f5a95063880f8426.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "12155935954",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "12155935954"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "bf3a9872cc0a2460f5a95063880f8426"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.720p.BluRay.x264-SPARKS",
+        "guid": "a8f13b3e226b6af7f848edd146d524cd",
+        "link": "https:\/\/nzbs.org\/getnzb\/a8f13b3e226b6af7f848edd146d524cd.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/a8f13b3e226b6af7f848edd146d524cd#comments",
+        "pubDate": "Tue, 15 Sep 2015 05:27:46 +0000",
+        "category": "Movies-x264",
+        "description": "Spy.2015.720p.BluRay.x264-SPARKS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a8f13b3e226b6af7f848edd146d524cd.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "8046525272",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "8046525272"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a8f13b3e226b6af7f848edd146d524cd"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.1080p.BluRay.x264-SPARKS",
+        "guid": "e72bb42f0669376da588415792219508",
+        "link": "https:\/\/nzbs.org\/getnzb\/e72bb42f0669376da588415792219508.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/e72bb42f0669376da588415792219508#comments",
+        "pubDate": "Tue, 15 Sep 2015 05:27:46 +0000",
+        "category": "Movies-x264",
+        "description": "Spy.2015.1080p.BluRay.x264-SPARKS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e72bb42f0669376da588415792219508.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "11473571472",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "11473571472"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e72bb42f0669376da588415792219508"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.720p.BluRay.x264-SPARKS",
+        "guid": "4a07b7577e06b8c2c4a545095af2d387",
+        "link": "https:\/\/nzbs.org\/getnzb\/4a07b7577e06b8c2c4a545095af2d387.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/4a07b7577e06b8c2c4a545095af2d387#comments",
+        "pubDate": "Tue, 15 Sep 2015 03:25:22 +0000",
+        "category": "Movies-x264",
+        "description": "Spy.2015.720p.BluRay.x264-SPARKS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/4a07b7577e06b8c2c4a545095af2d387.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "8097559281",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "8097559281"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "4a07b7577e06b8c2c4a545095af2d387"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.BDRip.x264-SPARKS",
+        "guid": "6ebe0c6859d53c4818bd46970c1f791e",
+        "link": "https:\/\/nzbs.org\/getnzb\/6ebe0c6859d53c4818bd46970c1f791e.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/6ebe0c6859d53c4818bd46970c1f791e#comments",
+        "pubDate": "Tue, 15 Sep 2015 02:35:41 +0000",
+        "category": "Movies-x264",
+        "description": "Spy.2015.BDRip.x264-SPARKS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/6ebe0c6859d53c4818bd46970c1f791e.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1113700466",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1113700466"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "6ebe0c6859d53c4818bd46970c1f791e"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.BDRip.x264-SPARKS",
+        "guid": "de8b64d712d8bc730717e1f711a09016",
+        "link": "https:\/\/nzbs.org\/getnzb\/de8b64d712d8bc730717e1f711a09016.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/de8b64d712d8bc730717e1f711a09016#comments",
+        "pubDate": "Tue, 15 Sep 2015 02:32:44 +0000",
+        "category": "Movies-x264",
+        "description": "Spy.2015.BDRip.x264-SPARKS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/de8b64d712d8bc730717e1f711a09016.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1046656853",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1046656853"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "de8b64d712d8bc730717e1f711a09016"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.720p.BluRay.x264-SPARKS",
+        "guid": "965f7c69e5dae0005dbe64e4e4bcd897",
+        "link": "https:\/\/nzbs.org\/getnzb\/965f7c69e5dae0005dbe64e4e4bcd897.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/965f7c69e5dae0005dbe64e4e4bcd897#comments",
+        "pubDate": "Tue, 15 Sep 2015 02:28:35 +0000",
+        "category": "Movies-x264",
+        "description": "Spy.2015.720p.BluRay.x264-SPARKS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/965f7c69e5dae0005dbe64e4e4bcd897.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "7652882693",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "7652882693"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "965f7c69e5dae0005dbe64e4e4bcd897"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.EXTENDED.1080p.WEB-DL.DD5.1.H264-RARBG",
+        "guid": "638e8dd1d6e6a931776d4e718dfc5aa8",
+        "link": "https:\/\/nzbs.org\/getnzb\/638e8dd1d6e6a931776d4e718dfc5aa8.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/638e8dd1d6e6a931776d4e718dfc5aa8#comments",
+        "pubDate": "Mon, 14 Sep 2015 16:51:01 +0000",
+        "category": "Movies-Other",
+        "description": "Spy.2015.EXTENDED.1080p.WEB-DL.DD5.1.H264-RARBG",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/638e8dd1d6e6a931776d4e718dfc5aa8.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "5488369911",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2050"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5488369911"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "638e8dd1d6e6a931776d4e718dfc5aa8"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.EXTENDED.1080p.WEB-DL.DD5.1.H264-RARBG",
+        "guid": "2bb6e032f1d55cd6eddbdba967410aae",
+        "link": "https:\/\/nzbs.org\/getnzb\/2bb6e032f1d55cd6eddbdba967410aae.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/2bb6e032f1d55cd6eddbdba967410aae#comments",
+        "pubDate": "Mon, 14 Sep 2015 14:13:13 +0000",
+        "category": "Movies-Other",
+        "description": "Spy.2015.EXTENDED.1080p.WEB-DL.DD5.1.H264-RARBG",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/2bb6e032f1d55cd6eddbdba967410aae.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "5473677588",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2050"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5473677588"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "2bb6e032f1d55cd6eddbdba967410aae"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.Extended.720p.WEB-DL",
+        "guid": "3f1e04b7d6847bde858441abb17ef158",
+        "link": "https:\/\/nzbs.org\/getnzb\/3f1e04b7d6847bde858441abb17ef158.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/3f1e04b7d6847bde858441abb17ef158#comments",
+        "pubDate": "Mon, 07 Sep 2015 09:42:04 +0000",
+        "category": "Movies-Other",
+        "description": "Spy.2015.Extended.720p.WEB-DL",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/3f1e04b7d6847bde858441abb17ef158.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "5525261051",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2050"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5525261051"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "3f1e04b7d6847bde858441abb17ef158"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.Susan.Cooper.Undercover.UNRATED.WEBRip.LD.German.x264-PsO",
+        "guid": "9e81d8d421b3dd8fdf832455bd9b8357",
+        "link": "https:\/\/nzbs.org\/getnzb\/9e81d8d421b3dd8fdf832455bd9b8357.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/9e81d8d421b3dd8fdf832455bd9b8357#comments",
+        "pubDate": "Fri, 04 Sep 2015 18:11:58 +0000",
+        "category": "Movies-Foreign",
+        "description": "Spy.Susan.Cooper.Undercover.UNRATED.WEBRip.LD.German.x264-PsO",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/9e81d8d421b3dd8fdf832455bd9b8357.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1303009062",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1303009062"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "9e81d8d421b3dd8fdf832455bd9b8357"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.UNRATED.720p.WEBRip.XviD.MP3-RARBG Ingebakken.Subs",
+        "guid": "9bc95c1d751526d7bf32c2c4efa7f090",
+        "link": "https:\/\/nzbs.org\/getnzb\/9bc95c1d751526d7bf32c2c4efa7f090.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/9bc95c1d751526d7bf32c2c4efa7f090#comments",
+        "pubDate": "Mon, 31 Aug 2015 11:39:45 +0000",
+        "category": "Movies-XviD",
+        "description": "Spy.2015.UNRATED.720p.WEBRip.XviD.MP3-RARBG Ingebakken.Subs",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/9bc95c1d751526d7bf32c2c4efa7f090.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "4280031147",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "4280031147"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "9bc95c1d751526d7bf32c2c4efa7f090"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.UNRATED.720p.WEBRip.XviD.MP3-RARBG Ingebakken.Subs",
+        "guid": "924ee596f5efc76df28b230ec8b3c71a",
+        "link": "https:\/\/nzbs.org\/getnzb\/924ee596f5efc76df28b230ec8b3c71a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/924ee596f5efc76df28b230ec8b3c71a#comments",
+        "pubDate": "Mon, 31 Aug 2015 11:36:08 +0000",
+        "category": "Movies-XviD",
+        "description": "Spy.2015.UNRATED.720p.WEBRip.XviD.MP3-RARBG Ingebakken.Subs",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/924ee596f5efc76df28b230ec8b3c71a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "4280456751",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "4280456751"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "924ee596f5efc76df28b230ec8b3c71a"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.UNRATED.720p.WEBRip.XviD.MP3-RARBG Ingebakken.Subs",
+        "guid": "b6952c25c24c141206fe5f1f88472742",
+        "link": "https:\/\/nzbs.org\/getnzb\/b6952c25c24c141206fe5f1f88472742.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/b6952c25c24c141206fe5f1f88472742#comments",
+        "pubDate": "Mon, 31 Aug 2015 11:02:31 +0000",
+        "category": "Movies-XviD",
+        "description": "Spy.2015.UNRATED.720p.WEBRip.XviD.MP3-RARBG Ingebakken.Subs",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/b6952c25c24c141206fe5f1f88472742.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "4298354809",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "4298354809"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "b6952c25c24c141206fe5f1f88472742"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.UNRATED.720p.WEBRip.XviD.MP3-RARBG Ingebakken Subs",
+        "guid": "a15c5bfaefa5758e6dc4e6a6642212a8",
+        "link": "https:\/\/nzbs.org\/getnzb\/a15c5bfaefa5758e6dc4e6a6642212a8.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/a15c5bfaefa5758e6dc4e6a6642212a8#comments",
+        "pubDate": "Mon, 31 Aug 2015 10:51:22 +0000",
+        "category": "Movies-XviD",
+        "description": "Spy.2015.UNRATED.720p.WEBRip.XviD.MP3-RARBG Ingebakken Subs",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a15c5bfaefa5758e6dc4e6a6642212a8.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "4298941441",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "4298941441"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a15c5bfaefa5758e6dc4e6a6642212a8"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.-.Susan.Cooper.Undercover.THEATRICAL.German.AC3.Dubbed.720p.WebHD.h264.iN",
+        "guid": "78ddc0db7809ff38c2c37208dc1d50bd",
+        "link": "https:\/\/nzbs.org\/getnzb\/78ddc0db7809ff38c2c37208dc1d50bd.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/78ddc0db7809ff38c2c37208dc1d50bd#comments",
+        "pubDate": "Sat, 29 Aug 2015 06:06:10 +0000",
+        "category": "Movies-Foreign",
+        "description": "Spy.-.Susan.Cooper.Undercover.THEATRICAL.German.AC3.Dubbed.720p.WebHD.h264.iN",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/78ddc0db7809ff38c2c37208dc1d50bd.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "4343615962",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "4343615962"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "78ddc0db7809ff38c2c37208dc1d50bd"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.-.Susan.Cooper.Undercover.THEATRICAL.WEBRip.LD.German.x264.iNTERNAL-PsO",
+        "guid": "a061881cb87072420a5322167e9e78b4",
+        "link": "https:\/\/nzbs.org\/getnzb\/a061881cb87072420a5322167e9e78b4.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/a061881cb87072420a5322167e9e78b4#comments",
+        "pubDate": "Sat, 29 Aug 2015 05:32:09 +0000",
+        "category": "Movies-Foreign",
+        "description": "Spy.-.Susan.Cooper.Undercover.THEATRICAL.WEBRip.LD.German.x264.iNTERNAL-PsO",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a061881cb87072420a5322167e9e78b4.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1327642090",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1327642090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a061881cb87072420a5322167e9e78b4"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.UNRATED.720p.WEBRip.XViD.AC3-REFiLL",
+        "guid": "a7dda980d1215c885e14e69b4891f29a",
+        "link": "https:\/\/nzbs.org\/getnzb\/a7dda980d1215c885e14e69b4891f29a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/a7dda980d1215c885e14e69b4891f29a#comments",
+        "pubDate": "Fri, 28 Aug 2015 02:04:47 +0000",
+        "category": "Movies-XviD",
+        "description": "Spy.2015.UNRATED.720p.WEBRip.XViD.AC3-REFiLL",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a7dda980d1215c885e14e69b4891f29a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "3415663665",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "3415663665"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a7dda980d1215c885e14e69b4891f29a"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.UNRATED.720p.WEB-DL.x264.ShAaNiG",
+        "guid": "dfad61ff23c2c4063f63b9fba0dcf446",
+        "link": "https:\/\/nzbs.org\/getnzb\/dfad61ff23c2c4063f63b9fba0dcf446.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/dfad61ff23c2c4063f63b9fba0dcf446#comments",
+        "pubDate": "Thu, 27 Aug 2015 15:25:16 +0000",
+        "category": "Movies-x264",
+        "description": "Spy.2015.UNRATED.720p.WEB-DL.x264.ShAaNiG",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/dfad61ff23c2c4063f63b9fba0dcf446.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1534805354",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1534805354"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "dfad61ff23c2c4063f63b9fba0dcf446"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.720p.HDRiP.x264-ShAaNiG",
+        "guid": "4d6132e5938c421e4832f1d0e4d398ee",
+        "link": "https:\/\/nzbs.org\/getnzb\/4d6132e5938c421e4832f1d0e4d398ee.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/4d6132e5938c421e4832f1d0e4d398ee#comments",
+        "pubDate": "Thu, 09 Jul 2015 06:15:42 +0000",
+        "category": "Movies-x264",
+        "description": "Spy.2015.720p.HDRiP.x264-ShAaNiG",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/4d6132e5938c421e4832f1d0e4d398ee.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1071967640",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1071967640"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "4d6132e5938c421e4832f1d0e4d398ee"
+            }
+          }
+        ]
+      },
+      {
+        "title": "SPY.2015.1080PHC.WEB-DLx264.NL.SUBS.T.U",
+        "guid": "66b75ee95884f4a4fa69c034c9fb8d95",
+        "link": "https:\/\/nzbs.org\/getnzb\/66b75ee95884f4a4fa69c034c9fb8d95.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/66b75ee95884f4a4fa69c034c9fb8d95#comments",
+        "pubDate": "Thu, 09 Jul 2015 01:52:28 +0000",
+        "category": "Movies-x264",
+        "description": "SPY.2015.1080PHC.WEB-DLx264.NL.SUBS.T.U",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/66b75ee95884f4a4fa69c034c9fb8d95.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "19746317214",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "19746317214"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "66b75ee95884f4a4fa69c034c9fb8d95"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.HC.720p.WEBRiP.XViD.AC3-LEGi0N",
+        "guid": "97a87d707ac047f762b1b3668a57c322",
+        "link": "https:\/\/nzbs.org\/getnzb\/97a87d707ac047f762b1b3668a57c322.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/97a87d707ac047f762b1b3668a57c322#comments",
+        "pubDate": "Tue, 07 Jul 2015 01:45:58 +0000",
+        "category": "Movies-XviD",
+        "description": "Spy.2015.HC.720p.WEBRiP.XViD.AC3-LEGi0N",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/97a87d707ac047f762b1b3668a57c322.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "5100955317",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5100955317"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "97a87d707ac047f762b1b3668a57c322"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Spy.2015.1080p.HDRip.KORSUB.x264.AAC2.0-RARBG",
+        "guid": "cc81f9195c11e0c99a76234bfc65ba12",
+        "link": "https:\/\/nzbs.org\/getnzb\/cc81f9195c11e0c99a76234bfc65ba12.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/cc81f9195c11e0c99a76234bfc65ba12#comments",
+        "pubDate": "Sun, 05 Jul 2015 22:36:21 +0000",
+        "category": "Movies-x264",
+        "description": "Spy.2015.1080p.HDRip.KORSUB.x264.AAC2.0-RARBG",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/cc81f9195c11e0c99a76234bfc65ba12.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "4912003848",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "4912003848"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "cc81f9195c11e0c99a76234bfc65ba12"
+            }
+          }
+        ]
+      },
+      {
+        "title": "SPY.2015.1080PHC.WEB-DLx264.NL.SUBS.T.U.",
+        "guid": "5342ae0149125d02499b312e90192c9c",
+        "link": "https:\/\/nzbs.org\/getnzb\/5342ae0149125d02499b312e90192c9c.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/5342ae0149125d02499b312e90192c9c#comments",
+        "pubDate": "Sun, 05 Jul 2015 20:13:16 +0000",
+        "category": "Movies-x264",
+        "description": "SPY.2015.1080PHC.WEB-DLx264.NL.SUBS.T.U.",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/5342ae0149125d02499b312e90192c9c.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "20007653313",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "20007653313"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "5342ae0149125d02499b312e90192c9c"
+            }
+          }
+        ]
+      },
+      {
+        "title": "spy.2015.hc.720p.hdrip.xvid.ac3-evo",
+        "guid": "e56116b25167ee49b00a1e1137ab83dc",
+        "link": "https:\/\/nzbs.org\/getnzb\/e56116b25167ee49b00a1e1137ab83dc.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/e56116b25167ee49b00a1e1137ab83dc#comments",
+        "pubDate": "Sun, 05 Jul 2015 14:15:12 +0000",
+        "category": "Movies-XviD",
+        "description": "spy.2015.hc.720p.hdrip.xvid.ac3-evo",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e56116b25167ee49b00a1e1137ab83dc.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "3168884569",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "3168884569"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e56116b25167ee49b00a1e1137ab83dc"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "@attributes": {
+    "version": "2.0"
+  },
+  "channel": {
+    "title": "NZBs(dot)ORG API Search",
+    "description": "NZBs(dot)ORG Feed",
+    "link": "https:\/\/nzbs.org\/",
+    "language": "en-gb",
+    "webMaster": "admin@nzbs.org (NZBs(dot)ORG)",
+    "category": {},
+    "image": {
+      "url": "https:\/\/nzbs.org\/\/templates\/default\/images\/banner.jpg",
+      "title": "NZBs(dot)ORG",
+      "link": "https:\/\/nzbs.org\/",
+      "description": "Visit NZBs(dot)ORG - Home of the NZB Harvester"
+    },
+    "response": {
+      "@attributes": {
+        "offset": "0",
+        "total": "1000"
+      }
+    },
+    "item": [
+      {
+        "title": "Avengers.Age.Of.Ultron.2015.REPACK.MULTI.1080p.BluRay.x264-Goatlove",
+        "guid": "d799a7ef175e8082af28c40fa887c766",
+        "link": "https:\/\/nzbs.org\/getnzb\/d799a7ef175e8082af28c40fa887c766.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/d799a7ef175e8082af28c40fa887c766#comments",
+        "pubDate": "Fri, 18 Sep 2015 20:44:57 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Age.Of.Ultron.2015.REPACK.MULTI.1080p.BluRay.x264-Goatlove",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/d799a7ef175e8082af28c40fa887c766.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "13427328078",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "13427328078"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "d799a7ef175e8082af28c40fa887c766"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "files",
+              "value": "78"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "poster",
+              "value": "Yenc@power-post.org (Yenc-PP-A&A)"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "rageid",
+              "value": ""
+            }
+          },
+          {
+            "@attributes": {
+              "name": "tvdbid",
+              "value": ""
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "2395427"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Avengers: Age of Ultron"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtagline",
+              "value": "A new age begins"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbplot",
+              "value": "When Tony Stark tries to jumpstart a dormant peacekeeping program, things go awry and Earth\u2019s Mightiest Heroes are put to the ultimate test as the fate of the planet hangs in the balance. As the villainous Ultron emerges, it is up to The Avengers to stop him from enacting his terrible plans, and soon uneasy alliances and unexpected action pave the way for an epic and unique global adventure."
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.8"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Action|Adventure|Sci-Fi|Science Fiction"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbdirector",
+              "value": "Joss Whedon"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbactors",
+              "value": "Robert Downey Jr.|Chris Hemsworth|Mark Ruffalo|Chris Evans|Scarlett Johansson|Jeremy Renner|James Spader|Samuel L. Jackson|Don Cheadle|Aaron Taylor-Johnson|Elizabeth Olsen|Paul Bettany|Cobie Smulders|Anthony Mackie|Hayley Atwell"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https:\/\/nzbs.org\/covers\/movies\/2395427-cover.jpg"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "backdropurl",
+              "value": "https:\/\/nzbs.org\/covers\/movies\/2395427-backdrop.jpg"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "67"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "completion",
+              "value": "100"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "password",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "usenetdate",
+              "value": "Fri, 18 Sep 2015 20:11:15 +0000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "group",
+              "value": "alt.binaries.mom"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

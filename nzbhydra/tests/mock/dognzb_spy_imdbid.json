@@ -1,0 +1,1202 @@
+{
+  "@attributes": {
+    "version": "2.0"
+  },
+  "channel": {
+    "title": "DOGnzb",
+    "description": "DOGnzb Feed",
+    "uuid": "34B37D52",
+    "response": {
+      "@attributes": {
+        "offset": "0",
+        "total": "13"
+      }
+    },
+    "language": "en-us",
+    "item": [
+      {
+        "id": "78df0cada77b6cb2713aa78472182d96",
+        "title": "Spy.2015.720p.BRRip.Hevc.X265.AC3-SANTI",
+        "guid": "https:\/\/dognzb.cr\/details\/78df0cada77b6cb2713aa78472182d96",
+        "link": "https:\/\/dognzb.cr\/fetch\/78df0cada77b6cb2713aa78472182d96\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Wed, 16 Sep 2015 19:15:49 -0600",
+        "category": "Movies > HD",
+        "description": "Spy.2015.720p.BRRip.Hevc.X265.AC3-SANTI",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/78df0cada77b6cb2713aa78472182d96\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "2038250348",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2038250348"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "78df0cada77b6cb2713aa78472182d96"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "65"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "3079380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Spy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.3>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Crime, Action, Comedy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/3079380.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "00b696353e3010afecd8790ed093670b",
+        "title": "Spy.2015.BRRip.XVID.AC3-SANTI",
+        "guid": "https:\/\/dognzb.cr\/details\/00b696353e3010afecd8790ed093670b",
+        "link": "https:\/\/dognzb.cr\/fetch\/00b696353e3010afecd8790ed093670b\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Wed, 16 Sep 2015 12:20:24 -0600",
+        "category": "Movies > SD",
+        "description": "Spy.2015.BRRip.XVID.AC3-SANTI",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/00b696353e3010afecd8790ed093670b\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "2022840865",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2022840865"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "00b696353e3010afecd8790ed093670b"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "35"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "3079380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Spy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.3>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Crime, Action, Comedy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/3079380.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "5e0331f9ffadf623db8a69cf3494c43c",
+        "title": "Spy.2015.UNRATED.BluRay.1080p.DTS-HD.MA.7.1.x264-NL",
+        "guid": "https:\/\/dognzb.cr\/details\/5e0331f9ffadf623db8a69cf3494c43c",
+        "link": "https:\/\/dognzb.cr\/fetch\/5e0331f9ffadf623db8a69cf3494c43c\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Wed, 16 Sep 2015 06:15:29 -0600",
+        "category": "Movies > HD",
+        "description": "Spy.2015.UNRATED.BluRay.1080p.DTS-HD.MA.7.1.x264-NL",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/5e0331f9ffadf623db8a69cf3494c43c\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "20188708749",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "20188708749"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "5e0331f9ffadf623db8a69cf3494c43c"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "120"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "3079380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Spy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.3>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Crime, Action, Comedy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/3079380.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "93b5ac2d6413d663c297930d655a935f",
+        "title": "Spy.2015.EXTENDED.720p.WEB-DL.DD5.1.H264-RARBG",
+        "guid": "https:\/\/dognzb.cr\/details\/93b5ac2d6413d663c297930d655a935f",
+        "link": "https:\/\/dognzb.cr\/fetch\/93b5ac2d6413d663c297930d655a935f\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Wed, 16 Sep 2015 05:29:47 -0600",
+        "category": "Movies > HD",
+        "description": "Spy.2015.EXTENDED.720p.WEB-DL.DD5.1.H264-RARBG",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/93b5ac2d6413d663c297930d655a935f\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "4954082795",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "4954082795"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "93b5ac2d6413d663c297930d655a935f"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "73"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "3079380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Spy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.3>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Crime, Action, Comedy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/3079380.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "20300f8eaf06249f1b6e4d3b99957196",
+        "title": "Spy.2015.1080p.BluRay.x264",
+        "guid": "https:\/\/dognzb.cr\/details\/20300f8eaf06249f1b6e4d3b99957196",
+        "link": "https:\/\/dognzb.cr\/fetch\/20300f8eaf06249f1b6e4d3b99957196\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Tue, 15 Sep 2015 01:44:40 -0600",
+        "category": "Movies > HD",
+        "description": "Spy.2015.1080p.BluRay.x264",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/20300f8eaf06249f1b6e4d3b99957196\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "12113014034",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "12113014034"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "20300f8eaf06249f1b6e4d3b99957196"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "202"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "3079380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Spy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.3>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Crime, Action, Comedy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/3079380.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "1ad085759e78d5f63b142e9c391c4b64",
+        "title": "Spy.2015.1080p.BluRay.x264-SPARKS",
+        "guid": "https:\/\/dognzb.cr\/details\/1ad085759e78d5f63b142e9c391c4b64",
+        "link": "https:\/\/dognzb.cr\/fetch\/1ad085759e78d5f63b142e9c391c4b64\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Mon, 14 Sep 2015 23:15:21 -0600",
+        "category": "Movies > HD",
+        "description": "Spy.2015.1080p.BluRay.x264-SPARKS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/1ad085759e78d5f63b142e9c391c4b64\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "11471771297",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "11471771297"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "1ad085759e78d5f63b142e9c391c4b64"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "894"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "3079380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Spy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.3>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Crime, Action, Comedy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/3079380.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "147ba7629a07042d801535bda64c2b31",
+        "title": "Spy.2015.BDRip.x264-SPARKS",
+        "guid": "https:\/\/dognzb.cr\/details\/147ba7629a07042d801535bda64c2b31",
+        "link": "https:\/\/dognzb.cr\/fetch\/147ba7629a07042d801535bda64c2b31\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Mon, 14 Sep 2015 20:21:05 -0600",
+        "category": "Movies > SD",
+        "description": "Spy.2015.BDRip.x264-SPARKS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/147ba7629a07042d801535bda64c2b31\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "1046479316",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1046479316"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "147ba7629a07042d801535bda64c2b31"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "141"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "3079380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Spy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.3>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Crime, Action, Comedy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/3079380.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "145741a4d604021d6e4784736933bc68",
+        "title": "Spy.2015.720p.BluRay.x264-SPARKS",
+        "guid": "https:\/\/dognzb.cr\/details\/145741a4d604021d6e4784736933bc68",
+        "link": "https:\/\/dognzb.cr\/fetch\/145741a4d604021d6e4784736933bc68\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Mon, 14 Sep 2015 20:15:45 -0600",
+        "category": "Movies > HD",
+        "description": "Spy.2015.720p.BluRay.x264-SPARKS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/145741a4d604021d6e4784736933bc68\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "7651634558",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "7651634558"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "145741a4d604021d6e4784736933bc68"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "571"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "3079380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Spy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.3>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Crime, Action, Comedy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/3079380.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "fac529e7078434e1122dbdf87cff0db1",
+        "title": "Spy.2015.Extended.1080p.WEB-DL.DD5.1.H264-RARBG",
+        "guid": "https:\/\/dognzb.cr\/details\/fac529e7078434e1122dbdf87cff0db1",
+        "link": "https:\/\/dognzb.cr\/fetch\/fac529e7078434e1122dbdf87cff0db1\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Mon, 14 Sep 2015 08:22:53 -0600",
+        "category": "Movies > HD",
+        "description": "Spy.2015.Extended.1080p.WEB-DL.DD5.1.H264-RARBG",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/fac529e7078434e1122dbdf87cff0db1\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "5201210466",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5201210466"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "fac529e7078434e1122dbdf87cff0db1"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "232"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "3079380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Spy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.3>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Crime, Action, Comedy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/3079380.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "86c41c96a40a5f821eb725f2b562aa72",
+        "title": "Spy.2015.Extended.720p.WEB-DL",
+        "guid": "https:\/\/dognzb.cr\/details\/86c41c96a40a5f821eb725f2b562aa72",
+        "link": "https:\/\/dognzb.cr\/fetch\/86c41c96a40a5f821eb725f2b562aa72\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Mon, 07 Sep 2015 03:10:19 -0600",
+        "category": "Movies > HD",
+        "description": "Spy.2015.Extended.720p.WEB-DL",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/86c41c96a40a5f821eb725f2b562aa72\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "5524537869",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5524537869"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "86c41c96a40a5f821eb725f2b562aa72"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "1443"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "1"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "3079380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Spy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.3>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Crime, Action, Comedy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/3079380.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "74679bd00fa18881674a9d96911f1d1d",
+        "title": "Spy.2015.UNRATED.720p.Webrip.XVID.AC3-REFILL",
+        "guid": "https:\/\/dognzb.cr\/details\/74679bd00fa18881674a9d96911f1d1d",
+        "link": "https:\/\/dognzb.cr\/fetch\/74679bd00fa18881674a9d96911f1d1d\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Thu, 27 Aug 2015 19:54:24 -0600",
+        "category": "Movies > HD",
+        "description": "Spy.2015.UNRATED.720p.Webrip.XVID.AC3-REFILL",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/74679bd00fa18881674a9d96911f1d1d\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "3415067391",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "3415067391"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "74679bd00fa18881674a9d96911f1d1d"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "1058"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "3079380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Spy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.3>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Crime, Action, Comedy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/3079380.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "b1c60043ee004eb0ba931c6ba50e8bb7",
+        "title": "Spy.2015.Hc.720p.Hdrip.XVID.AC3-EVO",
+        "guid": "https:\/\/dognzb.cr\/details\/b1c60043ee004eb0ba931c6ba50e8bb7",
+        "link": "https:\/\/dognzb.cr\/fetch\/b1c60043ee004eb0ba931c6ba50e8bb7\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Sun, 05 Jul 2015 07:55:55 -0600",
+        "category": "Movies > HD",
+        "description": "Spy.2015.Hc.720p.Hdrip.XVID.AC3-EVO",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/b1c60043ee004eb0ba931c6ba50e8bb7\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "3168384267",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "3168384267"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "b1c60043ee004eb0ba931c6ba50e8bb7"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "1266"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "2"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "3079380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Spy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.3>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Crime, Action, Comedy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/3079380.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "5c3d854fbeaf0076b7cf1a854d265816",
+        "title": "Spy.2015.TS.XVID.AC3-MRG",
+        "guid": "https:\/\/dognzb.cr\/details\/5c3d854fbeaf0076b7cf1a854d265816",
+        "link": "https:\/\/dognzb.cr\/fetch\/5c3d854fbeaf0076b7cf1a854d265816\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Sun, 28 Jun 2015 16:15:28 -0600",
+        "category": "Movies > SD",
+        "description": "Spy.2015.TS.XVID.AC3-MRG",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/5c3d854fbeaf0076b7cf1a854d265816\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "2061599249",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2061599249"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "5c3d854fbeaf0076b7cf1a854d265816"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "91"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "1"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "3079380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Spy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.3>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Crime, Action, Comedy"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/3079380.png"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

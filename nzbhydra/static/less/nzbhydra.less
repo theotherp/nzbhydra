@@ -1,0 +1,54 @@
+@import "bootstrap/variables.less";
+
+html,
+body {
+    height: 100%;
+  background: #555;
+}
+/* ------ featurette */
+.featurette {
+    display: table;
+    width: 100%;
+    height: 30%; /* set a pixel height and then remove the body,html height */
+    vertical-align: middle;
+    
+    color: #fff;
+}
+.featurette-inner {
+    display: table-cell;
+    vertical-align: middle;
+}
+.featurette .search {
+    padding: 3%;
+    max-width: 980px; /*max width of search*/
+    margin: 0 auto;
+}
+.no-margin-top {
+    margin-top: 0
+}
+
+
+/* ------ form-control-lg */
+.form-control-lg {
+    min-height: 46px;
+    border-radius: 6px;
+    font-size: 18px;
+    line-height: normal;
+}
+
+.td-embedded {
+    background-color: @table-bg-subrow;
+    font-size: @font-size-smaller;
+}
+
+.td-embedded:first-child {
+    margin-left: 30px;
+}
+
+.hidden-keep-space {
+  visibility: hidden;
+}
+
+.caret-reversed {
+  transform: rotate(180deg);
+}

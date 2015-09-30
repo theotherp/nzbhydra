@@ -1,0 +1,1720 @@
+<?xml version="1.0" encoding="utf-8" ?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/">
+<channel>
+<atom:link href="https://nzbs.org/api?apikey=691ffff70ac03d75812f910d813f7b3c&amp;t=search&amp;q=avengers" rel="self" type="application/rss+xml" />
+<title>NZBs(dot)ORG API Search</title>
+<description>NZBs(dot)ORG Feed</description>
+<link>https://nzbs.org/</link>
+<language>en-gb</language>
+<webMaster>admin@nzbs.org (NZBs(dot)ORG)</webMaster>
+<category></category>
+<image>
+	<url>https://nzbs.org//templates/default/images/banner.jpg</url>
+	<title>NZBs(dot)ORG</title>
+	<link>https://nzbs.org/</link>
+	<description>Visit NZBs(dot)ORG - Home of the NZB Harvester</description>
+</image>
+
+<newznab:response offset="0" total="1000" />
+<item>
+	<title>Avengers.Age.Of.Ultron.2015.FRENCH.720p.BluRay.x264-Goatlove</title>
+	<guid isPermaLink="false">9c9d30fa2767e05ffd387db52d318ad7</guid>
+	<link>https://nzbs.org/getnzb/9c9d30fa2767e05ffd387db52d318ad7.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/9c9d30fa2767e05ffd387db52d318ad7#comments</comments> 	
+	<pubDate>Fri, 18 Sep 2015 12:57:17 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.Of.Ultron.2015.FRENCH.720p.BluRay.x264-Goatlove</description>
+	<enclosure url="https://nzbs.org/getnzb/9c9d30fa2767e05ffd387db52d318ad7.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="6719733587" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="6719733587" />
+	<newznab:attr name="guid" value="9c9d30fa2767e05ffd387db52d318ad7" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.BluRay.x264.AC3.5.1-BUYMORE</title>
+	<guid isPermaLink="false">eb74f6c0bf2125c0b410936276ac38f0</guid>
+	<link>https://nzbs.org/getnzb/eb74f6c0bf2125c0b410936276ac38f0.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/eb74f6c0bf2125c0b410936276ac38f0#comments</comments> 	
+	<pubDate>Thu, 17 Sep 2015 19:50:32 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.BluRay.x264.AC3.5.1-BUYMORE</description>
+	<enclosure url="https://nzbs.org/getnzb/eb74f6c0bf2125c0b410936276ac38f0.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="4910931143" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="4910931143" />
+	<newznab:attr name="guid" value="eb74f6c0bf2125c0b410936276ac38f0" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.BluRay.DTS.x264-CyTSuNee</title>
+	<guid isPermaLink="false">41b305ac99507f70ed6a10e45177065c</guid>
+	<link>https://nzbs.org/getnzb/41b305ac99507f70ed6a10e45177065c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/41b305ac99507f70ed6a10e45177065c#comments</comments> 	
+	<pubDate>Thu, 17 Sep 2015 01:39:33 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.BluRay.DTS.x264-CyTSuNee</description>
+	<enclosure url="https://nzbs.org/getnzb/41b305ac99507f70ed6a10e45177065c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="15010196044" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="15010196044" />
+	<newznab:attr name="guid" value="41b305ac99507f70ed6a10e45177065c" />
+
+
+</item>
+<item>
+	<title>avengers.age.of.ultron.2015.1080p.bluray.hevc.x265.dts-santi</title>
+	<guid isPermaLink="false">70359782bdbbc1e11360e29eb67a82d1</guid>
+	<link>https://nzbs.org/getnzb/70359782bdbbc1e11360e29eb67a82d1.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/70359782bdbbc1e11360e29eb67a82d1#comments</comments> 	
+	<pubDate>Mon, 14 Sep 2015 19:52:25 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>avengers.age.of.ultron.2015.1080p.bluray.hevc.x265.dts-santi</description>
+	<enclosure url="https://nzbs.org/getnzb/70359782bdbbc1e11360e29eb67a82d1.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="5952397382" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="5952397382" />
+	<newznab:attr name="guid" value="70359782bdbbc1e11360e29eb67a82d1" />
+
+
+</item>
+<item>
+	<title>avengers.age.of.ultron.2015.1080p.bluray.hevc.x265.dts-santi</title>
+	<guid isPermaLink="false">84855454e4622014e256d6795dbadd0e</guid>
+	<link>https://nzbs.org/getnzb/84855454e4622014e256d6795dbadd0e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/84855454e4622014e256d6795dbadd0e#comments</comments> 	
+	<pubDate>Mon, 14 Sep 2015 17:47:28 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>avengers.age.of.ultron.2015.1080p.bluray.hevc.x265.dts-santi</description>
+	<enclosure url="https://nzbs.org/getnzb/84855454e4622014e256d6795dbadd0e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="5675496159" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="5675496159" />
+	<newznab:attr name="guid" value="84855454e4622014e256d6795dbadd0e" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.Of.Ultron.2015.TRUEFRENCH.720p.BluRay.x264-AViTECH</title>
+	<guid isPermaLink="false">ec406484c892b9b4134fd56ea053567a</guid>
+	<link>https://nzbs.org/getnzb/ec406484c892b9b4134fd56ea053567a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ec406484c892b9b4134fd56ea053567a#comments</comments> 	
+	<pubDate>Mon, 14 Sep 2015 15:54:26 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.Of.Ultron.2015.TRUEFRENCH.720p.BluRay.x264-AViTECH</description>
+	<enclosure url="https://nzbs.org/getnzb/ec406484c892b9b4134fd56ea053567a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="6340158122" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="6340158122" />
+	<newznab:attr name="guid" value="ec406484c892b9b4134fd56ea053567a" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.Of.Ultron.2015.TRUEFRENCH.720p.BluRay.x264-AViTECH</title>
+	<guid isPermaLink="false">af6a61088890e07a8cd9f2c6c11eaeec</guid>
+	<link>https://nzbs.org/getnzb/af6a61088890e07a8cd9f2c6c11eaeec.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/af6a61088890e07a8cd9f2c6c11eaeec#comments</comments> 	
+	<pubDate>Mon, 14 Sep 2015 15:53:54 +0000</pubDate> 
+	<category>Music-FLAC</category> 	
+	<description>Avengers.Age.Of.Ultron.2015.TRUEFRENCH.720p.BluRay.x264-AViTECH</description>
+	<enclosure url="https://nzbs.org/getnzb/af6a61088890e07a8cd9f2c6c11eaeec.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="6759461374" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="3000" />
+	<newznab:attr name="category" value="3040" />
+	<newznab:attr name="size" value="6759461374" />
+	<newznab:attr name="guid" value="af6a61088890e07a8cd9f2c6c11eaeec" />
+
+
+</item>
+<item>
+	<title>Avengers.Assemble.S02E25.New.Frontier.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">6c1999e34bfc9fec7269810544d66379</guid>
+	<link>https://nzbs.org/getnzb/6c1999e34bfc9fec7269810544d66379.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/6c1999e34bfc9fec7269810544d66379#comments</comments> 	
+	<pubDate>Mon, 14 Sep 2015 00:46:20 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Avengers.Assemble.S02E25.New.Frontier.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/6c1999e34bfc9fec7269810544d66379.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="181129893" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="181129893" />
+	<newznab:attr name="guid" value="6c1999e34bfc9fec7269810544d66379" />
+
+
+</item>
+<item>
+	<title>Avengers.Assemble.S02E25.New.Frontier.720p.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">9ce607b013652f361928d5e3f5e7ec0a</guid>
+	<link>https://nzbs.org/getnzb/9ce607b013652f361928d5e3f5e7ec0a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/9ce607b013652f361928d5e3f5e7ec0a#comments</comments> 	
+	<pubDate>Mon, 14 Sep 2015 00:46:04 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Avengers.Assemble.S02E25.New.Frontier.720p.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/9ce607b013652f361928d5e3f5e7ec0a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="621789858" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="621789858" />
+	<newznab:attr name="guid" value="9ce607b013652f361928d5e3f5e7ec0a" />
+
+
+</item>
+<item>
+	<title>The.Avengers.2012.720p.BluRay.DTS.x264-LEGi0N</title>
+	<guid isPermaLink="false">18d48ff46df00b974ee82c5efaa6a9df</guid>
+	<link>https://nzbs.org/getnzb/18d48ff46df00b974ee82c5efaa6a9df.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/18d48ff46df00b974ee82c5efaa6a9df#comments</comments> 	
+	<pubDate>Sun, 13 Sep 2015 22:27:54 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>The.Avengers.2012.720p.BluRay.DTS.x264-LEGi0N</description>
+	<enclosure url="https://nzbs.org/getnzb/18d48ff46df00b974ee82c5efaa6a9df.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="6104167979" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="6104167979" />
+	<newznab:attr name="guid" value="18d48ff46df00b974ee82c5efaa6a9df" />
+
+
+</item>
+<item>
+	<title>Avengers Age of Ultron (2015) HDRip XviD-MAXSPEED</title>
+	<guid isPermaLink="false">c7f3f644ea670dadac30d739d14140ab</guid>
+	<link>https://nzbs.org/getnzb/c7f3f644ea670dadac30d739d14140ab.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/c7f3f644ea670dadac30d739d14140ab#comments</comments> 	
+	<pubDate>Sat, 12 Sep 2015 22:19:19 +0000</pubDate> 
+	<category>Other-Misc</category> 	
+	<description>Avengers Age of Ultron (2015) HDRip XviD-MAXSPEED</description>
+	<enclosure url="https://nzbs.org/getnzb/c7f3f644ea670dadac30d739d14140ab.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="6246192" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="7000" />
+	<newznab:attr name="category" value="7010" />
+	<newznab:attr name="size" value="6246192" />
+	<newznab:attr name="guid" value="c7f3f644ea670dadac30d739d14140ab" />
+
+
+</item>
+<item>
+	<title>AVENGERS.AGE.OF.ULTRON.3D-half.OU.(GhettoS.)</title>
+	<guid isPermaLink="false">4ea00f59a554fbc554ab671f3dedb009</guid>
+	<link>https://nzbs.org/getnzb/4ea00f59a554fbc554ab671f3dedb009.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/4ea00f59a554fbc554ab671f3dedb009#comments</comments> 	
+	<pubDate>Fri, 11 Sep 2015 16:27:57 +0000</pubDate> 
+	<category>Movies-3D</category> 	
+	<description>AVENGERS.AGE.OF.ULTRON.3D-half.OU.(GhettoS.)</description>
+	<enclosure url="https://nzbs.org/getnzb/4ea00f59a554fbc554ab671f3dedb009.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="19605250778" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2070" />
+	<newznab:attr name="size" value="19605250778" />
+	<newznab:attr name="guid" value="4ea00f59a554fbc554ab671f3dedb009" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.TRUEFRENCH.720p.BluRay.x264-HMiDiMADRiDi</title>
+	<guid isPermaLink="false">20d140a14d0644511810930a356a1092</guid>
+	<link>https://nzbs.org/getnzb/20d140a14d0644511810930a356a1092.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/20d140a14d0644511810930a356a1092#comments</comments> 	
+	<pubDate>Fri, 11 Sep 2015 11:30:58 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.TRUEFRENCH.720p.BluRay.x264-HMiDiMADRiDi</description>
+	<enclosure url="https://nzbs.org/getnzb/20d140a14d0644511810930a356a1092.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="6643755191" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="6643755191" />
+	<newznab:attr name="guid" value="20d140a14d0644511810930a356a1092" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.BluRay.DTS.x264-CyTSuNee</title>
+	<guid isPermaLink="false">a161f0ebd9da885a1c6d1918a9512b08</guid>
+	<link>https://nzbs.org/getnzb/a161f0ebd9da885a1c6d1918a9512b08.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/a161f0ebd9da885a1c6d1918a9512b08#comments</comments> 	
+	<pubDate>Fri, 11 Sep 2015 08:21:47 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.BluRay.DTS.x264-CyTSuNee</description>
+	<enclosure url="https://nzbs.org/getnzb/a161f0ebd9da885a1c6d1918a9512b08.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="15952219812" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="15952219812" />
+	<newznab:attr name="guid" value="a161f0ebd9da885a1c6d1918a9512b08" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.BluRay.x265-HEVC</title>
+	<guid isPermaLink="false">27e0be01523502a971cb8c42ed7d164c</guid>
+	<link>https://nzbs.org/getnzb/27e0be01523502a971cb8c42ed7d164c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/27e0be01523502a971cb8c42ed7d164c#comments</comments> 	
+	<pubDate>Fri, 11 Sep 2015 00:46:19 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.BluRay.x265-HEVC</description>
+	<enclosure url="https://nzbs.org/getnzb/27e0be01523502a971cb8c42ed7d164c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1003165650" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="1003165650" />
+	<newznab:attr name="guid" value="27e0be01523502a971cb8c42ed7d164c" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.TRUEFRENCH.MULTi.1080p.BluRay.x264-HMiDiMADRiDi</title>
+	<guid isPermaLink="false">27bfa284964a022453fa777cb3970175</guid>
+	<link>https://nzbs.org/getnzb/27bfa284964a022453fa777cb3970175.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/27bfa284964a022453fa777cb3970175#comments</comments> 	
+	<pubDate>Fri, 11 Sep 2015 00:38:52 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.TRUEFRENCH.MULTi.1080p.BluRay.x264-HMiDiMADRiDi</description>
+	<enclosure url="https://nzbs.org/getnzb/27bfa284964a022453fa777cb3970175.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="13732282068" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="13732282068" />
+	<newznab:attr name="guid" value="27bfa284964a022453fa777cb3970175" />
+
+
+</item>
+<item>
+	<title>AVENGERS.AGE.OF.ULTRON.3D-half.OU.(GhettoS.)</title>
+	<guid isPermaLink="false">4ae47f6a591870e59bd250d94a475133</guid>
+	<link>https://nzbs.org/getnzb/4ae47f6a591870e59bd250d94a475133.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/4ae47f6a591870e59bd250d94a475133#comments</comments> 	
+	<pubDate>Fri, 11 Sep 2015 00:08:32 +0000</pubDate> 
+	<category>Movies-3D</category> 	
+	<description>AVENGERS.AGE.OF.ULTRON.3D-half.OU.(GhettoS.)</description>
+	<enclosure url="https://nzbs.org/getnzb/4ae47f6a591870e59bd250d94a475133.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="19605465634" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2070" />
+	<newznab:attr name="size" value="19605465634" />
+	<newznab:attr name="guid" value="4ae47f6a591870e59bd250d94a475133" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.BluRay.DTS.x264-CyTSuNee</title>
+	<guid isPermaLink="false">8e68ebb3df531033826ea614c30c8caf</guid>
+	<link>https://nzbs.org/getnzb/8e68ebb3df531033826ea614c30c8caf.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/8e68ebb3df531033826ea614c30c8caf#comments</comments> 	
+	<pubDate>Thu, 10 Sep 2015 20:33:11 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.BluRay.DTS.x264-CyTSuNee</description>
+	<enclosure url="https://nzbs.org/getnzb/8e68ebb3df531033826ea614c30c8caf.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="14417285709" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="14417285709" />
+	<newznab:attr name="guid" value="8e68ebb3df531033826ea614c30c8caf" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.3D.720p.BluRay.x264-VALUE</title>
+	<guid isPermaLink="false">22ea3dfb53bbed7b2f9ddc4ef18cb7cb</guid>
+	<link>https://nzbs.org/getnzb/22ea3dfb53bbed7b2f9ddc4ef18cb7cb.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/22ea3dfb53bbed7b2f9ddc4ef18cb7cb#comments</comments> 	
+	<pubDate>Thu, 10 Sep 2015 11:14:32 +0000</pubDate> 
+	<category>Movies-3D</category> 	
+	<description>Avengers.Age.of.Ultron.2015.3D.720p.BluRay.x264-VALUE</description>
+	<enclosure url="https://nzbs.org/getnzb/22ea3dfb53bbed7b2f9ddc4ef18cb7cb.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="6701123346" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2070" />
+	<newznab:attr name="size" value="6701123346" />
+	<newznab:attr name="guid" value="22ea3dfb53bbed7b2f9ddc4ef18cb7cb" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.Of.Ultron.2015.FRENCH.BDRip.x264-COUAC</title>
+	<guid isPermaLink="false">addf6b6796237cd7536ac040fe5e98c7</guid>
+	<link>https://nzbs.org/getnzb/addf6b6796237cd7536ac040fe5e98c7.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/addf6b6796237cd7536ac040fe5e98c7#comments</comments> 	
+	<pubDate>Thu, 10 Sep 2015 07:16:26 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.Of.Ultron.2015.FRENCH.BDRip.x264-COUAC</description>
+	<enclosure url="https://nzbs.org/getnzb/addf6b6796237cd7536ac040fe5e98c7.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1328014980" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="1328014980" />
+	<newznab:attr name="guid" value="addf6b6796237cd7536ac040fe5e98c7" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.3D.720p.BluRay.x264-VALUE</title>
+	<guid isPermaLink="false">6d56921be3d0e8ca7c51f6b4097011d4</guid>
+	<link>https://nzbs.org/getnzb/6d56921be3d0e8ca7c51f6b4097011d4.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/6d56921be3d0e8ca7c51f6b4097011d4#comments</comments> 	
+	<pubDate>Thu, 10 Sep 2015 02:55:41 +0000</pubDate> 
+	<category>Movies-3D</category> 	
+	<description>Avengers.Age.of.Ultron.2015.3D.720p.BluRay.x264-VALUE</description>
+	<enclosure url="https://nzbs.org/getnzb/6d56921be3d0e8ca7c51f6b4097011d4.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="6370359271" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2070" />
+	<newznab:attr name="size" value="6370359271" />
+	<newznab:attr name="guid" value="6d56921be3d0e8ca7c51f6b4097011d4" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.3D.720p.BluRay.x264-VALUE</title>
+	<guid isPermaLink="false">4cf1cb4989894ce7c0038762f03ce1ab</guid>
+	<link>https://nzbs.org/getnzb/4cf1cb4989894ce7c0038762f03ce1ab.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/4cf1cb4989894ce7c0038762f03ce1ab#comments</comments> 	
+	<pubDate>Thu, 10 Sep 2015 02:52:33 +0000</pubDate> 
+	<category>Movies-3D</category> 	
+	<description>Avengers.Age.of.Ultron.2015.3D.720p.BluRay.x264-VALUE</description>
+	<enclosure url="https://nzbs.org/getnzb/4cf1cb4989894ce7c0038762f03ce1ab.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="6727906566" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2070" />
+	<newznab:attr name="size" value="6727906566" />
+	<newznab:attr name="guid" value="4cf1cb4989894ce7c0038762f03ce1ab" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.Of.Ultron-bd25.iso</title>
+	<guid isPermaLink="false">ef643ca2a062b032c6c5587021fd7cae</guid>
+	<link>https://nzbs.org/getnzb/ef643ca2a062b032c6c5587021fd7cae.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ef643ca2a062b032c6c5587021fd7cae#comments</comments> 	
+	<pubDate>Wed, 09 Sep 2015 22:11:21 +0000</pubDate> 
+	<category>Movies-Other</category> 	
+	<description>Avengers.Age.Of.Ultron-bd25.iso</description>
+	<enclosure url="https://nzbs.org/getnzb/ef643ca2a062b032c6c5587021fd7cae.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="26307226950" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2050" />
+	<newznab:attr name="size" value="26307226950" />
+	<newznab:attr name="guid" value="ef643ca2a062b032c6c5587021fd7cae" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.3D.1080p.BluRay.x264-SPRiNTER</title>
+	<guid isPermaLink="false">5f43fa2893b5cad0794e74b8040f9add</guid>
+	<link>https://nzbs.org/getnzb/5f43fa2893b5cad0794e74b8040f9add.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/5f43fa2893b5cad0794e74b8040f9add#comments</comments> 	
+	<pubDate>Wed, 09 Sep 2015 18:03:57 +0000</pubDate> 
+	<category>Movies-3D</category> 	
+	<description>Avengers.Age.of.Ultron.2015.3D.1080p.BluRay.x264-SPRiNTER</description>
+	<enclosure url="https://nzbs.org/getnzb/5f43fa2893b5cad0794e74b8040f9add.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="13388784695" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2070" />
+	<newznab:attr name="size" value="13388784695" />
+	<newznab:attr name="guid" value="5f43fa2893b5cad0794e74b8040f9add" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.(2015).3D.1080p.Half-SBS</title>
+	<guid isPermaLink="false">0d32650ec8dffb6ab27968369dc06c5c</guid>
+	<link>https://nzbs.org/getnzb/0d32650ec8dffb6ab27968369dc06c5c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/0d32650ec8dffb6ab27968369dc06c5c#comments</comments> 	
+	<pubDate>Wed, 09 Sep 2015 17:41:44 +0000</pubDate> 
+	<category>Movies-3D</category> 	
+	<description>Avengers.Age.of.Ultron.(2015).3D.1080p.Half-SBS</description>
+	<enclosure url="https://nzbs.org/getnzb/0d32650ec8dffb6ab27968369dc06c5c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="13064436041" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2070" />
+	<newznab:attr name="size" value="13064436041" />
+	<newznab:attr name="guid" value="0d32650ec8dffb6ab27968369dc06c5c" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.3D.BluRay.Half-OU.x264.DTS-HD.MA.7.1-RARBG</title>
+	<guid isPermaLink="false">00684f6b97b8969843bbd4d4c80612d5</guid>
+	<link>https://nzbs.org/getnzb/00684f6b97b8969843bbd4d4c80612d5.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/00684f6b97b8969843bbd4d4c80612d5#comments</comments> 	
+	<pubDate>Wed, 09 Sep 2015 16:41:10 +0000</pubDate> 
+	<category>Movies-3D</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.3D.BluRay.Half-OU.x264.DTS-HD.MA.7.1-RARBG</description>
+	<enclosure url="https://nzbs.org/getnzb/00684f6b97b8969843bbd4d4c80612d5.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="29279460164" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2070" />
+	<newznab:attr name="size" value="29279460164" />
+	<newznab:attr name="guid" value="00684f6b97b8969843bbd4d4c80612d5" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.BluRay.DD5.1.DTS.x264.NLSubs-QoQ</title>
+	<guid isPermaLink="false">ebd31e7e62a0fae493528348e173f5e8</guid>
+	<link>https://nzbs.org/getnzb/ebd31e7e62a0fae493528348e173f5e8.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ebd31e7e62a0fae493528348e173f5e8#comments</comments> 	
+	<pubDate>Wed, 09 Sep 2015 13:55:22 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.BluRay.DD5.1.DTS.x264.NLSubs-QoQ</description>
+	<enclosure url="https://nzbs.org/getnzb/ebd31e7e62a0fae493528348e173f5e8.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="13796509876" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="13796509876" />
+	<newznab:attr name="guid" value="ebd31e7e62a0fae493528348e173f5e8" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.TRUEFRENCH.BDRip.x264-EXTREME</title>
+	<guid isPermaLink="false">b39a298a790218c69aad79bf4ae8770b</guid>
+	<link>https://nzbs.org/getnzb/b39a298a790218c69aad79bf4ae8770b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/b39a298a790218c69aad79bf4ae8770b#comments</comments> 	
+	<pubDate>Wed, 09 Sep 2015 12:28:53 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.TRUEFRENCH.BDRip.x264-EXTREME</description>
+	<enclosure url="https://nzbs.org/getnzb/b39a298a790218c69aad79bf4ae8770b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1242646581" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="1242646581" />
+	<newznab:attr name="guid" value="b39a298a790218c69aad79bf4ae8770b" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.BluRay.x264-jackane</title>
+	<guid isPermaLink="false">44e3ef6d237109ab3eda59d02fab297b</guid>
+	<link>https://nzbs.org/getnzb/44e3ef6d237109ab3eda59d02fab297b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/44e3ef6d237109ab3eda59d02fab297b#comments</comments> 	
+	<pubDate>Wed, 09 Sep 2015 08:20:05 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.BluRay.x264-jackane</description>
+	<enclosure url="https://nzbs.org/getnzb/44e3ef6d237109ab3eda59d02fab297b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="11871249408" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="11871249408" />
+	<newznab:attr name="guid" value="44e3ef6d237109ab3eda59d02fab297b" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.TRUEFRENCH.BDRip.x264-EXTREME</title>
+	<guid isPermaLink="false">5cad64f438b44c1b66407d8eb1f9c8ad</guid>
+	<link>https://nzbs.org/getnzb/5cad64f438b44c1b66407d8eb1f9c8ad.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/5cad64f438b44c1b66407d8eb1f9c8ad#comments</comments> 	
+	<pubDate>Wed, 09 Sep 2015 06:43:30 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.TRUEFRENCH.BDRip.x264-EXTREME</description>
+	<enclosure url="https://nzbs.org/getnzb/5cad64f438b44c1b66407d8eb1f9c8ad.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1243983284" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="1243983284" />
+	<newznab:attr name="guid" value="5cad64f438b44c1b66407d8eb1f9c8ad" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.3D.1080p.BluRay.x264-SPRiNTER</title>
+	<guid isPermaLink="false">ee038b6bcee9e0aed12f9c1368895a9c</guid>
+	<link>https://nzbs.org/getnzb/ee038b6bcee9e0aed12f9c1368895a9c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ee038b6bcee9e0aed12f9c1368895a9c#comments</comments> 	
+	<pubDate>Wed, 09 Sep 2015 05:25:55 +0000</pubDate> 
+	<category>Movies-3D</category> 	
+	<description>Avengers.Age.of.Ultron.2015.3D.1080p.BluRay.x264-SPRiNTER</description>
+	<enclosure url="https://nzbs.org/getnzb/ee038b6bcee9e0aed12f9c1368895a9c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="13411229645" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2070" />
+	<newznab:attr name="size" value="13411229645" />
+	<newznab:attr name="guid" value="ee038b6bcee9e0aed12f9c1368895a9c" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.3D.1080p.BluRay.x264-SPRiNTER</title>
+	<guid isPermaLink="false">08786f4befc6e97766fc9b1c637fb20f</guid>
+	<link>https://nzbs.org/getnzb/08786f4befc6e97766fc9b1c637fb20f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/08786f4befc6e97766fc9b1c637fb20f#comments</comments> 	
+	<pubDate>Wed, 09 Sep 2015 01:17:12 +0000</pubDate> 
+	<category>Movies-3D</category> 	
+	<description>Avengers.Age.of.Ultron.2015.3D.1080p.BluRay.x264-SPRiNTER</description>
+	<enclosure url="https://nzbs.org/getnzb/08786f4befc6e97766fc9b1c637fb20f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="13471046993" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2070" />
+	<newznab:attr name="size" value="13471046993" />
+	<newznab:attr name="guid" value="08786f4befc6e97766fc9b1c637fb20f" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.3D.1080p.BluRay.x264-SPRiNTER</title>
+	<guid isPermaLink="false">d95579578763dd14ad162464a72d58c0</guid>
+	<link>https://nzbs.org/getnzb/d95579578763dd14ad162464a72d58c0.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/d95579578763dd14ad162464a72d58c0#comments</comments> 	
+	<pubDate>Wed, 09 Sep 2015 00:32:52 +0000</pubDate> 
+	<category>Movies-3D</category> 	
+	<description>Avengers.Age.of.Ultron.2015.3D.1080p.BluRay.x264-SPRiNTER</description>
+	<enclosure url="https://nzbs.org/getnzb/d95579578763dd14ad162464a72d58c0.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="12735752535" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2070" />
+	<newznab:attr name="size" value="12735752535" />
+	<newznab:attr name="guid" value="d95579578763dd14ad162464a72d58c0" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.BDRip.XViD.AC3-REFiLL</title>
+	<guid isPermaLink="false">7c4d4a9e99a75850f7c111d41fb3195f</guid>
+	<link>https://nzbs.org/getnzb/7c4d4a9e99a75850f7c111d41fb3195f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/7c4d4a9e99a75850f7c111d41fb3195f#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 23:47:18 +0000</pubDate> 
+	<category>Movies-XviD</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.BDRip.XViD.AC3-REFiLL</description>
+	<enclosure url="https://nzbs.org/getnzb/7c4d4a9e99a75850f7c111d41fb3195f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="4239912999" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2030" />
+	<newznab:attr name="size" value="4239912999" />
+	<newznab:attr name="guid" value="7c4d4a9e99a75850f7c111d41fb3195f" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.Of.Ultron.2015.BRRip.x264.1080p-NPW</title>
+	<guid isPermaLink="false">ab40f77f43a4c0e89f5544beb609fb74</guid>
+	<link>https://nzbs.org/getnzb/ab40f77f43a4c0e89f5544beb609fb74.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ab40f77f43a4c0e89f5544beb609fb74#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 23:21:16 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.Of.Ultron.2015.BRRip.x264.1080p-NPW</description>
+	<enclosure url="https://nzbs.org/getnzb/ab40f77f43a4c0e89f5544beb609fb74.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="6660568427" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="6660568427" />
+	<newznab:attr name="guid" value="ab40f77f43a4c0e89f5544beb609fb74" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.BRRip.XviD.AC3-RARBG.Ingebakken.Subs</title>
+	<guid isPermaLink="false">b755d80c672be621096ba7304d52a245</guid>
+	<link>https://nzbs.org/getnzb/b755d80c672be621096ba7304d52a245.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/b755d80c672be621096ba7304d52a245#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 18:08:56 +0000</pubDate> 
+	<category>Movies-XviD</category> 	
+	<description>Avengers.Age.of.Ultron.2015.BRRip.XviD.AC3-RARBG.Ingebakken.Subs</description>
+	<enclosure url="https://nzbs.org/getnzb/b755d80c672be621096ba7304d52a245.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2395998799" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2030" />
+	<newznab:attr name="size" value="2395998799" />
+	<newznab:attr name="guid" value="b755d80c672be621096ba7304d52a245" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.BRRip.XviD.AC3-RARBG.Ingebakken.Subs</title>
+	<guid isPermaLink="false">1b0990d9cc7691a1b9a588d00ac70070</guid>
+	<link>https://nzbs.org/getnzb/1b0990d9cc7691a1b9a588d00ac70070.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/1b0990d9cc7691a1b9a588d00ac70070#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 18:05:17 +0000</pubDate> 
+	<category>Movies-XviD</category> 	
+	<description>Avengers.Age.of.Ultron.2015.BRRip.XviD.AC3-RARBG.Ingebakken.Subs</description>
+	<enclosure url="https://nzbs.org/getnzb/1b0990d9cc7691a1b9a588d00ac70070.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2396747825" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2030" />
+	<newznab:attr name="size" value="2396747825" />
+	<newznab:attr name="guid" value="1b0990d9cc7691a1b9a588d00ac70070" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.BRRip.XviD.AC3-RARBG.Ingebakken.Subs</title>
+	<guid isPermaLink="false">2c6ab1f304ad95e1b8a766f67971a8f6</guid>
+	<link>https://nzbs.org/getnzb/2c6ab1f304ad95e1b8a766f67971a8f6.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/2c6ab1f304ad95e1b8a766f67971a8f6#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 17:27:59 +0000</pubDate> 
+	<category>Movies-XviD</category> 	
+	<description>Avengers.Age.of.Ultron.2015.BRRip.XviD.AC3-RARBG.Ingebakken.Subs</description>
+	<enclosure url="https://nzbs.org/getnzb/2c6ab1f304ad95e1b8a766f67971a8f6.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2396933404" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2030" />
+	<newznab:attr name="size" value="2396933404" />
+	<newznab:attr name="guid" value="2c6ab1f304ad95e1b8a766f67971a8f6" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.BRRip.XviD.AC3-RARBG</title>
+	<guid isPermaLink="false">aecb8c5b44f1f00e18c36fe652b88621</guid>
+	<link>https://nzbs.org/getnzb/aecb8c5b44f1f00e18c36fe652b88621.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/aecb8c5b44f1f00e18c36fe652b88621#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 17:27:59 +0000</pubDate> 
+	<category>Movies-XviD</category> 	
+	<description>Avengers.Age.of.Ultron.2015.BRRip.XviD.AC3-RARBG</description>
+	<enclosure url="https://nzbs.org/getnzb/aecb8c5b44f1f00e18c36fe652b88621.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2418213522" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2030" />
+	<newznab:attr name="size" value="2418213522" />
+	<newznab:attr name="guid" value="aecb8c5b44f1f00e18c36fe652b88621" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.BRRip.XviD.AC3-RARBG</title>
+	<guid isPermaLink="false">eea6514ae30c01b1a2945e552be4b396</guid>
+	<link>https://nzbs.org/getnzb/eea6514ae30c01b1a2945e552be4b396.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/eea6514ae30c01b1a2945e552be4b396#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 17:27:58 +0000</pubDate> 
+	<category>Movies-XviD</category> 	
+	<description>Avengers.Age.of.Ultron.2015.BRRip.XviD.AC3-RARBG</description>
+	<enclosure url="https://nzbs.org/getnzb/eea6514ae30c01b1a2945e552be4b396.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2400887819" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2030" />
+	<newznab:attr name="size" value="2400887819" />
+	<newznab:attr name="guid" value="eea6514ae30c01b1a2945e552be4b396" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.Of.Ultron.2015.BRRip.x264.720p-NPW</title>
+	<guid isPermaLink="false">ca314e3b3411154432ba4eedce46ed09</guid>
+	<link>https://nzbs.org/getnzb/ca314e3b3411154432ba4eedce46ed09.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ca314e3b3411154432ba4eedce46ed09#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 16:20:49 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.Of.Ultron.2015.BRRip.x264.720p-NPW</description>
+	<enclosure url="https://nzbs.org/getnzb/ca314e3b3411154432ba4eedce46ed09.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="3960212212" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="3960212212" />
+	<newznab:attr name="guid" value="ca314e3b3411154432ba4eedce46ed09" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.German.2015.AC3.BDRiP.x264-XF</title>
+	<guid isPermaLink="false">bbb2796a26227253878d66b87cd0775b</guid>
+	<link>https://nzbs.org/getnzb/bbb2796a26227253878d66b87cd0775b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/bbb2796a26227253878d66b87cd0775b#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 15:18:50 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.German.2015.AC3.BDRiP.x264-XF</description>
+	<enclosure url="https://nzbs.org/getnzb/bbb2796a26227253878d66b87cd0775b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1567596799" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="1567596799" />
+	<newznab:attr name="guid" value="bbb2796a26227253878d66b87cd0775b" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.FANSUB.VOSTFR.BRRip.XviD-TeamSuW</title>
+	<guid isPermaLink="false">7526a8d655b6723ef8be4616413e2186</guid>
+	<link>https://nzbs.org/getnzb/7526a8d655b6723ef8be4616413e2186.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/7526a8d655b6723ef8be4616413e2186#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 13:34:02 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.FANSUB.VOSTFR.BRRip.XviD-TeamSuW</description>
+	<enclosure url="https://nzbs.org/getnzb/7526a8d655b6723ef8be4616413e2186.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1678761433" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="1678761433" />
+	<newznab:attr name="guid" value="7526a8d655b6723ef8be4616413e2186" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.BluRay.x264-SPARKS</title>
+	<guid isPermaLink="false">ca4f3f42ada174ad070e1b2dcae3b722</guid>
+	<link>https://nzbs.org/getnzb/ca4f3f42ada174ad070e1b2dcae3b722.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ca4f3f42ada174ad070e1b2dcae3b722#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 12:25:43 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.BluRay.x264-SPARKS</description>
+	<enclosure url="https://nzbs.org/getnzb/ca4f3f42ada174ad070e1b2dcae3b722.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="8257249858" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="8257249858" />
+	<newznab:attr name="guid" value="ca4f3f42ada174ad070e1b2dcae3b722" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.BluRay.x264-SPARKS</title>
+	<guid isPermaLink="false">f08f2e06c83bd8684b5db9ca2fff1fd6</guid>
+	<link>https://nzbs.org/getnzb/f08f2e06c83bd8684b5db9ca2fff1fd6.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/f08f2e06c83bd8684b5db9ca2fff1fd6#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 05:01:00 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.BluRay.x264-SPARKS</description>
+	<enclosure url="https://nzbs.org/getnzb/f08f2e06c83bd8684b5db9ca2fff1fd6.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="13417256303" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="13417256303" />
+	<newznab:attr name="guid" value="f08f2e06c83bd8684b5db9ca2fff1fd6" />
+
+
+</item>
+<item>
+	<title>Avengers Age of Ultron 2015 BRRip XviD AC3-SANTi</title>
+	<guid isPermaLink="false">c0d75625a6d9551479e52b7f4a1ecedf</guid>
+	<link>https://nzbs.org/getnzb/c0d75625a6d9551479e52b7f4a1ecedf.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/c0d75625a6d9551479e52b7f4a1ecedf#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 03:26:58 +0000</pubDate> 
+	<category>Movies-XviD</category> 	
+	<description>Avengers Age of Ultron 2015 BRRip XviD AC3-SANTi</description>
+	<enclosure url="https://nzbs.org/getnzb/c0d75625a6d9551479e52b7f4a1ecedf.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2525758814" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2030" />
+	<newznab:attr name="size" value="2525758814" />
+	<newznab:attr name="guid" value="c0d75625a6d9551479e52b7f4a1ecedf" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.BluRay.DD5.1.DTS.x264.NLSubs-QoQ</title>
+	<guid isPermaLink="false">34e71121612d1a589c4e342c94de0886</guid>
+	<link>https://nzbs.org/getnzb/34e71121612d1a589c4e342c94de0886.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/34e71121612d1a589c4e342c94de0886#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 01:03:14 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.BluRay.DD5.1.DTS.x264.NLSubs-QoQ</description>
+	<enclosure url="https://nzbs.org/getnzb/34e71121612d1a589c4e342c94de0886.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="13794774700" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="13794774700" />
+	<newznab:attr name="guid" value="34e71121612d1a589c4e342c94de0886" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.BluRay.DD5.1.DTS.x264.NLSubs-QoQ</title>
+	<guid isPermaLink="false">d58f532efdcb3b8d980d1700ef7fb132</guid>
+	<link>https://nzbs.org/getnzb/d58f532efdcb3b8d980d1700ef7fb132.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/d58f532efdcb3b8d980d1700ef7fb132#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 00:51:47 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.BluRay.DD5.1.DTS.x264.NLSubs-QoQ</description>
+	<enclosure url="https://nzbs.org/getnzb/d58f532efdcb3b8d980d1700ef7fb132.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="13796201672" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="13796201672" />
+	<newznab:attr name="guid" value="d58f532efdcb3b8d980d1700ef7fb132" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.BluRay.x264-SPARKS</title>
+	<guid isPermaLink="false">010d0e75ed0b5525c41a88ca6d49a909</guid>
+	<link>https://nzbs.org/getnzb/010d0e75ed0b5525c41a88ca6d49a909.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/010d0e75ed0b5525c41a88ca6d49a909#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 00:51:43 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.BluRay.x264-SPARKS</description>
+	<enclosure url="https://nzbs.org/getnzb/010d0e75ed0b5525c41a88ca6d49a909.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="13496090432" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="13496090432" />
+	<newznab:attr name="guid" value="010d0e75ed0b5525c41a88ca6d49a909" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.BluRay.x264-SPARKS</title>
+	<guid isPermaLink="false">e37be26e16c85a153edb9e65987d2b95</guid>
+	<link>https://nzbs.org/getnzb/e37be26e16c85a153edb9e65987d2b95.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/e37be26e16c85a153edb9e65987d2b95#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 00:43:25 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.BluRay.x264-SPARKS</description>
+	<enclosure url="https://nzbs.org/getnzb/e37be26e16c85a153edb9e65987d2b95.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="8045550369" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="8045550369" />
+	<newznab:attr name="guid" value="e37be26e16c85a153edb9e65987d2b95" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.BluRay.x264-SPARKS</title>
+	<guid isPermaLink="false">3a8e4a815397022f0095401761a1ec61</guid>
+	<link>https://nzbs.org/getnzb/3a8e4a815397022f0095401761a1ec61.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/3a8e4a815397022f0095401761a1ec61#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 00:11:21 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.BluRay.x264-SPARKS</description>
+	<enclosure url="https://nzbs.org/getnzb/3a8e4a815397022f0095401761a1ec61.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="12847371737" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="12847371737" />
+	<newznab:attr name="guid" value="3a8e4a815397022f0095401761a1ec61" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.BluRay.DD5.1.DTS.x264.NLSubs-QoQ</title>
+	<guid isPermaLink="false">a028ec1c7732196ff9f4a19b7feabeca</guid>
+	<link>https://nzbs.org/getnzb/a028ec1c7732196ff9f4a19b7feabeca.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/a028ec1c7732196ff9f4a19b7feabeca#comments</comments> 	
+	<pubDate>Mon, 07 Sep 2015 23:44:27 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.BluRay.DD5.1.DTS.x264.NLSubs-QoQ</description>
+	<enclosure url="https://nzbs.org/getnzb/a028ec1c7732196ff9f4a19b7feabeca.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="8882438751" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="8882438751" />
+	<newznab:attr name="guid" value="a028ec1c7732196ff9f4a19b7feabeca" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.BluRay.DD5.1.DTS.x264.NLSubs-QoQ</title>
+	<guid isPermaLink="false">5d23944622cc037dc30265de30d0fe39</guid>
+	<link>https://nzbs.org/getnzb/5d23944622cc037dc30265de30d0fe39.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/5d23944622cc037dc30265de30d0fe39#comments</comments> 	
+	<pubDate>Mon, 07 Sep 2015 23:44:27 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.BluRay.DD5.1.DTS.x264.NLSubs-QoQ</description>
+	<enclosure url="https://nzbs.org/getnzb/5d23944622cc037dc30265de30d0fe39.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="8885376240" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="8885376240" />
+	<newznab:attr name="guid" value="5d23944622cc037dc30265de30d0fe39" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.XViD.BRRiP.AC3.DD5.1.NLSubs-QoQ</title>
+	<guid isPermaLink="false">1a8f78b5ee7d012b21953d887fa03c29</guid>
+	<link>https://nzbs.org/getnzb/1a8f78b5ee7d012b21953d887fa03c29.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/1a8f78b5ee7d012b21953d887fa03c29#comments</comments> 	
+	<pubDate>Mon, 07 Sep 2015 23:32:12 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.XViD.BRRiP.AC3.DD5.1.NLSubs-QoQ</description>
+	<enclosure url="https://nzbs.org/getnzb/1a8f78b5ee7d012b21953d887fa03c29.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1866854813" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="1866854813" />
+	<newznab:attr name="guid" value="1a8f78b5ee7d012b21953d887fa03c29" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.XViD.BRRiP.AC3.DD5.1.NLSubs-QoQ</title>
+	<guid isPermaLink="false">1c51613bcb0ae4819a91770038b76d4c</guid>
+	<link>https://nzbs.org/getnzb/1c51613bcb0ae4819a91770038b76d4c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/1c51613bcb0ae4819a91770038b76d4c#comments</comments> 	
+	<pubDate>Mon, 07 Sep 2015 23:32:12 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.XViD.BRRiP.AC3.DD5.1.NLSubs-QoQ</description>
+	<enclosure url="https://nzbs.org/getnzb/1c51613bcb0ae4819a91770038b76d4c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1867073903" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="1867073903" />
+	<newznab:attr name="guid" value="1c51613bcb0ae4819a91770038b76d4c" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.BDRip.x264-SPARKS</title>
+	<guid isPermaLink="false">c3772ca6af3a3382a5772cc56cd49f89</guid>
+	<link>https://nzbs.org/getnzb/c3772ca6af3a3382a5772cc56cd49f89.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/c3772ca6af3a3382a5772cc56cd49f89#comments</comments> 	
+	<pubDate>Mon, 07 Sep 2015 22:44:48 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.BDRip.x264-SPARKS</description>
+	<enclosure url="https://nzbs.org/getnzb/c3772ca6af3a3382a5772cc56cd49f89.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1197895557" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="1197895557" />
+	<newznab:attr name="guid" value="c3772ca6af3a3382a5772cc56cd49f89" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.BluRay.x264-SPARKS</title>
+	<guid isPermaLink="false">35603708b0dce4c8e66f13694d11057d</guid>
+	<link>https://nzbs.org/getnzb/35603708b0dce4c8e66f13694d11057d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/35603708b0dce4c8e66f13694d11057d#comments</comments> 	
+	<pubDate>Mon, 07 Sep 2015 22:41:04 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.BluRay.x264-SPARKS</description>
+	<enclosure url="https://nzbs.org/getnzb/35603708b0dce4c8e66f13694d11057d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="7693724712" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="7693724712" />
+	<newznab:attr name="guid" value="35603708b0dce4c8e66f13694d11057d" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.BDRip.x264-SPARKS</title>
+	<guid isPermaLink="false">f08a2f4bd7daf8b81df9413fae2beda7</guid>
+	<link>https://nzbs.org/getnzb/f08a2f4bd7daf8b81df9413fae2beda7.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/f08a2f4bd7daf8b81df9413fae2beda7#comments</comments> 	
+	<pubDate>Mon, 07 Sep 2015 22:26:56 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.BDRip.x264-SPARKS</description>
+	<enclosure url="https://nzbs.org/getnzb/f08a2f4bd7daf8b81df9413fae2beda7.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1268104502" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="1268104502" />
+	<newznab:attr name="guid" value="f08a2f4bd7daf8b81df9413fae2beda7" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.BluRay.x264-SPARKS</title>
+	<guid isPermaLink="false">8f4b732951cb5f9b9710bd080e7327aa</guid>
+	<link>https://nzbs.org/getnzb/8f4b732951cb5f9b9710bd080e7327aa.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/8f4b732951cb5f9b9710bd080e7327aa#comments</comments> 	
+	<pubDate>Mon, 07 Sep 2015 22:26:29 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.BluRay.x264-SPARKS</description>
+	<enclosure url="https://nzbs.org/getnzb/8f4b732951cb5f9b9710bd080e7327aa.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="8095745859" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="8095745859" />
+	<newznab:attr name="guid" value="8f4b732951cb5f9b9710bd080e7327aa" />
+
+
+</item>
+<item>
+	<title>658906735The.Avengers</title>
+	<guid isPermaLink="false">ecb1fb8759cfad8f7386be486c8f7cf7</guid>
+	<link>https://nzbs.org/getnzb/ecb1fb8759cfad8f7386be486c8f7cf7.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ecb1fb8759cfad8f7386be486c8f7cf7#comments</comments> 	
+	<pubDate>Mon, 07 Sep 2015 12:50:50 +0000</pubDate> 
+	<category>Other-Misc</category> 	
+	<description>658906735The.Avengers</description>
+	<enclosure url="https://nzbs.org/getnzb/ecb1fb8759cfad8f7386be486c8f7cf7.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="20545288430" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="7000" />
+	<newznab:attr name="category" value="7010" />
+	<newznab:attr name="size" value="20545288430" />
+	<newznab:attr name="guid" value="ecb1fb8759cfad8f7386be486c8f7cf7" />
+
+
+</item>
+<item>
+	<title>Pawn.Stars.S12E26.Avengers.Assemble.720p.HDTV.x264-DHD</title>
+	<guid isPermaLink="false">915f8a70fc1852de997b0f9ce2837a2a</guid>
+	<link>https://nzbs.org/getnzb/915f8a70fc1852de997b0f9ce2837a2a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/915f8a70fc1852de997b0f9ce2837a2a#comments</comments> 	
+	<pubDate>Tue, 01 Sep 2015 10:42:54 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Pawn.Stars.S12E26.Avengers.Assemble.720p.HDTV.x264-DHD</description>
+	<enclosure url="https://nzbs.org/getnzb/915f8a70fc1852de997b0f9ce2837a2a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="570566234" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="570566234" />
+	<newznab:attr name="guid" value="915f8a70fc1852de997b0f9ce2837a2a" />
+
+
+</item>
+<item>
+	<title>Avengers.Assemble.S02E20.Terminal.Velocity.720p.WEB-DL.x264.AAC</title>
+	<guid isPermaLink="false">85b5fd6abb4620f565909a49a73ad73b</guid>
+	<link>https://nzbs.org/getnzb/85b5fd6abb4620f565909a49a73ad73b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/85b5fd6abb4620f565909a49a73ad73b#comments</comments> 	
+	<pubDate>Fri, 28 Aug 2015 12:57:30 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Avengers.Assemble.S02E20.Terminal.Velocity.720p.WEB-DL.x264.AAC</description>
+	<enclosure url="https://nzbs.org/getnzb/85b5fd6abb4620f565909a49a73ad73b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="301249341" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="301249341" />
+	<newznab:attr name="guid" value="85b5fd6abb4620f565909a49a73ad73b" />
+
+
+</item>
+<item>
+	<title>Avengers.Assemble.S02E19.The.New.Guy.720p.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">9363fab2f336fdb82c21b477174c552b</guid>
+	<link>https://nzbs.org/getnzb/9363fab2f336fdb82c21b477174c552b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/9363fab2f336fdb82c21b477174c552b#comments</comments> 	
+	<pubDate>Fri, 28 Aug 2015 10:02:04 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Avengers.Assemble.S02E19.The.New.Guy.720p.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/9363fab2f336fdb82c21b477174c552b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="713498857" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="713498857" />
+	<newznab:attr name="guid" value="9363fab2f336fdb82c21b477174c552b" />
+
+
+</item>
+<item>
+	<title>Avengers.Assemble.S02E19.The.New.Guy.720p.WEB-DL.x264.AAC</title>
+	<guid isPermaLink="false">4b6acfabc26a19545d5fe1ff440dba61</guid>
+	<link>https://nzbs.org/getnzb/4b6acfabc26a19545d5fe1ff440dba61.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/4b6acfabc26a19545d5fe1ff440dba61#comments</comments> 	
+	<pubDate>Fri, 28 Aug 2015 10:01:59 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Avengers.Assemble.S02E19.The.New.Guy.720p.WEB-DL.x264.AAC</description>
+	<enclosure url="https://nzbs.org/getnzb/4b6acfabc26a19545d5fe1ff440dba61.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="329523819" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="329523819" />
+	<newznab:attr name="guid" value="4b6acfabc26a19545d5fe1ff440dba61" />
+
+
+</item>
+<item>
+	<title>Avengers.Assemble.S02E18.Secret.Avengers.720p.WEB-DL.x264.AAC</title>
+	<guid isPermaLink="false">206637a71a99f9256bc995a7137e3c0f</guid>
+	<link>https://nzbs.org/getnzb/206637a71a99f9256bc995a7137e3c0f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/206637a71a99f9256bc995a7137e3c0f#comments</comments> 	
+	<pubDate>Fri, 28 Aug 2015 10:01:59 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Avengers.Assemble.S02E18.Secret.Avengers.720p.WEB-DL.x264.AAC</description>
+	<enclosure url="https://nzbs.org/getnzb/206637a71a99f9256bc995a7137e3c0f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="301805431" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="301805431" />
+	<newznab:attr name="guid" value="206637a71a99f9256bc995a7137e3c0f" />
+
+
+</item>
+<item>
+	<title>Avengers.Assemble.S02E19.The.New.Guy.720p.WEBRip.x264.AAC</title>
+	<guid isPermaLink="false">26c53023039d1240b16c92844415e72b</guid>
+	<link>https://nzbs.org/getnzb/26c53023039d1240b16c92844415e72b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/26c53023039d1240b16c92844415e72b#comments</comments> 	
+	<pubDate>Fri, 28 Aug 2015 10:01:58 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Avengers.Assemble.S02E19.The.New.Guy.720p.WEBRip.x264.AAC</description>
+	<enclosure url="https://nzbs.org/getnzb/26c53023039d1240b16c92844415e72b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="308420818" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="308420818" />
+	<newznab:attr name="guid" value="26c53023039d1240b16c92844415e72b" />
+
+
+</item>
+<item>
+	<title>Avengers.Assemble.S02E20.Terminal.Velocity.720p.WEB-DL.DD5.1.H.264-YFN</title>
+	<guid isPermaLink="false">2be5dfb21ed5720d50b2cd9ce9302c36</guid>
+	<link>https://nzbs.org/getnzb/2be5dfb21ed5720d50b2cd9ce9302c36.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/2be5dfb21ed5720d50b2cd9ce9302c36#comments</comments> 	
+	<pubDate>Fri, 28 Aug 2015 09:56:18 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Avengers.Assemble.S02E20.Terminal.Velocity.720p.WEB-DL.DD5.1.H.264-YFN</description>
+	<enclosure url="https://nzbs.org/getnzb/2be5dfb21ed5720d50b2cd9ce9302c36.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="894847227" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="894847227" />
+	<newznab:attr name="guid" value="2be5dfb21ed5720d50b2cd9ce9302c36" />
+
+
+</item>
+<item>
+	<title>Avengers.Assemble.S02E18.Secret.Avengers.720p.WEB-DL.DD5.1.H.264-YFN</title>
+	<guid isPermaLink="false">9c8288319835f1eff44bbc9b930b09b2</guid>
+	<link>https://nzbs.org/getnzb/9c8288319835f1eff44bbc9b930b09b2.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/9c8288319835f1eff44bbc9b930b09b2#comments</comments> 	
+	<pubDate>Fri, 28 Aug 2015 09:45:20 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Avengers.Assemble.S02E18.Secret.Avengers.720p.WEB-DL.DD5.1.H.264-YFN</description>
+	<enclosure url="https://nzbs.org/getnzb/9c8288319835f1eff44bbc9b930b09b2.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="861085323" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="861085323" />
+	<newznab:attr name="guid" value="9c8288319835f1eff44bbc9b930b09b2" />
+
+
+</item>
+<item>
+	<title>Avengers.Assemble.S02E16.Small.Time.Heroes.720p.WEB-DL.x264.AAC</title>
+	<guid isPermaLink="false">3d7dcb2404487bf8677346f16a6d1e00</guid>
+	<link>https://nzbs.org/getnzb/3d7dcb2404487bf8677346f16a6d1e00.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/3d7dcb2404487bf8677346f16a6d1e00#comments</comments> 	
+	<pubDate>Fri, 28 Aug 2015 09:38:28 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Avengers.Assemble.S02E16.Small.Time.Heroes.720p.WEB-DL.x264.AAC</description>
+	<enclosure url="https://nzbs.org/getnzb/3d7dcb2404487bf8677346f16a6d1e00.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="274195840" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="274195840" />
+	<newznab:attr name="guid" value="3d7dcb2404487bf8677346f16a6d1e00" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.DD5.1.x264-AmazonHD</title>
+	<guid isPermaLink="false">51180d8d3a4dbf241be617d8689c5f9b</guid>
+	<link>https://nzbs.org/getnzb/51180d8d3a4dbf241be617d8689c5f9b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/51180d8d3a4dbf241be617d8689c5f9b#comments</comments> 	
+	<pubDate>Wed, 26 Aug 2015 18:07:36 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.DD5.1.x264-AmazonHD</description>
+	<enclosure url="https://nzbs.org/getnzb/51180d8d3a4dbf241be617d8689c5f9b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="11953562708" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="11953562708" />
+	<newznab:attr name="guid" value="51180d8d3a4dbf241be617d8689c5f9b" />
+
+
+</item>
+<item>
+	<title>avengers.age.of.ultron.2015.1080p.web-dl.x264.ac3-evo</title>
+	<guid isPermaLink="false">dd12fc316d24fc10608c74cb4825b31c</guid>
+	<link>https://nzbs.org/getnzb/dd12fc316d24fc10608c74cb4825b31c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/dd12fc316d24fc10608c74cb4825b31c#comments</comments> 	
+	<pubDate>Sun, 23 Aug 2015 12:45:17 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>avengers.age.of.ultron.2015.1080p.web-dl.x264.ac3-evo</description>
+	<enclosure url="https://nzbs.org/getnzb/dd12fc316d24fc10608c74cb4825b31c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="9417061757" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="9417061757" />
+	<newznab:attr name="guid" value="dd12fc316d24fc10608c74cb4825b31c" />
+
+
+</item>
+<item>
+	<title>avengers.age.of.ultron.2015.1080p.webrip.hevc.x265.ac3-santi</title>
+	<guid isPermaLink="false">3120b7505b2588345c58e4d44c34969d</guid>
+	<link>https://nzbs.org/getnzb/3120b7505b2588345c58e4d44c34969d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/3120b7505b2588345c58e4d44c34969d#comments</comments> 	
+	<pubDate>Sun, 23 Aug 2015 06:19:09 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>avengers.age.of.ultron.2015.1080p.webrip.hevc.x265.ac3-santi</description>
+	<enclosure url="https://nzbs.org/getnzb/3120b7505b2588345c58e4d44c34969d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2551898208" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="2551898208" />
+	<newznab:attr name="guid" value="3120b7505b2588345c58e4d44c34969d" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.HDRip.HEVC.x265.AC3-SANTi</title>
+	<guid isPermaLink="false">421dcd6b2b05bd922060da4830e9528e</guid>
+	<link>https://nzbs.org/getnzb/421dcd6b2b05bd922060da4830e9528e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/421dcd6b2b05bd922060da4830e9528e#comments</comments> 	
+	<pubDate>Sat, 22 Aug 2015 23:57:50 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.HDRip.HEVC.x265.AC3-SANTi</description>
+	<enclosure url="https://nzbs.org/getnzb/421dcd6b2b05bd922060da4830e9528e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1551471275" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="1551471275" />
+	<newznab:attr name="guid" value="421dcd6b2b05bd922060da4830e9528e" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.DD5.1.H.264.AmazonHD</title>
+	<guid isPermaLink="false">5d6c6b5acc888bb47c7efaeec657b5b9</guid>
+	<link>https://nzbs.org/getnzb/5d6c6b5acc888bb47c7efaeec657b5b9.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/5d6c6b5acc888bb47c7efaeec657b5b9#comments</comments> 	
+	<pubDate>Sat, 22 Aug 2015 20:48:32 +0000</pubDate> 
+	<category>Movies-Other</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.DD5.1.H.264.AmazonHD</description>
+	<enclosure url="https://nzbs.org/getnzb/5d6c6b5acc888bb47c7efaeec657b5b9.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="11509168939" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2050" />
+	<newznab:attr name="size" value="11509168939" />
+	<newznab:attr name="guid" value="5d6c6b5acc888bb47c7efaeec657b5b9" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.PROPER.DD5.1.x264.NLSubs-QoQ</title>
+	<guid isPermaLink="false">9cd5dfd1dd8445fdc0649be5423f2621</guid>
+	<link>https://nzbs.org/getnzb/9cd5dfd1dd8445fdc0649be5423f2621.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/9cd5dfd1dd8445fdc0649be5423f2621#comments</comments> 	
+	<pubDate>Sat, 22 Aug 2015 19:59:38 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.PROPER.DD5.1.x264.NLSubs-QoQ</description>
+	<enclosure url="https://nzbs.org/getnzb/9cd5dfd1dd8445fdc0649be5423f2621.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="12708419697" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="12708419697" />
+	<newznab:attr name="guid" value="9cd5dfd1dd8445fdc0649be5423f2621" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.PROPER.DD5.1.x264.NLSubs-QoQ</title>
+	<guid isPermaLink="false">38e81508a826a3638a3755a348faa99e</guid>
+	<link>https://nzbs.org/getnzb/38e81508a826a3638a3755a348faa99e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/38e81508a826a3638a3755a348faa99e#comments</comments> 	
+	<pubDate>Sat, 22 Aug 2015 17:16:46 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.PROPER.DD5.1.x264.NLSubs-QoQ</description>
+	<enclosure url="https://nzbs.org/getnzb/38e81508a826a3638a3755a348faa99e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="12475132844" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="12475132844" />
+	<newznab:attr name="guid" value="38e81508a826a3638a3755a348faa99e" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.PROPER.DD5.1.x264.NLSubs-QoQ</title>
+	<guid isPermaLink="false">121cd014c5fd6f98777be0e7b4f9ae9b</guid>
+	<link>https://nzbs.org/getnzb/121cd014c5fd6f98777be0e7b4f9ae9b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/121cd014c5fd6f98777be0e7b4f9ae9b#comments</comments> 	
+	<pubDate>Sat, 22 Aug 2015 17:09:07 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.PROPER.DD5.1.x264.NLSubs-QoQ</description>
+	<enclosure url="https://nzbs.org/getnzb/121cd014c5fd6f98777be0e7b4f9ae9b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="11648432473" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="11648432473" />
+	<newznab:attr name="guid" value="121cd014c5fd6f98777be0e7b4f9ae9b" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.WEB-DL.DD5.1.H264-RARBG</title>
+	<guid isPermaLink="false">ffc01312f75886a7426aa22c37247530</guid>
+	<link>https://nzbs.org/getnzb/ffc01312f75886a7426aa22c37247530.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ffc01312f75886a7426aa22c37247530#comments</comments> 	
+	<pubDate>Sat, 22 Aug 2015 16:53:54 +0000</pubDate> 
+	<category>Movies-Other</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.WEB-DL.DD5.1.H264-RARBG</description>
+	<enclosure url="https://nzbs.org/getnzb/ffc01312f75886a7426aa22c37247530.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1817577669" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2050" />
+	<newznab:attr name="size" value="1817577669" />
+	<newznab:attr name="guid" value="ffc01312f75886a7426aa22c37247530" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.WEBRip.x264-iFAiL</title>
+	<guid isPermaLink="false">e0ed3c26dee9c6f6a7b0891dc9f1dccc</guid>
+	<link>https://nzbs.org/getnzb/e0ed3c26dee9c6f6a7b0891dc9f1dccc.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/e0ed3c26dee9c6f6a7b0891dc9f1dccc#comments</comments> 	
+	<pubDate>Fri, 21 Aug 2015 23:15:41 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.WEBRip.x264-iFAiL</description>
+	<enclosure url="https://nzbs.org/getnzb/e0ed3c26dee9c6f6a7b0891dc9f1dccc.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="3803143997" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="3803143997" />
+	<newznab:attr name="guid" value="e0ed3c26dee9c6f6a7b0891dc9f1dccc" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.WEBRip.x264-iFAiL</title>
+	<guid isPermaLink="false">26f9a5c1fe887356aea8cf5cf1167f97</guid>
+	<link>https://nzbs.org/getnzb/26f9a5c1fe887356aea8cf5cf1167f97.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/26f9a5c1fe887356aea8cf5cf1167f97#comments</comments> 	
+	<pubDate>Fri, 21 Aug 2015 22:40:14 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.WEBRip.x264-iFAiL</description>
+	<enclosure url="https://nzbs.org/getnzb/26f9a5c1fe887356aea8cf5cf1167f97.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="3566565586" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="3566565586" />
+	<newznab:attr name="guid" value="26f9a5c1fe887356aea8cf5cf1167f97" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.X264.AC3-EVO</title>
+	<guid isPermaLink="false">fde75d59a98ee67dd9103ca50e80d530</guid>
+	<link>https://nzbs.org/getnzb/fde75d59a98ee67dd9103ca50e80d530.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/fde75d59a98ee67dd9103ca50e80d530#comments</comments> 	
+	<pubDate>Fri, 21 Aug 2015 22:25:34 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.X264.AC3-EVO</description>
+	<enclosure url="https://nzbs.org/getnzb/fde75d59a98ee67dd9103ca50e80d530.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="4983395666" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="4983395666" />
+	<newznab:attr name="guid" value="fde75d59a98ee67dd9103ca50e80d530" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.WEBRip.XViD.AC3-REFiLL</title>
+	<guid isPermaLink="false">38bfc49578a69fd4cdc199104851cecc</guid>
+	<link>https://nzbs.org/getnzb/38bfc49578a69fd4cdc199104851cecc.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/38bfc49578a69fd4cdc199104851cecc#comments</comments> 	
+	<pubDate>Fri, 21 Aug 2015 17:44:07 +0000</pubDate> 
+	<category>Movies-XviD</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.WEBRip.XViD.AC3-REFiLL</description>
+	<enclosure url="https://nzbs.org/getnzb/38bfc49578a69fd4cdc199104851cecc.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="3978073903" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2030" />
+	<newznab:attr name="size" value="3978073903" />
+	<newznab:attr name="guid" value="38bfc49578a69fd4cdc199104851cecc" />
+
+
+</item>
+<item>
+	<title>avengers.age.of.ultron.2015.720p.web-dl.x264.ac3-evo</title>
+	<guid isPermaLink="false">26e60ac63ca7d3e80de6a26ae9c8bb65</guid>
+	<link>https://nzbs.org/getnzb/26e60ac63ca7d3e80de6a26ae9c8bb65.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/26e60ac63ca7d3e80de6a26ae9c8bb65#comments</comments> 	
+	<pubDate>Fri, 21 Aug 2015 07:55:51 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>avengers.age.of.ultron.2015.720p.web-dl.x264.ac3-evo</description>
+	<enclosure url="https://nzbs.org/getnzb/26e60ac63ca7d3e80de6a26ae9c8bb65.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="3926806422" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="3926806422" />
+	<newznab:attr name="guid" value="26e60ac63ca7d3e80de6a26ae9c8bb65" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.X264.AC3-EVO</title>
+	<guid isPermaLink="false">313b6d1228195ec7c1cbf9aaf84e6150</guid>
+	<link>https://nzbs.org/getnzb/313b6d1228195ec7c1cbf9aaf84e6150.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/313b6d1228195ec7c1cbf9aaf84e6150#comments</comments> 	
+	<pubDate>Fri, 21 Aug 2015 07:44:12 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.X264.AC3-EVO</description>
+	<enclosure url="https://nzbs.org/getnzb/313b6d1228195ec7c1cbf9aaf84e6150.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="5091914034" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="5091914034" />
+	<newznab:attr name="guid" value="313b6d1228195ec7c1cbf9aaf84e6150" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.720p.WEB-DL.DD5.1.H264-RARBG</title>
+	<guid isPermaLink="false">90cf9edf229e4c69fbee3f1658455687</guid>
+	<link>https://nzbs.org/getnzb/90cf9edf229e4c69fbee3f1658455687.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/90cf9edf229e4c69fbee3f1658455687#comments</comments> 	
+	<pubDate>Fri, 21 Aug 2015 00:14:42 +0000</pubDate> 
+	<category>Movies-Other</category> 	
+	<description>Avengers.Age.of.Ultron.2015.720p.WEB-DL.DD5.1.H264-RARBG</description>
+	<enclosure url="https://nzbs.org/getnzb/90cf9edf229e4c69fbee3f1658455687.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="5139323213" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2050" />
+	<newznab:attr name="size" value="5139323213" />
+	<newznab:attr name="guid" value="90cf9edf229e4c69fbee3f1658455687" />
+
+
+</item>
+<item>
+	<title>The.Avengers.Age.of.Ultron.2015.German.AC3.Dubbed.720p.WEB-DL</title>
+	<guid isPermaLink="false">6c67a0275cc6049ed240073bf5657fee</guid>
+	<link>https://nzbs.org/getnzb/6c67a0275cc6049ed240073bf5657fee.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/6c67a0275cc6049ed240073bf5657fee#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 21:57:25 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>The.Avengers.Age.of.Ultron.2015.German.AC3.Dubbed.720p.WEB-DL</description>
+	<enclosure url="https://nzbs.org/getnzb/6c67a0275cc6049ed240073bf5657fee.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="4938543057" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="4938543057" />
+	<newznab:attr name="guid" value="6c67a0275cc6049ed240073bf5657fee" />
+
+
+</item>
+<item>
+	<title>The.Avengers.Age.of.Ultron.2015.German.AC3.Dubbed.1080p.WEB-DL</title>
+	<guid isPermaLink="false">658d8ce1de00eb976b25ddda5a33d27f</guid>
+	<link>https://nzbs.org/getnzb/658d8ce1de00eb976b25ddda5a33d27f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/658d8ce1de00eb976b25ddda5a33d27f#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 21:57:25 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>The.Avengers.Age.of.Ultron.2015.German.AC3.Dubbed.1080p.WEB-DL</description>
+	<enclosure url="https://nzbs.org/getnzb/658d8ce1de00eb976b25ddda5a33d27f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="4802795895" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="4802795895" />
+	<newznab:attr name="guid" value="658d8ce1de00eb976b25ddda5a33d27f" />
+
+
+</item>
+<item>
+	<title>The.Avengers.Age.of.Ultron.2015.German.WEBRiP.AC3LD.XViD.PROPER-BM The.Avengers.Age.of.Ultron.2015.German.WEBRiP.AC3LD.XViD.PROPER-BM</title>
+	<guid isPermaLink="false">f22eb74bbae9957c23e9cc7add67545b</guid>
+	<link>https://nzbs.org/getnzb/f22eb74bbae9957c23e9cc7add67545b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/f22eb74bbae9957c23e9cc7add67545b#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 21:56:47 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>The.Avengers.Age.of.Ultron.2015.German.WEBRiP.AC3LD.XViD.PROPER-BM The.Avengers.Age.of.Ultron.2015.German.WEBRiP.AC3LD.XViD.PROPER-BM</description>
+	<enclosure url="https://nzbs.org/getnzb/f22eb74bbae9957c23e9cc7add67545b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2099712179" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="2099712179" />
+	<newznab:attr name="guid" value="f22eb74bbae9957c23e9cc7add67545b" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.WEB-DL.XviD.AC3-RARBG Ingebakken.Subs</title>
+	<guid isPermaLink="false">b758a747aceb132bca79587c08778dd0</guid>
+	<link>https://nzbs.org/getnzb/b758a747aceb132bca79587c08778dd0.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/b758a747aceb132bca79587c08778dd0#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 20:09:53 +0000</pubDate> 
+	<category>Movies-XviD</category> 	
+	<description>Avengers.Age.of.Ultron.2015.WEB-DL.XviD.AC3-RARBG Ingebakken.Subs</description>
+	<enclosure url="https://nzbs.org/getnzb/b758a747aceb132bca79587c08778dd0.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2310947464" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2030" />
+	<newznab:attr name="size" value="2310947464" />
+	<newznab:attr name="guid" value="b758a747aceb132bca79587c08778dd0" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.WEB-DL.XviD.AC3-RARBG Ingebakken.Subs</title>
+	<guid isPermaLink="false">76072b45cf6001876304a3ae67be146f</guid>
+	<link>https://nzbs.org/getnzb/76072b45cf6001876304a3ae67be146f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/76072b45cf6001876304a3ae67be146f#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 20:09:53 +0000</pubDate> 
+	<category>Movies-XviD</category> 	
+	<description>Avengers.Age.of.Ultron.2015.WEB-DL.XviD.AC3-RARBG Ingebakken.Subs</description>
+	<enclosure url="https://nzbs.org/getnzb/76072b45cf6001876304a3ae67be146f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2310951771" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2030" />
+	<newznab:attr name="size" value="2310951771" />
+	<newznab:attr name="guid" value="76072b45cf6001876304a3ae67be146f" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.WEB-DL.XviD.AC3-RARBG Ingebakken.Subs</title>
+	<guid isPermaLink="false">849ca04c89ab447334ee2b7b80a97a8e</guid>
+	<link>https://nzbs.org/getnzb/849ca04c89ab447334ee2b7b80a97a8e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/849ca04c89ab447334ee2b7b80a97a8e#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 20:09:53 +0000</pubDate> 
+	<category>Movies-XviD</category> 	
+	<description>Avengers.Age.of.Ultron.2015.WEB-DL.XviD.AC3-RARBG Ingebakken.Subs</description>
+	<enclosure url="https://nzbs.org/getnzb/849ca04c89ab447334ee2b7b80a97a8e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2311752708" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2030" />
+	<newznab:attr name="size" value="2311752708" />
+	<newznab:attr name="guid" value="849ca04c89ab447334ee2b7b80a97a8e" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.WEB-DL.XviD.AC3-RARBG Ingebakken.Subs</title>
+	<guid isPermaLink="false">500f0efc2990c7bc0b5504e01f8a2802</guid>
+	<link>https://nzbs.org/getnzb/500f0efc2990c7bc0b5504e01f8a2802.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/500f0efc2990c7bc0b5504e01f8a2802#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 19:30:42 +0000</pubDate> 
+	<category>Movies-XviD</category> 	
+	<description>Avengers.Age.of.Ultron.2015.WEB-DL.XviD.AC3-RARBG Ingebakken.Subs</description>
+	<enclosure url="https://nzbs.org/getnzb/500f0efc2990c7bc0b5504e01f8a2802.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2329530891" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2030" />
+	<newznab:attr name="size" value="2329530891" />
+	<newznab:attr name="guid" value="500f0efc2990c7bc0b5504e01f8a2802" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.(2015).1080p.6CH.WEB-DL</title>
+	<guid isPermaLink="false">488152d74cbddffd42a228f4960d517b</guid>
+	<link>https://nzbs.org/getnzb/488152d74cbddffd42a228f4960d517b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/488152d74cbddffd42a228f4960d517b#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 18:57:21 +0000</pubDate> 
+	<category>Movies-Other</category> 	
+	<description>Avengers.Age.of.Ultron.(2015).1080p.6CH.WEB-DL</description>
+	<enclosure url="https://nzbs.org/getnzb/488152d74cbddffd42a228f4960d517b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2504545795" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2050" />
+	<newznab:attr name="size" value="2504545795" />
+	<newznab:attr name="guid" value="488152d74cbddffd42a228f4960d517b" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.(2015).720p.WEB-DL</title>
+	<guid isPermaLink="false">bd4e376005c2f4431f782247df636620</guid>
+	<link>https://nzbs.org/getnzb/bd4e376005c2f4431f782247df636620.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/bd4e376005c2f4431f782247df636620#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 18:01:52 +0000</pubDate> 
+	<category>Movies-Other</category> 	
+	<description>Avengers.Age.of.Ultron.(2015).720p.WEB-DL</description>
+	<enclosure url="https://nzbs.org/getnzb/bd4e376005c2f4431f782247df636620.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1247192170" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2050" />
+	<newznab:attr name="size" value="1247192170" />
+	<newznab:attr name="guid" value="bd4e376005c2f4431f782247df636620" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.X264.AC3.DD5.1-NL.SUBS.T.U.</title>
+	<guid isPermaLink="false">e1f14d4b3bfb27fd80c76aa53e18910e</guid>
+	<link>https://nzbs.org/getnzb/e1f14d4b3bfb27fd80c76aa53e18910e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/e1f14d4b3bfb27fd80c76aa53e18910e#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 16:36:23 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.X264.AC3.DD5.1-NL.SUBS.T.U.</description>
+	<enclosure url="https://nzbs.org/getnzb/e1f14d4b3bfb27fd80c76aa53e18910e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="5111445742" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="5111445742" />
+	<newznab:attr name="guid" value="e1f14d4b3bfb27fd80c76aa53e18910e" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.X264.AC3-EVO</title>
+	<guid isPermaLink="false">08b97ccbcc0dc8bfec154a813d1b2c0b</guid>
+	<link>https://nzbs.org/getnzb/08b97ccbcc0dc8bfec154a813d1b2c0b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/08b97ccbcc0dc8bfec154a813d1b2c0b#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 16:13:49 +0000</pubDate> 
+	<category>Movies-x264</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.X264.AC3-EVO</description>
+	<enclosure url="https://nzbs.org/getnzb/08b97ccbcc0dc8bfec154a813d1b2c0b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="4994188047" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2040" />
+	<newznab:attr name="size" value="4994188047" />
+	<newznab:attr name="guid" value="08b97ccbcc0dc8bfec154a813d1b2c0b" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.German.AC3.Dubbed.DL.1080p.WEB-DL.h264-MULTiPLEX</title>
+	<guid isPermaLink="false">425b579b0961dc2f5567b49915f8a1fe</guid>
+	<link>https://nzbs.org/getnzb/425b579b0961dc2f5567b49915f8a1fe.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/425b579b0961dc2f5567b49915f8a1fe#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 16:06:14 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.German.AC3.Dubbed.DL.1080p.WEB-DL.h264-MULTiPLEX</description>
+	<enclosure url="https://nzbs.org/getnzb/425b579b0961dc2f5567b49915f8a1fe.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="4993376895" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="4993376895" />
+	<newznab:attr name="guid" value="425b579b0961dc2f5567b49915f8a1fe" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.WEB-DL.480p.H264-20-40</title>
+	<guid isPermaLink="false">809727fb16f06c6370698e9009831ad5</guid>
+	<link>https://nzbs.org/getnzb/809727fb16f06c6370698e9009831ad5.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/809727fb16f06c6370698e9009831ad5#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 15:44:43 +0000</pubDate> 
+	<category>Movies-Other</category> 	
+	<description>Avengers.Age.of.Ultron.2015.WEB-DL.480p.H264-20-40</description>
+	<enclosure url="https://nzbs.org/getnzb/809727fb16f06c6370698e9009831ad5.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="899249964" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2050" />
+	<newznab:attr name="size" value="899249964" />
+	<newznab:attr name="guid" value="809727fb16f06c6370698e9009831ad5" />
+
+
+</item>
+<item>
+	<title>The.Avengers.Age.of.Ultron.WEBRiP.Line.Dubbed.German.XviD-WTR</title>
+	<guid isPermaLink="false">c6b22ccbf5744a226586b76f009801ae</guid>
+	<link>https://nzbs.org/getnzb/c6b22ccbf5744a226586b76f009801ae.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/c6b22ccbf5744a226586b76f009801ae#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 15:44:40 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>The.Avengers.Age.of.Ultron.WEBRiP.Line.Dubbed.German.XviD-WTR</description>
+	<enclosure url="https://nzbs.org/getnzb/c6b22ccbf5744a226586b76f009801ae.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="2364587010" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="2364587010" />
+	<newznab:attr name="guid" value="c6b22ccbf5744a226586b76f009801ae" />
+
+
+</item>
+<item>
+	<title>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.DD5.1.x264.NLSubs-QoQ</title>
+	<guid isPermaLink="false">98c15670c98002747e31124e1b78337f</guid>
+	<link>https://nzbs.org/getnzb/98c15670c98002747e31124e1b78337f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/98c15670c98002747e31124e1b78337f#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 15:07:28 +0000</pubDate> 
+	<category>Movies-Foreign</category> 	
+	<description>Avengers.Age.of.Ultron.2015.1080p.WEB-DL.DD5.1.x264.NLSubs-QoQ</description>
+	<enclosure url="https://nzbs.org/getnzb/98c15670c98002747e31124e1b78337f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="5543359652" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="2000" />
+	<newznab:attr name="category" value="2060" />
+	<newznab:attr name="size" value="5543359652" />
+	<newznab:attr name="guid" value="98c15670c98002747e31124e1b78337f" />
+
+
+</item>
+
+</channel>
+</rss>

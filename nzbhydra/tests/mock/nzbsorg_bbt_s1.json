@@ -1,0 +1,4227 @@
+{
+  "@attributes": {
+    "version": "2.0"
+  },
+  "channel": {
+    "title": "NZBs(dot)ORG API TV Search",
+    "description": "NZBs(dot)ORG Feed",
+    "link": "https:\/\/nzbs.org\/",
+    "language": "en-gb",
+    "webMaster": "admin@nzbs.org (NZBs(dot)ORG)",
+    "category": {},
+    "image": {
+      "url": "https:\/\/nzbs.org\/\/templates\/default\/images\/banner.jpg",
+      "title": "NZBs(dot)ORG",
+      "link": "https:\/\/nzbs.org\/",
+      "description": "Visit NZBs(dot)ORG - Home of the NZB Harvester"
+    },
+    "response": {
+      "@attributes": {
+        "offset": "0",
+        "total": "337"
+      }
+    },
+    "item": [
+      {
+        "title": "The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON",
+        "guid": "b5772bf329b6f15e22856db843d55237",
+        "link": "https:\/\/nzbs.org\/getnzb\/b5772bf329b6f15e22856db843d55237.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/b5772bf329b6f15e22856db843d55237#comments",
+        "pubDate": "Thu, 20 Aug 2015 00:58:07 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/b5772bf329b6f15e22856db843d55237.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1391758838",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1391758838"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "b5772bf329b6f15e22856db843d55237"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON",
+        "guid": "82f3af397d7e5ecc635509a86d143bb3",
+        "link": "https:\/\/nzbs.org\/getnzb\/82f3af397d7e5ecc635509a86d143bb3.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/82f3af397d7e5ecc635509a86d143bb3#comments",
+        "pubDate": "Thu, 20 Aug 2015 00:38:44 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/82f3af397d7e5ecc635509a86d143bb3.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1445698413",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1445698413"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "82f3af397d7e5ecc635509a86d143bb3"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON",
+        "guid": "78f22d2da0e298c5993518092e45d696",
+        "link": "https:\/\/nzbs.org\/getnzb\/78f22d2da0e298c5993518092e45d696.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/78f22d2da0e298c5993518092e45d696#comments",
+        "pubDate": "Wed, 19 Aug 2015 22:28:12 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/78f22d2da0e298c5993518092e45d696.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1391853257",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1391853257"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "78f22d2da0e298c5993518092e45d696"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON",
+        "guid": "e0eec6828c05c4d31f4d65effeb9c25a",
+        "link": "https:\/\/nzbs.org\/getnzb\/e0eec6828c05c4d31f4d65effeb9c25a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/e0eec6828c05c4d31f4d65effeb9c25a#comments",
+        "pubDate": "Wed, 19 Aug 2015 20:00:52 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e0eec6828c05c4d31f4d65effeb9c25a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1321212807",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1321212807"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e0eec6828c05c4d31f4d65effeb9c25a"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON",
+        "guid": "8d7590efbf4e05658647243bb10563f4",
+        "link": "https:\/\/nzbs.org\/getnzb\/8d7590efbf4e05658647243bb10563f4.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/8d7590efbf4e05658647243bb10563f4#comments",
+        "pubDate": "Wed, 19 Aug 2015 17:08:32 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/8d7590efbf4e05658647243bb10563f4.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1895156172",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1895156172"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "8d7590efbf4e05658647243bb10563f4"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON",
+        "guid": "a726aa4eefa9304e58e61850e31e4f83",
+        "link": "https:\/\/nzbs.org\/getnzb\/a726aa4eefa9304e58e61850e31e4f83.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/a726aa4eefa9304e58e61850e31e4f83#comments",
+        "pubDate": "Wed, 19 Aug 2015 14:27:13 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a726aa4eefa9304e58e61850e31e4f83.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1357796093",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1357796093"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a726aa4eefa9304e58e61850e31e4f83"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON",
+        "guid": "5f1179f0b493338dc1a700ae38d566bc",
+        "link": "https:\/\/nzbs.org\/getnzb\/5f1179f0b493338dc1a700ae38d566bc.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/5f1179f0b493338dc1a700ae38d566bc#comments",
+        "pubDate": "Wed, 19 Aug 2015 13:47:54 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/5f1179f0b493338dc1a700ae38d566bc.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1380934224",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1380934224"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "5f1179f0b493338dc1a700ae38d566bc"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON",
+        "guid": "78e1886b8983fcee819a9ce6756ffae7",
+        "link": "https:\/\/nzbs.org\/getnzb\/78e1886b8983fcee819a9ce6756ffae7.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/78e1886b8983fcee819a9ce6756ffae7#comments",
+        "pubDate": "Wed, 19 Aug 2015 12:47:58 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/78e1886b8983fcee819a9ce6756ffae7.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1385017715",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1385017715"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "78e1886b8983fcee819a9ce6756ffae7"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON",
+        "guid": "2c4bad32a59af3c2c58282c908a4824d",
+        "link": "https:\/\/nzbs.org\/getnzb\/2c4bad32a59af3c2c58282c908a4824d.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/2c4bad32a59af3c2c58282c908a4824d#comments",
+        "pubDate": "Wed, 19 Aug 2015 11:51:16 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/2c4bad32a59af3c2c58282c908a4824d.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1895186730",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1895186730"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "2c4bad32a59af3c2c58282c908a4824d"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON",
+        "guid": "31dbbb08f95df87dca6bc73e64d663f9",
+        "link": "https:\/\/nzbs.org\/getnzb\/31dbbb08f95df87dca6bc73e64d663f9.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/31dbbb08f95df87dca6bc73e64d663f9#comments",
+        "pubDate": "Wed, 19 Aug 2015 08:39:15 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/31dbbb08f95df87dca6bc73e64d663f9.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1300717183",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1300717183"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "31dbbb08f95df87dca6bc73e64d663f9"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON",
+        "guid": "c2377a716045c18746a590ed2dcd4130",
+        "link": "https:\/\/nzbs.org\/getnzb\/c2377a716045c18746a590ed2dcd4130.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/c2377a716045c18746a590ed2dcd4130#comments",
+        "pubDate": "Wed, 19 Aug 2015 08:35:32 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/c2377a716045c18746a590ed2dcd4130.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1424654794",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1424654794"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "c2377a716045c18746a590ed2dcd4130"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON",
+        "guid": "c720c30dc1aaa46e79734b8944715c61",
+        "link": "https:\/\/nzbs.org\/getnzb\/c720c30dc1aaa46e79734b8944715c61.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/c720c30dc1aaa46e79734b8944715c61#comments",
+        "pubDate": "Wed, 19 Aug 2015 08:35:32 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/c720c30dc1aaa46e79734b8944715c61.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1321052941",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1321052941"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "c720c30dc1aaa46e79734b8944715c61"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON",
+        "guid": "3a26276ceba26ad50a287c696dda69ab",
+        "link": "https:\/\/nzbs.org\/getnzb\/3a26276ceba26ad50a287c696dda69ab.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/3a26276ceba26ad50a287c696dda69ab#comments",
+        "pubDate": "Wed, 19 Aug 2015 08:35:32 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/3a26276ceba26ad50a287c696dda69ab.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1445521074",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1445521074"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "3a26276ceba26ad50a287c696dda69ab"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON",
+        "guid": "5d703d6c3a95c34e05afcaa4491640ab",
+        "link": "https:\/\/nzbs.org\/getnzb\/5d703d6c3a95c34e05afcaa4491640ab.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/5d703d6c3a95c34e05afcaa4491640ab#comments",
+        "pubDate": "Wed, 19 Aug 2015 08:26:35 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/5d703d6c3a95c34e05afcaa4491640ab.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1357887193",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1357887193"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "5d703d6c3a95c34e05afcaa4491640ab"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON",
+        "guid": "03d0ef685ce3970b461e906af915e5cf",
+        "link": "https:\/\/nzbs.org\/getnzb\/03d0ef685ce3970b461e906af915e5cf.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/03d0ef685ce3970b461e906af915e5cf#comments",
+        "pubDate": "Wed, 19 Aug 2015 08:26:35 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/03d0ef685ce3970b461e906af915e5cf.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1391847376",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1391847376"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "03d0ef685ce3970b461e906af915e5cf"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON",
+        "guid": "9333de09938f45db97a117f719f20653",
+        "link": "https:\/\/nzbs.org\/getnzb\/9333de09938f45db97a117f719f20653.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/9333de09938f45db97a117f719f20653#comments",
+        "pubDate": "Wed, 19 Aug 2015 08:19:12 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/9333de09938f45db97a117f719f20653.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1380761314",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1380761314"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "9333de09938f45db97a117f719f20653"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON",
+        "guid": "7f6db04468e721bfe328304c77299f60",
+        "link": "https:\/\/nzbs.org\/getnzb\/7f6db04468e721bfe328304c77299f60.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/7f6db04468e721bfe328304c77299f60#comments",
+        "pubDate": "Wed, 19 Aug 2015 08:26:35 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/7f6db04468e721bfe328304c77299f60.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1448372071",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1448372071"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "7f6db04468e721bfe328304c77299f60"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON",
+        "guid": "fa41a39b2907ee2f83625b09131ff811",
+        "link": "https:\/\/nzbs.org\/getnzb\/fa41a39b2907ee2f83625b09131ff811.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/fa41a39b2907ee2f83625b09131ff811#comments",
+        "pubDate": "Wed, 19 Aug 2015 08:06:56 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/fa41a39b2907ee2f83625b09131ff811.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1384952679",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1384952679"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "fa41a39b2907ee2f83625b09131ff811"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON",
+        "guid": "07ff30f0c8695afe4dee1cd07bee5590",
+        "link": "https:\/\/nzbs.org\/getnzb\/07ff30f0c8695afe4dee1cd07bee5590.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/07ff30f0c8695afe4dee1cd07bee5590#comments",
+        "pubDate": "Wed, 19 Aug 2015 06:59:36 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/07ff30f0c8695afe4dee1cd07bee5590.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1895303796",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1895303796"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "07ff30f0c8695afe4dee1cd07bee5590"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E17.720p.BluRay.DD5.1.x264-DON",
+        "guid": "5915ae7c3a430c0899d6db1f3cae7b0c",
+        "link": "https:\/\/nzbs.org\/getnzb\/5915ae7c3a430c0899d6db1f3cae7b0c.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/5915ae7c3a430c0899d6db1f3cae7b0c#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:52:57 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E17.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/5915ae7c3a430c0899d6db1f3cae7b0c.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1324012984",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1324012984"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "5915ae7c3a430c0899d6db1f3cae7b0c"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON",
+        "guid": "9342ce9d6f07dc7f0c96d55982072533",
+        "link": "https:\/\/nzbs.org\/getnzb\/9342ce9d6f07dc7f0c96d55982072533.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/9342ce9d6f07dc7f0c96d55982072533#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:37:04 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/9342ce9d6f07dc7f0c96d55982072533.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1300562887",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1300562887"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "9342ce9d6f07dc7f0c96d55982072533"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON",
+        "guid": "aea342863c524b10c1b481908868b669",
+        "link": "https:\/\/nzbs.org\/getnzb\/aea342863c524b10c1b481908868b669.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/aea342863c524b10c1b481908868b669#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:28:29 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/aea342863c524b10c1b481908868b669.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1424832364",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1424832364"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "aea342863c524b10c1b481908868b669"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON",
+        "guid": "12ec26c95d398caa4f7aef79f52320fc",
+        "link": "https:\/\/nzbs.org\/getnzb\/12ec26c95d398caa4f7aef79f52320fc.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/12ec26c95d398caa4f7aef79f52320fc#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:21:12 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/12ec26c95d398caa4f7aef79f52320fc.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1321305081",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1321305081"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "12ec26c95d398caa4f7aef79f52320fc"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON",
+        "guid": "f201defac47a3c9513138376878a5e0e",
+        "link": "https:\/\/nzbs.org\/getnzb\/f201defac47a3c9513138376878a5e0e.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/f201defac47a3c9513138376878a5e0e#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:16:20 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/f201defac47a3c9513138376878a5e0e.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1445628544",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1445628544"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "f201defac47a3c9513138376878a5e0e"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON",
+        "guid": "0a294e00c91a6f6888b9e09da434e8d0",
+        "link": "https:\/\/nzbs.org\/getnzb\/0a294e00c91a6f6888b9e09da434e8d0.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/0a294e00c91a6f6888b9e09da434e8d0#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:16:20 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/0a294e00c91a6f6888b9e09da434e8d0.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1357521294",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1357521294"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "0a294e00c91a6f6888b9e09da434e8d0"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E09.720p.BluRay.DD5.1.x264-DON",
+        "guid": "3021adf3a2aec3b94d9f0872ef9ae112",
+        "link": "https:\/\/nzbs.org\/getnzb\/3021adf3a2aec3b94d9f0872ef9ae112.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/3021adf3a2aec3b94d9f0872ef9ae112#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:09:03 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E09.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/3021adf3a2aec3b94d9f0872ef9ae112.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1279791027",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1279791027"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "3021adf3a2aec3b94d9f0872ef9ae112"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E08.720p.BluRay.DD5.1.x264-DON",
+        "guid": "ae161446a706fdc89842f9ba24f079e2",
+        "link": "https:\/\/nzbs.org\/getnzb\/ae161446a706fdc89842f9ba24f079e2.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/ae161446a706fdc89842f9ba24f079e2#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:05:22 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E08.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/ae161446a706fdc89842f9ba24f079e2.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1326999276",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1326999276"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "ae161446a706fdc89842f9ba24f079e2"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON",
+        "guid": "c04ecee2722c15fb8c537fb587e95db2",
+        "link": "https:\/\/nzbs.org\/getnzb\/c04ecee2722c15fb8c537fb587e95db2.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/c04ecee2722c15fb8c537fb587e95db2#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:00:25 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/c04ecee2722c15fb8c537fb587e95db2.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1391818158",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1391818158"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "c04ecee2722c15fb8c537fb587e95db2"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON",
+        "guid": "e2fd052a33d92ecce6fcf37543c123c1",
+        "link": "https:\/\/nzbs.org\/getnzb\/e2fd052a33d92ecce6fcf37543c123c1.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/e2fd052a33d92ecce6fcf37543c123c1#comments",
+        "pubDate": "Wed, 19 Aug 2015 04:52:56 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e2fd052a33d92ecce6fcf37543c123c1.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1380969081",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1380969081"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e2fd052a33d92ecce6fcf37543c123c1"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E04.720p.BluRay.DD5.1.x264-DON",
+        "guid": "e044455b9817c1294a6485eebd0e8dcc",
+        "link": "https:\/\/nzbs.org\/getnzb\/e044455b9817c1294a6485eebd0e8dcc.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/e044455b9817c1294a6485eebd0e8dcc#comments",
+        "pubDate": "Wed, 19 Aug 2015 04:45:37 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E04.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e044455b9817c1294a6485eebd0e8dcc.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1358325710",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1358325710"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e044455b9817c1294a6485eebd0e8dcc"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON",
+        "guid": "25869618700bb8b370ce907848113fdd",
+        "link": "https:\/\/nzbs.org\/getnzb\/25869618700bb8b370ce907848113fdd.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/25869618700bb8b370ce907848113fdd#comments",
+        "pubDate": "Wed, 19 Aug 2015 04:41:52 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/25869618700bb8b370ce907848113fdd.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1448403274",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1448403274"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "25869618700bb8b370ce907848113fdd"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON",
+        "guid": "7e64063f770edb4d8c8deff491baffbf",
+        "link": "https:\/\/nzbs.org\/getnzb\/7e64063f770edb4d8c8deff491baffbf.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/7e64063f770edb4d8c8deff491baffbf#comments",
+        "pubDate": "Wed, 19 Aug 2015 04:34:14 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/7e64063f770edb4d8c8deff491baffbf.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1384948801",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1384948801"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "7e64063f770edb4d8c8deff491baffbf"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E17.720p.BluRay.DD5.1.x264-DON",
+        "guid": "e4a79d8d8e386f6db1f3955455dbc00b",
+        "link": "https:\/\/nzbs.org\/getnzb\/e4a79d8d8e386f6db1f3955455dbc00b.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/e4a79d8d8e386f6db1f3955455dbc00b#comments",
+        "pubDate": "Wed, 19 Aug 2015 04:22:35 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E17.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e4a79d8d8e386f6db1f3955455dbc00b.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1323958867",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1323958867"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e4a79d8d8e386f6db1f3955455dbc00b"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON",
+        "guid": "6d8a4b8055658d3285eeecb71eb6cf82",
+        "link": "https:\/\/nzbs.org\/getnzb\/6d8a4b8055658d3285eeecb71eb6cf82.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/6d8a4b8055658d3285eeecb71eb6cf82#comments",
+        "pubDate": "Wed, 19 Aug 2015 04:18:53 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/6d8a4b8055658d3285eeecb71eb6cf82.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1300382923",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1300382923"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "6d8a4b8055658d3285eeecb71eb6cf82"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E15.720p.BluRay.DD5.1.x264-DON",
+        "guid": "4a1ae45d062de212ce161f502a2b7e56",
+        "link": "https:\/\/nzbs.org\/getnzb\/4a1ae45d062de212ce161f502a2b7e56.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/4a1ae45d062de212ce161f502a2b7e56#comments",
+        "pubDate": "Wed, 19 Aug 2015 04:10:10 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E15.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/4a1ae45d062de212ce161f502a2b7e56.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1436741008",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1436741008"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "4a1ae45d062de212ce161f502a2b7e56"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E14.720p.BluRay.DD5.1.x264-DON",
+        "guid": "157d430d760835b1edd3233cf0c91194",
+        "link": "https:\/\/nzbs.org\/getnzb\/157d430d760835b1edd3233cf0c91194.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/157d430d760835b1edd3233cf0c91194#comments",
+        "pubDate": "Wed, 19 Aug 2015 04:10:10 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E14.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/157d430d760835b1edd3233cf0c91194.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1321189314",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1321189314"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "157d430d760835b1edd3233cf0c91194"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON",
+        "guid": "97281e9cb615a970567389068c884124",
+        "link": "https:\/\/nzbs.org\/getnzb\/97281e9cb615a970567389068c884124.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/97281e9cb615a970567389068c884124#comments",
+        "pubDate": "Wed, 19 Aug 2015 04:06:31 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/97281e9cb615a970567389068c884124.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1424788377",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1424788377"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "97281e9cb615a970567389068c884124"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON",
+        "guid": "bbe726416d31bf779cd7ea0851651c45",
+        "link": "https:\/\/nzbs.org\/getnzb\/bbe726416d31bf779cd7ea0851651c45.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/bbe726416d31bf779cd7ea0851651c45#comments",
+        "pubDate": "Wed, 19 Aug 2015 03:36:50 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/bbe726416d31bf779cd7ea0851651c45.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1321048675",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1321048675"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "bbe726416d31bf779cd7ea0851651c45"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON",
+        "guid": "848a26b4a22fd1452693083e3496cc5d",
+        "link": "https:\/\/nzbs.org\/getnzb\/848a26b4a22fd1452693083e3496cc5d.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/848a26b4a22fd1452693083e3496cc5d#comments",
+        "pubDate": "Wed, 19 Aug 2015 03:33:08 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/848a26b4a22fd1452693083e3496cc5d.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1445806094",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1445806094"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "848a26b4a22fd1452693083e3496cc5d"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON",
+        "guid": "2e22f6cdbdf892693207ae42ffa579a8",
+        "link": "https:\/\/nzbs.org\/getnzb\/2e22f6cdbdf892693207ae42ffa579a8.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/2e22f6cdbdf892693207ae42ffa579a8#comments",
+        "pubDate": "Wed, 19 Aug 2015 03:29:09 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/2e22f6cdbdf892693207ae42ffa579a8.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1357600462",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1357600462"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "2e22f6cdbdf892693207ae42ffa579a8"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E08.720p.BluRay.DD5.1.x264-DON",
+        "guid": "e75329c8440c47e03148e5e9ddce137f",
+        "link": "https:\/\/nzbs.org\/getnzb\/e75329c8440c47e03148e5e9ddce137f.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/e75329c8440c47e03148e5e9ddce137f#comments",
+        "pubDate": "Wed, 19 Aug 2015 03:16:33 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E08.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e75329c8440c47e03148e5e9ddce137f.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1326903727",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1326903727"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e75329c8440c47e03148e5e9ddce137f"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON",
+        "guid": "a65463b9174130abe0423c45ce39e3d7",
+        "link": "https:\/\/nzbs.org\/getnzb\/a65463b9174130abe0423c45ce39e3d7.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/a65463b9174130abe0423c45ce39e3d7#comments",
+        "pubDate": "Wed, 19 Aug 2015 03:12:52 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a65463b9174130abe0423c45ce39e3d7.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1391795891",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1391795891"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a65463b9174130abe0423c45ce39e3d7"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON",
+        "guid": "d89ba65335efc685c91d4e0d6e81524f",
+        "link": "https:\/\/nzbs.org\/getnzb\/d89ba65335efc685c91d4e0d6e81524f.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/d89ba65335efc685c91d4e0d6e81524f#comments",
+        "pubDate": "Wed, 19 Aug 2015 03:01:50 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/d89ba65335efc685c91d4e0d6e81524f.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1380972066",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1380972066"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "d89ba65335efc685c91d4e0d6e81524f"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E05.720p.BluRay.DD5.1.x264-DON",
+        "guid": "a227652a65b085c29b81f7cee569fac3",
+        "link": "https:\/\/nzbs.org\/getnzb\/a227652a65b085c29b81f7cee569fac3.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/a227652a65b085c29b81f7cee569fac3#comments",
+        "pubDate": "Wed, 19 Aug 2015 03:01:50 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E05.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a227652a65b085c29b81f7cee569fac3.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1325929235",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1325929235"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a227652a65b085c29b81f7cee569fac3"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E04.720p.BluRay.DD5.1.x264-DON",
+        "guid": "f0d7ef51af6c1bbfc185dd8ff0cde489",
+        "link": "https:\/\/nzbs.org\/getnzb\/f0d7ef51af6c1bbfc185dd8ff0cde489.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/f0d7ef51af6c1bbfc185dd8ff0cde489#comments",
+        "pubDate": "Wed, 19 Aug 2015 02:41:56 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E04.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/f0d7ef51af6c1bbfc185dd8ff0cde489.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1358321224",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1358321224"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "f0d7ef51af6c1bbfc185dd8ff0cde489"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON",
+        "guid": "eded0ee4393a8a629e6ac1e3420cf898",
+        "link": "https:\/\/nzbs.org\/getnzb\/eded0ee4393a8a629e6ac1e3420cf898.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/eded0ee4393a8a629e6ac1e3420cf898#comments",
+        "pubDate": "Wed, 19 Aug 2015 02:30:28 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/eded0ee4393a8a629e6ac1e3420cf898.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1448485493",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1448485493"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "eded0ee4393a8a629e6ac1e3420cf898"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON",
+        "guid": "bd2e971709610594753db0122244773e",
+        "link": "https:\/\/nzbs.org\/getnzb\/bd2e971709610594753db0122244773e.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/bd2e971709610594753db0122244773e#comments",
+        "pubDate": "Wed, 19 Aug 2015 02:26:47 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/bd2e971709610594753db0122244773e.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1895121505",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1895121505"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "bd2e971709610594753db0122244773e"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON",
+        "guid": "8ea39b1ad7d1b6c95a8cc7dabaa75650",
+        "link": "https:\/\/nzbs.org\/getnzb\/8ea39b1ad7d1b6c95a8cc7dabaa75650.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/8ea39b1ad7d1b6c95a8cc7dabaa75650#comments",
+        "pubDate": "Wed, 19 Aug 2015 02:19:22 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/8ea39b1ad7d1b6c95a8cc7dabaa75650.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1385038905",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1385038905"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "8ea39b1ad7d1b6c95a8cc7dabaa75650"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E17.720p.BluRay.DD5.1.x264-DON",
+        "guid": "e8630a568f43c5f9cfad7e1bbce7ca01",
+        "link": "https:\/\/nzbs.org\/getnzb\/e8630a568f43c5f9cfad7e1bbce7ca01.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/e8630a568f43c5f9cfad7e1bbce7ca01#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:25:30 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E17.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e8630a568f43c5f9cfad7e1bbce7ca01.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1376328279",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1376328279"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e8630a568f43c5f9cfad7e1bbce7ca01"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON",
+        "guid": "69a289e4310309167cb5d9a28bf9effb",
+        "link": "https:\/\/nzbs.org\/getnzb\/69a289e4310309167cb5d9a28bf9effb.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/69a289e4310309167cb5d9a28bf9effb#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:25:30 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/69a289e4310309167cb5d9a28bf9effb.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1351880028",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1351880028"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "69a289e4310309167cb5d9a28bf9effb"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E15.720p.BluRay.DD5.1.x264-DON",
+        "guid": "b4362f753cd5fc73a1493a3c87a80552",
+        "link": "https:\/\/nzbs.org\/getnzb\/b4362f753cd5fc73a1493a3c87a80552.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/b4362f753cd5fc73a1493a3c87a80552#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:22:36 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E15.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/b4362f753cd5fc73a1493a3c87a80552.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1493437966",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1493437966"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "b4362f753cd5fc73a1493a3c87a80552"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E14.720p.BluRay.DD5.1.x264-DON",
+        "guid": "0223c0dac759aa367ed8cba75f70867a",
+        "link": "https:\/\/nzbs.org\/getnzb\/0223c0dac759aa367ed8cba75f70867a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/0223c0dac759aa367ed8cba75f70867a#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:22:37 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E14.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/0223c0dac759aa367ed8cba75f70867a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1374663296",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1374663296"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "0223c0dac759aa367ed8cba75f70867a"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON",
+        "guid": "a26b86b5bb72def5453fe9a398437c32",
+        "link": "https:\/\/nzbs.org\/getnzb\/a26b86b5bb72def5453fe9a398437c32.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/a26b86b5bb72def5453fe9a398437c32#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:19:26 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a26b86b5bb72def5453fe9a398437c32.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1482593940",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1482593940"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a26b86b5bb72def5453fe9a398437c32"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON",
+        "guid": "57e549ff58459193be449700a419c367",
+        "link": "https:\/\/nzbs.org\/getnzb\/57e549ff58459193be449700a419c367.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/57e549ff58459193be449700a419c367#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:19:26 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/57e549ff58459193be449700a419c367.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1374537236",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1374537236"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "57e549ff58459193be449700a419c367"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON",
+        "guid": "651a448c4a2e20c52f1d60f807ebb3a1",
+        "link": "https:\/\/nzbs.org\/getnzb\/651a448c4a2e20c52f1d60f807ebb3a1.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/651a448c4a2e20c52f1d60f807ebb3a1#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:16:19 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/651a448c4a2e20c52f1d60f807ebb3a1.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1504119055",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1504119055"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "651a448c4a2e20c52f1d60f807ebb3a1"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON",
+        "guid": "e9af6bfc7b5caa411c8017554023d729",
+        "link": "https:\/\/nzbs.org\/getnzb\/e9af6bfc7b5caa411c8017554023d729.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/e9af6bfc7b5caa411c8017554023d729#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:16:19 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e9af6bfc7b5caa411c8017554023d729.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1412129101",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1412129101"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e9af6bfc7b5caa411c8017554023d729"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E09.720p.BluRay.DD5.1.x264-DON",
+        "guid": "b89b3bcca7f7e00e166282cf0e4d1a19",
+        "link": "https:\/\/nzbs.org\/getnzb\/b89b3bcca7f7e00e166282cf0e4d1a19.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/b89b3bcca7f7e00e166282cf0e4d1a19#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:12:55 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E09.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/b89b3bcca7f7e00e166282cf0e4d1a19.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1332248261",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1332248261"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "b89b3bcca7f7e00e166282cf0e4d1a19"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E08.720p.BluRay.DD5.1.x264-DON",
+        "guid": "0ae6450936bf81725dd41779ac24ad1a",
+        "link": "https:\/\/nzbs.org\/getnzb\/0ae6450936bf81725dd41779ac24ad1a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/0ae6450936bf81725dd41779ac24ad1a#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:09:46 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E08.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/0ae6450936bf81725dd41779ac24ad1a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1379321300",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1379321300"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "0ae6450936bf81725dd41779ac24ad1a"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON",
+        "guid": "875b4799f5316971cdfb5c99f39fad39",
+        "link": "https:\/\/nzbs.org\/getnzb\/875b4799f5316971cdfb5c99f39fad39.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/875b4799f5316971cdfb5c99f39fad39#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:09:46 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/875b4799f5316971cdfb5c99f39fad39.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1448818688",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1448818688"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "875b4799f5316971cdfb5c99f39fad39"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON",
+        "guid": "ed062cfdde9de73206bf94449eba51ab",
+        "link": "https:\/\/nzbs.org\/getnzb\/ed062cfdde9de73206bf94449eba51ab.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/ed062cfdde9de73206bf94449eba51ab#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:06:13 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/ed062cfdde9de73206bf94449eba51ab.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1436676230",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1436676230"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "ed062cfdde9de73206bf94449eba51ab"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E05.720p.BluRay.DD5.1.x264-DON",
+        "guid": "5c24fcfa1248e8098df963aa732b5a05",
+        "link": "https:\/\/nzbs.org\/getnzb\/5c24fcfa1248e8098df963aa732b5a05.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/5c24fcfa1248e8098df963aa732b5a05#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:06:13 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E05.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/5c24fcfa1248e8098df963aa732b5a05.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1379158556",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1379158556"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "5c24fcfa1248e8098df963aa732b5a05"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E04.720p.BluRay.DD5.1.x264-DON",
+        "guid": "5caaf480c8c1dee2fa01a187075cae4d",
+        "link": "https:\/\/nzbs.org\/getnzb\/5caaf480c8c1dee2fa01a187075cae4d.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/5caaf480c8c1dee2fa01a187075cae4d#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:03:08 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E04.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/5caaf480c8c1dee2fa01a187075cae4d.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1412734069",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1412734069"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "5caaf480c8c1dee2fa01a187075cae4d"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON",
+        "guid": "4592aec3e3cb5390a7308de10e17adf7",
+        "link": "https:\/\/nzbs.org\/getnzb\/4592aec3e3cb5390a7308de10e17adf7.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/4592aec3e3cb5390a7308de10e17adf7#comments",
+        "pubDate": "Tue, 02 Jun 2015 18:03:08 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/4592aec3e3cb5390a7308de10e17adf7.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1507094107",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1507094107"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "4592aec3e3cb5390a7308de10e17adf7"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON",
+        "guid": "7ddf5c7612f65de759b04c63e86221b6",
+        "link": "https:\/\/nzbs.org\/getnzb\/7ddf5c7612f65de759b04c63e86221b6.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/7ddf5c7612f65de759b04c63e86221b6#comments",
+        "pubDate": "Tue, 02 Jun 2015 17:59:56 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/7ddf5c7612f65de759b04c63e86221b6.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1441345009",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1441345009"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "7ddf5c7612f65de759b04c63e86221b6"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON",
+        "guid": "fb7385e40b06144eaabcad767c6acbb2",
+        "link": "https:\/\/nzbs.org\/getnzb\/fb7385e40b06144eaabcad767c6acbb2.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/fb7385e40b06144eaabcad767c6acbb2#comments",
+        "pubDate": "Tue, 02 Jun 2015 17:56:52 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/fb7385e40b06144eaabcad767c6acbb2.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1976639205",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1976639205"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "fb7385e40b06144eaabcad767c6acbb2"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E17.The.Tangerine.Factor.BluRay.1080p.DTS.x264-CHD",
+        "guid": "55371da24b743fc1237f9a2703a0e1f4",
+        "link": "https:\/\/nzbs.org\/getnzb\/55371da24b743fc1237f9a2703a0e1f4.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/55371da24b743fc1237f9a2703a0e1f4#comments",
+        "pubDate": "Mon, 04 May 2015 20:14:16 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E17.The.Tangerine.Factor.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/55371da24b743fc1237f9a2703a0e1f4.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2438089544",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2438089544"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "55371da24b743fc1237f9a2703a0e1f4"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E16.The.Peanut.Reaction.BluRay.1080p.DTS.x264-CHD",
+        "guid": "143d3bfbb9e352ef45364660c6d0e923",
+        "link": "https:\/\/nzbs.org\/getnzb\/143d3bfbb9e352ef45364660c6d0e923.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/143d3bfbb9e352ef45364660c6d0e923#comments",
+        "pubDate": "Mon, 04 May 2015 20:10:19 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E16.The.Peanut.Reaction.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/143d3bfbb9e352ef45364660c6d0e923.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2392245216",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2392245216"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "143d3bfbb9e352ef45364660c6d0e923"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E15.The.Shiksa.Indeterminacy.BluRay.1080p.DTS.x264-CHD",
+        "guid": "8a4f1ec834fad9e69cb97aa7a3aa9071",
+        "link": "https:\/\/nzbs.org\/getnzb\/8a4f1ec834fad9e69cb97aa7a3aa9071.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/8a4f1ec834fad9e69cb97aa7a3aa9071#comments",
+        "pubDate": "Mon, 04 May 2015 20:06:17 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E15.The.Shiksa.Indeterminacy.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/8a4f1ec834fad9e69cb97aa7a3aa9071.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2645024949",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2645024949"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "8a4f1ec834fad9e69cb97aa7a3aa9071"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E14.The.Nerdvana.Annihilation.BluRay.1080p.DTS.x264-CHD",
+        "guid": "a231e185f43e2244026d3ec6ebfeb535",
+        "link": "https:\/\/nzbs.org\/getnzb\/a231e185f43e2244026d3ec6ebfeb535.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/a231e185f43e2244026d3ec6ebfeb535#comments",
+        "pubDate": "Mon, 04 May 2015 20:06:18 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E14.The.Nerdvana.Annihilation.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a231e185f43e2244026d3ec6ebfeb535.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2434153699",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2434153699"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a231e185f43e2244026d3ec6ebfeb535"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E13.The.Bat.Jar.Conjecture.BluRay.1080p.DTS.x264-CHD",
+        "guid": "35f41fdda0be67562013fa58c9b5c12b",
+        "link": "https:\/\/nzbs.org\/getnzb\/35f41fdda0be67562013fa58c9b5c12b.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/35f41fdda0be67562013fa58c9b5c12b#comments",
+        "pubDate": "Mon, 04 May 2015 20:01:55 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E13.The.Bat.Jar.Conjecture.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/35f41fdda0be67562013fa58c9b5c12b.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2623885305",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2623885305"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "35f41fdda0be67562013fa58c9b5c12b"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E12.The.Jerusalem.Duality.BluRay.1080p.DTS.x264-CHD",
+        "guid": "dedba412d609a3d7689f895865afdf55",
+        "link": "https:\/\/nzbs.org\/getnzb\/dedba412d609a3d7689f895865afdf55.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/dedba412d609a3d7689f895865afdf55#comments",
+        "pubDate": "Mon, 04 May 2015 19:57:35 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E12.The.Jerusalem.Duality.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/dedba412d609a3d7689f895865afdf55.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2427192356",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2427192356"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "dedba412d609a3d7689f895865afdf55"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E11.The.Pancake.Batter.Anomaly.BluRay.1080p.DTS.x264-CHD",
+        "guid": "ecb4532e8c65916e9bc910c17a6a3da9",
+        "link": "https:\/\/nzbs.org\/getnzb\/ecb4532e8c65916e9bc910c17a6a3da9.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/ecb4532e8c65916e9bc910c17a6a3da9#comments",
+        "pubDate": "Mon, 04 May 2015 19:57:34 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E11.The.Pancake.Batter.Anomaly.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/ecb4532e8c65916e9bc910c17a6a3da9.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2663430083",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2663430083"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "ecb4532e8c65916e9bc910c17a6a3da9"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E10.The.Loobenfeld.Decay.BluRay.1080p.DTS.x264-CHD",
+        "guid": "4fc5ff31a5cec5f4c6ead087e9f38c55",
+        "link": "https:\/\/nzbs.org\/getnzb\/4fc5ff31a5cec5f4c6ead087e9f38c55.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/4fc5ff31a5cec5f4c6ead087e9f38c55#comments",
+        "pubDate": "Mon, 04 May 2015 19:53:36 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E10.The.Loobenfeld.Decay.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/4fc5ff31a5cec5f4c6ead087e9f38c55.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2500518833",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2500518833"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "4fc5ff31a5cec5f4c6ead087e9f38c55"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E09.The.Cooper-Hofstadter.Polarization.BluRay.1080p.DTS.x264-CHD",
+        "guid": "a7be6eaf37d162de07af1454b43c3eff",
+        "link": "https:\/\/nzbs.org\/getnzb\/a7be6eaf37d162de07af1454b43c3eff.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/a7be6eaf37d162de07af1454b43c3eff#comments",
+        "pubDate": "Mon, 04 May 2015 19:49:30 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E09.The.Cooper-Hofstadter.Polarization.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a7be6eaf37d162de07af1454b43c3eff.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2356169090",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2356169090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a7be6eaf37d162de07af1454b43c3eff"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E08.The.Grasshopper.Experiment.BluRay.1080p.DTS.x264-CHD",
+        "guid": "b4bda3fdf2bdce7845f0a2418e43d272",
+        "link": "https:\/\/nzbs.org\/getnzb\/b4bda3fdf2bdce7845f0a2418e43d272.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/b4bda3fdf2bdce7845f0a2418e43d272#comments",
+        "pubDate": "Mon, 04 May 2015 19:49:30 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E08.The.Grasshopper.Experiment.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/b4bda3fdf2bdce7845f0a2418e43d272.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2442487803",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2442487803"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "b4bda3fdf2bdce7845f0a2418e43d272"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E07.The.Dumpling.Paradox.BluRay.1080p.DTS.x264-CHD",
+        "guid": "23d6f64509c9345863be38a0ecd23690",
+        "link": "https:\/\/nzbs.org\/getnzb\/23d6f64509c9345863be38a0ecd23690.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/23d6f64509c9345863be38a0ecd23690#comments",
+        "pubDate": "Mon, 04 May 2015 19:45:01 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E07.The.Dumpling.Paradox.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/23d6f64509c9345863be38a0ecd23690.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2563459385",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2563459385"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "23d6f64509c9345863be38a0ecd23690"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E06.The.Middle.Earth.Paradigm.BluRay.1080p.DTS.x264-CHD",
+        "guid": "b9e57540d357553eee3b50e58e6b720c",
+        "link": "https:\/\/nzbs.org\/getnzb\/b9e57540d357553eee3b50e58e6b720c.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/b9e57540d357553eee3b50e58e6b720c#comments",
+        "pubDate": "Mon, 04 May 2015 19:40:56 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E06.The.Middle.Earth.Paradigm.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/b9e57540d357553eee3b50e58e6b720c.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2541228360",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2541228360"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "b9e57540d357553eee3b50e58e6b720c"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E05.The.Hamburger.Postulate.BluRay.1080p.DTS.x264-CHD",
+        "guid": "1ab43a157ecd9ff4a03a7585dac478b6",
+        "link": "https:\/\/nzbs.org\/getnzb\/1ab43a157ecd9ff4a03a7585dac478b6.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/1ab43a157ecd9ff4a03a7585dac478b6#comments",
+        "pubDate": "Mon, 04 May 2015 19:40:56 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E05.The.Hamburger.Postulate.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/1ab43a157ecd9ff4a03a7585dac478b6.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2443972483",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2443972483"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "1ab43a157ecd9ff4a03a7585dac478b6"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E04.The.Luminous.Fish.Effect.BluRay.1080p.DTS.x264-CHD",
+        "guid": "aef39c1d277b36b0feb2aa180cc8bf8a",
+        "link": "https:\/\/nzbs.org\/getnzb\/aef39c1d277b36b0feb2aa180cc8bf8a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/aef39c1d277b36b0feb2aa180cc8bf8a#comments",
+        "pubDate": "Mon, 04 May 2015 19:36:13 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E04.The.Luminous.Fish.Effect.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/aef39c1d277b36b0feb2aa180cc8bf8a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2495893315",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2495893315"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "aef39c1d277b36b0feb2aa180cc8bf8a"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E03.The.Fuzzyboots.Corollary.BluRay.1080p.DTS.x264-CHD",
+        "guid": "ec734a5a09491923e8888acc0d8c9761",
+        "link": "https:\/\/nzbs.org\/getnzb\/ec734a5a09491923e8888acc0d8c9761.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/ec734a5a09491923e8888acc0d8c9761#comments",
+        "pubDate": "Mon, 04 May 2015 19:36:13 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E03.The.Fuzzyboots.Corollary.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/ec734a5a09491923e8888acc0d8c9761.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2665882343",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2665882343"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "ec734a5a09491923e8888acc0d8c9761"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E02.The.Big.Bran.Hypothesis.BluRay.1080p.DTS.x264-CHD",
+        "guid": "08add50848f0e1b5b9341234a1be303a",
+        "link": "https:\/\/nzbs.org\/getnzb\/08add50848f0e1b5b9341234a1be303a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/08add50848f0e1b5b9341234a1be303a#comments",
+        "pubDate": "Mon, 04 May 2015 19:31:35 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E02.The.Big.Bran.Hypothesis.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/08add50848f0e1b5b9341234a1be303a.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2547614895",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2547614895"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "08add50848f0e1b5b9341234a1be303a"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E01.Pilot.BluRay.1080p.DTS.x264-CHD",
+        "guid": "f2c545bb06587a35a371c65668849626",
+        "link": "https:\/\/nzbs.org\/getnzb\/f2c545bb06587a35a371c65668849626.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/f2c545bb06587a35a371c65668849626#comments",
+        "pubDate": "Mon, 04 May 2015 19:26:34 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E01.Pilot.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/f2c545bb06587a35a371c65668849626.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2771598086",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2771598086"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "f2c545bb06587a35a371c65668849626"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01.BluRay.1080p.DTS.x264-CHD",
+        "guid": "da1cd477070b2a2d779a5cb6b3c45e4c",
+        "link": "https:\/\/nzbs.org\/getnzb\/da1cd477070b2a2d779a5cb6b3c45e4c.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/da1cd477070b2a2d779a5cb6b3c45e4c#comments",
+        "pubDate": "Mon, 04 May 2015 19:26:41 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01.BluRay.1080p.DTS.x264-CHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/da1cd477070b2a2d779a5cb6b3c45e4c.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1679981",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1679981"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "da1cd477070b2a2d779a5cb6b3c45e4c"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E01.576p.BluRay.DD5.1.x264-HiSD",
+        "guid": "d19a09cb91e5ad2e972c7ef171a3ab28",
+        "link": "https:\/\/nzbs.org\/getnzb\/d19a09cb91e5ad2e972c7ef171a3ab28.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/d19a09cb91e5ad2e972c7ef171a3ab28#comments",
+        "pubDate": "Wed, 21 Jan 2015 10:25:44 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E01.576p.BluRay.DD5.1.x264-HiSD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/d19a09cb91e5ad2e972c7ef171a3ab28.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "6874005182",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "6874005182"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "d19a09cb91e5ad2e972c7ef171a3ab28"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E02.1080p.BluRay",
+        "guid": "07a90d0c713806f4e82f7142e4a25101",
+        "link": "https:\/\/nzbs.org\/getnzb\/07a90d0c713806f4e82f7142e4a25101.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/07a90d0c713806f4e82f7142e4a25101#comments",
+        "pubDate": "Sun, 07 Dec 2014 20:01:22 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E02.1080p.BluRay",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/07a90d0c713806f4e82f7142e4a25101.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "1790966654",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1790966654"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "07a90d0c713806f4e82f7142e4a25101"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E01.1080p.BluRay",
+        "guid": "4ce2d7e1747beb104d7a21dcf48ad304",
+        "link": "https:\/\/nzbs.org\/getnzb\/4ce2d7e1747beb104d7a21dcf48ad304.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/4ce2d7e1747beb104d7a21dcf48ad304#comments",
+        "pubDate": "Sat, 06 Dec 2014 02:07:36 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Big.Bang.Theory.S01E01.1080p.BluRay",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/4ce2d7e1747beb104d7a21dcf48ad304.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "2564328633",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2564328633"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "4ce2d7e1747beb104d7a21dcf48ad304"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E177p.W.DL.nHD4-NhaNc3",
+        "guid": "1ccf1e987e9a82c3d9c105123a651279",
+        "link": "https:\/\/nzbs.org\/getnzb\/1ccf1e987e9a82c3d9c105123a651279.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/1ccf1e987e9a82c3d9c105123a651279#comments",
+        "pubDate": "Fri, 20 Jun 2014 07:04:07 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E177p.W.DL.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/1ccf1e987e9a82c3d9c105123a651279.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "580276859",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "580276859"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "1ccf1e987e9a82c3d9c105123a651279"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E167p.W.DL.nHD4-NhaNc3",
+        "guid": "4e21cc9a6af4bcc2e9334e58e47bac51",
+        "link": "https:\/\/nzbs.org\/getnzb\/4e21cc9a6af4bcc2e9334e58e47bac51.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/4e21cc9a6af4bcc2e9334e58e47bac51#comments",
+        "pubDate": "Fri, 20 Jun 2014 07:03:56 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E167p.W.DL.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/4e21cc9a6af4bcc2e9334e58e47bac51.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "465855436",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "465855436"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "4e21cc9a6af4bcc2e9334e58e47bac51"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E157p.W.DL.nHD4-NhaNc3",
+        "guid": "e5706144e45dfd41bc087dbff2159974",
+        "link": "https:\/\/nzbs.org\/getnzb\/e5706144e45dfd41bc087dbff2159974.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/e5706144e45dfd41bc087dbff2159974#comments",
+        "pubDate": "Fri, 20 Jun 2014 07:04:09 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E157p.W.DL.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e5706144e45dfd41bc087dbff2159974.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "579774317",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "579774317"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e5706144e45dfd41bc087dbff2159974"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E147p.W.DL.nHD4-NhaNc3",
+        "guid": "81743c337e33e909176b35d623734b44",
+        "link": "https:\/\/nzbs.org\/getnzb\/81743c337e33e909176b35d623734b44.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/81743c337e33e909176b35d623734b44#comments",
+        "pubDate": "Fri, 20 Jun 2014 07:04:10 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E147p.W.DL.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/81743c337e33e909176b35d623734b44.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "580505266",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "580505266"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "81743c337e33e909176b35d623734b44"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E137p.W.DL.nHD4-NhaNc3",
+        "guid": "569b5a1f84d8d64dac08be0b155b4771",
+        "link": "https:\/\/nzbs.org\/getnzb\/569b5a1f84d8d64dac08be0b155b4771.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/569b5a1f84d8d64dac08be0b155b4771#comments",
+        "pubDate": "Fri, 20 Jun 2014 06:59:24 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E137p.W.DL.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/569b5a1f84d8d64dac08be0b155b4771.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "583542721",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "583542721"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "569b5a1f84d8d64dac08be0b155b4771"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E127p.W.DL.nHD4-NhaNc3",
+        "guid": "d701a5d80ffe8e146955f3802fa4acbc",
+        "link": "https:\/\/nzbs.org\/getnzb\/d701a5d80ffe8e146955f3802fa4acbc.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/d701a5d80ffe8e146955f3802fa4acbc#comments",
+        "pubDate": "Fri, 20 Jun 2014 06:59:28 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E127p.W.DL.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/d701a5d80ffe8e146955f3802fa4acbc.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "583312331",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "583312331"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "d701a5d80ffe8e146955f3802fa4acbc"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E117p.W.DL.nHD4-NhaNc3",
+        "guid": "f3ecb1359e6af7578b9ed7ca17917d12",
+        "link": "https:\/\/nzbs.org\/getnzb\/f3ecb1359e6af7578b9ed7ca17917d12.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/f3ecb1359e6af7578b9ed7ca17917d12#comments",
+        "pubDate": "Fri, 20 Jun 2014 06:59:29 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E117p.W.DL.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/f3ecb1359e6af7578b9ed7ca17917d12.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "580210815",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "580210815"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "f3ecb1359e6af7578b9ed7ca17917d12"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E107p.W.DL.nHD4-NhaNc3",
+        "guid": "605dab416b15b76a99b69c09af2b7adb",
+        "link": "https:\/\/nzbs.org\/getnzb\/605dab416b15b76a99b69c09af2b7adb.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/605dab416b15b76a99b69c09af2b7adb#comments",
+        "pubDate": "Fri, 20 Jun 2014 06:59:31 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E107p.W.DL.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/605dab416b15b76a99b69c09af2b7adb.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "580196983",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "580196983"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "605dab416b15b76a99b69c09af2b7adb"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E097p.W.DL.nHD4-NhaNc3",
+        "guid": "21957de5a29b13e0600a61f852dcd54f",
+        "link": "https:\/\/nzbs.org\/getnzb\/21957de5a29b13e0600a61f852dcd54f.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/21957de5a29b13e0600a61f852dcd54f#comments",
+        "pubDate": "Fri, 20 Jun 2014 06:59:22 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E097p.W.DL.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/21957de5a29b13e0600a61f852dcd54f.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "465359698",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "465359698"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "21957de5a29b13e0600a61f852dcd54f"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E087p.W.DL.nHD4-NhaNc3",
+        "guid": "be8b6c914b91284ec00a503924b68ec8",
+        "link": "https:\/\/nzbs.org\/getnzb\/be8b6c914b91284ec00a503924b68ec8.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/be8b6c914b91284ec00a503924b68ec8#comments",
+        "pubDate": "Fri, 20 Jun 2014 06:59:25 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E087p.W.DL.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/be8b6c914b91284ec00a503924b68ec8.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "583879289",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "583879289"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "be8b6c914b91284ec00a503924b68ec8"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E077p.W.DL.nHD4-NhaNc3",
+        "guid": "97f5192091abb7f4058b43796fc14084",
+        "link": "https:\/\/nzbs.org\/getnzb\/97f5192091abb7f4058b43796fc14084.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/97f5192091abb7f4058b43796fc14084#comments",
+        "pubDate": "Fri, 20 Jun 2014 06:59:26 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E077p.W.DL.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/97f5192091abb7f4058b43796fc14084.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "582162779",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "582162779"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "97f5192091abb7f4058b43796fc14084"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E067p.W.DL.nHD4-NhaNc3",
+        "guid": "110b410c22a449fe34787db0973bec48",
+        "link": "https:\/\/nzbs.org\/getnzb\/110b410c22a449fe34787db0973bec48.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/110b410c22a449fe34787db0973bec48#comments",
+        "pubDate": "Fri, 20 Jun 2014 06:55:29 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E067p.W.DL.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/110b410c22a449fe34787db0973bec48.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "582326295",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "582326295"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "110b410c22a449fe34787db0973bec48"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E057p.W.DL.nHD4-NhaNc3",
+        "guid": "9dfbd9d2fd1feeb1dee285ecceadd398",
+        "link": "https:\/\/nzbs.org\/getnzb\/9dfbd9d2fd1feeb1dee285ecceadd398.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/9dfbd9d2fd1feeb1dee285ecceadd398#comments",
+        "pubDate": "Fri, 20 Jun 2014 06:55:30 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E057p.W.DL.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/9dfbd9d2fd1feeb1dee285ecceadd398.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "582346279",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "582346279"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "9dfbd9d2fd1feeb1dee285ecceadd398"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Big.Bang.Theory.S01E047pbd.nHD4-NhaNc3",
+        "guid": "979857bac0f98d7e5fb73d3363c4a472",
+        "link": "https:\/\/nzbs.org\/getnzb\/979857bac0f98d7e5fb73d3363c4a472.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/979857bac0f98d7e5fb73d3363c4a472#comments",
+        "pubDate": "Fri, 20 Jun 2014 06:55:27 +0000",
+        "category": "TV-SD",
+        "description": "The.Big.Bang.Theory.S01E047pbd.nHD4-NhaNc3",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/979857bac0f98d7e5fb73d3363c4a472.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "524417169",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "524417169"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "979857bac0f98d7e5fb73d3363c4a472"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "@attributes": {
+    "version": "2.0"
+  },
+  "channel": {
+    "title": "DOGnzb",
+    "description": "DOGnzb Feed",
+    "uuid": "7DABB48C",
+    "response": {
+      "@attributes": {
+        "offset": "0",
+        "total": "99"
+      }
+    },
+    "language": "en-us",
+    "item": [
+      {
+        "id": "d708678efac249ecc0746ac6c6999c2f",
+        "title": "Avengers.Age.Of.Ultron.2015.REPACK.MULTI.1080p.BluRay.x264-Goatlove",
+        "guid": "https:\/\/dognzb.cr\/details\/d708678efac249ecc0746ac6c6999c2f",
+        "link": "https:\/\/dognzb.cr\/fetch\/d708678efac249ecc0746ac6c6999c2f\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Fri, 18 Sep 2015 14:11:15 -0600",
+        "category": "Movies > HD",
+        "description": "Avengers.Age.Of.Ultron.2015.REPACK.MULTI.1080p.BluRay.x264-Goatlove",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/d708678efac249ecc0746ac6c6999c2f\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "13425888821",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "13425888821"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "d708678efac249ecc0746ac6c6999c2f"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "56"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "2395427"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Avengers: Age of Ultron"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.8>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Adventure,Science Fiction,Action"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/2395427.png"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html ng-app="nzbhydraApp">
+<head>
+    <title>NZB Hydra</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <base href="/">
+
+    <!-- build:css /css/nzbhydra.css -->
+    <link href="/static/lib/angular-growl-2/angular-growl.css" rel="stylesheet" media="screen">
+    <link href="/static/lib/angular-loadingbar/loading-bar.css" rel="stylesheet" media="screen">
+    <link href="/static/lib/fullcalendar/fullcalendar.css" rel="stylesheet" media="screen">
+    <link href="/static/css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="/static/lib/fullcalendar/fullcalendar.css" rel="stylesheet" media="screen">
+    <link href="/static/lib/animate-css/animate.css" rel="stylesheet" media="screen">
+    <link href="/static/lib/typicons/typicons.min.css" rel="stylesheet" media="screen">
+    <link href="/static/lib/angular-busy/angular-busy.css" rel="stylesheet" media="screen">
+    <link href="/static/css/nzbhydra.css" rel="stylesheet" media="screen">
+    <!--endbuild-->
+    <link rel="icon" type="image/vnd.microsoft.icon" href="/static/img/crap.ico">
+
+
+</head>
+<body style="text-align: center" ng-controller="MainController">
+<div class="featurette">
+    <div class="featurette-inner text-center">
+        <form role="search" class="search has-button" ng-submit="searchFiles()">
+            <h3 class="no-margin-top h1">NZB Hydra</h3>
+
+            <div class="form-group">
+                <input type="search" placeholder="search" class="form-control form-control-lg" ng-model="query">
+                <button class="btn btn-lg btn-warning" type="button">Search</button>
+            </div>
+            <!-- /form-group -->
+        </form>
+        <!-- /.max-width on this form -->
+
+    </div>
+    <!-- /.featurette-inner (display:table-cell) -->
+
+</div>
+
+
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+
+        <table class="table" style="margin-bottom: 0px">
+            <thead>
+            <tr>
+                <th class="col-md-7 text-left" ng-click="setSorting('title', false)">
+                    Title <span ng-show="predicate=='title'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                </th>
+                <th class="col-md-1 text-left" ng-click="setSorting('provider', true)">
+                    Provider <span ng-show="predicate=='provider'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                </th>
+                <th class="col-md-1 text-left" ng-click="setSorting('category', true)">
+                    Category <span ng-show="predicate=='category'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                </th>
+                <th class="col-md-1 text-left" ng-click="setSorting('size', true)">
+                    Size <span ng-show="predicate=='size'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                </th>
+                <th class="col-md-1 text-left" ng-click="setSorting('age', false)">
+                    Age <span ng-show="predicate=='age'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                </th>
+                <th class="col-md-1 text-left" >
+                    Links
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+
+            
+                <tr ng-repeat-start="resultwithduplicates in results | sortResults:predicate:reversed" ng-if="0"></tr>
+                <!-- First result in the list, show regularly -->
+                <tr ng-repeat="result in resultwithduplicates" ng-if="$index == 0" >
+                    <td class="col-md-7 text-left">
+                       {{ result.title }}
+                    </td>
+                    <td class="col-md-1 text-left">
+                        {{ result.provider }}
+                    </td>
+                    <td class="col-md-1 text-left">
+                        Category
+                    </td>
+                    <td class="col-md-1 text-left">
+                        {{ result.size | bytes }}
+                    </td>
+                    <td class="col-md-1 text-left">
+                        {{ result.age_days }}d
+                    </td>
+                    <td class="col-md-1 text-left">
+                        Link
+                    </td>
+                </tr>
+                <!-- Show all the duplicates of this entry-->
+                 <tr ng-repeat="result in resultwithduplicates" ng-if="$index > 0" ng-show="isShowDuplicates">
+                    <td class="col-md-9 text-left td-embedded">
+                    </td>
+                    <td class="col-md-1 text-left td-embedded">
+                        {{ result.provider }}
+                    </td>
+                    <td class="col-md-1 text-left td-embedded">
+                        
+                    </td>
+                    <td class="col-md-1 text-left td-embedded">
+                        {{ result.size | bytes }}
+                    </td>
+                    <td class="col-md-1 text-left td-embedded">
+                        {{ result.age_days }}d
+                    </td>
+                    <td class="col-md-1 text-left td-embedded">
+                        Link
+                    </td>
+                </tr>
+                
+                
+                
+                
+                <tr ng-repeat-end ng-if="0"></tr>
+            
+
+            </tbody>
+        </table>
+
+
+    </div>
+    <div class="col-md-2"></div>
+</div>
+
+
+<!--
+
+<div class="modal fade" id="deletionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="nzbNfoDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" id="nfoModal">
+        <div class="modal-body" id="newsModalBody">
+            <div class="panel panel-default" ng-repeat="entry in news">
+
+                <div class="panel-body" style="text-align: center" ng-bind-html="content | unsafe">
+                </div>
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" ng-click="closeNfoModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" id="newsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" style="" ng-controller="NewsShowController" ng-class="{show: news}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="closeNewsModal()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="newsModalTitle">News</h4>
+            </div>
+            <div class="modal-body" id="newsModalBody">
+                <div class="panel panel-default" ng-repeat="entry in news">
+                    <div class="panel-heading">
+                        <h3 class="panel-title" style="font-size: 20px;">{{ entry.date | date:'dd.MM.yyyy' : 'UTC' }}</h3>
+                    </div>
+                    <div class="panel-body" style="text-align: left" ng-bind-html="entry.content | unsafe">
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="closeNewsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div growl></div>
+
+
+<div class="alert alert-danger alert-dismissible" role="alert" id="alert-error" aria-hidden="true" style="display:none;">
+    <button type="button" class="close" id="closeAlertError"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <span id="alert-error-content"></span>
+</div>
+<div class="alert alert-success alert-dismissible" role="alert" id="alert-success" style="display:none;">
+    <button type="button" class="close" id="closeAlertSuccess"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <span id="alert-success-content"></span>
+</div>
+
+<div id="loading"></div>
+
+
+<div class="container-fluid" style="" id="all">
+
+
+    <div class="col-lg-12 col-sm-12 col-md-12">
+
+        <nav class="navbar navbar-default navbar-top" role="navigation" id="navbar" ng-controller="NzbSearchBoxController">
+            <div class="container-fluid">
+
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="fileLink navbar-brand" href="/">Crapture</a>
+                </div>
+
+
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+                    <form class="navbar-form navbar-left navbar-input-group" role="search">
+                        <span class="navbar-input-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" id="searchCategoryDropdownButton" ng-cloak>
+                                Search {{ category }} <span class="caret"/>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu" style="right: auto; top:initial; margin:0px;">
+                                <li><a href="" class="searchCategoryButton" data-searchcategory="all" ng-click="toggle('all')">All</a></li>
+                                <li><a href="" class="searchCategoryButton" data-searchcategory="Movies" ng-click="toggle('movies')">Movies</a></li>
+                                <li><a href="" class="searchCategoryButton" data-searchcategory="Series" ng-click="toggle('series')">Series</a></li>
+                            </ul>
+                            
+                        </span>
+                         <span class="btn-group noleftborderradius" dropdown is-open="status.isopen" ng-show="category == 'series' || category =='movies'">
+                          <button type="button" class="noLeftBorderRadius btn btn-default dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+                              {{ selectedQuality }} <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu" role="menu">
+                              <li><a href="" ng-click="selectedQuality = 'All qualities'">All qualities</a></li>
+                              <li><a href="" ng-click="selectedQuality = 'HD'">HD</a></li>
+                              <li><a href="" ng-click="selectedQuality = 'SD'">SD</a></li>
+                          </ul>
+                        </span>
+
+                        <div class="form-group">
+
+                            <script type="text/ng-template" id="movieAutocompleteEntry">
+                                <a><span class="autocompletePoster"><img src="{{ match.model.poster }}"/></span><span
+                                        bind-html-unsafe="match.label | typeaheadHighlight:query"></span></a>
+                            </script>
+                            <input type="search" ngtype="search" ng-model="searchTerm" placeholder="Search" typeahead-min-length="2" type-ahead-wait-ms="300"
+                                   typeahead="item as item.label for item in getAutocomplete($viewValue) | filter:{title:$viewValue}"
+                                   typeahead-template-url="movieAutocompleteEntry" class="form-control"
+                                   ng-class="{'autocompleteLoading': (loadingItems && autocompleteActive), 'noBorderRadius': seriesSelected}"
+                                   typeahead-wait-ms="{{ typeAheadWait }}"
+                                   typeahead-loading="loadingItems" typeahead-on-select="selectAutocompleteItem($item)" ng-enter="submitSearch(selectedItem)" style="width:150px; border-left-width: 0px;">
+
+                            <input type="input" class="form-control noBorderRadius" placeholder="S" name="season" id="seriesSearchS" style="width:40px;" ng-model="searchSeason"
+                                   ng-show="seriesSelected" ng-enter="submitSearch(selectedItem)">
+                            <input type="input" class="form-control noLeftBorderRadius" placeholder="E" name="episode" id="seriesSearchE" style="width:40px;" ng-model="searchEpisode"
+                                   ng-show="seriesSelected" ng-enter="submitSearch(selectedItem)">
+
+
+                        </div>
+                    </form>
+
+                    <p class="navbar-text navbar-center">
+                        <span id="info" ng-controller="DownloaderInfoController" ng-cloak>
+                            <b>DL State</b> {{ sabStatus.state }}
+                            <span ng-if="sabStatus.state == 'Downloading'">
+                                &bull; <b># Jobs</b> {{ sabStatus.jobsLeft }}
+                                &bull; <b>Time left</b> {{ sabStatus.timeLeft }}
+                                &bull; <b>DL left</b> {{ sabStatus.mbLeft }}
+                                &bull; <b>Speed</b> {{ sabStatus.speedReadable }}/s
+                            </span>
+                            &bull; <b>Disc Space</b> {{ sabStatus.space }}
+                        </span>
+                    </p>
+
+
+                        
+                        <li><a href="/calendar" style="padding:  15px 5px 10px 15px;"><i class="fa fa-calendar"></i> Calendar</a></li>
+                        <li><a href="/news" style="padding:  15px 5px 10px 15px;"><i class="fa fa-newspaper-o"></i> News</a></li>
+                        <li><a href="" ng-click="logout()" style="padding:  15px 5px 10px 15px;"><span style="margin-top: 3px;" class="glyphicon glyphicon-off"></span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+
+    </div>
+
+    <div class="modal fade" id="deletionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-fluid" id="content">
+        <div class="row" id="mainRow">
+
+            <div class="col-lg-4 visible-lg-block" id="latestContainer">
+                <div id="latest" class="greyRoundBox">
+                    <div class="container-fluid" ng-controller="LatestEpisodesController">
+                        
+                        <span class="bannerRow " ng-repeat="e in latestEpisodeGroups | after:(currentPage-1)*itemsPerPage | limitTo:itemsPerPage">
+                            <div class="bannerRow" >
+                                <episodegroup episodes="e"/>
+                            </div>
+                        </span>
+                        
+                        
+                        <pager class="pager-episode-list" ng-show="latestEpisodeGroups" total-items="totalItems" items-per-page="itemsPerPage" ng-model="currentPage" previous-text="Newer" next-text="Older" ng-click="scrollToTop()"></pager>
+                    </div>
+                </div>
+            </div>
+
+            <div class=" col-md-12 col-lg-8" id="fileListContainer">
+                <div id="fileList" class="greyRoundBox" ng-view>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+-->
+</body>
+<!-- build:js /js/static/libs.js -->
+<script src="/static/lib/jquery/jquery.js"></script>
+<script src="/static/lib/jquery-ui/jquery-ui.js"></script>
+<script src="/static/lib/angular/angular.js"></script>
+<script src="/static/lib/angular-route/angular-route.js"></script>
+<script src="/static/lib/angular-cookie/angular-cookie.js"></script>
+<script src="/static/lib/angular-animate/angular-animate.js"></script>
+<script src="/static/lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="/static/lib/angular-filter/angular-filter.js"></script>
+<script src="/static/lib/angular-growl-2/angular-growl.js"></script>
+<script src="/static/lib/angular-loadingbar/loading-bar.js"></script>
+<script src="/static/lib/bootstrap/bootstrap.js"></script>
+<script src="/static/lib/underscore/underscore.js"></script>
+<script src="/static/lib/momentjs/moment.js"></script>
+<script src="/static/lib/filesize/filesize.js"></script>
+
+
+<!--endbuild-->
+
+<!-- build:js /js/nzbhydra.js -->
+<script src="/static/js/filters.js"></script>
+<script src="/static/js/controllers.js"></script>
+<script src="/static/js/nzbhydra.js"></script>
+<!--endbuild-->
+</html>

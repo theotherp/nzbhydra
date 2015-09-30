@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from werkzeug.exceptions import Unauthorized
 from nzbhydra.api import process_for_internal_api
 from nzbhydra import config, search
@@ -90,7 +90,7 @@ def requires_auth(f):
 @app.route('/')
 @requires_auth
 def base():
-    return "hello"
+    return send_file("static/index.html")
 
 
 @app.route('/api')

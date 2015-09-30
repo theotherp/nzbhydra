@@ -1,0 +1,18 @@
+{
+  "@attributes": {
+    "version": "2.0"
+  },
+  "channel": {
+    "title": "DOGnzb",
+    "description": "DOGnzb Feed",
+    "uuid": "7DABB48C",
+    "response": {
+      "@attributes": {
+        "offset": "0",
+        "total": "0"
+      }
+    },
+    "language": "en-us",
+    "item": []
+  }
+}

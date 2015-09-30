@@ -1,0 +1,4227 @@
+{
+  "@attributes": {
+    "version": "2.0"
+  },
+  "channel": {
+    "title": "NZBs(dot)ORG API Search",
+    "description": "NZBs(dot)ORG Feed",
+    "link": "https:\/\/nzbs.org\/",
+    "language": "en-gb",
+    "webMaster": "admin@nzbs.org (NZBs(dot)ORG)",
+    "category": {},
+    "image": {
+      "url": "https:\/\/nzbs.org\/\/templates\/default\/images\/banner.jpg",
+      "title": "NZBs(dot)ORG",
+      "link": "https:\/\/nzbs.org\/",
+      "description": "Visit NZBs(dot)ORG - Home of the NZB Harvester"
+    },
+    "response": {
+      "@attributes": {
+        "offset": "100",
+        "total": "199"
+      }
+    },
+    "item": [
+      {
+        "title": "Avengers.Age.of.Ultron.2015.WEB-DL.XviD.AC3-RARBG Ingebakken.Subs",
+        "guid": "500f0efc2990c7bc0b5504e01f8a2802",
+        "link": "https:\/\/nzbs.org\/getnzb\/500f0efc2990c7bc0b5504e01f8a2802.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/500f0efc2990c7bc0b5504e01f8a2802#comments",
+        "pubDate": "Thu, 20 Aug 2015 19:30:42 +0000",
+        "category": "Movies-XviD",
+        "description": "Avengers.Age.of.Ultron.2015.WEB-DL.XviD.AC3-RARBG Ingebakken.Subs",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/500f0efc2990c7bc0b5504e01f8a2802.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2329530891",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2329530891"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "500f0efc2990c7bc0b5504e01f8a2802"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.(2015).1080p.6CH.WEB-DL",
+        "guid": "488152d74cbddffd42a228f4960d517b",
+        "link": "https:\/\/nzbs.org\/getnzb\/488152d74cbddffd42a228f4960d517b.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/488152d74cbddffd42a228f4960d517b#comments",
+        "pubDate": "Thu, 20 Aug 2015 18:57:21 +0000",
+        "category": "Movies-Other",
+        "description": "Avengers.Age.of.Ultron.(2015).1080p.6CH.WEB-DL",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/488152d74cbddffd42a228f4960d517b.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2504545795",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2050"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2504545795"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "488152d74cbddffd42a228f4960d517b"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.(2015).720p.WEB-DL",
+        "guid": "bd4e376005c2f4431f782247df636620",
+        "link": "https:\/\/nzbs.org\/getnzb\/bd4e376005c2f4431f782247df636620.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/bd4e376005c2f4431f782247df636620#comments",
+        "pubDate": "Thu, 20 Aug 2015 18:01:52 +0000",
+        "category": "Movies-Other",
+        "description": "Avengers.Age.of.Ultron.(2015).720p.WEB-DL",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/bd4e376005c2f4431f782247df636620.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "1247192170",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2050"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1247192170"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "bd4e376005c2f4431f782247df636620"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.1080p.WEB-DL.X264.AC3.DD5.1-NL.SUBS.T.U.",
+        "guid": "e1f14d4b3bfb27fd80c76aa53e18910e",
+        "link": "https:\/\/nzbs.org\/getnzb\/e1f14d4b3bfb27fd80c76aa53e18910e.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/e1f14d4b3bfb27fd80c76aa53e18910e#comments",
+        "pubDate": "Thu, 20 Aug 2015 16:36:23 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Age.of.Ultron.2015.1080p.WEB-DL.X264.AC3.DD5.1-NL.SUBS.T.U.",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e1f14d4b3bfb27fd80c76aa53e18910e.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "5111445742",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5111445742"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e1f14d4b3bfb27fd80c76aa53e18910e"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.1080p.WEB-DL.X264.AC3-EVO",
+        "guid": "08b97ccbcc0dc8bfec154a813d1b2c0b",
+        "link": "https:\/\/nzbs.org\/getnzb\/08b97ccbcc0dc8bfec154a813d1b2c0b.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/08b97ccbcc0dc8bfec154a813d1b2c0b#comments",
+        "pubDate": "Thu, 20 Aug 2015 16:13:49 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Age.of.Ultron.2015.1080p.WEB-DL.X264.AC3-EVO",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/08b97ccbcc0dc8bfec154a813d1b2c0b.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "4994188047",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "4994188047"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "08b97ccbcc0dc8bfec154a813d1b2c0b"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.German.AC3.Dubbed.DL.1080p.WEB-DL.h264-MULTiPLEX",
+        "guid": "425b579b0961dc2f5567b49915f8a1fe",
+        "link": "https:\/\/nzbs.org\/getnzb\/425b579b0961dc2f5567b49915f8a1fe.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/425b579b0961dc2f5567b49915f8a1fe#comments",
+        "pubDate": "Thu, 20 Aug 2015 16:06:14 +0000",
+        "category": "Movies-Foreign",
+        "description": "Avengers.Age.of.Ultron.2015.German.AC3.Dubbed.DL.1080p.WEB-DL.h264-MULTiPLEX",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/425b579b0961dc2f5567b49915f8a1fe.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "4993376895",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "4993376895"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "425b579b0961dc2f5567b49915f8a1fe"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.WEB-DL.480p.H264-20-40",
+        "guid": "809727fb16f06c6370698e9009831ad5",
+        "link": "https:\/\/nzbs.org\/getnzb\/809727fb16f06c6370698e9009831ad5.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/809727fb16f06c6370698e9009831ad5#comments",
+        "pubDate": "Thu, 20 Aug 2015 15:44:43 +0000",
+        "category": "Movies-Other",
+        "description": "Avengers.Age.of.Ultron.2015.WEB-DL.480p.H264-20-40",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/809727fb16f06c6370698e9009831ad5.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "899249964",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2050"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "899249964"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "809727fb16f06c6370698e9009831ad5"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.Age.of.Ultron.WEBRiP.Line.Dubbed.German.XviD-WTR",
+        "guid": "c6b22ccbf5744a226586b76f009801ae",
+        "link": "https:\/\/nzbs.org\/getnzb\/c6b22ccbf5744a226586b76f009801ae.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/c6b22ccbf5744a226586b76f009801ae#comments",
+        "pubDate": "Thu, 20 Aug 2015 15:44:40 +0000",
+        "category": "Movies-Foreign",
+        "description": "The.Avengers.Age.of.Ultron.WEBRiP.Line.Dubbed.German.XviD-WTR",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/c6b22ccbf5744a226586b76f009801ae.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2364587010",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2364587010"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "c6b22ccbf5744a226586b76f009801ae"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.1080p.WEB-DL.DD5.1.x264.NLSubs-QoQ",
+        "guid": "98c15670c98002747e31124e1b78337f",
+        "link": "https:\/\/nzbs.org\/getnzb\/98c15670c98002747e31124e1b78337f.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/98c15670c98002747e31124e1b78337f#comments",
+        "pubDate": "Thu, 20 Aug 2015 15:07:28 +0000",
+        "category": "Movies-Foreign",
+        "description": "Avengers.Age.of.Ultron.2015.1080p.WEB-DL.DD5.1.x264.NLSubs-QoQ",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/98c15670c98002747e31124e1b78337f.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "5543359652",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5543359652"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "98c15670c98002747e31124e1b78337f"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.1080p.WEB-DL.DD5.1.x264.NLSubs-QoQ",
+        "guid": "0ec7d9bf70090ed1ea22f71a5b8712b5",
+        "link": "https:\/\/nzbs.org\/getnzb\/0ec7d9bf70090ed1ea22f71a5b8712b5.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/0ec7d9bf70090ed1ea22f71a5b8712b5#comments",
+        "pubDate": "Thu, 20 Aug 2015 15:00:06 +0000",
+        "category": "Movies-Foreign",
+        "description": "Avengers.Age.of.Ultron.2015.1080p.WEB-DL.DD5.1.x264.NLSubs-QoQ",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/0ec7d9bf70090ed1ea22f71a5b8712b5.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "5329659317",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5329659317"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "0ec7d9bf70090ed1ea22f71a5b8712b5"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.720p.WEB-DL.DD5.1.x264.NLSubs-QoQ",
+        "guid": "a94cf4415d5877cde2c84b6c59a02279",
+        "link": "https:\/\/nzbs.org\/getnzb\/a94cf4415d5877cde2c84b6c59a02279.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/a94cf4415d5877cde2c84b6c59a02279#comments",
+        "pubDate": "Thu, 20 Aug 2015 13:57:09 +0000",
+        "category": "Movies-Foreign",
+        "description": "Avengers.Age.of.Ultron.2015.720p.WEB-DL.DD5.1.x264.NLSubs-QoQ",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a94cf4415d5877cde2c84b6c59a02279.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "5462092976",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5462092976"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a94cf4415d5877cde2c84b6c59a02279"
+            }
+          }
+        ]
+      },
+      {
+        "title": "iva.Avengers.Age.of.Ultron.2015.AC3.DD5.1.NLSubs-Q",
+        "guid": "db6763cfeb4b5d739305d3ee7d95708b",
+        "link": "https:\/\/nzbs.org\/getnzb\/db6763cfeb4b5d739305d3ee7d95708b.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/db6763cfeb4b5d739305d3ee7d95708b#comments",
+        "pubDate": "Thu, 20 Aug 2015 13:38:39 +0000",
+        "category": "Movies-Foreign",
+        "description": "iva.Avengers.Age.of.Ultron.2015.AC3.DD5.1.NLSubs-Q",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/db6763cfeb4b5d739305d3ee7d95708b.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "1776211169",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1776211169"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "db6763cfeb4b5d739305d3ee7d95708b"
+            }
+          }
+        ]
+      },
+      {
+        "title": "iva.Avengers.Age.of.Ultron.2015.AC3.DD5.1.NLSubs-Q",
+        "guid": "f60325b7c4e821905fd4dacdda698891",
+        "link": "https:\/\/nzbs.org\/getnzb\/f60325b7c4e821905fd4dacdda698891.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/f60325b7c4e821905fd4dacdda698891#comments",
+        "pubDate": "Thu, 20 Aug 2015 12:50:05 +0000",
+        "category": "Movies-Foreign",
+        "description": "iva.Avengers.Age.of.Ultron.2015.AC3.DD5.1.NLSubs-Q",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/f60325b7c4e821905fd4dacdda698891.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "1693337958",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1693337958"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "f60325b7c4e821905fd4dacdda698891"
+            }
+          }
+        ]
+      },
+      {
+        "title": "avengers.age.of.ultron.2015.720p.web-dl.x264.ac3-evo",
+        "guid": "ea0e029d6dd8136461d2e98f3e893473",
+        "link": "https:\/\/nzbs.org\/getnzb\/ea0e029d6dd8136461d2e98f3e893473.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/ea0e029d6dd8136461d2e98f3e893473#comments",
+        "pubDate": "Thu, 20 Aug 2015 12:23:44 +0000",
+        "category": "Movies-x264",
+        "description": "avengers.age.of.ultron.2015.720p.web-dl.x264.ac3-evo",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/ea0e029d6dd8136461d2e98f3e893473.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "3729032960",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "3729032960"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "ea0e029d6dd8136461d2e98f3e893473"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.720p.WEB-DL.DD5.1.x264.NLSubs-QoQ",
+        "guid": "826b8fd68469cd06a95bb45a1530e190",
+        "link": "https:\/\/nzbs.org\/getnzb\/826b8fd68469cd06a95bb45a1530e190.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/826b8fd68469cd06a95bb45a1530e190#comments",
+        "pubDate": "Thu, 20 Aug 2015 12:23:44 +0000",
+        "category": "Movies-Foreign",
+        "description": "Avengers.Age.of.Ultron.2015.720p.WEB-DL.DD5.1.x264.NLSubs-QoQ",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/826b8fd68469cd06a95bb45a1530e190.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "5205053195",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5205053195"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "826b8fd68469cd06a95bb45a1530e190"
+            }
+          }
+        ]
+      },
+      {
+        "title": "iva.Avengers.Age.of.Ultron.2015.AC3.DD5.1.NLSubs-Q",
+        "guid": "05d9d61a605069645ef5d85f680910db",
+        "link": "https:\/\/nzbs.org\/getnzb\/05d9d61a605069645ef5d85f680910db.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/05d9d61a605069645ef5d85f680910db#comments",
+        "pubDate": "Thu, 20 Aug 2015 11:10:54 +0000",
+        "category": "Movies-Foreign",
+        "description": "iva.Avengers.Age.of.Ultron.2015.AC3.DD5.1.NLSubs-Q",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/05d9d61a605069645ef5d85f680910db.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "1776708623",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1776708623"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "05d9d61a605069645ef5d85f680910db"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.720p.WEB-DL.DD5.1.x264.NLSubs-QoQ",
+        "guid": "d14bca658d61e46a289eff430c7d0fa6",
+        "link": "https:\/\/nzbs.org\/getnzb\/d14bca658d61e46a289eff430c7d0fa6.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/d14bca658d61e46a289eff430c7d0fa6#comments",
+        "pubDate": "Thu, 20 Aug 2015 11:03:30 +0000",
+        "category": "Movies-Foreign",
+        "description": "Avengers.Age.of.Ultron.2015.720p.WEB-DL.DD5.1.x264.NLSubs-QoQ",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/d14bca658d61e46a289eff430c7d0fa6.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "5463887695",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5463887695"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "d14bca658d61e46a289eff430c7d0fa6"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.Englisch.HDRip.X264.AC3-PLAYNOW",
+        "guid": "608fd3eb56f655dcc5766e578d9f66fd",
+        "link": "https:\/\/nzbs.org\/getnzb\/608fd3eb56f655dcc5766e578d9f66fd.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/608fd3eb56f655dcc5766e578d9f66fd#comments",
+        "pubDate": "Thu, 20 Aug 2015 10:59:51 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Age.of.Ultron.2015.Englisch.HDRip.X264.AC3-PLAYNOW",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/608fd3eb56f655dcc5766e578d9f66fd.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2717390628",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2717390628"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "608fd3eb56f655dcc5766e578d9f66fd"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.720p.WEB-DL.DD5.1.H264-RARBG",
+        "guid": "953f1750e833a5be2ecb6b17ad987943",
+        "link": "https:\/\/nzbs.org\/getnzb\/953f1750e833a5be2ecb6b17ad987943.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/953f1750e833a5be2ecb6b17ad987943#comments",
+        "pubDate": "Thu, 20 Aug 2015 09:57:23 +0000",
+        "category": "Movies-Other",
+        "description": "Avengers.Age.of.Ultron.2015.720p.WEB-DL.DD5.1.H264-RARBG",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/953f1750e833a5be2ecb6b17ad987943.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "5236286143",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2050"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5236286143"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "953f1750e833a5be2ecb6b17ad987943"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E12.The.Superlative.Seven.720p.BluRay.x264-iFPD",
+        "guid": "1611bba10a83740a88f03142a7b0aa11",
+        "link": "https:\/\/nzbs.org\/getnzb\/1611bba10a83740a88f03142a7b0aa11.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/1611bba10a83740a88f03142a7b0aa11#comments",
+        "pubDate": "Wed, 19 Aug 2015 18:36:52 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E12.The.Superlative.Seven.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/1611bba10a83740a88f03142a7b0aa11.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2734395380",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2734395380"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "1611bba10a83740a88f03142a7b0aa11"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E23.Murdersville.720p.BluRay.x264-iFPD",
+        "guid": "490e5ef995cf4c6b27aadb92015a1e3b",
+        "link": "https:\/\/nzbs.org\/getnzb\/490e5ef995cf4c6b27aadb92015a1e3b.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/490e5ef995cf4c6b27aadb92015a1e3b#comments",
+        "pubDate": "Wed, 19 Aug 2015 06:02:05 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E23.Murdersville.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/490e5ef995cf4c6b27aadb92015a1e3b.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2746283206",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2746283206"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "490e5ef995cf4c6b27aadb92015a1e3b"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E15.The.Joker.720p.BluRay.x264-iFPD",
+        "guid": "1d109089d31cbd0200bbbb825d11dac2",
+        "link": "https:\/\/nzbs.org\/getnzb\/1d109089d31cbd0200bbbb825d11dac2.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/1d109089d31cbd0200bbbb825d11dac2#comments",
+        "pubDate": "Wed, 19 Aug 2015 06:00:14 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E15.The.Joker.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/1d109089d31cbd0200bbbb825d11dac2.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2736109418",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2736109418"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "1d109089d31cbd0200bbbb825d11dac2"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E22.The.Positive.Negative.Man.720p.BluRay.x264-iFPD",
+        "guid": "a2e8e63bdb771204a0eb3ff39d820287",
+        "link": "https:\/\/nzbs.org\/getnzb\/a2e8e63bdb771204a0eb3ff39d820287.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/a2e8e63bdb771204a0eb3ff39d820287#comments",
+        "pubDate": "Wed, 19 Aug 2015 06:00:13 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E22.The.Positive.Negative.Man.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a2e8e63bdb771204a0eb3ff39d820287.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2727392270",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2727392270"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a2e8e63bdb771204a0eb3ff39d820287"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E18.Deaths.Door.720p.BluRay.x264-iFPD",
+        "guid": "52655e5f37c5cc163de7f2cc570ccf92",
+        "link": "https:\/\/nzbs.org\/getnzb\/52655e5f37c5cc163de7f2cc570ccf92.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/52655e5f37c5cc163de7f2cc570ccf92#comments",
+        "pubDate": "Wed, 19 Aug 2015 06:00:12 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E18.Deaths.Door.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/52655e5f37c5cc163de7f2cc570ccf92.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2732776162",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2732776162"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "52655e5f37c5cc163de7f2cc570ccf92"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E16.Whos.Who.720p.BluRay.x264-iFPD",
+        "guid": "648eaf419145a1e822a8ab1f633e43c7",
+        "link": "https:\/\/nzbs.org\/getnzb\/648eaf419145a1e822a8ab1f633e43c7.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/648eaf419145a1e822a8ab1f633e43c7#comments",
+        "pubDate": "Wed, 19 Aug 2015 06:00:11 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E16.Whos.Who.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/648eaf419145a1e822a8ab1f633e43c7.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2737515616",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2737515616"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "648eaf419145a1e822a8ab1f633e43c7"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E17.The.Return.of.the.Cybernauts.720p.BluRay.x264-iFPD",
+        "guid": "3714d8f18d13c8e1c95030d9d8f0c447",
+        "link": "https:\/\/nzbs.org\/getnzb\/3714d8f18d13c8e1c95030d9d8f0c447.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/3714d8f18d13c8e1c95030d9d8f0c447#comments",
+        "pubDate": "Wed, 19 Aug 2015 06:00:10 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E17.The.Return.of.the.Cybernauts.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/3714d8f18d13c8e1c95030d9d8f0c447.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2723724031",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2723724031"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "3714d8f18d13c8e1c95030d9d8f0c447"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E21.You.have.been.just.Murdered.720p.BluRay.x264-iFPD",
+        "guid": "1313938bce186409d04b831087f03ddb",
+        "link": "https:\/\/nzbs.org\/getnzb\/1313938bce186409d04b831087f03ddb.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/1313938bce186409d04b831087f03ddb#comments",
+        "pubDate": "Wed, 19 Aug 2015 06:00:09 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E21.You.have.been.just.Murdered.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/1313938bce186409d04b831087f03ddb.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2735127390",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2735127390"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "1313938bce186409d04b831087f03ddb"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E20.Dead.Mans.Treasure.720p.BluRay.x264-iFPD",
+        "guid": "6aebb06b750e4edd081c7716da28025f",
+        "link": "https:\/\/nzbs.org\/getnzb\/6aebb06b750e4edd081c7716da28025f.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/6aebb06b750e4edd081c7716da28025f#comments",
+        "pubDate": "Wed, 19 Aug 2015 06:00:08 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E20.Dead.Mans.Treasure.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/6aebb06b750e4edd081c7716da28025f.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2731775697",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2731775697"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "6aebb06b750e4edd081c7716da28025f"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E19.The.50.000.Pound.Breakfast.720p.BluRay.x264-iFPD",
+        "guid": "eb170feac7ea27ca3328287e9beb8730",
+        "link": "https:\/\/nzbs.org\/getnzb\/eb170feac7ea27ca3328287e9beb8730.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/eb170feac7ea27ca3328287e9beb8730#comments",
+        "pubDate": "Wed, 19 Aug 2015 06:00:08 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E19.The.50.000.Pound.Breakfast.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/eb170feac7ea27ca3328287e9beb8730.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2720030283",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2720030283"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "eb170feac7ea27ca3328287e9beb8730"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E24.Mission.Highly.Imbrobable.720p.BluRay.x264-iFPD",
+        "guid": "bc77889f85820dc0d4aa089ebdf25ff0",
+        "link": "https:\/\/nzbs.org\/getnzb\/bc77889f85820dc0d4aa089ebdf25ff0.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/bc77889f85820dc0d4aa089ebdf25ff0#comments",
+        "pubDate": "Wed, 19 Aug 2015 06:00:07 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E24.Mission.Highly.Imbrobable.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/bc77889f85820dc0d4aa089ebdf25ff0.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2750267762",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2750267762"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "bc77889f85820dc0d4aa089ebdf25ff0"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E11.Epic.720p.BluRay.x264-iFPD",
+        "guid": "5db36aaa4158c32327ae08ffd2917f8c",
+        "link": "https:\/\/nzbs.org\/getnzb\/5db36aaa4158c32327ae08ffd2917f8c.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/5db36aaa4158c32327ae08ffd2917f8c#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:54:34 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E11.Epic.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/5db36aaa4158c32327ae08ffd2917f8c.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2745059737",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2745059737"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "5db36aaa4158c32327ae08ffd2917f8c"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E10.Never.never.say.die.720p.BluRay.x264-iFPD",
+        "guid": "3fc715aa9a8ab445dedabca379003099",
+        "link": "https:\/\/nzbs.org\/getnzb\/3fc715aa9a8ab445dedabca379003099.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/3fc715aa9a8ab445dedabca379003099#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:54:34 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E10.Never.never.say.die.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/3fc715aa9a8ab445dedabca379003099.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2712476786",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2712476786"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "3fc715aa9a8ab445dedabca379003099"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E14.Something.Nasty.in.the.Nursery.720p.BluRay.x264-iFPD",
+        "guid": "860304e66f13fa60935695b800b779af",
+        "link": "https:\/\/nzbs.org\/getnzb\/860304e66f13fa60935695b800b779af.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/860304e66f13fa60935695b800b779af#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:54:33 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E14.Something.Nasty.in.the.Nursery.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/860304e66f13fa60935695b800b779af.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2720991955",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2720991955"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "860304e66f13fa60935695b800b779af"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E13.A.Funny.thing.happenend.on.the.Way.to.the.Station.720p.BluRay.x264-iFPD",
+        "guid": "82dc7b6c83d72770b9d3c7dd8240a5d7",
+        "link": "https:\/\/nzbs.org\/getnzb\/82dc7b6c83d72770b9d3c7dd8240a5d7.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/82dc7b6c83d72770b9d3c7dd8240a5d7#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:54:33 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E13.A.Funny.thing.happenend.on.the.Way.to.the.Station.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/82dc7b6c83d72770b9d3c7dd8240a5d7.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2732013989",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2732013989"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "82dc7b6c83d72770b9d3c7dd8240a5d7"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E08.The.Hidden.Tiger.720p.BluRay.x264-iFPD",
+        "guid": "efd8bc30077b1cb8c5f181691d4809ab",
+        "link": "https:\/\/nzbs.org\/getnzb\/efd8bc30077b1cb8c5f181691d4809ab.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/efd8bc30077b1cb8c5f181691d4809ab#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:54:32 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E08.The.Hidden.Tiger.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/efd8bc30077b1cb8c5f181691d4809ab.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2741157406",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2741157406"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "efd8bc30077b1cb8c5f181691d4809ab"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E07.The.Living.Dead.720p.BluRay.x264-iFPD",
+        "guid": "7e369cef8d4267f2b734372d2f586cd2",
+        "link": "https:\/\/nzbs.org\/getnzb\/7e369cef8d4267f2b734372d2f586cd2.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/7e369cef8d4267f2b734372d2f586cd2#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:54:32 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E07.The.Living.Dead.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/7e369cef8d4267f2b734372d2f586cd2.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2721006042",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2721006042"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "7e369cef8d4267f2b734372d2f586cd2"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E09.The.Correct.Way.to.kill.720p.BluRay.x264-iFPD",
+        "guid": "e3cce72e675dacd08fde548b0cf5a58f",
+        "link": "https:\/\/nzbs.org\/getnzb\/e3cce72e675dacd08fde548b0cf5a58f.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/e3cce72e675dacd08fde548b0cf5a58f#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:54:31 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E09.The.Correct.Way.to.kill.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e3cce72e675dacd08fde548b0cf5a58f.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2753021563",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2753021563"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e3cce72e675dacd08fde548b0cf5a58f"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E06.Winged.Avengers.720p.BluRay.x264-iFPD",
+        "guid": "3650e6625193eebc1423ad4bdf6541d1",
+        "link": "https:\/\/nzbs.org\/getnzb\/3650e6625193eebc1423ad4bdf6541d1.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/3650e6625193eebc1423ad4bdf6541d1#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:49:44 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E06.Winged.Avengers.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/3650e6625193eebc1423ad4bdf6541d1.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2739099703",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2739099703"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "3650e6625193eebc1423ad4bdf6541d1"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E05.The.Bird.Who.Knew.too.much.720p.BluRay.x264-iFPD",
+        "guid": "a45fe8bc48f29b62adffabcd635019de",
+        "link": "https:\/\/nzbs.org\/getnzb\/a45fe8bc48f29b62adffabcd635019de.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/a45fe8bc48f29b62adffabcd635019de#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:49:43 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E05.The.Bird.Who.Knew.too.much.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a45fe8bc48f29b62adffabcd635019de.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2735767726",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2735767726"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a45fe8bc48f29b62adffabcd635019de"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E04.The.See-Through.Man.720p.BluRay.x264-iFPD",
+        "guid": "70294d148b1a538bf090197a3fa04dde",
+        "link": "https:\/\/nzbs.org\/getnzb\/70294d148b1a538bf090197a3fa04dde.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/70294d148b1a538bf090197a3fa04dde#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:45:09 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E04.The.See-Through.Man.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/70294d148b1a538bf090197a3fa04dde.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2742389986",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2742389986"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "70294d148b1a538bf090197a3fa04dde"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E02.The.Fear.Merchants.720p.BluRay.x264-iFPD",
+        "guid": "f5b887449b847cdc21fd0ea6a7ca68d1",
+        "link": "https:\/\/nzbs.org\/getnzb\/f5b887449b847cdc21fd0ea6a7ca68d1.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/f5b887449b847cdc21fd0ea6a7ca68d1#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:40:51 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E02.The.Fear.Merchants.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/f5b887449b847cdc21fd0ea6a7ca68d1.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2731535685",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2731535685"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "f5b887449b847cdc21fd0ea6a7ca68d1"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E03.Escape.in.Time.720p.BluRay.x264-iFPD",
+        "guid": "fff0cc2876a313acfea8efab7b660a1d",
+        "link": "https:\/\/nzbs.org\/getnzb\/fff0cc2876a313acfea8efab7b660a1d.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/fff0cc2876a313acfea8efab7b660a1d#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:40:50 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E03.Escape.in.Time.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/fff0cc2876a313acfea8efab7b660a1d.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2743266616",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2743266616"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "fff0cc2876a313acfea8efab7b660a1d"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.S05E01.From.Venus.with.Love.720p.BluRay.x264-iFPD",
+        "guid": "35753afe7c59f6107bc958fbe976b899",
+        "link": "https:\/\/nzbs.org\/getnzb\/35753afe7c59f6107bc958fbe976b899.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/35753afe7c59f6107bc958fbe976b899#comments",
+        "pubDate": "Wed, 19 Aug 2015 05:40:50 +0000",
+        "category": "TV-BoxHD",
+        "description": "The.Avengers.S05E01.From.Venus.with.Love.720p.BluRay.x264-iFPD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/35753afe7c59f6107bc958fbe976b899.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2732621656",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2732621656"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "35753afe7c59f6107bc958fbe976b899"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.(2012).3D.1080p.Half-SBS",
+        "guid": "66f4f61e0425f02fb73a27db5d779b3b",
+        "link": "https:\/\/nzbs.org\/getnzb\/66f4f61e0425f02fb73a27db5d779b3b.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/66f4f61e0425f02fb73a27db5d779b3b#comments",
+        "pubDate": "Thu, 06 Aug 2015 17:05:57 +0000",
+        "category": "Movies-3D",
+        "description": "The.Avengers.(2012).3D.1080p.Half-SBS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/66f4f61e0425f02fb73a27db5d779b3b.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "17136806107",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2070"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "17136806107"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "66f4f61e0425f02fb73a27db5d779b3b"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E24.Avengers.Underground.720p.HDTV.x264-W4F",
+        "guid": "ce01222ef01b55f79f6ae577ac9caa23",
+        "link": "https:\/\/nzbs.org\/getnzb\/ce01222ef01b55f79f6ae577ac9caa23.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/ce01222ef01b55f79f6ae577ac9caa23#comments",
+        "pubDate": "Mon, 03 Aug 2015 06:11:26 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E24.Avengers.Underground.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/ce01222ef01b55f79f6ae577ac9caa23.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "533595174",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "533595174"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "ce01222ef01b55f79f6ae577ac9caa23"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E24.Avengers.Underground.HDTV.x264-W4F",
+        "guid": "12533e834c1a83c4844e960ba177db23",
+        "link": "https:\/\/nzbs.org\/getnzb\/12533e834c1a83c4844e960ba177db23.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/12533e834c1a83c4844e960ba177db23#comments",
+        "pubDate": "Mon, 03 Aug 2015 04:46:59 +0000",
+        "category": "TV-SD",
+        "description": "Avengers.Assemble.S02E24.Avengers.Underground.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/12533e834c1a83c4844e960ba177db23.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "161791905",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "161791905"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "12533e834c1a83c4844e960ba177db23"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E24.Avengers.Underground.720p.HDTV.x264-W4F",
+        "guid": "52a619fd82f78d7dba9f13196d4f9644",
+        "link": "https:\/\/nzbs.org\/getnzb\/52a619fd82f78d7dba9f13196d4f9644.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/52a619fd82f78d7dba9f13196d4f9644#comments",
+        "pubDate": "Mon, 03 Aug 2015 04:46:58 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E24.Avengers.Underground.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/52a619fd82f78d7dba9f13196d4f9644.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "559937804",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "559937804"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "52a619fd82f78d7dba9f13196d4f9644"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.3D.2012.1080p.BluRay.Half-SBS.DTS.HebSub.x264-PublicHD",
+        "guid": "72b8227258d48af49b4bbf17fc2d6e97",
+        "link": "https:\/\/nzbs.org\/getnzb\/72b8227258d48af49b4bbf17fc2d6e97.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/72b8227258d48af49b4bbf17fc2d6e97#comments",
+        "pubDate": "Thu, 30 Jul 2015 00:34:35 +0000",
+        "category": "Movies-Foreign",
+        "description": "The.Avengers.3D.2012.1080p.BluRay.Half-SBS.DTS.HebSub.x264-PublicHD",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/72b8227258d48af49b4bbf17fc2d6e97.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "10742764942",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "10742764942"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "72b8227258d48af49b4bbf17fc2d6e97"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E23.Avengers.Last.Stand.720p.HDTV.x264-W4F",
+        "guid": "e4c9fd3e1ed8dd6ef10bd63f3f2c19da",
+        "link": "https:\/\/nzbs.org\/getnzb\/e4c9fd3e1ed8dd6ef10bd63f3f2c19da.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/e4c9fd3e1ed8dd6ef10bd63f3f2c19da#comments",
+        "pubDate": "Mon, 27 Jul 2015 04:20:10 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E23.Avengers.Last.Stand.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e4c9fd3e1ed8dd6ef10bd63f3f2c19da.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "573146551",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "573146551"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e4c9fd3e1ed8dd6ef10bd63f3f2c19da"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E23.Avengers.Last.Stand.720p.HDTV.x264-W4F",
+        "guid": "1583984219132fecbdf313841b9082c5",
+        "link": "https:\/\/nzbs.org\/getnzb\/1583984219132fecbdf313841b9082c5.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/1583984219132fecbdf313841b9082c5#comments",
+        "pubDate": "Sun, 26 Jul 2015 17:17:14 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E23.Avengers.Last.Stand.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/1583984219132fecbdf313841b9082c5.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "591440143",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "591440143"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "1583984219132fecbdf313841b9082c5"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E23.Avengers.Last.Stand.720p.HDTV.x264-W4F",
+        "guid": "0ea182445a971e257c9cef98a471cd6d",
+        "link": "https:\/\/nzbs.org\/getnzb\/0ea182445a971e257c9cef98a471cd6d.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/0ea182445a971e257c9cef98a471cd6d#comments",
+        "pubDate": "Sun, 26 Jul 2015 15:35:51 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E23.Avengers.Last.Stand.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/0ea182445a971e257c9cef98a471cd6d.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "626435698",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "626435698"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "0ea182445a971e257c9cef98a471cd6d"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E23.Avengers.Last.Stand.HDTV.x264-W4F",
+        "guid": "ba69dbe9709be515f01413cd2a85b530",
+        "link": "https:\/\/nzbs.org\/getnzb\/ba69dbe9709be515f01413cd2a85b530.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/ba69dbe9709be515f01413cd2a85b530#comments",
+        "pubDate": "Sun, 26 Jul 2015 15:01:56 +0000",
+        "category": "TV-SD",
+        "description": "Avengers.Assemble.S02E23.Avengers.Last.Stand.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/ba69dbe9709be515f01413cd2a85b530.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "199398959",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "199398959"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "ba69dbe9709be515f01413cd2a85b530"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E23.Avengers.Last.Stand.720p.HDTV.x264-W4F",
+        "guid": "f4a034449146bde21eb0d87bfab34d09",
+        "link": "https:\/\/nzbs.org\/getnzb\/f4a034449146bde21eb0d87bfab34d09.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/f4a034449146bde21eb0d87bfab34d09#comments",
+        "pubDate": "Sun, 26 Jul 2015 14:54:07 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E23.Avengers.Last.Stand.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/f4a034449146bde21eb0d87bfab34d09.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "616496939",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "616496939"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "f4a034449146bde21eb0d87bfab34d09"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E23.Avengers.Last.Stand.HDTV.x264-W4F",
+        "guid": "4b3ef1e7b60163bd55e6e07be4bf8740",
+        "link": "https:\/\/nzbs.org\/getnzb\/4b3ef1e7b60163bd55e6e07be4bf8740.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/4b3ef1e7b60163bd55e6e07be4bf8740#comments",
+        "pubDate": "Sun, 26 Jul 2015 14:41:31 +0000",
+        "category": "TV-SD",
+        "description": "Avengers.Assemble.S02E23.Avengers.Last.Stand.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/4b3ef1e7b60163bd55e6e07be4bf8740.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "196398661",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "196398661"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "4b3ef1e7b60163bd55e6e07be4bf8740"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E21.Spectrums.720p.HDTV.x264-W4F",
+        "guid": "a9c383aa8e33a778855ab3e8385f6b11",
+        "link": "https:\/\/nzbs.org\/getnzb\/a9c383aa8e33a778855ab3e8385f6b11.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/a9c383aa8e33a778855ab3e8385f6b11#comments",
+        "pubDate": "Tue, 21 Jul 2015 17:30:41 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E21.Spectrums.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a9c383aa8e33a778855ab3e8385f6b11.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "617815631",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "617815631"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a9c383aa8e33a778855ab3e8385f6b11"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E21.Spectrums.720p.HDTV.x264-W4F",
+        "guid": "f5a25e15224d0c982873e3062b8ff8bc",
+        "link": "https:\/\/nzbs.org\/getnzb\/f5a25e15224d0c982873e3062b8ff8bc.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/f5a25e15224d0c982873e3062b8ff8bc#comments",
+        "pubDate": "Tue, 21 Jul 2015 05:35:51 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E21.Spectrums.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/f5a25e15224d0c982873e3062b8ff8bc.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "621780853",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "621780853"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "f5a25e15224d0c982873e3062b8ff8bc"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E22.Midgard.Crisis.720p.HDTV.x264-W4F",
+        "guid": "f8e28b133d984d567107b63be1d09317",
+        "link": "https:\/\/nzbs.org\/getnzb\/f8e28b133d984d567107b63be1d09317.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/f8e28b133d984d567107b63be1d09317#comments",
+        "pubDate": "Tue, 21 Jul 2015 04:58:58 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E22.Midgard.Crisis.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/f8e28b133d984d567107b63be1d09317.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "648504207",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "648504207"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "f8e28b133d984d567107b63be1d09317"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E22.Midgard.Crisis.HDTV.x264-W4F",
+        "guid": "50a4ba8cdbba8656970bf87dabf8bf6f",
+        "link": "https:\/\/nzbs.org\/getnzb\/50a4ba8cdbba8656970bf87dabf8bf6f.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/50a4ba8cdbba8656970bf87dabf8bf6f#comments",
+        "pubDate": "Tue, 21 Jul 2015 03:05:56 +0000",
+        "category": "TV-SD",
+        "description": "Avengers.Assemble.S02E22.Midgard.Crisis.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/50a4ba8cdbba8656970bf87dabf8bf6f.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "225656424",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "225656424"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "50a4ba8cdbba8656970bf87dabf8bf6f"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E22.Midgard.Crisis.720p.HDTV.x264-W4F",
+        "guid": "e2da45be95d7ff7d274f01c9e20e3922",
+        "link": "https:\/\/nzbs.org\/getnzb\/e2da45be95d7ff7d274f01c9e20e3922.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/e2da45be95d7ff7d274f01c9e20e3922#comments",
+        "pubDate": "Tue, 21 Jul 2015 03:02:14 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E22.Midgard.Crisis.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e2da45be95d7ff7d274f01c9e20e3922.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "689292643",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "689292643"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e2da45be95d7ff7d274f01c9e20e3922"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E22.Midgard.Crisis.HDTV.x264-W4F",
+        "guid": "d6e56aef594f6eac4a115fa18b6b2404",
+        "link": "https:\/\/nzbs.org\/getnzb\/d6e56aef594f6eac4a115fa18b6b2404.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/d6e56aef594f6eac4a115fa18b6b2404#comments",
+        "pubDate": "Tue, 21 Jul 2015 02:53:01 +0000",
+        "category": "TV-SD",
+        "description": "Avengers.Assemble.S02E22.Midgard.Crisis.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/d6e56aef594f6eac4a115fa18b6b2404.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "223838564",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "223838564"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "d6e56aef594f6eac4a115fa18b6b2404"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E22.Midgard.Crisis.720p.HDTV.x264-W4F",
+        "guid": "1efdbffa9c9a2d352855dfdd6cd40213",
+        "link": "https:\/\/nzbs.org\/getnzb\/1efdbffa9c9a2d352855dfdd6cd40213.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/1efdbffa9c9a2d352855dfdd6cd40213#comments",
+        "pubDate": "Tue, 21 Jul 2015 02:53:00 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E22.Midgard.Crisis.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/1efdbffa9c9a2d352855dfdd6cd40213.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "675786896",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "675786896"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "1efdbffa9c9a2d352855dfdd6cd40213"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E21.Spectrums.HDTV.x264-W4F",
+        "guid": "a25b351b5a10a81d42629722499dd614",
+        "link": "https:\/\/nzbs.org\/getnzb\/a25b351b5a10a81d42629722499dd614.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/a25b351b5a10a81d42629722499dd614#comments",
+        "pubDate": "Tue, 21 Jul 2015 02:39:37 +0000",
+        "category": "TV-SD",
+        "description": "Avengers.Assemble.S02E21.Spectrums.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/a25b351b5a10a81d42629722499dd614.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "210675863",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "210675863"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "a25b351b5a10a81d42629722499dd614"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E21.Spectrums.720p.HDTV.x264-W4F",
+        "guid": "93647c3d5726f49934b5d5f62dbe0983",
+        "link": "https:\/\/nzbs.org\/getnzb\/93647c3d5726f49934b5d5f62dbe0983.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/93647c3d5726f49934b5d5f62dbe0983#comments",
+        "pubDate": "Tue, 21 Jul 2015 02:39:36 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E21.Spectrums.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/93647c3d5726f49934b5d5f62dbe0983.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "646304462",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "646304462"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "93647c3d5726f49934b5d5f62dbe0983"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E21.Spectrums.HDTV.x264-W4F",
+        "guid": "38fb941fe4381c2395ff5156f3e192ea",
+        "link": "https:\/\/nzbs.org\/getnzb\/38fb941fe4381c2395ff5156f3e192ea.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/38fb941fe4381c2395ff5156f3e192ea#comments",
+        "pubDate": "Tue, 21 Jul 2015 02:31:49 +0000",
+        "category": "TV-SD",
+        "description": "Avengers.Assemble.S02E21.Spectrums.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/38fb941fe4381c2395ff5156f3e192ea.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "212431203",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "212431203"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "38fb941fe4381c2395ff5156f3e192ea"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.1961.S04E15.DVDRip.x264-SFM",
+        "guid": "01bb7443ae6ef78e06fae3e681855d72",
+        "link": "https:\/\/nzbs.org\/getnzb\/01bb7443ae6ef78e06fae3e681855d72.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/01bb7443ae6ef78e06fae3e681855d72#comments",
+        "pubDate": "Tue, 14 Jul 2015 19:06:21 +0000",
+        "category": "TV-BoxSD",
+        "description": "The.Avengers.1961.S04E15.DVDRip.x264-SFM",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/01bb7443ae6ef78e06fae3e681855d72.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "719166622",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5070"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "719166622"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "01bb7443ae6ef78e06fae3e681855d72"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.1961.S04E13.DVDRip.x264-SFM",
+        "guid": "54aa307f415281754d397e3b3dabe1cb",
+        "link": "https:\/\/nzbs.org\/getnzb\/54aa307f415281754d397e3b3dabe1cb.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/54aa307f415281754d397e3b3dabe1cb#comments",
+        "pubDate": "Tue, 14 Jul 2015 19:06:21 +0000",
+        "category": "TV-BoxSD",
+        "description": "The.Avengers.1961.S04E13.DVDRip.x264-SFM",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/54aa307f415281754d397e3b3dabe1cb.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "729799616",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5070"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "729799616"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "54aa307f415281754d397e3b3dabe1cb"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.1961.S04E12.DVDRip.x264-SFM",
+        "guid": "df1b7fc6fb3da6fb28e423442a139174",
+        "link": "https:\/\/nzbs.org\/getnzb\/df1b7fc6fb3da6fb28e423442a139174.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/df1b7fc6fb3da6fb28e423442a139174#comments",
+        "pubDate": "Tue, 14 Jul 2015 19:06:21 +0000",
+        "category": "TV-BoxSD",
+        "description": "The.Avengers.1961.S04E12.DVDRip.x264-SFM",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/df1b7fc6fb3da6fb28e423442a139174.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "746836900",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5070"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "746836900"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "df1b7fc6fb3da6fb28e423442a139174"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.1961.S04E08.DVDRip.x264-SFM",
+        "guid": "8106a9d51755199e3f75a9df30ddc668",
+        "link": "https:\/\/nzbs.org\/getnzb\/8106a9d51755199e3f75a9df30ddc668.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/8106a9d51755199e3f75a9df30ddc668#comments",
+        "pubDate": "Tue, 14 Jul 2015 19:03:21 +0000",
+        "category": "TV-BoxSD",
+        "description": "The.Avengers.1961.S04E08.DVDRip.x264-SFM",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/8106a9d51755199e3f75a9df30ddc668.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "930776986",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5070"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "930776986"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "8106a9d51755199e3f75a9df30ddc668"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.1961.S04E03.REPACK.DVDRip.x264-SFM",
+        "guid": "452fda764b75b11dc4a658c4effe4205",
+        "link": "https:\/\/nzbs.org\/getnzb\/452fda764b75b11dc4a658c4effe4205.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/452fda764b75b11dc4a658c4effe4205#comments",
+        "pubDate": "Tue, 14 Jul 2015 18:59:32 +0000",
+        "category": "TV-BoxSD",
+        "description": "The.Avengers.1961.S04E03.REPACK.DVDRip.x264-SFM",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/452fda764b75b11dc4a658c4effe4205.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "623878938",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5070"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "623878938"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "452fda764b75b11dc4a658c4effe4205"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.1961.S04E10.DVDRip.x264-SFM",
+        "guid": "69d85eb7e79c263b5a3a3581eeffbbf2",
+        "link": "https:\/\/nzbs.org\/getnzb\/69d85eb7e79c263b5a3a3581eeffbbf2.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/69d85eb7e79c263b5a3a3581eeffbbf2#comments",
+        "pubDate": "Tue, 14 Jul 2015 18:59:31 +0000",
+        "category": "TV-BoxSD",
+        "description": "The.Avengers.1961.S04E10.DVDRip.x264-SFM",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/69d85eb7e79c263b5a3a3581eeffbbf2.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "665949818",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5070"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "665949818"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "69d85eb7e79c263b5a3a3581eeffbbf2"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.1961.S04E07.REPACK.DVDRip.x264-SFM",
+        "guid": "7078105708522561ad5c9670e9d93646",
+        "link": "https:\/\/nzbs.org\/getnzb\/7078105708522561ad5c9670e9d93646.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/7078105708522561ad5c9670e9d93646#comments",
+        "pubDate": "Tue, 14 Jul 2015 18:59:30 +0000",
+        "category": "TV-BoxSD",
+        "description": "The.Avengers.1961.S04E07.REPACK.DVDRip.x264-SFM",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/7078105708522561ad5c9670e9d93646.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "693407782",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5070"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "693407782"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "7078105708522561ad5c9670e9d93646"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.1961.S04E06.REPACK.DVDRip.x264-SFM",
+        "guid": "e794f2d3e12751a4ee10818cff9aa24c",
+        "link": "https:\/\/nzbs.org\/getnzb\/e794f2d3e12751a4ee10818cff9aa24c.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/e794f2d3e12751a4ee10818cff9aa24c#comments",
+        "pubDate": "Tue, 14 Jul 2015 18:59:30 +0000",
+        "category": "TV-BoxSD",
+        "description": "The.Avengers.1961.S04E06.REPACK.DVDRip.x264-SFM",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e794f2d3e12751a4ee10818cff9aa24c.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "665821138",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5070"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "665821138"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e794f2d3e12751a4ee10818cff9aa24c"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.1961.S04E02.DVDRip.x264-SFM",
+        "guid": "10ba6f366f456d7f7be1028717564746",
+        "link": "https:\/\/nzbs.org\/getnzb\/10ba6f366f456d7f7be1028717564746.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/10ba6f366f456d7f7be1028717564746#comments",
+        "pubDate": "Tue, 14 Jul 2015 18:59:29 +0000",
+        "category": "TV-BoxSD",
+        "description": "The.Avengers.1961.S04E02.DVDRip.x264-SFM",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/10ba6f366f456d7f7be1028717564746.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "786135189",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5070"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "786135189"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "10ba6f366f456d7f7be1028717564746"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.1961.S04E04.REPACK.DVDRip.x264-SFM",
+        "guid": "f21b0d6d5b953b1b8492d521fec820b4",
+        "link": "https:\/\/nzbs.org\/getnzb\/f21b0d6d5b953b1b8492d521fec820b4.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/f21b0d6d5b953b1b8492d521fec820b4#comments",
+        "pubDate": "Tue, 14 Jul 2015 18:55:55 +0000",
+        "category": "TV-BoxSD",
+        "description": "The.Avengers.1961.S04E04.REPACK.DVDRip.x264-SFM",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/f21b0d6d5b953b1b8492d521fec820b4.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "798289293",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5070"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "798289293"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "f21b0d6d5b953b1b8492d521fec820b4"
+            }
+          }
+        ]
+      },
+      {
+        "title": "The.Avengers.1961.S04E01.REPACK.DVDRip.x264-SFM",
+        "guid": "e08f7c291c3b58b116c7a648d089dfdd",
+        "link": "https:\/\/nzbs.org\/getnzb\/e08f7c291c3b58b116c7a648d089dfdd.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/e08f7c291c3b58b116c7a648d089dfdd#comments",
+        "pubDate": "Tue, 14 Jul 2015 18:55:51 +0000",
+        "category": "TV-BoxSD",
+        "description": "The.Avengers.1961.S04E01.REPACK.DVDRip.x264-SFM",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/e08f7c291c3b58b116c7a648d089dfdd.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "790582263",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5070"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "790582263"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "e08f7c291c3b58b116c7a648d089dfdd"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Confidential.Black.Widow.and.Punisher.2014.PROPER.DVDRip.x264-PHOBOS",
+        "guid": "56191b9ac0d6b79eb6586c787f6224ee",
+        "link": "https:\/\/nzbs.org\/getnzb\/56191b9ac0d6b79eb6586c787f6224ee.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/56191b9ac0d6b79eb6586c787f6224ee#comments",
+        "pubDate": "Tue, 14 Jul 2015 03:50:44 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Confidential.Black.Widow.and.Punisher.2014.PROPER.DVDRip.x264-PHOBOS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/56191b9ac0d6b79eb6586c787f6224ee.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "441573860",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "441573860"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "56191b9ac0d6b79eb6586c787f6224ee"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Confidential.Black.Widow.and.Punisher.2014.PROPER.DVDRip.x264-PHOBOS",
+        "guid": "040755d24aaa3cb02496562fa3f75961",
+        "link": "https:\/\/nzbs.org\/getnzb\/040755d24aaa3cb02496562fa3f75961.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/040755d24aaa3cb02496562fa3f75961#comments",
+        "pubDate": "Wed, 08 Jul 2015 16:14:06 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Confidential.Black.Widow.and.Punisher.2014.PROPER.DVDRip.x264-PHOBOS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/040755d24aaa3cb02496562fa3f75961.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "476899038",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "476899038"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "040755d24aaa3cb02496562fa3f75961"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E20.Terminal.Velocity.720p.HDTV.x264-W4F",
+        "guid": "389df2f24313271c28769495032aede4",
+        "link": "https:\/\/nzbs.org\/getnzb\/389df2f24313271c28769495032aede4.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/389df2f24313271c28769495032aede4#comments",
+        "pubDate": "Sun, 05 Jul 2015 21:38:59 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E20.Terminal.Velocity.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/389df2f24313271c28769495032aede4.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "653302286",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "653302286"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "389df2f24313271c28769495032aede4"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E20.Terminal.Velocity.XviD-AFG",
+        "guid": "4a5c3c66c5b3a0f1df81aa2a58635cad",
+        "link": "https:\/\/nzbs.org\/getnzb\/4a5c3c66c5b3a0f1df81aa2a58635cad.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/4a5c3c66c5b3a0f1df81aa2a58635cad#comments",
+        "pubDate": "Sun, 05 Jul 2015 21:38:57 +0000",
+        "category": "TV-SD",
+        "description": "Avengers.Assemble.S02E20.Terminal.Velocity.XviD-AFG",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/4a5c3c66c5b3a0f1df81aa2a58635cad.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "265307436",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "265307436"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "4a5c3c66c5b3a0f1df81aa2a58635cad"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E20.Terminal.Velocity.HDTV.x264-W4F",
+        "guid": "1bf9b04d7bdce43b8e542217a084f8a5",
+        "link": "https:\/\/nzbs.org\/getnzb\/1bf9b04d7bdce43b8e542217a084f8a5.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/1bf9b04d7bdce43b8e542217a084f8a5#comments",
+        "pubDate": "Sun, 05 Jul 2015 21:35:37 +0000",
+        "category": "TV-SD",
+        "description": "Avengers.Assemble.S02E20.Terminal.Velocity.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/1bf9b04d7bdce43b8e542217a084f8a5.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "211061532",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "211061532"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "1bf9b04d7bdce43b8e542217a084f8a5"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E20.Terminal.Velocity.720p.HDTV.x264-W4F",
+        "guid": "faafbccce82d547ffcce1ee742a6d7ab",
+        "link": "https:\/\/nzbs.org\/getnzb\/faafbccce82d547ffcce1ee742a6d7ab.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/faafbccce82d547ffcce1ee742a6d7ab#comments",
+        "pubDate": "Sun, 05 Jul 2015 14:18:47 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E20.Terminal.Velocity.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/faafbccce82d547ffcce1ee742a6d7ab.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "602978977",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "602978977"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "faafbccce82d547ffcce1ee742a6d7ab"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E20.Terminal.Velocity.HDTV.x264-W4F",
+        "guid": "ace52ba11d9837045a0e4f7371a7328c",
+        "link": "https:\/\/nzbs.org\/getnzb\/ace52ba11d9837045a0e4f7371a7328c.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/ace52ba11d9837045a0e4f7371a7328c#comments",
+        "pubDate": "Sun, 05 Jul 2015 14:12:16 +0000",
+        "category": "TV-SD",
+        "description": "Avengers.Assemble.S02E20.Terminal.Velocity.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/ace52ba11d9837045a0e4f7371a7328c.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "195046457",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "195046457"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "ace52ba11d9837045a0e4f7371a7328c"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Assemble.S02E20.Terminal.Velocity.720p.HDTV.x264-W4F",
+        "guid": "b6972c8f1142b6bcc87dcd7a64225280",
+        "link": "https:\/\/nzbs.org\/getnzb\/b6972c8f1142b6bcc87dcd7a64225280.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/b6972c8f1142b6bcc87dcd7a64225280#comments",
+        "pubDate": "Sun, 05 Jul 2015 14:09:05 +0000",
+        "category": "TV-HD",
+        "description": "Avengers.Assemble.S02E20.Terminal.Velocity.720p.HDTV.x264-W4F",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/b6972c8f1142b6bcc87dcd7a64225280.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "630535659",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "630535659"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "b6972c8f1142b6bcc87dcd7a64225280"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Grimm.2015.1080p.BluRay.x264.DTS-HD.MA.5.1-RARBG",
+        "guid": "8baedf5b8aae7a4a04cf87699b9a2ba1",
+        "link": "https:\/\/nzbs.org\/getnzb\/8baedf5b8aae7a4a04cf87699b9a2ba1.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/8baedf5b8aae7a4a04cf87699b9a2ba1#comments",
+        "pubDate": "Sun, 28 Jun 2015 05:33:02 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Grimm.2015.1080p.BluRay.x264.DTS-HD.MA.5.1-RARBG",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/8baedf5b8aae7a4a04cf87699b9a2ba1.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "12744495503",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "12744495503"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "8baedf5b8aae7a4a04cf87699b9a2ba1"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Grimm.2015.1080p.BluRay.REMUX.AVC.DTS-HD.MA.5.1-RARBG",
+        "guid": "714ecc11df63f2a87fe66f9ca7af67aa",
+        "link": "https:\/\/nzbs.org\/getnzb\/714ecc11df63f2a87fe66f9ca7af67aa.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/714ecc11df63f2a87fe66f9ca7af67aa#comments",
+        "pubDate": "Sun, 28 Jun 2015 01:30:01 +0000",
+        "category": "Movies-Other",
+        "description": "Avengers.Grimm.2015.1080p.BluRay.REMUX.AVC.DTS-HD.MA.5.1-RARBG",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/714ecc11df63f2a87fe66f9ca7af67aa.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "16918286173",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2050"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "16918286173"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "714ecc11df63f2a87fe66f9ca7af67aa"
+            }
+          }
+        ]
+      },
+      {
+        "title": "avengers.age.of.ultron.2015.720p.tc.x264.ac3.hq.hive-cm8",
+        "guid": "2975b3a120bd03e367103371a66dd905",
+        "link": "https:\/\/nzbs.org\/getnzb\/2975b3a120bd03e367103371a66dd905.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/2975b3a120bd03e367103371a66dd905#comments",
+        "pubDate": "Mon, 22 Jun 2015 19:53:51 +0000",
+        "category": "TV-HD",
+        "description": "avengers.age.of.ultron.2015.720p.tc.x264.ac3.hq.hive-cm8",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/2975b3a120bd03e367103371a66dd905.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "4459379654",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "4459379654"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "2975b3a120bd03e367103371a66dd905"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Grimm.2015.BRRip.x264.720p-NPW",
+        "guid": "58d40138418ce12c1ba6b1dd105aefc8",
+        "link": "https:\/\/nzbs.org\/getnzb\/58d40138418ce12c1ba6b1dd105aefc8.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/58d40138418ce12c1ba6b1dd105aefc8#comments",
+        "pubDate": "Sat, 20 Jun 2015 20:23:31 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Grimm.2015.BRRip.x264.720p-NPW",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/58d40138418ce12c1ba6b1dd105aefc8.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2367107682",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2367107682"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "58d40138418ce12c1ba6b1dd105aefc8"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers Age of Ultron 2015 720p.TC.x264.NL.SUBS",
+        "guid": "dd1297c6fb3df24effa3d5b8be1c2a00",
+        "link": "https:\/\/nzbs.org\/getnzb\/dd1297c6fb3df24effa3d5b8be1c2a00.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/dd1297c6fb3df24effa3d5b8be1c2a00#comments",
+        "pubDate": "Sun, 14 Jun 2015 13:39:08 +0000",
+        "category": "Movies-Foreign",
+        "description": "Avengers Age of Ultron 2015 720p.TC.x264.NL.SUBS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/dd1297c6fb3df24effa3d5b8be1c2a00.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2344681578",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2344681578"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "dd1297c6fb3df24effa3d5b8be1c2a00"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Grimm.2015.1080p.BluRay.X264-iNVANDRAREN",
+        "guid": "6ceee3e051327eb7f873d547ffeb5fcb",
+        "link": "https:\/\/nzbs.org\/getnzb\/6ceee3e051327eb7f873d547ffeb5fcb.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/6ceee3e051327eb7f873d547ffeb5fcb#comments",
+        "pubDate": "Sun, 14 Jun 2015 02:01:45 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Grimm.2015.1080p.BluRay.X264-iNVANDRAREN",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/6ceee3e051327eb7f873d547ffeb5fcb.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "8039197311",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "8039197311"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "6ceee3e051327eb7f873d547ffeb5fcb"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Grimm.2015.720p.BluRay.X264-iNVANDRAREN",
+        "guid": "c20d78a71f5e6b277275970ae5c22bbd",
+        "link": "https:\/\/nzbs.org\/getnzb\/c20d78a71f5e6b277275970ae5c22bbd.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/c20d78a71f5e6b277275970ae5c22bbd#comments",
+        "pubDate": "Sun, 14 Jun 2015 00:47:37 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Grimm.2015.720p.BluRay.X264-iNVANDRAREN",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/c20d78a71f5e6b277275970ae5c22bbd.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "5365177360",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5365177360"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "c20d78a71f5e6b277275970ae5c22bbd"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Grimm.2015.1080p.BluRay.X264-iNVANDRAREN",
+        "guid": "10222eaee778e96fada6ea946fa0a21c",
+        "link": "https:\/\/nzbs.org\/getnzb\/10222eaee778e96fada6ea946fa0a21c.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/10222eaee778e96fada6ea946fa0a21c#comments",
+        "pubDate": "Sun, 14 Jun 2015 00:26:53 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Grimm.2015.1080p.BluRay.X264-iNVANDRAREN",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/10222eaee778e96fada6ea946fa0a21c.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "8146502612",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "8146502612"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "10222eaee778e96fada6ea946fa0a21c"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Grimm.2015.720p.BluRay.X264-iNVANDRAREN",
+        "guid": "673bd56bd5ec543156dee66a91b2e952",
+        "link": "https:\/\/nzbs.org\/getnzb\/673bd56bd5ec543156dee66a91b2e952.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/673bd56bd5ec543156dee66a91b2e952#comments",
+        "pubDate": "Sun, 14 Jun 2015 00:15:15 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Grimm.2015.720p.BluRay.X264-iNVANDRAREN",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/673bd56bd5ec543156dee66a91b2e952.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "5486668344",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5486668344"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "673bd56bd5ec543156dee66a91b2e952"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Grimm.2015.1080p.BluRay.X264-iNVANDRAREN",
+        "guid": "6dd15ba83836ff435c6520dec923e8ca",
+        "link": "https:\/\/nzbs.org\/getnzb\/6dd15ba83836ff435c6520dec923e8ca.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/6dd15ba83836ff435c6520dec923e8ca#comments",
+        "pubDate": "Sat, 13 Jun 2015 23:37:06 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Grimm.2015.1080p.BluRay.X264-iNVANDRAREN",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/6dd15ba83836ff435c6520dec923e8ca.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "7753201597",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "7753201597"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "6dd15ba83836ff435c6520dec923e8ca"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Grimm.2015.720p.BluRay.X264-iNVANDRAREN",
+        "guid": "8cc901ba338a31c7eba4cbd99460d981",
+        "link": "https:\/\/nzbs.org\/getnzb\/8cc901ba338a31c7eba4cbd99460d981.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/8cc901ba338a31c7eba4cbd99460d981#comments",
+        "pubDate": "Sat, 13 Jun 2015 23:22:56 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Grimm.2015.720p.BluRay.X264-iNVANDRAREN",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/8cc901ba338a31c7eba4cbd99460d981.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "5210675515",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5210675515"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "8cc901ba338a31c7eba4cbd99460d981"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.BDRip.XviD-Epr",
+        "guid": "eade6f924b805e1158baecb45aafe1fc",
+        "link": "https:\/\/nzbs.org\/getnzb\/eade6f924b805e1158baecb45aafe1fc.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/eade6f924b805e1158baecb45aafe1fc#comments",
+        "pubDate": "Tue, 09 Jun 2015 15:10:00 +0000",
+        "category": "TV-BoxSD",
+        "description": "Avengers.Age.of.Ultron.2015.BDRip.XviD-Epr",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/eade6f924b805e1158baecb45aafe1fc.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "1048977661",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5070"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1048977661"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "eade6f924b805e1158baecb45aafe1fc"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.2.A.Porn.Parody.XXX.DVDRip.x264-KuKaS",
+        "guid": "ceeefa44c074bdb22fcea736911fb070",
+        "link": "https:\/\/nzbs.org\/getnzb\/ceeefa44c074bdb22fcea736911fb070.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/ceeefa44c074bdb22fcea736911fb070#comments",
+        "pubDate": "Sun, 07 Jun 2015 05:09:24 +0000",
+        "category": "XXX-XviD",
+        "description": "Avengers.2.A.Porn.Parody.XXX.DVDRip.x264-KuKaS",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/ceeefa44c074bdb22fcea736911fb070.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "1341672346",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "6000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "6030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "1341672346"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "ceeefa44c074bdb22fcea736911fb070"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Pawn.Stars.S12E25.Avengers.Assemble.720p.HDTV.X265.HEVC.O69",
+        "guid": "5ad5c3c8dd599189b147eaf27cb35ca8",
+        "link": "https:\/\/nzbs.org\/getnzb\/5ad5c3c8dd599189b147eaf27cb35ca8.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/5ad5c3c8dd599189b147eaf27cb35ca8#comments",
+        "pubDate": "Fri, 29 May 2015 22:34:00 +0000",
+        "category": "TV-HD",
+        "description": "Pawn.Stars.S12E25.Avengers.Assemble.720p.HDTV.X265.HEVC.O69",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/5ad5c3c8dd599189b147eaf27cb35ca8.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "212858526",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "212858526"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "5ad5c3c8dd599189b147eaf27cb35ca8"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.720p.HDTS.AC3.X264-R.KNOR",
+        "guid": "399a5d01931607b9c5b3a82d8043a7cf",
+        "link": "https:\/\/nzbs.org\/getnzb\/399a5d01931607b9c5b3a82d8043a7cf.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/399a5d01931607b9c5b3a82d8043a7cf#comments",
+        "pubDate": "Thu, 28 May 2015 23:24:51 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Age.of.Ultron.2015.720p.HDTS.AC3.X264-R.KNOR",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/399a5d01931607b9c5b3a82d8043a7cf.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2430357480",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2430357480"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "399a5d01931607b9c5b3a82d8043a7cf"
+            }
+          }
+        ]
+      },
+      {
+        "title": "avengers.age.of.ultron.2015.720p.tc.x264.ac3.hq.hive-cm8",
+        "guid": "9c1f38dadb7fc1a0437cd576d9ac618d",
+        "link": "https:\/\/nzbs.org\/getnzb\/9c1f38dadb7fc1a0437cd576d9ac618d.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/9c1f38dadb7fc1a0437cd576d9ac618d#comments",
+        "pubDate": "Thu, 28 May 2015 15:26:11 +0000",
+        "category": "Movies-x264",
+        "description": "avengers.age.of.ultron.2015.720p.tc.x264.ac3.hq.hive-cm8",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/9c1f38dadb7fc1a0437cd576d9ac618d.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "4267893637",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "4267893637"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "9c1f38dadb7fc1a0437cd576d9ac618d"
+            }
+          }
+        ]
+      },
+      {
+        "title": "avengers.age.of.ultron.2015.tcrip.xvid.ac3.hq.hive-cm8",
+        "guid": "b8324f8f19693e684a309b59f77e1ec2",
+        "link": "https:\/\/nzbs.org\/getnzb\/b8324f8f19693e684a309b59f77e1ec2.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+        "comments": "https:\/\/nzbs.org\/details\/b8324f8f19693e684a309b59f77e1ec2#comments",
+        "pubDate": "Thu, 28 May 2015 15:15:29 +0000",
+        "category": "Movies-XviD",
+        "description": "avengers.age.of.ultron.2015.tcrip.xvid.ac3.hq.hive-cm8",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/b8324f8f19693e684a309b59f77e1ec2.nzb&i=1692&r=db7afb7f52e75435048e7cd66528667a",
+            "length": "2148755417",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2030"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "2148755417"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "b8324f8f19693e684a309b59f77e1ec2"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

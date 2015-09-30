@@ -1,0 +1,293 @@
+{
+  "@attributes": {
+    "version": "2.0"
+  },
+  "channel": {
+    "title": "DOGnzb",
+    "description": "DOGnzb Feed",
+    "uuid": "1756D320",
+    "response": {
+      "@attributes": {
+        "offset": "0",
+        "total": "100"
+      }
+    },
+    "language": "en-us",
+    "item": [
+      {
+        "id": "c6214fe5ae317b36906f0507042ca889",
+        "title": "Avengers.Age.Of.Ultron.2015.FRENCH.720p.BluRay.x264-Goatlove",
+        "guid": "https:\/\/dognzb.cr\/details\/c6214fe5ae317b36906f0507042ca889",
+        "link": "https:\/\/dognzb.cr\/fetch\/c6214fe5ae317b36906f0507042ca889\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Fri, 18 Sep 2015 06:14:46 -0600",
+        "category": "Movies > Foreign",
+        "description": "Avengers.Age.Of.Ultron.2015.FRENCH.720p.BluRay.x264-Goatlove",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/c6214fe5ae317b36906f0507042ca889\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "6718866639",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2010"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "6718866639"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "c6214fe5ae317b36906f0507042ca889"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "2395427"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Avengers: Age of Ultron"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.8>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Adventure,Science Fiction,Action"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/2395427.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "0199594cb9af69efb663e761848a76c2",
+        "title": "Avengers.Age.Of.Ultron.2015.1080p.BluRay.Hevc.X265.DTS-SANTI",
+        "guid": "https:\/\/dognzb.cr\/details\/0199594cb9af69efb663e761848a76c2",
+        "link": "https:\/\/dognzb.cr\/fetch\/0199594cb9af69efb663e761848a76c2\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Mon, 14 Sep 2015 11:26:25 -0600",
+        "category": "Movies > HD",
+        "description": "Avengers.Age.Of.Ultron.2015.1080p.BluRay.Hevc.X265.DTS-SANTI",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/0199594cb9af69efb663e761848a76c2\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "5674463318",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "5674463318"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "0199594cb9af69efb663e761848a76c2"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "57"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "2395427"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Avengers: Age of Ultron"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.8>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Adventure,Science Fiction,Action"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/2395427.png"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ea1b68d2ff97a5f0528b3d22c73f11ad",
+        "title": "Avengers.Age.Of.Ultron.2015.Truefrench.720p.BluRay.x264-AVITECH",
+        "guid": "https:\/\/dognzb.cr\/details\/ea1b68d2ff97a5f0528b3d22c73f11ad",
+        "link": "https:\/\/dognzb.cr\/fetch\/ea1b68d2ff97a5f0528b3d22c73f11ad\/d838e856067b5fc8da92fd49bbbc7604",
+        "comments": "",
+        "pubDate": "Sun, 13 Sep 2015 20:45:35 -0600",
+        "category": "Movies > Foreign",
+        "description": "Avengers.Age.Of.Ultron.2015.Truefrench.720p.BluRay.x264-AVITECH",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/dognzb.cr\/fetch\/ea1b68d2ff97a5f0528b3d22c73f11ad\/d838e856067b5fc8da92fd49bbbc7604",
+            "length": "6340781948",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2010"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "6340781948"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "ea1b68d2ff97a5f0528b3d22c73f11ad"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "grabs",
+              "value": "3"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "comments",
+              "value": "0"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdb",
+              "value": "2395427"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbtitle",
+              "value": "Avengers: Age of Ultron"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbyear",
+              "value": "2015"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "imdbscore",
+              "value": "7.8>"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "genre",
+              "value": "Adventure,Science Fiction,Action"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "coverurl",
+              "value": "https://dognzb.cr/content/covers/movies/thumbs/2395427.png"
+            }
+          }
+        ]
+      }
+      
+    ]
+  }
+}

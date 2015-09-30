@@ -1,0 +1,1720 @@
+<?xml version="1.0" encoding="utf-8" ?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/">
+<channel>
+<atom:link href="https://nzbs.org/api?apikey=apikey=691ffff70ac03d75812f910d813f7b3c&amp;t=tvsearch&amp;tvdbid=80379" rel="self" type="application/rss+xml" />
+<title>NZBs(dot)ORG API TV Search</title>
+<description>NZBs(dot)ORG Feed</description>
+<link>https://nzbs.org/</link>
+<language>en-gb</language>
+<webMaster>admin@nzbs.org (NZBs(dot)ORG)</webMaster>
+<category></category>
+<image>
+	<url>https://nzbs.org//templates/default/images/banner.jpg</url>
+	<title>NZBs(dot)ORG</title>
+	<link>https://nzbs.org/</link>
+	<description>Visit NZBs(dot)ORG - Home of the NZB Harvester</description>
+</image>
+
+<newznab:response offset="0" total="1000" />
+<item>
+	<title>The Big Bang Theory - S08E13 - Der optimale Angstbereich - mkv - NEWUPP - 02 - by Videomann</title>
+	<guid isPermaLink="false">8ee6e954b758211cf21b52e240a3d49c</guid>
+	<link>https://nzbs.org/getnzb/8ee6e954b758211cf21b52e240a3d49c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/8ee6e954b758211cf21b52e240a3d49c#comments</comments> 	
+	<pubDate>Fri, 18 Sep 2015 05:51:56 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The Big Bang Theory - S08E13 - Der optimale Angstbereich - mkv - NEWUPP - 02 - by Videomann</description>
+	<enclosure url="https://nzbs.org/getnzb/8ee6e954b758211cf21b52e240a3d49c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="217764501" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="217764501" />
+	<newznab:attr name="guid" value="8ee6e954b758211cf21b52e240a3d49c" />
+
+
+</item>
+<item>
+	<title>The Big Bang Theory - S08E13 - Der optimale Angstbereich - mkv - NEWUPP - by Videomann</title>
+	<guid isPermaLink="false">a56c4643b1dc2bbae2336d1b80d4a701</guid>
+	<link>https://nzbs.org/getnzb/a56c4643b1dc2bbae2336d1b80d4a701.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/a56c4643b1dc2bbae2336d1b80d4a701#comments</comments> 	
+	<pubDate>Wed, 16 Sep 2015 02:30:57 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The Big Bang Theory - S08E13 - Der optimale Angstbereich - mkv - NEWUPP - by Videomann</description>
+	<enclosure url="https://nzbs.org/getnzb/a56c4643b1dc2bbae2336d1b80d4a701.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="217000413" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="217000413" />
+	<newznab:attr name="guid" value="a56c4643b1dc2bbae2336d1b80d4a701" />
+
+
+</item>
+<item>
+	<title>The Big Bang Theory - S08E13 - Der optimale Angstbereich - mkv - by Videomann</title>
+	<guid isPermaLink="false">324a0c9c13ac8a663d15937c814cb9ac</guid>
+	<link>https://nzbs.org/getnzb/324a0c9c13ac8a663d15937c814cb9ac.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/324a0c9c13ac8a663d15937c814cb9ac#comments</comments> 	
+	<pubDate>Mon, 14 Sep 2015 21:54:51 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The Big Bang Theory - S08E13 - Der optimale Angstbereich - mkv - by Videomann</description>
+	<enclosure url="https://nzbs.org/getnzb/324a0c9c13ac8a663d15937c814cb9ac.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="218220509" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="218220509" />
+	<newznab:attr name="guid" value="324a0c9c13ac8a663d15937c814cb9ac" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S09E00.2015.Comic.Con.Panel.1080p.WEB-DL.AAC.2.0.x264-PZK</title>
+	<guid isPermaLink="false">3de41429f18f401199d00986551ecc4c</guid>
+	<link>https://nzbs.org/getnzb/3de41429f18f401199d00986551ecc4c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/3de41429f18f401199d00986551ecc4c#comments</comments> 	
+	<pubDate>Tue, 08 Sep 2015 11:48:01 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>The.Big.Bang.Theory.S09E00.2015.Comic.Con.Panel.1080p.WEB-DL.AAC.2.0.x264-PZK</description>
+	<enclosure url="https://nzbs.org/getnzb/3de41429f18f401199d00986551ecc4c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1200534620" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1200534620" />
+	<newznab:attr name="guid" value="3de41429f18f401199d00986551ecc4c" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S09E00.2015.Comic.Con.Panel.1080p.WEB-DL.AAC2.0.H.264-PZK</title>
+	<guid isPermaLink="false">9bb007c5287a3538d49139fedfeaf23d</guid>
+	<link>https://nzbs.org/getnzb/9bb007c5287a3538d49139fedfeaf23d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/9bb007c5287a3538d49139fedfeaf23d#comments</comments> 	
+	<pubDate>Mon, 07 Sep 2015 09:50:58 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>The.Big.Bang.Theory.S09E00.2015.Comic.Con.Panel.1080p.WEB-DL.AAC2.0.H.264-PZK</description>
+	<enclosure url="https://nzbs.org/getnzb/9bb007c5287a3538d49139fedfeaf23d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1250577272" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1250577272" />
+	<newznab:attr name="guid" value="9bb007c5287a3538d49139fedfeaf23d" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S09E00.2015.Comic.Con.Panel.1080p.WEB-DL.AAC.2.0.x264-PZK</title>
+	<guid isPermaLink="false">ce9b766451b0ddfb067f429091def383</guid>
+	<link>https://nzbs.org/getnzb/ce9b766451b0ddfb067f429091def383.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ce9b766451b0ddfb067f429091def383#comments</comments> 	
+	<pubDate>Mon, 07 Sep 2015 17:46:02 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>The.Big.Bang.Theory.S09E00.2015.Comic.Con.Panel.1080p.WEB-DL.AAC.2.0.x264-PZK</description>
+	<enclosure url="https://nzbs.org/getnzb/ce9b766451b0ddfb067f429091def383.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1253739338" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1253739338" />
+	<newznab:attr name="guid" value="ce9b766451b0ddfb067f429091def383" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S08.BDRip.x264-DEMAND</title>
+	<guid isPermaLink="false">f80d3063c86bdec1b1c90b69d1a449a3</guid>
+	<link>https://nzbs.org/getnzb/f80d3063c86bdec1b1c90b69d1a449a3.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/f80d3063c86bdec1b1c90b69d1a449a3#comments</comments> 	
+	<pubDate>Thu, 27 Aug 2015 06:28:14 +0000</pubDate> 
+	<category>TV-BoxSD</category> 	
+	<description>The.Big.Bang.Theory.S08.BDRip.x264-DEMAND</description>
+	<enclosure url="https://nzbs.org/getnzb/f80d3063c86bdec1b1c90b69d1a449a3.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="4828864873" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5070" />
+	<newznab:attr name="size" value="4828864873" />
+	<newznab:attr name="guid" value="f80d3063c86bdec1b1c90b69d1a449a3" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S08.720p.BluRay.x264-DEMAND</title>
+	<guid isPermaLink="false">b0f9864ce00128e33b2a0d8e5377c2c2</guid>
+	<link>https://nzbs.org/getnzb/b0f9864ce00128e33b2a0d8e5377c2c2.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/b0f9864ce00128e33b2a0d8e5377c2c2#comments</comments> 	
+	<pubDate>Thu, 27 Aug 2015 19:12:34 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S08.720p.BluRay.x264-DEMAND</description>
+	<enclosure url="https://nzbs.org/getnzb/b0f9864ce00128e33b2a0d8e5377c2c2.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="28593273432" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="28593273432" />
+	<newznab:attr name="guid" value="b0f9864ce00128e33b2a0d8e5377c2c2" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">b5772bf329b6f15e22856db843d55237</guid>
+	<link>https://nzbs.org/getnzb/b5772bf329b6f15e22856db843d55237.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/b5772bf329b6f15e22856db843d55237#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 00:58:07 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/b5772bf329b6f15e22856db843d55237.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1391758838" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1391758838" />
+	<newznab:attr name="guid" value="b5772bf329b6f15e22856db843d55237" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">82f3af397d7e5ecc635509a86d143bb3</guid>
+	<link>https://nzbs.org/getnzb/82f3af397d7e5ecc635509a86d143bb3.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/82f3af397d7e5ecc635509a86d143bb3#comments</comments> 	
+	<pubDate>Thu, 20 Aug 2015 00:38:44 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/82f3af397d7e5ecc635509a86d143bb3.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1445698413" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1445698413" />
+	<newznab:attr name="guid" value="82f3af397d7e5ecc635509a86d143bb3" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">78f22d2da0e298c5993518092e45d696</guid>
+	<link>https://nzbs.org/getnzb/78f22d2da0e298c5993518092e45d696.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/78f22d2da0e298c5993518092e45d696#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 22:28:12 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/78f22d2da0e298c5993518092e45d696.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1391853257" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1391853257" />
+	<newznab:attr name="guid" value="78f22d2da0e298c5993518092e45d696" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">e0eec6828c05c4d31f4d65effeb9c25a</guid>
+	<link>https://nzbs.org/getnzb/e0eec6828c05c4d31f4d65effeb9c25a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/e0eec6828c05c4d31f4d65effeb9c25a#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 20:00:52 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/e0eec6828c05c4d31f4d65effeb9c25a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1321212807" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1321212807" />
+	<newznab:attr name="guid" value="e0eec6828c05c4d31f4d65effeb9c25a" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">8d7590efbf4e05658647243bb10563f4</guid>
+	<link>https://nzbs.org/getnzb/8d7590efbf4e05658647243bb10563f4.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/8d7590efbf4e05658647243bb10563f4#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 17:08:32 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/8d7590efbf4e05658647243bb10563f4.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1895156172" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1895156172" />
+	<newznab:attr name="guid" value="8d7590efbf4e05658647243bb10563f4" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">a726aa4eefa9304e58e61850e31e4f83</guid>
+	<link>https://nzbs.org/getnzb/a726aa4eefa9304e58e61850e31e4f83.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/a726aa4eefa9304e58e61850e31e4f83#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 14:27:13 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/a726aa4eefa9304e58e61850e31e4f83.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1357796093" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1357796093" />
+	<newznab:attr name="guid" value="a726aa4eefa9304e58e61850e31e4f83" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">5f1179f0b493338dc1a700ae38d566bc</guid>
+	<link>https://nzbs.org/getnzb/5f1179f0b493338dc1a700ae38d566bc.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/5f1179f0b493338dc1a700ae38d566bc#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 13:47:54 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/5f1179f0b493338dc1a700ae38d566bc.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1380934224" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1380934224" />
+	<newznab:attr name="guid" value="5f1179f0b493338dc1a700ae38d566bc" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">78e1886b8983fcee819a9ce6756ffae7</guid>
+	<link>https://nzbs.org/getnzb/78e1886b8983fcee819a9ce6756ffae7.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/78e1886b8983fcee819a9ce6756ffae7#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 12:47:58 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/78e1886b8983fcee819a9ce6756ffae7.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1385017715" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1385017715" />
+	<newznab:attr name="guid" value="78e1886b8983fcee819a9ce6756ffae7" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">2c4bad32a59af3c2c58282c908a4824d</guid>
+	<link>https://nzbs.org/getnzb/2c4bad32a59af3c2c58282c908a4824d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/2c4bad32a59af3c2c58282c908a4824d#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 11:51:16 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/2c4bad32a59af3c2c58282c908a4824d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1895186730" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1895186730" />
+	<newznab:attr name="guid" value="2c4bad32a59af3c2c58282c908a4824d" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">31dbbb08f95df87dca6bc73e64d663f9</guid>
+	<link>https://nzbs.org/getnzb/31dbbb08f95df87dca6bc73e64d663f9.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/31dbbb08f95df87dca6bc73e64d663f9#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 08:39:15 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/31dbbb08f95df87dca6bc73e64d663f9.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1300717183" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1300717183" />
+	<newznab:attr name="guid" value="31dbbb08f95df87dca6bc73e64d663f9" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">c2377a716045c18746a590ed2dcd4130</guid>
+	<link>https://nzbs.org/getnzb/c2377a716045c18746a590ed2dcd4130.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/c2377a716045c18746a590ed2dcd4130#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 08:35:32 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/c2377a716045c18746a590ed2dcd4130.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1424654794" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1424654794" />
+	<newznab:attr name="guid" value="c2377a716045c18746a590ed2dcd4130" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">c720c30dc1aaa46e79734b8944715c61</guid>
+	<link>https://nzbs.org/getnzb/c720c30dc1aaa46e79734b8944715c61.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/c720c30dc1aaa46e79734b8944715c61#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 08:35:32 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/c720c30dc1aaa46e79734b8944715c61.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1321052941" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1321052941" />
+	<newznab:attr name="guid" value="c720c30dc1aaa46e79734b8944715c61" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">3a26276ceba26ad50a287c696dda69ab</guid>
+	<link>https://nzbs.org/getnzb/3a26276ceba26ad50a287c696dda69ab.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/3a26276ceba26ad50a287c696dda69ab#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 08:35:32 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/3a26276ceba26ad50a287c696dda69ab.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1445521074" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1445521074" />
+	<newznab:attr name="guid" value="3a26276ceba26ad50a287c696dda69ab" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">5d703d6c3a95c34e05afcaa4491640ab</guid>
+	<link>https://nzbs.org/getnzb/5d703d6c3a95c34e05afcaa4491640ab.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/5d703d6c3a95c34e05afcaa4491640ab#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 08:26:35 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/5d703d6c3a95c34e05afcaa4491640ab.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1357887193" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1357887193" />
+	<newznab:attr name="guid" value="5d703d6c3a95c34e05afcaa4491640ab" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">03d0ef685ce3970b461e906af915e5cf</guid>
+	<link>https://nzbs.org/getnzb/03d0ef685ce3970b461e906af915e5cf.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/03d0ef685ce3970b461e906af915e5cf#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 08:26:35 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/03d0ef685ce3970b461e906af915e5cf.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1391847376" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1391847376" />
+	<newznab:attr name="guid" value="03d0ef685ce3970b461e906af915e5cf" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">9333de09938f45db97a117f719f20653</guid>
+	<link>https://nzbs.org/getnzb/9333de09938f45db97a117f719f20653.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/9333de09938f45db97a117f719f20653#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 08:19:12 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/9333de09938f45db97a117f719f20653.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1380761314" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1380761314" />
+	<newznab:attr name="guid" value="9333de09938f45db97a117f719f20653" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">7f6db04468e721bfe328304c77299f60</guid>
+	<link>https://nzbs.org/getnzb/7f6db04468e721bfe328304c77299f60.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/7f6db04468e721bfe328304c77299f60#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 08:26:35 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/7f6db04468e721bfe328304c77299f60.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1448372071" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1448372071" />
+	<newznab:attr name="guid" value="7f6db04468e721bfe328304c77299f60" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">fa41a39b2907ee2f83625b09131ff811</guid>
+	<link>https://nzbs.org/getnzb/fa41a39b2907ee2f83625b09131ff811.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/fa41a39b2907ee2f83625b09131ff811#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 08:06:56 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/fa41a39b2907ee2f83625b09131ff811.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1384952679" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1384952679" />
+	<newznab:attr name="guid" value="fa41a39b2907ee2f83625b09131ff811" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">07ff30f0c8695afe4dee1cd07bee5590</guid>
+	<link>https://nzbs.org/getnzb/07ff30f0c8695afe4dee1cd07bee5590.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/07ff30f0c8695afe4dee1cd07bee5590#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 06:59:36 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/07ff30f0c8695afe4dee1cd07bee5590.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1895303796" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1895303796" />
+	<newznab:attr name="guid" value="07ff30f0c8695afe4dee1cd07bee5590" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E17.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">5915ae7c3a430c0899d6db1f3cae7b0c</guid>
+	<link>https://nzbs.org/getnzb/5915ae7c3a430c0899d6db1f3cae7b0c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/5915ae7c3a430c0899d6db1f3cae7b0c#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 05:52:57 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E17.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/5915ae7c3a430c0899d6db1f3cae7b0c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1324012984" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1324012984" />
+	<newznab:attr name="guid" value="5915ae7c3a430c0899d6db1f3cae7b0c" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">9342ce9d6f07dc7f0c96d55982072533</guid>
+	<link>https://nzbs.org/getnzb/9342ce9d6f07dc7f0c96d55982072533.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/9342ce9d6f07dc7f0c96d55982072533#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 05:37:04 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/9342ce9d6f07dc7f0c96d55982072533.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1300562887" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1300562887" />
+	<newznab:attr name="guid" value="9342ce9d6f07dc7f0c96d55982072533" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">aea342863c524b10c1b481908868b669</guid>
+	<link>https://nzbs.org/getnzb/aea342863c524b10c1b481908868b669.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/aea342863c524b10c1b481908868b669#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 05:28:29 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/aea342863c524b10c1b481908868b669.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1424832364" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1424832364" />
+	<newznab:attr name="guid" value="aea342863c524b10c1b481908868b669" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">12ec26c95d398caa4f7aef79f52320fc</guid>
+	<link>https://nzbs.org/getnzb/12ec26c95d398caa4f7aef79f52320fc.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/12ec26c95d398caa4f7aef79f52320fc#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 05:21:12 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/12ec26c95d398caa4f7aef79f52320fc.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1321305081" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1321305081" />
+	<newznab:attr name="guid" value="12ec26c95d398caa4f7aef79f52320fc" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">f201defac47a3c9513138376878a5e0e</guid>
+	<link>https://nzbs.org/getnzb/f201defac47a3c9513138376878a5e0e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/f201defac47a3c9513138376878a5e0e#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 05:16:20 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/f201defac47a3c9513138376878a5e0e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1445628544" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1445628544" />
+	<newznab:attr name="guid" value="f201defac47a3c9513138376878a5e0e" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">0a294e00c91a6f6888b9e09da434e8d0</guid>
+	<link>https://nzbs.org/getnzb/0a294e00c91a6f6888b9e09da434e8d0.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/0a294e00c91a6f6888b9e09da434e8d0#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 05:16:20 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/0a294e00c91a6f6888b9e09da434e8d0.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1357521294" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1357521294" />
+	<newznab:attr name="guid" value="0a294e00c91a6f6888b9e09da434e8d0" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E09.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">3021adf3a2aec3b94d9f0872ef9ae112</guid>
+	<link>https://nzbs.org/getnzb/3021adf3a2aec3b94d9f0872ef9ae112.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/3021adf3a2aec3b94d9f0872ef9ae112#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 05:09:03 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E09.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/3021adf3a2aec3b94d9f0872ef9ae112.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1279791027" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1279791027" />
+	<newznab:attr name="guid" value="3021adf3a2aec3b94d9f0872ef9ae112" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E08.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">ae161446a706fdc89842f9ba24f079e2</guid>
+	<link>https://nzbs.org/getnzb/ae161446a706fdc89842f9ba24f079e2.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ae161446a706fdc89842f9ba24f079e2#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 05:05:22 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E08.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/ae161446a706fdc89842f9ba24f079e2.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1326999276" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1326999276" />
+	<newznab:attr name="guid" value="ae161446a706fdc89842f9ba24f079e2" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">c04ecee2722c15fb8c537fb587e95db2</guid>
+	<link>https://nzbs.org/getnzb/c04ecee2722c15fb8c537fb587e95db2.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/c04ecee2722c15fb8c537fb587e95db2#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 05:00:25 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/c04ecee2722c15fb8c537fb587e95db2.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1391818158" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1391818158" />
+	<newznab:attr name="guid" value="c04ecee2722c15fb8c537fb587e95db2" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">e2fd052a33d92ecce6fcf37543c123c1</guid>
+	<link>https://nzbs.org/getnzb/e2fd052a33d92ecce6fcf37543c123c1.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/e2fd052a33d92ecce6fcf37543c123c1#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 04:52:56 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/e2fd052a33d92ecce6fcf37543c123c1.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1380969081" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1380969081" />
+	<newznab:attr name="guid" value="e2fd052a33d92ecce6fcf37543c123c1" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E04.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">e044455b9817c1294a6485eebd0e8dcc</guid>
+	<link>https://nzbs.org/getnzb/e044455b9817c1294a6485eebd0e8dcc.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/e044455b9817c1294a6485eebd0e8dcc#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 04:45:37 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E04.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/e044455b9817c1294a6485eebd0e8dcc.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1358325710" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1358325710" />
+	<newznab:attr name="guid" value="e044455b9817c1294a6485eebd0e8dcc" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">25869618700bb8b370ce907848113fdd</guid>
+	<link>https://nzbs.org/getnzb/25869618700bb8b370ce907848113fdd.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/25869618700bb8b370ce907848113fdd#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 04:41:52 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/25869618700bb8b370ce907848113fdd.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1448403274" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1448403274" />
+	<newznab:attr name="guid" value="25869618700bb8b370ce907848113fdd" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">7e64063f770edb4d8c8deff491baffbf</guid>
+	<link>https://nzbs.org/getnzb/7e64063f770edb4d8c8deff491baffbf.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/7e64063f770edb4d8c8deff491baffbf#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 04:34:14 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/7e64063f770edb4d8c8deff491baffbf.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1384948801" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1384948801" />
+	<newznab:attr name="guid" value="7e64063f770edb4d8c8deff491baffbf" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E17.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">e4a79d8d8e386f6db1f3955455dbc00b</guid>
+	<link>https://nzbs.org/getnzb/e4a79d8d8e386f6db1f3955455dbc00b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/e4a79d8d8e386f6db1f3955455dbc00b#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 04:22:35 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E17.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/e4a79d8d8e386f6db1f3955455dbc00b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1323958867" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1323958867" />
+	<newznab:attr name="guid" value="e4a79d8d8e386f6db1f3955455dbc00b" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">6d8a4b8055658d3285eeecb71eb6cf82</guid>
+	<link>https://nzbs.org/getnzb/6d8a4b8055658d3285eeecb71eb6cf82.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/6d8a4b8055658d3285eeecb71eb6cf82#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 04:18:53 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/6d8a4b8055658d3285eeecb71eb6cf82.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1300382923" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1300382923" />
+	<newznab:attr name="guid" value="6d8a4b8055658d3285eeecb71eb6cf82" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E15.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">4a1ae45d062de212ce161f502a2b7e56</guid>
+	<link>https://nzbs.org/getnzb/4a1ae45d062de212ce161f502a2b7e56.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/4a1ae45d062de212ce161f502a2b7e56#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 04:10:10 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E15.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/4a1ae45d062de212ce161f502a2b7e56.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1436741008" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1436741008" />
+	<newznab:attr name="guid" value="4a1ae45d062de212ce161f502a2b7e56" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E14.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">157d430d760835b1edd3233cf0c91194</guid>
+	<link>https://nzbs.org/getnzb/157d430d760835b1edd3233cf0c91194.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/157d430d760835b1edd3233cf0c91194#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 04:10:10 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E14.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/157d430d760835b1edd3233cf0c91194.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1321189314" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1321189314" />
+	<newznab:attr name="guid" value="157d430d760835b1edd3233cf0c91194" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">97281e9cb615a970567389068c884124</guid>
+	<link>https://nzbs.org/getnzb/97281e9cb615a970567389068c884124.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/97281e9cb615a970567389068c884124#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 04:06:31 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/97281e9cb615a970567389068c884124.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1424788377" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1424788377" />
+	<newznab:attr name="guid" value="97281e9cb615a970567389068c884124" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">bbe726416d31bf779cd7ea0851651c45</guid>
+	<link>https://nzbs.org/getnzb/bbe726416d31bf779cd7ea0851651c45.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/bbe726416d31bf779cd7ea0851651c45#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 03:36:50 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/bbe726416d31bf779cd7ea0851651c45.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1321048675" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1321048675" />
+	<newznab:attr name="guid" value="bbe726416d31bf779cd7ea0851651c45" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">848a26b4a22fd1452693083e3496cc5d</guid>
+	<link>https://nzbs.org/getnzb/848a26b4a22fd1452693083e3496cc5d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/848a26b4a22fd1452693083e3496cc5d#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 03:33:08 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/848a26b4a22fd1452693083e3496cc5d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1445806094" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1445806094" />
+	<newznab:attr name="guid" value="848a26b4a22fd1452693083e3496cc5d" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">2e22f6cdbdf892693207ae42ffa579a8</guid>
+	<link>https://nzbs.org/getnzb/2e22f6cdbdf892693207ae42ffa579a8.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/2e22f6cdbdf892693207ae42ffa579a8#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 03:29:09 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/2e22f6cdbdf892693207ae42ffa579a8.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1357600462" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1357600462" />
+	<newznab:attr name="guid" value="2e22f6cdbdf892693207ae42ffa579a8" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E08.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">e75329c8440c47e03148e5e9ddce137f</guid>
+	<link>https://nzbs.org/getnzb/e75329c8440c47e03148e5e9ddce137f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/e75329c8440c47e03148e5e9ddce137f#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 03:16:33 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E08.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/e75329c8440c47e03148e5e9ddce137f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1326903727" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1326903727" />
+	<newznab:attr name="guid" value="e75329c8440c47e03148e5e9ddce137f" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">a65463b9174130abe0423c45ce39e3d7</guid>
+	<link>https://nzbs.org/getnzb/a65463b9174130abe0423c45ce39e3d7.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/a65463b9174130abe0423c45ce39e3d7#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 03:12:52 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E07.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/a65463b9174130abe0423c45ce39e3d7.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1391795891" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1391795891" />
+	<newznab:attr name="guid" value="a65463b9174130abe0423c45ce39e3d7" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">d89ba65335efc685c91d4e0d6e81524f</guid>
+	<link>https://nzbs.org/getnzb/d89ba65335efc685c91d4e0d6e81524f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/d89ba65335efc685c91d4e0d6e81524f#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 03:01:50 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E06.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/d89ba65335efc685c91d4e0d6e81524f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1380972066" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1380972066" />
+	<newznab:attr name="guid" value="d89ba65335efc685c91d4e0d6e81524f" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E05.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">a227652a65b085c29b81f7cee569fac3</guid>
+	<link>https://nzbs.org/getnzb/a227652a65b085c29b81f7cee569fac3.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/a227652a65b085c29b81f7cee569fac3#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 03:01:50 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E05.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/a227652a65b085c29b81f7cee569fac3.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1325929235" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1325929235" />
+	<newznab:attr name="guid" value="a227652a65b085c29b81f7cee569fac3" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E04.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">f0d7ef51af6c1bbfc185dd8ff0cde489</guid>
+	<link>https://nzbs.org/getnzb/f0d7ef51af6c1bbfc185dd8ff0cde489.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/f0d7ef51af6c1bbfc185dd8ff0cde489#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 02:41:56 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E04.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/f0d7ef51af6c1bbfc185dd8ff0cde489.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1358321224" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1358321224" />
+	<newznab:attr name="guid" value="f0d7ef51af6c1bbfc185dd8ff0cde489" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">eded0ee4393a8a629e6ac1e3420cf898</guid>
+	<link>https://nzbs.org/getnzb/eded0ee4393a8a629e6ac1e3420cf898.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/eded0ee4393a8a629e6ac1e3420cf898#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 02:30:28 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E03.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/eded0ee4393a8a629e6ac1e3420cf898.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1448485493" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1448485493" />
+	<newznab:attr name="guid" value="eded0ee4393a8a629e6ac1e3420cf898" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">bd2e971709610594753db0122244773e</guid>
+	<link>https://nzbs.org/getnzb/bd2e971709610594753db0122244773e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/bd2e971709610594753db0122244773e#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 02:26:47 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E01.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/bd2e971709610594753db0122244773e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1895121505" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1895121505" />
+	<newznab:attr name="guid" value="bd2e971709610594753db0122244773e" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">8ea39b1ad7d1b6c95a8cc7dabaa75650</guid>
+	<link>https://nzbs.org/getnzb/8ea39b1ad7d1b6c95a8cc7dabaa75650.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/8ea39b1ad7d1b6c95a8cc7dabaa75650#comments</comments> 	
+	<pubDate>Wed, 19 Aug 2015 02:19:22 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E02.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/8ea39b1ad7d1b6c95a8cc7dabaa75650.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1385038905" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1385038905" />
+	<newznab:attr name="guid" value="8ea39b1ad7d1b6c95a8cc7dabaa75650" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S04.720p.BluRay.nHD.x264-NhaNc3</title>
+	<guid isPermaLink="false">31a8c0f5b133a942b207dcda15e36005</guid>
+	<link>https://nzbs.org/getnzb/31a8c0f5b133a942b207dcda15e36005.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/31a8c0f5b133a942b207dcda15e36005#comments</comments> 	
+	<pubDate>Sun, 02 Aug 2015 01:13:55 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S04.720p.BluRay.nHD.x264-NhaNc3</description>
+	<enclosure url="https://nzbs.org/getnzb/31a8c0f5b133a942b207dcda15e36005.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="14015785794" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="14015785794" />
+	<newznab:attr name="guid" value="31a8c0f5b133a942b207dcda15e36005" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S08E13-18.FRENCH.LD.WEB-DL</title>
+	<guid isPermaLink="false">cee9ccfa0d7b6001eeb917dc9ef7a59c</guid>
+	<link>https://nzbs.org/getnzb/cee9ccfa0d7b6001eeb917dc9ef7a59c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/cee9ccfa0d7b6001eeb917dc9ef7a59c#comments</comments> 	
+	<pubDate>Thu, 23 Jul 2015 12:01:23 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.S08E13-18.FRENCH.LD.WEB-DL</description>
+	<enclosure url="https://nzbs.org/getnzb/cee9ccfa0d7b6001eeb917dc9ef7a59c.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1276310735" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="1276310735" />
+	<newznab:attr name="guid" value="cee9ccfa0d7b6001eeb917dc9ef7a59c" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S08E18.FRENCH.720p.HDTV.x264-FRiES</title>
+	<guid isPermaLink="false">cd410c099b5c21365ddb621c0f494b8b</guid>
+	<link>https://nzbs.org/getnzb/cd410c099b5c21365ddb621c0f494b8b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/cd410c099b5c21365ddb621c0f494b8b#comments</comments> 	
+	<pubDate>Wed, 22 Jul 2015 14:40:39 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.S08E18.FRENCH.720p.HDTV.x264-FRiES</description>
+	<enclosure url="https://nzbs.org/getnzb/cd410c099b5c21365ddb621c0f494b8b.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="435523000" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="435523000" />
+	<newznab:attr name="guid" value="cd410c099b5c21365ddb621c0f494b8b" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S08E18.FRENCH.1080p.WEB-DL.H264-LiBERTY</title>
+	<guid isPermaLink="false">c0f5ca04121461274d163f8a7d4ba4b1</guid>
+	<link>https://nzbs.org/getnzb/c0f5ca04121461274d163f8a7d4ba4b1.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/c0f5ca04121461274d163f8a7d4ba4b1#comments</comments> 	
+	<pubDate>Wed, 22 Jul 2015 12:17:52 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.S08E18.FRENCH.1080p.WEB-DL.H264-LiBERTY</description>
+	<enclosure url="https://nzbs.org/getnzb/c0f5ca04121461274d163f8a7d4ba4b1.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="815024192" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="815024192" />
+	<newznab:attr name="guid" value="c0f5ca04121461274d163f8a7d4ba4b1" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S08E18.FRENCH.720p.WEB-DL.H264-LiBERTY</title>
+	<guid isPermaLink="false">cd71fe90affdd95bc423a87eb5e89581</guid>
+	<link>https://nzbs.org/getnzb/cd71fe90affdd95bc423a87eb5e89581.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/cd71fe90affdd95bc423a87eb5e89581#comments</comments> 	
+	<pubDate>Wed, 22 Jul 2015 12:14:58 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.S08E18.FRENCH.720p.WEB-DL.H264-LiBERTY</description>
+	<enclosure url="https://nzbs.org/getnzb/cd71fe90affdd95bc423a87eb5e89581.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="654069114" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="654069114" />
+	<newznab:attr name="guid" value="cd71fe90affdd95bc423a87eb5e89581" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S08E17.FRENCH.720p.WEB-DL.H264-LiBERTY</title>
+	<guid isPermaLink="false">85603916bd1889f0c8ff232283526375</guid>
+	<link>https://nzbs.org/getnzb/85603916bd1889f0c8ff232283526375.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/85603916bd1889f0c8ff232283526375#comments</comments> 	
+	<pubDate>Wed, 22 Jul 2015 04:29:19 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.S08E17.FRENCH.720p.WEB-DL.H264-LiBERTY</description>
+	<enclosure url="https://nzbs.org/getnzb/85603916bd1889f0c8ff232283526375.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="841343354" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="841343354" />
+	<newznab:attr name="guid" value="85603916bd1889f0c8ff232283526375" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S08E09.FRENCH.WEB-DL.XviD-ZT</title>
+	<guid isPermaLink="false">f08c6862878428800ce87b411bb10d06</guid>
+	<link>https://nzbs.org/getnzb/f08c6862878428800ce87b411bb10d06.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/f08c6862878428800ce87b411bb10d06#comments</comments> 	
+	<pubDate>Tue, 21 Jul 2015 01:10:58 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.S08E09.FRENCH.WEB-DL.XviD-ZT</description>
+	<enclosure url="https://nzbs.org/getnzb/f08c6862878428800ce87b411bb10d06.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="198547488" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="198547488" />
+	<newznab:attr name="guid" value="f08c6862878428800ce87b411bb10d06" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S08E16.FRENCH.LD.WEB-DL.XviD-ZT</title>
+	<guid isPermaLink="false">cef289274575ae6f82021667fe863388</guid>
+	<link>https://nzbs.org/getnzb/cef289274575ae6f82021667fe863388.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/cef289274575ae6f82021667fe863388#comments</comments> 	
+	<pubDate>Tue, 21 Jul 2015 01:05:41 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.S08E16.FRENCH.LD.WEB-DL.XviD-ZT</description>
+	<enclosure url="https://nzbs.org/getnzb/cef289274575ae6f82021667fe863388.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="200489514" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="200489514" />
+	<newznab:attr name="guid" value="cef289274575ae6f82021667fe863388" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S08E07-12.FRENCH.WEB-DL</title>
+	<guid isPermaLink="false">bbb0d53bd0a7b4d92a9add4418986678</guid>
+	<link>https://nzbs.org/getnzb/bbb0d53bd0a7b4d92a9add4418986678.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/bbb0d53bd0a7b4d92a9add4418986678#comments</comments> 	
+	<pubDate>Wed, 15 Jul 2015 06:55:55 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.S08E07-12.FRENCH.WEB-DL</description>
+	<enclosure url="https://nzbs.org/getnzb/bbb0d53bd0a7b4d92a9add4418986678.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1268982777" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="1268982777" />
+	<newznab:attr name="guid" value="bbb0d53bd0a7b4d92a9add4418986678" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x24.La.Determinazione.Dell.Impegno.ITA.DLMux.x264-NovaRip</title>
+	<guid isPermaLink="false">55261d0904e9228553f1ce88961ebdc9</guid>
+	<link>https://nzbs.org/getnzb/55261d0904e9228553f1ce88961ebdc9.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/55261d0904e9228553f1ce88961ebdc9#comments</comments> 	
+	<pubDate>Wed, 08 Jul 2015 22:53:12 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x24.La.Determinazione.Dell.Impegno.ITA.DLMux.x264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/55261d0904e9228553f1ce88961ebdc9.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="216316584" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="216316584" />
+	<newznab:attr name="guid" value="55261d0904e9228553f1ce88961ebdc9" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x23.La.Combustione.Materna.ITA.DLMux.x264-NovaRip</title>
+	<guid isPermaLink="false">b9aa6c6dc53d23d8471c8f1a85ce65ab</guid>
+	<link>https://nzbs.org/getnzb/b9aa6c6dc53d23d8471c8f1a85ce65ab.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/b9aa6c6dc53d23d8471c8f1a85ce65ab#comments</comments> 	
+	<pubDate>Wed, 08 Jul 2015 22:50:24 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x23.La.Combustione.Materna.ITA.DLMux.x264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/b9aa6c6dc53d23d8471c8f1a85ce65ab.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="216521723" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="216521723" />
+	<newznab:attr name="guid" value="b9aa6c6dc53d23d8471c8f1a85ce65ab" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x24.La.Determinazione.Dell.Impegno.ITA.720p.DLMux.h264-NovaRip</title>
+	<guid isPermaLink="false">b8e5ec98fd828184c0a079f462d1c557</guid>
+	<link>https://nzbs.org/getnzb/b8e5ec98fd828184c0a079f462d1c557.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/b8e5ec98fd828184c0a079f462d1c557#comments</comments> 	
+	<pubDate>Wed, 08 Jul 2015 22:47:40 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x24.La.Determinazione.Dell.Impegno.ITA.720p.DLMux.h264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/b8e5ec98fd828184c0a079f462d1c557.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="734198807" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="734198807" />
+	<newznab:attr name="guid" value="b8e5ec98fd828184c0a079f462d1c557" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x23.La.Combustione.Materna.ITA.720p.DLMux.h264-NovaRip</title>
+	<guid isPermaLink="false">80eb49f1cc40f8d195c2cbcb40462a2f</guid>
+	<link>https://nzbs.org/getnzb/80eb49f1cc40f8d195c2cbcb40462a2f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/80eb49f1cc40f8d195c2cbcb40462a2f#comments</comments> 	
+	<pubDate>Wed, 08 Jul 2015 22:42:22 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x23.La.Combustione.Materna.ITA.720p.DLMux.h264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/80eb49f1cc40f8d195c2cbcb40462a2f.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="688576785" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="688576785" />
+	<newznab:attr name="guid" value="80eb49f1cc40f8d195c2cbcb40462a2f" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S08E01-E06</title>
+	<guid isPermaLink="false">ecb9a339f2b50a2df81fbc3c044110d6</guid>
+	<link>https://nzbs.org/getnzb/ecb9a339f2b50a2df81fbc3c044110d6.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ecb9a339f2b50a2df81fbc3c044110d6#comments</comments> 	
+	<pubDate>Tue, 07 Jul 2015 07:26:22 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>The.Big.Bang.Theory.S08E01-E06</description>
+	<enclosure url="https://nzbs.org/getnzb/ecb9a339f2b50a2df81fbc3c044110d6.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1467150223" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="1467150223" />
+	<newznab:attr name="guid" value="ecb9a339f2b50a2df81fbc3c044110d6" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x22.La.Trasmissione.Del.Diplomato.ITA.DLMux.x264-NovaRip</title>
+	<guid isPermaLink="false">6922bf78c697fc1e096d1fd9499c6821</guid>
+	<link>https://nzbs.org/getnzb/6922bf78c697fc1e096d1fd9499c6821.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/6922bf78c697fc1e096d1fd9499c6821#comments</comments> 	
+	<pubDate>Wed, 01 Jul 2015 21:41:25 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x22.La.Trasmissione.Del.Diplomato.ITA.DLMux.x264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/6922bf78c697fc1e096d1fd9499c6821.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="216426394" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="216426394" />
+	<newznab:attr name="guid" value="6922bf78c697fc1e096d1fd9499c6821" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x21.Il.Deterioramento.Della.Comunicazione.ITA.DLMux.x264-NovaRip</title>
+	<guid isPermaLink="false">b4568d7a4bce0bf51e1be7a6369676e3</guid>
+	<link>https://nzbs.org/getnzb/b4568d7a4bce0bf51e1be7a6369676e3.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/b4568d7a4bce0bf51e1be7a6369676e3#comments</comments> 	
+	<pubDate>Wed, 01 Jul 2015 21:37:49 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x21.Il.Deterioramento.Della.Comunicazione.ITA.DLMux.x264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/b4568d7a4bce0bf51e1be7a6369676e3.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="216617886" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="216617886" />
+	<newznab:attr name="guid" value="b4568d7a4bce0bf51e1be7a6369676e3" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x22.La.Trasmissione.Del.Diplomato.ITA.720p.DLMux.h264-NovaRip</title>
+	<guid isPermaLink="false">a5667cf9f3be2ad65f1428b3cccb3d3e</guid>
+	<link>https://nzbs.org/getnzb/a5667cf9f3be2ad65f1428b3cccb3d3e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/a5667cf9f3be2ad65f1428b3cccb3d3e#comments</comments> 	
+	<pubDate>Wed, 01 Jul 2015 21:34:12 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x22.La.Trasmissione.Del.Diplomato.ITA.720p.DLMux.h264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/a5667cf9f3be2ad65f1428b3cccb3d3e.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="698923240" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="698923240" />
+	<newznab:attr name="guid" value="a5667cf9f3be2ad65f1428b3cccb3d3e" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x21.Il.Deterioramento.Della.Comunicazione.ITA.720p.DLMux.h264-NovaRip</title>
+	<guid isPermaLink="false">716e9a9816f83769f87fd250e4420bd3</guid>
+	<link>https://nzbs.org/getnzb/716e9a9816f83769f87fd250e4420bd3.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/716e9a9816f83769f87fd250e4420bd3#comments</comments> 	
+	<pubDate>Wed, 01 Jul 2015 21:34:14 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x21.Il.Deterioramento.Della.Comunicazione.ITA.720p.DLMux.h264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/716e9a9816f83769f87fd250e4420bd3.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="672400620" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="672400620" />
+	<newznab:attr name="guid" value="716e9a9816f83769f87fd250e4420bd3" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x20.L.Implementazione.Del.Fortino.ITA.DLMux.x264-NovaRip</title>
+	<guid isPermaLink="false">b3db1e07baeceadc455510773187e445</guid>
+	<link>https://nzbs.org/getnzb/b3db1e07baeceadc455510773187e445.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/b3db1e07baeceadc455510773187e445#comments</comments> 	
+	<pubDate>Thu, 25 Jun 2015 20:01:10 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x20.L.Implementazione.Del.Fortino.ITA.DLMux.x264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/b3db1e07baeceadc455510773187e445.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="216365370" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="216365370" />
+	<newznab:attr name="guid" value="b3db1e07baeceadc455510773187e445" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x19.La.Violazione.Dello.Skywalker.ITA.DLMux.x264-NovaRip</title>
+	<guid isPermaLink="false">ab285e02ade792496df966529ae21b9a</guid>
+	<link>https://nzbs.org/getnzb/ab285e02ade792496df966529ae21b9a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ab285e02ade792496df966529ae21b9a#comments</comments> 	
+	<pubDate>Thu, 25 Jun 2015 19:57:22 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x19.La.Violazione.Dello.Skywalker.ITA.DLMux.x264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/ab285e02ade792496df966529ae21b9a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="216345849" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="216345849" />
+	<newznab:attr name="guid" value="ab285e02ade792496df966529ae21b9a" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x20.L.Implementazione.Del.Fortino.ITA.720p.DLMux.h264-NovaRip</title>
+	<guid isPermaLink="false">34c551d72e0fdf8cd71970870732d701</guid>
+	<link>https://nzbs.org/getnzb/34c551d72e0fdf8cd71970870732d701.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/34c551d72e0fdf8cd71970870732d701#comments</comments> 	
+	<pubDate>Thu, 25 Jun 2015 19:57:15 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x20.L.Implementazione.Del.Fortino.ITA.720p.DLMux.h264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/34c551d72e0fdf8cd71970870732d701.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="726125857" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="726125857" />
+	<newznab:attr name="guid" value="34c551d72e0fdf8cd71970870732d701" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x19.La.Violazione.Dello.Skywalker.ITA.720p.DLMux.h264-NovaRip</title>
+	<guid isPermaLink="false">ad1189b41c0629700b705b109a612c92</guid>
+	<link>https://nzbs.org/getnzb/ad1189b41c0629700b705b109a612c92.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/ad1189b41c0629700b705b109a612c92#comments</comments> 	
+	<pubDate>Thu, 25 Jun 2015 19:42:28 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x19.La.Violazione.Dello.Skywalker.ITA.720p.DLMux.h264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/ad1189b41c0629700b705b109a612c92.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="785902272" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="785902272" />
+	<newznab:attr name="guid" value="ad1189b41c0629700b705b109a612c92" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x18.La.Termalizzazione.Dell.Escluso.ITA.DLMux.x264-NovaRip</title>
+	<guid isPermaLink="false">92b10021b277cc6405ad21cf90afbfc5</guid>
+	<link>https://nzbs.org/getnzb/92b10021b277cc6405ad21cf90afbfc5.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/92b10021b277cc6405ad21cf90afbfc5#comments</comments> 	
+	<pubDate>Sat, 20 Jun 2015 22:02:50 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x18.La.Termalizzazione.Dell.Escluso.ITA.DLMux.x264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/92b10021b277cc6405ad21cf90afbfc5.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="216468366" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="216468366" />
+	<newznab:attr name="guid" value="92b10021b277cc6405ad21cf90afbfc5" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x17.Il.Modulo.Della.Colonizzazione.ITA.DLMux.x264-NovaRip</title>
+	<guid isPermaLink="false">f29e3112f406a57dcf405d0107c336dd</guid>
+	<link>https://nzbs.org/getnzb/f29e3112f406a57dcf405d0107c336dd.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/f29e3112f406a57dcf405d0107c336dd#comments</comments> 	
+	<pubDate>Sat, 20 Jun 2015 21:59:29 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x17.Il.Modulo.Della.Colonizzazione.ITA.DLMux.x264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/f29e3112f406a57dcf405d0107c336dd.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="216299743" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="216299743" />
+	<newznab:attr name="guid" value="f29e3112f406a57dcf405d0107c336dd" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x18.La.Termalizzazione.Dell.Escluso.ITA.720p.DLMux.h264-NovaRip</title>
+	<guid isPermaLink="false">14ad3db1ede8533c65ca58c27ea0909d</guid>
+	<link>https://nzbs.org/getnzb/14ad3db1ede8533c65ca58c27ea0909d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/14ad3db1ede8533c65ca58c27ea0909d#comments</comments> 	
+	<pubDate>Sat, 20 Jun 2015 21:56:25 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x18.La.Termalizzazione.Dell.Escluso.ITA.720p.DLMux.h264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/14ad3db1ede8533c65ca58c27ea0909d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="713158706" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="713158706" />
+	<newznab:attr name="guid" value="14ad3db1ede8533c65ca58c27ea0909d" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x17.Il.Modulo.Della.Colonizzazione.ITA.720p.DLMux.h264-NovaRip</title>
+	<guid isPermaLink="false">e9d0aa41344f5c9bc9cb71e461c67009</guid>
+	<link>https://nzbs.org/getnzb/e9d0aa41344f5c9bc9cb71e461c67009.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/e9d0aa41344f5c9bc9cb71e461c67009#comments</comments> 	
+	<pubDate>Sat, 20 Jun 2015 21:50:30 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x17.Il.Modulo.Della.Colonizzazione.ITA.720p.DLMux.h264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/e9d0aa41344f5c9bc9cb71e461c67009.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="735923066" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="735923066" />
+	<newznab:attr name="guid" value="e9d0aa41344f5c9bc9cb71e461c67009" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x16.L.Accelerazione.Dell.Intimita.ITA.DLMux.x264-NovaRip</title>
+	<guid isPermaLink="false">3ed4726ac67e88f19310f275ae3bf403</guid>
+	<link>https://nzbs.org/getnzb/3ed4726ac67e88f19310f275ae3bf403.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/3ed4726ac67e88f19310f275ae3bf403#comments</comments> 	
+	<pubDate>Thu, 11 Jun 2015 14:06:21 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x16.L.Accelerazione.Dell.Intimita.ITA.DLMux.x264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/3ed4726ac67e88f19310f275ae3bf403.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="216370027" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="216370027" />
+	<newznab:attr name="guid" value="3ed4726ac67e88f19310f275ae3bf403" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x15.La.Rigenerazione.Del.Negozio.Di.Fumetti.ITA.DLMux.x264-NovaRip</title>
+	<guid isPermaLink="false">3f6b1dd9142e4281021a985841ce2070</guid>
+	<link>https://nzbs.org/getnzb/3f6b1dd9142e4281021a985841ce2070.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/3f6b1dd9142e4281021a985841ce2070#comments</comments> 	
+	<pubDate>Thu, 11 Jun 2015 14:06:22 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x15.La.Rigenerazione.Del.Negozio.Di.Fumetti.ITA.DLMux.x264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/3f6b1dd9142e4281021a985841ce2070.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="216455876" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="216455876" />
+	<newznab:attr name="guid" value="3f6b1dd9142e4281021a985841ce2070" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x16.L.Accelerazione.Dell.Intimita.ITA.720p.DLMux.h264-NovaRip</title>
+	<guid isPermaLink="false">0955022b1e60a55947d68217c9b9e6b8</guid>
+	<link>https://nzbs.org/getnzb/0955022b1e60a55947d68217c9b9e6b8.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/0955022b1e60a55947d68217c9b9e6b8#comments</comments> 	
+	<pubDate>Thu, 11 Jun 2015 14:00:30 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x16.L.Accelerazione.Dell.Intimita.ITA.720p.DLMux.h264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/0955022b1e60a55947d68217c9b9e6b8.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="731420789" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="731420789" />
+	<newznab:attr name="guid" value="0955022b1e60a55947d68217c9b9e6b8" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x15.La.Rigenerazione.Del.Negozio.Di.Fumetti.ITA.720p.DLMux.h264-NovaRip</title>
+	<guid isPermaLink="false">f351896ae8926931837a8fd676f97fca</guid>
+	<link>https://nzbs.org/getnzb/f351896ae8926931837a8fd676f97fca.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/f351896ae8926931837a8fd676f97fca#comments</comments> 	
+	<pubDate>Thu, 11 Jun 2015 13:54:55 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x15.La.Rigenerazione.Del.Negozio.Di.Fumetti.ITA.720p.DLMux.h264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/f351896ae8926931837a8fd676f97fca.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="732236156" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="732236156" />
+	<newznab:attr name="guid" value="f351896ae8926931837a8fd676f97fca" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x14.La.Manifestazione.Del.Troll.ITA.720p.DLMux.h264-NovaRip</title>
+	<guid isPermaLink="false">d351c60660b93dd1548d6cfb6a5df963</guid>
+	<link>https://nzbs.org/getnzb/d351c60660b93dd1548d6cfb6a5df963.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/d351c60660b93dd1548d6cfb6a5df963#comments</comments> 	
+	<pubDate>Thu, 04 Jun 2015 15:04:05 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x14.La.Manifestazione.Del.Troll.ITA.720p.DLMux.h264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/d351c60660b93dd1548d6cfb6a5df963.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="783171363" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="783171363" />
+	<newznab:attr name="guid" value="d351c60660b93dd1548d6cfb6a5df963" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x13.L.Ottimizzazione.Dell.Ansia.ITA.720p.DLMux.h264-NovaRip</title>
+	<guid isPermaLink="false">b3eb4e9ccba4fc10e540965008fd5c44</guid>
+	<link>https://nzbs.org/getnzb/b3eb4e9ccba4fc10e540965008fd5c44.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/b3eb4e9ccba4fc10e540965008fd5c44#comments</comments> 	
+	<pubDate>Thu, 04 Jun 2015 14:58:51 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x13.L.Ottimizzazione.Dell.Ansia.ITA.720p.DLMux.h264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/b3eb4e9ccba4fc10e540965008fd5c44.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="744768059" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="744768059" />
+	<newznab:attr name="guid" value="b3eb4e9ccba4fc10e540965008fd5c44" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x14.La.Manifestazione.Del.Troll.ITA.DLMux.x264-NovaRip</title>
+	<guid isPermaLink="false">683e91c9c0dc63524f6419494aed89ef</guid>
+	<link>https://nzbs.org/getnzb/683e91c9c0dc63524f6419494aed89ef.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/683e91c9c0dc63524f6419494aed89ef#comments</comments> 	
+	<pubDate>Thu, 04 Jun 2015 14:56:14 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x14.La.Manifestazione.Del.Troll.ITA.DLMux.x264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/683e91c9c0dc63524f6419494aed89ef.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="216544585" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="216544585" />
+	<newznab:attr name="guid" value="683e91c9c0dc63524f6419494aed89ef" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.8x13.L.Ottimizzazione.Dell.Ansia.ITA.DLMux.x264-NovaRip</title>
+	<guid isPermaLink="false">171ed3aa931cbde463d53bcaedf99b0d</guid>
+	<link>https://nzbs.org/getnzb/171ed3aa931cbde463d53bcaedf99b0d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/171ed3aa931cbde463d53bcaedf99b0d#comments</comments> 	
+	<pubDate>Thu, 04 Jun 2015 14:58:52 +0000</pubDate> 
+	<category>TV-Foreign</category> 	
+	<description>The.Big.Bang.Theory.8x13.L.Ottimizzazione.Dell.Ansia.ITA.DLMux.x264-NovaRip</description>
+	<enclosure url="https://nzbs.org/getnzb/171ed3aa931cbde463d53bcaedf99b0d.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="216420300" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5080" />
+	<newznab:attr name="size" value="216420300" />
+	<newznab:attr name="guid" value="171ed3aa931cbde463d53bcaedf99b0d" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E17.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">e8630a568f43c5f9cfad7e1bbce7ca01</guid>
+	<link>https://nzbs.org/getnzb/e8630a568f43c5f9cfad7e1bbce7ca01.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/e8630a568f43c5f9cfad7e1bbce7ca01#comments</comments> 	
+	<pubDate>Tue, 02 Jun 2015 18:25:30 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E17.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/e8630a568f43c5f9cfad7e1bbce7ca01.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1376328279" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1376328279" />
+	<newznab:attr name="guid" value="e8630a568f43c5f9cfad7e1bbce7ca01" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">69a289e4310309167cb5d9a28bf9effb</guid>
+	<link>https://nzbs.org/getnzb/69a289e4310309167cb5d9a28bf9effb.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/69a289e4310309167cb5d9a28bf9effb#comments</comments> 	
+	<pubDate>Tue, 02 Jun 2015 18:25:30 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E16.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/69a289e4310309167cb5d9a28bf9effb.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1351880028" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1351880028" />
+	<newznab:attr name="guid" value="69a289e4310309167cb5d9a28bf9effb" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E15.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">b4362f753cd5fc73a1493a3c87a80552</guid>
+	<link>https://nzbs.org/getnzb/b4362f753cd5fc73a1493a3c87a80552.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/b4362f753cd5fc73a1493a3c87a80552#comments</comments> 	
+	<pubDate>Tue, 02 Jun 2015 18:22:36 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E15.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/b4362f753cd5fc73a1493a3c87a80552.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1493437966" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1493437966" />
+	<newznab:attr name="guid" value="b4362f753cd5fc73a1493a3c87a80552" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E14.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">0223c0dac759aa367ed8cba75f70867a</guid>
+	<link>https://nzbs.org/getnzb/0223c0dac759aa367ed8cba75f70867a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/0223c0dac759aa367ed8cba75f70867a#comments</comments> 	
+	<pubDate>Tue, 02 Jun 2015 18:22:37 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E14.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/0223c0dac759aa367ed8cba75f70867a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1374663296" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1374663296" />
+	<newznab:attr name="guid" value="0223c0dac759aa367ed8cba75f70867a" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">a26b86b5bb72def5453fe9a398437c32</guid>
+	<link>https://nzbs.org/getnzb/a26b86b5bb72def5453fe9a398437c32.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/a26b86b5bb72def5453fe9a398437c32#comments</comments> 	
+	<pubDate>Tue, 02 Jun 2015 18:19:26 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E13.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/a26b86b5bb72def5453fe9a398437c32.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1482593940" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1482593940" />
+	<newznab:attr name="guid" value="a26b86b5bb72def5453fe9a398437c32" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">57e549ff58459193be449700a419c367</guid>
+	<link>https://nzbs.org/getnzb/57e549ff58459193be449700a419c367.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/57e549ff58459193be449700a419c367#comments</comments> 	
+	<pubDate>Tue, 02 Jun 2015 18:19:26 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E12.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/57e549ff58459193be449700a419c367.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1374537236" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1374537236" />
+	<newznab:attr name="guid" value="57e549ff58459193be449700a419c367" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">651a448c4a2e20c52f1d60f807ebb3a1</guid>
+	<link>https://nzbs.org/getnzb/651a448c4a2e20c52f1d60f807ebb3a1.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/651a448c4a2e20c52f1d60f807ebb3a1#comments</comments> 	
+	<pubDate>Tue, 02 Jun 2015 18:16:19 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E11.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/651a448c4a2e20c52f1d60f807ebb3a1.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1504119055" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1504119055" />
+	<newznab:attr name="guid" value="651a448c4a2e20c52f1d60f807ebb3a1" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">e9af6bfc7b5caa411c8017554023d729</guid>
+	<link>https://nzbs.org/getnzb/e9af6bfc7b5caa411c8017554023d729.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/e9af6bfc7b5caa411c8017554023d729#comments</comments> 	
+	<pubDate>Tue, 02 Jun 2015 18:16:19 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E10.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/e9af6bfc7b5caa411c8017554023d729.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1412129101" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1412129101" />
+	<newznab:attr name="guid" value="e9af6bfc7b5caa411c8017554023d729" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E09.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">b89b3bcca7f7e00e166282cf0e4d1a19</guid>
+	<link>https://nzbs.org/getnzb/b89b3bcca7f7e00e166282cf0e4d1a19.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/b89b3bcca7f7e00e166282cf0e4d1a19#comments</comments> 	
+	<pubDate>Tue, 02 Jun 2015 18:12:55 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E09.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/b89b3bcca7f7e00e166282cf0e4d1a19.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1332248261" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1332248261" />
+	<newznab:attr name="guid" value="b89b3bcca7f7e00e166282cf0e4d1a19" />
+
+
+</item>
+<item>
+	<title>The.Big.Bang.Theory.S01E08.720p.BluRay.DD5.1.x264-DON</title>
+	<guid isPermaLink="false">0ae6450936bf81725dd41779ac24ad1a</guid>
+	<link>https://nzbs.org/getnzb/0ae6450936bf81725dd41779ac24ad1a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c</link>
+	<comments>https://nzbs.org/details/0ae6450936bf81725dd41779ac24ad1a#comments</comments> 	
+	<pubDate>Tue, 02 Jun 2015 18:09:46 +0000</pubDate> 
+	<category>TV-BoxHD</category> 	
+	<description>The.Big.Bang.Theory.S01E08.720p.BluRay.DD5.1.x264-DON</description>
+	<enclosure url="https://nzbs.org/getnzb/0ae6450936bf81725dd41779ac24ad1a.nzb&amp;i=1692&amp;r=691ffff70ac03d75812f910d813f7b3c" length="1379321300" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5090" />
+	<newznab:attr name="size" value="1379321300" />
+	<newznab:attr name="guid" value="0ae6450936bf81725dd41779ac24ad1a" />
+
+
+</item>
+
+</channel>
+</rss>

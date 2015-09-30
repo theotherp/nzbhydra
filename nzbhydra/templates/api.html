@@ -1,0 +1,40 @@
+{#TODO: Replace any nzbmegasearch stuff#}<?xml version="1.0" encoding="utf-8" ?> 
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/">
+<channel>
+<atom:link href="https://www.isthisrelevant.questionmark" rel="self" type="application/rss+xml" />
+<title>NZB Hydra</title>
+<description>NZB Hydra - the meta search</description>
+<link>https://github.com/theotherp/nzbhydra</link>
+<language>en-gb</language>
+<webMaster>TheOtherP</webMaster>
+<category></category>
+<image>
+	<url>https://github.com/theotherp/nzbhydra</url>
+	<title>NZB Hydra</title>
+	<link>https://github.com/theotherp/nzbhydra</link>
+	<description>Meta search machine for NZB indexers</description>
+</image>
+
+<newznab:response offset="0" total="{{ items|length }}" />
+
+{% for row in items -%}
+<item>
+	<title>{{ row['title'] }}</title>
+	<guid isPermaLink="true">{{ row['encodedurl'] }}</guid>
+	<link>{{ row['link'] }}</link>
+	<comments>{{ row['providerurl'] }}</comments> 	
+	<pubDate>{{ row['pubDate'] }}</pubDate> 	
+	<description>{{ row['title'] }} - {{ row['providertitle'] }}</description>
+	<enclosure url="{{ row['url'] }}" length="{{ row['size'] }}" type="application/x-nzb" />
+
+	{% for attribute in row.attributes %}
+		<newznab:attr name="{{ attribute.name }}" value="{{ attribute.value }}" />
+	{%- endfor %}
+
+
+</item>
+    
+{%- endfor %}
+	
+</channel>
+</rss>

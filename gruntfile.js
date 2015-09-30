@@ -97,13 +97,13 @@ module.exports = function (grunt) {
 		},	
 		
 		less: {
-			crapture: {
+			nzbhydra: {
 				options: {
 					strictMath: true,
 					paths: ["nzbhydra/static/less"]
 				},
 				files: {
-      				'nzbhydra/static/css/crapture.css': 'nzbhydra/static/less/nzbhydra.less'
+      				'nzbhydra/static/css/nzbhydra.css': 'nzbhydra/static/less/nzbhydra.less'
     			}
 			},
 			bootstrap: {
@@ -111,7 +111,7 @@ module.exports = function (grunt) {
 					strictMath: true
 				},
 				files: {
-					'nzbhydra/static/css/bootstrap.css': 'nzbhydra/static/less/bootstrap/nzbhydra.less'
+					'nzbhydra/static/css/bootstrap.css': 'nzbhydra/static/less/bootstrap/bootstrap.less'
 				}
 			}
 		},
@@ -162,13 +162,13 @@ module.exports = function (grunt) {
 		
 		watch: {			
 			mystuff: {
-				files: ['nzbhydra/static/**/*.*', '!nzbhydra/static/less/**/*.less'], tasks: ['shell'], options: {
+				files: ['nzbhydra/static/**/*.*', '!nzbhydra/static/less/**/*.less'],  options: {
 					livereload: true
 				}
 			},
 			
 			crapLess: {
-				files: ['nzbhydra/static/less/nzbhydra.less'], tasks: ['less:nzbhydra', 'shell']
+				files: ['nzbhydra/static/less/nzbhydra.less', 'nzbhydra/static/less/bootstrap/variables.less'], tasks: ['less:nzbhydra']
 			},
 			
 			bootstrapLess: {
@@ -199,7 +199,6 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-less');
-	grunt.loadNpmTasks('grunt-shell');
 	
 
 	grunt.registerTask(
@@ -221,5 +220,7 @@ module.exports = function (grunt) {
 	
 
 	grunt.registerTask('default', ['watch']);
+	
+	grunt.registerTask('copy', ['bowercopy']);
 	
 };
