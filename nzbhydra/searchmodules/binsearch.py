@@ -5,9 +5,9 @@ import arrow
 from bs4 import BeautifulSoup
 from furl import furl
 
-from exceptions import ProviderIllegalSearchException
-from nzb_search_result import NzbSearchResult
-from search_module import SearchModule
+from nzbhydra.exceptions import ProviderIllegalSearchException
+from nzbhydra.nzb_search_result import NzbSearchResult
+from nzbhydra.search_module import SearchModule
 
 logger = logging.getLogger('root')
 
@@ -16,8 +16,8 @@ class Binsearch(SearchModule):
 
     def __init__(self, provider):
         super(Binsearch, self).__init__(provider)
-        self.module = "nzbclub"
-        self.name = "NZBClub"
+        self.module = "binsearch"
+        self.name = "Binsearch"
 
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = True
@@ -59,7 +59,7 @@ class Binsearch(SearchModule):
             raise ProviderIllegalSearchException("Attempted to search without a query although this provider only supports query-based searches", self)
         return self.get_search_urls(query if query else generated_query, categories)
 
-    def process_query_result(self, html):
+    def process_query_result(self, html, query):
         entries = []
         soup = BeautifulSoup(html, 'html.parser')
 
@@ -72,6 +72,7 @@ class Binsearch(SearchModule):
 
         for row in items:
             entry = NzbSearchResult()
+            entry.provider = self.name
             title = row.find('span', attrs={'class': 's'})
 
             if title is None: 
@@ -101,16 +102,18 @@ class Binsearch(SearchModule):
                 poster = poster.replace("+", " ")
                 entry.poster = poster
             #Size
-            p = re.compile(r"size: ([0-9]+\.[0-9]+).(GB|MB)")
+            p = re.compile(r"size: ([0-9]+\.[0-9]+).(GB|MB|KB)")
             m = p.search(info.text)
             if not m:
                 logger.debug("Unable to find size information in %s" % info.text)
                 continue
             size = float(m.group(1))
             unit = m.group(2)
-            if unit == "MB":
+            if unit == "KB":
+                size *= 1024  
+            elif unit == "MB":
                 size = size * 1024 * 1024
-            else:
+            elif unit == "GB":
                 size = size * 1024 * 1024 * 1024
             entry.size = int(size)
 
@@ -123,6 +126,8 @@ class Binsearch(SearchModule):
                 entry.pubdate_utc = str(pubdate)
                 entry.age_days = (arrow.utcnow() - pubdate).days
                 entry.age_precise = False
+            else:
+                logger.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
 
             entries.append(entry)
 

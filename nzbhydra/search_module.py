@@ -154,7 +154,7 @@ class SearchModule(object):
                         self.handle_provider_success()
                     except Exception as e:
                         self.logger.exception("Error while processing search results from provider %s" % self, e)
-                        raise ProviderResultParsingException("Error while parsing the results from provider %s" % self)
+                        raise ProviderResultParsingException("Error while parsing the results from provider", self)
     
             except ProviderAuthException as e:
                 self.logger.error("Unable to authorize with %s: %s" % (e.search_module, e.message))

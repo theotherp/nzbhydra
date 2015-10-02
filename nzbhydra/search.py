@@ -11,14 +11,14 @@ from requests_futures.sessions import FuturesSession
 from nzbhydra.database import Provider, ProviderSearch, ProviderStatus
 from nzbhydra import config
 from nzbhydra.exceptions import ExternalApiInfoException
-from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex
+from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch
 
 
 
 
 
 # TODO: I would like to use plugins for this but couldn't get this to work with pluginbase. Would also need a concept to work with the database
-search_modules = {"newznab": newznab, "womble": womble, "nzbclub": nzbclub, "nzbindex": nzbindex}
+search_modules = {"newznab": newznab, "womble": womble, "nzbclub": nzbclub, "nzbindex": nzbindex, "binsearch": binsearch}
 logger = logging.getLogger('root')
 
 config.init("searching.timeout", 5, int)
@@ -34,13 +34,13 @@ def pick_providers(search_type=None, query_supplied=True, identifier_key=None, a
         if not p.provider.enabled:
             logger.debug("Did not pick %s because it is disabled" % p)
             continue
-        try:
-            status = p.provider.status.get()
-            if status.disabled_until > arrow.utcnow():
-                logger.debug("Did not pick %s because it is disabled temporarily due to an error: %s" % (p, status.reason))
-                continue
-        except ProviderStatus.DoesNotExist:
-            pass
+        # try:
+        #     status = p.provider.status.get()
+        #     if status.disabled_until > arrow.utcnow():
+        #         logger.debug("Did not pick %s because it is disabled temporarily due to an error: %s" % (p, status.reason))
+        #         continue
+        # except ProviderStatus.DoesNotExist:
+        #     pass
 
         if query_supplied and not p.supports_queries:
             logger.debug("Did not pick %s because a query was supplied but the provider does not support queries" % p)
