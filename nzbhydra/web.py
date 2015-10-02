@@ -27,6 +27,7 @@ api_args = {
     "extended": Arg(bool),  # TODO to test 
     "del": Arg(str),
     "maxage": Arg(str),
+    "title": Arg(str),
     "rid": Arg(str),
     "genre": Arg(str),
     "imdbid": Arg(str),
@@ -100,13 +101,13 @@ def api(args):
     if config.cfg["main.apikey"] and ("apikey" not in args or args["apikey"] != config.cfg["main.apikey"]):
         raise Unauthorized("API key not provided or invalid")
     if args["t"] == "search":
-        results = search.search(args["q"], args["cat"])
+        results = search.search(False, args["q"], args["cat"])
         return render_search_results_for_api(results)
     if args["t"] == "tvsearch":
         # search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None)
         identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
         identifier_value = args[identifier_key] if identifier_key else None
-        results = search.search_show(args["q"], identifier_key, identifier_value, args["season"], args["ep"], args["cat"])
+        results = search.search_show(False, args["q"], identifier_key, identifier_value, args["season"], args["ep"], args["cat"])
         return render_search_results_for_api(results)
     pprint(request)
     return "hello api"
@@ -119,7 +120,7 @@ def internal_api(args):
     
     results = None
     if args["t"] == "search":
-        results = search.search(args["q"], args["cat"])
+        results = search.search(True, args["q"], args["cat"])
     if args["t"] == "tvsearch":
         #search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
         key = None
@@ -127,9 +128,9 @@ def internal_api(args):
         if "tvdbid" in args:
             key = "tvdbid"
             value = args[key]            
-        results = search.search_show(args["q"], key, value, args["season"], args["ep"], args["cat"])
+        results = search.search_show(True, args["q"], key, value, args["season"], args["ep"], args["cat"])
     if args["t"] == "moviesearch":
-        results = search.search_movie(args["q"], args["imdbid"], args["cat"])
+        results = search.search_movie(True, args["q"], args["imdbid"], args["title"], args["cat"])
     if args["t"] == "autocompletemovie":
         results = infos.find_movie_ids(args["input"])
         return jsonify({"results": results})

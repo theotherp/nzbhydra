@@ -2,8 +2,9 @@ import logging
 import arrow
 import requests
 from nzbhydra import config
-from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderSearchApiAccess, ProviderStatus
+from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus
 from nzbhydra.exceptions import ProviderConnectionException, ProviderResultParsingException, ProviderAuthException, ProviderAccessException
+from nzbhydra.infos import title_from_id
 
 
 class SearchModule(object):
@@ -33,10 +34,6 @@ class SearchModule(object):
         return self.provider.settings
 
     @property
-    def search_types(self):
-        return self.provider.settings.get("search_types", [])
-
-    @property
     def search_ids(self):
         return self.provider.settings.get("search_ids", [])
 
@@ -51,21 +48,70 @@ class SearchModule(object):
     @property
     def api_hits_reset(self):
         return self.provider.settings.get("api_hits_reset")
+    
+    
+    def search(self, query=None,category=None):
+        urls = self.get_search_urls(query=query, category=category)
+        return self.execute_queries(urls)
+    
+    def search_movie(self, query=None, imdbid=None, title=None, category=None):
+        if query is None and title is None and imdbid is None and self.needs_queries:
+            self.logger.error("Movie search without query or IMDB id or title is not possible with this provider")
+            return []
+        if query is None and not self.generate_queries:
+            self.logger.error("Movie search is not possible with this provideer because query generation is disabled")
+        if imdbid is not None and imdbid in self.search_ids:
+            #Best case, we can search using IMDB id
+            urls = self.get_moviesearch_urls(query=None, identifier_key="imdbid", identifier_value=imdbid, category=category)
+        elif title is not None:
+            #If we cannot search using the ID we generate a query using the title provided by the GUI
+            urls = self.get_moviesearch_urls(query=title, category=category)
+        elif query is not None:
+            #Simple case, just a regular raw search but in movie category
+            urls = self.get_moviesearch_urls(query=query, category=category)
+        else:
+            #Just show all the latest movie releases
+            urls = self.get_moviesearch_urls(category=category)
+            
+        return self.execute_queries(urls)
+    
+    def search_show(self, query=None, identifier_key=None, identifier_value=None, title=None, season=None, episode=None, category=None):
+        if query is None and title is None and identifier_key is None and self.needs_queries:
+            self.logger.error("TV search without query or id or title is not possible with this provider")
+            return []
+        if query is None and not self.generate_queries:
+            self.logger.error("TV search is not possible with this provideer because query generation is disabled")
+        if identifier_key is not None and identifier_key in self.search_ids:
+            #Best case, we can search using the ID
+            urls = self.get_showsearch_urls(query=None, identifier_key=identifier_key, identifier_value=identifier_value, category=category, season=season, episode=episode)
+        elif title is not None:
+            #If we cannot search using the ID we generate a query using the title provided by the GUI
+            urls = self.get_showsearch_urls(query=title, category=category, season=season, episode=episode)
+        elif query is not None:
+            #Simple case, just a regular raw search but in movie category
+            urls = self.get_showsearch_urls(query=query, category=category, season=season, episode=episode)
+        else:
+            #Just show all the latest movie releases
+            urls = self.get_showsearch_urls(category=category, season=season, episode=episode)
+            
+        return self.execute_queries(urls)
+        
+    
 
     # Access to most basic functions
-    def get_search_urls(self, query=None, generated_query=None, category=None):
+    def get_search_urls(self, query=None, category=None):
         # return url(s) to search. Url is then retrieved and result is returned if OK
         # we can return multiple urls in case a module needs to make multiple requests (e.g. when searching for a show
         # using general queries
         pass
 
-    def get_showsearch_urls(self, query=None, generated_query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
+    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
         # to extend
         # if module supports it, search specifically for show, otherwise make sure we create a query that searches
         # for for s01e01, 1x1 etc
         pass
 
-    def get_moviesearch_urls(self, query=None, generated_query=None, identifier_key=None, identifier_value=None, category=None):
+    def get_moviesearch_urls(self, query=None, identifier_key=None, identifier_value=None, category=None):
         # to extend
         # if module doesnt support it possibly use (configurable) size restrictions when searching
         pass
@@ -120,22 +166,25 @@ class SearchModule(object):
         
     def execute_queries(self, queries):
         # todo call all queries, check if further should be called, return all results when done or timeout or whatever
-        results = []
+        results_and_providersearchdbentry = {"results": []}
         executed_queries = set()
+        psearch = ProviderSearch(provider=self.provider)
+        psearch.save()
         while len(queries) > 0:
             query = queries.pop()
             if query in executed_queries:
                 #To make sure that in case an offset is reported wrong or we have a bug we don't get stuck in an endless loop 
                 continue
+                
+            results_and_providersearchdbentry["providersearchdbentry"] = psearch
+            
             try:
-                psearch = ProviderSearch(provider=self.provider, query=query)
-                psearch.save()
-                papiaccess = ProviderApiAccess(provider=self.provider, type="search")
+                papiaccess = ProviderApiAccess(provider=self.provider, provider_search=psearch, type="search", url=query)
+                
                 self.logger.debug("Requesting URL %s with timeout %d" % (query, config.cfg["searching.timeout"]))  
-                executed_queries.add(query)
                 request = requests.get(query, timeout=config.cfg["searching.timeout"], verify=False)          
+                executed_queries.add(query)
                 papiaccess.save()
-                ProviderSearchApiAccess(search=psearch, api_access=papiaccess).save()  # So we can later see which/how many accesses the search caused and how they went
                 
                 papiaccess.response_time = request.elapsed.microseconds / 1000
                 if request.status_code != 200:
@@ -147,10 +196,8 @@ class SearchModule(object):
     
                     try:
                         parsed_results = self.process_query_result(request.text, query)
-                        psearch.results = len(parsed_results["entries"])
-                        results.extend(parsed_results["entries"]) #Retrieve the processed results
-                        queries.extend(parsed_results["queries"])
-                        psearch.successful = True
+                        results_and_providersearchdbentry["results"].extend(parsed_results["entries"]) #Retrieve the processed results
+                        queries.extend(parsed_results["queries"]) #Add queries that were added as a result of the parsing, e.g. when the next result page should also be loaded
                         self.handle_provider_success()
                     except Exception as e:
                         self.logger.exception("Error while processing search results from provider %s" % self, e)
@@ -160,7 +207,6 @@ class SearchModule(object):
                 self.logger.error("Unable to authorize with %s: %s" % (e.search_module, e.message))
                 papiaccess.error = "Authorization error :%s" % e.message
                 self.handle_provider_failure(reason="Authentication failed", disable_permanently=True)
-    
             except ProviderConnectionException as e:
                 self.logger.error("Unable to connect with %s: %s" % (e.search_module, e.message))
                 papiaccess.error = "Connection error :%s" % e.message
@@ -175,9 +221,12 @@ class SearchModule(object):
             except Exception as e:
                 self.logger.exception("An error error occurred while searching: %s", e)
                 papiaccess.error = "Unknown error :%s" % e
-            psearch.save()
             papiaccess.save()
-        return results
+            
+            psearch.results = len(results_and_providersearchdbentry["results"])
+            psearch.successful = True
+            psearch.save()
+        return results_and_providersearchdbentry
 
         # information, perhaps if we provide basic information, get the info link for a uid, get base url, etc
 

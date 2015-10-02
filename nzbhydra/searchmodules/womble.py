@@ -28,13 +28,13 @@ class Womble(SearchModule):
         url = furl(self.provider.settings.get("query_url")).add({"fr": "false"})
         return url
 
-    def get_search_urls(self, generated_query=None, query=None, category=None):
+    def get_search_urls(self, query=None, category=None):
         logger.error("This provider does not support queries")
         return []
 
-    def get_showsearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
+    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
         urls = []
-        if generated_query or query or identifier_key or season or episode:
+        if query or identifier_key or season or episode:
             raise NotImplementedError("This provider does not support specific searches")
         if category:
             for c in category:
@@ -50,7 +50,7 @@ class Womble(SearchModule):
             urls.append(self.build_base_url().tostr())
         return urls
 
-    def get_moviesearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, category=None):
+    def get_moviesearch_urls(self, query=None, identifier_key=None, identifier_value=None, category=None):
         logger.error("This provider does not support movie search")
         return []
 

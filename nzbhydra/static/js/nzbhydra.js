@@ -198,7 +198,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
 
     
     $scope.isAskById = false; //If true a check box will be shown asking the user if he wants to search by ID 
-    $scope.isById = {value: false}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
+    $scope.isById = {value: true}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
     
 
     $scope.autocompleteClass = "autocompletePosterMovies";
@@ -210,22 +210,12 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
 
         //Show checkbox to ask if the user wants to search by ID (using autocomplete)
         $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 );
-
-
-        //Wait longer for series because it takes so long to query and is more expensive
-        if ($scope.category.indexOf("TV") > -1) {
-            console.log("Setting type ahead wait to 600ms");
-            $scope.typeAheadWait = 600;
-        } else {
-            $scope.typeAheadWait = 300;
-        }
     };
 
 
     // Any function returning a promise object can be used to load values asynchronously
     $scope.getAutocomplete = function (val) {
         $scope.autocompleteLoading = true;
-        $scope.seriesSelected = false;
         //Expected model returned from API:
         //label: What to show in the results
         //title: Will be used for file search
@@ -266,10 +256,8 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
 
     $scope.selectAutocompleteItem = function ($item) {
         $scope.selectedItem = $item;
-
-
+        
         $scope.startSearch($item);
-
     };
     
     
@@ -281,6 +269,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
             if ($scope.selectedItem.value != undefined) {
                 console.log("moviesearch per imdbid");
                 uri.addQuery("imdbid", $scope.selectedItem.value);
+                uri.addQuery("title", $scope.selectedItem.label);
             } else {
                 console.log("moviesearch per query");
                 uri.addQuery("q", $scope.searchTerm);
@@ -288,7 +277,11 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
             
         } else if ($scope.category.indexOf("TV") > -1) {
             uri.addQuery("t", "tvsearch");
-            uri.addQuery("tvdbid", $scope.selectedItem.value);
+            if ($scope.selectedItem.value != undefined) {
+                uri.addQuery("tvdbid", $scope.selectedItem.value);
+                uri.addQuery("title", $scope.selectedItem.label);    
+            }
+            
             if ($scope.searchSeason != "") {
                 uri.addQuery("season", $scope.searchSeason);
             }
@@ -303,6 +296,14 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
         $http.get(uri).then(function (data) {
 
             $scope.results = data.data.results;
+            $scope.providersearches = data.data.providersearches;
+            _.each($scope.providersearches, function(ps) {
+               ps.totalResponseTime = _.reduce(ps.api_accesses, function(memo, rp) {
+                   console.log(memo + " + " + rp.response_time)
+                   return memo + rp.response_time;
+               }, 0)
+            });
+            console.log($scope.providersearches);
             console.log($scope.results);
         });
 
@@ -312,6 +313,12 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
     $scope.autocompleteActive = function () {
         return ($scope.category.indexOf("TV") > -1) || ($scope.category.indexOf("Movies") > -1)
     };
+    
+    $scope.seriesSelected = function() {
+        return ($scope.category.indexOf("TV") > -1);
+    };
+    
+    
 
 
     $scope.results = [];

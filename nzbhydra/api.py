@@ -80,6 +80,12 @@ def test_for_duplicate(search_result_1, search_result_2):
     if same_size and same_age:
         return True
 
+class ProviderSchema(Schema):
+    name = fields.String()
+    module = fields.String()
+    enabled = fields.Boolean()
+    settings = fields.String()
+
 
 class NzbSearchResultSchema(Schema):
     title = fields.String()
@@ -93,15 +99,35 @@ class NzbSearchResultSchema(Schema):
     guid = fields.String()
     size = fields.Integer()
     categories = fields.String()  # wthy the fuc doesnt this work with fields.Integer(many=True)
+   
+class ProviderApiAccess(Schema):
+    provider = fields.Nested(ProviderSchema, only="name")
+    time = fields.DateTime()
+    type = fields.String()
+    url = fields.String()
+    response_successful = fields.Boolean()
+    response_time = fields.Integer()
+    error = fields.String()
+    
+class ProviderSearchSchema(Schema):
+    provider = fields.Nested(ProviderSchema, only="name")
+    time = fields.DateTime()
+    successful = fields.Boolean()
+    results = fields.Integer()
+    
+    api_accesses = fields.Nested(ProviderApiAccess, many=True)
 
 
 def process_for_internal_api(results):
-    # do what ever we need do prepare the results to be shown on our own page instead of being returned as newznab-compatible API
-    """
-
-    :type results: list[NzbSearchResult]
-    """
-    grouped_by_sameness = find_duplicates(results)
+    #results: list of dicts, <provider>:dict "providersearchdbentry":<ProviderSearch>,"results":[<NzbSearchResult>]
+    nzbsearchresults = []
+    providersearchdbentries = []
+    for i in results.values():
+        nzbsearchresults.extend(i["results"])
+        providersearchdbentries.append(ProviderSearchSchema().dump(i["providersearchdbentry"]).data)
+    
+    
+    grouped_by_sameness = find_duplicates(nzbsearchresults)
     
     
     # Will be sorted by GUI later anyway but makes debugging easier
@@ -114,7 +140,7 @@ def process_for_internal_api(results):
     for count, group in enumerate(serialized):
         for i in group:
             i["count"] = count
-    return {"results": serialized}
+    return {"results": serialized, "providersearches": providersearchdbentries}
 
 
 def serialize_nzb_search_result(result):

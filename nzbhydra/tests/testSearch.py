@@ -30,13 +30,13 @@ Provider(module="womble", name="womble", settings={"query_url": "http://www.news
 
 class MyTestCase(unittest.TestCase):
     def setUp(self):
-        self.oldExecute_search_queries = search.execute_search_queries
+        self.oldExecute_search_queries = search.start_search_futures
         database.ProviderStatus.delete().execute()
         database.ProviderSearch.delete().execute()
         database.ProviderSearchApiAccess.delete().execute()
 
     def tearDown(self):
-        search.execute_search_queries = self.oldExecute_search_queries
+        search.start_search_futures = self.oldExecute_search_queries
 
     config.cfg = profig.Config()
 
@@ -51,7 +51,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_pick_providers(self):
         search.read_providers_from_config()
-        Provider().select().count()
+        
         providers = search.pick_providers()
         self.assertEqual(3, len(providers))
 
@@ -71,17 +71,22 @@ class MyTestCase(unittest.TestCase):
         providers = search.pick_providers("tv", identifier_key="imdbid")
         self.assertEqual(1, len(providers))
         self.assertEqual("NZBs.org", providers[0].name)
+        
+        #Test category search, the first provider is now only enabled for audio searches, so it will be only 2 available 
+        search.providers[0].provider.settings["categories"] = ["Audio"]
+        providers = search.pick_providers(category="Movie")
+        self.assertEqual(2, len(providers))
 
     def testGeneralSearchProviderSelectionAndUrlBuilding(self):
 
         search.read_providers_from_config()
 
         from unittest.mock import MagicMock
-        search.execute_search_queries = MagicMock(return_value=[])
+        search.start_search_futures = MagicMock(return_value=[])
 
         # General search, only providers which support queries
         search.search("aquery")
-        args = search.execute_search_queries.call_args[0][0]  # mock returns a tuple, with the directional arguments as tuple first, of which we want the first (and only) argument, our actual arguments, which is a dict module:[urls]
+        args = search.start_search_futures.call_args[0][0]  # mock returns a tuple, with the directional arguments as tuple first, of which we want the first (and only) argument, our actual arguments, which is a dict module:[urls]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]  # Url lists, sorted by name of provider because the order might be random
         self.assertEqual(3, len(args))  # both newznab providers and nzbclub
 
@@ -108,11 +113,11 @@ class MyTestCase(unittest.TestCase):
         search.read_providers_from_config()
 
         from unittest.mock import MagicMock
-        search.execute_search_queries = MagicMock(return_value=[])
+        search.start_search_futures = MagicMock(return_value=[])
 
         # TV search without any specifics (return all lates releases), this includes wombles but excludes nzbclub 
         search.search_show()
-        args = search.execute_search_queries.call_args[0][0]
+        args = search.start_search_futures.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(3, len(args))  # 3 providers (no nzbsorg
 
@@ -137,7 +142,7 @@ class MyTestCase(unittest.TestCase):
 
         # TV search with a query (not using identifiers), so no wombles
         search.search_show(query="aquery")
-        args = search.execute_search_queries.call_args[0][0]
+        args = search.start_search_futures.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(3, len(args))  # 3 providers
 
@@ -167,7 +172,7 @@ class MyTestCase(unittest.TestCase):
 
         # TV search with tvdbid, allow query generation, so no wombles or nzbclub
         search.search_show(identifier_key="tvdbid", identifier_value="81189")
-        args = search.execute_search_queries.call_args[0][0]
+        args = search.start_search_futures.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(3, len(args))  # 
 
@@ -194,7 +199,7 @@ class MyTestCase(unittest.TestCase):
 
         # TV search with tvdbid and season and episode
         search.search_show(identifier_key="tvdbid", identifier_value="81189", season=1, episode=2)
-        args = search.execute_search_queries.call_args[0][0]
+        args = search.start_search_futures.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(3, len(args))  # 2 providers
 
@@ -227,11 +232,11 @@ class MyTestCase(unittest.TestCase):
         search.read_providers_from_config()
 
         from unittest.mock import MagicMock
-        search.execute_search_queries = MagicMock(return_value=[])
+        search.start_search_futures = MagicMock(return_value=[])
 
         # movie search without any specifics (return all latest releases)
         search.search_movie()
-        args = search.execute_search_queries.call_args[0][0]
+        args = search.start_search_futures.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(3, len(args))
 
@@ -245,7 +250,7 @@ class MyTestCase(unittest.TestCase):
 
         # movie search with a query 
         search.search_movie(query="aquery")
-        args = search.execute_search_queries.call_args[0][0]
+        args = search.start_search_futures.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(3, len(args))
 
@@ -271,7 +276,7 @@ class MyTestCase(unittest.TestCase):
                       body=json.dumps({"Title": "American Beauty"}), status=200,
                       content_type='application/json')
         search.search_movie(imdbid="tt0169547")
-        args = search.execute_search_queries.call_args[0][0]
+        args = search.start_search_futures.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(3, len(args))  # 2 providers
 
@@ -293,7 +298,7 @@ class MyTestCase(unittest.TestCase):
 
         # movie search with imdbid and category
         search.search_movie(imdbid="tt0169547", category="Movies SD")
-        args = search.execute_search_queries.call_args[0][0]
+        args = search.start_search_futures.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(3, len(args))  # 2 providers
 
@@ -318,7 +323,7 @@ class MyTestCase(unittest.TestCase):
                       body={"Title": "American Beauty"}, status=200,
                       content_type='application/json')
         search.search_movie(imdbid="tt0169547")
-        args = search.execute_search_queries.call_args[0][0]
+        args = search.start_search_futures.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(1, len(args))  # Only nzbs,org
 

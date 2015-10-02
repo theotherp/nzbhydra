@@ -34,25 +34,21 @@ class NzbIndex(SearchModule):
         url = furl(self.query_url).add({"more": "1", "max": self.max_results}) 
         return url
 
-    def get_search_urls(self, query=None, generated_query=None, category=None):
+    def get_search_urls(self, query=None, category=None):
         return [self.build_base_url().add({"q": query}).tostr()]
 
-    def get_showsearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
-        if query is None and generated_query is None:
-            raise ProviderIllegalSearchException("Attempted to search without a query although this provider only supports query-based searches", self)
-        if generated_query and season is not None:
+    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
+        if season is not None:
             #Restrict query if generated and season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
             if episode is not None:
-                generated_query = "%s s%02de%02d | %dx%02d" % (generated_query, season, episode, season, episode)
+                query = "%s s%02de%02d | %dx%02d" % (query, season, episode, season, episode)
             else:
-                generated_query = '%s s%02d | "season %d"' % (generated_query, season, season)
-        return self.get_search_urls(query if query else generated_query, category)
+                query = '%s s%02d | "season %d"' % (query, season, season)
+        return self.get_search_urls(query, category)
 
 
-    def get_moviesearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, category=None):
-        if query is None and generated_query is None:
-            raise ProviderIllegalSearchException("Attempted to search without a query although this provider only supports query-based searches", self)
-        return self.get_search_urls(query if query else generated_query, category)
+    def get_moviesearch_urls(self, query=None, identifier_key=None, identifier_value=None, category=None):
+        return self.get_search_urls(query)
 
     def process_query_result(self, xml, query):
         entries = []

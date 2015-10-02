@@ -50,7 +50,7 @@
                         <li><a href="" class="searchCategoryButton" data-searchcategory="XXX" ng-click="toggle('XXX')">XXX</a></li>                        
                     </ul>
                 </span>
-                <span class="input-group-btn" ng-if="seriesSelected">
+                <span class="input-group-btn" ng-if="seriesSelected()">
                 <input type="input" class="form-control noBorderRadius season-input" placeholder="S" name="season" id="seriesSearchS" style="width:40px;" ng-model="searchSeason"
                        ng-enter="submitSearch(selectedItem)"
                        tooltip="Enter a season to search for."
@@ -58,7 +58,7 @@
                        tooltip-trigger="mouseenter"
                         >
                     </span>
-                <span class="input-group-btn" ng-if="seriesSelected">
+                <span class="input-group-btn" ng-if="seriesSelected()">
                 <input type="input" class="form-control noLeftBorderRadius episode-input" placeholder="E" name="episode" id="seriesSearchE" style="width:40px;" ng-model="searchEpisode"
                        ng-enter="submitSearch(selectedItem)"
                        tooltip="Enter an episode to search for."
@@ -76,7 +76,7 @@
                 <script type="text/ng-template" id="movieAutocompleteEntry">
                     <a>{{ match.label }}</a>
                 </script>
-                <input type="search" ngtype="search" ng-model="searchTerm" placeholder="Search" typeahead-min-length="2" type-ahead-wait-ms="typeAheadWait"
+                <input type="search" ngtype="search" ng-model="searchTerm" placeholder="Search" typeahead-min-length="2" typeahead-wait-ms="typeAheadWait"
                        typeahead="item as item.label for item in getAutocomplete($viewValue)"
                        typeahead-template-url="movieAutocompleteEntry" class="form-control"
                        ng-class="{'autocompleteLoading': (loadingItems && autocompleteActive), 'search-border': !seriesSelected}"
@@ -92,6 +92,58 @@
 
 </div>
 
+
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <table class="table" style="margin-bottom: 0px">
+            <thead>
+            <tr>
+                <th class="text-left">
+                    Provider
+                </th>
+                <th class="text-left">
+                    Results
+                </th>
+                <th class="text-left">
+                    Response time
+                </th>
+                <th class="text-left">
+                    Message
+                </th>
+
+            </tr>
+            </thead>
+            <tbody>
+
+
+            <tr ng-repeat-start="ps in providersearches " ng-if="0"></tr>
+            <!-- First result in the list, show regularly -->
+            <tr>
+                <td class="text-left">
+                    {{ ps.provider }}
+                </td>
+                <td class="text-left">
+                    {{ ps.results }}
+                </td>
+                <td class="text-left">
+                    {{ ps.totalResponseTime }}ms
+                </td>                
+                <td class="text-left">
+                    {{ ps.error }}
+                </td>
+            </tr>
+
+            <tr ng-repeat-end ng-if="0"></tr>
+
+
+            </tbody>
+        </table>
+
+    </div>
+    <div class="col-md-4"></div>
+
+</div>
 
 <div class="row">
     <div class="col-md-2"></div>
