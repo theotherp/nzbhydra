@@ -111,7 +111,12 @@ module.exports = function (grunt) {
 					strictMath: true
 				},
 				files: {
-					'nzbhydra/static/css/bootstrap.css': 'nzbhydra/static/less/bootstrap/bootstrap.less'
+					'nzbhydra/static/lib/bootstrap/bootstrap.css': 'nzbhydra/static/lib/bootstrap/less/bootstrap.less'
+				}
+			},
+			slider: {
+				files: {
+					'nzbhydra/static/lib/seiyria-bootstrap-slider/bootstrap-slider.css': 'nzbhydra/static/lib/seiyria-bootstrap-slider/bootstrap-slider.less'
 				}
 			}
 		},

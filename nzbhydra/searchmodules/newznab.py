@@ -131,8 +131,8 @@ class NewzNab(SearchModule):
         json_result = json.loads(json_response)
         total = int(json_result["channel"]["response"]["@attributes"]["total"])
         offset = int(json_result["channel"]["response"]["@attributes"]["offset"])
-        if "0" == total:
-            return entries
+        if total == 0:
+            return {"entries": entries, "queries": []}
 
         result_items = json_result["channel"]["item"]
         if "title" in result_items:

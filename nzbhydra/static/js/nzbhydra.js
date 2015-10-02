@@ -1,4 +1,4 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['ngRoute', 'angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['ngRoute', 'angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.bootstrap-slider']);
 
 
 nzbhydraapp.run(['$rootScope', '$route', function ($rootScope, $route) {
@@ -195,11 +195,11 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
     $scope.selectedItem = "";
     $scope.selectedQuality = "All qualities";
     $scope.autocompleteLoading = false;
-
     
+
     $scope.isAskById = false; //If true a check box will be shown asking the user if he wants to search by ID 
     $scope.isById = {value: true}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
-    
+
 
     $scope.autocompleteClass = "autocompletePosterMovies";
 
@@ -221,13 +221,13 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
         //title: Will be used for file search
         //value: Will be used as extraInfo (ttid oder tvdb id)
         //poster: url of poster to show
-        
+
         //Don't use autocomplete if checkbox is disabled
         if (!$scope.isById.value) {
-            
+
             return {};
         }
-        
+
         if ($scope.category.indexOf("Movies") > -1) {
             return $http.get('internalapi?t=autocompletemovie', {
                 params: {
@@ -256,16 +256,15 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
 
     $scope.selectAutocompleteItem = function ($item) {
         $scope.selectedItem = $item;
-        
+
         $scope.startSearch($item);
     };
-    
-    
+
 
     $scope.startSearch = function () {
         var uri = new URI("/internalapi");
         if ($scope.category.indexOf("Movies") > -1) {
-                uri.addQuery("t", "moviesearch");
+            uri.addQuery("t", "moviesearch");
             if ($scope.selectedItem.value != undefined) {
                 console.log("moviesearch per imdbid");
                 uri.addQuery("imdbid", $scope.selectedItem.value);
@@ -274,14 +273,14 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
                 console.log("moviesearch per query");
                 uri.addQuery("query", $scope.searchTerm);
             }
-            
+
         } else if ($scope.category.indexOf("TV") > -1) {
             uri.addQuery("t", "tvsearch");
             if ($scope.selectedItem.value != undefined) {
                 uri.addQuery("tvdbid", $scope.selectedItem.value);
-                uri.addQuery("title", $scope.selectedItem.label);    
+                uri.addQuery("title", $scope.selectedItem.label);
             }
-            
+
             if ($scope.searchSeason != "") {
                 uri.addQuery("season", $scope.searchSeason);
             }
@@ -289,20 +288,35 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
                 uri.addQuery("episode", $scope.searchEpisode);
             }
         } else {
-            uri.addQuery("t", "search").addQuery("q", $scope.searchTerm).addQuery("category", $scope.category);
+            uri.addQuery("t", "search").addQuery("query", $scope.searchTerm).addQuery("category", $scope.category);
         }
+
+        if ($scope.minsize != undefined) {
+            uri.addQuery("minsize", $scope.minsize);
+        }
+        if ($scope.maxsize != undefined) {
+            uri.addQuery("maxsize", $scope.maxsize);
+        }
+        if ($scope.minage != undefined) {
+            uri.addQuery("minage", $scope.minage);
+        }
+        if ($scope.maxage != undefined) {
+            uri.addQuery("maxage", $scope.maxage);
+        }
+        
+        
 
         console.log(uri);
         $http.get(uri).then(function (data) {
 
             $scope.results = data.data.results;
             $scope.providersearches = data.data.providersearches;
-            
+
             //Sum up response times of providers from individual api accesses
-            _.each($scope.providersearches, function(ps) {
-               ps.averageResponseTime = _.reduce(ps.api_accesses, function(memo, rp) {
-                   return memo + rp.response_time;
-               }, 0);
+            _.each($scope.providersearches, function (ps) {
+                ps.averageResponseTime = _.reduce(ps.api_accesses, function (memo, rp) {
+                    return memo + rp.response_time;
+                }, 0);
                 ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
             });
         });
@@ -313,12 +327,10 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
     $scope.autocompleteActive = function () {
         return ($scope.category.indexOf("TV") > -1) || ($scope.category.indexOf("Movies") > -1)
     };
-    
-    $scope.seriesSelected = function() {
+
+    $scope.seriesSelected = function () {
         return ($scope.category.indexOf("TV") > -1);
     };
-    
-    
 
 
     $scope.results = [];

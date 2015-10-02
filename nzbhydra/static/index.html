@@ -10,26 +10,30 @@
     <!-- build:css /css/nzbhydra.css -->
     <link href="/static/lib/angular-growl-2/angular-growl.css" rel="stylesheet" media="screen">
     <link href="/static/lib/angular-loadingbar/loading-bar.css" rel="stylesheet" media="screen">
-    <link href="/static/lib/fullcalendar/fullcalendar.css" rel="stylesheet" media="screen">
-    <link href="/static/css/bootstrap.css" rel="stylesheet" media="screen">
-    <link href="/static/lib/fullcalendar/fullcalendar.css" rel="stylesheet" media="screen">
+    <link href="/static/lib/bootstrap/bootstrap.css" rel="stylesheet" media="screen">
     <link href="/static/lib/animate-css/animate.css" rel="stylesheet" media="screen">
     <link href="/static/lib/typicons/typicons.min.css" rel="stylesheet" media="screen">
     <link href="/static/lib/angular-busy/angular-busy.css" rel="stylesheet" media="screen">
+    <link href="/static/lib/seiyria-bootstrap-slider/bootstrap-slider.css" rel="stylesheet" media="screen">
     <link href="/static/css/nzbhydra.css" rel="stylesheet" media="screen">
     <!--endbuild-->
     <link rel="icon" type="image/vnd.microsoft.icon" href="/static/img/crap.ico">
 
 
 </head>
-<body style="text-align: center" ng-controller="SearchController">
-<div class="featurette">
-    <div class="featurette-inner text-center">
-        
-        <form role="search" class="search has-button" ng-submit="searchFiles()">
-            <h3 class="no-margin-top h1">NZB Hydra</h3>
+<body style="text-align: center" ng-controller="SearchController" class="container-fluid">
+<div>
+    <div class="row" >
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
 
-            <div class="input-group">
+            <form class="form-horizontal">
+                <div class="form-group">
+
+                    <label for="inputEmail3" class="col-sm-1 control-label">Search</label>
+
+                    <div class="col-sm-6">
+                        <div class="input-group">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default dropdown-toggle search-category-button" data-toggle="dropdown" aria-expanded="false" id="searchCategoryDropdownButton" ng-cloak>
                         {{ category }} <span class="caret"/>
@@ -47,7 +51,7 @@
                         <li><a href="" class="searchCategoryButton" data-searchcategory="Audio MP3" ng-click="toggle('Audio MP3')">Audio MP3</a></li>
                         <li><a href="" class="searchCategoryButton" data-searchcategory="Console" ng-click="toggle('Console')">Console</a></li>
                         <li><a href="" class="searchCategoryButton" data-searchcategory="PC" ng-click="toggle('PC')">PC</a></li>
-                        <li><a href="" class="searchCategoryButton" data-searchcategory="XXX" ng-click="toggle('XXX')">XXX</a></li>                        
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="XXX" ng-click="toggle('XXX')">XXX</a></li>
                     </ul>
                 </span>
                 <span class="input-group-btn" ng-if="seriesSelected()">
@@ -66,165 +70,247 @@
                        tooltip-trigger="mouseenter"
                         >
                 </span>
-                <span class="input-group-btn by-id-checkbox" ng-if="isAskById" 
+                <span class="input-group-btn by-id-checkbox" ng-if="isAskById"
                       tooltip="If enabled the search is done using an ID from TheTVDB or IMDB. The ID is retrieved using autocomplete."
                       tooltip-placement="top"
                       tooltip-trigger="mouseenter">
                 <input type="checkbox" name="by-id" id="by-id" style="width:40px;" ng-model="isById.value">
                     </span>
 
-                <script type="text/ng-template" id="movieAutocompleteEntry">
-                    <a>{{ match.label }}</a>
-                </script>
-                <input type="search" ngtype="search" ng-model="searchTerm" placeholder="Search" typeahead-min-length="2" typeahead-wait-ms="typeAheadWait"
-                       typeahead="item as item.label for item in getAutocomplete($viewValue)"
-                       typeahead-template-url="movieAutocompleteEntry" class="form-control"
-                       ng-class="{'autocompleteLoading': (loadingItems && autocompleteActive), 'search-border': !seriesSelected}"
-                       typeahead-loading="loadingItems" typeahead-on-select="selectAutocompleteItem($item)" ng-enter="submitSearch(selectedItem)" class="form-control"
-                >
+                            <script type="text/ng-template" id="movieAutocompleteEntry">
+                                <a>{{ match.label }}</a>
+                            </script>
+                            <input type="search" ngtype="search" ng-model="searchTerm" placeholder="Search" typeahead-min-length="2" typeahead-wait-ms="typeAheadWait"
+                                   typeahead="item as item.label for item in getAutocomplete($viewValue)"
+                                   typeahead-template-url="movieAutocompleteEntry" class="form-control"
+                                   ng-class="{'autocompleteLoading': (loadingItems && autocompleteActive), 'search-border': !seriesSelected}"
+                                   typeahead-loading="loadingItems" typeahead-on-select="selectAutocompleteItem($item)" ng-enter="submitSearch(selectedItem)" class="form-control col-lg-10"
+                                    >
 
-            </div>
-        </form>
-
-    </div>
-</div>
-
-
-<div class="row">
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-        <table class="table" style="margin-bottom: 0px">
-            <thead>
-            <tr>
-                <th class="text-left">
-                    Provider
-                </th>
-                <th class="text-left">
-                    Results
-                </th>
-                <th class="text-left">
-                    Avg. response time
-                </th>
-                <th class="text-left">
-                    Message
-                </th>
-
-            </tr>
-            </thead>
-            <tbody>
-            
-            <tr ng-repeat-start="ps in providersearches " ng-if="0"></tr>
-            <!-- First result in the list, show regularly -->
-            <tr>
-                <td class="text-left">
-                    {{ ps.provider }}
-                </td>
-                <td class="text-left">
-                    {{ ps.results }}
-                </td>
-                <td class="text-left">
-                    {{ ps.averageResponseTime }}ms
-                </td>                
-                <td class="text-left">
-                    {{ ps.error }}
-                </td>
-            </tr>
-
-            <tr ng-repeat-end ng-if="0"></tr>
-            </tbody>
-        </table>
-
-    </div>
-    <div class="col-md-4"></div>
-
-</div>
-
-<div class="row">
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
-        <table class="table" style="margin-bottom: 0px">
-            <thead>
-            <tr>
-                <th class=" text-left" ng-click="setSorting('title', false)">
-                    Title <span ng-show="predicate=='title'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
-                    <br>
-                    <input type="text"/>
-                </th>
-                <th class=" text-left" ng-click="setSorting('provider', true)">
-                    <div style="width: 80px;">
-                        Provider <span ng-show="predicate=='provider'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
-                    </div>
-                </th>
-                <th class=" text-left" ng-click="setSorting('category', false)">
-                    <div style="width: 80px;">
-                        Category <span ng-show="predicate=='category'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
-                    </div>
-                </th>
-                <th class=" text-left" ng-click="setSorting('size', true)">
-                    <div style="width: 50px;">
-                        Size <span ng-show="predicate=='size'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
-                    </div>
-                </th>
-                <th class=" text-left" ng-click="setSorting('age', false)">
-                    <div style="width: 50px;">
-                        Age <span ng-show="predicate=='age'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
-                    </div>
-                </th>
-                <th class=" text-left">
-                    <div style="width: 100px;">
-                    Links
                         </div>
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            
-            <tr>
-                <td class="c text-left">
-                     Avengers.Gemeinsam.unbesiegbar.S02E04.Geister.der.Vergangenheit.GERMAN.DL.Dubbed.WS.720p.WebHD.h264-CNHD 
-                </td>
-                <td class=" text-left">
-                    Aprovider
-                </td>
-                <td class=" text-left">
-                    Acategory
-                </td>
-                <td class=" text-left">
-                    Asize
-                </td>
-                <td class=" text-left">
-                    Anage
-                </td>
-                <td class=" text-left">
-                    NZB NFO Details
-                </td>
-            </tr>
+                    </div>
+
+                </div>
+
+            </form>
+            <form class="form-horizontal">
+                <div class="form-group">
+
+                    <label for="inputEmail3" class="col-sm-1 control-label">Age</label>
+
+                    <div class="col-sm-2">
+                        <div class="input-group">
+                            <span class="input-group-addon">Min</span>
+                            <input type="text" class="form-control" id="minage" ng-model="minage">
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="input-group">
+                            <span class="input-group-addon">Max</span>
+                            <input type="text" class="form-control" id="maxage" ng-model="maxage">
+                        </div>
+                    </div>
+                    <div class="col-sm-3"></div>
+                </div>
+
+            </form>
+
+            <form class="form-horizontal">
+                <div class="form-group">
+
+                    <label for="inputEmail3" class="col-sm-1 control-label">Size</label>
+
+                    <div class="col-sm-2">
+                        <div class="input-group">
+                            <span class="input-group-addon">Min</span>
+                            <input type="text" class="form-control" id="minsize" ng-model="minsize">
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="input-group">
+                            <span class="input-group-addon">Max</span>
+                            <input type="text" class="form-control" id="maxsize" ng-model="maxsize">
+                        </div>
+                    </div>
+                    <div class="col-sm-3"></div>
+                </div>
+            </form>
+
+            <form class="form-horizontal">
+                <div class="form-group">
+
+                    <label for="inputEmail3" class="col-sm-1 control-label">Providers</label>
+
+                    <div class="col-sm-1">
+                        <div class="input-group">
+                            <input type="checkbox" class="form-control"  >
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="input-group">
+                            <input type="checkbox" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="input-group">
+                            <input type="checkbox" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="input-group">
+                            <input type="checkbox" class="form-control" >
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="input-group">
+                            <input type="checkbox" class="form-control" >
+                        </div>
+                    </div>
+
+                </div>
+            </form>
 
 
-            <tr ng-repeat-start="resultwithduplicates in results | sortResults:predicate:reversed" ng-if="0"></tr>
-            <!-- First result in the list, show regularly -->
-            <tr ng-repeat="result in resultwithduplicates" ng-if="$index == 0">
-                <td class="c text-left">
-                    {{ result.title }}
-                </td>
-                <td class=" text-left">
-                    {{ result.provider }}
-                </td>
-                <td class=" text-left">
-                    {{ result.category }}
-                </td>
-                <td class=" text-left">
-                    {{ result.size | bytes }}
-                </td>
-                <td class=" text-left">
-                    {{ result.age_days }}d
-                </td>
-                <td class=" text-left">
-                    NZB NFO Details
-                </td>
-            </tr>
-            <!-- Show all the duplicates of this entry-->
-            <!--
+        </div>
+
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <table class="table" style="margin-bottom: 0px">
+                <thead>
+                <tr>
+                    <th class="text-left">
+                        Provider
+                    </th>
+                    <th class="text-left">
+                        Results
+                    </th>
+                    <th class="text-left">
+                        Avg. response time
+                    </th>
+                    <th class="text-left">
+                        Message
+                    </th>
+
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr ng-repeat-start="ps in providersearches " ng-if="0"></tr>
+                <!-- First result in the list, show regularly -->
+                <tr>
+                    <td class="text-left">
+                        {{ ps.provider }}
+                    </td>
+                    <td class="text-left">
+                        {{ ps.results }}
+                    </td>
+                    <td class="text-left">
+                        {{ ps.averageResponseTime }}ms
+                    </td>
+                    <td class="text-left">
+                        {{ ps.error }}
+                    </td>
+                </tr>
+
+                <tr ng-repeat-end ng-if="0"></tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="col-md-4"></div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <table class="table" style="margin-bottom: 0px">
+                <thead>
+                <tr>
+                    <th class=" text-left" ng-click="setSorting('title', false)">
+                        Title <span ng-show="predicate=='title'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                        <br>
+                        <input type="text"/>
+                    </th>
+                    <th class=" text-left" ng-click="setSorting('provider', true)">
+                        <div style="width: 80px;">
+                            Provider <span ng-show="predicate=='provider'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                        </div>
+                    </th>
+                    <th class=" text-left" ng-click="setSorting('category', false)">
+                        <div style="width: 80px;">
+                            Category <span ng-show="predicate=='category'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                        </div>
+                    </th>
+                    <th class=" text-left" ng-click="setSorting('size', true)">
+                        <div style="width: 50px;">
+                            Size <span ng-show="predicate=='size'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                        </div>
+                    </th>
+                    <th class=" text-left" ng-click="setSorting('age', false)">
+                        <div style="width: 50px;">
+                            Age <span ng-show="predicate=='age'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                        </div>
+                    </th>
+                    <th class=" text-left">
+                        <div style="width: 100px;">
+                            Links
+                        </div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr>
+                    <td class="c text-left">
+                        Avengers.Gemeinsam.unbesiegbar.S02E04.Geister.der.Vergangenheit.GERMAN.DL.Dubbed.WS.720p.WebHD.h264-CNHD
+                    </td>
+                    <td class=" text-left">
+                        Aprovider
+                    </td>
+                    <td class=" text-left">
+                        Acategory
+                    </td>
+                    <td class=" text-left">
+                        Asize
+                    </td>
+                    <td class=" text-left">
+                        Anage
+                    </td>
+                    <td class=" text-left">
+                        NZB NFO Details
+                    </td>
+                </tr>
+
+
+                <tr ng-repeat-start="resultwithduplicates in results | sortResults:predicate:reversed" ng-if="0"></tr>
+                <!-- First result in the list, show regularly -->
+                <tr ng-repeat="result in resultwithduplicates" ng-if="$index == 0">
+                    <td class="c text-left">
+                        {{ result.title }}
+                    </td>
+                    <td class=" text-left">
+                        {{ result.provider }}
+                    </td>
+                    <td class=" text-left">
+                        {{ result.category }}
+                    </td>
+                    <td class=" text-left">
+                        {{ result.size | bytes }}
+                    </td>
+                    <td class=" text-left">
+                        {{ result.age_days }}d
+                    </td>
+                    <td class=" text-left">
+                        NZB NFO Details
+                    </td>
+                </tr>
+                <!-- Show all the duplicates of this entry-->
+                <!--
             <tr ng-repeat="result in resultwithduplicates" ng-if="$index > 0" ng-show="isShowDuplicates">
                 <td class="col-md-6 text-left td-embedded">
                 </td>
@@ -246,17 +332,17 @@
             </tr>
             -->
 
-            <tr ng-repeat-end ng-if="0"></tr>
+                <tr ng-repeat-end ng-if="0"></tr>
 
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
 
 
+        </div>
+        <div class="col-md-2"></div>
     </div>
-    <div class="col-md-2"></div>
 </div>
-
 
 </body>
 <!-- build:js /js/static/libs.js -->
@@ -270,7 +356,11 @@
 <script src="/static/lib/angular-filter/angular-filter.js"></script>
 <script src="/static/lib/angular-growl-2/angular-growl.js"></script>
 <script src="/static/lib/angular-loadingbar/loading-bar.js"></script>
+
+
 <script src="/static/lib/bootstrap/bootstrap.js"></script>
+<script src="/static/lib/seiyria-bootstrap-slider/bootstrap-slider.min.js"></script>
+<script src="/static/lib/angular-bootstrap-slider/slider.js"></script>
 <script src="/static/lib/underscore/underscore.js"></script>
 <script src="/static/lib/momentjs/moment.js"></script>
 <script src="/static/lib/filesize/filesize.js"></script>
@@ -281,7 +371,6 @@
 
 <!-- build:js /js/nzbhydra.js -->
 <script src="/static/js/filters.js"></script>
-<script src="/static/js/controllers.js"></script>
 <script src="/static/js/nzbhydra.js"></script>
 <!--endbuild-->
 </html>
