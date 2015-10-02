@@ -97,7 +97,7 @@ def search(query, categories=None):
     # make a general query, probably only done by the gui
 
 
-def pick_providers_and_generate_queries(search_function, query=None, identifier_key=None, identifier_value=None, categories=None, **kwargs): 
+def pick_providers_and_generate_queries(search_function, query=None, identifier_key=None, identifier_value=None, category=None, **kwargs): 
     queries_by_provider = {}
     picked_providers = pick_providers(query_supplied=query is not None or identifier_key is not None, identifier_key=identifier_key, allow_query_generation=True)
 
@@ -116,7 +116,7 @@ def pick_providers_and_generate_queries(search_function, query=None, identifier_
 
                 # and then finally use the generated query
                 for p in providers_that_allow_query_generation:
-                    queries = getattr(p, search_function)(generated_query=generated_query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, **kwargs)
+                    queries = getattr(p, search_function)(generated_query=generated_query, identifier_key=identifier_key, identifier_value=identifier_value, category=category, **kwargs)
 
                     dbentry = ProviderSearch(provider=p.provider, query=generated_query, query_generated=True, identifier_key=identifier_key, identifier_value=identifier_value, categories=json.dumps(categories))
                     queries_by_provider[p] = {"queries": queries, "dbsearchentry": dbentry}
@@ -125,22 +125,22 @@ def pick_providers_and_generate_queries(search_function, query=None, identifier_
 
     # Get movie search urls from those providers that support search by id
     for p in [x for x in picked_providers if x not in providers_that_allow_query_generation]:
-        queries = getattr(p, search_function)(query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, **kwargs)
-        dbentry = ProviderSearch(provider=p.provider, query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=json.dumps(categories))
+        queries = getattr(p, search_function)(query=query, identifier_key=identifier_key, identifier_value=identifier_value, category=category, **kwargs)
+        dbentry = ProviderSearch(provider=p.provider, query=query, identifier_key=identifier_key, identifier_value=identifier_value, category=json.dumps(category))
         queries_by_provider[p] = {"queries": queries, "dbsearchentry": dbentry}
 
     return queries_by_provider
 
 
-def search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
+def search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
     logger.info("Searching for show")  # todo:extend
-    queries_by_provider = pick_providers_and_generate_queries("get_showsearch_urls", *(), query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, season=season, episode=episode)
+    queries_by_provider = pick_providers_and_generate_queries("get_showsearch_urls", *(), query=query, identifier_key=identifier_key, identifier_value=identifier_value, category=category, season=season, episode=episode)
     return execute_search_queries(queries_by_provider)
 
 
-def search_movie(query=None, imbdbid=None, categories=None):
+def search_movie(query=None, imdbid=None, category=None):
     logger.info("Searching for movie")  # todo:extend
-    queries_by_provider = pick_providers_and_generate_queries("get_moviesearch_urls", *(), query=query, identifier_key="imdbid" if imbdbid is not None else None, identifier_value=imbdbid, categories=categories)
+    queries_by_provider = pick_providers_and_generate_queries("get_moviesearch_urls", *(), query=query, identifier_key="imdbid" if imdbid is not None else None, identifier_value=imdbid, category=category)
     return execute_search_queries(queries_by_provider)
 
 

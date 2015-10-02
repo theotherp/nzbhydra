@@ -88,13 +88,12 @@ class MyTestCase(unittest.TestCase):
         assert "t=tvsearch" in query
         assert "o=json" in query
         
-        queries = nzbsorg.get_showsearch_urls(categories=[5432])
+        queries = nzbsorg.get_showsearch_urls(category="All")
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
         assert "apikey=apikeynzbsorg" in query
         assert "t=tvsearch" in query
-        assert "cat=5432" in query
         assert "o=json" in query
         
         queries = nzbsorg.get_showsearch_urls(identifier_key="rid", identifier_value="8511")
@@ -136,7 +135,7 @@ class MyTestCase(unittest.TestCase):
         assert "imdbid=12345678" in query
         assert "o=json" in query
         
-        queries = nzbsorg.get_moviesearch_urls(identifier_key="imdbid", identifier_value="12345678", categories=[5432])
+        queries = nzbsorg.get_moviesearch_urls(identifier_key="imdbid", identifier_value="12345678", category="Movies")
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
@@ -144,7 +143,7 @@ class MyTestCase(unittest.TestCase):
         assert "t=movie" in query
         assert "imdbid=12345678" in query
         assert "o=json" in query
-        assert "cat=5432" in query
+        assert "cat=2000" in query
         
         
     @responses.activate

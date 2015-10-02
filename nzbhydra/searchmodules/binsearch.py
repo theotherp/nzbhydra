@@ -33,16 +33,16 @@ class Binsearch(SearchModule):
                                         })
         return url
 
-    def get_search_urls(self, query=None, generated_query=None, categories=None):
+    def get_search_urls(self, query=None, generated_query=None, category=None):
         return [self.build_base_url().add({"q": query if query else generated_query}).tostr()]
 
-    def get_showsearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
+    def get_showsearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
         if query is None and generated_query is None:
             raise ProviderIllegalSearchException("Attempted to search without a query although this provider only supports query-based searches", self)
         
         urls = []
         if query:
-            urls = [self.get_search_urls(query, categories)]
+            urls = [self.get_search_urls(query, category)]
         if generated_query and season is not None:
             #Restrict query if generated and season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
             #binsearch doesn't seem to support "or" in searches, so create separate queries
@@ -54,10 +54,10 @@ class Binsearch(SearchModule):
                 urls.extend(self.get_search_urls(generated_query='%s "season %d"' % (generated_query, season)))
         return urls
 
-    def get_moviesearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, categories=None):
+    def get_moviesearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, category=None):
         if query is None and generated_query is None:
             raise ProviderIllegalSearchException("Attempted to search without a query although this provider only supports query-based searches", self)
-        return self.get_search_urls(query if query else generated_query, categories)
+        return self.get_search_urls(query if query else generated_query, category)
 
     def process_query_result(self, html, query):
         entries = []

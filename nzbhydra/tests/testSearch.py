@@ -12,13 +12,11 @@ import requests
 import responses
 from furl import furl
 
-import search
-import config
-import search_module
-from tests import mockbuilder
-import database
-from database import Provider
-from tests.db_prepare import set_and_drop
+from nzbhydra import search, config, search_module, database
+from nzbhydra.tests import mockbuilder
+
+from nzbhydra.database import Provider
+from nzbhydra.tests.db_prepare import set_and_drop
 
 logging.getLogger("root").addHandler(logging.StreamHandler(sys.stdout))
 logging.getLogger("root").setLevel("DEBUG")
@@ -45,7 +43,7 @@ class MyTestCase(unittest.TestCase):
     config.cfg["searching.timeout"] = 5
 
     def test_search_module_loading(self):
-        self.assertEqual(4, len(search.search_modules))
+        self.assertEqual(5, len(search.search_modules))
 
     def test_read_providers(self):
         providers = search.read_providers_from_config()
@@ -54,21 +52,16 @@ class MyTestCase(unittest.TestCase):
     def test_pick_providers(self):
         search.read_providers_from_config()
         Provider().select().count()
-        providers = search.pick_providers(search_type="general")
+        providers = search.pick_providers()
         self.assertEqual(3, len(providers))
 
         # Providers with tv search and which support queries (actually searching for particular releases)
-        providers = search.pick_providers(search_type="tv", query_supplied=True)
+        providers = search.pick_providers(query_supplied=True)
         self.assertEqual(3, len(providers))
 
         # Providers with tv search, including those that only provide a list of latest releases (womble) but excluding the one that needs a query (nzbclub) 
-        providers = search.pick_providers(search_type="tv", query_supplied=False)
+        providers = search.pick_providers(query_supplied=False)
         self.assertEqual(3, len(providers))
-
-        providers = search.pick_providers(search_type="movie")
-        self.assertEqual(2, len(providers))
-        self.assertEqual("NZBs.org", providers[0].name)
-        self.assertEqual("NZBClub", providers[1].name)
 
         providers = search.pick_providers(identifier_key="tvdbid")
         self.assertEqual(2, len(providers))
@@ -108,7 +101,6 @@ class MyTestCase(unittest.TestCase):
         assert "t=search" in web_args
         assert "apikey=apikeynzbsorg" in web_args
         assert "q=aquery" in web_args
-        self.assertEqual(7, len(web_args))  # other args: o=json & extended=1 & offset & limit
 
     @responses.activate
     def testTvSearchProviderSelectionAndUrlBuilding(self):
@@ -219,7 +211,7 @@ class MyTestCase(unittest.TestCase):
         url = args[1]["queries"][0]
         assert "nzbclub" in url
         web_args = url.split("?")[1].split("&")
-        assert "q=Breaking+Bad" in web_args
+        assert "q=Breaking+Bad+s01e02+or+Breaking+Bad+1x02" in web_args
 
         url = args[2]["queries"][0]
         assert "nzbs" in url
@@ -241,12 +233,12 @@ class MyTestCase(unittest.TestCase):
         search.search_movie()
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(1, len(args))  # only nzbsorg and supports general movie search without query (in this test
+        self.assertEqual(3, len(args))
 
         url = args[0]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "t=movie" in web_args
-        assert "apikey=apikeynzbsorg" in web_args
+        assert "apikey=apikeydognzb" in web_args
         assert "cat=2000" in web_args  # no category provided, so we just added 2000
         
 
@@ -255,14 +247,16 @@ class MyTestCase(unittest.TestCase):
         search.search_movie(query="aquery")
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(2, len(args))
+        self.assertEqual(3, len(args))
 
         url = args[0]["queries"][0]
-        web_args = url.split("?")[1].split("&")
-        assert "nzbclub" in url
-        assert "q=aquery" in web_args
+        assert "dognzb" in url
 
         url = args[1]["queries"][0]
+        assert "nzbclub" in url
+        
+
+        url = args[2]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "t=search" in web_args
         assert "q=aquery" in web_args
@@ -276,17 +270,20 @@ class MyTestCase(unittest.TestCase):
         responses.add(responses.GET, url_re,
                       body=json.dumps({"Title": "American Beauty"}), status=200,
                       content_type='application/json')
-        search.search_movie(identifier_key="imdbid", identifier_value="tt0169547")
+        search.search_movie(imdbid="tt0169547")
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(2, len(args))  # 2 providers
+        self.assertEqual(3, len(args))  # 2 providers
 
         url = args[0]["queries"][0]
+        assert "dognzb" in url
+        
+        url = args[1]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "nzbclub" in url
         assert "q=American+Beauty" in web_args
 
-        url = args[1]["queries"][0]
+        url = args[2]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "t=movie" in web_args
         assert "imdbid=tt0169547" in web_args
@@ -295,23 +292,23 @@ class MyTestCase(unittest.TestCase):
 
 
         # movie search with imdbid and category
-        search.search_movie(identifier_key="imdbid", identifier_value="tt0169547", categories=[2040])
+        search.search_movie(imdbid="tt0169547", category="Movies SD")
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(2, len(args))  # 2 providers
+        self.assertEqual(3, len(args))  # 2 providers
 
-        url = args[0]["queries"][0]
+        url = args[1]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "nzbclub" in url
         assert "q=American+Beauty" in web_args
         # todo category transformation for query based providers
 
-        url = args[1]["queries"][0]
+        url = args[2]["queries"][0]
         web_args = url.split("?")[1].split("&")
         assert "t=movie" in web_args
         assert "imdbid=tt0169547" in web_args
         assert "apikey=apikeynzbsorg" in web_args
-        assert "cat=2040" in web_args
+        assert "cat=2030" in web_args
 
         # Finally a test where we disable query generation
         # movie search with imdbid, so a query should be generated for and used by nzbclub
@@ -320,7 +317,7 @@ class MyTestCase(unittest.TestCase):
         responses.add(responses.GET, url_re,
                       body={"Title": "American Beauty"}, status=200,
                       content_type='application/json')
-        search.search_movie(identifier_key="imdbid", identifier_value="tt0169547")
+        search.search_movie(imdbid="tt0169547")
         args = search.execute_search_queries.call_args[0][0]
         args = [args[y] for y in sorted(args, key=lambda x: x.name)]
         self.assertEqual(1, len(args))  # Only nzbs,org
@@ -353,8 +350,8 @@ class MyTestCase(unittest.TestCase):
         # movie search without any specifics (return all latest releases)
         search.read_providers_from_config()
 
-        from tests.testLogger import LoggingCaptor
-        from log import setup_custom_logger
+        from nzbhydra.tests.testLogger import LoggingCaptor
+        from nzbhydra.log import setup_custom_logger
         logger = setup_custom_logger("root")
         logging_captor = LoggingCaptor()
         logger.addHandler(logging_captor)

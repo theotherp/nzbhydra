@@ -19,21 +19,21 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(1, len(urls))
         self.assertEqual("http://127.0.0.1:5001/womble?fr=false", urls[0])
 
-        urls = self.w.get_showsearch_urls(categories=[5000])
+        urls = self.w.get_showsearch_urls(category=[5000])
         self.assertEqual(1, len(urls))
         self.assertEqual("http://127.0.0.1:5001/womble?fr=false", urls[0])
 
-        urls = self.w.get_showsearch_urls(categories=[5030])
+        urls = self.w.get_showsearch_urls(category=[5030])
         self.assertEqual(2, len(urls))
         self.assertEqual("http://127.0.0.1:5001/womble?fr=false&sec=tv-dvd", urls[0])
         self.assertEqual("http://127.0.0.1:5001/womble?fr=false&sec=tv-sd", urls[1])
 
-        urls = self.w.get_showsearch_urls(categories=[5040])
+        urls = self.w.get_showsearch_urls(category=[5040])
         self.assertEqual(2, len(urls))
         self.assertEqual("http://127.0.0.1:5001/womble?fr=false&sec=tv-x264", urls[0])
         self.assertEqual("http://127.0.0.1:5001/womble?fr=false&sec=tv-hd", urls[1])
 
-        urls = self.w.get_showsearch_urls(categories=[5030, 5040])
+        urls = self.w.get_showsearch_urls(category=[5030, 5040])
         self.assertEqual(4, len(urls))
         self.assertEqual("http://127.0.0.1:5001/womble?fr=false&sec=tv-dvd", urls[0])
         self.assertEqual("http://127.0.0.1:5001/womble?fr=false&sec=tv-sd", urls[1])

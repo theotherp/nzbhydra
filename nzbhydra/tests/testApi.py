@@ -1,13 +1,13 @@
 from pprint import pprint
 import unittest
-import config
+from nzbhydra import config
 
-from nzb_search_result import NzbSearchResult
+from nzbhydra.nzb_search_result import NzbSearchResult
 
 
 class MyTestCase(unittest.TestCase):
     def testTestForDuplicate(self):
-        from api import test_for_duplicate
+        from nzbhydra.api import test_for_duplicate
 
         config.cfg.section("ResultProcessing")["duplicateSizeThresholdInPercent"] = 1
         age_threshold = config.cfg.section("ResultProcessing").get("duplicateAgeThreshold", 120) #three hours in ms
@@ -59,7 +59,7 @@ class MyTestCase(unittest.TestCase):
 
 
     def testFindDuplicates(self):
-        from api import find_duplicates
+        from nzbhydra.api import find_duplicates
     
         config.cfg.section("ResultProcessing")["duplicateSizeThresholdInPercent"] = 1
         age_threshold = 120

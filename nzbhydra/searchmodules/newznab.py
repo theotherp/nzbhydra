@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 import arrow
 from requests import RequestException
 import requests
+
 from furl import furl
 
 from nzbhydra.database import ProviderApiAccess
@@ -18,20 +19,22 @@ from nzbhydra.search_module import SearchModule
 
 logger = logging.getLogger('root')
 
-categories_to_newznab = {'Console': [1000],
-                         'Movie': [2000],
-                         'Movie_HD': [2040, 2050, 2060],
-                         'Movie_SD': [2030],
-                         'Audio': [3000],
-                         'Audio_FLAC': [3040],
-                         'Audio_MP3': [3010],
-                         'PC': [4000],
-                         'TV': [5000],
-                         'TV_SD': [5030],
-                         'TV_HD': [5040],
-                         'XXX': [6000],
-                         'Other': [7000]
-                         }
+categories_to_newznab = {
+    'All': [],
+    'Movies': [2000],
+    'Movies HD': [2040, 2050, 2060],
+    'Movies SD': [2030],
+    'TV': [5000],
+    'TV SD': [5030],
+    'TV HD': [5040],
+    'Audio': [3000],
+    'Audio FLAC': [3040],
+    'Audio MP3': [3010],
+    'Console': [1000],
+    'PC': [4000],
+    'XXX': [6000],
+    'Other': [7000]
+}
 
 
 def get_age_from_pubdate(pubdate):
@@ -42,6 +45,14 @@ def get_age_from_pubdate(pubdate):
     pubdate_utc = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(email.utils.mktime_tz(email.utils.parsedate_tz(pubdate))))
     age_days = int(dt.days)
     return epoch, pubdate_utc, int(age_days)
+
+
+def map_category(category):
+    #If we know this category we return a list of newznab categories
+    if category in categories_to_newznab.keys():
+        return categories_to_newznab[category]
+    #If not we return an empty list so that we search in all categories
+    return []
 
 
 class NewzNab(SearchModule):
@@ -59,21 +70,24 @@ class NewzNab(SearchModule):
     def __repr__(self):
         return "Provider: %s" % self.name
 
-    def build_base_url(self, action, o="json", extended=1):
+    def build_base_url(self, action, category, o="json", extended=1):
         url = furl(self.provider.settings.get("query_url")).add({"apikey": self.provider.settings.get("apikey"), "o": o, "extended": extended, "t": action, "limit": self.limit, "offset": 0})
+        
+        url.add({"cat": ",".join(str(x) for x in map_category(category))})
         return url
 
-    def get_search_urls(self, query=None, categories=None):
-        f = self.build_base_url("search")
+    def get_search_urls(self, query=None, generated_query=None, category=None):
+        f = self.build_base_url("search", "All")
         if query is not None:
             f = f.add({"q": query})
-        if categories is not None:
-            f.add({"cat": ",".join(str(x) for x in categories)})
         return [f.url]
 
-    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, categories=None, season=None, episode=None, ):
+    def get_showsearch_urls(self, query=None, generated_query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
+        if category is None:
+            category = "TV"
+        
         if query is None:
-            url = self.build_base_url("tvsearch")
+            url = self.build_base_url("tvsearch", category)
             if identifier_key is not None:
                 url.add({identifier_key: identifier_value})
             if episode is not None:
@@ -81,27 +95,19 @@ class NewzNab(SearchModule):
             if season is not None:
                 url.add({"season": season})
         else:
-            url = self.build_base_url("search").add({"q": query})
-
-        if categories is None:
-            categories = [5000]
-
-        url.add({"cat": ",".join(str(x) for x in categories)})
+            url = self.build_base_url("search", category).add({"q": query})
 
         return [url.url]
 
-    def get_moviesearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, categories=None):
+    def get_moviesearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, category=None):
+        if category is None:
+            category = "Movies"
         if query is None:
-            url = self.build_base_url("movie")
+            url = self.build_base_url("movie", category)
             if identifier_key is not None:
                 url.add({identifier_key: identifier_value})
         else:
-            url = self.build_base_url("search").add({"q": query})
-
-        if categories is None:
-            categories = [2000]
-            
-        url.add({"cat": ",".join(str(x) for x in categories)})
+            url = self.build_base_url("search", category).add({"q": query})
 
         return [url.url]
 
@@ -176,7 +182,7 @@ class NewzNab(SearchModule):
 
     def get_nfo(self, guid):
         # try to get raw nfo. if it is xml the provider doesn't actually return raw nfos (I'm looking at you, DOGNzb)
-        url = self.build_base_url("getnfo", o="xml", extended=0).add({"id": guid})
+        url = self.build_base_url("getnfo", "All", o="xml", extended=0).add({"id": guid})
         papiaccess = ProviderApiAccess(provider=self.provider, type="nfo")
         try:
             response = requests.get(url)

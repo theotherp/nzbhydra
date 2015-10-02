@@ -34,10 +34,10 @@ class NzbClub(SearchModule):
         url = furl(self.query_url).add({"ig": "2", "rpp": self.max_results, "st": 5, "ns": 1, "sn": 1}) #I need to find out wtf these values are
         return url
 
-    def get_search_urls(self, query=None, categories=None):
+    def get_search_urls(self, query=None, generated_query=None, category=None):
         return [self.build_base_url().add({"q": query}).tostr()]
 
-    def get_showsearch_urls(self, query=None, generated_query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
+    def get_showsearch_urls(self, query=None, generated_query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
         if query is None and generated_query is None:
             raise ProviderIllegalSearchException("Attempted to search without a query although this provider only supports query-based searches", self)
         if generated_query and season is not None:
@@ -46,13 +46,13 @@ class NzbClub(SearchModule):
                 generated_query = "%s s%02de%02d or %s %dx%02d" % (generated_query, season, episode, generated_query, season, episode)
             else:
                 generated_query = '%s s%02d or %s "season %d"' % (generated_query, season, generated_query, season)
-        return self.get_search_urls(query if query else generated_query, categories)
+        return self.get_search_urls(query if query else generated_query, category)
 
 
-    def get_moviesearch_urls(self, query=None, generated_query=None, identifier_key=None, identifier_value=None, categories=None):
+    def get_moviesearch_urls(self, query=None, generated_query=None, identifier_key=None, identifier_value=None, category=None):
         if query is None and generated_query is None:
             raise ProviderIllegalSearchException("Attempted to search without a query although this provider only supports query-based searches", self)
-        return self.get_search_urls(query if query else generated_query, categories)
+        return self.get_search_urls(query if query else generated_query, category)
 
     def process_query_result(self, xml, query):
         entries = []

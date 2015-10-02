@@ -14,13 +14,13 @@ class LoggingCaptor(logging.StreamHandler):
 
 class MyTestCase(unittest.TestCase):
     def testThatSensitiveDataIsRemoved(self):
-        from config import cfg
+        from nzbhydra.config import cfg
         
         cfg.section("main")["apikey"] = "testapikey"
         cfg.section("main")["username"] = "asecretusername"
         cfg.section("main")["password"] = "somepassword"
         
-        from log import setup_custom_logger
+        from nzbhydra.log import setup_custom_logger
         logger = setup_custom_logger("test")
         logging_captor = LoggingCaptor()
         logger.addHandler(logging_captor)
