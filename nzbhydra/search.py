@@ -112,7 +112,7 @@ def search_show(internal, query=None, identifier_key=None, identifier_value=None
     dbsearch.save()
     providers_to_call = pick_providers(query_supplied=True if query is not None else False, identifier_key=identifier_key, category=category, internal=internal)
 
-    results_by_provider = start_search_futures(providers_to_call, "search_show", query=query, identifier_key=identifier_key, identifier_value=identifier_value, title=None, season=season, episode=episode, category=category)
+    results_by_provider = start_search_futures(providers_to_call, "search_show", query=query, identifier_key=identifier_key, identifier_value=identifier_value, title=title, season=season, episode=episode, category=category)
     for i in results_by_provider.values():
         providersearchentry = i["providersearchdbentry"]
         providersearchentry.search = dbsearch
@@ -122,7 +122,7 @@ def search_show(internal, query=None, identifier_key=None, identifier_value=None
 
 def search_movie(internal, query=None, imdbid=None, title=None, category=None):
     logger.info("Searching for movie")  # todo:extend
-    dbsearch = Search(internal=internal, query=query, category=category, identifier_key="imdbid" if imdbid is not None else None, identifier_value = imdbid if imdbid is not None else None)
+    dbsearch = Search(internal=internal, query=query, category=category, identifier_key="imdbid" if imdbid is not None else None, identifier_value=imdbid if imdbid is not None else None)
     dbsearch.save()
     providers_to_call = pick_providers(query_supplied=True if query is not None else False, identifier_key="imdbid" if imdbid is not None else None, category=category, internal=internal)
 
@@ -141,16 +141,22 @@ def execute(provider, search_function, **kwargs):
 def start_search_futures(providers_to_call, search_function, **kwargs):
     search_results_by_provider = {}
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(providers_to_call)) as executor:
         futures = []
         providers_by_future = {}
+        count = 1
         for provider in providers_to_call:
             future = executor.submit(execute, provider, search_function, **kwargs)
             futures.append(future)
             providers_by_future[future] = provider
+            logger.debug("Added %d of %d calls to executor" % (count, len(providers_to_call)))
+            count += 1
+        count = 1
         for f in concurrent.futures.as_completed(futures):
             results = f.result()
             search_results_by_provider[providers_by_future[f]] = results
+            logger.debug("Retrieved %d of %d calls from executor" % (count, len(futures)))
+            count += 1
 
     return search_results_by_provider
 

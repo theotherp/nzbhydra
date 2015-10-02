@@ -76,8 +76,7 @@ class NzbClub(SearchModule):
             entry.link = url.attrib["url"]
             entry.size = int(url.attrib["length"])
             entry.provider = self.name
-            #todo category
-            entry.category = 0 #undefined
+            entry.category = "N/A"
                 
             entry.guid = elem.find("guid").text
             

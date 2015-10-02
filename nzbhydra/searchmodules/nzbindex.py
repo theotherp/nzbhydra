@@ -51,6 +51,7 @@ class NzbIndex(SearchModule):
         return self.get_search_urls(query)
 
     def process_query_result(self, xml, query):
+        
         entries = []
         try:
             tree = ET.fromstring(xml)
@@ -77,8 +78,7 @@ class NzbIndex(SearchModule):
             entry.link = url.attrib["url"]
             entry.size = int(url.attrib["length"])
             entry.provider = self.name
-            #todo category
-            entry.category = 0 #undefined
+            entry.category = "N/A"
                 
             entry.guid = elem.find("guid").text
             
@@ -89,7 +89,6 @@ class NzbIndex(SearchModule):
             entry.age_days = (arrow.utcnow() - pubdate).days
              
             entries.append(entry)
-            
         return {"entries": entries, "queries": []}
 
 

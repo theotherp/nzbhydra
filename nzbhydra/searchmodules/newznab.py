@@ -135,7 +135,7 @@ class NewzNab(SearchModule):
             entry.title = item["title"]
             entry.link = item["link"]
             entry.pubDate = item["pubDate"]
-            pubdate = arrow.get(entry.pubDate, '"ddd, DD MMM YYYY HH:mm:ss Z')
+            pubdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
             entry.epoch = pubdate.timestamp
             entry.pubdate_utc = str(pubdate)
             entry.age_days = (arrow.utcnow() - pubdate).days
@@ -143,7 +143,7 @@ class NewzNab(SearchModule):
             entry.provider = self.name
             entry.attributes = []
 
-            entry.categories = []
+            categories = []
             for i in item["attr"]:
                 if i["@attributes"]["name"] == "size":
                     entry.size = int(i["@attributes"]["value"])
@@ -151,12 +151,20 @@ class NewzNab(SearchModule):
                 elif i["@attributes"]["name"] == "guid":
                     entry.guid = i["@attributes"]["value"]
                 elif i["@attributes"]["name"] == "category":
-                    entry.categories.append(int(i["@attributes"]["value"]))
+                    categories.append(int(i["@attributes"]["value"]))
                 elif i["@attributes"]["name"] == "poster":
                     entry.poster = (i["@attributes"]["value"])
                 # Store all the extra attributes, we will return them later for external apis
                 entry.attributes.append({"name": i["@attributes"]["name"], "value": i["@attributes"]["value"]})
-            entry.categories = sorted(entry.categories)  # Sort to make the general category appear first
+            #Map category. Try to find the most specific category (like 2040), then the more general one (like 2000)
+            categories = sorted(categories, reverse=True)  # Sort to make the most specific category appear first
+            if len(categories) > 0:
+                for k, v in categories_to_newznab.items():
+                    for c in categories:
+                        if c in v:
+                            entry.category = k
+                            break
+                
             entries.append(entry)
 
         offset += self.limit
@@ -169,7 +177,8 @@ class NewzNab(SearchModule):
 
         return {"entries": entries, "queries": []}
 
-    def check_auth(self, body):
+    def check_auth(self, response):
+        body = response.text
         # TODO: unfortunately in case of an auth problem newznab doesn't return json even if requested. So this would be easier/better if we used XML responses instead of json
         if '<error code="100"' in body:
             raise ProviderAuthException("The API key seems to be incorrect.", self)

@@ -98,7 +98,7 @@ class NzbSearchResultSchema(Schema):
     provider = fields.String()
     guid = fields.String()
     size = fields.Integer()
-    categories = fields.String()  # wthy the fuc doesnt this work with fields.Integer(many=True)
+    category = fields.String()  
    
 class ProviderApiAccess(Schema):
     provider = fields.Nested(ProviderSchema, only="name")

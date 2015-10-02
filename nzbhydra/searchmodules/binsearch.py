@@ -4,6 +4,7 @@ import re
 import arrow
 from bs4 import BeautifulSoup
 from furl import furl
+import time
 
 from nzbhydra.exceptions import ProviderIllegalSearchException
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -39,7 +40,7 @@ class Binsearch(SearchModule):
     def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
         urls = []
         if query:
-            urls = [self.get_search_urls(query, category)]
+            urls = self.get_search_urls(query, category)
         if season is not None:
             #Restrict query if  season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
             #binsearch doesn't seem to support "or" in searches, so create separate queries
@@ -54,7 +55,9 @@ class Binsearch(SearchModule):
     def get_moviesearch_urls(self, query=None, identifier_key=None, identifier_value=None, category=None):
         return self.get_search_urls(query, category)
 
+
     def process_query_result(self, html, query):
+        
         entries = []
         soup = BeautifulSoup(html, 'html.parser')
 
@@ -66,6 +69,7 @@ class Binsearch(SearchModule):
         items = main_table.find_all('tr')
 
         for row in items:
+            
             entry = NzbSearchResult()
             entry.provider = self.name
             title = row.find('span', attrs={'class': 's'})
@@ -80,7 +84,7 @@ class Binsearch(SearchModule):
                 entry.title = m.group(1)
             else:
                 entry.title = title
-
+            
             entry.guid = row.find("input", attrs={"type": "checkbox"})["name"]
             entry.link = "https://www.binsearch.info/fcgi/nzb.fcgi?q=%s" % entry.guid
             info = row.find("span", attrs={"class": "d"})
@@ -111,6 +115,8 @@ class Binsearch(SearchModule):
             elif unit == "GB":
                 size = size * 1024 * 1024 * 1024
             entry.size = int(size)
+            
+            entry.category = "N/A"
 
             #Age
             p = re.compile(r"(\d{2}\-\w{3}\-\d{4})")
@@ -126,6 +132,7 @@ class Binsearch(SearchModule):
 
             entries.append(entry)
 
+        
         return {"entries": entries, "queries": []}
 
 def get_instance(provider):

@@ -170,14 +170,13 @@ class SearchModule(object):
         executed_queries = set()
         psearch = ProviderSearch(provider=self.provider)
         psearch.save()
+        results_and_providersearchdbentry["providersearchdbentry"] = psearch
         while len(queries) > 0:
             query = queries.pop()
             if query in executed_queries:
                 #To make sure that in case an offset is reported wrong or we have a bug we don't get stuck in an endless loop 
                 continue
                 
-            results_and_providersearchdbentry["providersearchdbentry"] = psearch
-            
             try:
                 papiaccess = ProviderApiAccess(provider=self.provider, provider_search=psearch, type="search", url=query)
                 
@@ -185,15 +184,13 @@ class SearchModule(object):
                 request = requests.get(query, timeout=config.cfg["searching.timeout"], verify=False)          
                 executed_queries.add(query)
                 papiaccess.save()
-                
                 papiaccess.response_time = request.elapsed.microseconds / 1000
                 if request.status_code != 200:
                     raise ProviderConnectionException("Unable to connect to provider. Status code: %d" % request.status_code, self)
                 else:
-                    self.check_auth(request.text)
+                    self.check_auth(request)
                     self.logger.debug("Successfully loaded URL %s" % request.url)
                     papiaccess.response_successful = True
-    
                     try:
                         parsed_results = self.process_query_result(request.text, query)
                         results_and_providersearchdbentry["results"].extend(parsed_results["entries"]) #Retrieve the processed results
@@ -202,7 +199,6 @@ class SearchModule(object):
                     except Exception as e:
                         self.logger.exception("Error while processing search results from provider %s" % self, e)
                         raise ProviderResultParsingException("Error while parsing the results from provider", self)
-    
             except ProviderAuthException as e:
                 self.logger.error("Unable to authorize with %s: %s" % (e.search_module, e.message))
                 papiaccess.error = "Authorization error :%s" % e.message
@@ -222,7 +218,6 @@ class SearchModule(object):
                 self.logger.exception("An error error occurred while searching: %s", e)
                 papiaccess.error = "Unknown error :%s" % e
             papiaccess.save()
-            
             psearch.results = len(results_and_providersearchdbentry["results"])
             psearch.successful = True
             psearch.save()

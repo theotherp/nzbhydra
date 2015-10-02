@@ -297,14 +297,14 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
 
             $scope.results = data.data.results;
             $scope.providersearches = data.data.providersearches;
+            
+            //Sum up response times of providers from individual api accesses
             _.each($scope.providersearches, function(ps) {
-               ps.totalResponseTime = _.reduce(ps.api_accesses, function(memo, rp) {
-                   console.log(memo + " + " + rp.response_time)
+               ps.averageResponseTime = _.reduce(ps.api_accesses, function(memo, rp) {
                    return memo + rp.response_time;
-               }, 0)
+               }, 0);
+                ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
             });
-            console.log($scope.providersearches);
-            console.log($scope.results);
         });
 
 
@@ -322,7 +322,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
 
 
     $scope.results = [];
-    $scope.isShowDuplicates = false;
+    $scope.isShowDuplicates = true;
     $scope.predicate = 'age';
     $scope.reversed = false;
 

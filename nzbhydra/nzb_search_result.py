@@ -1,5 +1,5 @@
 class NzbSearchResult:
-    def __init__(self, title=None, link=None, provider=None, guid=None, size=None, categories=None, attributes=[], epoch=None, pubdate_utc=None, age_days=None, poster=None):
+    def __init__(self, title=None, link=None, provider=None, guid=None, size=None, category=None, attributes=[], epoch=None, pubdate_utc=None, age_days=None, poster=None):
         self.title = title
         self.link = link
         self.epoch = epoch
@@ -9,7 +9,7 @@ class NzbSearchResult:
         self.provider = provider
         self.guid = guid
         self.size = size
-        self.categories = categories
+        self.category = category
         self.description = None
         self.comments = None
         self.attributes = attributes

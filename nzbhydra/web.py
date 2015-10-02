@@ -128,7 +128,7 @@ def internal_api(args):
         if "tvdbid" in args:
             key = "tvdbid"
             value = args[key]            
-        results = search.search_show(True, args["q"], key, value, args["season"], args["ep"], args["cat"])
+        results = search.search_show(True, args["q"], key, value, args["title"], args["season"], args["ep"], args["cat"])
     if args["t"] == "moviesearch":
         results = search.search_movie(True, args["q"], args["imdbid"], args["title"], args["cat"])
     if args["t"] == "autocompletemovie":

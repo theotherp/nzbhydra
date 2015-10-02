@@ -35,7 +35,8 @@ class Womble(SearchModule):
     def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
         urls = []
         if query or identifier_key or season or episode:
-            raise NotImplementedError("This provider does not support specific searches")
+            logger.error("This provider does not support specific searches")
+            return []
         if category:
             for c in category:
                 if c in (5000, 5020):  # all
@@ -77,14 +78,16 @@ class Womble(SearchModule):
             if m:
                 entry.description = m.group(1)
                 entry.size = int(m.group(2)) * 1024 * 1024 #megabyte to byte
-            if elem.find("category").text == "TV-DVDRIP":
-                entry.category = 5030
-            elif elem.find("category").text == "TV-x264":
-                entry.category = 5040
+            if elem.find("category").text.lower() == "tv-dvdrip" or elem.find("category").text.lower() == "tv-sd":
+                entry.category = "TV SD"
+            elif elem.find("category").text.lower() == "tv-x264" or elem.find("category").text.lower == "tv-hd":
+                entry.category = "TV HD"
             else:
-                entry.category = 0 #undefined
+                entry.category = "N/A" #undefined
                 
             entry.guid = elem.find("guid").text
+            
+ 
             
             pubdate = arrow.get(pubdate.text, 'M/DD/YYYY h:mm:ss A')
             entry.epoch = pubdate.timestamp
