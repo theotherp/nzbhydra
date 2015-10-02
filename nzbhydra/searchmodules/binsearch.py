@@ -34,26 +34,30 @@ class Binsearch(SearchModule):
                                         })
         return url
 
-    def get_search_urls(self, query=None, category=None):
-        return [self.build_base_url().add({"q": query}).tostr()]
+    def get_search_urls(self, args):
+        return [self.build_base_url().add({"q": args["query"]}).tostr()]
 
-    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
+    def get_showsearch_urls(self, args):
         urls = []
-        if query:
-            urls = self.get_search_urls(query, category)
-        if season is not None:
+        if args["query"]:
+            urls = self.get_search_urls(args["query"], args["category"])
+        if args["season"] is not None:
             #Restrict query if  season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
             #binsearch doesn't seem to support "or" in searches, so create separate queries
-            if episode is not None:
-                urls.extend(self.get_search_urls(query="%s s%02de%02d" % (query, season, episode)))
-                urls.extend(self.get_search_urls(query="%s %dx%02d" % (query, season, episode)))
+            if args["episode"] is not None:
+                args["query"] = "%s s%02de%02d" % (query, season, episode)
+                urls.extend(self.get_search_urls(args))
+                args["query"] = "%s %dx%02d" % (query, season, episode)
+                urls.extend(self.get_search_urls(args))
             else:
-                urls.extend(self.get_search_urls(query="%s s%02d" % (query, season)))
-                urls.extend(self.get_search_urls(query='%s "season %d"' % (query, season)))
+                args["query"] = "%s s%02d" % (query, season)
+                urls.extend(self.get_search_urls())
+                args["query"] = '%s "season %d"' % (query, season)
+                urls.extend(self.get_search_urls(args))
         return urls
 
-    def get_moviesearch_urls(self, query=None, identifier_key=None, identifier_value=None, category=None):
-        return self.get_search_urls(query, category)
+    def get_moviesearch_urls(self, args):
+        return self.get_search_urls(args)
 
 
     def process_query_result(self, html, query):
@@ -64,7 +68,8 @@ class Binsearch(SearchModule):
         main_table = soup.find('table', attrs={'id': 'r2'})
 
         if not main_table:
-            return
+            logger.error("Unable to find main table in binsearch page")
+            return {"entries": [], "queries": []}
 
         items = main_table.find_all('tr')
 

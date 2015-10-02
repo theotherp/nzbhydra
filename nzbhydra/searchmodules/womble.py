@@ -28,30 +28,29 @@ class Womble(SearchModule):
         url = furl(self.provider.settings.get("query_url")).add({"fr": "false"})
         return url
 
-    def get_search_urls(self, query=None, category=None):
+    def get_search_urls(self, args):
         logger.error("This provider does not support queries")
         return []
 
-    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
+    def get_showsearch_urls(self, args):
         urls = []
-        if query or identifier_key or season or episode:
+        if args["query"] or args["imdbid"] or args["rid"] or args["tvdbid"] or args["season"] or args["episode"]:
             logger.error("This provider does not support specific searches")
             return []
-        if category:
-            for c in category:
-                if c in (5000, 5020):  # all
-                    urls.append(self.build_base_url().tostr())
-                if c == 5030:  # SD
-                    urls.append(self.build_base_url().add({"sec": "tv-dvd"}).tostr())
-                    urls.append(self.build_base_url().add({"sec": "tv-sd"}).tostr())
-                if c == 5040:  # HD
-                    urls.append(self.build_base_url().add({"sec": "tv-x264"}).tostr())
-                    urls.append(self.build_base_url().add({"sec": "tv-hd"}).tostr())
+        if args["category"]:
+            if args["category"] == "TV":
+                urls.append(self.build_base_url().tostr())
+            if args["category"] == "TV SD":
+                urls.append(self.build_base_url().add({"sec": "tv-dvd"}).tostr())
+                urls.append(self.build_base_url().add({"sec": "tv-sd"}).tostr())
+            if args["category"] == "TV HD":
+                urls.append(self.build_base_url().add({"sec": "tv-x264"}).tostr())
+                urls.append(self.build_base_url().add({"sec": "tv-hd"}).tostr())
         else:
             urls.append(self.build_base_url().tostr())
         return urls
 
-    def get_moviesearch_urls(self, query=None, identifier_key=None, identifier_value=None, category=None):
+    def get_moviesearch_urls(self, args):
         logger.error("This provider does not support movie search")
         return []
 
@@ -89,7 +88,7 @@ class Womble(SearchModule):
             
  
             
-            pubdate = arrow.get(pubdate.text, 'M/DD/YYYY h:mm:ss A')
+            pubdate = arrow.get(pubdate.text, 'M/D/YYYY h:mm:ss A')
             entry.epoch = pubdate.timestamp
             entry.pubdate_utc = str(pubdate)
             entry.age_days = (arrow.utcnow() - pubdate).days

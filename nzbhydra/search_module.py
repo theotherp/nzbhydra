@@ -50,68 +50,70 @@ class SearchModule(object):
         return self.provider.settings.get("api_hits_reset")
     
     
-    def search(self, query=None,category=None):
-        urls = self.get_search_urls(query=query, category=category)
+    def search(self, args):
+        urls = self.get_search_urls(args)
         return self.execute_queries(urls)
     
-    def search_movie(self, query=None, imdbid=None, title=None, category=None):
-        if query is None and title is None and imdbid is None and self.needs_queries:
+    def search_movie(self, args):
+        if args["query"] is None and args["title"] is None and args["imdbid"] is None and self.needs_queries:
             self.logger.error("Movie search without query or IMDB id or title is not possible with this provider")
             return []
-        if query is None and not self.generate_queries:
+        if args["query"] is None and not self.generate_queries:
             self.logger.error("Movie search is not possible with this provideer because query generation is disabled")
-        if imdbid is not None and imdbid in self.search_ids:
+        if args["imdbid"] is not None and "imdbid" in self.search_ids:
             #Best case, we can search using IMDB id
-            urls = self.get_moviesearch_urls(query=None, identifier_key="imdbid", identifier_value=imdbid, category=category)
-        elif title is not None:
+            urls = self.get_moviesearch_urls(args)
+        elif args["title"] is not None:
             #If we cannot search using the ID we generate a query using the title provided by the GUI
-            urls = self.get_moviesearch_urls(query=title, category=category)
-        elif query is not None:
+            args["query"] = args["title"]
+            urls = self.get_moviesearch_urls(args)
+        elif args["query"] is not None:
             #Simple case, just a regular raw search but in movie category
-            urls = self.get_moviesearch_urls(query=query, category=category)
+            urls = self.get_moviesearch_urls(args)
         else:
             #Just show all the latest movie releases
-            urls = self.get_moviesearch_urls(category=category)
+            urls = self.get_moviesearch_urls(args)
             
         return self.execute_queries(urls)
     
-    def search_show(self, query=None, identifier_key=None, identifier_value=None, title=None, season=None, episode=None, category=None):
-        if query is None and title is None and identifier_key is None and self.needs_queries:
+    def search_show(self, args):
+        if args["query"] is None and args["title"] is None and args["rid"] and args["tvdbid"] is None and self.needs_queries:
             self.logger.error("TV search without query or id or title is not possible with this provider")
             return []
-        if query is None and not self.generate_queries:
+        if args["query"] is None and not self.generate_queries:
             self.logger.error("TV search is not possible with this provideer because query generation is disabled")
-        if identifier_key is not None and identifier_key in self.search_ids:
+        if (args["rid"] is not None and "rid" in self.search_ids) or (args["tvdbid"] is not None and "tvdbid" in self.search_ids):
             #Best case, we can search using the ID
-            urls = self.get_showsearch_urls(query=None, identifier_key=identifier_key, identifier_value=identifier_value, category=category, season=season, episode=episode)
-        elif title is not None:
+            urls = self.get_showsearch_urls(args)
+        elif args["title"] is not None:
             #If we cannot search using the ID we generate a query using the title provided by the GUI
-            urls = self.get_showsearch_urls(query=title, category=category, season=season, episode=episode)
-        elif query is not None:
+            args["query"] = args["title"]
+            urls = self.get_showsearch_urls(args)
+        elif args["query"] is not None:
             #Simple case, just a regular raw search but in movie category
-            urls = self.get_showsearch_urls(query=query, category=category, season=season, episode=episode)
+            urls = self.get_showsearch_urls(args)
         else:
             #Just show all the latest movie releases
-            urls = self.get_showsearch_urls(category=category, season=season, episode=episode)
+            urls = self.get_showsearch_urls(args)
             
         return self.execute_queries(urls)
         
     
 
     # Access to most basic functions
-    def get_search_urls(self, query=None, category=None):
+    def get_search_urls(self, args):
         # return url(s) to search. Url is then retrieved and result is returned if OK
         # we can return multiple urls in case a module needs to make multiple requests (e.g. when searching for a show
         # using general queries
         pass
 
-    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
+    def get_showsearch_urls(self, args):
         # to extend
         # if module supports it, search specifically for show, otherwise make sure we create a query that searches
         # for for s01e01, 1x1 etc
         pass
 
-    def get_moviesearch_urls(self, query=None, identifier_key=None, identifier_value=None, category=None):
+    def get_moviesearch_urls(self, args):
         # to extend
         # if module doesnt support it possibly use (configurable) size restrictions when searching
         pass

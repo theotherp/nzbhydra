@@ -1,16 +1,12 @@
 import concurrent
 from concurrent.futures import ThreadPoolExecutor
-import json
 import logging
 
 import arrow
-from furl import furl
-import requests
 from requests_futures.sessions import FuturesSession
 
-from nzbhydra.database import Provider, ProviderSearch, ProviderStatus, Search
+from nzbhydra.database import Provider, ProviderStatus, Search
 from nzbhydra import config
-from nzbhydra.exceptions import ExternalApiInfoException
 from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch
 
 categories = {'All': {"pretty": "All", "index": 0},
@@ -34,7 +30,7 @@ logger = logging.getLogger('root')
 
 config.init("searching.timeout", 5, int)
 config.init("searching.ignore_temporarily_disabled", False, bool)  # If true we try providers even if they are temporarily disabled
-config.init("searching.allow_query_generation", "both", str) #"internal", "external", "both", anything else
+config.init("searching.allow_query_generation", "both", str)  # "internal", "external", "both", anything else
 
 session = FuturesSession()
 providers = []
@@ -64,7 +60,7 @@ def pick_providers(query_supplied=True, identifier_key=None, category=None, inte
         if not query_supplied and p.needs_queries and identifier_key is None:
             logger.debug("Did not pick %s because no query was supplied but the provider needs queries" % p)
             continue
-        allow_query_generation = (config.cfg.get("searching.allow_query_generation") == "both") or (config.cfg.get("searching.allow_query_generation") == "internal" and internal) or (config.cfg.get("searching.allow_query_generation") == "external" and not internal) 
+        allow_query_generation = (config.cfg.get("searching.allow_query_generation") == "both") or (config.cfg.get("searching.allow_query_generation") == "internal" and internal) or (config.cfg.get("searching.allow_query_generation") == "external" and not internal)
         if not (identifier_key is None or identifier_key in p.search_ids or (allow_query_generation and p.generate_queries)):
             logger.debug("Did not pick %s because search will be done by an identifier and the provider or system wide settings don't allow query generation" % p)
             continue
@@ -90,29 +86,29 @@ def read_providers_from_config():
     return providers
 
 
-def search(internal, query, category=None):
-    logger.info("Searching for query '%s'" % query)
-    dbsearch = Search(internal=internal, query=query, category=category)
+def search(internal, args):
+    logger.info("Searching for query '%s'" % args["query"])
+    dbsearch = Search(internal=internal, query=args["query"], category=args["category"])
     dbsearch.save()
     providers_to_call = pick_providers(query_supplied=True, internal=internal)
 
-    results_by_provider = start_search_futures(providers_to_call, "search", query=query, category=category)
+    results_by_provider = start_search_futures(providers_to_call, "search", args)
     for i in results_by_provider.values():
         providersearchentry = i["providersearchdbentry"]
         providersearchentry.search = dbsearch
         providersearchentry.save()
     return results_by_provider
-    
 
 
-def search_show(internal, query=None, identifier_key=None, identifier_value=None, title=None, season=None, episode=None, category=None):
+def search_show(internal, args):
     logger.info("Searching for show")  # todo:extend
-        
-    dbsearch = Search(internal=internal, query=query, identifier_key=identifier_key, identifier_value=identifier_value, season=season, category=category)
+    identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
+    identifier_value = args[identifier_key] if identifier_key else None
+    dbsearch = Search(internal=internal, query=args["query"], identifier_key=identifier_key, identifier_value=identifier_value, season=args["season"], category=args["category"])
     dbsearch.save()
-    providers_to_call = pick_providers(query_supplied=True if query is not None else False, identifier_key=identifier_key, category=category, internal=internal)
+    providers_to_call = pick_providers(query_supplied=True if args["query"] is not None else False, identifier_key=identifier_key, category=args["category"], internal=internal)
 
-    results_by_provider = start_search_futures(providers_to_call, "search_show", query=query, identifier_key=identifier_key, identifier_value=identifier_value, title=title, season=season, episode=episode, category=category)
+    results_by_provider = start_search_futures(providers_to_call, "search_show", args)
     for i in results_by_provider.values():
         providersearchentry = i["providersearchdbentry"]
         providersearchentry.search = dbsearch
@@ -120,13 +116,13 @@ def search_show(internal, query=None, identifier_key=None, identifier_value=None
     return results_by_provider
     
 
-def search_movie(internal, query=None, imdbid=None, title=None, category=None):
+def search_movie(internal, args):
     logger.info("Searching for movie")  # todo:extend
-    dbsearch = Search(internal=internal, query=query, category=category, identifier_key="imdbid" if imdbid is not None else None, identifier_value=imdbid if imdbid is not None else None)
+    dbsearch = Search(internal=internal, query=args["query"], category=args["category"], identifier_key="imdbid" if args["imdbid"] is not None else None, identifier_value=args["imdbid"] if args["imdbid"] is not None else None)
     dbsearch.save()
-    providers_to_call = pick_providers(query_supplied=True if query is not None else False, identifier_key="imdbid" if imdbid is not None else None, category=category, internal=internal)
+    providers_to_call = pick_providers(query_supplied=True if args["query"] is not None else False, identifier_key="imdbid" if args["imdbid"] is not None else None, category=args["category"], internal=internal)
 
-    results_by_provider = start_search_futures(providers_to_call, "search_movie", query=query, imdbid=imdbid, title=title, category=category)
+    results_by_provider = start_search_futures(providers_to_call, "search_movie", args)
     for i in results_by_provider.values():
         providersearchentry = i["providersearchdbentry"]
         providersearchentry.search = dbsearch
@@ -134,11 +130,11 @@ def search_movie(internal, query=None, imdbid=None, title=None, category=None):
     return results_by_provider
 
 
-def execute(provider, search_function, **kwargs):
-    return getattr(provider, search_function)(**kwargs)
+def execute(provider, search_function, args):
+    return getattr(provider, search_function)(args)
 
 
-def start_search_futures(providers_to_call, search_function, **kwargs):
+def start_search_futures(providers_to_call, search_function, args):
     search_results_by_provider = {}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(providers_to_call)) as executor:
@@ -146,7 +142,7 @@ def start_search_futures(providers_to_call, search_function, **kwargs):
         providers_by_future = {}
         count = 1
         for provider in providers_to_call:
-            future = executor.submit(execute, provider, search_function, **kwargs)
+            future = executor.submit(execute, provider, search_function, args)
             futures.append(future)
             providers_by_future[future] = provider
             logger.debug("Added %d of %d calls to executor" % (count, len(providers_to_call)))
@@ -159,4 +155,3 @@ def start_search_futures(providers_to_call, search_function, **kwargs):
             count += 1
 
     return search_results_by_provider
-

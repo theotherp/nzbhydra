@@ -78,38 +78,40 @@ class NewzNab(SearchModule):
             url.add({"cat": ",".join(str(x) for x in categories)})
         return url
 
-    def get_search_urls(self, query=None, category=None):
+    def get_search_urls(self, args):
         f = self.build_base_url("search", "All")
-        if query is not None:
-            f = f.add({"q": query})
+        if args["query"]:
+            f = f.add({"q": args["query"]})
         return [f.url]
 
-    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
-        if category is None:
-            category = "TV"
+    def get_showsearch_urls(self, args):
+        if args["category"] is None:
+            args["category"] = "TV"
         
-        if query is None:
-            url = self.build_base_url("tvsearch", category)
-            if identifier_key is not None:
-                url.add({identifier_key: identifier_value})
-            if episode is not None:
-                url.add({"ep": episode})
-            if season is not None:
-                url.add({"season": season})
+        if args["query"] is None:
+            url = self.build_base_url("tvsearch", args["category"])
+            if args["rid"] is not None:
+                url.add({args["rid"]: args["rid"]})
+            if args["tvdbid"] is not None:
+                url.add({args["thetvdb"]: args["thetvdb"]})
+            if args["episode"] is not None:
+                url.add({"ep": args["episode"]})
+            if args["season"] is not None:
+                url.add({"season": args["season"]})
         else:
-            url = self.build_base_url("search", category).add({"q": query})
+            url = self.build_base_url("search", args["category"]).add({"q": args["query"]})
 
         return [url.url]
 
-    def get_moviesearch_urls(self, query=None, identifier_key=None, identifier_value=None, category=None):
-        if category is None:
-            category = "Movies"
-        if query is None:
-            url = self.build_base_url("movie", category)
-            if identifier_key is not None:
-                url.add({identifier_key: identifier_value})
+    def get_moviesearch_urls(self, args):
+        if args["category"] is None:
+            args["category"] = "Movies"
+        if args["query"] is None:
+            url = self.build_base_url("movie", args["category"])
+            if args["imdbid"] is not None:
+                url.add({"imdbid": args["imdbid"]})
         else:
-            url = self.build_base_url("search", category).add({"q": query})
+            url = self.build_base_url("search", args["category"]).add({"q": args["query"]})
 
         return [url.url]
 

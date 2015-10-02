@@ -272,7 +272,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
                 uri.addQuery("title", $scope.selectedItem.label);
             } else {
                 console.log("moviesearch per query");
-                uri.addQuery("q", $scope.searchTerm);
+                uri.addQuery("query", $scope.searchTerm);
             }
             
         } else if ($scope.category.indexOf("TV") > -1) {
@@ -289,7 +289,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
                 uri.addQuery("episode", $scope.searchEpisode);
             }
         } else {
-            uri.addQuery("t", "search").addQuery("q", $scope.searchTerm);
+            uri.addQuery("t", "search").addQuery("q", $scope.searchTerm).addQuery("category", $scope.category);
         }
 
         console.log(uri);

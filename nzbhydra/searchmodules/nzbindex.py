@@ -34,21 +34,21 @@ class NzbIndex(SearchModule):
         url = furl(self.query_url).add({"more": "1", "max": self.max_results}) 
         return url
 
-    def get_search_urls(self, query=None, category=None):
-        return [self.build_base_url().add({"q": query}).tostr()]
+    def get_search_urls(self, args):
+        return [self.build_base_url().add({"q": args["query"]}).tostr()]
 
-    def get_showsearch_urls(self, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, category=None):
-        if season is not None:
+    def get_showsearch_urls(self, args):
+        if args["season"] is not None:
             #Restrict query if generated and season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
-            if episode is not None:
-                query = "%s s%02de%02d | %dx%02d" % (query, season, episode, season, episode)
+            if args["episode"] is not None:
+                args["query"] = "%s s%02de%02d | %dx%02d" % (args["query"], args["season"], args["episode"], args["season"], args["episode"])
             else:
-                query = '%s s%02d | "season %d"' % (query, season, season)
-        return self.get_search_urls(query, category)
+                args["query"] = '%s s%02d | "season %d"' % (args["query"], args["season"], args["season"])
+        return self.get_search_urls(args)
 
 
-    def get_moviesearch_urls(self, query=None, identifier_key=None, identifier_value=None, category=None):
-        return self.get_search_urls(query)
+    def get_moviesearch_urls(self, args):
+        return self.get_search_urls(args)
 
     def process_query_result(self, xml, query):
         

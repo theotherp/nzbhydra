@@ -11,31 +11,45 @@ from werkzeug.exceptions import Unauthorized
 
 app = Flask(__name__)
 
-api_args = {
-    # Todo: Throw exception on unsupported actions
-    # TODO: validate using own code, web_args' return is not very helpful. On the other side the api is only consumed by us or external tools which better know what they're doing...
+externalapi_args = {
     "input": Arg(str),
     "apikey": Arg(str),
     "t": Arg(str),
     "q": Arg(str),
     "group": Arg(str),
-    "limit": Arg(int),  # for now we don't limit our results
-    "offset": Arg(str),  # so we dont use an offset
+    "limit": Arg(int),  
+    "offset": Arg(str), 
     "cat": Arg(str),
-    "o": Arg(str),  # for now we only support xml which is what most tools ask for anyway
+    "o": Arg(str),  
     "attrs": Arg(str),
-    "extended": Arg(bool),  # TODO to test 
+    "extended": Arg(bool),  
     "del": Arg(str),
-    "maxage": Arg(str),
-    "title": Arg(str),
     "rid": Arg(str),
     "genre": Arg(str),
     "imdbid": Arg(str),
-    "tvdbid": Arg(str),  # nzbs.org
+    "tvdbid": Arg(str),  
     "season": Arg(str),
     "ep": Arg(str)
+}
 
-    # TODO: Support comments, music search, book search, details, etc(?)
+internalapi_args = {
+    "apikey": Arg(str),
+    "t": Arg(str),
+    "query": Arg(str), 
+    "category": Arg(str),
+    "title": Arg(str),
+    "rid": Arg(str),
+    "imdbid": Arg(str),
+    "tvdbid": Arg(str),  
+    "season": Arg(str),
+    "episode": Arg(str),
+    
+    "minsize": Arg(int),
+    "maxsize": Arg(int),
+    "minage": Arg(int),
+    "maxage": Arg(int),
+    
+    "input": Arg(str)
 }
 
 from webargs import core
@@ -96,7 +110,7 @@ def base():
 
 
 @app.route('/api')
-@use_args(api_args)
+@use_args(externalapi_args)
 def api(args):
     if config.cfg["main.apikey"] and ("apikey" not in args or args["apikey"] != config.cfg["main.apikey"]):
         raise Unauthorized("API key not provided or invalid")
@@ -115,12 +129,13 @@ def api(args):
 
 @app.route('/internalapi')
 @requires_auth
-@use_args(api_args)
+@use_args(internalapi_args)
 def internal_api(args):
+    
     
     results = None
     if args["t"] == "search":
-        results = search.search(True, args["q"], args["cat"])
+        results = search.search(True, args)
     if args["t"] == "tvsearch":
         #search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
         key = None
@@ -128,9 +143,9 @@ def internal_api(args):
         if "tvdbid" in args:
             key = "tvdbid"
             value = args[key]            
-        results = search.search_show(True, args["q"], key, value, args["title"], args["season"], args["ep"], args["cat"])
+        results = search.search_show(True, args)
     if args["t"] == "moviesearch":
-        results = search.search_movie(True, args["q"], args["imdbid"], args["title"], args["cat"])
+        results = search.search_movie(True, args)
     if args["t"] == "autocompletemovie":
         results = infos.find_movie_ids(args["input"])
         return jsonify({"results": results})
