@@ -102,13 +102,13 @@ class Binsearch(SearchModule):
                 poster = poster.replace("+", " ")
                 entry.poster = poster
             #Size
-            p = re.compile(r"size: ([0-9]+\.[0-9]+).(GB|MB|KB)")
+            p = re.compile(r"size: (?P<size>[0-9]+(\.[0-9]+)?).(?P<unit>(GB|MB|KB))")
             m = p.search(info.text)
             if not m:
                 logger.debug("Unable to find size information in %s" % info.text)
                 continue
-            size = float(m.group(1))
-            unit = m.group(2)
+            size = float(m.group("size"))
+            unit = m.group("unit")
             if unit == "KB":
                 size *= 1024  
             elif unit == "MB":

@@ -1,19 +1,16 @@
-import json
 import unittest
 
 from freezegun import freeze_time
 from furl import furl
-from database import Provider
-from exceptions import ProviderIllegalSearchException
 
-from searchmodules.nzbclub import NzbClub
-from tests.db_prepare import set_and_drop
+from nzbhydra.database import Provider
+from nzbhydra.searchmodules.nzbclub import NzbClub
+from nzbhydra.tests.db_prepare import set_and_drop
 
 
 class MyTestCase(unittest.TestCase):
-    
-    def setUp(self):    
-        set_and_drop()    
+    def setUp(self):
+        set_and_drop()
         self.nzbclub = Provider(module="nzbclub", name="nzbclub", query_url="http://127.0.0.1:5001/nzbclub", base_url="http://127.0.0.1:5001/nzbclub", search_types=["general", "tv", "movie"], generate_queries=True)
         self.nzbclub.save()
 
@@ -23,12 +20,10 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(1, len(urls))
         print(urls[0])
         self.assertEqual('a showtitle s01e02 or a showtitle 1x02', furl(urls[0]).args["q"])
-        
+
         urls = w.get_showsearch_urls(generated_query="a showtitle", season=1)
         self.assertEqual(1, len(urls))
         self.assertEqual('a showtitle s01 or a showtitle "season 1"', furl(urls[0]).args["q"])
-
-
 
     @freeze_time("2015-09-24 14:00:00", tz_offset=-4)
     def testProcess_results(self):

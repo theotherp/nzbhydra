@@ -37,14 +37,17 @@
                     <ul class="dropdown-menu dropdown-menu-right" role="menu" style="right: auto; top:initial; margin:0px;">
                         <li><a href="" class="searchCategoryButton" data-searchcategory="all" ng-click="toggle('All')">All</a></li>
                         <li><a href="" class="searchCategoryButton" data-searchcategory="Movies" ng-click="toggle('Movies')">Movies</a></li>
-                        <li><a href="" class="searchCategoryButton" data-searchcategory="Movies" ng-click="toggle('Movies HD')">Movies HD</a></li>
-                        <li><a href="" class="searchCategoryButton" data-searchcategory="Movies" ng-click="toggle('Movies SD')">Movies SD</a></li>
-                        <li><a href="" class="searchCategoryButton" data-searchcategory="Series" ng-click="toggle('Series')">Series</a></li>
-                        <li><a href="" class="searchCategoryButton" data-searchcategory="Series" ng-click="toggle('Series HD')">Series HD </a></li>
-                        <li><a href="" class="searchCategoryButton" data-searchcategory="Series" ng-click="toggle('Series SD')">Series SD</a></li>
-                        <li><a href="" class="searchCategoryButton" data-searchcategory="Ebooks" ng-click="toggle('Ebooks')">Ebooks</a></li>
-                        <li><a href="" class="searchCategoryButton" data-searchcategory="XXX" ng-click="toggle('XXX')">XXX</a></li>
-                        <li><a href="" class="searchCategoryButton" data-searchcategory="" ng-click="toggle('')">TO EXPAND</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="Movies HD" ng-click="toggle('Movies HD')">Movies HD</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="Movies SD" ng-click="toggle('Movies SD')">Movies SD</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="TV" ng-click="toggle('TV')">TV</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="TV HD" ng-click="toggle('TV HD')">TV HD </a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="TV SD" ng-click="toggle('TV SD')">TV SD</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="Audio" ng-click="toggle('Audio')">Audio</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="Audio FLAC" ng-click="toggle('Audio FLAC')">Audio FLAC</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="Audio MP3" ng-click="toggle('Audio MP3')">Audio MP3</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="Console" ng-click="toggle('Console')">Console</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="PC" ng-click="toggle('PC')">PC</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="XXX" ng-click="toggle('XXX')">XXX</a></li>                        
                     </ul>
                 </span>
                 <span class="input-group-btn" ng-if="seriesSelected">
@@ -63,11 +66,11 @@
                        tooltip-trigger="mouseenter"
                         >
                 </span>
-                <span class="input-group-btn by-id-checkbox" ng-if="isAskById"
+                <span class="input-group-btn by-id-checkbox" ng-if="isAskById" 
                       tooltip="If enabled the search is done using an ID from TheTVDB or IMDB. The ID is retrieved using autocomplete."
                       tooltip-placement="top"
                       tooltip-trigger="mouseenter">
-                <input type="checkbox" name="by-id" id="by-id" style="width:40px;" ng-model="byId">
+                <input type="checkbox" name="by-id" id="by-id" style="width:40px;" ng-model="isById.value">
                     </span>
 
                 <script type="text/ng-template" id="movieAutocompleteEntry">
@@ -77,7 +80,6 @@
                        typeahead="item as item.label for item in getAutocomplete($viewValue)"
                        typeahead-template-url="movieAutocompleteEntry" class="form-control"
                        ng-class="{'autocompleteLoading': (loadingItems && autocompleteActive), 'search-border': !seriesSelected}"
-                       typeahead-wait-ms="{{ typeAheadWait }}"
                        typeahead-loading="loadingItems" typeahead-on-select="selectAutocompleteItem($item)" ng-enter="submitSearch(selectedItem)" class="form-control"
 
                         >
@@ -178,201 +180,6 @@
 </div>
 
 
-<!--
-
-<div class="modal fade" id="deletionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="nzbNfoDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog" id="nfoModal">
-        <div class="modal-body" id="newsModalBody">
-            <div class="panel panel-default" ng-repeat="entry in news">
-
-                <div class="panel-body" style="text-align: center" ng-bind-html="content | unsafe">
-                </div>
-
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" ng-click="closeNfoModal()">Close</button>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal" id="newsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" style="" ng-controller="NewsShowController" ng-class="{show: news}">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" ng-click="closeNewsModal()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="newsModalTitle">News</h4>
-            </div>
-            <div class="modal-body" id="newsModalBody">
-                <div class="panel panel-default" ng-repeat="entry in news">
-                    <div class="panel-heading">
-                        <h3 class="panel-title" style="font-size: 20px;">{{ entry.date | date:'dd.MM.yyyy' : 'UTC' }}</h3>
-                    </div>
-                    <div class="panel-body" style="text-align: left" ng-bind-html="entry.content | unsafe">
-
-                    </div>
-
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" ng-click="closeNewsModal()">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div growl></div>
-
-
-<div class="alert alert-danger alert-dismissible" role="alert" id="alert-error" aria-hidden="true" style="display:none;">
-    <button type="button" class="close" id="closeAlertError"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-    <span id="alert-error-content"></span>
-</div>
-<div class="alert alert-success alert-dismissible" role="alert" id="alert-success" style="display:none;">
-    <button type="button" class="close" id="closeAlertSuccess"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-    <span id="alert-success-content"></span>
-</div>
-
-<div id="loading"></div>
-
-
-<div class="container-fluid" style="" id="all">
-
-
-    <div class="col-lg-12 col-sm-12 col-md-12">
-
-        <nav class="navbar navbar-default navbar-top" role="navigation" id="navbar" ng-controller="NzbSearchBoxController">
-            <div class="container-fluid">
-
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="fileLink navbar-brand" href="/">Crapture</a>
-                </div>
-
-
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-
-                    <form class="navbar-form navbar-left navbar-input-group" role="search">
-                        <span class="navbar-input-group">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" id="searchCategoryDropdownButton" ng-cloak>
-                                Search {{ category }} <span class="caret"/>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-right" role="menu" style="right: auto; top:initial; margin:0px;">
-                                <li><a href="" class="searchCategoryButton" data-searchcategory="all" ng-click="toggle('all')">All</a></li>
-                                <li><a href="" class="searchCategoryButton" data-searchcategory="Movies" ng-click="toggle('movies')">Movies</a></li>
-                                <li><a href="" class="searchCategoryButton" data-searchcategory="Series" ng-click="toggle('series')">Series</a></li>
-                            </ul>
-                            
-                        </span>
-                         <span class="btn-group noleftborderradius" dropdown is-open="status.isopen" ng-show="category == 'series' || category =='movies'">
-                          <button type="button" class="noLeftBorderRadius btn btn-default dropdown-toggle" dropdown-toggle ng-disabled="disabled">
-                              {{ selectedQuality }} <span class="caret"></span>
-                          </button>
-                          <ul class="dropdown-menu" role="menu">
-                              <li><a href="" ng-click="selectedQuality = 'All qualities'">All qualities</a></li>
-                              <li><a href="" ng-click="selectedQuality = 'HD'">HD</a></li>
-                              <li><a href="" ng-click="selectedQuality = 'SD'">SD</a></li>
-                          </ul>
-                        </span>
-
-                        <div class="form-group">
-
-                            <script type="text/ng-template" id="movieAutocompleteEntry">
-                                <a><span class="autocompletePoster"><img src="{{ match.model.poster }}"/></span><span
-                                        bind-html-unsafe="match.label | typeaheadHighlight:query"></span></a>
-                            </script>
-                            <input type="search" ngtype="search" ng-model="searchTerm" placeholder="Search" typeahead-min-length="2" type-ahead-wait-ms="300"
-                                   typeahead="item as item.label for item in getAutocomplete($viewValue) | filter:{title:$viewValue}"
-                                   typeahead-template-url="movieAutocompleteEntry" class="form-control"
-                                   ng-class="{'autocompleteLoading': (loadingItems && autocompleteActive), 'noBorderRadius': seriesSelected}"
-                                   typeahead-wait-ms="{{ typeAheadWait }}"
-                                   typeahead-loading="loadingItems" typeahead-on-select="selectAutocompleteItem($item)" ng-enter="submitSearch(selectedItem)" style="width:150px; border-left-width: 0px;">
-
-                            <input type="input" class="form-control noBorderRadius" placeholder="S" name="season" id="seriesSearchS" style="width:40px;" ng-model="searchSeason"
-                                   ng-show="seriesSelected" ng-enter="submitSearch(selectedItem)">
-                            <input type="input" class="form-control noLeftBorderRadius" placeholder="E" name="episode" id="seriesSearchE" style="width:40px;" ng-model="searchEpisode"
-                                   ng-show="seriesSelected" ng-enter="submitSearch(selectedItem)">
-
-
-                        </div>
-                    </form>
-
-                    <p class="navbar-text navbar-center">
-                        <span id="info" ng-controller="DownloaderInfoController" ng-cloak>
-                            <b>DL State</b> {{ sabStatus.state }}
-                            <span ng-if="sabStatus.state == 'Downloading'">
-                                &bull; <b># Jobs</b> {{ sabStatus.jobsLeft }}
-                                &bull; <b>Time left</b> {{ sabStatus.timeLeft }}
-                                &bull; <b>DL left</b> {{ sabStatus.mbLeft }}
-                                &bull; <b>Speed</b> {{ sabStatus.speedReadable }}/s
-                            </span>
-                            &bull; <b>Disc Space</b> {{ sabStatus.space }}
-                        </span>
-                    </p>
-
-
-                        
-                        <li><a href="/calendar" style="padding:  15px 5px 10px 15px;"><i class="fa fa-calendar"></i> Calendar</a></li>
-                        <li><a href="/news" style="padding:  15px 5px 10px 15px;"><i class="fa fa-newspaper-o"></i> News</a></li>
-                        <li><a href="" ng-click="logout()" style="padding:  15px 5px 10px 15px;"><span style="margin-top: 3px;" class="glyphicon glyphicon-off"></span></a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-
-    </div>
-
-    <div class="modal fade" id="deletionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            </div>
-        </div>
-    </div>
-
-
-    <div class="container-fluid" id="content">
-        <div class="row" id="mainRow">
-
-            <div class="col-lg-4 visible-lg-block" id="latestContainer">
-                <div id="latest" class="greyRoundBox">
-                    <div class="container-fluid" ng-controller="LatestEpisodesController">
-                        
-                        <span class="bannerRow " ng-repeat="e in latestEpisodeGroups | after:(currentPage-1)*itemsPerPage | limitTo:itemsPerPage">
-                            <div class="bannerRow" >
-                                <episodegroup episodes="e"/>
-                            </div>
-                        </span>
-                        
-                        
-                        <pager class="pager-episode-list" ng-show="latestEpisodeGroups" total-items="totalItems" items-per-page="itemsPerPage" ng-model="currentPage" previous-text="Newer" next-text="Older" ng-click="scrollToTop()"></pager>
-                    </div>
-                </div>
-            </div>
-
-            <div class=" col-md-12 col-lg-8" id="fileListContainer">
-                <div id="fileList" class="greyRoundBox" ng-view>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
--->
 </body>
 <!-- build:js /js/static/libs.js -->
 <script src="/static/lib/jquery/jquery.js"></script>

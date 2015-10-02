@@ -21,12 +21,11 @@ class Womble(SearchModule):
         
         self.getsettings["generate_queries"] = False #Doesn't matter because supports_queries is False
         self.needs_queries = False
-        self.needs_queries = False # Doesn't even allow them
-        self.category_search = True #Same
+        self.category_search = True
         self.supports_queries = False  # Only as support for general tv search
 
     def build_base_url(self):
-        url = furl(self.query_url).add({"fr": "false"})
+        url = furl(self.provider.settings.get("query_url")).add({"fr": "false"})
         return url
 
     def get_search_urls(self, generated_query=None, query=None, categories=None):

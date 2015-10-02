@@ -3,9 +3,9 @@ import unittest
 from freezegun import freeze_time
 from furl import furl
 
-from database import Provider
-from searchmodules.nzbindex import NzbIndex
-from tests.db_prepare import set_and_drop
+from nzbhydra.database import Provider
+from nzbhydra.searchmodules.nzbindex import NzbIndex
+from nzbhydra.tests.db_prepare import set_and_drop
 
 
 class MyTestCase(unittest.TestCase):

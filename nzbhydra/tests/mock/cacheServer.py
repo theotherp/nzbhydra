@@ -10,53 +10,9 @@ from webargs import core, Arg
 
 app = Flask(__name__)
 
-api_args = {
-    
-    "apikey": Arg(str),
-    "t": Arg(str),
-    "q": Arg(str),
-    "group": Arg(str),
-    "limit": Arg(int),
-    "offset": Arg(str),
-    "cat": Arg(str),
-    "o": Arg(str),  
-    "attrs": Arg(str),
-    "extended": Arg(str), 
-    "del": Arg(str),
-    "maxage": Arg(str),
-    "rid": Arg(str),
-    "genre": Arg(str),
-    "imdbid": Arg(str),
-    "tvdbid": Arg(str),
-    "id": Arg(str),  
-    "season": Arg(str),
-    "ep": Arg(str),
-    "sec": Arg(str),  # womble
-    "fr": Arg(str),  # womble
-
-    "ig": Arg(str),  # nzbclub
-    "rpp": Arg(str),  # nzbclub
-    "st": Arg(str),  # nzbclub
-    "sp": Arg(str),  # nzbclub
-    "ns": Arg(str),  # nzbclub
-
-    "more": Arg(str),  # nzbindex
-    "sort": Arg(str),  # nzbindex
-    "max": Arg(str),  # nzbindex
-    
-    "adv_sort": Arg(str),  # binsearch
-    "postdate": Arg(str),  # binsearch
-    "minsize": Arg(str),  # binsearch
-    "maxsize": Arg(str),  # binsearch
-    "adv_col": Arg(str),  # binsearch
-    
-
-}
-
-parser = core.Parser()
-
 
 @app.route('/nzbsorg')
+@app.route('/nzbsorg/api')
 def apinzbsorg():
     if request.args["o"] == "json":
         extension = "json"
@@ -66,6 +22,7 @@ def apinzbsorg():
 
 
 @app.route('/dognzb')
+@app.route('/dognzb/api')
 def apidog():
     if request.args["o"] == "json":
         extension = "json"

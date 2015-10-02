@@ -42,7 +42,7 @@ class SearchModule(object):
 
     @property
     def generate_queries(self):
-        return self.provider.settings.get("generate_queries")  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for providers which don't support id-based searches
+        return self.provider.settings.get("generate_queries", True)  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for providers which don't support id-based searches
 
     @property
     def max_api_hits(self):

@@ -196,8 +196,10 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
     $scope.selectedQuality = "All qualities";
     $scope.autocompleteLoading = false;
 
-    $scope.seriesSelected = false;
-    $scope.isAskById = false;
+    
+    $scope.isAskById = false; //If true a check box will be shown asking the user if he wants to search by ID 
+    $scope.isById = {value: false}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
+    
 
     $scope.autocompleteClass = "autocompletePosterMovies";
 
@@ -207,17 +209,15 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
         $scope.searchTerm = "";
 
         //Show checkbox to ask if the user wants to search by ID (using autocomplete)
-        $scope.isAskById = ($scope.category.indexOf("Series") > -1 || $scope.category.indexOf("Movies") > -1 );
+        $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 );
 
 
         //Wait longer for series because it takes so long to query and is more expensive
-        if ($scope.category.indexOf("Series") > -1) {
+        if ($scope.category.indexOf("TV") > -1) {
             console.log("Setting type ahead wait to 600ms");
-            $scope.typeAheadWait = 1600;
-            $scope.seriesSelected = true;
+            $scope.typeAheadWait = 600;
         } else {
             $scope.typeAheadWait = 300;
-            $scope.seriesSelected = false;
         }
     };
 
@@ -231,6 +231,13 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
         //title: Will be used for file search
         //value: Will be used as extraInfo (ttid oder tvdb id)
         //poster: url of poster to show
+        
+        //Don't use autocomplete if checkbox is disabled
+        if (!$scope.isById.value) {
+            
+            return {};
+        }
+        
         if ($scope.category.indexOf("Movies") > -1) {
             return $http.get('internalapi?t=autocompletemovie', {
                 params: {
@@ -240,7 +247,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
                 $scope.autocompleteLoading = false;
                 return response.data.results;
             });
-        } else if ($scope.category.indexOf("Series") > -1) {
+        } else if ($scope.category.indexOf("TV") > -1) {
 
             return $http.get('internalapi?t=autocompleteseries', {
                 params: {
@@ -251,6 +258,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
                 return response.data.results;
             });
         } else {
+            console.log("ha");
             return {};
         }
     };
@@ -263,13 +271,22 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
         $scope.startSearch($item);
 
     };
+    
+    
 
     $scope.startSearch = function () {
-        uri = new URI("/internalapi");
+        var uri = new URI("/internalapi");
         if ($scope.category.indexOf("Movies") > -1) {
-            uri.addQuery("t", "moviesearch");
-            uri.addQuery("imdbid", $scope.selectedItem.value);
-        } else if ($scope.category.indexOf("Series") > -1) {
+                uri.addQuery("t", "moviesearch");
+            if ($scope.selectedItem.value != undefined) {
+                console.log("moviesearch per imdbid");
+                uri.addQuery("imdbid", $scope.selectedItem.value);
+            } else {
+                console.log("moviesearch per query");
+                uri.addQuery("q", $scope.searchTerm);
+            }
+            
+        } else if ($scope.category.indexOf("TV") > -1) {
             uri.addQuery("t", "tvsearch");
             uri.addQuery("tvdbid", $scope.selectedItem.value);
             if ($scope.searchSeason != "") {
@@ -293,7 +310,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
     };
 
     $scope.autocompleteActive = function () {
-        return $scope.category == 'movies' || $scope.category == 'series';
+        return ($scope.category.indexOf("TV") > -1) || ($scope.category.indexOf("Movies") > -1)
     };
 
 

@@ -13,43 +13,53 @@ from nzbhydra import config
 from nzbhydra.exceptions import ExternalApiInfoException
 from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch
 
-
-
-
+categories = {'All': {"pretty": "All", "index": 0},
+              'Movies': {"pretty": "Movie", "index": 1},
+              'Movies HD': {"pretty": "HD", "index": 2},
+              'Movies SD': {"pretty": "SD", "index": 3},
+              'TV': {"pretty": "TV", "index": 4},
+              'TV SD': {"pretty": "SD", "index": 5},
+              'TV HD': {"pretty": "HD", "index": 6},
+              'Audio': {"pretty": "Audio", "index": 7},
+              'Audio FLAC': {"pretty": "Audio FLAC", "index": 8},
+              'Audio MP3': {"pretty": "Audio MP3", "index": 9},
+              'Console': {"pretty": "Console", "index": 10},
+              'PC': {"pretty": "PC", "index": 11},
+              'XXX': {"pretty": "XXX", "index": 12}
+              }
 
 # TODO: I would like to use plugins for this but couldn't get this to work with pluginbase. Would also need a concept to work with the database
 search_modules = {"newznab": newznab, "womble": womble, "nzbclub": nzbclub, "nzbindex": nzbindex, "binsearch": binsearch}
 logger = logging.getLogger('root')
 
 config.init("searching.timeout", 5, int)
+config.init("searching.ignore_temporarily_disabled", False, bool) # If true we try providers even if they are temporarily disabled
+
 
 session = FuturesSession()
 providers = []
 
 
-def pick_providers(search_type=None, query_supplied=True, identifier_key=None, allow_query_generation=False):
+def pick_providers(query_supplied=True, identifier_key=None, allow_query_generation=False):
     picked_providers = []
 
     for p in providers:
         if not p.provider.enabled:
             logger.debug("Did not pick %s because it is disabled" % p)
             continue
-        # try:
-        #     status = p.provider.status.get()
-        #     if status.disabled_until > arrow.utcnow():
-        #         logger.debug("Did not pick %s because it is disabled temporarily due to an error: %s" % (p, status.reason))
-        #         continue
-        # except ProviderStatus.DoesNotExist:
-        #     pass
+        try:
+            status = p.provider.status.get()
+            if status.disabled_until > arrow.utcnow() and not config.cfg.get("searching.ignore_temporarily_disabled", False):
+                logger.info("Did not pick %s because it is disabled temporarily due to an error: %s" % (p, status.reason))
+                continue
+        except ProviderStatus.DoesNotExist:
+            pass
 
         if query_supplied and not p.supports_queries:
             logger.debug("Did not pick %s because a query was supplied but the provider does not support queries" % p)
             continue
         if not query_supplied and p.needs_queries:
             logger.debug("Did not pick %s because no query was supplied but the provider needs queries" % p)
-            continue
-        if search_type is not None and search_type not in p.search_types:
-            logger.debug("Did not pick %s because it does not support supplied search type %s" % (p, search_type))
             continue
         if not (identifier_key is None or identifier_key in p.search_ids or (allow_query_generation and p.generate_queries)):
             logger.debug("Did not pick %s because search will be done by an identifier and the provider or system wide settings don't allow query generation" % p)
@@ -79,7 +89,7 @@ def read_providers_from_config():
 def search(query, categories=None):
     logger.info("Searching for query '%s'" % query)
     queries_by_provider = {}
-    for p in pick_providers(search_type="general", query_supplied=True):
+    for p in pick_providers(query_supplied=True):
         queries = p.get_search_urls(query, categories)
         dbentry = ProviderSearch(provider=p.provider, query=query)
         queries_by_provider[p] = {"queries": queries, "dbsearchentry": dbentry}
@@ -87,10 +97,9 @@ def search(query, categories=None):
     # make a general query, probably only done by the gui
 
 
-def pick_providers_and_generate_queries(search_type, search_function, query=None, identifier_key=None, identifier_value=None, categories=None, **kwargs):
-    # The search_type is used to determine the providers, the search function is the function that is called using the supplied parameters, for every provider we found 
+def pick_providers_and_generate_queries(search_function, query=None, identifier_key=None, identifier_value=None, categories=None, **kwargs): 
     queries_by_provider = {}
-    picked_providers = pick_providers(search_type=search_type, query_supplied=query is not None or identifier_key is not None, identifier_key=identifier_key, allow_query_generation=True)
+    picked_providers = pick_providers(query_supplied=query is not None or identifier_key is not None, identifier_key=identifier_key, allow_query_generation=True)
 
     # If we have no query, we can still try to generate one for the providers which don't support query based searches, but only if we have an identifier.
     providers_that_allow_query_generation = []
@@ -125,13 +134,13 @@ def pick_providers_and_generate_queries(search_type, search_function, query=None
 
 def search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
     logger.info("Searching for show")  # todo:extend
-    queries_by_provider = pick_providers_and_generate_queries("tv", "get_showsearch_urls", *(), query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, season=season, episode=episode)
+    queries_by_provider = pick_providers_and_generate_queries("get_showsearch_urls", *(), query=query, identifier_key=identifier_key, identifier_value=identifier_value, categories=categories, season=season, episode=episode)
     return execute_search_queries(queries_by_provider)
 
 
 def search_movie(query=None, imbdbid=None, categories=None):
     logger.info("Searching for movie")  # todo:extend
-    queries_by_provider = pick_providers_and_generate_queries("movie", "get_moviesearch_urls", *(), query=query, identifier_key="imdbid" if imbdbid is not None else None, identifier_value=imbdbid, categories=categories)
+    queries_by_provider = pick_providers_and_generate_queries("get_moviesearch_urls", *(), query=query, identifier_key="imdbid" if imbdbid is not None else None, identifier_value=imbdbid, categories=categories)
     return execute_search_queries(queries_by_provider)
 
 

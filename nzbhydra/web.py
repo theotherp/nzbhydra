@@ -126,8 +126,7 @@ def internal_api(args):
         value = None
         if "tvdbid" in args:
             key = "tvdbid"
-            value = args[key]
-            
+            value = args[key]            
         results = search.search_show(args["q"], key, value, args["season"], args["ep"], args["cat"])
     if args["t"] == "moviesearch":
         results = search.search_movie(args["q"], args["imdbid"], args["cat"])
@@ -137,6 +136,8 @@ def internal_api(args):
     if args["t"] == "autocompleteseries":
         results = infos.find_series_ids(args["input"])
         return jsonify({"results": results})
+    if args["t"] == "categories":
+        return jsonify(search.categories)
     if results is not None:
         results = process_for_internal_api(results)
         return jsonify(results)  # Flask cannot return lists

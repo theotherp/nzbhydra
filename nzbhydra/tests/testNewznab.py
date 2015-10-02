@@ -4,11 +4,11 @@ import re
 import unittest
 from freezegun import freeze_time
 import responses
-from database import Provider
+from nzbhydra.database import Provider
 
-from searchmodules.newznab import NewzNab
-from tests import mockbuilder
-from tests.db_prepare import set_and_drop
+from nzbhydra.searchmodules.newznab import NewzNab
+from nzbhydra.tests import mockbuilder
+from nzbhydra.tests.db_prepare import set_and_drop
 
 
 class MyTestCase(unittest.TestCase):

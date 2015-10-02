@@ -3,20 +3,35 @@ import datetime
 import email
 import logging
 import time
-import arrow
 import xml.etree.ElementTree as ET
+
+import arrow
 from requests import RequestException
 import requests
-import re
 from furl import furl
-from nzbhydra.database import ProviderApiAccess
 
+from nzbhydra.database import ProviderApiAccess
 from nzbhydra.datestuff import now
 from nzbhydra.exceptions import ProviderAuthException, ProviderAccessException, ProviderConnectionException
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule
 
 logger = logging.getLogger('root')
+
+categories_to_newznab = {'Console': [1000],
+                         'Movie': [2000],
+                         'Movie_HD': [2040, 2050, 2060],
+                         'Movie_SD': [2030],
+                         'Audio': [3000],
+                         'Audio_FLAC': [3040],
+                         'Audio_MP3': [3010],
+                         'PC': [4000],
+                         'TV': [5000],
+                         'TV_SD': [5030],
+                         'TV_HD': [5040],
+                         'XXX': [6000],
+                         'Other': [7000]
+                         }
 
 
 def get_age_from_pubdate(pubdate):
@@ -30,8 +45,7 @@ def get_age_from_pubdate(pubdate):
 
 
 class NewzNab(SearchModule):
-
-    #todo feature: read caps from server on first run and store them in the config/database
+    # todo feature: read caps from server on first run and store them in the config/database
     def __init__(self, provider):
         """
 
@@ -41,8 +55,7 @@ class NewzNab(SearchModule):
         self.module = "newznab"
         self.category_search = True
         self.limit = 100
-        
-        
+
     def __repr__(self):
         return "Provider: %s" % self.name
 
@@ -52,7 +65,7 @@ class NewzNab(SearchModule):
 
     def get_search_urls(self, query=None, categories=None):
         f = self.build_base_url("search")
-        if query is not None :
+        if query is not None:
             f = f.add({"q": query})
         if categories is not None:
             f.add({"cat": ",".join(str(x) for x in categories)})
@@ -69,13 +82,12 @@ class NewzNab(SearchModule):
                 url.add({"season": season})
         else:
             url = self.build_base_url("search").add({"q": query})
-        
+
         if categories is None:
             categories = [5000]
-        
+
         url.add({"cat": ",".join(str(x) for x in categories)})
-            
-        
+
         return [url.url]
 
     def get_moviesearch_urls(self, generated_query=None, query=None, identifier_key=None, identifier_value=None, categories=None):
@@ -85,12 +97,12 @@ class NewzNab(SearchModule):
                 url.add({identifier_key: identifier_value})
         else:
             url = self.build_base_url("search").add({"q": query})
-        
+
         if categories is None:
             categories = [2000]
-        
+            
         url.add({"cat": ",".join(str(x) for x in categories)})
-        
+
         return [url.url]
 
     test = 0
@@ -136,21 +148,21 @@ class NewzNab(SearchModule):
                     entry.poster = (i["@attributes"]["value"])
                 # Store all the extra attributes, we will return them later for external apis
                 entry.attributes.append({"name": i["@attributes"]["name"], "value": i["@attributes"]["value"]})
-            entry.categories = sorted(entry.categories) #Sort to make the general category appear first
+            entry.categories = sorted(entry.categories)  # Sort to make the general category appear first
             entries.append(entry)
-            
+
         offset += self.limit
         if offset < total and offset < 400:
             f = furl(query)
-            query = f.remove("offset").add({"offset": offset}) 
+            query = f.remove("offset").add({"offset": offset})
             queries.append(query.url)
-            
+
             return {"entries": entries, "queries": queries}
-        
+
         return {"entries": entries, "queries": []}
-    
+
     def check_auth(self, body):
-        #TODO: unfortunately in case of an auth problem newznab doesn't return json even if requested. So this would be easier/better if we used XML responses instead of json
+        # TODO: unfortunately in case of an auth problem newznab doesn't return json even if requested. So this would be easier/better if we used XML responses instead of json
         if '<error code="100"' in body:
             raise ProviderAuthException("The API key seems to be incorrect.", self)
         if '<error code="101"' in body:
@@ -161,9 +173,9 @@ class NewzNab(SearchModule):
             raise ProviderAccessException("The API seems to be disabled for the moment.", self)
         if '<error code=' in body:
             raise ProviderAccessException("Unknown error while trying to access the provider.", self)
-        
+
     def get_nfo(self, guid):
-        #try to get raw nfo. if it is xml the provider doesn't actually return raw nfos (I'm looking at you, DOGNzb)
+        # try to get raw nfo. if it is xml the provider doesn't actually return raw nfos (I'm looking at you, DOGNzb)
         url = self.build_base_url("getnfo", o="xml", extended=0).add({"id": guid})
         papiaccess = ProviderApiAccess(provider=self.provider, type="nfo")
         try:
@@ -171,13 +183,13 @@ class NewzNab(SearchModule):
             if response.status_code != 200:
                 raise ProviderConnectionException("Error while retrieving NFO for ID %s. Returned status code:" % (guid, response.status_code), self)
             papiaccess.response_time = response.elapsed.microseconds / 1000
-            
+
             nfo = response.text
             if "<?xml" in nfo:
                 tree = ET.fromstring(nfo)
                 for elem in tree.iter('item'):
                     nfo = elem.find("description").text
-            #otherwise we just hope it's the nfo...
+                    # otherwise we just hope it's the nfo...
         except RequestException:
             raise ProviderConnectionException("Error while connecting.", self)
         except ProviderConnectionException as e:
@@ -185,9 +197,9 @@ class NewzNab(SearchModule):
             papiaccess.error = "Error while retrieving NFO for ID %s." % guid
             papiaccess.save()
             raise
-        
+
         papiaccess.save()
-        return nfo    
+        return nfo
 
 
 def get_instance(provider):
