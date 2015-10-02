@@ -82,6 +82,12 @@ class NewzNab(SearchModule):
         f = self.build_base_url("search", "All")
         if args["query"]:
             f = f.add({"q": args["query"]})
+        if args["minsize"]:
+            f = f.add({"minsize": args["minsize"]})
+        if args["maxsize"]:
+            f = f.add({"maxsize": args["maxsize"]})
+        if args["maxage"]:
+            f = f.add({"age": args["maxage"]})
         return [f.url]
 
     def get_showsearch_urls(self, args):
@@ -91,9 +97,9 @@ class NewzNab(SearchModule):
         if args["query"] is None:
             url = self.build_base_url("tvsearch", args["category"])
             if args["rid"] is not None:
-                url.add({args["rid"]: args["rid"]})
+                url.add({"rid": args["rid"]})
             if args["tvdbid"] is not None:
-                url.add({args["thetvdb"]: args["thetvdb"]})
+                url.add({"tvdbid": args["tvdbid"]})
             if args["episode"] is not None:
                 url.add({"ep": args["episode"]})
             if args["season"] is not None:
@@ -196,7 +202,7 @@ class NewzNab(SearchModule):
     def get_nfo(self, guid):
         # try to get raw nfo. if it is xml the provider doesn't actually return raw nfos (I'm looking at you, DOGNzb)
         url = self.build_base_url("getnfo", "All", o="xml", extended=0).add({"id": guid})
-        papiaccess = ProviderApiAccess(provider=self.provider, type="nfo")
+        papiaccess = ProviderApiAccess(provider=self.provider, type="nfo", url=url)
         try:
             response = requests.get(url)
             if response.status_code != 200:

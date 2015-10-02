@@ -35,7 +35,15 @@ class Binsearch(SearchModule):
         return url
 
     def get_search_urls(self, args):
-        return [self.build_base_url().add({"q": args["query"]}).tostr()]
+        f = self.build_base_url().add({"q": args["query"]})
+        if args["minsize"]:
+            f = f.add({"minsize": args["minsize"]})
+        if args["maxsize"]:
+            f = f.add({"maxsize": args["maxsize"]})
+        if args["maxage"]:
+            f = f.add({"adv_age": args["maxage"]})
+        
+        return [f.tostr()]
 
     def get_showsearch_urls(self, args):
         urls = []

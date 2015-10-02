@@ -1,9 +1,9 @@
 from peewee import OperationalError
-from nzbhydra.database import Provider, ProviderApiAccess, ProviderSearch, ProviderStatus
+from nzbhydra.database import Provider, ProviderApiAccess, ProviderSearch, ProviderStatus, Search
 from nzbhydra import database
 
 
-def set_and_drop(dbfile="tests.db", tables=[Provider, ProviderApiAccess, ProviderSearch, ProviderStatus]):
+def set_and_drop(dbfile="tests.db", tables=[Provider, ProviderApiAccess, ProviderSearch, ProviderStatus, Search]):
     database.db.init(dbfile)
     database.db.connect()
 

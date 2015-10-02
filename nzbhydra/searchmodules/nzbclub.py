@@ -35,7 +35,8 @@ class NzbClub(SearchModule):
         return url
 
     def get_search_urls(self, args):
-        return [self.build_base_url().add({"q": args["query"]}).tostr()]
+        f = self.build_base_url().add({"q": args["query"]})
+        return [f.tostr()]
 
     def get_showsearch_urls(self, args):
         if args["season"] is not None:

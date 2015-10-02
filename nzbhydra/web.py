@@ -136,13 +136,7 @@ def internal_api(args):
     results = None
     if args["t"] == "search":
         results = search.search(True, args)
-    if args["t"] == "tvsearch":
-        #search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None):
-        key = None
-        value = None
-        if "tvdbid" in args:
-            key = "tvdbid"
-            value = args[key]            
+    if args["t"] == "tvsearch":   
         results = search.search_show(True, args)
     if args["t"] == "moviesearch":
         results = search.search_movie(True, args)

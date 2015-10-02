@@ -14,9 +14,9 @@ from furl import furl
 
 from nzbhydra import search, config, search_module, database
 from nzbhydra.tests import mockbuilder
-
 from nzbhydra.database import Provider
 from nzbhydra.tests.db_prepare import set_and_drop
+from nzbhydra.tests.providerTest import ProviderTestcase
 
 logging.getLogger("root").addHandler(logging.StreamHandler(sys.stdout))
 logging.getLogger("root").setLevel("DEBUG")
@@ -28,12 +28,11 @@ Provider(module="nzbclub", name="NZBClub", settings={"query_url": "http://127.0.
 Provider(module="womble", name="womble", settings={"query_url": "http://www.newshost.co.za/rss", "base_url": "http://127.0.0.1:5001/womble", "search_types": ["tv"]}).save()
 
 
-class MyTestCase(unittest.TestCase):
+class MyTestCase(ProviderTestcase):
     def setUp(self):
         self.oldExecute_search_queries = search.start_search_futures
         database.ProviderStatus.delete().execute()
         database.ProviderSearch.delete().execute()
-        database.ProviderSearchApiAccess.delete().execute()
 
     def tearDown(self):
         search.start_search_futures = self.oldExecute_search_queries
@@ -51,7 +50,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_pick_providers(self):
         search.read_providers_from_config()
-        
+
         providers = search.pick_providers()
         self.assertEqual(3, len(providers))
 
@@ -71,312 +70,12 @@ class MyTestCase(unittest.TestCase):
         providers = search.pick_providers("tv", identifier_key="imdbid")
         self.assertEqual(1, len(providers))
         self.assertEqual("NZBs.org", providers[0].name)
-        
-        #Test category search, the first provider is now only enabled for audio searches, so it will be only 2 available 
+
+        # Test category search, the first provider is now only enabled for audio searches, so it will be only 2 available 
         search.providers[0].provider.settings["categories"] = ["Audio"]
         providers = search.pick_providers(category="Movie")
         self.assertEqual(2, len(providers))
 
-    def testGeneralSearchProviderSelectionAndUrlBuilding(self):
-
-        search.read_providers_from_config()
-
-        from unittest.mock import MagicMock
-        search.start_search_futures = MagicMock(return_value=[])
-
-        # General search, only providers which support queries
-        search.search("aquery")
-        args = search.start_search_futures.call_args[0][0]  # mock returns a tuple, with the directional arguments as tuple first, of which we want the first (and only) argument, our actual arguments, which is a dict module:[urls]
-        args = [args[y] for y in sorted(args, key=lambda x: x.name)]  # Url lists, sorted by name of provider because the order might be random
-        self.assertEqual(3, len(args))  # both newznab providers and nzbclub
-
-        url = args[0]["queries"][0]  # nzbclub
-        web_args = url.split("?")[1].split("&")
-        assert "t=search" in web_args
-        assert "apikey=apikeydognzb" in web_args
-        assert "q=aquery" in web_args
-
-        url = args[1]["queries"][0]
-        web_args = url.split("?")[1].split("&")
-        assert "nzbclub" in url
-        assert "q=aquery" in web_args
-
-        url = args[2]["queries"][0]
-        web_args = url.split("?")[1].split("&")  # and then we get all arguments because we cannot check against the url because furl builds it somewhat randomly
-        assert "t=search" in web_args
-        assert "apikey=apikeynzbsorg" in web_args
-        assert "q=aquery" in web_args
-
-    @responses.activate
-    def testTvSearchProviderSelectionAndUrlBuilding(self):
-
-        search.read_providers_from_config()
-
-        from unittest.mock import MagicMock
-        search.start_search_futures = MagicMock(return_value=[])
-
-        # TV search without any specifics (return all lates releases), this includes wombles but excludes nzbclub 
-        search.search_show()
-        args = search.start_search_futures.call_args[0][0]
-        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(3, len(args))  # 3 providers (no nzbsorg
-
-        url = args[0]["queries"][0]
-        web_args = url.split("?")[1].split("&")
-        assert "t=tvsearch" in web_args
-        assert "apikey=apikeydognzb" in web_args
-
-        url = args[1]["queries"][0]
-        web_args = url.split("?")[1].split("&")
-        assert "t=tvsearch" in web_args
-        assert "apikey=apikeynzbsorg" in web_args
-        assert "cat=5000" in web_args  # no category provided, so we just added 5000 
-        self.assertEqual(7, len(web_args))  # other args: o=json & extended=1 & offset & limit      
-
-        url = args[2]["queries"][0]
-        web_args = url.split("?")[1].split("&")
-        assert "http://www.newshost.co.za/rss" in url
-        self.assertEqual(1, len(web_args))  # only disable pretty titles
-
-
-
-        # TV search with a query (not using identifiers), so no wombles
-        search.search_show(query="aquery")
-        args = search.start_search_futures.call_args[0][0]
-        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(3, len(args))  # 3 providers
-
-        url = args[0]["queries"][0]
-        assert "dognzb" in url
-        web_args = url.split("?")[1].split("&")
-        assert "t=search" in web_args
-        assert "q=aquery" in web_args
-        assert "apikey=apikeydognzb" in web_args
-
-        url = args[1]["queries"][0]
-        assert "nzbclub" in url
-        web_args = url.split("?")[1].split("&")
-        assert "q=aquery" in web_args
-
-        url = args[2]["queries"][0]
-        assert "nzbs" in url
-        web_args = url.split("?")[1].split("&")
-        assert "t=search" in web_args
-        assert "apikey=apikeynzbsorg" in web_args
-        assert "q=aquery" in web_args
-        assert "cat=5000" in web_args  # no category provided, so we just added 5000
-
-        url_re = re.compile(r'.*tvmaze.*')
-        responses.add(responses.GET, url_re, body=json.dumps({"name": "Breaking Bad"}), status=200, content_type='application/json')
-
-
-        # TV search with tvdbid, allow query generation, so no wombles or nzbclub
-        search.search_show(identifier_key="tvdbid", identifier_value="81189")
-        args = search.start_search_futures.call_args[0][0]
-        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(3, len(args))  # 
-
-        url = args[0]["queries"][0]
-        assert "dognzb" in url
-        web_args = url.split("?")[1].split("&")
-        assert "t=tvsearch" in web_args
-        assert "apikey=apikeydognzb" in web_args
-        assert "tvdbid=81189" in web_args
-        assert "cat=5000" in web_args  # no category provided, so we just added 5000
-
-        url = args[1]["queries"][0]
-        assert "nzbclub" in url
-        web_args = url.split("?")[1].split("&")
-        # todo query generation
-
-        url = args[2]["queries"][0]
-        assert "nzbs" in url
-        web_args = url.split("?")[1].split("&")
-        assert "t=tvsearch" in web_args
-        assert "tvdbid=81189" in web_args
-        assert "apikey=apikeynzbsorg" in web_args
-
-
-        # TV search with tvdbid and season and episode
-        search.search_show(identifier_key="tvdbid", identifier_value="81189", season=1, episode=2)
-        args = search.start_search_futures.call_args[0][0]
-        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(3, len(args))  # 2 providers
-
-        url = args[0]["queries"][0]
-        assert "dognzb" in url
-        web_args = url.split("?")[1].split("&")
-        assert "t=tvsearch" in web_args
-        assert "apikey=apikeydognzb" in web_args
-        assert "tvdbid=81189" in web_args
-        assert "season=1" in web_args
-        assert "ep=2" in web_args
-        assert "cat=5000" in web_args  # no category provided, so we just added 5000
-
-        url = args[1]["queries"][0]
-        assert "nzbclub" in url
-        web_args = url.split("?")[1].split("&")
-        assert "q=Breaking+Bad+s01e02+or+Breaking+Bad+1x02" in web_args
-
-        url = args[2]["queries"][0]
-        assert "nzbs" in url
-        web_args = url.split("?")[1].split("&")
-        assert "t=tvsearch" in web_args
-        assert "tvdbid=81189" in web_args
-        assert "season=1" in web_args
-        assert "ep=2" in web_args
-        assert "apikey=apikeynzbsorg" in web_args
-
-    @responses.activate
-    def testMovieSearchProviderSelectionAndUrlBuilding(self):
-        search.read_providers_from_config()
-
-        from unittest.mock import MagicMock
-        search.start_search_futures = MagicMock(return_value=[])
-
-        # movie search without any specifics (return all latest releases)
-        search.search_movie()
-        args = search.start_search_futures.call_args[0][0]
-        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(3, len(args))
-
-        url = args[0]["queries"][0]
-        web_args = url.split("?")[1].split("&")
-        assert "t=movie" in web_args
-        assert "apikey=apikeydognzb" in web_args
-        assert "cat=2000" in web_args  # no category provided, so we just added 2000
-        
-
-
-        # movie search with a query 
-        search.search_movie(query="aquery")
-        args = search.start_search_futures.call_args[0][0]
-        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(3, len(args))
-
-        url = args[0]["queries"][0]
-        assert "dognzb" in url
-
-        url = args[1]["queries"][0]
-        assert "nzbclub" in url
-        
-
-        url = args[2]["queries"][0]
-        web_args = url.split("?")[1].split("&")
-        assert "t=search" in web_args
-        assert "q=aquery" in web_args
-        assert "apikey=apikeynzbsorg" in web_args
-        assert "cat=2000" in web_args  # no category provided, so we just added 2000
-
-
-
-        # movie search with imdbid, so a query should be generated for and used by nzbclub
-        url_re = re.compile(r'.*omdbapi.*')
-        responses.add(responses.GET, url_re,
-                      body=json.dumps({"Title": "American Beauty"}), status=200,
-                      content_type='application/json')
-        search.search_movie(imdbid="tt0169547")
-        args = search.start_search_futures.call_args[0][0]
-        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(3, len(args))  # 2 providers
-
-        url = args[0]["queries"][0]
-        assert "dognzb" in url
-        
-        url = args[1]["queries"][0]
-        web_args = url.split("?")[1].split("&")
-        assert "nzbclub" in url
-        assert "q=American+Beauty" in web_args
-
-        url = args[2]["queries"][0]
-        web_args = url.split("?")[1].split("&")
-        assert "t=movie" in web_args
-        assert "imdbid=tt0169547" in web_args
-        assert "apikey=apikeynzbsorg" in web_args
-        assert "cat=2000" in web_args
-
-
-        # movie search with imdbid and category
-        search.search_movie(imdbid="tt0169547", category="Movies SD")
-        args = search.start_search_futures.call_args[0][0]
-        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(3, len(args))  # 2 providers
-
-        url = args[1]["queries"][0]
-        web_args = url.split("?")[1].split("&")
-        assert "nzbclub" in url
-        assert "q=American+Beauty" in web_args
-        # todo category transformation for query based providers
-
-        url = args[2]["queries"][0]
-        web_args = url.split("?")[1].split("&")
-        assert "t=movie" in web_args
-        assert "imdbid=tt0169547" in web_args
-        assert "apikey=apikeynzbsorg" in web_args
-        assert "cat=2030" in web_args
-
-        # Finally a test where we disable query generation
-        # movie search with imdbid, so a query should be generated for and used by nzbclub
-        config.cfg["searching.allow_query_generation"] = False
-        url_re = re.compile(r'.*omdbapi.*')
-        responses.add(responses.GET, url_re,
-                      body={"Title": "American Beauty"}, status=200,
-                      content_type='application/json')
-        search.search_movie(imdbid="tt0169547")
-        args = search.start_search_futures.call_args[0][0]
-        args = [args[y] for y in sorted(args, key=lambda x: x.name)]
-        self.assertEqual(1, len(args))  # Only nzbs,org
-
-        config.cfg["searching.allow_query_generation"] = True  # set back for later tests
-
-    @responses.activate
-    def testSearchExecution(self):
-
-        # movie search without any specifics (return all latest releases)
-        search.read_providers_from_config()
-
-        mockitem_nzbs = mockbuilder.buildNewznabItem("myId", "myTitle", "myGuid", "http://nzbs.org/myId.nzb", None, None, 12345, "NZBs.org", [2000, 2040])
-        mockresponse_nzbs = mockbuilder.buildNewznabResponse("NZBs.org", [mockitem_nzbs])
-
-        url_re = re.compile(r'.*nzbsorg.*')
-        responses.add(responses.GET, url_re,
-                      body=json.dumps(mockresponse_nzbs), status=200,
-                      content_type='application/json')
-
-        results = search.search_movie()
-        self.assertEqual(1, len(results))
-        result = results[0]
-        self.assertEqual("myTitle", result.title)
-        assert 2000 in result.categories
-        assert 2040 in result.categories
-
-    @responses.activate
-    def testSearchExceptions(self):
-        # movie search without any specifics (return all latest releases)
-        search.read_providers_from_config()
-
-        from nzbhydra.tests.testLogger import LoggingCaptor
-        from nzbhydra.log import setup_custom_logger
-        logger = setup_custom_logger("root")
-        logging_captor = LoggingCaptor()
-        logger.addHandler(logging_captor)
-
-        with responses.RequestsMock() as rsps:
-            url_re = re.compile(r'.*')
-            rsps.add(responses.GET, url_re,
-                     body='<error code="100" description="Incorrect user credentials"/>', status=200,
-                     content_type='application/json')
-            search.search_movie()
-            assert any("The API key seems to be incorrect" in s for s in logging_captor.messages)
-
-        with responses.RequestsMock() as rsps:
-            logging_captor.messages = []
-            url_re = re.compile(r'.*')
-            rsps.add(responses.GET, url_re,
-                     body='', status=404,
-                     content_type='application/json')
-            search.search_movie()
-            assert any("Unable to connect with" in s for s in logging_captor.messages)
 
     def testHandleProviderFailureAndSuccess(self):
         provider_model = Provider.get(Provider.name == "NZBs.org")

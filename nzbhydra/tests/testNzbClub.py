@@ -1,14 +1,14 @@
-import unittest
-
 from freezegun import freeze_time
+
 from furl import furl
 
 from nzbhydra.database import Provider
 from nzbhydra.searchmodules.nzbclub import NzbClub
 from nzbhydra.tests.db_prepare import set_and_drop
+from nzbhydra.tests.providerTest import ProviderTestcase
 
 
-class MyTestCase(unittest.TestCase):
+class MyTestCase(ProviderTestcase):
     def setUp(self):
         set_and_drop()
         self.nzbclub = Provider(module="nzbclub", name="nzbclub", query_url="http://127.0.0.1:5001/nzbclub", base_url="http://127.0.0.1:5001/nzbclub", search_types=["general", "tv", "movie"], generate_queries=True)
@@ -16,12 +16,14 @@ class MyTestCase(unittest.TestCase):
 
     def testUrlGeneration(self):
         w = NzbClub(self.nzbclub)
-        urls = w.get_showsearch_urls(generated_query="a showtitle", season=1, episode=2)
+        self.args.update({"query": "a showtitle", "season": 1, "episode": 2})
+        urls = w.get_showsearch_urls(args=self.args)
         self.assertEqual(1, len(urls))
         print(urls[0])
         self.assertEqual('a showtitle s01e02 or a showtitle 1x02', furl(urls[0]).args["q"])
 
-        urls = w.get_showsearch_urls(generated_query="a showtitle", season=1)
+        self.args.update({"query": "a showtitle", "season": 1, "episode": None})
+        urls = w.get_showsearch_urls(args=self.args)
         self.assertEqual(1, len(urls))
         self.assertEqual('a showtitle s01 or a showtitle "season 1"', furl(urls[0]).args["q"])
 

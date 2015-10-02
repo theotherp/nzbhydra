@@ -9,9 +9,10 @@ from nzbhydra.database import Provider
 from nzbhydra.searchmodules.newznab import NewzNab
 from nzbhydra.tests import mockbuilder
 from nzbhydra.tests.db_prepare import set_and_drop
+from nzbhydra.tests.providerTest import ProviderTestcase
 
 
-class MyTestCase(unittest.TestCase):
+class MyTestCase(ProviderTestcase):
 
     def setUp(self):    
         set_and_drop()    
@@ -70,8 +71,8 @@ class MyTestCase(unittest.TestCase):
     def testNewznabSearchQueries(self):
         
         nzbsorg = NewzNab(self.nzbsorg)
-        
-        queries = nzbsorg.get_search_urls("aquery")
+        self.args.update({"query": "aquery"})
+        queries = nzbsorg.get_search_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg" in query
@@ -80,7 +81,8 @@ class MyTestCase(unittest.TestCase):
         assert "q=aquery" in query
         assert "o=json" in query
         
-        queries = nzbsorg.get_showsearch_urls()
+        self.args.update({"query": None})
+        queries = nzbsorg.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
@@ -88,7 +90,8 @@ class MyTestCase(unittest.TestCase):
         assert "t=tvsearch" in query
         assert "o=json" in query
         
-        queries = nzbsorg.get_showsearch_urls(category="All")
+        self.args.update({"category": "All"})
+        queries = nzbsorg.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
@@ -96,7 +99,8 @@ class MyTestCase(unittest.TestCase):
         assert "t=tvsearch" in query
         assert "o=json" in query
         
-        queries = nzbsorg.get_showsearch_urls(identifier_key="rid", identifier_value="8511")
+        self.args.update({"rid": "8511"})
+        queries = nzbsorg.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
@@ -105,7 +109,8 @@ class MyTestCase(unittest.TestCase):
         assert "rid=8511" in query
         assert "o=json" in query
         
-        queries = nzbsorg.get_showsearch_urls(identifier_key="rid", identifier_value="8511", season="1")
+        self.args.update({"rid": "8511", "season": "1"})
+        queries = nzbsorg.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
@@ -115,7 +120,8 @@ class MyTestCase(unittest.TestCase):
         assert "o=json" in query
         assert "season=1" in query
         
-        queries = nzbsorg.get_showsearch_urls(identifier_key="rid", identifier_value="8511", season="1", episode="2")
+        self.args.update({"rid": "8511", "season": "1", "episode":"2"})
+        queries = nzbsorg.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
@@ -126,7 +132,8 @@ class MyTestCase(unittest.TestCase):
         assert "season=1" in query
         assert "ep=2" in query
         
-        queries = nzbsorg.get_moviesearch_urls(identifier_key="imdbid", identifier_value="12345678")
+        self.args.update({"imdbid": "12345678"})
+        queries = nzbsorg.get_moviesearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
@@ -135,7 +142,8 @@ class MyTestCase(unittest.TestCase):
         assert "imdbid=12345678" in query
         assert "o=json" in query
         
-        queries = nzbsorg.get_moviesearch_urls(identifier_key="imdbid", identifier_value="12345678", category="Movies")
+        self.args.update({"imdbid": "12345678", "category": "Movies"})
+        queries = nzbsorg.get_moviesearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg?" in query
