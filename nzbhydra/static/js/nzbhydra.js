@@ -1,5 +1,55 @@
 var nzbhydraapp = angular.module('nzbhydraApp', ['ngRoute', 'angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.bootstrap-slider']);
 
+nzbhydraapp.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+    $routeProvider.when('/search/:category/:query', {
+        templateUrl: '/static/html/searchtemplate.html',
+        controller: 'SearchController',
+        title: 'NZB Hydra - Search',
+        resolve: {
+            ignored: function ($route) {
+                $route.current.params.mode = "all";
+            }
+        }
+
+    }).when('/searchmovies/:category/:imdbid/:title/', {
+        templateUrl: '/static/html/searchtemplate.html',
+        controller: 'SearchController',
+        title: 'NZB Hydra - Movie search',
+        resolve: {
+            ignored: function ($route) {
+                $route.current.params.mode = "movie";
+            }
+        }
+
+    }).when('/searchtv/:category/:tvdbid/:title/:season?/:episode?', {
+        templateUrl: '/static/html/searchtemplate.html',
+        controller: 'SearchController',
+        title: 'NZB Hydra - TV search',
+        resolve: {
+            ignored: function ($route) {
+                $route.current.params.mode = "tv";
+            }
+        }
+
+    }).when('/config', {
+        templateUrl: '/js/views/news/news.html',
+        controller: 'ConfigController',
+        title: 'NZB Hydra - Configuration'
+        
+    }).otherwise({
+        templateUrl: '/static/html/searchtemplate.html',
+        controller: 'SearchController',
+        title: 'NZB Hydra',
+        resolve: {
+            ignored: function ($route) {
+                $route.current.params.mode = "landing";
+            }
+        }
+    });
+
+    $locationProvider.html5Mode(true);
+}]);
+
 
 nzbhydraapp.run(['$rootScope', '$route', function ($rootScope, $route) {
     $rootScope.$on('$routeChangeSuccess', function (newVal, oldVal) {
@@ -156,6 +206,16 @@ nzbhydraapp.controller('ModalInstanceCtrl', ['$scope', '$modalInstance', 'conten
 }]);
 
 
+function sortResults (input, predicate, reversed) {
+        var sorted = _.sortBy(input, function (i) {
+            return i[0][predicate];
+        });
+        if (reversed) {
+            sorted.reverse();
+        }
+    return sorted;
+    }
+
 nzbhydraapp.filter('sortResults', function () {
     return function (input, predicate, reversed) {
         var sorted = _.sortBy(input, function (i) {
@@ -184,18 +244,109 @@ nzbhydraapp.directive('ngEnter', function () {
 });
 
 
-nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope, $http) {
+nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '$location', function ($scope, $http, $routeParams, $location) {
 
-    $scope.category = "All";
-    $scope.searchTerm = "";
-    $scope.extraInfo = "";
-    $scope.searchSeason = "";
-    $scope.searchEpisode = "";
+    $scope.category = (typeof $routeParams.category === "undefined") ? "All" : $routeParams.category;
+
+    $scope.searchTerm = (typeof $routeParams.query === "undefined") ? "" : $routeParams.query;
+
+    $scope.imdbid = (typeof $routeParams.imdbid === "undefined") ? "" : $routeParams.imdbid;
+    $scope.tvdbid = (typeof $routeParams.tvdbid === "undefined") ? "" : $routeParams.tvdbid;
+    $scope.title = (typeof $routeParams.title === "undefined") ? "" : $routeParams.title;
+    $scope.season = (typeof $routeParams.season === "undefined") ? "" : $routeParams.season;
+    $scope.episode = (typeof $routeParams.episode === "undefined") ? "" : $routeParams.episode;
+
+    $scope.minsize = (typeof $routeParams.minsize === "undefined") ? "" : $routeParams.minsize;
+    $scope.maxsize = (typeof $routeParams.maxsize === "undefined") ? "" : $routeParams.maxsize;
+    $scope.minage = (typeof $routeParams.minage === "undefined") ? "" : $routeParams.minage;
+    $scope.maxage = (typeof $routeParams.maxage === "undefined") ? "" : $routeParams.maxage;
+    
+    $scope.showProviders = {};
+
+
+    if ($scope.title != "" && $scope.query == "") {
+        $scope.searchTerm = $scope.title;
+    }
+
+    //Only start search if we're in search mode, landing mode just shows the search box
+    console.log($routeParams.mode);
+    if ($routeParams.mode != "landing") {
+
+        //Search start. TODO: Move to service
+
+        var uri = new URI("/internalapi");
+        if ($scope.category.indexOf("Movies") > -1) {
+            uri.addQuery("t", "moviesearch");
+            if ($scope.imdbid != "undefined") {
+                console.log("moviesearch per imdbid");
+                uri.addQuery("imdbid", $scope.imdbid);
+                uri.addQuery("title", $scope.title);
+            } else {
+                console.log("moviesearch per query");
+                uri.addQuery("query", $scope.searchTerm);
+            }
+
+        } else if ($scope.category.indexOf("TV") > -1) {
+            uri.addQuery("t", "tvsearch");
+            if ($scope.tvdbid) {
+                uri.addQuery("tvdbid", $scope.tvdbid);
+                uri.addQuery("title", $scope.title);
+            }
+
+            if ($scope.season != "") {
+                uri.addQuery("season", $scope.season);
+            }
+            if ($scope.episode != "") {
+                uri.addQuery("episode", $scope.episode);
+            }
+        } else {
+            uri.addQuery("t", "search").addQuery("query", $scope.searchTerm).addQuery("category", $scope.category);
+        }
+
+        if ($scope.minsize != "") {
+            uri.addQuery("minsize", $scope.minsize);
+        }
+        if ($scope.maxsize != "") {
+            uri.addQuery("maxsize", $scope.maxsize);
+        }
+        if ($scope.minage != "") {
+            uri.addQuery("minage", $scope.minage);
+        }
+        if ($scope.maxage != "") {
+            uri.addQuery("maxage", $scope.maxage);
+        }
+
+
+        
+        $http.get(uri).then(function (data) {
+
+            $scope.results = data.data.results;
+            $scope.filteredResults = data.data.results;
+            $scope.providersearches = data.data.providersearches;
+
+            //Sum up response times of providers from individual api accesses
+            _.each($scope.providersearches, function (ps) {
+                ps.averageResponseTime = _.reduce(ps.api_accesses, function (memo, rp) {
+                    return memo + rp.response_time;
+                }, 0);
+                ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
+            });
+            
+            _.each($scope.providersearches, function (ps) {
+              $scope.showProviders[ps.provider] = true;  
+            });
+            
+            
+        });
+
+
+        //Search end
+    }
+
     $scope.typeAheadWait = 300;
     $scope.selectedItem = "";
-    $scope.selectedQuality = "All qualities";
     $scope.autocompleteLoading = false;
-    
+
 
     $scope.isAskById = false; //If true a check box will be shown asking the user if he wants to search by ID 
     $scope.isById = {value: true}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
@@ -205,8 +356,6 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
 
     $scope.toggle = function (searchCategory) {
         $scope.category = searchCategory;
-        $scope.selectedItem = "";
-        $scope.searchTerm = "";
 
         //Show checkbox to ask if the user wants to search by ID (using autocomplete)
         $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 );
@@ -224,7 +373,6 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
 
         //Don't use autocomplete if checkbox is disabled
         if (!$scope.isById.value) {
-
             return {};
         }
 
@@ -248,81 +396,63 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
                 return response.data.results;
             });
         } else {
-            console.log("ha");
             return {};
         }
+    };
+
+    $scope.startSearch = function () {
+        var uri;
+        if ($scope.imdbid != "") {
+            uri = new URI("/searchmovies");
+            uri.segment($scope.category);
+            uri.segment($scope.imdbid);
+            uri.segment($scope.title);
+        } else if ($scope.tvdbid != "") {
+            uri = new URI("/searchtv");
+            uri.segment($scope.category);
+            uri.segment($scope.tvdbid);
+            uri.segment($scope.title);
+            if ($scope.season != "") {
+                uri.segment($scope.season);
+            }
+            if ($scope.episode != "") {
+                uri.segment($scope.episode);
+            }
+        } else {
+            uri = new URI("/search");
+            uri.segment($scope.category);
+            uri.segment($scope.searchTerm);
+        }
+
+        if ($scope.minsize != "") {
+            uri.addQuery("minsize", $scope.minsize);
+        }
+        if ($scope.maxsize != "") {
+            uri.addQuery("maxsize", $scope.maxsize);
+        }
+        if ($scope.minage != "") {
+            uri.addQuery("minage", $scope.minage);
+        }
+        if ($scope.maxage != "") {
+            uri.addQuery("maxage", $scope.maxage);
+        }
+
+        $location.url(uri)
+
     };
 
 
     $scope.selectAutocompleteItem = function ($item) {
         $scope.selectedItem = $item;
-
-        $scope.startSearch($item);
-    };
-
-
-    $scope.startSearch = function () {
-        var uri = new URI("/internalapi");
+        $scope.title = $item.label;
         if ($scope.category.indexOf("Movies") > -1) {
-            uri.addQuery("t", "moviesearch");
-            if ($scope.selectedItem.value != undefined) {
-                console.log("moviesearch per imdbid");
-                uri.addQuery("imdbid", $scope.selectedItem.value);
-                uri.addQuery("title", $scope.selectedItem.label);
-            } else {
-                console.log("moviesearch per query");
-                uri.addQuery("query", $scope.searchTerm);
-            }
-
+            $scope.imdbid = $item.value;
         } else if ($scope.category.indexOf("TV") > -1) {
-            uri.addQuery("t", "tvsearch");
-            if ($scope.selectedItem.value != undefined) {
-                uri.addQuery("tvdbid", $scope.selectedItem.value);
-                uri.addQuery("title", $scope.selectedItem.label);
-            }
-
-            if ($scope.searchSeason != "") {
-                uri.addQuery("season", $scope.searchSeason);
-            }
-            if ($scope.searchEpisode != "") {
-                uri.addQuery("episode", $scope.searchEpisode);
-            }
-        } else {
-            uri.addQuery("t", "search").addQuery("query", $scope.searchTerm).addQuery("category", $scope.category);
+            $scope.tvdbid = $item.value;
         }
-
-        if ($scope.minsize != undefined) {
-            uri.addQuery("minsize", $scope.minsize);
-        }
-        if ($scope.maxsize != undefined) {
-            uri.addQuery("maxsize", $scope.maxsize);
-        }
-        if ($scope.minage != undefined) {
-            uri.addQuery("minage", $scope.minage);
-        }
-        if ($scope.maxage != undefined) {
-            uri.addQuery("maxage", $scope.maxage);
-        }
-        
-        
-
-        console.log(uri);
-        $http.get(uri).then(function (data) {
-
-            $scope.results = data.data.results;
-            $scope.providersearches = data.data.providersearches;
-
-            //Sum up response times of providers from individual api accesses
-            _.each($scope.providersearches, function (ps) {
-                ps.averageResponseTime = _.reduce(ps.api_accesses, function (memo, rp) {
-                    return memo + rp.response_time;
-                }, 0);
-                ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
-            });
-        });
-
-
+        $scope.startSearch();
     };
+
 
     $scope.autocompleteActive = function () {
         return ($scope.category.indexOf("TV") > -1) || ($scope.category.indexOf("Movies") > -1)
@@ -335,7 +465,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
 
     $scope.results = [];
     $scope.isShowDuplicates = true;
-    $scope.predicate = 'age';
+    $scope.predicate = 'age_days';
     $scope.reversed = false;
 
     $scope.setSorting = function (predicate, reversedDefault) {
@@ -345,8 +475,56 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', function ($scope,
             $scope.reversed = reversedDefault;
         }
         $scope.predicate = predicate;
-        console.log($scope.predicate);
     };
 
-
+    
+    $scope.isShow = function(item) {
+        var doShow = $scope.showProviders[item.provider];
+        if (doShow && $scope.minsize) {
+            doShow &= item.size > $scope.minsize * 1024 * 1024;
+        }
+        if (doShow && $scope.maxsize) {
+            doShow &= item.size < $scope.maxsize * 1024 * 1024;
+        }
+        if (doShow && $scope.minage) {
+            doShow &= item.age_days > $scope.minage;
+        }
+        if (doShow && $scope.maxage) {
+            doShow &= item.age_days < $scope.maxage;
+        }
+        
+        return doShow;
+    };
+    
 }]);
+
+
+
+nzbhydraapp.filter('firstShownResult', function () {
+  return function (resultswithduplicates, isShowFunction) {
+    var firstShownResult = _.find(resultswithduplicates, function find(item) {
+            return isShowFunction(item);
+        });
+      if (!_.isUndefined(firstShownResult)) {
+          var index = _.indexOf(resultswithduplicates, firstShownResult);
+            console.log("First shown result at : " + index);
+          return [firstShownResult];
+      } else {
+          console.log("No shown results remain");
+          return [];
+      }
+  };
+});
+
+nzbhydraapp.filter('shownDuplicates', function () {
+  return function (resultswithduplicates, isShowFunction) {
+    var shownResults = _.filter(resultswithduplicates, function find(item) {
+            return isShowFunction(item);
+        });
+      if (shownResults.length > 1) {
+          return shownResults.slice(1);
+      } else {
+          return [];
+      }
+  };
+});

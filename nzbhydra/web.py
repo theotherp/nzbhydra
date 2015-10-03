@@ -103,9 +103,10 @@ def requires_auth(f):
     return decorated
 
 
-@app.route('/')
+@app.route('/<path:path>')
+@app.route('/', defaults={"path": None})
 @requires_auth
-def base():
+def base(path):
     return send_file("static/index.html")
 
 
