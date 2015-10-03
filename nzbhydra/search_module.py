@@ -126,7 +126,7 @@ class SearchModule(object):
         pass
 
     def get_nfo(self, guid):
-        pass
+        return None
     
     disable_periods = [0, 15, 30, 60, 3 * 60, 6 * 60, 12 * 60, 24 * 60]
 

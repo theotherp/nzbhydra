@@ -35,7 +35,7 @@ nzbhydraapp.config(['$routeProvider', '$locationProvider', function ($routeProvi
         templateUrl: '/js/views/news/news.html',
         controller: 'ConfigController',
         title: 'NZB Hydra - Configuration'
-        
+
     }).otherwise({
         templateUrl: '/static/html/searchtemplate.html',
         controller: 'SearchController',
@@ -206,15 +206,15 @@ nzbhydraapp.controller('ModalInstanceCtrl', ['$scope', '$modalInstance', 'conten
 }]);
 
 
-function sortResults (input, predicate, reversed) {
-        var sorted = _.sortBy(input, function (i) {
-            return i[0][predicate];
-        });
-        if (reversed) {
-            sorted.reverse();
-        }
-    return sorted;
+function sortResults(input, predicate, reversed) {
+    var sorted = _.sortBy(input, function (i) {
+        return i[0][predicate];
+    });
+    if (reversed) {
+        sorted.reverse();
     }
+    return sorted;
+}
 
 nzbhydraapp.filter('sortResults', function () {
     return function (input, predicate, reversed) {
@@ -260,9 +260,8 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
     $scope.maxsize = (typeof $routeParams.maxsize === "undefined") ? "" : $routeParams.maxsize;
     $scope.minage = (typeof $routeParams.minage === "undefined") ? "" : $routeParams.minage;
     $scope.maxage = (typeof $routeParams.maxage === "undefined") ? "" : $routeParams.maxage;
-    
-    $scope.showProviders = {};
 
+    $scope.showProviders = {};
 
     if ($scope.title != "" && $scope.query == "") {
         $scope.searchTerm = $scope.title;
@@ -317,11 +316,9 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
         }
 
 
-        
         $http.get(uri).then(function (data) {
 
             $scope.results = data.data.results;
-            $scope.filteredResults = data.data.results;
             $scope.providersearches = data.data.providersearches;
 
             //Sum up response times of providers from individual api accesses
@@ -331,12 +328,30 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
                 }, 0);
                 ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
             });
-            
+
             _.each($scope.providersearches, function (ps) {
-              $scope.showProviders[ps.provider] = true;  
+                $scope.showProviders[ps.provider] = true;
             });
-            
-            
+
+            //Filter the events once. Not all providers follow or allow all the restrictions, so we enfore them here
+            $scope.filteredResults = _.filter($scope.results, function (item) {
+                var doShow = true;
+                item = item[0]; //We take the first element of the bunch because their size and age should be nearly identical
+                if (doShow && $scope.minsize) {
+                    doShow &= item.size > $scope.minsize * 1024 * 1024;
+                }
+                if (doShow && $scope.maxsize) {
+                    doShow &= item.size < $scope.maxsize * 1024 * 1024;
+                }
+                if (doShow && $scope.minage) {
+                    doShow &= item.age_days > $scope.minage;
+                }
+                if (doShow && $scope.maxage) {
+                    doShow &= item.age_days < $scope.maxage;
+                }
+                return doShow; 
+            });
+
         });
 
 
@@ -468,6 +483,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
     $scope.predicate = 'age_days';
     $scope.reversed = false;
 
+
     $scope.setSorting = function (predicate, reversedDefault) {
         if (predicate == $scope.predicate) {
             $scope.reversed = !$scope.reversed;
@@ -477,54 +493,38 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
         $scope.predicate = predicate;
     };
 
-    
-    $scope.isShow = function(item) {
-        var doShow = $scope.showProviders[item.provider];
-        if (doShow && $scope.minsize) {
-            doShow &= item.size > $scope.minsize * 1024 * 1024;
-        }
-        if (doShow && $scope.maxsize) {
-            doShow &= item.size < $scope.maxsize * 1024 * 1024;
-        }
-        if (doShow && $scope.minage) {
-            doShow &= item.age_days > $scope.minage;
-        }
-        if (doShow && $scope.maxage) {
-            doShow &= item.age_days < $scope.maxage;
-        }
-        
-        return doShow;
+
+    //True if the provider is selected in the table filter, false else 
+    $scope.isShow = function (item) {
+        return $scope.showProviders[item.provider];
     };
-    
+
+
 }]);
 
 
-
 nzbhydraapp.filter('firstShownResult', function () {
-  return function (resultswithduplicates, isShowFunction) {
-    var firstShownResult = _.find(resultswithduplicates, function find(item) {
+    return function (resultswithduplicates, isShowFunction) {
+        var firstShownResult = _.find(resultswithduplicates, function find(item) {
             return isShowFunction(item);
         });
-      if (!_.isUndefined(firstShownResult)) {
-          var index = _.indexOf(resultswithduplicates, firstShownResult);
-            console.log("First shown result at : " + index);
-          return [firstShownResult];
-      } else {
-          console.log("No shown results remain");
-          return [];
-      }
-  };
+        if (!_.isUndefined(firstShownResult)) {
+            return [firstShownResult];
+        } else {
+            return [];
+        }
+    };
 });
 
 nzbhydraapp.filter('shownDuplicates', function () {
-  return function (resultswithduplicates, isShowFunction) {
-    var shownResults = _.filter(resultswithduplicates, function find(item) {
+    return function (resultswithduplicates, isShowFunction) {
+        var shownResults = _.filter(resultswithduplicates, function find(item) {
             return isShowFunction(item);
         });
-      if (shownResults.length > 1) {
-          return shownResults.slice(1);
-      } else {
-          return [];
-      }
-  };
+        if (shownResults.length > 1) {
+            return shownResults.slice(1);
+        } else {
+            return [];
+        }
+    };
 });

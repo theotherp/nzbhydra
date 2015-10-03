@@ -5,9 +5,9 @@ import logging
 import arrow
 from requests_futures.sessions import FuturesSession
 
-from nzbhydra.database import Provider, ProviderStatus, Search
+from nzbhydra.database import ProviderStatus, Search
 from nzbhydra import config
-from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch
+from nzbhydra import providers 
 
 categories = {'All': {"pretty": "All", "index": 0},
               'Movies': {"pretty": "Movie", "index": 1},
@@ -24,8 +24,7 @@ categories = {'All': {"pretty": "All", "index": 0},
               'XXX': {"pretty": "XXX", "index": 12}
               }
 
-# TODO: I would like to use plugins for this but couldn't get this to work with pluginbase. Would also need a concept to work with the database
-search_modules = {"newznab": newznab, "womble": womble, "nzbclub": nzbclub, "nzbindex": nzbindex, "binsearch": binsearch}
+
 logger = logging.getLogger('root')
 
 config.init("searching.timeout", 5, int)
@@ -33,13 +32,12 @@ config.init("searching.ignore_temporarily_disabled", False, bool)  # If true we 
 config.init("searching.allow_query_generation", "both", str)  # "internal", "external", "both", anything else
 
 session = FuturesSession()
-providers = []
 
 
 def pick_providers(query_supplied=True, identifier_key=None, category=None, internal=True):
     picked_providers = []
 
-    for p in providers:
+    for p in providers.providers:
         if not p.provider.enabled:
             logger.debug("Did not pick %s because it is disabled" % p)
             continue
@@ -70,20 +68,6 @@ def pick_providers(query_supplied=True, identifier_key=None, category=None, inte
     return picked_providers
 
 
-# Load from config and initialize all configured providers using the loaded modules
-def read_providers_from_config():
-    global providers
-    providers = []
-
-    for provider in Provider().select():
-        if provider.module not in search_modules.keys():
-            pass  # todo raise exception
-
-        module = search_modules[provider.module]
-        provider_instance = module.get_instance(provider)
-        providers.append(provider_instance)
-
-    return providers
 
 
 def search(internal, args):

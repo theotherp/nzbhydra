@@ -1,6 +1,6 @@
 import nzbhydra.config as config
 from nzbhydra import log
-from nzbhydra import search
+from nzbhydra import providers
 from nzbhydra import database
 
 from os.path import dirname
@@ -46,7 +46,7 @@ def run():
     logger.info("Loading database file %s" % database_file)
     database.db.init(database_file)
     database.db.connect()
-    search.read_providers_from_config()
+    providers.read_providers_from_config()
     port = config.cfg["main.port"] if args.port is not None else args.port
     host = config.cfg["main.host"] if args.host is not None else args.host
     

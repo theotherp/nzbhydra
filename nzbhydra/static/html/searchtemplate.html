@@ -175,7 +175,11 @@
             <!-- First result in the list, show regularly -->
             <tr>
                 <td class="text-left">
-                    {{ ps.provider }}
+                    <input type="checkbox" ng-model="showProviders[ps.provider]"
+                           tooltip="Uncheck to hide results from this provider"
+                           tooltip-placement="top"
+                           tooltip-trigger="mouseenter"
+                            />{{ ps.provider }}
                 </td>
                 <td class="text-left">
                     {{ ps.results }}
@@ -201,36 +205,30 @@
     <table class="table" style="margin-bottom: 0">
         <thead>
         <tr>
-            <th class="col-md-6 text-left" ng-click="setSorting('title', false)">
+            <th class="col-md-6 text-left cursor-default" ng-click="setSorting('title', false)" style="vertical-align: top">
                 Title <span ng-show="predicate=='title'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
-                <br>
-                <input type="text"/>
             </th>
-            <th class="col-md-1 text-left">
-                <div style="width: 80px;">
-                    <span ng-click="setSorting('provider', true)">Provider <span ng-show="predicate=='provider'" class="caret" ng-class="{'caret-reversed': !reversed}"></span></span>
-                    <div ng-repeat="ps in providersearches">
-                        <br>
-                        <input type="checkbox" ng-model="showProviders[ps.provider]"/>{{ ps.provider }}
-                    </div>
+            <th class="col-md-1 text-left cursor-default" ng-click="setSorting('provider', true)">
+                <div style="width: 100px;" style="vertical-align: top">
+                    Provider <span ng-show="predicate=='provider'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
                 </div>
             </th>
-            <th class="col-md-1 text-left" ng-click="setSorting('category', false)">
+            <th class="col-md-1 text-left cursor-default" ng-click="setSorting('category', false)" style="vertical-align: top">
                 <div style="width: 80px;">
                     Category <span ng-show="predicate=='category'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
                 </div>
             </th>
-            <th class="col-md-1 text-left" ng-click="setSorting('size', true)">
+            <th class="col-md-1 text-left cursor-default" ng-click="setSorting('size', true)" style="vertical-align: top">
                 <div style="width: 50px;">
                     Size <span ng-show="predicate=='size'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
                 </div>
             </th>
-            <th class="col-md-1 text-left" ng-click="setSorting('age_days', false)">
+            <th class="col-md-1 text-left cursor-default" ng-click="setSorting('age_days', false)" style="vertical-align: top">
                 <div style="width: 50px;">
                     Age <span ng-show="predicate=='age_days'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
                 </div>
             </th>
-            <th class="col-md-2 text-left">
+            <th class="col-md-2 text-left" style="vertical-align: top">
                 <div style="width: 100px;">
                     Links
                 </div>
@@ -263,27 +261,27 @@
             </td>
         </tr>
         <!-- Show all the duplicates of this entry-->
-        
-            <tr ng-repeat="result in resultwithduplicates | shownDuplicates:isShow">
-                <td class="col-md-6 text-left td-embedded">
-                </td>
-                <td class="col-md-1 text-left td-embedded">
-                    {{ result.provider }}
-                </td>
-                <td class="col-md-1 text-left td-embedded">
 
-                </td>
-                <td class="col-md-1 text-left td-embedded">
-                    {{ result.size | bytes }}
-                </td>
-                <td class="col-md-1 text-left td-embedded">
-                    {{ result.age_days }}d
-                </td>
-                <td class="col-md-2 text-left td-embedded">
-                    Link
-                </td>
-            </tr>
-            
+        <tr ng-repeat="result in resultwithduplicates | shownDuplicates:isShow">
+            <td class="col-md-6 text-left td-embedded">
+            </td>
+            <td class="col-md-1 text-left td-embedded">
+                {{ result.provider }}
+            </td>
+            <td class="col-md-1 text-left td-embedded">
+                {{ result.category }}
+            </td>
+            <td class="col-md-1 text-left td-embedded">
+                {{ result.size | bytes }}
+            </td>
+            <td class="col-md-1 text-left td-embedded">
+                {{ result.age_days }}d
+            </td>
+            <td class="col-md-2 text-left td-embedded">
+                Link
+            </td>
+        </tr>
+
 
         <tr ng-repeat-end ng-if="0"></tr>
 

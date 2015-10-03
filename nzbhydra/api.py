@@ -1,9 +1,14 @@
 from itertools import groupby
+import logging
 
 from marshmallow import Schema, fields
 
-import config
-from config import init
+from nzbhydra import config
+
+from nzbhydra.config import init
+from nzbhydra import providers
+
+logger = logging.getLogger('root')
 
 init("ResultProcessing.duplicateSizeThresholdInPercent", 0.1, float)
 init("ResultProcessing.duplicateAgeThreshold", 36000, int)
@@ -69,7 +74,7 @@ def test_for_duplicate(search_result_1, search_result_2):
     size_average = (search_result_1.size + search_result_2.size) / 2
     size_difference_percent = abs(size_difference / size_average) * 100
 
-    
+
     # TODO: Ignore age threshold if no precise date is known or account for score (if we have sth like that...) 
     age_threshold = config.cfg["ResultProcessing.duplicateAgeThreshold"]
     same_size = size_difference_percent <= size_threshold
@@ -79,6 +84,7 @@ def test_for_duplicate(search_result_1, search_result_2):
     # We could also use something to combine several values to a score, say that if a two posts have the exact size their age may differe more or combine relative and absolute size comparison
     if same_size and same_age:
         return True
+
 
 class ProviderSchema(Schema):
     name = fields.String()
@@ -98,8 +104,9 @@ class NzbSearchResultSchema(Schema):
     provider = fields.String()
     guid = fields.String()
     size = fields.Integer()
-    category = fields.String()  
-   
+    category = fields.String()
+
+
 class ProviderApiAccess(Schema):
     provider = fields.Nested(ProviderSchema, only="name")
     time = fields.DateTime()
@@ -108,35 +115,35 @@ class ProviderApiAccess(Schema):
     response_successful = fields.Boolean()
     response_time = fields.Integer()
     error = fields.String()
-    
+
+
 class ProviderSearchSchema(Schema):
     provider = fields.Nested(ProviderSchema, only="name")
     time = fields.DateTime()
     successful = fields.Boolean()
     results = fields.Integer()
-    
+
     api_accesses = fields.Nested(ProviderApiAccess, many=True)
 
 
 def process_for_internal_api(results):
-    #results: list of dicts, <provider>:dict "providersearchdbentry":<ProviderSearch>,"results":[<NzbSearchResult>]
+    # results: list of dicts, <provider>:dict "providersearchdbentry":<ProviderSearch>,"results":[<NzbSearchResult>]
     nzbsearchresults = []
     providersearchdbentries = []
     for i in results.values():
         nzbsearchresults.extend(i["results"])
         providersearchdbentries.append(ProviderSearchSchema().dump(i["providersearchdbentry"]).data)
-    
-    
+
     grouped_by_sameness = find_duplicates(nzbsearchresults)
-    
-    
+
+
     # Will be sorted by GUI later anyway but makes debugging easier
     results = sorted(grouped_by_sameness, key=lambda x: x[0].epoch, reverse=True)
     serialized = []
     for g in results:
         serialized.append(serialize_nzb_search_result(g).data)
-    
-    #We give each group of results a unique count value by which they can be identified later even if they're "taken apart"
+
+    # We give each group of results a unique count value by which they can be identified later even if they're "taken apart"
     for count, group in enumerate(serialized):
         for i in group:
             i["count"] = count
@@ -145,3 +152,22 @@ def process_for_internal_api(results):
 
 def serialize_nzb_search_result(result):
     return NzbSearchResultSchema(many=True).dump(result)
+
+
+def get_nfo(provider_name, guid):
+    nfo = None
+    result = {}
+    for p in providers.providers:
+        if p.name == provider_name:
+            nfo = p.get_nfo(guid)
+            break
+    else:
+        logger.error("Did not find provider with name %s" % provider_name)
+        result["error"] = "Unable to find provider"
+    if nfo is None:
+        logger.info("Unable to find NFO for provider %s and guid %s" % (provider_name, guid))
+        result["has_nfo"] = False
+    else:
+        result["has_nfo"] = True
+        result["nfo"] = nfo
+    return result

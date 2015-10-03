@@ -6623,3 +6623,6 @@ body {
 textarea.by-id-checkbox {
   height: auto;
 }
+.cursor-default {
+  cursor: pointer;
+}

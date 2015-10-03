@@ -1,13 +1,14 @@
-from flask import Flask, render_template, request, send_file
-from werkzeug.exceptions import Unauthorized
-from nzbhydra.api import process_for_internal_api
-from nzbhydra import config, search, infos
 from functools import wraps
 from pprint import pprint
+
+from flask import send_file
 from flask import Flask, render_template, request, jsonify, Response
 from webargs import Arg
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
+
+from nzbhydra.api import process_for_internal_api, get_nfo
+from nzbhydra import config, search, infos
 
 app = Flask(__name__)
 
@@ -17,17 +18,17 @@ externalapi_args = {
     "t": Arg(str),
     "q": Arg(str),
     "group": Arg(str),
-    "limit": Arg(int),  
-    "offset": Arg(str), 
+    "limit": Arg(int),
+    "offset": Arg(str),
     "cat": Arg(str),
-    "o": Arg(str),  
+    "o": Arg(str),
     "attrs": Arg(str),
-    "extended": Arg(bool),  
+    "extended": Arg(bool),
     "del": Arg(str),
     "rid": Arg(str),
     "genre": Arg(str),
     "imdbid": Arg(str),
-    "tvdbid": Arg(str),  
+    "tvdbid": Arg(str),
     "season": Arg(str),
     "ep": Arg(str)
 }
@@ -35,21 +36,24 @@ externalapi_args = {
 internalapi_args = {
     "apikey": Arg(str),
     "t": Arg(str),
-    "query": Arg(str), 
+    "query": Arg(str),
     "category": Arg(str),
     "title": Arg(str),
     "rid": Arg(str),
     "imdbid": Arg(str),
-    "tvdbid": Arg(str),  
+    "tvdbid": Arg(str),
     "season": Arg(str),
     "episode": Arg(str),
-    
+
     "minsize": Arg(int),
     "maxsize": Arg(int),
     "minage": Arg(int),
     "maxage": Arg(int),
+
+    "input": Arg(str),
+    "guid": Arg(str),
+    "provider": Arg(str)
     
-    "input": Arg(str)
 }
 
 from webargs import core
@@ -132,12 +136,10 @@ def api(args):
 @requires_auth
 @use_args(internalapi_args)
 def internal_api(args):
-    
-    
     results = None
     if args["t"] == "search":
         results = search.search(True, args)
-    if args["t"] == "tvsearch":   
+    if args["t"] == "tvsearch":
         results = search.search_show(True, args)
     if args["t"] == "moviesearch":
         results = search.search_movie(True, args)
@@ -149,6 +151,10 @@ def internal_api(args):
         return jsonify({"results": results})
     if args["t"] == "categories":
         return jsonify(search.categories)
+    if args["t"] == "getnfo":
+        nfo = get_nfo(args["provider"], args["guid"])
+        return jsonify(nfo)
+
     if results is not None:
         results = process_for_internal_api(results)
         return jsonify(results)  # Flask cannot return lists
