@@ -41,6 +41,7 @@ class Provider(Model):
 class Search(Model):
     internal = BooleanField() #true if from our gui, false if via newznab api
     query = CharField(null=True)
+    time = DateTimeField()
     identifier_key = CharField(null=True)
     identifier_value = CharField(null=True)
     category = JSONField(null=True)
@@ -49,24 +50,34 @@ class Search(Model):
 
     class Meta:
         database = db
+        
+    def save(self, *args, **kwargs): 
+        if self.time is None:
+            self.time = datetime.datetime.utcnow() #Otherwise the time of the first run of this code is taken
+        super(Search, self).save(*args, **kwargs)
 
 
 class ProviderSearch(Model):
     provider = ForeignKeyField(Provider, related_name="searches")
     search = ForeignKeyField(Search, related_name="provider_searches", null=True)
-    time = DateTimeField(default=datetime.datetime.utcnow())
+    time = DateTimeField()
     
     successful = BooleanField(default=False)
     results = IntegerField(null=True)  # number of results returned
 
     class Meta:
         database = db  # This model uses the "people.db" database.
+        
+    def save(self, *args, **kwargs): 
+        if self.time is None:
+            self.time = datetime.datetime.utcnow() #Otherwise the time of the first run of this code is taken
+        super(ProviderSearch, self).save(*args, **kwargs)
 
 
 class ProviderApiAccess(Model):
     provider = ForeignKeyField(Provider)
     provider_search = ForeignKeyField(ProviderSearch, related_name="api_accesses", null=True)
-    time = DateTimeUTCField(default=datetime.datetime.utcnow())
+    time = DateTimeUTCField()
     type = CharField()  # search, download, comments, nfo?
     url = CharField()
     response_successful = BooleanField(default=False)
@@ -75,6 +86,12 @@ class ProviderApiAccess(Model):
 
     class Meta:
         database = db
+        
+    def save(self, *args, **kwargs):
+        if self.time is None: #Otherwise the time of the first run of this code is taken
+            self.time = datetime.datetime.utcnow()
+        super(ProviderApiAccess, self).save(*args, **kwargs)
+
 
 
 # class ProviderSearchApiAccess(Model):

@@ -1,8 +1,8 @@
 from nzbhydra import database
-from nzbhydra.database import Provider, ProviderSearch, ProviderApiAccess, ProviderSearchApiAccess, ProviderStatus
+from nzbhydra.database import Provider, ProviderSearch, ProviderApiAccess, ProviderStatus, Search
 from nzbhydra.tests.db_prepare import set_and_drop
 
-set_and_drop("nzbhydra.db", [Provider, ProviderSearch, ProviderApiAccess, ProviderSearchApiAccess, ProviderStatus])
+set_and_drop("nzbhydra.db", [Provider, ProviderSearch, ProviderApiAccess, Search, ProviderStatus])
 
 database.db.init("nzbhydra.db")
 database.db.connect()

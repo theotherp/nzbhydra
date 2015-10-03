@@ -4,10 +4,7 @@ import re
 import arrow
 from bs4 import BeautifulSoup
 from furl import furl
-import time
-import requests
 
-from nzbhydra.exceptions import ProviderIllegalSearchException
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule
 
@@ -15,7 +12,6 @@ logger = logging.getLogger('root')
 
 
 class Binsearch(SearchModule):
-
     def __init__(self, provider):
         super(Binsearch, self).__init__(provider)
         self.module = "binsearch"
@@ -25,16 +21,15 @@ class Binsearch(SearchModule):
         self.needs_queries = True
         self.category_search = False
 
-
     def build_base_url(self):
         f = furl(self.query_url)
         f.path.add("index.php")
-        url = f.add({"max": self.provider.settings.get("max_results", 250), 
-                                        "adv_col": "on", # collections only 
-                                        "postdate": "date", # show pubDate, not age
-                                        #"adv_nfo": "off", #if enabled only show results with nfo file #todo make configurable. setting it to off doesnt work, its still done
-                                        "adv_sort": "date" #prefer the newest
-                                        })
+        url = f.add({"max": self.provider.settings.get("max_results", 250),
+                     "adv_col": "on",  # collections only 
+                     "postdate": "date",  # show pubDate, not age
+                     # "adv_nfo": "off", #if enabled only show results with nfo file #todo make configurable. setting it to off doesnt work, its still done
+                     "adv_sort": "date"  # prefer the newest
+                     })
         return url
 
     def get_search_urls(self, args):
@@ -45,7 +40,7 @@ class Binsearch(SearchModule):
             f = f.add({"maxsize": args["maxsize"]})
         if args["maxage"]:
             f = f.add({"adv_age": args["maxage"]})
-        
+
         return [f.tostr()]
 
     def get_showsearch_urls(self, args):
@@ -54,8 +49,8 @@ class Binsearch(SearchModule):
         if args["query"]:
             urls = self.get_search_urls(args)
         if args["season"] is not None:
-            #Restrict query if  season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
-            #binsearch doesn't seem to support "or" in searches, so create separate queries
+            # Restrict query if  season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
+            # binsearch doesn't seem to support "or" in searches, so create separate queries
             urls = []
             if args["episode"] is not None:
                 args["query"] = "%s s%02de%02d" % (query, args["season"], args["episode"])
@@ -72,9 +67,8 @@ class Binsearch(SearchModule):
     def get_moviesearch_urls(self, args):
         return self.get_search_urls(args)
 
-
     def process_query_result(self, html, query):
-        
+
         entries = []
         soup = BeautifulSoup(html, 'html.parser')
 
@@ -87,29 +81,29 @@ class Binsearch(SearchModule):
         items = main_table.find_all('tr')
 
         for row in items:
-            
+
             entry = NzbSearchResult()
             entry.provider = self.name
             title = row.find('span', attrs={'class': 's'})
 
-            if title is None: 
+            if title is None:
                 continue
             title = title.text
-                
-            p = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"') 
+
+            p = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"')
             m = p.search(title)
             if m:
                 entry.title = m.group(1)
             else:
                 entry.title = title
-            
+
             entry.guid = row.find("input", attrs={"type": "checkbox"})["name"]
             entry.link = "https://www.binsearch.info/fcgi/nzb.fcgi?q=%s" % entry.guid
             info = row.find("span", attrs={"class": "d"})
             if info is None:
                 continue
-                
-            collection_link = info.find("a")["href"] #'/?b=MARVELS.AVENGERS.AGE.OF.ULTRON.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250'
+
+            collection_link = info.find("a")["href"]  # '/?b=MARVELS.AVENGERS.AGE.OF.ULTRON.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250'
             m = re.compile(r"&p=(.*)&").search(collection_link)
             if m:
                 poster = m.group(1)
@@ -118,7 +112,7 @@ class Binsearch(SearchModule):
                 poster = poster.replace("%29", ">")
                 poster = poster.replace("+", " ")
                 entry.poster = poster
-            #Size
+            # Size
             p = re.compile(r"size: (?P<size>[0-9]+(\.[0-9]+)?).(?P<unit>(GB|MB|KB))")
             m = p.search(info.text)
             if not m:
@@ -127,21 +121,21 @@ class Binsearch(SearchModule):
                 size = float(m.group("size"))
                 unit = m.group("unit")
                 if unit == "KB":
-                    size *= 1024  
+                    size *= 1024
                 elif unit == "MB":
                     size = size * 1024 * 1024
                 elif unit == "GB":
                     size = size * 1024 * 1024 * 1024
                 entry.size = int(size)
-            
+
             entry.category = "N/A"
-            
-            if re.compile(r"\d nfo file").search(info.text): # 1 nfo file is missing if there is no NFO
+
+            if re.compile(r"\d nfo file").search(info.text):  # 1 nfo file is missing if there is no NFO
                 entry.has_nfo = True
             else:
                 entry.has_nfo = False
 
-            #Age
+            # Age
             try:
                 pubdate = re.compile(r"(\d{1,2}\-\w{3}\-\d{4})").search(row.find("td").text).group(1)
                 pubdate = arrow.get(pubdate, "DD-MMM-YYYY")
@@ -151,26 +145,26 @@ class Binsearch(SearchModule):
                 entry.age_precise = False
             except Exception as e:
                 entry.epoch = 0
-                
+
                 logger.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
 
             entries.append(entry)
 
-        
         return {"entries": entries, "queries": []}
-    
+
     def get_nfo(self, guid):
         f = furl(self.base_url)
         f.path.add("viewNFO.php")
         f.add({"oid": guid})
-        r = requests.get(f.tostr(), verify=False)
-        r.raise_for_status()
-        html = r.text
-        p = re.compile(r"<pre>(?P<nfo>.*)<\/pre>", re.DOTALL)
-        m = p.search(html)
-        if m:
-            return m.group("nfo")
+        r, papiaccess = self.get_url_with_papi_access(f.tostr(), "nfo")
+        if r is not None:
+            html = r.text
+            p = re.compile(r"<pre>(?P<nfo>.*)<\/pre>", re.DOTALL)
+            m = p.search(html)
+            if m:
+                return m.group("nfo")
         return None
+
 
 def get_instance(provider):
     return Binsearch(provider)

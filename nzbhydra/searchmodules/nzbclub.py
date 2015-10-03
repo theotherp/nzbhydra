@@ -98,11 +98,12 @@ class NzbClub(SearchModule):
         f = furl(self.base_url)
         f.path.add("api/NFO")
         f.path.segments.append(guid)
-        r = requests.get(f.tostr(), verify=False)
-        r.raise_for_status()
-        if r.json()["Count"] == 0:
-            return None
-        return r.json()["Data"][0]["NFOContentData"]
+        r, papiaccess = self.get_url_with_papi_access(f.tostr(), "nfo")
+        if r is not None:
+            r.raise_for_status()
+            if r.json()["Count"] == 0:
+                return None
+            return r.json()["Data"][0]["NFOContentData"]
         
 
 def get_instance(provider):

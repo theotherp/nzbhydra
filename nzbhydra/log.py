@@ -49,4 +49,9 @@ def setup_custom_logger(name):
     
     logger.addFilter(SensitiveDataFilter())
     
+    logging.getLogger("requests").setLevel(logging.CRITICAL)
+    logging.getLogger("urllib3").setLevel(logging.CRITICAL)
+    logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
+
+    
     return logger

@@ -2,6 +2,7 @@ import logging
 
 import arrow
 import requests
+from requests import RequestException
 
 from nzbhydra import config
 from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus
@@ -122,10 +123,7 @@ class SearchModule(object):
     def check_auth(self, body=""):
         # check the response body to see if request was authenticated. If yes, do nothing, if no, raise exception 
         pass
-
-    def get_nfo(self, guid):
-        return None
-
+    
     disable_periods = [0, 15, 30, 60, 3 * 60, 6 * 60, 12 * 60, 24 * 60]
 
     def handle_provider_success(self):
@@ -159,11 +157,33 @@ class SearchModule(object):
             provider_status.disabled_until = arrow.utcnow().replace(minutes=self.disable_periods[provider_status.level])
 
         provider_status.save()
-        
-        
-    def get(self, query, timeout):
+            
+    def get(self, query, timeout=None, cookies=None):
         #overwrite for special handling, e.g. cookies
-        return requests.get(query, timeout=timeout, verify=False)
+        return requests.get(query, timeout=timeout, verify=False, cookies=cookies)
+
+    def get_url_with_papi_access(self, url, type, cookies=None, timeout=None):
+        papiaccess = ProviderApiAccess(provider=self.provider, type=type, url=url)
+        
+        try:
+            response = self.get(url, cookies=cookies, timeout=timeout)
+            response.raise_for_status()
+            papiaccess.response_time = response.elapsed.microseconds / 1000
+            papiaccess.response_successful = True
+            self.handle_provider_success()
+        except RequestException as e:
+            self.logger.error("Error while connecting to URL %s: %s" % (url, str(e)))
+            papiaccess.error = "Connection failed: %s" % str(e)
+            response = None
+            self.handle_provider_failure("Connection failed: %s" % str(e))
+        finally:
+            papiaccess.save()
+        return response, papiaccess
+
+
+    def get_nfo(self, guid):
+        return None
+    
 
     def execute_queries(self, queries):
         # todo call all queries, check if further should be called, return all results when done or timeout or whatever
@@ -179,16 +199,14 @@ class SearchModule(object):
                 continue
 
             try:
-                papiaccess = ProviderApiAccess(provider=self.provider, provider_search=psearch, type="search", url=query)
-
                 self.logger.debug("Requesting URL %s with timeout %d" % (query, config.cfg["searching.timeout"]))
-                request = self.get(query, config.cfg["searching.timeout"])
+                request, papiaccess = self.get_url_with_papi_access(query, "search")
+                papiaccess.provider_search = psearch
+                
                 executed_queries.add(query)
                 papiaccess.save()
-                papiaccess.response_time = request.elapsed.microseconds / 1000
-                if request.status_code != 200:
-                    raise ProviderConnectionException("Unable to connect to provider. Status code: %d" % request.status_code, self)
-                else:
+                
+                if request is not None:
                     self.check_auth(request)
                     self.logger.debug("Successfully loaded URL %s" % request.url)
                     papiaccess.response_successful = True
@@ -204,10 +222,6 @@ class SearchModule(object):
                 self.logger.error("Unable to authorize with %s: %s" % (e.search_module, e.message))
                 papiaccess.error = "Authorization error :%s" % e.message
                 self.handle_provider_failure(reason="Authentication failed", disable_permanently=True)
-            except ProviderConnectionException as e:
-                self.logger.error("Unable to connect with %s: %s" % (e.search_module, e.message))
-                papiaccess.error = "Connection error :%s" % e.message
-                self.handle_provider_failure(reason="Connection failed")
             except ProviderAccessException as e:
                 self.logger.error("Unable to access %s: %s" % (e.search_module, e.message))
                 papiaccess.error = "Access error :%s" % e.message
@@ -218,23 +232,14 @@ class SearchModule(object):
             except Exception as e:
                 self.logger.exception("An error error occurred while searching: %s", e)
                 papiaccess.error = "Unknown error :%s" % e
-            papiaccess.save()
-            psearch.results = len(results_and_providersearchdbentry["results"])
-            psearch.successful = True
-            psearch.save()
+            finally:
+                papiaccess.save()
+                psearch.results = len(results_and_providersearchdbentry["results"])
+                psearch.successful = True
+                psearch.save()
         return results_and_providersearchdbentry
 
-        # information, perhaps if we provide basic information, get the info link for a uid, get base url, etc
-
-        # define config, what settings we expect in the config
-        # config could be:
-        #   enable for api
-        #   priority score
-        #   base url
-        #   search url?
-        #   enabled for which search types?
-        #
-        #   to be extended by e.g. newznab, for example apikey
+      
 
 
 def get_instance(provider):

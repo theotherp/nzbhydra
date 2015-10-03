@@ -63,7 +63,7 @@ class NzbIndex(SearchModule):
     def get_moviesearch_urls(self, args):
         return self.get_search_urls(args)
     
-    def get(self, query, timeout):
+    def get(self, query, timeout=None, cookies=None):
         #overwrite for special handling, e.g. cookies
         return requests.get(query, timeout=timeout, verify=False, cookies={"agreed": "true", "lang": "2"})
 
@@ -165,13 +165,13 @@ class NzbIndex(SearchModule):
         f = furl(self.base_url)
         f.path.add("nfo")
         f.path.add(guid)
-        r = requests.get(f.tostr(), verify=False, cookies={"agreed": "true"})
-        r.raise_for_status()
-        html = r.text
-        p = re.compile(r'<pre id="nfo0">(?P<nfo>.*)<\/pre>', re.DOTALL)
-        m = p.search(html)
-        if m:
-            return m.group("nfo")
+        r, papiaccess = self.get_url_with_papi_access(f.tostr(), "nfo", cookies={"agreed": "true"})
+        if r is not None:
+            html = r.text
+            p = re.compile(r'<pre id="nfo0">(?P<nfo>.*)<\/pre>', re.DOTALL)
+            m = p.search(html)
+            if m:
+                return m.group("nfo")
         return None
 
 def get_instance(provider):

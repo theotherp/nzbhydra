@@ -47,6 +47,7 @@ def nzbindex(path):
 def binsearch(file):
     return handle_request(request.args.items(), "https://www.binsearch.info/" + file)
 
+
 @cache.memoize()
 def get(url, cookies):
     print("Requesting URL " + url)
@@ -65,7 +66,8 @@ def handle_request(argsitems, baseurl, cookies=None):
         args[i[0]] = i[1]
 
     f = furl(baseurl)
-    for key in args.keys():
+    sortedkeys = sorted(args.keys())
+    for key in sortedkeys:
         f.add({key: str(args[key])})
     return get(f.tostr(), cookies=cookies)
 

@@ -203,13 +203,9 @@ class NewzNab(SearchModule):
     def get_nfo(self, guid):
         # try to get raw nfo. if it is xml the provider doesn't actually return raw nfos (I'm looking at you, DOGNzb)
         url = furl(self.provider.settings.get("query_url")).add({"apikey": self.provider.settings.get("apikey"), "t": "getnfo", "o": "xml", "id": guid}) #todo: should use build_base_url but that adds search specific stuff
-        papiaccess = ProviderApiAccess(provider=self.provider, type="nfo", url=url)
-        try:
-            response = requests.get(url)
-            if response.status_code != 200:
-                raise ProviderConnectionException("Error while retrieving NFO for ID %s. Returned status code:" % (guid, response.status_code), self)
-            papiaccess.response_time = response.elapsed.microseconds / 1000
-
+        
+        response, papiaccess = self.get_url_with_papi_access(url, "nfo")
+        if response is not None:
             nfo = response.text
             if "<?xml" in nfo:
                 tree = ET.fromstring(nfo)
@@ -218,15 +214,7 @@ class NewzNab(SearchModule):
                     nfo = re.sub("\\n", nfo, "\n") #TODO: Not completely correct, looks still a bit werid
                     pass
             # otherwise we just hope it's the nfo...
-        except RequestException:
-            raise ProviderConnectionException("Error while connecting.", self)
-        except ProviderConnectionException as e:
-            logger.exception("Error while connecting to %s" % self, e)
-            papiaccess.error = "Error while retrieving NFO for ID %s." % guid
-            papiaccess.save()
-            raise
-
-        papiaccess.save()
+        
         return nfo
 
 
