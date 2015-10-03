@@ -159,6 +159,11 @@ class SearchModule(object):
             provider_status.disabled_until = arrow.utcnow().replace(minutes=self.disable_periods[provider_status.level])
 
         provider_status.save()
+        
+        
+    def get(self, query, timeout):
+        #overwrite for special handling, e.g. cookies
+        return requests.get(query, timeout=timeout, verify=False)
 
     def execute_queries(self, queries):
         # todo call all queries, check if further should be called, return all results when done or timeout or whatever
@@ -177,7 +182,7 @@ class SearchModule(object):
                 papiaccess = ProviderApiAccess(provider=self.provider, provider_search=psearch, type="search", url=query)
 
                 self.logger.debug("Requesting URL %s with timeout %d" % (query, config.cfg["searching.timeout"]))
-                request = requests.get(query, timeout=config.cfg["searching.timeout"], verify=False)
+                request = self.get(query, config.cfg["searching.timeout"])
                 executed_queries.add(query)
                 papiaccess.save()
                 papiaccess.response_time = request.elapsed.microseconds / 1000

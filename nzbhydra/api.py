@@ -96,7 +96,6 @@ class ProviderSchema(Schema):
 class NzbSearchResultSchema(Schema):
     title = fields.String()
     link = fields.String()
-    pubDate = fields.String()
     epoch = fields.Integer()
     pubdate_utc = fields.String()
     age_days = fields.Integer()

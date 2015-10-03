@@ -2,8 +2,10 @@ import json
 import logging
 import re
 import arrow
+from bs4 import BeautifulSoup
 from furl import furl
 import xml.etree.ElementTree as ET
+import requests
 from nzbhydra.exceptions import ProviderIllegalSearchException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
@@ -31,8 +33,10 @@ class NzbIndex(SearchModule):
         
 
     def build_base_url(self):
-        url = furl(self.query_url).add({"more": "1", "max": self.max_results}) 
-        return url
+        f = furl(self.query_url)
+        f.path.add("search")
+        f = f.add({"more": "1", "max": self.max_results, "hidecross": 1}) 
+        return f
 
     def get_search_urls(self, args):
         f = self.build_base_url().add({"q": args["query"]})
@@ -58,48 +62,117 @@ class NzbIndex(SearchModule):
 
     def get_moviesearch_urls(self, args):
         return self.get_search_urls(args)
+    
+    def get(self, query, timeout):
+        #overwrite for special handling, e.g. cookies
+        return requests.get(query, timeout=timeout, verify=False, cookies={"agreed": "true", "lang": "2"})
 
-    def process_query_result(self, xml, query):
+    def process_query_result(self, html, query):
         
         entries = []
-        try:
-            tree = ET.fromstring(xml)
-        except Exception:
-            logger.exception("Error parsing XML")
-            return []
-        for elem in tree.iter('item'):
-            title = elem.find("title")
-            url = elem.find("enclosure")
-            pubdate = elem.find("pubDate")
-            if title is None or url is None or pubdate is None:
+        soup = BeautifulSoup(html, 'html.parser')
+        main_table = soup.find(id="results").find('table')
+
+        if not main_table:
+            logger.error("Unable to find main table in NZBIndex page")
+            return {"entries": [], "queries": []}
+
+        items = main_table.find("tbody").find_all('tr')
+
+        for row in items:
+            tds = list(row.find_all("td"))
+            if len(tds) != 5:
+                #advertisement
                 continue
-            
             entry = NzbSearchResult()
-            p = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"') #Attempt to find the title in quotation marks and if it exists don't take the extension. This part is more likely to be helpful then he beginning
-            m = p.search(title.text)
+            entry.provider = self.name
+            
+            entry.guid = row.find("input")["value"]
+            
+            infotd = tds[1]
+            
+            title = infotd.find("label").text
+            p = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"') 
+            m = p.search(title)
             if m:
                 entry.title = m.group(1)
-                if len(entry.title) > 4 and entry.title[-7:] == "-sample":
-                    entry.title = entry.title[:-7]
             else:
-                entry.title = title.text
+                entry.title = title
                 
-            entry.link = url.attrib["url"]
-            entry.size = int(url.attrib["length"])
-            entry.provider = self.name
-            entry.category = "N/A"
-                
-            entry.guid = elem.find("guid").text
+            info = infotd.find("div", class_="fileinfo")
+            if info is not None and re.compile(r"\d NFO").search(info.text): # 1 nfo file is missing if there is no NFO
+                entry.has_nfo = True
+            else:
+                entry.has_nfo = False
+            poster = infotd.find("span", class_="poster").find("a")
+            if poster is not None:
+                entry.poster = poster.text
             
-            entry.pubDate = pubdate.text
-            pubdate = arrow.get(pubdate.text, '"ddd, DD MMM YYYY HH:mm:ss Z')
-            entry.epoch = pubdate.timestamp
-            entry.pubdate_utc = str(pubdate)
-            entry.age_days = (arrow.utcnow() - pubdate).days
-             
+            link = infotd.findAll('a', text=re.compile('Download'))
+            if link is not None and len(link) == 1:
+                entry.link = link[0]["href"]
+            else:
+                logger.debug("Did not find link in row")
+                
+            
+            sizetd = tds[2]
+            p = re.compile(r"(?P<size>[0-9]+(\.[0-9]+)?).(?P<unit>(GB|MB|KB))")
+            m = p.search(sizetd.text)
+            if not m:
+                logger.debug("Unable to find size information in %s" % sizetd.text)
+            else:
+                size = float(m.group("size"))
+                unit = m.group("unit")
+                if unit == "KB":
+                    size *= 1024  
+                elif unit == "MB":
+                    size = size * 1024 * 1024
+                elif unit == "GB":
+                    size = size * 1024 * 1024 * 1024
+                entry.size = int(size)
+                        
+            agetd = tds[4]
+            p = re.compile(r"(?P<days1>\d+)\.(?P<days2>\d)")
+            m = p.search(agetd.text)
+            days = None
+            hours = None
+            if m:
+                days = int(m.group("days1"))
+                hours = int(m.group("days2")) * 2.4
+            else:
+                p = re.compile(r"(?P<hours>\d+) hours?")
+                m = p.search(agetd.text)
+                if m:
+                    days = 0
+                    hours = int(m.group("hours")) 
+            if hours is not None:
+                pubdate = arrow.utcnow().replace(days=-days, hours=-1) #hours because of timezone change below
+                if hours > 0:
+                    pubdate = pubdate.replace(hours=-hours) 
+                pubdate = pubdate.to("+01:00") #nzbindex server time, I guess?
+                entry.epoch = pubdate.timestamp
+                entry.pubdate_utc = str(pubdate)
+                entry.age_days = (arrow.utcnow() - pubdate).days
+                entry.age_precise = True #Precise to 2.4 hours, should be enough for duplicate detection
+            else:
+                logger.debug("Found no age info in %s" % str(agetd))
             entries.append(entry)
+            
         return {"entries": entries, "queries": []}
-
+    
+        
+    def get_nfo(self, guid):
+        f = furl(self.base_url)
+        f.path.add("nfo")
+        f.path.add(guid)
+        r = requests.get(f.tostr(), verify=False, cookies={"agreed": "true"})
+        r.raise_for_status()
+        html = r.text
+        p = re.compile(r'<pre id="nfo0">(?P<nfo>.*)<\/pre>', re.DOTALL)
+        m = p.search(html)
+        if m:
+            return m.group("nfo")
+        return None
 
 def get_instance(provider):
     return NzbIndex(provider)

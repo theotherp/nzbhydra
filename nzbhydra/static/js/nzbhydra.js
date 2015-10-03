@@ -242,7 +242,7 @@ nzbhydraapp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, nf
     };
 });
 
-nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '$location', '$modal', function ($scope, $http, $routeParams, $location, $modal) {
+nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '$location', '$modal', '$sce', function ($scope, $http, $routeParams, $location, $modal, $sce) {
 
     $scope.category = (typeof $routeParams.category === "undefined") ? "All" : $routeParams.category;
 
@@ -519,17 +519,15 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
 
         var modalInstance = $modal.open({
             animation: $scope.animationsEnabled,
-            template: '<pre>{{nfo}}</pre>',
+            template: '<pre><span ng-bind-html="nfo"></span></pre>',
             controller: 'ModalInstanceCtrl',
             size: size,
             resolve: {
                 nfo: function () {
-                    return nfo;
+                    return $sce.trustAsHtml(nfo);
                 }
             }
         });
-
-        
     };
 
 

@@ -2,6 +2,7 @@ import calendar
 import datetime
 import email
 import logging
+import re
 import time
 import xml.etree.ElementTree as ET
 
@@ -201,7 +202,7 @@ class NewzNab(SearchModule):
 
     def get_nfo(self, guid):
         # try to get raw nfo. if it is xml the provider doesn't actually return raw nfos (I'm looking at you, DOGNzb)
-        url = self.build_base_url("getnfo", "All", o="xml", extended=0).add({"id": guid})
+        url = furl(self.provider.settings.get("query_url")).add({"apikey": self.provider.settings.get("apikey"), "t": "getnfo", "o": "xml", "id": guid}) #todo: should use build_base_url but that adds search specific stuff
         papiaccess = ProviderApiAccess(provider=self.provider, type="nfo", url=url)
         try:
             response = requests.get(url)
@@ -214,7 +215,9 @@ class NewzNab(SearchModule):
                 tree = ET.fromstring(nfo)
                 for elem in tree.iter('item'):
                     nfo = elem.find("description").text
-                    # otherwise we just hope it's the nfo...
+                    nfo = re.sub("\\n", nfo, "\n") #TODO: Not completely correct, looks still a bit werid
+                    pass
+            # otherwise we just hope it's the nfo...
         except RequestException:
             raise ProviderConnectionException("Error while connecting.", self)
         except ProviderConnectionException as e:

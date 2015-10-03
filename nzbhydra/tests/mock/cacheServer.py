@@ -1,6 +1,4 @@
-import os
-
-from flask import Flask, send_file, request
+from flask import Flask, request
 from flask.ext.cache import Cache
 from furl import furl
 import requests
@@ -11,7 +9,6 @@ cache = Cache(app, config={'CACHE_TYPE': 'filesystem', 'CACHE_DIR': 'cache'})
 
 @app.route('/nzbsorg')
 @app.route('/nzbsorg/api')
-@cache.memoize()
 def apinzbsorg():
     return handle_request(request.args.items(), "https://nzbs.org/api")
 
@@ -23,7 +20,6 @@ def apidog():
 
 
 @app.route('/nzbclub/api/NFO/<path:guid>')
-@cache.memoize()
 def nzbindexapi(guid):
     print("Get nfo from web via %s " % "https://www.nzbclub.com/api/NFO/" + guid)
     r = requests.get("https://www.nzbclub.com/api/NFO/" + guid)
@@ -31,48 +27,47 @@ def nzbindexapi(guid):
 
 
 @app.route('/nzbclub')
-@cache.memoize()
 def nzbclubrss():
     return handle_request(request.args.items(), "https://www.nzbclub.com/nzbrss.aspx")
 
 
 @app.route('/womble')
-@cache.memoize()
 def womble():
     return handle_request(request.args.items(), "https://www.newshost.co.za/rss/")
 
 
 @app.route('/nzbindex')
-@cache.memoize()
-def nzbindex():
-    return handle_request(request.args.items(), "https://nzbindex.com/rss")
+@app.route('/nzbindex/<path:path>')
+def nzbindex(path):
+    return handle_request(request.args.items(), "https://nzbindex.com/" + path, cookies={"agreed": "true", "lang": "2"})
 
 
 @app.route('/binsearch')
 @app.route('/binsearch/<path:file>')
-@cache.memoize()
 def binsearch(file):
     return handle_request(request.args.items(), "https://www.binsearch.info/" + file)
 
-
-def handle_request(argsitems, baseurl):
-    args = {}
-    for i in argsitems:
-        args[i[0]] = i[1]
-    
-    f = furl(baseurl)
-    for key in args.keys():
-        f.add({key: str(args[key])})
-
-    print("Requesting URL " + f.tostr())
-    r = requests.get(f.tostr(), verify=False)
+@cache.memoize()
+def get(url, cookies):
+    print("Requesting URL " + url)
+    r = requests.get(url, verify=False, cookies=cookies)
     if r.status_code != 200:
         return r.text, 500
     else:
         return r.text
-        
 
-    
+
+def handle_request(argsitems, baseurl, cookies=None):
+    if not cookies:
+        cookies = []
+    args = {}
+    for i in argsitems:
+        args[i[0]] = i[1]
+
+    f = furl(baseurl)
+    for key in args.keys():
+        f.add({key: str(args[key])})
+    return get(f.tostr(), cookies=cookies)
 
 
 if __name__ == '__main__':
