@@ -1,10 +1,11 @@
 import logging
+
 import arrow
 import requests
+
 from nzbhydra import config
 from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus
 from nzbhydra.exceptions import ProviderConnectionException, ProviderResultParsingException, ProviderAuthException, ProviderAccessException
-from nzbhydra.infos import title_from_id
 
 
 class SearchModule(object):
@@ -48,12 +49,11 @@ class SearchModule(object):
     @property
     def api_hits_reset(self):
         return self.provider.settings.get("api_hits_reset")
-    
-    
+
     def search(self, args):
         urls = self.get_search_urls(args)
         return self.execute_queries(urls)
-    
+
     def search_movie(self, args):
         if args["query"] is None and args["title"] is None and args["imdbid"] is None and self.needs_queries:
             self.logger.error("Movie search without query or IMDB id or title is not possible with this provider")
@@ -61,21 +61,21 @@ class SearchModule(object):
         if args["query"] is None and not self.generate_queries:
             self.logger.error("Movie search is not possible with this provideer because query generation is disabled")
         if args["imdbid"] is not None and "imdbid" in self.search_ids:
-            #Best case, we can search using IMDB id
+            # Best case, we can search using IMDB id
             urls = self.get_moviesearch_urls(args)
         elif args["title"] is not None:
-            #If we cannot search using the ID we generate a query using the title provided by the GUI
+            # If we cannot search using the ID we generate a query using the title provided by the GUI
             args["query"] = args["title"]
             urls = self.get_moviesearch_urls(args)
         elif args["query"] is not None:
-            #Simple case, just a regular raw search but in movie category
+            # Simple case, just a regular raw search but in movie category
             urls = self.get_moviesearch_urls(args)
         else:
-            #Just show all the latest movie releases
+            # Just show all the latest movie releases
             urls = self.get_moviesearch_urls(args)
-            
+
         return self.execute_queries(urls)
-    
+
     def search_show(self, args):
         if args["query"] is None and args["title"] is None and args["rid"] and args["tvdbid"] is None and self.needs_queries:
             self.logger.error("TV search without query or id or title is not possible with this provider")
@@ -83,22 +83,20 @@ class SearchModule(object):
         if args["query"] is None and not self.generate_queries:
             self.logger.error("TV search is not possible with this provideer because query generation is disabled")
         if (args["rid"] is not None and "rid" in self.search_ids) or (args["tvdbid"] is not None and "tvdbid" in self.search_ids):
-            #Best case, we can search using the ID
+            # Best case, we can search using the ID
             urls = self.get_showsearch_urls(args)
         elif args["title"] is not None:
-            #If we cannot search using the ID we generate a query using the title provided by the GUI
+            # If we cannot search using the ID we generate a query using the title provided by the GUI
             args["query"] = args["title"]
             urls = self.get_showsearch_urls(args)
         elif args["query"] is not None:
-            #Simple case, just a regular raw search but in movie category
+            # Simple case, just a regular raw search but in movie category
             urls = self.get_showsearch_urls(args)
         else:
-            #Just show all the latest movie releases
+            # Just show all the latest movie releases
             urls = self.get_showsearch_urls(args)
-            
+
         return self.execute_queries(urls)
-        
-    
 
     # Access to most basic functions
     def get_search_urls(self, args):
@@ -127,12 +125,11 @@ class SearchModule(object):
 
     def get_nfo(self, guid):
         return None
-    
+
     disable_periods = [0, 15, 30, 60, 3 * 60, 6 * 60, 12 * 60, 24 * 60]
 
-
     def handle_provider_success(self):
-        #Deescalate level by 1 (or stay at 0) and reset reason and disable-time
+        # Deescalate level by 1 (or stay at 0) and reset reason and disable-time
         try:
             provider_status = self.provider.status.get()
         except ProviderStatus.DoesNotExist:
@@ -140,20 +137,19 @@ class SearchModule(object):
         if provider_status.level > 0:
             provider_status.level -= 1
         provider_status.reason = None
-        provider_status.disabled_until = arrow.get(0) #Because I'm too dumb to set it to None/null
+        provider_status.disabled_until = arrow.get(0)  # Because I'm too dumb to set it to None/null
         provider_status.save()
-    
-    
+
     def handle_provider_failure(self, reason=None, disable_permanently=False):
-        #Escalate level by 1. Set disabled-time according to level so that with increased level the time is further in the future
+        # Escalate level by 1. Set disabled-time according to level so that with increased level the time is further in the future
         try:
             provider_status = self.provider.status.get()
         except ProviderStatus.DoesNotExist:
             provider_status = ProviderStatus(provider=self.provider)
-    
+
         if provider_status.level == 0:
             provider_status.first_failure = arrow.utcnow()
-    
+
         provider_status.latest_failure = arrow.utcnow()
         provider_status.reason = reason  # Overwrite the last reason if one is set, should've been logged anyway
         if disable_permanently:
@@ -161,11 +157,9 @@ class SearchModule(object):
         else:
             provider_status.level = min(len(self.disable_periods) - 1, provider_status.level + 1)
             provider_status.disabled_until = arrow.utcnow().replace(minutes=self.disable_periods[provider_status.level])
-    
-    
+
         provider_status.save()
-        
-        
+
     def execute_queries(self, queries):
         # todo call all queries, check if further should be called, return all results when done or timeout or whatever
         results_and_providersearchdbentry = {"results": []}
@@ -176,14 +170,14 @@ class SearchModule(object):
         while len(queries) > 0:
             query = queries.pop()
             if query in executed_queries:
-                #To make sure that in case an offset is reported wrong or we have a bug we don't get stuck in an endless loop 
+                # To make sure that in case an offset is reported wrong or we have a bug we don't get stuck in an endless loop 
                 continue
-                
+
             try:
                 papiaccess = ProviderApiAccess(provider=self.provider, provider_search=psearch, type="search", url=query)
-                
-                self.logger.debug("Requesting URL %s with timeout %d" % (query, config.cfg["searching.timeout"]))  
-                request = requests.get(query, timeout=config.cfg["searching.timeout"], verify=False)          
+
+                self.logger.debug("Requesting URL %s with timeout %d" % (query, config.cfg["searching.timeout"]))
+                request = requests.get(query, timeout=config.cfg["searching.timeout"], verify=False)
                 executed_queries.add(query)
                 papiaccess.save()
                 papiaccess.response_time = request.elapsed.microseconds / 1000
@@ -195,8 +189,8 @@ class SearchModule(object):
                     papiaccess.response_successful = True
                     try:
                         parsed_results = self.process_query_result(request.text, query)
-                        results_and_providersearchdbentry["results"].extend(parsed_results["entries"]) #Retrieve the processed results
-                        queries.extend(parsed_results["queries"]) #Add queries that were added as a result of the parsing, e.g. when the next result page should also be loaded
+                        results_and_providersearchdbentry["results"].extend(parsed_results["entries"])  # Retrieve the processed results
+                        queries.extend(parsed_results["queries"])  # Add queries that were added as a result of the parsing, e.g. when the next result page should also be loaded
                         self.handle_provider_success()
                     except Exception as e:
                         self.logger.exception("Error while processing search results from provider %s" % self, e)

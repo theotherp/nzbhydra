@@ -105,9 +105,12 @@
                 </div>
             </div>
 
+            
         </form>
 
-        <div class="col-md-2"></div>
+        <div class="col-md-2">
+            <a ng-click="showNfo({'provider': 'Binsearch', 'guid': '168003916'})">Nfo</a>
+        </div>
         <form class="form-horizontal">
             <div class="form-group">
 
@@ -196,6 +199,7 @@
             </tbody>
         </table>
     </div>
+    
 
 
 </div>
@@ -257,7 +261,8 @@
                 {{ result.age_days }}d
             </td>
             <td class="col-md-2 text-left">
-                NZB NFO Details
+                <a ng-if="result.has_nfo" ng-click="showNfo(result)">Nfo</a>
+                NZB <a ng-if="result.has_nfo" ng-click="open()">NFO</a> Details
             </td>
         </tr>
         <!-- Show all the duplicates of this entry-->

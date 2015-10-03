@@ -191,21 +191,6 @@ nzbhydraapp.config(['$provide', '$httpProvider', function ($provide, $httpProvid
 }]);
 
 
-nzbhydraapp.controller('ModalInstanceCtrl', ['$scope', '$modalInstance', 'content', 'title', function ($scope, $modalInstance, content, title) {
-
-    $scope.content = content;
-    $scope.title = title;
-
-    $scope.ok = function () {
-        $modalInstance.close();
-    };
-
-    $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
-    };
-}]);
-
-
 function sortResults(input, predicate, reversed) {
     var sorted = _.sortBy(input, function (i) {
         return i[0][predicate];
@@ -243,8 +228,21 @@ nzbhydraapp.directive('ngEnter', function () {
     };
 });
 
+nzbhydraapp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, nfo) {
 
-nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '$location', function ($scope, $http, $routeParams, $location) {
+    $scope.nfo = nfo;
+    
+
+    $scope.ok = function () {
+        $modalInstance.close($scope.selected.item);
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss();
+    };
+});
+
+nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '$location', '$modal', function ($scope, $http, $routeParams, $location, $modal) {
 
     $scope.category = (typeof $routeParams.category === "undefined") ? "All" : $routeParams.category;
 
@@ -263,11 +261,13 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
 
     $scope.showProviders = {};
 
+
+
     if ($scope.title != "" && $scope.query == "") {
         $scope.searchTerm = $scope.title;
     }
 
-    //Only start search if we're in search mode, landing mode just shows the search box
+//Only start search if we're in search mode, landing mode just shows the search box
     console.log($routeParams.mode);
     if ($routeParams.mode != "landing") {
 
@@ -349,7 +349,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
                 if (doShow && $scope.maxage) {
                     doShow &= item.age_days < $scope.maxage;
                 }
-                return doShow; 
+                return doShow;
             });
 
         });
@@ -377,7 +377,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
     };
 
 
-    // Any function returning a promise object can be used to load values asynchronously
+// Any function returning a promise object can be used to load values asynchronously
     $scope.getAutocomplete = function (val) {
         $scope.autocompleteLoading = true;
         //Expected model returned from API:
@@ -494,13 +494,47 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
     };
 
 
-    //True if the provider is selected in the table filter, false else 
+//True if the provider is selected in the table filter, false else 
     $scope.isShow = function (item) {
         return $scope.showProviders[item.provider];
     };
+    
+    
+    $scope.showNfo = function(resultItem) {
+        var uri = new URI("/internalapi");
+            uri.addQuery("t", "getnfo");
+            uri.addQuery("provider", resultItem.provider);
+            uri.addQuery("guid", resultItem.guid);
+          return $http.get(uri).then(function (response) {
+                if (response.data.has_nfo) {
+                    $scope.open("lg", response.data.nfo)
+                } else {
+                    //todo: show error or info that no nfo is available
+                }
+            });
+    };
+    
+    
+    $scope.open = function (size, nfo) {
+
+        var modalInstance = $modal.open({
+            animation: $scope.animationsEnabled,
+            template: '<pre>{{nfo}}</pre>',
+            controller: 'ModalInstanceCtrl',
+            size: size,
+            resolve: {
+                nfo: function () {
+                    return nfo;
+                }
+            }
+        });
+
+        
+    };
 
 
-}]);
+}])
+;
 
 
 nzbhydraapp.filter('firstShownResult', function () {

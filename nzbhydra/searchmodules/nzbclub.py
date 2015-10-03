@@ -76,7 +76,13 @@ class NzbClub(SearchModule):
             entry.provider = self.name
             entry.category = "N/A"
 
-            entry.guid = elem.find("guid").text
+            entry.guid = elem.find("guid").text[-8:] #GUID looks like "http://www.nzbclub.com/nzb_view58556415" of which we only want the last part
+            
+            description = elem.find("description").text
+            if re.compile(r"\d NFO Files").search(description): # [x NFO Files] is missing if there is no NFO
+                entry.has_nfo = True
+            else:
+                entry.has_nfo = False
 
             entry.pubDate = pubdate.text
             pubdate = arrow.get(pubdate.text, '"ddd, DD MMM YYYY HH:mm:ss Z')

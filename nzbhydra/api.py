@@ -105,6 +105,7 @@ class NzbSearchResultSchema(Schema):
     guid = fields.String()
     size = fields.Integer()
     category = fields.String()
+    has_nfo = fields.Boolean()
 
 
 class ProviderApiAccess(Schema):

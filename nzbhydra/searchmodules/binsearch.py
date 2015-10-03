@@ -5,6 +5,7 @@ import arrow
 from bs4 import BeautifulSoup
 from furl import furl
 import time
+import requests
 
 from nzbhydra.exceptions import ProviderIllegalSearchException
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -23,14 +24,16 @@ class Binsearch(SearchModule):
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = True
         self.category_search = False
-        # https://www.nzbclub.com/nzbrss.aspx
 
 
     def build_base_url(self):
-        url = furl(self.query_url).add({"max": self.provider.settings.get("max_results", 250), 
+        f = furl(self.query_url)
+        f.path.add("index.php")
+        url = f.add({"max": self.provider.settings.get("max_results", 250), 
                                         "adv_col": "on", # collections only 
                                         "postdate": "date", # show pubDate, not age
-                                        "adv_nfo": "off" #if enabled only show results with nfo file #todo make configurable
+                                        #"adv_nfo": "off", #if enabled only show results with nfo file #todo make configurable. setting it to off doesnt work, its still done
+                                        "adv_sort": "date" #prefer the newest
                                         })
         return url
 
@@ -47,20 +50,22 @@ class Binsearch(SearchModule):
 
     def get_showsearch_urls(self, args):
         urls = []
+        query = args["query"]
         if args["query"]:
-            urls = self.get_search_urls(args["query"], args["category"])
+            urls = self.get_search_urls(args)
         if args["season"] is not None:
             #Restrict query if  season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
             #binsearch doesn't seem to support "or" in searches, so create separate queries
+            urls = []
             if args["episode"] is not None:
-                args["query"] = "%s s%02de%02d" % (query, season, episode)
+                args["query"] = "%s s%02de%02d" % (query, args["season"], args["episode"])
                 urls.extend(self.get_search_urls(args))
-                args["query"] = "%s %dx%02d" % (query, season, episode)
+                args["query"] = "%s %dx%02d" % (query, args["season"], args["episode"])
                 urls.extend(self.get_search_urls(args))
             else:
-                args["query"] = "%s s%02d" % (query, season)
-                urls.extend(self.get_search_urls())
-                args["query"] = '%s "season %d"' % (query, season)
+                args["query"] = "%s s%02d" % (query, args["season"])
+                urls.extend(self.get_search_urls(args))
+                args["query"] = '%s "season %d"' % (query, args["season"])
                 urls.extend(self.get_search_urls(args))
         return urls
 
@@ -130,23 +135,42 @@ class Binsearch(SearchModule):
             entry.size = int(size)
             
             entry.category = "N/A"
+            
+            if re.compile(r"\d nfo file").search(info.text): # 1 nfo file is missing if there is no NFO
+                entry.has_nfo = True
+            else:
+                entry.has_nfo = False
 
             #Age
-            p = re.compile(r"(\d{2}\-\w{3}\-\d{4})")
-            m = p.search(row.find_all("td")[-1:][0].text)
-            if m:
-                pubdate = arrow.get(m.group(1), "DD-MMM-YYYY")
+            try:
+                pubdate = re.compile(r"(\d{1,2}\-\w{3}\-\d{4})").search(row.find("td").text).group(1)
+                pubdate = arrow.get(pubdate, "DD-MMM-YYYY")
                 entry.epoch = pubdate.timestamp
                 entry.pubdate_utc = str(pubdate)
                 entry.age_days = (arrow.utcnow() - pubdate).days
                 entry.age_precise = False
-            else:
+            except Exception as e:
+                entry.epoch = 0
+                
                 logger.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
 
             entries.append(entry)
 
         
         return {"entries": entries, "queries": []}
+    
+    def get_nfo(self, guid):
+        f = furl(self.base_url)
+        f.path.add("viewNFO.php")
+        f.add({"oid": guid})
+        r = requests.get(f.tostr(), verify=False)
+        r.raise_for_status()
+        html = r.text
+        p = re.compile(r"<pre>(?P<nfo>.*)<\/pre>", re.DOTALL)
+        m = p.search(html)
+        if m:
+            return m.group("nfo")
+        return None
 
 def get_instance(provider):
     return Binsearch(provider)

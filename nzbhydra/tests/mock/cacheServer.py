@@ -25,8 +25,8 @@ def apidog():
 @app.route('/nzbclub/api/NFO/<path:guid>')
 @cache.memoize()
 def nzbindexapi(guid):
+    print("Get nfo from web via %s " % "https://www.nzbclub.com/api/NFO/" + guid)
     r = requests.get("https://www.nzbclub.com/api/NFO/" + guid)
-    print("Get nfo from web")
     return r.text, r.status_code
 
 
@@ -49,12 +49,13 @@ def nzbindex():
 
 
 @app.route('/binsearch')
+@app.route('/binsearch/<path:file>')
 @cache.memoize()
-def binsearch():
-    return handle_request( request.args.items(), "https://www.binsearch.info/index.php")
+def binsearch(file):
+    return handle_request(request.args.items(), "https://www.binsearch.info/" + file)
 
 
-def handle_request(argsitems,  baseurl):
+def handle_request(argsitems, baseurl):
     args = {}
     for i in argsitems:
         args[i[0]] = i[1]

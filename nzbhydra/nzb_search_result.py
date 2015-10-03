@@ -1,5 +1,5 @@
 class NzbSearchResult:
-    def __init__(self, title=None, link=None, provider=None, guid=None, size=None, category=None, attributes=[], epoch=None, pubdate_utc=None, age_days=None, poster=None):
+    def __init__(self, title=None, link=None, provider=None, guid=None, size=None, category=None, attributes=[], epoch=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=True):
         self.title = title
         self.link = link
         self.epoch = epoch
@@ -17,6 +17,7 @@ class NzbSearchResult:
         self.supports_queries = True #Providers might only provide a feed of the latest releases, e.g. womble
         self.search_ids = [] #"tvdbid", "rid", "imdbid"
         self.poster = poster
+        self.has_nfo = has_nfo #False if we know there isn't one, True if there might be one!
         
         
         
