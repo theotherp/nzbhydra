@@ -1,3 +1,4 @@
+import base64
 import logging
 import socket
 import xmlrpc.client
@@ -83,4 +84,31 @@ class Nzbget(Downloader):
             return False
     
     def add_nzb(self, content: str, title: str, category: str) -> bool:
-        return True
+        if title is None:
+            title = ""
+        else:
+            if not title.endswith(".nzb"):  #NZBGet skips entries of which the filename does not end with NZB
+                title += ".nzb"
+        category = "" if category is None else category
+        
+        encoded_content = base64.standard_b64encode(content).decode() #Took me ages until I found out I was still sending bytes instead of a string 
+        
+        rpc = self.get_rpc()
+        try:
+            rcode = rpc.append(title, encoded_content, category, 0, False, False, "", 0, "SCORE")
+            if rcode > 0:
+                self.logger.info("Successfully added %s to NZBGet" % title)
+                return True
+            else:
+                self.logger.error("NZBGet returned an error while adding NZB for %s" % title)
+                return False
+        except socket.error:
+            self.logger.error('NZBGet is not responding. Please ensure that NZBGet is running and host setting is correct.')
+            return False
+        except xmlrpc.client.ProtocolError as e:
+            if e.errcode == 401:
+                self.logger.error('Wrong credentials')
+            else:
+                self.logger.error('Protocol error: %s', e)
+            return False
+        

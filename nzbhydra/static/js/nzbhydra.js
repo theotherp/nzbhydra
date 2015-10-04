@@ -517,11 +517,12 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
     $scope.nzbgetclass = {};
     $scope.nzbgetEnabled = true;
 
-    $scope.downloadNzb = function (resultItem) {
+    $scope.addNzb = function (resultItem) {
         var uri = new URI("/internalapi");
-        uri.addQuery("t", "dlnzb");
+        uri.addQuery("t", "addnzb");
         uri.addQuery("title", resultItem.title);
-        uri.addQuery("link", resultItem.link);
+        uri.addQuery("guid", resultItem.guid);
+        uri.addQuery("provider", resultItem.provider);
         $scope.nzbgetclass[resultItem.guid] = "nzb-spinning";
         return $http.get(uri).success(function () {
             $scope.nzbgetclass[resultItem.guid] = "nzbget-success";

@@ -146,14 +146,25 @@ class AllowQueryGeneration(object):
 # Downloader settings
 
 @InitSettings
-class DownloaderAddtype(object):
-    setting = "downloader.addtype"
+class NzbAccessType(object):
+    setting = "downloader.nzbaccesstype"
     default = "serve"
     type = str
-    comment = "Determines how we internally handle NZBs (accessed via the GUI, not the API). ""Serve"": Download the NZB from the provider and send it to the downloader (preferred). ""Redirect"": Send a link to NZBHydra which redirects to the provider. ""Direct"": Create direct links. Not recommended."
+    comment = "Determines how we provide access to NZBs  ""Serve"": Provide a link to NZBHydra via which the NZB is downloaded and returned. ""Redirect"": Provide a link to NZBHydra which redirects to the provider. ""Direct"": Create direct links (as returned by the provider=. Not recommended."
 
     serve = "serve"
     redirect = "redirect"
     direct = "direct"
+    
+    
+@InitSettings
+class NzbDownloaderAddingType(object):
+    setting = "downloader.nzbaddingtype"
+    default = "link"
+    type = str
+    comment = "Determines how NZBs are added to downloaders. Either by sending a link to the downloader (""link"") or by sending the actual NZB (""nzb"")."
+
+    link = "link"
+    nzb = "nzb"
 
 

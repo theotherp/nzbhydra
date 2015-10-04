@@ -1,18 +1,23 @@
 from functools import wraps
+import json
+import logging
 from pprint import pprint
 
 from flask import send_file, redirect
 from flask import Flask, render_template, request, jsonify, Response
+import requests
 from webargs import Arg
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
 
-from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb, DownloaderAddtype
+from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, NzbAccessType, download_nzb_and_log
 from nzbhydra import config, search, infos
-from nzbhydra.config import Apikey, Username, Password, EnableAuth
+from nzbhydra.config import Apikey, Username, Password, EnableAuth, NzbDownloaderAddingType
 from nzbhydra.downloader import Nzbget
 
 app = Flask(__name__)
+
+logger = logging.getLogger('root')
 
 externalapi_args = {
     "input": Arg(str),
@@ -142,15 +147,23 @@ def api(args):
 
 @app.route('/internalapi')
 @requires_auth
-@use_args(internalapi_args)
+@use_args(internalapi_args, locations=['querystring'])
 def internal_api(args):
     results = None
-    if args["t"] == "search":
-        results = search.search(True, args)
-    if args["t"] == "tvsearch":
-        results = search.search_show(True, args)
-    if args["t"] == "moviesearch":
-        results = search.search_movie(True, args)
+    
+    if args["t"] in ("search", "tvsearch", "moviesearch"):
+        if args["t"] == "search":
+            results = search.search(True, args)
+        if args["t"] == "tvsearch":
+            results = search.search_show(True, args)
+        if args["t"] == "moviesearch":
+            results = search.search_movie(True, args)
+    
+        if results is not None:
+            results = process_for_internal_api(results)
+            return jsonify(results)  # Flask cannot return lists
+        else:
+            return "No results", 500
     if args["t"] == "autocompletemovie":
         results = infos.find_movie_ids(args["input"])
         return jsonify({"results": results})
@@ -162,28 +175,41 @@ def internal_api(args):
     if args["t"] == "getnfo":
         nfo = get_nfo(args["provider"], args["guid"])
         return jsonify(nfo)
-    if args["t"] == "getnzb":
-        if config.get(DownloaderAddtype) == DownloaderAddtype.redirect:  # I'd like to have this in api but don't want to have to use redirect() there...
+    if args["t"] == "getnzb": #Returns an NZB. This will probably be only called (internally) if the user wants to download an NZB instead of adding it to the downloader
+        if config.get(NzbAccessType) == NzbAccessType.redirect:  # I'd like to have this in api but don't want to have to use redirect() there...
             link = get_nzb_link(args["provider"], args["guid"], args["title"], args["searchid"])
             if link is not None:
                 return redirect(link)
             else:
                 return "Unable to build link to NZB", 404
-        elif config.get(DownloaderAddtype) == DownloaderAddtype.serve:
-            return get_nzb(args["provider"], args["guid"], args["title"], args["searchid"])
+        elif config.get(NzbAccessType) == NzbAccessType.serve:
+            return get_nzb_response(args["provider"], args["guid"], args["title"], args["searchid"])
         else:
-            return "downloader.add_type has wrong value", 500
-    if args["t"] == "dlnzb":
+            logger.error("Invalid value of %s: %s" % (NzbAccessType.setting, config.get(NzbAccessType)))
+            return "downloader.add_type has wrong value", 500 #"direct" would never end up here, so it must be a wrong value
+    if args["t"] == "addnzb":
         nzbget = Nzbget()
-        added = nzbget.add_link(args["link"], args["title"], args["category"])
-        if added:
-            return "Success"
+        if config.get(NzbDownloaderAddingType) == NzbDownloaderAddingType.link: #We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
+            link = get_nzb_link(args["provider"], args["guid"], args["title"], args["searchid"])
+            added = nzbget.add_link(link, args["title"], args["category"])
+            if added:
+                return "Success"
+            else:
+                return "Error", 500
+        elif config.get(NzbDownloaderAddingType) == NzbDownloaderAddingType.nzb: #We download an NZB send it to the downloader
+            nzbdownloadresult = download_nzb_and_log(args["provider"], args["guid"], args["title"], args["searchid"])
+            added = nzbget.add_nzb(nzbdownloadresult.content, args["title"], args["category"])
+            if added:
+                return "Success"
+            else:
+                return "Error", 500
         else:
-            return "Error", 500
+            logger.error("Invalid value of %s: %s" % (NzbDownloaderAddingType.setting, config.get(NzbDownloaderAddingType)))
+            return "downloader.add_type has wrong value", 500 #"direct" would never end up here, so it must be a wrong value
+            
+            
         
         
 
-    if results is not None:
-        results = process_for_internal_api(results)
-        return jsonify(results)  # Flask cannot return lists
-    return "hello internal api"
+    
+    return "hello internal api", 500
