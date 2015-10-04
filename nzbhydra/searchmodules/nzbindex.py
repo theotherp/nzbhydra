@@ -173,6 +173,16 @@ class NzbIndex(SearchModule):
             if m:
                 return m.group("nfo")
         return None
+    
+    
+    def get_nzb_link(self, guid, title):
+        #https://nzbindex.com/download/126435066/ATG-Avengers-02-Lre-dUltron-2015-TF-720p.zip.nzb
+        f = furl(self.base_url)
+        f.path.add("download")
+        f.path.add("guid")
+        f.path.add("title" + ".nzb")
+        return f.tostr()
+
 
 def get_instance(provider):
     return NzbIndex(provider)

@@ -17,4 +17,3 @@ def init(path, value, type):
     #Write this to console for now, later we can use it to collect all available/expected config data
     print("Initializing configuration with path %s and value %s" % (path, value))
 
-        

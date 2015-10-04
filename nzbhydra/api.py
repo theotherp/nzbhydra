@@ -1,10 +1,11 @@
 from itertools import groupby
 import logging
 
+from flask import request
+from furl import furl
 from marshmallow import Schema, fields
 
 from nzbhydra import config
-
 from nzbhydra.config import init
 from nzbhydra import providers
 
@@ -126,6 +127,31 @@ class ProviderSearchSchema(Schema):
     api_accesses = fields.Nested(ProviderApiAccess, many=True)
 
 
+# todo: thsi needs to be expanded when we support reverse proxies / global urls / whatever
+def get_root_url():
+    return request.url_root
+
+
+config.init("downloader.add_type", "nzb", str)  # todo: "nzb" if we download an nzb and send it to the downloader, "redirect" if send an internal link that redirects to the provider and "direct" ("worst case") if we provide the original link 
+
+
+def transform_links(results):
+    if config.cfg.get("downloader.add_type") == "direct":
+        return results
+
+    for i in results:
+        f = furl(get_root_url())
+        f.path.add("internalapi")
+        f.add({"t": "getnzb", "provider": i.provider, "guid": i.guid})
+        i.link = f.url
+
+    return results
+
+def process_for_external_api(results):
+    results = transform_links(results)
+    return results
+
+
 def process_for_internal_api(results):
     # results: list of dicts, <provider>:dict "providersearchdbentry":<ProviderSearch>,"results":[<NzbSearchResult>]
     nzbsearchresults = []
@@ -133,6 +159,8 @@ def process_for_internal_api(results):
     for i in results.values():
         nzbsearchresults.extend(i["results"])
         providersearchdbentries.append(ProviderSearchSchema().dump(i["providersearchdbentry"]).data)
+
+    nzbsearchresults = transform_links(nzbsearchresults)
 
     grouped_by_sameness = find_duplicates(nzbsearchresults)
 
@@ -171,3 +199,17 @@ def get_nfo(provider_name, guid):
         result["has_nfo"] = True
         result["nfo"] = nfo
     return result
+
+
+def get_nzb(provider_name, guid):
+    if config.cfg.get("downloader.add_type") == "direct":
+        #return link to nzb from provider
+        for p in providers.providers:
+            if p.name == provider_name:
+                return p.get_nzb_link(guid)
+            else:
+                logger.error("Did not find provider with name %s" % provider_name)
+                return None
+    
+    
+    

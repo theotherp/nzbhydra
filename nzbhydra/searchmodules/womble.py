@@ -38,12 +38,10 @@ class Womble(SearchModule):
             logger.error("This provider does not support specific searches")
             return []
         if args["category"]:
-            if args["category"] == "TV":
-                urls.append(self.build_base_url().tostr())
-            if args["category"] == "TV SD":
+            if args["category"] == "TV SD" or args["category"] == "TV":
                 urls.append(self.build_base_url().add({"sec": "tv-dvd"}).tostr())
                 urls.append(self.build_base_url().add({"sec": "tv-sd"}).tostr())
-            if args["category"] == "TV HD":
+            if args["category"] == "TV HD" or args["category"] == "TV":
                 urls.append(self.build_base_url().add({"sec": "tv-x264"}).tostr())
                 urls.append(self.build_base_url().add({"sec": "tv-hd"}).tostr())
         else:
@@ -84,9 +82,8 @@ class Womble(SearchModule):
             else:
                 entry.category = "N/A" #undefined
                 
-            entry.guid = elem.find("guid").text
             
- 
+            entry.guid = elem.find("guid").text[30:] #39a/The.Almighty.Johnsons.S03E06.720p.BluRay.x264-YELLOWBiRD.nzb is the GUID, only the 39a doesn't work
             
             pubdate = arrow.get(pubdate.text, 'M/D/YYYY h:mm:ss A')
             entry.epoch = pubdate.timestamp
@@ -96,6 +93,12 @@ class Womble(SearchModule):
             entries.append(entry)
             
         return {"entries": entries, "queries": []}
+    
+    def get_nzb_link(self, guid, title):
+        f = furl(self.base_url)
+        f.path.add("nzb")
+        f.path.add(guid)
+        return f.tostr()
 
 
 def get_instance(provider):

@@ -105,6 +105,13 @@ class NzbClub(SearchModule):
                 return None
             return r.json()["Data"][0]["NFOContentData"]
         
+    def get_nzb_link(self, guid, title):
+        f = furl(self.base_url)
+        f.path.add("nzb_get")
+        f.path.add("guid")
+        f.path.add("title" + ".nzb")
+        return f.tostr()
+        
 
 def get_instance(provider):
     return NzbClub(provider)

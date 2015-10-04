@@ -189,3 +189,12 @@ class MyTestCase(ProviderTestcase):
         r = nzbsorg.process_query_result(json.dumps(mockresponse_nzbs2), "http://127.0.0.1:5001/nzbsorg/q=whatever&offset=0&limit=0")
         further_queries = r["queries"]
         self.assertEqual(0, len(further_queries))
+        
+    
+    def testGetNzbLink(self):
+        nzbsorg = NewzNab(self.nzbsorg)
+        link = nzbsorg.get_nzb_link("guid", None)
+        assert "id=guid" in link
+        assert "t=get" in link
+        assert "apikey=apikeynzbsorg" in link
+        

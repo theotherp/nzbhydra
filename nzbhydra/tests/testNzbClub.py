@@ -11,7 +11,7 @@ from nzbhydra.tests.providerTest import ProviderTestcase
 class MyTestCase(ProviderTestcase):
     def setUp(self):
         set_and_drop()
-        self.nzbclub = Provider(module="nzbclub", name="nzbclub", query_url="http://127.0.0.1:5001/nzbclub", base_url="http://127.0.0.1:5001/nzbclub", search_types=["general", "tv", "movie"], generate_queries=True)
+        self.nzbclub = Provider(module="nzbclub", name="nzbclub", settings={"query_url": "http://127.0.0.1:5001/nzbclub", "base_url": "http://127.0.0.1:5001/nzbclub", "search_ids": []})
         self.nzbclub.save()
 
     def testUrlGeneration(self):
@@ -35,7 +35,14 @@ class MyTestCase(ProviderTestcase):
             self.assertEqual('Avengers.Age.of.Ultron.2015.720p.BluRay.x264.YIFY', entries[0].title)
             self.assertEqual("http://www.nzbclub.com/nzb_get/60269450/Avengers Age of Ultron 720p BrRip x264 YIFY Avengers Age of Ultron 2015 720p BluRay x264 YIFY.nzb", entries[0].link)
             self.assertEqual(1075514926, entries[0].size)
-            self.assertEqual("http://www.nzbclub.com/nzb_view60269450", entries[0].guid)
+            self.assertEqual("60269450", entries[0].guid)
             self.assertEqual(1443019463, entries[0].epoch)
             self.assertEqual("2015-09-23T09:44:23-05:00", entries[0].pubdate_utc)
             self.assertEqual(0, entries[0].age_days)
+
+    
+    def testGetNzbLink(self):
+        n = NzbClub(self.nzbclub)
+        link = n.get_nzb_link("guid", "title")
+        self.assertEqual("http://127.0.0.1:5001/nzbclub/nzb_get/guid/title.nzb", link)
+    

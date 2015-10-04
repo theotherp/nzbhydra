@@ -1,0 +1,153 @@
+{
+  "@attributes": {
+    "version": "2.0"
+  },
+  "channel": {
+    "title": "NZBs(dot)ORG API Search",
+    "description": "NZBs(dot)ORG Feed",
+    "link": "https:\/\/nzbs.org\/",
+    "language": "en-gb",
+    "webMaster": "admin@nzbs.org (NZBs(dot)ORG)",
+    "category": {},
+    "image": {
+      "url": "https:\/\/nzbs.org\/\/templates\/default\/images\/banner.jpg",
+      "title": "NZBs(dot)ORG",
+      "link": "https:\/\/nzbs.org\/",
+      "description": "Visit NZBs(dot)ORG - Home of the NZB Harvester"
+    },
+    "response": {
+      "@attributes": {
+        "offset": "0",
+        "total": "1000"
+      }
+    },
+    "item": [
+      {
+        "title": "Avengers.Age.Of.Ultron.2015.FRENCH.720p.BluRay.x264-Goatlove",
+        "guid": "9c9d30fa2767e05ffd387db52d318ad7",
+        "link": "https:\/\/nzbs.org\/getnzb\/9c9d30fa2767e05ffd387db52d318ad7.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/9c9d30fa2767e05ffd387db52d318ad7#comments",
+        "pubDate": "Fri, 18 Sep 2015 12:57:17 +0000",
+        "category": "Movies-Foreign",
+        "description": "Avengers.Age.Of.Ultron.2015.FRENCH.720p.BluRay.x264-Goatlove",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/9c9d30fa2767e05ffd387db52d318ad7.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "6719733587",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2060"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "6719733587"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "9c9d30fa2767e05ffd387db52d318ad7"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.1080p.BluRay.x264.AC3.5.1-BUYMORE",
+        "guid": "eb74f6c0bf2125c0b410936276ac38f0",
+        "link": "https:\/\/nzbs.org\/getnzb\/eb74f6c0bf2125c0b410936276ac38f0.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/eb74f6c0bf2125c0b410936276ac38f0#comments",
+        "pubDate": "Thu, 17 Sep 2015 19:50:32 +0000",
+        "category": "TV-BoxHD",
+        "description": "Avengers.Age.of.Ultron.2015.1080p.BluRay.x264.AC3.5.1-BUYMORE",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/eb74f6c0bf2125c0b410936276ac38f0.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "4910931143",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "5090"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "4910931143"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "eb74f6c0bf2125c0b410936276ac38f0"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Avengers.Age.of.Ultron.2015.1080p.BluRay.DTS.x264-CyTSuNee",
+        "guid": "41b305ac99507f70ed6a10e45177065c",
+        "link": "https:\/\/nzbs.org\/getnzb\/41b305ac99507f70ed6a10e45177065c.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+        "comments": "https:\/\/nzbs.org\/details\/41b305ac99507f70ed6a10e45177065c#comments",
+        "pubDate": "Thu, 17 Sep 2015 01:39:33 +0000",
+        "category": "Movies-x264",
+        "description": "Avengers.Age.of.Ultron.2015.1080p.BluRay.DTS.x264-CyTSuNee",
+        "enclosure": {
+          "@attributes": {
+            "url": "https:\/\/nzbs.org\/getnzb\/41b305ac99507f70ed6a10e45177065c.nzb&i=1692&r=691ffff70ac03d75812f910d813f7b3c",
+            "length": "15010196044",
+            "type": "application\/x-nzb"
+          }
+        },
+        "attr": [
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2000"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "category",
+              "value": "2040"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "size",
+              "value": "15010196044"
+            }
+          },
+          {
+            "@attributes": {
+              "name": "guid",
+              "value": "41b305ac99507f70ed6a10e45177065c"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

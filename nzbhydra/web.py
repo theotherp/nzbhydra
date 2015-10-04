@@ -7,7 +7,7 @@ from webargs import Arg
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
 
-from nzbhydra.api import process_for_internal_api, get_nfo
+from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api
 from nzbhydra import config, search, infos
 
 app = Flask(__name__)
@@ -17,6 +17,7 @@ externalapi_args = {
     "apikey": Arg(str),
     "t": Arg(str),
     "q": Arg(str),
+    "query": Arg(str),
     "group": Arg(str),
     "limit": Arg(int),
     "offset": Arg(str),
@@ -71,8 +72,7 @@ def handle_error(error):
     raise CustomError(error)
 
 
-def render_search_results_for_api(search_results):
-    return render_template("api.html", channel={}, items=search_results)
+
 
 
 config.init("main.username", "nzbhydra", str)
@@ -114,22 +114,29 @@ def base(path):
     return send_file("static/index.html")
 
 
+def render_search_results_for_api(search_results):
+    return render_template("api.html", channel={}, items=search_results)
+
 @app.route('/api')
 @use_args(externalapi_args)
 def api(args):
+    print(args)
+    print(request.url)
+    #Map newznab api parameters to internal
+    if args["q"] is not None:
+        args["query"] = args["q"] #Because internally we work with "query" instead of "q"
+    #todo: category mapping, completely forgot that
     if config.cfg["main.apikey"] and ("apikey" not in args or args["apikey"] != config.cfg["main.apikey"]):
         raise Unauthorized("API key not provided or invalid")
-    if args["t"] == "search":
-        results = search.search(False, args["q"], args["cat"])
-        return render_search_results_for_api(results)
-    if args["t"] == "tvsearch":
-        # search_show(query=None, identifier_key=None, identifier_value=None, season=None, episode=None, categories=None)
-        identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
-        identifier_value = args[identifier_key] if identifier_key else None
-        results = search.search_show(False, args["q"], identifier_key, identifier_value, args["season"], args["ep"], args["cat"])
-        return render_search_results_for_api(results)
-    pprint(request)
-    return "hello api"
+    elif args["t"] == "search":
+        results = search.search(False, args)
+    elif args["t"] == "tvsearch":
+        results = search.search_show(False, args)
+    else:
+        pprint(request)
+        return "hello api"
+    results = process_for_external_api(results)
+    return render_search_results_for_api(results)
 
 
 @app.route('/internalapi')
@@ -153,6 +160,9 @@ def internal_api(args):
         return jsonify(search.categories)
     if args["t"] == "getnfo":
         nfo = get_nfo(args["provider"], args["guid"])
+        return jsonify(nfo)
+    if args["t"] == "getnzb":
+        nfo = get_nzb(args["provider"], args["guid"])
         return jsonify(nfo)
 
     if results is not None:

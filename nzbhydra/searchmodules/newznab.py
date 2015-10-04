@@ -177,6 +177,7 @@ class NewzNab(SearchModule):
             entries.append(entry)
 
         offset += self.limit
+        #TODO: dognzb always returns a limit of 100 even if there are more results. Either do some research and get it fixed or load the next page optimistically and see if there are new results, then cancel if not
         if offset < total and offset < 400:
             f = furl(query)
             query = f.remove("offset").add({"offset": offset})
@@ -215,7 +216,14 @@ class NewzNab(SearchModule):
                     pass
             # otherwise we just hope it's the nfo...
         
-        return nfo
+            return nfo
+        return None
+    
+    def get_nzb_link(self, guid, title):
+        f = furl(self.base_url)
+        f.path.add("api")
+        f.add({"t": "get", "apikey": self.getsettings["apikey"], "id": guid})
+        return f.tostr()
 
 
 def get_instance(provider):
