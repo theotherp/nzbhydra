@@ -529,10 +529,21 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
             }
         });
     };
-
-
+    
 }])
 ;
+
+nzbhydraapp.filter('nzblink', function() {
+	return function(resultItem) {
+		var uri = new URI("/internalapi");
+        uri.addQuery("t", "getnzb");
+        uri.addQuery("guid", resultItem.guid);
+        uri.addQuery("title", resultItem.title);
+        uri.addQuery("provider", resultItem.provider);
+        
+        return uri.toString();
+	}
+});
 
 
 nzbhydraapp.filter('firstShownResult', function () {

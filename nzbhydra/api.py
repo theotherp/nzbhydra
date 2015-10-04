@@ -1,13 +1,19 @@
 from itertools import groupby
 import logging
+from io import BytesIO
+import re
 
-from flask import request
+from flask import request, send_file
 from furl import furl
+
 from marshmallow import Schema, fields
+from requests import RequestException
+import sys
 
 from nzbhydra import config
 from nzbhydra.config import init
 from nzbhydra import providers
+from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderNzbDownload, Provider
 
 logger = logging.getLogger('root')
 
@@ -91,8 +97,7 @@ class ProviderSchema(Schema):
     name = fields.String()
     module = fields.String()
     enabled = fields.Boolean()
-    settings = fields.String()
-
+    settings = fields.String()    
 
 class NzbSearchResultSchema(Schema):
     title = fields.String()
@@ -108,7 +113,7 @@ class NzbSearchResultSchema(Schema):
     has_nfo = fields.Boolean()
 
 
-class ProviderApiAccess(Schema):
+class ProviderApiAccessSchema(Schema):
     provider = fields.Nested(ProviderSchema, only="name")
     time = fields.DateTime()
     type = fields.String()
@@ -124,7 +129,7 @@ class ProviderSearchSchema(Schema):
     successful = fields.Boolean()
     results = fields.Integer()
 
-    api_accesses = fields.Nested(ProviderApiAccess, many=True)
+    api_accesses = fields.Nested(ProviderApiAccessSchema, many=True)
 
 
 # todo: thsi needs to be expanded when we support reverse proxies / global urls / whatever
@@ -132,38 +137,38 @@ def get_root_url():
     return request.url_root
 
 
-config.init("downloader.add_type", "nzb", str)  # todo: "nzb" if we download an nzb and send it to the downloader, "redirect" if send an internal link that redirects to the provider and "direct" ("worst case") if we provide the original link 
+config.cfg.init("downloader.add_type", "redirect", str, 'Determines how NZBs are retrieved when using the GUI. "direct": Links to the provider''s NZB. Not recommended. "redirect": redirect via nzbhydra. "serve": nzbhydra downloads the nzb from the provider and returns it.')
 
 
-def transform_links(results):
-    if config.cfg.get("downloader.add_type") == "direct":
+def transform_links(results, dbsearchid):
+    if config.cfg.get("downloader.add_type") == "direct":  # We don't change the link, the results lead directly to the NZB
         return results
 
     for i in results:
         f = furl(get_root_url())
         f.path.add("internalapi")
-        f.add({"t": "getnzb", "provider": i.provider, "guid": i.guid})
+        f.add({"t": "getnzb", "provider": i.provider, "guid": i.guid, "searchid": dbsearchid, "title": i.title})
         i.link = f.url
 
     return results
+
 
 def process_for_external_api(results):
     results = transform_links(results)
     return results
 
 
-def process_for_internal_api(results):
+def process_for_internal_api(search_result):
     # results: list of dicts, <provider>:dict "providersearchdbentry":<ProviderSearch>,"results":[<NzbSearchResult>]
     nzbsearchresults = []
     providersearchdbentries = []
-    for i in results.values():
+    for i in search_result["results"].values():
         nzbsearchresults.extend(i["results"])
         providersearchdbentries.append(ProviderSearchSchema().dump(i["providersearchdbentry"]).data)
 
-    nzbsearchresults = transform_links(nzbsearchresults)
+    nzbsearchresults = transform_links(nzbsearchresults, search_result["dbsearchid"])
 
     grouped_by_sameness = find_duplicates(nzbsearchresults)
-
 
     # Will be sorted by GUI later anyway but makes debugging easier
     results = sorted(grouped_by_sameness, key=lambda x: x[0].epoch, reverse=True)
@@ -175,7 +180,7 @@ def process_for_internal_api(results):
     for count, group in enumerate(serialized):
         for i in group:
             i["count"] = count
-    return {"results": serialized, "providersearches": providersearchdbentries}
+    return {"results": serialized, "providersearches": providersearchdbentries, "searchentryid": search_result["dbsearchid"]}
 
 
 def serialize_nzb_search_result(result):
@@ -201,15 +206,60 @@ def get_nfo(provider_name, guid):
     return result
 
 
-def get_nzb(provider_name, guid):
-    if config.cfg.get("downloader.add_type") == "direct":
-        #return link to nzb from provider
-        for p in providers.providers:
-            if p.name == provider_name:
-                return p.get_nzb_link(guid)
-            else:
-                logger.error("Did not find provider with name %s" % provider_name)
+
+def get_nzb_link(provider_name, guid, title, searchid):
+    for p in providers.providers:
+        if p.name == provider_name:
+            
+            link = p.get_nzb_link(guid, title)
+            
+            #Log to database
+            provider = Provider.get(Provider.name == provider_name)
+            papiaccess = ProviderApiAccess(provider=p.provider, type="nzb", url=link, response_successful=None, provider_search=provider)
+            papiaccess.save()
+            pnzbdl = ProviderNzbDownload(provider=provider, provider_search=searchid, api_access=papiaccess, mode="redirect")
+            pnzbdl.save()
+            
+            return link
+
+    else:
+        logger.error("Did not find provider with name %s" % provider_name)
+        return None
+
+
+def get_nzb(provider_name, guid, title, searchid):
+    for p in providers.providers:
+        if p.name == provider_name:
+            
+            link = p.get_nzb_link(guid, title)
+            provider = Provider.get(Provider.name == provider_name)
+            papiaccess = ProviderApiAccess(provider=p.provider, type="nzb", url=link, provider_search=provider)
+            papiaccess.save()
+            pnzbdl = ProviderNzbDownload(provider=provider, provider_search=searchid, api_access=papiaccess, mode="serve")
+            pnzbdl.save()
+            try:
+                r = p.get(link)
+                r.raise_for_status()
+                
+                papiaccess.response_successful = True
+                papiaccess.response_time = r.elapsed.microseconds / 1000
+                    
+                bio = BytesIO(r.content)
+                filename = title + ".nzb" if title is not None else "nzbhydra.nzb"
+                response = send_file(bio, mimetype='application/x-nzb;', as_attachment=True, attachment_filename=filename, add_etags=False)
+                response.headers["content-length"] = len(r.content)
+    
+                for header in r.headers.keys():
+                    if header.lower().startswith("x-dnzb") or header.lower() in ("content-disposition", "content-type"):
+                        response.headers[header] = r.headers[header]
+                return response
+            except RequestException as e:
+                logger.error("Error while connecting to URL %s: %s" % (link, str(e)))
+                papiaccess.error = str(e)
                 return None
-    
-    
-    
+            finally:
+                papiaccess.save()
+            
+
+    else:
+        return "Unable to find NZB link"

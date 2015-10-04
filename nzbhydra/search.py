@@ -81,7 +81,10 @@ def search(internal, args):
         providersearchentry = i["providersearchdbentry"]
         providersearchentry.search = dbsearch
         providersearchentry.save()
-    return results_by_provider
+    
+    search_result = {"results": results_by_provider, "dbsearchid": dbsearch.id}
+    
+    return search_result
 
 
 def search_show(internal, args):

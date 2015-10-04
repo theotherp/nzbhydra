@@ -1,8 +1,8 @@
 from nzbhydra import database
-from nzbhydra.database import Provider, ProviderSearch, ProviderApiAccess, ProviderStatus, Search
+from nzbhydra.database import Provider, ProviderSearch, ProviderApiAccess, ProviderStatus, Search, ProviderNzbDownload
 from nzbhydra.tests.db_prepare import set_and_drop
 
-#set_and_drop("nzbhydra.db", [ProviderSearch, ProviderApiAccess, Search, ProviderStatus])
+set_and_drop("nzbhydra.db", [ProviderNzbDownload, ProviderApiAccess])
 
 database.db.init("nzbhydra.db")
 database.db.connect()
@@ -19,8 +19,8 @@ database.db.connect()
 # nzbclub = Provider(module="nzbclub", name="NZBClub", settings={"query_url": "http://127.0.0.1:5001/nzbclub", "base_url": "http://127.0.0.1:5001/nzbclub", "search_ids": []})
 # nzbclub.save()
 
-binsearch = Provider(module="binsearch", name="Binsearch", settings={"query_url": "http://127.0.0.1:5001/binsearch", "base_url": "http://127.0.0.1:5001/binsearch", "search_ids": []})
-binsearch.save()
-
-womble = Provider(module="womble", name="Womble", settings={"query_url": "http://127.0.0.1:5001/womble", "base_url": "http://127.0.0.1:5001/womble", "search_ids": []})
-womble.save()
+# binsearch = Provider(module="binsearch", name="Binsearch", settings={"query_url": "http://127.0.0.1:5001/binsearch", "base_url": "http://127.0.0.1:5001/binsearch", "search_ids": []})
+# binsearch.save()
+# 
+# womble = Provider(module="womble", name="Womble", settings={"query_url": "http://127.0.0.1:5001/womble", "base_url": "http://127.0.0.1:5001/womble", "search_ids": []})
+# womble.save()

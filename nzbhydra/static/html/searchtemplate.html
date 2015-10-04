@@ -261,7 +261,7 @@
             </td>
             <td class="col-md-2 text-left">
                 <a ng-if="result.has_nfo" ng-click="showNfo(result)">NFO</a>
-                NZB Details
+                <a target="_blank" href="{{ result.link }}">NZB</a> Details
             </td>
         </tr>
         <!-- Show all the duplicates of this entry-->
@@ -283,7 +283,7 @@
             </td>
             <td class="col-md-2 text-left td-embedded">
                 <a ng-if="result.has_nfo" ng-click="showNfo(result)">NFO</a>
-                NZB Details
+                <a target="_blank" href="{{ result.link }}">NZB</a> Details
             </td>
         </tr>
 

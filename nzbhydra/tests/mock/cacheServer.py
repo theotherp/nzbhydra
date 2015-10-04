@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, redirect
 from flask.ext.cache import Cache
 from furl import furl
 import requests
@@ -58,7 +58,7 @@ def get(url, cookies):
         return r.text
 
 
-def handle_request(argsitems, baseurl, cookies=None):
+def handle_request(argsitems, baseurl, cookies=None, doredirect=False):
     if not cookies:
         cookies = []
     args = {}
@@ -69,6 +69,8 @@ def handle_request(argsitems, baseurl, cookies=None):
     sortedkeys = sorted(args.keys())
     for key in sortedkeys:
         f.add({key: str(args[key])})
+    if doredirect:
+        return redirect(f.tostr())
     return get(f.tostr(), cookies=cookies)
 
 

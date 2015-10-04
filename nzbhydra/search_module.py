@@ -158,9 +158,9 @@ class SearchModule(object):
 
         provider_status.save()
             
-    def get(self, query, timeout=None, cookies=None):
+    def get(self, url, timeout=None, cookies=None, stream=False):
         #overwrite for special handling, e.g. cookies
-        return requests.get(query, timeout=timeout, verify=False, cookies=cookies)
+        return requests.get(url, timeout=timeout, verify=False, cookies=cookies, stream=stream)
 
     def get_url_with_papi_access(self, url, type, cookies=None, timeout=None):
         papiaccess = ProviderApiAccess(provider=self.provider, type=type, url=url)

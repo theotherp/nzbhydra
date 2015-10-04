@@ -1,13 +1,13 @@
 from functools import wraps
 from pprint import pprint
 
-from flask import send_file
+from flask import send_file, redirect
 from flask import Flask, render_template, request, jsonify, Response
 from webargs import Arg
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
 
-from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api
+from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb
 from nzbhydra import config, search, infos
 
 app = Flask(__name__)
@@ -53,8 +53,9 @@ internalapi_args = {
 
     "input": Arg(str),
     "guid": Arg(str),
-    "provider": Arg(str)
-    
+    "provider": Arg(str),
+    "searchid": Arg(str)
+
 }
 
 from webargs import core
@@ -70,9 +71,6 @@ class CustomError(Exception):
 def handle_error(error):
     print(error)
     raise CustomError(error)
-
-
-
 
 
 config.init("main.username", "nzbhydra", str)
@@ -117,15 +115,16 @@ def base(path):
 def render_search_results_for_api(search_results):
     return render_template("api.html", channel={}, items=search_results)
 
+
 @app.route('/api')
 @use_args(externalapi_args)
 def api(args):
     print(args)
     print(request.url)
-    #Map newznab api parameters to internal
+    # Map newznab api parameters to internal
     if args["q"] is not None:
-        args["query"] = args["q"] #Because internally we work with "query" instead of "q"
-    #todo: category mapping, completely forgot that
+        args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
+    # todo: category mapping, completely forgot that
     if config.cfg["main.apikey"] and ("apikey" not in args or args["apikey"] != config.cfg["main.apikey"]):
         raise Unauthorized("API key not provided or invalid")
     elif args["t"] == "search":
@@ -162,8 +161,18 @@ def internal_api(args):
         nfo = get_nfo(args["provider"], args["guid"])
         return jsonify(nfo)
     if args["t"] == "getnzb":
-        nfo = get_nzb(args["provider"], args["guid"])
-        return jsonify(nfo)
+        if config.cfg.get("downloader.add_type") == "redirect":  # I'd like to have this in api but don't want to have to use redirect() there...
+            link = get_nzb_link(args["provider"], args["guid"], args["title"], args["searchid"])
+            if link is not None:
+                return redirect(link)
+            else:
+                return "Unable to build link to NZB", 404
+        elif config.cfg.get("downloader.add_type") == "serve":
+            return get_nzb(args["provider"], args["guid"], args["title"], args["searchid"])
+        else:
+            return "downloader.add_type has wrong value", 500
+        
+        
 
     if results is not None:
         results = process_for_internal_api(results)
