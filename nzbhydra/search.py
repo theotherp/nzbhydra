@@ -109,12 +109,12 @@ def search_movie(internal, args):
     dbsearch.save()
     providers_to_call = pick_providers(query_supplied=True if args["query"] is not None else False, identifier_key="imdbid" if args["imdbid"] is not None else None, category=args["category"], internal=internal)
 
-    results_by_provider = start_search_futures(providers_to_call, "search_movie", args)
-    for i in results_by_provider.values():
-        providersearchentry = i["providersearchdbentry"]
+    provider_to_searchresults = start_search_futures(providers_to_call, "search_movie", args)
+    for search_result in provider_to_searchresults.values():
+        providersearchentry = search_result["providersearchdbentry"]
         providersearchentry.search = dbsearch
         providersearchentry.save()
-    return results_by_provider
+    return provider_to_searchresults
 
 
 def execute(provider, search_function, args):
@@ -122,23 +122,21 @@ def execute(provider, search_function, args):
 
 
 def start_search_futures(providers_to_call, search_function, args):
-    search_results_by_provider = {}
+    provider_to_searchresults = {}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(providers_to_call)) as executor:
-        futures = []
-        providers_by_future = {}
+        futures_to_providers = {}
         count = 1
         for provider in providers_to_call:
             future = executor.submit(execute, provider, search_function, args)
-            futures.append(future)
-            providers_by_future[future] = provider
+            futures_to_providers[future] = provider
             logger.debug("Added %d of %d calls to executor" % (count, len(providers_to_call)))
             count += 1
         count = 1
-        for f in concurrent.futures.as_completed(futures):
+        for f in concurrent.futures.as_completed(futures_to_providers.keys()):
             results = f.result()
-            search_results_by_provider[providers_by_future[f]] = results
-            logger.debug("Retrieved %d of %d calls from executor" % (count, len(futures)))
+            provider_to_searchresults[futures_to_providers[f]] = results
+            logger.debug("Retrieved %d of %d calls from executor" % (count, len(futures_to_providers)))
             count += 1
 
-    return search_results_by_provider
+    return provider_to_searchresults
