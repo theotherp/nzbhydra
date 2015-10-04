@@ -7,16 +7,12 @@ import time
 import xml.etree.ElementTree as ET
 
 import arrow
-from requests import RequestException
-import requests
-
 from furl import furl
 
-from nzbhydra.database import ProviderApiAccess
 from nzbhydra.datestuff import now
-from nzbhydra.exceptions import ProviderAuthException, ProviderAccessException, ProviderConnectionException
+from nzbhydra.exceptions import ProviderAuthException, ProviderAccessException
 from nzbhydra.nzb_search_result import NzbSearchResult
-from nzbhydra.search_module import SearchModule
+from nzbhydra.search_module import SearchModule, EntriesAndQueries
 
 logger = logging.getLogger('root')
 
@@ -49,10 +45,10 @@ def get_age_from_pubdate(pubdate):
 
 
 def map_category(category):
-    #If we know this category we return a list of newznab categories
+    # If we know this category we return a list of newznab categories
     if category in categories_to_newznab.keys():
         return categories_to_newznab[category]
-    #If not we return an empty list so that we search in all categories
+    # If not we return an empty list so that we search in all categories
     return []
 
 
@@ -73,7 +69,7 @@ class NewzNab(SearchModule):
 
     def build_base_url(self, action, category, o="json", extended=1):
         url = furl(self.provider.settings.get("query_url")).add({"apikey": self.provider.settings.get("apikey"), "o": o, "extended": extended, "t": action, "limit": self.limit, "offset": 0})
-        
+
         categories = map_category(category)
         if len(categories) > 0:
             url.add({"cat": ",".join(str(x) for x in categories)})
@@ -94,7 +90,7 @@ class NewzNab(SearchModule):
     def get_showsearch_urls(self, args):
         if args["category"] is None:
             args["category"] = "TV"
-        
+
         if args["query"] is None:
             url = self.build_base_url("tvsearch", args["category"])
             if args["rid"] is not None:
@@ -124,9 +120,8 @@ class NewzNab(SearchModule):
 
     test = 0
 
-    def process_query_result(self, json_response, query):
+    def process_query_result(self, json_response, query) -> EntriesAndQueries:
         import json
-
         entries = []
         queries = []
         json_result = json.loads(json_response)
@@ -134,7 +129,6 @@ class NewzNab(SearchModule):
         offset = int(json_result["channel"]["response"]["@attributes"]["offset"])
         if total == 0:
             return {"entries": entries, "queries": []}
-
         result_items = json_result["channel"]["item"]
         if "title" in result_items:
             # Only one item, put it in a list so the for-loop works
@@ -165,7 +159,7 @@ class NewzNab(SearchModule):
                     entry.poster = (i["@attributes"]["value"])
                 # Store all the extra attributes, we will return them later for external apis
                 entry.attributes.append({"name": i["@attributes"]["name"], "value": i["@attributes"]["value"]})
-            #Map category. Try to find the most specific category (like 2040), then the more general one (like 2000)
+            # Map category. Try to find the most specific category (like 2040), then the more general one (like 2000)
             categories = sorted(categories, reverse=True)  # Sort to make the most specific category appear first
             if len(categories) > 0:
                 for k, v in categories_to_newznab.items():
@@ -173,22 +167,18 @@ class NewzNab(SearchModule):
                         if c in v:
                             entry.category = k
                             break
-                
-            entries.append(entry)
 
+            entries.append(entry)
         offset += self.limit
-        #TODO: dognzb always returns a limit of 100 even if there are more results. Either do some research and get it fixed or load the next page optimistically and see if there are new results, then cancel if not
         if offset < total and offset < 400:
             f = furl(query)
             query = f.remove("offset").add({"offset": offset})
             queries.append(query.url)
 
-            return {"entries": entries, "queries": queries}
+            return EntriesAndQueries(entries=entries, queries=queries)
+        return EntriesAndQueries(entries=entries, queries=[])
 
-        return {"entries": entries, "queries": []}
-
-    def check_auth(self, response):
-        body = response.text
+    def check_auth(self, body: str):
         # TODO: unfortunately in case of an auth problem newznab doesn't return json even if requested. So this would be easier/better if we used XML responses instead of json
         if '<error code="100"' in body:
             raise ProviderAuthException("The API key seems to be incorrect.", self)
@@ -203,8 +193,8 @@ class NewzNab(SearchModule):
 
     def get_nfo(self, guid):
         # try to get raw nfo. if it is xml the provider doesn't actually return raw nfos (I'm looking at you, DOGNzb)
-        url = furl(self.provider.settings.get("query_url")).add({"apikey": self.provider.settings.get("apikey"), "t": "getnfo", "o": "xml", "id": guid}) #todo: should use build_base_url but that adds search specific stuff
-        
+        url = furl(self.provider.settings.get("query_url")).add({"apikey": self.provider.settings.get("apikey"), "t": "getnfo", "o": "xml", "id": guid})  # todo: should use build_base_url but that adds search specific stuff
+
         response, papiaccess = self.get_url_with_papi_access(url, "nfo")
         if response is not None:
             nfo = response.text
@@ -212,13 +202,13 @@ class NewzNab(SearchModule):
                 tree = ET.fromstring(nfo)
                 for elem in tree.iter('item'):
                     nfo = elem.find("description").text
-                    nfo = re.sub("\\n", nfo, "\n") #TODO: Not completely correct, looks still a bit werid
+                    nfo = re.sub("\\n", nfo, "\n")  # TODO: Not completely correct, looks still a bit werid
                     pass
             # otherwise we just hope it's the nfo...
-        
+
             return nfo
         return None
-    
+
     def get_nzb_link(self, guid, title):
         f = furl(self.base_url)
         f.path.add("api")

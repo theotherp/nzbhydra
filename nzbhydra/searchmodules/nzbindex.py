@@ -9,7 +9,7 @@ import requests
 from nzbhydra.exceptions import ProviderIllegalSearchException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
-from nzbhydra.search_module import SearchModule
+from nzbhydra.search_module import SearchModule, EntriesAndQueries
 
 logger = logging.getLogger('root')
 
@@ -67,7 +67,7 @@ class NzbIndex(SearchModule):
         #overwrite for special handling, e.g. cookies
         return requests.get(query, timeout=timeout, verify=False, cookies={"agreed": "true", "lang": "2"})
 
-    def process_query_result(self, html, query):
+    def process_query_result(self, html, query) -> EntriesAndQueries:
         
         entries = []
         soup = BeautifulSoup(html, 'html.parser')
@@ -158,7 +158,7 @@ class NzbIndex(SearchModule):
                 logger.debug("Found no age info in %s" % str(agetd))
             entries.append(entry)
             
-        return {"entries": entries, "queries": []}
+        return EntriesAndQueries(entries=entries, queries=[])
     
         
     def get_nfo(self, guid):

@@ -2,15 +2,14 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 import sys
 from nzbhydra import config
+from nzbhydra.config import ConsoleLevel, Logfile, LogfileLevel
 
-config.init("main.logging.logfile", "nzbhydra.log", str)
-config.init("main.logging.logfile.level", "INFO", str)
-config.init("main.logging.consolelevel", "ERROR", str)
 
 class SensitiveDataFilter(logging.Filter):
     def filter(self, record):
-        #TODO: Make this easier to retrieve, what if we forget a setting somewhere? Perhaps centralize all config setting and getting in config.py and specify if a setting is sensitive 
+         
         sensitive_strings = []
+        #todo:
         for section in config.cfg.section("search_providers").sections():
             sensitive_strings.append(section.get("apikey"))
             sensitive_strings.append(section.get("username"))
@@ -33,11 +32,11 @@ def setup_custom_logger(name):
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
 
     stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setLevel(config.cfg["main.logging.consolelevel"])
+    stream_handler.setLevel(config.get(ConsoleLevel))
     stream_handler.setFormatter(formatter)
     
-    file_handler = TimedRotatingFileHandler(filename=config.cfg["main.logging.logfile"], when='D', interval=7)
-    file_handler.setLevel(config.cfg["main.logging.logfile.level"])
+    file_handler = TimedRotatingFileHandler(filename=config.get(Logfile), when='D', interval=7)
+    file_handler.setLevel(config.get(LogfileLevel))
     file_handler.setFormatter(formatter)
 
     logger = logging.getLogger(name)

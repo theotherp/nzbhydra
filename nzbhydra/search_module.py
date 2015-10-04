@@ -1,12 +1,19 @@
+from typing import Dict, List
 import logging
 
 import arrow
+import collections
 import requests
 from requests import RequestException
 
 from nzbhydra import config
+from nzbhydra.config import SearchingTimeout
 from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus
 from nzbhydra.exceptions import ProviderConnectionException, ProviderResultParsingException, ProviderAuthException, ProviderAccessException
+
+
+ResultsAndProviderSearchDbEntry = collections.namedtuple("ResultsAndProviderSearchDbEntry", "results dbentry")
+EntriesAndQueries = collections.namedtuple("ResultsAndQueris", "entries queries")
 
 
 class SearchModule(object):
@@ -55,7 +62,7 @@ class SearchModule(object):
         urls = self.get_search_urls(args)
         return self.execute_queries(urls)
 
-    def search_movie(self, args):
+    def search_movie(self, args: Dict[str, str]) -> ResultsAndProviderSearchDbEntry:
         if args["query"] is None and args["title"] is None and args["imdbid"] is None and self.needs_queries:
             self.logger.error("Movie search without query or IMDB id or title is not possible with this provider")
             return []
@@ -74,10 +81,9 @@ class SearchModule(object):
         else:
             # Just show all the latest movie releases
             urls = self.get_moviesearch_urls(args)
-
         return self.execute_queries(urls)
 
-    def search_show(self, args):
+    def search_show(self, args: Dict[str, str]) -> ResultsAndProviderSearchDbEntry:
         if args["query"] is None and args["title"] is None and args["rid"] and args["tvdbid"] is None and self.needs_queries:
             self.logger.error("TV search without query or id or title is not possible with this provider")
             return []
@@ -100,29 +106,29 @@ class SearchModule(object):
         return self.execute_queries(urls)
 
     # Access to most basic functions
-    def get_search_urls(self, args):
+    def get_search_urls(self, args: Dict[str, str]) -> List[str]:
         # return url(s) to search. Url is then retrieved and result is returned if OK
         # we can return multiple urls in case a module needs to make multiple requests (e.g. when searching for a show
         # using general queries
-        pass
+        return []
 
-    def get_showsearch_urls(self, args):
+    def get_showsearch_urls(self, args: Dict[str, str]):
         # to extend
         # if module supports it, search specifically for show, otherwise make sure we create a query that searches
         # for for s01e01, 1x1 etc
-        pass
-
-    def get_moviesearch_urls(self, args):
-        # to extend
-        # if module doesnt support it possibly use (configurable) size restrictions when searching
-        pass
-
-    def process_query_result(self, result, query):
         return []
 
-    def check_auth(self, body=""):
+    def get_moviesearch_urls(self, args: Dict[str, str]):
+        # to extend
+        # if module doesnt support it possibly use (configurable) size restrictions when searching
+        return []
+
+    def process_query_result(self, result: str, query: str) -> EntriesAndQueries:
+        return []
+
+    def check_auth(self, body : str):
         # check the response body to see if request was authenticated. If yes, do nothing, if no, raise exception 
-        pass
+        return []
     
     disable_periods = [0, 15, 30, 60, 3 * 60, 6 * 60, 12 * 60, 24 * 60]
 
@@ -158,9 +164,9 @@ class SearchModule(object):
 
         provider_status.save()
             
-    def get(self, url, timeout=None, cookies=None, stream=False):
+    def get(self, url, timeout=None, cookies=None):
         #overwrite for special handling, e.g. cookies
-        return requests.get(url, timeout=timeout, verify=False, cookies=cookies, stream=stream)
+        return requests.get(url, timeout=timeout, verify=False, cookies=cookies)
 
     def get_url_with_papi_access(self, url, type, cookies=None, timeout=None):
         papiaccess = ProviderApiAccess(provider=self.provider, type=type, url=url)
@@ -189,13 +195,17 @@ class SearchModule(object):
         return None
     
 
-    def execute_queries(self, queries):
+    
+    def execute_queries(self, queries) -> ResultsAndProviderSearchDbEntry:
         # todo call all queries, check if further should be called, return all results when done or timeout or whatever
-        results_and_providersearchdbentry = {"results": []}
+        """
+
+        :rtype : ResultsAndProviderSearchDbEntry
+        """
+        results = []
         executed_queries = set()
         psearch = ProviderSearch(provider=self.provider)
         psearch.save()
-        results_and_providersearchdbentry["providersearchdbentry"] = psearch
         while len(queries) > 0:
             query = queries.pop()
             if query in executed_queries:
@@ -203,7 +213,7 @@ class SearchModule(object):
                 continue
 
             try:
-                self.logger.debug("Requesting URL %s with timeout %d" % (query, config.cfg["searching.timeout"]))
+                self.logger.debug("Requesting URL %s with timeout %d" % (query, config.get(SearchingTimeout)))
                 request, papiaccess = self.get_url_with_papi_access(query, "search")
                 papiaccess.provider_search = psearch
                 
@@ -216,8 +226,8 @@ class SearchModule(object):
                     papiaccess.response_successful = True
                     try:
                         parsed_results = self.process_query_result(request.text, query)
-                        results_and_providersearchdbentry["results"].extend(parsed_results["entries"])  # Retrieve the processed results
-                        queries.extend(parsed_results["queries"])  # Add queries that were added as a result of the parsing, e.g. when the next result page should also be loaded
+                        results.extend(parsed_results.entries)  # Retrieve the processed results
+                        queries.extend(parsed_results.queries)  # Add queries that were added as a result of the parsing, e.g. when the next result page should also be loaded
                         self.handle_provider_success()
                     except Exception as e:
                         self.logger.exception("Error while processing search results from provider %s" % self, e)
@@ -238,10 +248,10 @@ class SearchModule(object):
                 papiaccess.error = "Unknown error :%s" % e
             finally:
                 papiaccess.save()
-                psearch.results = len(results_and_providersearchdbentry["results"])
+                psearch.results = len(results)
                 psearch.successful = True
                 psearch.save()
-        return results_and_providersearchdbentry
+        return ResultsAndProviderSearchDbEntry(results=results, dbentry=psearch)
 
       
 

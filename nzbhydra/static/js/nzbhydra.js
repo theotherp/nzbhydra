@@ -231,7 +231,7 @@ nzbhydraapp.directive('ngEnter', function () {
 nzbhydraapp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, nfo) {
 
     $scope.nfo = nfo;
-    
+
 
     $scope.ok = function () {
         $modalInstance.close($scope.selected.item);
@@ -260,7 +260,6 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
     $scope.maxage = (typeof $routeParams.maxage === "undefined") ? "" : $routeParams.maxage;
 
     $scope.showProviders = {};
-
 
 
     if ($scope.title != "" && $scope.query == "") {
@@ -498,23 +497,49 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
     $scope.isShow = function (item) {
         return $scope.showProviders[item.provider];
     };
-    
-    
-    $scope.showNfo = function(resultItem) {
+
+
+    $scope.showNfo = function (resultItem) {
         var uri = new URI("/internalapi");
-            uri.addQuery("t", "getnfo");
-            uri.addQuery("provider", resultItem.provider);
-            uri.addQuery("guid", resultItem.guid);
-          return $http.get(uri).then(function (response) {
-                if (response.data.has_nfo) {
-                    $scope.open("lg", response.data.nfo)
-                } else {
-                    //todo: show error or info that no nfo is available
-                }
-            });
+        uri.addQuery("t", "getnfo");
+        uri.addQuery("provider", resultItem.provider);
+        uri.addQuery("guid", resultItem.guid);
+        return $http.get(uri).then(function (response) {
+            if (response.data.has_nfo) {
+                $scope.open("lg", response.data.nfo)
+            } else {
+                //todo: show error or info that no nfo is available
+            }
+        });
     };
-    
-    
+
+
+    $scope.nzbgetclass = {};
+    $scope.nzbgetEnabled = true;
+
+    $scope.downloadNzb = function (resultItem) {
+        var uri = new URI("/internalapi");
+        uri.addQuery("t", "dlnzb");
+        uri.addQuery("title", resultItem.title);
+        uri.addQuery("link", resultItem.link);
+        $scope.nzbgetclass[resultItem.guid] = "nzb-spinning";
+        return $http.get(uri).success(function () {
+            $scope.nzbgetclass[resultItem.guid] = "nzbget-success";
+        }).error(function () {
+            $scope.nzbgetclass[resultItem.guid] = "nzbget-error";
+        })
+            ;
+    };
+
+    $scope.nzbclass = function (resultItem) {
+        if ($scope.nzbgetclass[resultItem.guid]) {
+            return $scope.nzbgetclass[resultItem.guid];
+        } else {
+            return "nzbget";
+        }
+    }
+
+
     $scope.open = function (size, nfo) {
 
         var modalInstance = $modal.open({
@@ -529,20 +554,20 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
             }
         });
     };
-    
+
 }])
 ;
 
-nzbhydraapp.filter('nzblink', function() {
-	return function(resultItem) {
-		var uri = new URI("/internalapi");
+nzbhydraapp.filter('nzblink', function () {
+    return function (resultItem) {
+        var uri = new URI("/internalapi");
         uri.addQuery("t", "getnzb");
         uri.addQuery("guid", resultItem.guid);
         uri.addQuery("title", resultItem.title);
         uri.addQuery("provider", resultItem.provider);
-        
+
         return uri.toString();
-	}
+    }
 });
 
 

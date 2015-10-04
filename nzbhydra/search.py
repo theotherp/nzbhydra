@@ -4,6 +4,7 @@ import logging
 
 import arrow
 from requests_futures.sessions import FuturesSession
+from nzbhydra.config import IgnoreTemporarilyDisabled
 
 from nzbhydra.database import ProviderStatus, Search
 from nzbhydra import config
@@ -27,10 +28,6 @@ categories = {'All': {"pretty": "All", "index": 0},
 
 logger = logging.getLogger('root')
 
-config.init("searching.timeout", 5, int)
-config.init("searching.ignore_temporarily_disabled", False, bool)  # If true we try providers even if they are temporarily disabled
-config.init("searching.allow_query_generation", "both", str)  # "internal", "external", "both", anything else
-
 session = FuturesSession()
 
 
@@ -43,7 +40,7 @@ def pick_providers(query_supplied=True, identifier_key=None, category=None, inte
             continue
         try:
             status = p.provider.status.get()
-            if status.disabled_until > arrow.utcnow() and not config.cfg.get("searching.ignore_temporarily_disabled", False):
+            if status.disabled_until > arrow.utcnow() and not config.get(IgnoreTemporarilyDisabled, False):
                 logger.info("Did not pick %s because it is disabled temporarily due to an error: %s" % (p, status.reason))
                 continue
         except ProviderStatus.DoesNotExist:
@@ -78,7 +75,7 @@ def search(internal, args):
 
     results_by_provider = start_search_futures(providers_to_call, "search", args)
     for i in results_by_provider.values():
-        providersearchentry = i["providersearchdbentry"]
+        providersearchentry = i.dbentry
         providersearchentry.search = dbsearch
         providersearchentry.save()
     

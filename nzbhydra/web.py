@@ -7,8 +7,10 @@ from webargs import Arg
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
 
-from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb
+from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb, DownloaderAddtype
 from nzbhydra import config, search, infos
+from nzbhydra.config import Apikey, Username, Password, EnableAuth
+from nzbhydra.downloader import Nzbget
 
 app = Flask(__name__)
 
@@ -54,7 +56,10 @@ internalapi_args = {
     "input": Arg(str),
     "guid": Arg(str),
     "provider": Arg(str),
-    "searchid": Arg(str)
+    "searchid": Arg(str),
+    
+    "link": Arg(str),
+    "downloader" : Arg(str),
 
 }
 
@@ -73,17 +78,14 @@ def handle_error(error):
     raise CustomError(error)
 
 
-config.init("main.username", "nzbhydra", str)
-config.init("main.password", "hailhydra", str)
-config.init("main.apikey", "hailhydra", str)
-config.init("main.auth", True, bool)
+
 
 
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return username == config.cfg["main.username"] and password == config.cfg["main.password"]
+    return username == config.get(Username) and password == config.get(Password)
 
 
 def authenticate():
@@ -96,7 +98,7 @@ def authenticate():
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if config.cfg["main.auth"]:
+        if config.get(EnableAuth):
             auth = request.authorization
             if not auth or not check_auth(auth.username, auth.password):
                 return authenticate()
@@ -125,7 +127,7 @@ def api(args):
     if args["q"] is not None:
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
     # todo: category mapping, completely forgot that
-    if config.cfg["main.apikey"] and ("apikey" not in args or args["apikey"] != config.cfg["main.apikey"]):
+    if config.get(Apikey, None) is not None and ("apikey" not in args or args["apikey"] != config.get(Apikey)):
         raise Unauthorized("API key not provided or invalid")
     elif args["t"] == "search":
         results = search.search(False, args)
@@ -161,16 +163,23 @@ def internal_api(args):
         nfo = get_nfo(args["provider"], args["guid"])
         return jsonify(nfo)
     if args["t"] == "getnzb":
-        if config.cfg.get("downloader.add_type") == "redirect":  # I'd like to have this in api but don't want to have to use redirect() there...
+        if config.get(DownloaderAddtype) == DownloaderAddtype.redirect:  # I'd like to have this in api but don't want to have to use redirect() there...
             link = get_nzb_link(args["provider"], args["guid"], args["title"], args["searchid"])
             if link is not None:
                 return redirect(link)
             else:
                 return "Unable to build link to NZB", 404
-        elif config.cfg.get("downloader.add_type") == "serve":
+        elif config.get(DownloaderAddtype) == DownloaderAddtype.serve:
             return get_nzb(args["provider"], args["guid"], args["title"], args["searchid"])
         else:
             return "downloader.add_type has wrong value", 500
+    if args["t"] == "dlnzb":
+        nzbget = Nzbget()
+        added = nzbget.add_link(args["link"], args["title"], args["category"])
+        if added:
+            return "Success"
+        else:
+            return "Error", 500
         
         
 

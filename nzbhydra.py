@@ -22,11 +22,6 @@ requests.packages.urllib3.disable_warnings()
 logger = None
 
 
-
-config.init("main.port", 5050, int)
-config.init("main.host", "0.0.0.0", str)
-
-
 def run():
     global logger
     parser = argparse.ArgumentParser(description='Demo')
@@ -47,9 +42,10 @@ def run():
     database.db.init(database_file)
     database.db.connect()
     providers.read_providers_from_config()
-    port = config.cfg["main.port"] if args.port is not None else args.port
-    host = config.cfg["main.host"] if args.host is not None else args.host
-    
+    #port = config.cfg["main.port"] if args.port is not None else args.port
+    host = config.get(config.Host) if args.host is not None else args.host
+    port = config.get(config.Port) if args.port is not None else args.port
+    logger.info("Starting web app on %s:%d" % (host, port))
     from nzbhydra.web import app
     app.run(host=host, port=port, debug=True)
 

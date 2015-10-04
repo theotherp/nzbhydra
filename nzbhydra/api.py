@@ -1,3 +1,4 @@
+from enum import Enum
 from itertools import groupby
 import logging
 from io import BytesIO
@@ -11,14 +12,11 @@ from requests import RequestException
 import sys
 
 from nzbhydra import config
-from nzbhydra.config import init
+from nzbhydra.config import init, DownloaderAddtype, DuplicateSizeThreshold, DuplicateAgeThreshold
 from nzbhydra import providers
 from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderNzbDownload, Provider
 
 logger = logging.getLogger('root')
-
-init("ResultProcessing.duplicateSizeThresholdInPercent", 0.1, float)
-init("ResultProcessing.duplicateAgeThreshold", 36000, int)
 
 categories = {'Console': {'code': [1000, 1010, 1020, 1030, 1040, 1050, 1060, 1070, 1080], 'pretty': 'Console'},
               'Movie': {'code': [2000, 2010, 2020], 'pretty': 'Movie'},
@@ -76,14 +74,14 @@ def test_for_duplicate(search_result_1, search_result_2):
 
     if search_result_1.title.lower() != search_result_2.title.lower():
         return False
-    size_threshold = config.cfg["ResultProcessing.duplicateSizeThresholdInPercent"]
+    size_threshold = config.get(DuplicateSizeThreshold)
     size_difference = search_result_1.size - search_result_2.size
     size_average = (search_result_1.size + search_result_2.size) / 2
     size_difference_percent = abs(size_difference / size_average) * 100
 
 
     # TODO: Ignore age threshold if no precise date is known or account for score (if we have sth like that...) 
-    age_threshold = config.cfg["ResultProcessing.duplicateAgeThreshold"]
+    age_threshold = config.get(DuplicateAgeThreshold)
     same_size = size_difference_percent <= size_threshold
     same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold  # epoch difference (ms) to minutes
 
@@ -137,11 +135,8 @@ def get_root_url():
     return request.url_root
 
 
-config.cfg.init("downloader.add_type", "redirect", str, 'Determines how NZBs are retrieved when using the GUI. "direct": Links to the provider''s NZB. Not recommended. "redirect": redirect via nzbhydra. "serve": nzbhydra downloads the nzb from the provider and returns it.')
-
-
 def transform_links(results, dbsearchid):
-    if config.cfg.get("downloader.add_type") == "direct":  # We don't change the link, the results lead directly to the NZB
+    if config.get(DownloaderAddtype) == DownloaderAddtype.direct:  # We don't change the link, the results lead directly to the NZB
         return results
 
     for i in results:
@@ -162,9 +157,9 @@ def process_for_internal_api(search_result):
     # results: list of dicts, <provider>:dict "providersearchdbentry":<ProviderSearch>,"results":[<NzbSearchResult>]
     nzbsearchresults = []
     providersearchdbentries = []
-    for i in search_result["results"].values():
-        nzbsearchresults.extend(i["results"])
-        providersearchdbentries.append(ProviderSearchSchema().dump(i["providersearchdbentry"]).data)
+    for results_and_dbentry in search_result["results"].values():
+        nzbsearchresults.extend(results_and_dbentry.results)
+        providersearchdbentries.append(ProviderSearchSchema().dump(results_and_dbentry.dbentry).data)
 
     nzbsearchresults = transform_links(nzbsearchresults, search_result["dbsearchid"])
 

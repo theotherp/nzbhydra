@@ -5,7 +5,7 @@ from furl import furl
 import xml.etree.ElementTree as ET
 from nzbhydra.nzb_search_result import NzbSearchResult
 
-from nzbhydra.search_module import SearchModule
+from nzbhydra.search_module import SearchModule, EntriesAndQueries
 
 logger = logging.getLogger('root')
 
@@ -52,7 +52,7 @@ class Womble(SearchModule):
         logger.error("This provider does not support movie search")
         return []
 
-    def process_query_result(self, xml, query):
+    def process_query_result(self, xml, query) -> EntriesAndQueries:
         entries = []
         try:
             tree = ET.fromstring(xml)
@@ -92,7 +92,7 @@ class Womble(SearchModule):
              
             entries.append(entry)
             
-        return {"entries": entries, "queries": []}
+        return EntriesAndQueries(entries=entries, queries=[])
     
     def get_nzb_link(self, guid, title):
         f = furl(self.base_url)

@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from furl import furl
 
 from nzbhydra.nzb_search_result import NzbSearchResult
-from nzbhydra.search_module import SearchModule
+from nzbhydra.search_module import SearchModule, EntriesAndQueries
 
 logger = logging.getLogger('root')
 
@@ -67,7 +67,7 @@ class Binsearch(SearchModule):
     def get_moviesearch_urls(self, args):
         return self.get_search_urls(args)
 
-    def process_query_result(self, html, query):
+    def process_query_result(self, html, query) -> EntriesAndQueries:
 
         entries = []
         soup = BeautifulSoup(html, 'html.parser')
@@ -150,7 +150,7 @@ class Binsearch(SearchModule):
 
             entries.append(entry)
 
-        return {"entries": entries, "queries": []}
+        return EntriesAndQueries(entries=entries, queries=[])
 
     def get_nfo(self, guid):
         f = furl(self.base_url)

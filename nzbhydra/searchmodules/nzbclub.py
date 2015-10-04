@@ -8,7 +8,7 @@ from furl import furl
 import requests
 
 from nzbhydra.nzb_search_result import NzbSearchResult
-from nzbhydra.search_module import SearchModule
+from nzbhydra.search_module import SearchModule, EntriesAndQueries
 
 logger = logging.getLogger('root')
 
@@ -37,7 +37,7 @@ class NzbClub(SearchModule):
         f = self.build_base_url().add({"q": args["query"]})
         return [f.tostr()]
 
-    def get_showsearch_urls(self, args):
+    def get_showsearch_urls(self, args) -> EntriesAndQueries:
         if args["season"] is not None:
             # Restrict query if season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
             if args["episode"] is not None:
@@ -92,7 +92,7 @@ class NzbClub(SearchModule):
 
             entries.append(entry)
 
-        return {"entries": entries, "queries": []}
+        return EntriesAndQueries(entries=entries, queries=[])
     
     def get_nfo(self, guid):
         f = furl(self.base_url)
