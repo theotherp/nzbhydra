@@ -164,7 +164,14 @@ class Binsearch(SearchModule):
             if m:
                 return m.group("nfo")
         return None
+    
+    def get_nzb_link(self, guid, title):
+        f = furl(self.base_url)
+        f.add({"action": "nzb", guid: "1"})
+        return f.tostr()
 
+
+    
 
 def get_instance(provider):
     return Binsearch(provider)

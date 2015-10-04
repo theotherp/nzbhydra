@@ -12,7 +12,7 @@ from nzbhydra.tests.providerTest import ProviderTestcase
 class MyTestCase(ProviderTestcase):
     def setUp(self):
         set_and_drop()
-        self.binsearch = Provider(module="binsearch", name="Binsearch", query_url="http://127.0.0.1:5001/binsearch", base_url="http://127.0.0.1:5001/binsearch", settings={}, search_types=["general"], search_ids=[])
+        self.binsearch = Provider(module="binsearch", name="Binsearch", settings={"query_url": "http://127.0.0.1:5001/binsearch", "base_url": "http://127.0.0.1:5001/binsearch", "search_ids": []})
         self.binsearch.save()
 
     def testUrlGeneration(self):
@@ -39,11 +39,19 @@ class MyTestCase(ProviderTestcase):
             self.assertEqual("https://www.binsearch.info/fcgi/nzb.fcgi?q=176073735", entries[0].link)
             self.assertEqual(13110387671, entries[0].size)
             self.assertEqual("176073735", entries[0].guid)
-            self.assertEqual(1437868800, entries[0].epoch)
-            self.assertEqual("2015-07-26T00:00:00+00:00", entries[0].pubdate_utc)
-            self.assertEqual(66, entries[0].age_days)
+            self.assertEqual(1443312000, entries[0].epoch)
+            self.assertEqual("2015-09-27T00:00:00+00:00", entries[0].pubdate_utc)
+            self.assertEqual(3, entries[0].age_days)
             self.assertFalse(entries[0].age_precise)
             self.assertEqual("Ramer@marmer.com <Clown_nez>", entries[0].poster)
             self.assertFalse(entries[0].has_nfo)
             
             self.assertTrue(entries[8].has_nfo)
+            
+                
+    def testGetNzbLink(self):
+        n = Binsearch(self.binsearch)
+        link = n.get_nzb_link("guid", "title")
+        assert "action=nzb" in link
+        assert "guid=1" in link
+        
