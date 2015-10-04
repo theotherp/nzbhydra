@@ -43,8 +43,8 @@ def run():
     database.db.connect()
     providers.read_providers_from_config()
     #port = config.cfg["main.port"] if args.port is not None else args.port
-    host = config.get(config.Host) if args.host is not None else args.host
-    port = config.get(config.Port) if args.port is not None else args.port
+    host = config.get(config.MainSettings.host) if args.host is not None else args.host
+    port = config.get(config.MainSettings.port) if args.port is not None else args.port
     logger.info("Starting web app on %s:%d" % (host, port))
     from nzbhydra.web import app
     app.run(host=host, port=port, debug=True)

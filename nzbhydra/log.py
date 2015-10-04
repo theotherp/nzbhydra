@@ -2,7 +2,7 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 import sys
 from nzbhydra import config
-from nzbhydra.config import ConsoleLevel, Logfile, LogfileLevel
+from nzbhydra.config import MainSettings
 
 
 class SensitiveDataFilter(logging.Filter):
@@ -32,11 +32,11 @@ def setup_custom_logger(name):
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
 
     stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setLevel(config.get(ConsoleLevel))
+    stream_handler.setLevel(config.get(MainSettings.consolelevel))
     stream_handler.setFormatter(formatter)
     
-    file_handler = TimedRotatingFileHandler(filename=config.get(Logfile), when='D', interval=7)
-    file_handler.setLevel(config.get(LogfileLevel))
+    file_handler = TimedRotatingFileHandler(filename=config.get(MainSettings.logfile), when='D', interval=7)
+    file_handler.setLevel(config.get(MainSettings.logfilelevel))
     file_handler.setFormatter(formatter)
 
     logger = logging.getLogger(name)

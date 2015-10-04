@@ -10,9 +10,9 @@ from webargs import Arg
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
 
-from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, NzbAccessType, download_nzb_and_log
+from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log
 from nzbhydra import config, search, infos
-from nzbhydra.config import Apikey, Username, Password, EnableAuth, NzbDownloaderAddingType
+from nzbhydra.config import MainSettings, DownloaderSettings
 from nzbhydra.downloader import Nzbget
 
 app = Flask(__name__)
@@ -90,7 +90,7 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return username == config.get(Username) and password == config.get(Password)
+    return username == config.get(MainSettings.username) and password == config.get(MainSettings.password)
 
 
 def authenticate():
@@ -103,7 +103,7 @@ def authenticate():
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if config.get(EnableAuth):
+        if config.get(MainSettings.enable_auth):
             auth = request.authorization
             if not auth or not check_auth(auth.username, auth.password):
                 return authenticate()
@@ -132,7 +132,7 @@ def api(args):
     if args["q"] is not None:
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
     # todo: category mapping, completely forgot that
-    if config.get(Apikey, None) is not None and ("apikey" not in args or args["apikey"] != config.get(Apikey)):
+    if config.get(Apikey, None) is not None and ("apikey" not in args or args["apikey"] != config.get(MainSettings.apikey)):
         raise Unauthorized("API key not provided or invalid")
     elif args["t"] == "search":
         results = search.search(False, args)
@@ -176,35 +176,36 @@ def internal_api(args):
         nfo = get_nfo(args["provider"], args["guid"])
         return jsonify(nfo)
     if args["t"] == "getnzb": #Returns an NZB. This will probably be only called (internally) if the user wants to download an NZB instead of adding it to the downloader
-        if config.get(NzbAccessType) == NzbAccessType.redirect:  # I'd like to have this in api but don't want to have to use redirect() there...
+        if config.get(DownloaderSettings.nzbaccesstype) == DownloaderSettings.NzbAccessTypeOptions.redirect.value:  # I'd like to have this in api but don't want to have to use redirect() there...
             link = get_nzb_link(args["provider"], args["guid"], args["title"], args["searchid"])
             if link is not None:
                 return redirect(link)
             else:
                 return "Unable to build link to NZB", 404
-        elif config.get(NzbAccessType) == NzbAccessType.serve:
+        elif config.get(DownloaderSettings.nzbaccesstype) == DownloaderSettings.NzbAccessTypeOptions.serve.value:
             return get_nzb_response(args["provider"], args["guid"], args["title"], args["searchid"])
         else:
-            logger.error("Invalid value of %s: %s" % (NzbAccessType.setting, config.get(NzbAccessType)))
+            logger.error("Invalid value of %s: %s" % (DownloaderSettings.nzbaccesstype.name, config.get(DownloaderSettings.nzbaccesstype)))
             return "downloader.add_type has wrong value", 500 #"direct" would never end up here, so it must be a wrong value
     if args["t"] == "addnzb":
-        nzbget = Nzbget()
-        if config.get(NzbDownloaderAddingType) == NzbDownloaderAddingType.link: #We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
+        #todo read config
+        downloader = Nzbget()
+        if config.get(DownloaderSettings.nzbAddingType) == DownloaderSettings.NzbAddingTypeOptions.link.value: #We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
             link = get_nzb_link(args["provider"], args["guid"], args["title"], args["searchid"])
-            added = nzbget.add_link(link, args["title"], args["category"])
+            added = downloader.add_link(link, args["title"], args["category"])
             if added:
                 return "Success"
             else:
                 return "Error", 500
-        elif config.get(NzbDownloaderAddingType) == NzbDownloaderAddingType.nzb: #We download an NZB send it to the downloader
+        elif config.get(DownloaderSettings.nzbAddingType) == DownloaderSettings.NzbAddingTypeOptions.nzb.value: #We download an NZB send it to the downloader
             nzbdownloadresult = download_nzb_and_log(args["provider"], args["guid"], args["title"], args["searchid"])
-            added = nzbget.add_nzb(nzbdownloadresult.content, args["title"], args["category"])
+            added = downloader.add_nzb(nzbdownloadresult.content, args["title"], args["category"])
             if added:
                 return "Success"
             else:
                 return "Error", 500
         else:
-            logger.error("Invalid value of %s: %s" % (NzbDownloaderAddingType.setting, config.get(NzbDownloaderAddingType)))
+            logger.error("Invalid value of %s: %s" % (DownloaderSettings.nzbAddingType.name, config.get(DownloaderSettings.nzbAddingType)))
             return "downloader.add_type has wrong value", 500 #"direct" would never end up here, so it must be a wrong value
             
             

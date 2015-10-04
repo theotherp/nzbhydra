@@ -7,7 +7,7 @@ import requests
 from requests import RequestException
 
 from nzbhydra import config
-from nzbhydra.config import SearchingTimeout
+from nzbhydra.config import SearchingSettings
 from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus
 from nzbhydra.exceptions import ProviderConnectionException, ProviderResultParsingException, ProviderAuthException, ProviderAccessException
 
@@ -213,7 +213,7 @@ class SearchModule(object):
                 continue
 
             try:
-                self.logger.debug("Requesting URL %s with timeout %d" % (query, config.get(SearchingTimeout)))
+                self.logger.debug("Requesting URL %s with timeout %d" % (query, config.get(SearchingSettings.timeout)))
                 request, papiaccess = self.get_url_with_papi_access(query, "search")
                 papiaccess.provider_search = psearch
                 
