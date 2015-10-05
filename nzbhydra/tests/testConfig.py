@@ -1,32 +1,41 @@
 from nzbhydra import config
-from nzbhydra.config import MainSettings, SabnzbdSettings
+from nzbhydra.config import MainSettings, DownloaderSettings, NzbAccessTypeSelection
 
 config.load("testsettings.cfg")
 
 
-def testThatGetWorks():
-    # Read a string
-    assert config.cfg.get("main.host") == "127.0.0.1"
+def testThatGetAndSetWork():
+        
+    
     assert config.get(MainSettings.host) == "127.0.0.1"
-
-    assert config.get(MainSettings.host) == "127.0.0.1"
-
-    # Read an int
-    assert config.cfg.get("main.port") == 5050
     assert config.get(MainSettings.port) == 5050
-
-
-def testThatSetWorks():
-    # Set using profig
-    config.cfg["main.port"] = 5051
-    assert config.cfg.get("main.port") == 5051
+    
+    config.set(MainSettings.host, "192.168.0.1")
+    assert config.get(MainSettings.host) == "192.168.0.1"
+    #set back for later tests
+    config.set(MainSettings.host, "127.0.0.1")
+    
+    config.set(MainSettings.port, 5051)
     assert config.get(MainSettings.port) == 5051
+    
+def testThatSelectionSettingsWork():
+    assert config.cfg.get("downloader.nzbaccesstype") == "serve" #Do a direct query to be sure that the data we work with is ok
+    assert config.get(DownloaderSettings.nzbaccesstype) == "serve"
+    
+    assert config.isSettingSelection(DownloaderSettings.nzbaccesstype, NzbAccessTypeSelection.serve)
+    
 
-    # Set using custom config and setting class
-    config.set(MainSettings.port, 5052)
-    assert config.cfg.get("main.port") == 5052
-    assert config.get(MainSettings.port) == 5052
-
+def testGetSettingsAsDict():
+    d = config.get_settings_dict()
+    assert "main" in d.keys()
+    assert "host" in d["main"].keys()
+    assert d["main"]["host"]["value"] == "127.0.0.1"
+    
+    assert d["downloader"]["nzbaccesstype"]["settingtype"] == "selection"
+    assert d["downloader"]["nzbaccesstype"]["default"] == "serve"
+    assert len(d["downloader"]["nzbaccesstype"]["selections"]) == 3
+    assert d["downloader"]["nzbaccesstype"]["selections"][0]["name"] == "serve"
+    
 
 def testThatWritingSettingsWorks():
     config.set(MainSettings.port, 5053)
@@ -38,10 +47,4 @@ def testThatWritingSettingsWorks():
     config.set(MainSettings.port, 5050)
     config.cfg.sync()
     
-
-def testBla():
-    assert config.cfg.get("downloader.sabnzbd.host") == "127.0.0.1"
-    assert config.get(SabnzbdSettings.host) == "127.0.0.1"
-
-    assert config.cfg.get("downloader.sabnzbd.port") == 8086
-    assert config.get(SabnzbdSettings.port) == 8086
+    

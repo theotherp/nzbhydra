@@ -12,7 +12,7 @@ from werkzeug.exceptions import Unauthorized
 
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log
 from nzbhydra import config, search, infos
-from nzbhydra.config import MainSettings, DownloaderSettings
+from nzbhydra.config import MainSettings, DownloaderSettings, NzbAccessTypeSelection, NzbAddingTypeSelection
 from nzbhydra.downloader import Nzbget
 
 app = Flask(__name__)
@@ -176,13 +176,13 @@ def internal_api(args):
         nfo = get_nfo(args["provider"], args["guid"])
         return jsonify(nfo)
     if args["t"] == "getnzb": #Returns an NZB. This will probably be only called (internally) if the user wants to download an NZB instead of adding it to the downloader
-        if config.get(DownloaderSettings.nzbaccesstype) == DownloaderSettings.NzbAccessTypeOptions.redirect.value:  # I'd like to have this in api but don't want to have to use redirect() there...
+        if config.isSettingSelection(DownloaderSettings.nzbaccesstype, NzbAccessTypeSelection.redirect):  # I'd like to have this in api but don't want to have to use redirect() there...
             link = get_nzb_link(args["provider"], args["guid"], args["title"], args["searchid"])
             if link is not None:
                 return redirect(link)
             else:
                 return "Unable to build link to NZB", 404
-        elif config.get(DownloaderSettings.nzbaccesstype) == DownloaderSettings.NzbAccessTypeOptions.serve.value:
+        elif config.isSettingSelection(DownloaderSettings.nzbaccesstype, NzbAccessTypeSelection.serve):
             return get_nzb_response(args["provider"], args["guid"], args["title"], args["searchid"])
         else:
             logger.error("Invalid value of %s: %s" % (DownloaderSettings.nzbaccesstype.name, config.get(DownloaderSettings.nzbaccesstype)))
@@ -197,7 +197,7 @@ def internal_api(args):
                 return "Success"
             else:
                 return "Error", 500
-        elif config.get(DownloaderSettings.nzbAddingType) == DownloaderSettings.NzbAddingTypeOptions.nzb.value: #We download an NZB send it to the downloader
+        elif config.isSettingSelection(DownloaderSettings.nzbAddingType, NzbAddingTypeSelection.nzb): #We download an NZB send it to the downloader
             nzbdownloadresult = download_nzb_and_log(args["provider"], args["guid"], args["title"], args["searchid"])
             added = downloader.add_nzb(nzbdownloadresult.content, args["title"], args["category"])
             if added:

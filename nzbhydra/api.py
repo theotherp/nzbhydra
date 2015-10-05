@@ -9,7 +9,7 @@ from marshmallow import Schema, fields
 from requests import RequestException
 
 from nzbhydra import config
-from nzbhydra.config import ResultProcessing, DownloaderSettings
+from nzbhydra.config import ResultProcessingSettings, DownloaderSettings, NzbAccessTypeSelection
 from nzbhydra import providers
 from nzbhydra.database import ProviderApiAccess, ProviderNzbDownload, Provider
 
@@ -71,14 +71,14 @@ def test_for_duplicate(search_result_1, search_result_2):
 
     if search_result_1.title.lower() != search_result_2.title.lower():
         return False
-    size_threshold = config.get(ResultProcessing.duplicateSizeThresholdInPercent)
+    size_threshold = config.get(ResultProcessingSettings.duplicateSizeThresholdInPercent)
     size_difference = search_result_1.size - search_result_2.size
     size_average = (search_result_1.size + search_result_2.size) / 2
     size_difference_percent = abs(size_difference / size_average) * 100
 
 
     # TODO: Ignore age threshold if no precise date is known or account for score (if we have sth like that...) 
-    age_threshold = config.get(ResultProcessing.duplicateAgeThreshold)
+    age_threshold = config.get(ResultProcessingSettings.duplicateAgeThreshold)
     same_size = size_difference_percent <= size_threshold
     same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold  # epoch difference (ms) to minutes
 
@@ -134,7 +134,7 @@ def get_root_url():
 
 
 def transform_links(results, dbsearchid):
-    if config.get(DownloaderSettings.nzbaccesstype) == DownloaderSettings.NzbAccessTypeOptions.direct.value:  # We don't change the link, the results lead directly to the NZB
+    if config.isSettingSelection(DownloaderSettings.nzbaccesstype, NzbAccessTypeSelection.serve):  # We don't change the link, the results lead directly to the NZB
         return results
 
     for i in results:
