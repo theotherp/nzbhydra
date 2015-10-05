@@ -1,7 +1,9 @@
+from nzbhydra import config
+from nzbhydra import config
 from nzbhydra.database import Provider
 from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch
 
-# TODO: I would like to use plugins for this but couldn't get this to work with pluginbase. Would also need a concept to work with the database
+# TODO: I would like to use plugins for this but couldn't get this to work with pluginbase. Realistically there won't be any plugins anyway... At least none written by me which need code change
 search_modules = {"newznab": newznab, "womble": womble, "nzbclub": nzbclub, "nzbindex": nzbindex, "binsearch": binsearch}
 providers = []
 
@@ -10,6 +12,11 @@ providers = []
 def read_providers_from_config():
     global providers
     providers = []
+    
+    if config.get(config.ProviderBinsearchSettings.enabled):
+        providers.append(binsearch.get_instance())
+        
+        
 
     for provider in Provider().select():
         if provider.module not in search_modules.keys():

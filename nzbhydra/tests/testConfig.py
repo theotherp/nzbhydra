@@ -1,7 +1,7 @@
 from profig import InvalidSectionError
 import pytest
 from nzbhydra import config
-from nzbhydra.config import MainSettings, DownloaderSettings, NzbAccessTypeSelection
+from nzbhydra.config import MainSettings, DownloaderSettings, NzbAccessTypeSelection, ProviderBinsearchSettings, ProviderNewznab1Settings, SearchIdSelection
 
 config.load("testsettings.cfg")
 
@@ -54,6 +54,12 @@ def testThatWritingSettingsWorks():
     
     #Set back to restore initial file content
     config.set(MainSettings.port, 5050)
+    config.cfg.sync()
+    
+
+def testThatMultiSelectionSettingsWork():
+    config.set(ProviderNewznab1Settings.search_ids, [SearchIdSelection.imdbid])
+    assert config.get(ProviderNewznab1Settings.search_ids) == [SearchIdSelection.imdbid]
     config.cfg.sync()
     
     
