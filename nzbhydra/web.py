@@ -132,7 +132,7 @@ def api(args):
     if args["q"] is not None:
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
     # todo: category mapping, completely forgot that
-    if config.get(Apikey, None) is not None and ("apikey" not in args or args["apikey"] != config.get(MainSettings.apikey)):
+    if config.get(MainSettings.apikey, None) is not None and ("apikey" not in args or args["apikey"] != config.get(MainSettings.apikey)):
         raise Unauthorized("API key not provided or invalid")
     elif args["t"] == "search":
         results = search.search(False, args)
@@ -190,7 +190,7 @@ def internal_api(args):
     if args["t"] == "addnzb":
         #todo read config
         downloader = Nzbget()
-        if config.get(DownloaderSettings.nzbAddingType) == DownloaderSettings.NzbAddingTypeOptions.link.value: #We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
+        if config.isSettingSelection(DownloaderSettings.nzbAddingType, NzbAddingTypeSelection.link): #We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
             link = get_nzb_link(args["provider"], args["guid"], args["title"], args["searchid"])
             added = downloader.add_link(link, args["title"], args["category"])
             if added:
@@ -207,6 +207,8 @@ def internal_api(args):
         else:
             logger.error("Invalid value of %s: %s" % (DownloaderSettings.nzbAddingType.name, config.get(DownloaderSettings.nzbAddingType)))
             return "downloader.add_type has wrong value", 500 #"direct" would never end up here, so it must be a wrong value
+    if args["t"] == "getsettings":
+        return jsonify(config.get_settings_dict())
             
             
         

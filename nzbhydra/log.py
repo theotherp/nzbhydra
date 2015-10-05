@@ -10,18 +10,18 @@ class SensitiveDataFilter(logging.Filter):
          
         sensitive_strings = []
         #todo:
-        for section in config.cfg.section("search_providers").sections():
-            sensitive_strings.append(section.get("apikey"))
-            sensitive_strings.append(section.get("username"))
-            sensitive_strings.append(section.get("password"))
+        # for section in config.cfg.section("search_providers").sections():
+        #     sensitive_strings.append(section.get("apikey"))
+        #     sensitive_strings.append(section.get("username"))
+        #     sensitive_strings.append(section.get("password"))
             
-        sensitive_strings.append(config.cfg.section("main").get("apikey"))
-        sensitive_strings.append(config.cfg.section("main").get("username"))
-        sensitive_strings.append(config.cfg.section("main").get("password"))
+        sensitive_strings.append(config.get(MainSettings.username))
+        sensitive_strings.append(config.get(MainSettings.password))
+        sensitive_strings.append(config.get(MainSettings.apikey))
         
         msg = record.msg
         for sensitive_string in sensitive_strings:
-            if sensitive_string and sensitive_string != "":
+            if sensitive_string is not None and sensitive_string != "":
                 msg = msg.replace(sensitive_string, "<XXX>")
         
         record.msg = msg

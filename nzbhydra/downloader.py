@@ -6,6 +6,8 @@ import xmlrpc.client
 from furl import furl
 import requests
 from requests.packages.urllib3.exceptions import RequestError
+from nzbhydra import config
+from nzbhydra.config import DownloaderSettings, NzbgetSettings, SabnzbdSettings
 
 
 class Downloader(object):
@@ -23,16 +25,11 @@ class Nzbget(Downloader):
     logger = logging.getLogger('root')
 
     def get_rpc(self):
-        host = "127.0.0.1"
-        ssl = False
-        port = 6789
-        username = "nzbget"
-        password = "tegbzn6789"
-        f = furl(host)
-        f.username = username
-        f.password = password
-        f.scheme = "https" if ssl else "http"
-        f.port = port
+        f = furl(config.get(NzbgetSettings.host))
+        f.username = config.get(DownloaderSettings.username)
+        f.password = config.get(DownloaderSettings.password)
+        f.scheme = "https" if config.get(DownloaderSettings.ssl) else "http"
+        f.port = config.get(DownloaderSettings.port)
         f.path = "xmlrpc"
 
         return xmlrpc.client.ServerProxy(f.tostr())
@@ -120,22 +117,15 @@ class Sabnzbd(Downloader):
     logger = logging.getLogger('root')
 
     def get_sab(self):
-        host = "127.0.0.1"
-        ssl = False
-        port = 8086
-        username = None
-        password = None
-        apikey = "d471a402a71542bdd255667df2dd45cc"
         f = furl()
-        if username is not None:
-            f.username = username
-        if password is not None:
-            f.password = password
-        if apikey is not None:
-            f.add({"apikey": apikey})
-        f.scheme = "https" if ssl else "http"
-        f.host = host
-        f.port = port
+        #if username is not None:
+        f.username = config.get(SabnzbdSettings.username, None)
+        f.password = config.get(SabnzbdSettings.password, None)
+        if config.get(SabnzbdSettings.apikey, None) is not None:
+            f.add({"apikey": config.get(SabnzbdSettings.apikey)})
+        f.scheme = "https" if config.get(SabnzbdSettings.ssl) else "http"
+        f.host = config.get(SabnzbdSettings.host, None)
+        f.port = config.get(SabnzbdSettings.port, None)
         f.path.add("api")
         f.add({"output": "json"})
 

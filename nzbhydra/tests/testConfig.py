@@ -1,3 +1,5 @@
+from profig import InvalidSectionError
+import pytest
 from nzbhydra import config
 from nzbhydra.config import MainSettings, DownloaderSettings, NzbAccessTypeSelection
 
@@ -5,8 +7,6 @@ config.load("testsettings.cfg")
 
 
 def testThatGetAndSetWork():
-        
-    
     assert config.get(MainSettings.host) == "127.0.0.1"
     assert config.get(MainSettings.port) == 5050
     
@@ -23,7 +23,7 @@ def testThatSelectionSettingsWork():
     assert config.get(DownloaderSettings.nzbaccesstype) == "serve"
     
     assert config.isSettingSelection(DownloaderSettings.nzbaccesstype, NzbAccessTypeSelection.serve)
-    
+        
 
 def testGetSettingsAsDict():
     d = config.get_settings_dict()
@@ -35,6 +35,15 @@ def testGetSettingsAsDict():
     assert d["downloader"]["nzbaccesstype"]["default"] == "serve"
     assert len(d["downloader"]["nzbaccesstype"]["selections"]) == 3
     assert d["downloader"]["nzbaccesstype"]["selections"][0]["name"] == "serve"
+    
+    #Write back changed settings
+    d["main"]["host"]["value"] = "192.168.0.1"
+    config.set_settings_from_dict(d)
+    assert config.get(MainSettings.host) == "192.168.0.1"
+    
+    #set back for later tests
+    config.set(MainSettings.host, "127.0.0.1")
+    config.cfg.sync()
     
 
 def testThatWritingSettingsWorks():

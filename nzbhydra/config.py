@@ -2,6 +2,8 @@ from enum import Enum
 
 import profig
 
+cfg = profig.Config(strict=True)
+
 
 class SettingsType(Enum):
     """
@@ -34,14 +36,14 @@ class SettingsClass(object):
         return {
             "name": self.name,
             "default": self.default,
-            "valuetype": self.valuetype,
+            "valuetype": self.valuetype.__name__,
             "comment": self.comment,
             "settingtype": self.get_setting_type().value
         }
 
     def get_setting_type(self):
         return SettingsType.Free
-
+    
 
 class SettingSelection(object):
     """
@@ -70,8 +72,6 @@ class SelectSettingsClass(SettingsClass):
     def get_setting_type(self):
         return SettingsType.Select
 
-
-cfg = profig.Config()
 
 all_known_settings = []
 
@@ -102,7 +102,7 @@ def isSettingSelection(setting: SettingsClass, compare: SettingSelection) -> boo
     return get(setting) == compare.value.name
 
 
-def get_settings_dict():
+def get_settings_dict() -> dict:
     all_settings_dict = {}
     # Iterate over the enums which are our main categories
     for setting in all_known_settings:
@@ -117,13 +117,22 @@ def get_settings_dict():
     return all_settings_dict
 
 
+def set_settings_from_dict(new_settings: dict):
+    for sectionname, settings in new_settings.items():
+        for settingname, setting in settings.items():
+            cfg.section(sectionname)[settingname] = setting["value"]
+    cfg.sync()
+    
+
 def register_settings(cls):
     for i in cls:
         setting = i.value
         all_known_settings.append(setting)
-        print("Initializing %s with default %s and valuetype %s" % (setting.name, setting.default, setting.valuetype))
+        print("Initializing %s with default %s and valuetype %s" % (setting.name, setting.default, setting.valuetype.__name__))
+        if setting.category not in cfg.sections():
+            cfg.section(setting.category, create=True)
         cfg.section(setting.category).init(setting.name, setting.default, setting.valuetype, setting.comment)
-
+    
     return cls
 
 
@@ -132,15 +141,19 @@ class MainSettings(Enum):
     """
     The main settings of our program.
     """
-    host = SettingsClass(category="main", name="host", default="127.0.0.1", valuetype=str, comment=None)
-    port = SettingsClass(category="main", name="port", default=5050, valuetype=int, comment=None)
-    logfile = SettingsClass(category="main", name="logging.logfile", default="nzbhydra.log", valuetype=str, comment=None)
-    logfilelevel = SettingsClass(category="main", name="logging.logfile.level", default="INFO", valuetype=str, comment=None)
-    consolelevel = SettingsClass(category="main", name="logging.consolelevel", default="ERROR", valuetype=str, comment=None)
+    host = SettingsClass(category="main", name="host", default="127.0.0.1", valuetype=str, comment="Set to 0.0.0.0 to listen on all public IPs. If you do this you should enable SSL.")
+    port = SettingsClass(category="main", name="port", default=5050, valuetype=int, comment="Port to listen on.")
+    debug = SettingsClass(category="main", name="debug", default=False, valuetype=bool, comment="Enable debugging functions. Don't do this until you know why you're doing it.")
+    ssl = SettingsClass(category="main", name="ssl", default=True, valuetype=bool, comment="Use SSL. Strongly recommended if you access via a public network!")
+    sslcert = SettingsClass(category="main", name="sslcert", default="nzbhydra.crt", valuetype=str, comment="File name of the certificate to use for SSL.")
+    sslkey = SettingsClass(category="main", name="sslkey", default="nzbhydra.key", valuetype=str, comment="File name of the key to use for SSL.")
+    logfile = SettingsClass(category="main", name="logging.logfile", default="nzbhydra.log", valuetype=str, comment="File name (relative or absolute) of the log file.")
+    logfilelevel = SettingsClass(category="main", name="logging.logfile.level", default="INFO", valuetype=str, comment="Log level of the log file")  # TODO change to SelectionSetting
+    consolelevel = SettingsClass(category="main", name="logging.consolelevel", default="ERROR", valuetype=str, comment="Log level of the console. Only applies if run in console, obviously.")  # TODO change to SelectionSetting
     username = SettingsClass(category="main", name="username", default="", valuetype=str, comment=None)
     password = SettingsClass(category="main", name="password", default="", valuetype=str, comment=None)
-    apikey = SettingsClass(category="main", name="apikey", default="", valuetype=str, comment=None)
-    enable_auth = SettingsClass(category="main", name="enableAuth", default="", valuetype=bool, comment=None)
+    apikey = SettingsClass(category="main", name="apikey", default="", valuetype=str, comment="API key for external tools to authenticate (newznab API)")
+    enable_auth = SettingsClass(category="main", name="enableAuth", default=True, valuetype=bool, comment="Select if you want to enable autorization via username / password.")
 
 
 @register_settings
@@ -148,8 +161,8 @@ class ResultProcessingSettings(Enum):
     """
     Settings which control how search results are processed.
     """
-    duplicateSizeThresholdInPercent = SettingsClass(category="resultProcessing", name="duplicateSizeThresholdInPercent", default=0.1, valuetype=float)
-    duplicateAgeThreshold = SettingsClass(category="resultProcessing", name="duplicateAgeThreshold", default=3600, valuetype=int)
+    duplicateSizeThresholdInPercent = SettingsClass(category="resultProcessing", name="duplicateSizeThresholdInPercent", default=0.1, valuetype=float, comment="If the size difference between two search entries with the same title is higher than this they won't be considered dplicates.")
+    duplicateAgeThreshold = SettingsClass(category="resultProcessing", name="duplicateAgeThreshold", default=3600, valuetype=int, comment="If the age difference in seconds between two search entries with the same title is higher than this they won't be considered dplicates.")
 
 
 @register_settings
@@ -157,9 +170,9 @@ class SearchingSettings(Enum):
     """
     How searching is executed.
     """
-    timeout = SettingsClass(category="searching", name="searching.timeout", default=5, valuetype=int, comment=None)
-    ignoreTemporarilyDisabled = SettingsClass(category="searching", name="searching.ignoreTemporarilyDisabled", default=False, valuetype=bool, comment=None)
-    allowQueryGeneration = SettingsClass(category="searching", name="searching.allowQueryGeneration", default="both", valuetype=str, comment=None)
+    timeout = SettingsClass(category="searching", name="searching.timeout", default=5, valuetype=int, comment="Timeout when accessing providers.")
+    ignoreTemporarilyDisabled = SettingsClass(category="searching", name="searching.ignoreTemporarilyDisabled", default=False, valuetype=bool, comment="Enable if you want to always call all enabled providers even if the connection previously failed.")
+    allowQueryGeneration = SettingsClass(category="searching", name="searching.allowQueryGeneration", default="both", valuetype=str, comment=None)  # todo change to SelctionSetting
 
 
 class NzbAccessTypeSelection(Enum):
@@ -174,11 +187,26 @@ class NzbAddingTypeSelection(Enum):
 
 
 @register_settings
-class DownloaderSettings(Enum):
-    # sabnzbd setings
-    host = SettingsClass(category="downloader", name="sabnzbd.host", default="127.0.0.1", valuetype=str, comment=None)
-    port = SettingsClass(category="downloader", name="sabnzbd.port", default=8086, valuetype=int, comment=None)
+class SabnzbdSettings(Enum):
+    host = SettingsClass(category="sabnzbd", name="host", default="127.0.0.1", valuetype=str, comment=None)
+    port = SettingsClass(category="sabnzbd", name="port", default=8086, valuetype=int, comment=None)
+    ssl = SettingsClass(category="sabnzbd", name="ssl", default=False, valuetype=bool, comment=None)
+    apikey = SettingsClass(category="sabnzbd", name="apikey", default="", valuetype=str, comment=None)
+    username = SettingsClass(category="sabnzbd", name="username", default="", valuetype=str, comment=None)
+    password = SettingsClass(category="sabnzbd", name="password", default="", valuetype=str, comment=None)
+    
 
+@register_settings
+class NzbgetSettings(Enum):
+    host = SettingsClass(category="nzbget", name="host", default="127.0.0.1", valuetype=str, comment=None)
+    port = SettingsClass(category="nzbget", name="port", default=6789, valuetype=int, comment=None)
+    ssl = SettingsClass(category="nzbget", name="ssl", default=False, valuetype=bool, comment=None)
+    username = SettingsClass(category="nzbget", name="username", default="nzbget", valuetype=str, comment=None)
+    password = SettingsClass(category="nzbget", name="password", default="tegbzn6789", valuetype=str, comment=None)
+
+
+@register_settings
+class DownloaderSettings(Enum):
     # see comment
     nzbaccesstype = SelectSettingsClass(category="downloader", name="nzbaccesstype", default=NzbAccessTypeSelection.serve, selections=NzbAccessTypeSelection, valuetype=str,
                                         comment="Determines how we provide access to NZBs  ""Serve"": Provide a link to NZBHydra via which the NZB is downloaded and returned. ""Redirect"": Provide a link to NZBHydra which redirects to the provider. ""Direct"": Create direct links (as returned by the provider=. Not recommended.")
