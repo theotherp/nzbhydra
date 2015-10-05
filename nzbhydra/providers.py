@@ -13,7 +13,7 @@ def read_providers_from_config():
     global providers
     providers = []
     
-    if config.get(config.ProviderBinsearchSettings.enabled.get()):
+    if config.providerBinsearchSettings.enabled.get():
         providers.append(binsearch.get_instance(ProviderBinsearchSettings()))
         
     return providers

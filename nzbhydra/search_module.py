@@ -7,7 +7,7 @@ import requests
 from requests import RequestException
 
 from nzbhydra import config
-from nzbhydra.config import SearchingSettings, ProviderSettings
+from nzbhydra.config import SearchingSettings, ProviderSettings, searchingSettings
 from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus, Provider
 from nzbhydra.exceptions import ProviderConnectionException, ProviderResultParsingException, ProviderAuthException, ProviderAccessException
 
@@ -23,17 +23,14 @@ class SearchModule(object):
 
 
     def __init__(self, settings: ProviderSettings):
-        self.provider = Provider.get(Provider.id == settings.dbid)
+        self.settings = settings
+        self.provider = Provider.get(Provider.id == settings.dbid.get())
         self.name = self.provider.name
         self.module = "Abstract search module"
         self.supports_queries = True
         self.needs_queries = False
         self.category_search = True  # If true the provider supports searching in a given category (possibly without any query or id)
         
-
-    @property
-    def host(self):
-        return self.provider.settings.get("query_url")
 
     @property
     def getsettings(self):
@@ -210,7 +207,7 @@ class SearchModule(object):
                 continue
 
             try:
-                self.logger.debug("Requesting URL %s with timeout %d" % (query, config.get(SearchingSettings.timeout)))
+                self.logger.debug("Requesting URL %s with timeout %d" % (query, searchingSettings.timeout.get()))
                 request, papiaccess = self.get_url_with_papi_access(query, "search")
                 papiaccess.provider_search = psearch
                 

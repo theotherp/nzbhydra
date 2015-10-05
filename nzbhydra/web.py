@@ -12,7 +12,7 @@ from werkzeug.exceptions import Unauthorized
 
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log
 from nzbhydra import config, search, infos
-from nzbhydra.config import MainSettings, DownloaderSettings, NzbAccessTypeSelection, NzbAddingTypeSelection
+from nzbhydra.config import mainSettings, DownloaderSettings, NzbAccessTypeSelection, NzbAddingTypeSelection, mainSettings
 from nzbhydra.downloader import Nzbget
 
 app = Flask(__name__)
@@ -90,7 +90,7 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return username == config.get(MainSettings.username) and password == config.get(MainSettings.password)
+    return username == config.get(mainSettings.username) and password == config.get(mainSettings.password)
 
 
 def authenticate():
@@ -103,7 +103,7 @@ def authenticate():
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if config.get(MainSettings.enable_auth):
+        if config.get(mainSettings.enable_auth):
             auth = request.authorization
             if not auth or not check_auth(auth.username, auth.password):
                 return authenticate()
@@ -132,7 +132,7 @@ def api(args):
     if args["q"] is not None:
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
     # todo: category mapping, completely forgot that
-    if config.get(MainSettings.apikey, None) is not None and ("apikey" not in args or args["apikey"] != config.get(MainSettings.apikey)):
+    if config.get(mainSettings.apikey, None) is not None and ("apikey" not in args or args["apikey"] != config.get(mainSettings.apikey)):
         raise Unauthorized("API key not provided or invalid")
     elif args["t"] == "search":
         results = search.search(False, args)

@@ -16,13 +16,14 @@ class Binsearch(SearchModule):
         super(Binsearch, self).__init__(settings)
         self.module = "binsearch"
         self.name = "Binsearch"
+        self.host = "https://binsearch.info"
 
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = True
         self.category_search = False
 
     def build_base_url(self):
-        f = furl(self.query_url)
+        f = furl(self.host)
         f.path.add("index.php")
         url = f.add({"max": self.provider.settings.get("max_results", 250),
                      "adv_col": "on",  # collections only 

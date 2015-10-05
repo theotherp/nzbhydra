@@ -3,7 +3,19 @@ from enum import Enum
 import profig
 
 cfg = profig.Config(strict=False)
-cfg.coercer.register("SearchIdSelectionList", lambda l: ",".join([x.name for x in l]), lambda string: [SearchIdSelection[x] for x in string.split(",")] if string else [])
+
+
+def a(l):
+    return ",".join([x.name for x in l])
+
+
+def b(string):
+    if isinstance(string, list):
+        return string #Haven't found out yet why this gets called with a list but it does, so we just return it 
+    return [SearchIdSelection[x] for x in string.split(",")] if string else []
+
+
+cfg.coercer.register("SearchIdSelectionList", lambda l: a(l), lambda string: b(string))
 
 
 class SettingsType(Enum):
@@ -182,12 +194,13 @@ def traverse_dict_and_add_to_list(d, l, toadd):
         d[l[0]] = traverse_dict_and_add_to_list(d[l[0]], l[1:], toadd)
     return d
 
+
 def traverse_dict_and_add_to_dict(d, l, key, value):
     if len(l) == 1:
         if l[0] not in d.keys():
             d[l[0]] = {}
         d[l[0]][key] = value
-        return d 
+        return d
     else:
         if l[0] not in d.keys():
             d[l[0]] = {}
@@ -203,13 +216,11 @@ def replace_setting_with_dict(d: dict):
             d[k] = v.get_settings_dict()
             d[k]["value"] = v.get()
     return d
-        
+
 
 def get_settings_dict() -> dict:
-    
     all_settings_dict = all_known_settings.copy()
     all_settings_dict = replace_setting_with_dict(all_settings_dict)
-    
 
     return all_settings_dict
 
@@ -222,10 +233,10 @@ def traverse_settings_dict_and_transfer(d, section):
     """
     for k, v in d.items():
         if isinstance(v, dict):
-            if "value" in v.keys() and "name" in v.keys(): #If we have a "value" and a "name" key we consider this a setting from which we transfer the value to the settings. 
+            if "value" in v.keys() and "name" in v.keys():  # If we have a "value" and a "name" key we consider this a setting from which we transfer the value to the settings. 
                 section[k] = v["value"]
             else:
-                traverse_settings_dict_and_transfer(v, section.section(k)) #Otherwise it's just a section with more dicts of sections (we don't support a mix of sections and settings on the same parent path) 
+                traverse_settings_dict_and_transfer(v, section.section(k))  # Otherwise it's just a section with more dicts of sections (we don't support a mix of sections and settings on the same parent path) 
 
 
 def set_settings_from_dict(new_settings: dict):
@@ -254,47 +265,69 @@ def register_settings(cls):
     return cls
 
 
-@register_settings
-class MainSettings(object):
-    _path = "main"
+class SettingsCategory(object):
+    def __init__(self):
+        pass
 
+
+class MainSettings(SettingsCategory):
     """
     The main settings of our program.
     """
-    host = Setting(name="host", default="127.0.0.1", valuetype=str, comment="Set to 0.0.0.0 to listen on all public IPs. If you do this you should enable SSL.")
-    port = Setting(name="port", default=5050, valuetype=int, comment="Port to listen on.")
-    debug = Setting(name="debug", default=False, valuetype=bool, comment="Enable debugging functions. Don't do this until you know why you're doing it.")
-    ssl = Setting(name="ssl", default=True, valuetype=bool, comment="Use SSL. Strongly recommended if you access via a public network!")
-    sslcert = Setting(name="sslcert", default="nzbhydra.crt", valuetype=str, comment="File name of the certificate to use for SSL.")
-    sslkey = Setting(name="sslkey", default="nzbhydra.key", valuetype=str, comment="File name of the key to use for SSL.")
-    logfile = Setting(name="logging.logfile", default="nzbhydra.log", valuetype=str, comment="File name (relative or absolute) of the log file.")
-    logfilelevel = Setting(name="logging.logfile.level", default="INFO", valuetype=str, comment="Log level of the log file")  # TODO change to SelectionSetting
-    consolelevel = Setting(name="logging.consolelevel", default="ERROR", valuetype=str, comment="Log level of the console. Only applies if run in console, obviously.")  # TODO change to SelectionSetting
-    username = Setting(name="username", default="", valuetype=str, comment=None)
-    password = Setting(name="password", default="", valuetype=str, comment=None)
-    apikey = Setting(name="apikey", default="", valuetype=str, comment="API key for external tools to authenticate (newznab API)")
-    enable_auth = Setting(name="enableAuth", default=True, valuetype=bool, comment="Select if you want to enable autorization via username / password.")
+
+    def __init__(self):
+        super().__init__()
+        self._path = "main"
+        self.host = Setting(name="host", default="127.0.0.1", valuetype=str, comment="Set to 0.0.0.0 to listen on all public IPs. If you do this you should enable SSL.")
+        self.port = Setting(name="port", default=5050, valuetype=int, comment="Port to listen on.")
+        self.debug = Setting(name="debug", default=False, valuetype=bool, comment="Enable debugging functions. Don't do this until you know why you're doing it.")
+        self.ssl = Setting(name="ssl", default=True, valuetype=bool, comment="Use SSL. Strongly recommended if you access via a public network!")
+        self.sslcert = Setting(name="sslcert", default="nzbhydra.crt", valuetype=str, comment="File name of the certificate to use for SSL.")
+        self.sslkey = Setting(name="sslkey", default="nzbhydra.key", valuetype=str, comment="File name of the key to use for SSL.")
+        self.logfile = Setting(name="logging.logfile", default="nzbhydra.log", valuetype=str, comment="File name (relative or absolute) of the log file.")
+        self.logfilelevel = Setting(name="logging.logfile.level", default="INFO", valuetype=str, comment="Log level of the log file")  # TODO change to SelectionSetting
+        self.consolelevel = Setting(name="logging.consolelevel", default="ERROR", valuetype=str, comment="Log level of the console. Only applies if run in console, obviously.")  # TODO change to SelectionSetting
+        self.username = Setting(name="username", default="", valuetype=str, comment=None)
+        self.password = Setting(name="password", default="", valuetype=str, comment=None)
+        self.apikey = Setting(name="apikey", default="", valuetype=str, comment="API key for external tools to authenticate (newznab API)")
+        self.enable_auth = Setting(name="enableAuth", default=True, valuetype=bool, comment="Select if you want to enable autorization via username / password.")
+        register_settings(self)
 
 
-@register_settings
-class ResultProcessingSettings(object):
-    _path = "resultProcessing"
+mainSettings = MainSettings()
+
+
+class ResultProcessingSettings(SettingsCategory):
     """
     Settings which control how search results are processed.
     """
-    duplicateSizeThresholdInPercent = Setting(name="duplicateSizeThresholdInPercent", default=0.1, valuetype=float, comment="If the size difference between two search entries with the same title is higher than this they won't be considered dplicates.")
-    duplicateAgeThreshold = Setting(name="duplicateAgeThreshold", default=3600, valuetype=int, comment="If the age difference in seconds between two search entries with the same title is higher than this they won't be considered dplicates.")
+
+    def __init__(self):
+        super().__init__()
+        self._path = "resultProcessing"
+        self.duplicateSizeThresholdInPercent = Setting(name="duplicateSizeThresholdInPercent", default=0.1, valuetype=float, comment="If the size difference between two search entries with the same title is higher than this they won't be considered dplicates.")
+        self.duplicateAgeThreshold = Setting(name="duplicateAgeThreshold", default=3600, valuetype=int, comment="If the age difference in seconds between two search entries with the same title is higher than this they won't be considered dplicates.")
+        register_settings(self)
 
 
-@register_settings
-class SearchingSettings(object):
-    _path = "searching"
+resultProcessingSettings = ResultProcessingSettings()
+
+
+class SearchingSettings(SettingsCategory):
     """
     How searching is executed.
     """
-    timeout = Setting(name="searching.timeout", default=5, valuetype=int, comment="Timeout when accessing providers.")
-    ignoreTemporarilyDisabled = Setting(name="searching.ignoreTemporarilyDisabled", default=False, valuetype=bool, comment="Enable if you want to always call all enabled providers even if the connection previously failed.")
-    allowQueryGeneration = Setting(name="searching.allowQueryGeneration", default="both", valuetype=str, comment=None)  # todo change to SelctionSetting
+
+    def __init__(self):
+        super().__init__()
+        self._path = "searching"
+        self.timeout = Setting(name="searching.timeout", default=5, valuetype=int, comment="Timeout when accessing providers.")
+        self.ignoreTemporarilyDisabled = Setting(name="searching.ignoreTemporarilyDisabled", default=False, valuetype=bool, comment="Enable if you want to always call all enabled providers even if the connection previously failed.")
+        self.allowQueryGeneration = Setting(name="searching.allowQueryGeneration", default="both", valuetype=str, comment=None)  # todo change to SelctionSetting
+        register_settings(self)
+
+
+searchingSettings = SearchingSettings()
 
 
 class NzbAccessTypeSelection(Enum):
@@ -308,72 +341,97 @@ class NzbAddingTypeSelection(Enum):
     nzb = SettingSelection(name="nzb", comment=None)
 
 
-@register_settings
-class SabnzbdSettings(object):
-    _path = "sabnzbd"
-    host = Setting(name="host", default="127.0.0.1", valuetype=str, comment=None)
-    port = Setting(name="port", default=8086, valuetype=int, comment=None)
-    ssl = Setting(name="ssl", default=False, valuetype=bool, comment=None)
-    apikey = Setting(name="apikey", default="", valuetype=str, comment=None)
-    username = Setting(name="username", default="", valuetype=str, comment=None)
-    password = Setting(name="password", default="", valuetype=str, comment=None)
-
-
-@register_settings
-class NzbgetSettings(object):
-    _path = "nzbget"
-    host = Setting(name="host", default="127.0.0.1", valuetype=str, comment=None)
-    port = Setting(name="port", default=6789, valuetype=int, comment=None)
-    ssl = Setting(name="ssl", default=False, valuetype=bool, comment=None)
-    username = Setting(name="username", default="nzbget", valuetype=str, comment=None)
-    password = Setting(name="password", default="tegbzn6789", valuetype=str, comment=None)
-
-
-@register_settings
-class DownloaderSettings(object):
-    _path = "downloader"
-    # see comment
-    nzbaccesstype = SelectSetting(name="nzbaccesstype", default=NzbAccessTypeSelection.serve, selections=NzbAccessTypeSelection, valuetype=str,
-                                  comment="Determines how we provide access to NZBs  ""Serve"": Provide a link to NZBHydra via which the NZB is downloaded and returned. ""Redirect"": Provide a link to NZBHydra which redirects to the provider. ""Direct"": Create direct links (as returned by the provider=. Not recommended.")
-
-    # see comment
-    nzbAddingType = SelectSetting(name="nzbAddingType", default=NzbAddingTypeSelection.nzb, selections=NzbAddingTypeSelection, valuetype=str,
-                                  comment="Determines how NZBs are added to downloaders. Either by sending a link to the downloader (""link"") or by sending the actual NZB (""nzb"").")
-
-
-class ProviderSettings(object):
-    
+class SabnzbdSettings(SettingsCategory):
     def __init__(self):
+        super().__init__()
+        self._path = "sabnzbd"
+        self.host = Setting(name="host", default="127.0.0.1", valuetype=str, comment=None)
+        self.port = Setting(name="port", default=8086, valuetype=int, comment=None)
+        self.ssl = Setting(name="ssl", default=False, valuetype=bool, comment=None)
+        self.apikey = Setting(name="apikey", default="", valuetype=str, comment=None)
+        self.username = Setting(name="username", default="", valuetype=str, comment=None)
+        self.password = Setting(name="password", default="", valuetype=str, comment=None)
+        register_settings(self)
+
+
+sabnzbdSettings = SabnzbdSettings()
+
+
+class NzbgetSettings(SettingsCategory):
+    def __init__(self):
+        super().__init__()
+        self._path = "nzbget"
+        self.host = Setting(name="host", default="127.0.0.1", valuetype=str, comment=None)
+        self.port = Setting(name="port", default=6789, valuetype=int, comment=None)
+        self.ssl = Setting(name="ssl", default=False, valuetype=bool, comment=None)
+        self.username = Setting(name="username", default="nzbget", valuetype=str, comment=None)
+        self.password = Setting(name="password", default="tegbzn6789", valuetype=str, comment=None)
+        register_settings(self)
+
+
+nzbgetSettings = NzbgetSettings()
+
+
+class DownloaderSettings(SettingsCategory):
+    def __init__(self):
+        super().__init__()
+        self._path = "downloader"
+        self.nzbaccesstype = SelectSetting(name="nzbaccesstype", default=NzbAccessTypeSelection.serve, selections=NzbAccessTypeSelection, valuetype=str,
+                                           comment="Determines how we provide access to NZBs  ""Serve"": Provide a link to NZBHydra via which the NZB is downloaded and returned. ""Redirect"": Provide a link to NZBHydra which redirects to the provider. ""Direct"": Create direct links (as returned by the provider=. Not recommended.")
+        self.nzbAddingType = SelectSetting(name="nzbAddingType", default=NzbAddingTypeSelection.nzb, selections=NzbAddingTypeSelection, valuetype=str,
+                                           comment="Determines how NZBs are added to downloaders. Either by sending a link to the downloader (""link"") or by sending the actual NZB (""nzb"").")
+        register_settings(self)
+
+
+downloaderSettings = DownloaderSettings()
+
+
+class ProviderSettings(SettingsCategory):
+    def __init__(self):
+        super().__init__()
         self.enabled = Setting(name="enabled", default=True, valuetype=bool, comment=None)
         self.dbid = Setting(name="dbid", default=0, valuetype=int, comment=None)  # TODO: hide in GUI
 
-@register_settings
-class ProviderBinsearchSettings(ProviderSettings):
 
+class ProviderBinsearchSettings(ProviderSettings):
     def __init__(self):
+        super(ProviderBinsearchSettings, self).__init__()
         self.dbid = Setting(name="dbid", default=1, valuetype=int, comment=None)  # TODO: hide in GUI
         self._path = "providers.binsearch"
+        register_settings(self)
 
 
-@register_settings
+providerBinsearchSettings = ProviderBinsearchSettings()
+
+
 class ProviderNzbclubSettings(ProviderSettings):
-    _path = "providers.nzbclub"
+    def __init__(self):
+        super(ProviderSettings, self).__init__()
+        self._path = "providers.nzbclub"
+        self.dbid = Setting(name="dbid", default=2, valuetype=int, comment=None)  # TODO: hide in GUI
+        register_settings(self)
 
-    dbid = Setting(name="dbid", default=2, valuetype=int, comment=None)  # TODO: hide in GUI
+
+providerNzbclubSettings = ProviderNzbclubSettings
 
 
-@register_settings
 class ProviderNzbindexSettings(ProviderSettings):
-    _path = "providers.nzbindex"
+    def __init__(self):
+        super(ProviderSettings, self).__init__()
+        self._path = "providers.nzbindex"
+        self.dbid = Setting(name="dbid", default=3, valuetype=int, comment=None)  # TODO: hide in GUI
+        register_settings(self)
 
-    dbid = Setting(name="dbid", default=3, valuetype=int, comment=None)  # TODO: hide in GUI
+
+providerNzbindexSettings = ProviderNzbindexSettings()
 
 
-@register_settings
 class ProviderWombleSettings(ProviderSettings):
-    _path = "providers.womble"
-
-    dbid = Setting(name="dbid", default=4, valuetype=int, comment=None)  # TODO: hide in GUI
+    def __init__(self):
+        super().__init__()
+        self._path = "providers.womble"
+        self.dbid = Setting(name="dbid", default=4, valuetype=int, comment=None)  # TODO: hide in GUI
+        register_settings(self)
 
 
 class SearchIdSelection(Enum):
@@ -387,60 +445,76 @@ class SearchIdSelection(Enum):
 # to worry about synchronization of settings
 
 class ProviderNewznabSettings(ProviderSettings):
-    
     def __init__(self):
+        super(ProviderNewznabSettings, self).__init__()
         self.ssl = Setting(name="ssl", default=True, valuetype=bool, comment=None)
         self.host = Setting(name="host", default=None, valuetype=str, comment=None)
         self.apikey = Setting(name="apikey", default=None, valuetype=str, comment=None)
         self.search_ids = MultiSelectSetting(name="search_ids", default=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid], selections=SearchIdSelection, valuetype="SearchIdSelectionList", comment=None)
 
 
-@register_settings
 class ProviderNewznab1Settings(ProviderNewznabSettings):
-    _path = "providers.newznab.1"
-    dbid = Setting(name="dbid", default=5, valuetype=int, comment=None)  # TODO: hide in GUI
+    def __init__(self):
+        super().__init__()
+        self._path = "providers.newznab.1"
+        self.dbid = Setting(name="dbid", default=5, valuetype=int, comment=None)  # TODO: hide in GUI
+        register_settings(self)
 
 
-@register_settings
 class ProviderNewznab2Settings(ProviderNewznabSettings):
-    _path = "providers.newznab.2"
-    dbid = Setting(name="dbid", default=6, valuetype=int, comment=None)  # TODO: hide in GUI
+    def __init__(self):
+        super().__init__()
+        self._path = "providers.newznab.2"
+        self.dbid = Setting(name="dbid", default=6, valuetype=int, comment=None)  # TODO: hide in GUI
+        register_settings(self)
 
 
-@register_settings
 class ProviderNewznab3Settings(ProviderNewznabSettings):
-    _path = "providers.newznab.3"
-    dbid = Setting(name="dbid", default=7, valuetype=int, comment=None)  # TODO: hide in GUI
+    def __init__(self):
+        super().__init__()
+        self._path = "providers.newznab.3"
+        self.dbid = Setting(name="dbid", default=7, valuetype=int, comment=None)  # TODO: hide in GUI
+        register_settings(self)
 
 
-@register_settings
 class ProviderNewznab4Settings(ProviderNewznabSettings):
-    _path = "providers.newznab.4"
-    dbid = Setting(name="dbid", default=8, valuetype=int, comment=None)  # TODO: hide in GUI
+    def __init__(self):
+        super().__init__()
+        self._path = "providers.newznab.4"
+        self.dbid = Setting(name="dbid", default=8, valuetype=int, comment=None)  # TODO: hide in GUI
+        register_settings(self)
 
 
-@register_settings
 class ProviderNewznab5Settings(ProviderNewznabSettings):
-    _path = "providers.newznab.5"
-    dbid = Setting(name="dbid", default=9, valuetype=int, comment=None)  # TODO: hide in GUI
+    def __init__(self):
+        super().__init__()
+        self._path = "providers.newznab.5"
+        self.dbid = Setting(name="dbid", default=9, valuetype=int, comment=None)  # TODO: hide in GUI
+        register_settings(self)
 
 
-@register_settings
 class ProviderNewznab6Settings(ProviderNewznabSettings):
-    _path = "providers.newznab.6"
-    dbid = Setting(name="dbid", default=10, valuetype=int, comment=None)  # TODO: hide in GUI
+    def __init__(self):
+        super().__init__()
+        self._path = "providers.newznab.6"
+        self.dbid = Setting(name="dbid", default=10, valuetype=int, comment=None)  # TODO: hide in GUI
+        register_settings(self)
 
 
-@register_settings
 class ProviderNewznab7Settings(ProviderNewznabSettings):
-    _path = "providers.newznab.7"
-    dbid = Setting(name="dbid", default=11, valuetype=int, comment=None)  # TODO: hide in GUI
+    def __init__(self):
+        super().__init__()
+        self._path = "providers.newznab.7"
+        self.dbid = Setting(name="dbid", default=11, valuetype=int, comment=None)  # TODO: hide in GUI
+        register_settings(self)
 
 
-@register_settings
 class ProviderNewznab8Settings(ProviderNewznabSettings):
-    _path = "providers.newznab.8"
-    dbid = Setting(name="dbid", default=12, valuetype=int, comment=None)  # TODO: hide in GUI
+    def __init__(self):
+        super().__init__()
+        self._path = "providers.newznab.8"
+        self.dbid = Setting(name="dbid", default=12, valuetype=int, comment=None)  # TODO: hide in GUI
+        register_settings(self)
 
 
 def get_newznab_setting_by_id(id):

@@ -2,7 +2,7 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 import sys
 from nzbhydra import config
-from nzbhydra.config import MainSettings
+from nzbhydra.config import MainSettings, mainSettings
 
 
 class SensitiveDataFilter(logging.Filter):
@@ -15,9 +15,9 @@ class SensitiveDataFilter(logging.Filter):
         #     sensitive_strings.append(section.get("username"))
         #     sensitive_strings.append(section.get("password"))
             
-        sensitive_strings.append(config.get(MainSettings.username))
-        sensitive_strings.append(config.get(MainSettings.password))
-        sensitive_strings.append(config.get(MainSettings.apikey))
+        sensitive_strings.append(config.get(mainSettings.username))
+        sensitive_strings.append(config.get(mainSettings.password))
+        sensitive_strings.append(config.get(mainSettings.apikey))
         
         msg = record.msg
         for sensitive_string in sensitive_strings:
@@ -32,11 +32,11 @@ def setup_custom_logger(name):
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
 
     stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setLevel(config.get(MainSettings.consolelevel))
+    stream_handler.setLevel(config.get(mainSettings.consolelevel))
     stream_handler.setFormatter(formatter)
     
-    file_handler = TimedRotatingFileHandler(filename=config.get(MainSettings.logfile), when='D', interval=7)
-    file_handler.setLevel(config.get(MainSettings.logfilelevel))
+    file_handler = TimedRotatingFileHandler(filename=config.get(mainSettings.logfile), when='D', interval=7)
+    file_handler.setLevel(config.get(mainSettings.logfilelevel))
     file_handler.setFormatter(formatter)
 
     logger = logging.getLogger(name)

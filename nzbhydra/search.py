@@ -35,7 +35,7 @@ def pick_providers(query_supplied=True, identifier_key=None, category=None, inte
     picked_providers = []
 
     for p in providers.providers:
-        if not p.provider.enabled:
+        if not p.settings.enabled.get():
             logger.debug("Did not pick %s because it is disabled" % p)
             continue
         try:

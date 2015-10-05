@@ -45,18 +45,18 @@ def run():
     database.db.connect()
     providers.read_providers_from_config()
     
-    host = config.get(config.MainSettings.host) if args.host is not None else args.host
-    port = config.get(config.MainSettings.port) if args.port is not None else args.port
+    host = config.mainSettings.host.get() if args.host is not None else args.host
+    port = config.mainSettings.port.get() if args.port is not None else args.port
     context = None
-    if config.get(config.MainSettings.ssl):
+    if config.mainSettings.ssl.get():
         context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-        context.load_cert_chain(config.get(config.MainSettings.sslcert), config.get(config.MainSettings.sslkey))
+        context.load_cert_chain(config.mainSettings.sslcert.get(), config.mainSettings.sslkey.get())
     
-    if config.get(config.MainSettings.debug):
+    if config.mainSettings.debug.get():
         logger.info("Debug mode enabled")
     logger.info("Starting web app on %s:%d" % (host, port))
     from nzbhydra.web import app
-    app.run(host=host, port=port, debug=config.get(config.MainSettings.debug), ssl_context=context)
+    app.run(host=host, port=port, debug=config.mainSettings.debug.get(), ssl_context=context)
 
 
 if __name__ == '__main__':
