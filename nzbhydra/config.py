@@ -2,7 +2,8 @@ from enum import Enum
 
 import profig
 
-cfg = profig.Config(strict=True)
+cfg = profig.Config(strict=False)
+cfg.coercer.register("SearchIdSelectionList", lambda l: ",".join([x.name for x in l]), lambda string: [SearchIdSelection[x] for x in string.split(",")] if string else [])
 
 
 class SettingsType(Enum):
@@ -27,6 +28,7 @@ class Setting(object):
         self.default = default
         self.valuetype = valuetype
         self.comment = comment
+        self.category = None  # Is dynamically filled by register_settings later
 
     def get_settings_dict(self):
         """
@@ -43,6 +45,15 @@ class Setting(object):
 
     def get_setting_type(self):
         return SettingsType.Free
+
+    def get(self):
+        return cfg.section(self.category).get(self.name)
+
+    def get_with_default(self, default):
+        return cfg.section(self.category).get(self.name, default=default if default is not None else self.default)
+
+    def set(self, value):
+        cfg.section(self.category)[self.name] = value
 
 
 class SettingSelection(object):
@@ -71,6 +82,9 @@ class SelectSetting(Setting):
 
     def get_setting_type(self):
         return SettingsType.Select
+
+    def isSetting(self, compare: SettingSelection) -> bool:
+        return get(self) == compare.name
 
 
 class MultiSelectSetting(Setting):
@@ -120,26 +134,102 @@ def isSettingSelection(setting: Setting, compare: SettingSelection) -> bool:
     return get(setting) == compare.name
 
 
+def traverse_dict_and_set(d, l, newval, keep=False):
+    """
+    Traverses the dict by the list of values which describe the path and set the new value.
+    Example: d = {"a": {"b": {"c": "newval"}}} with l=["a","b","c"], will set d["a"]["b"]["c"] = "newval" 
+    :param d: 
+    :param l: 
+    :param newval: 
+    ;param keep; If true and the key is already set it won't be overwritten
+    :return: the updated dictionary
+    """
+    if len(l) == 1:
+        if l[0] not in d.keys() or not keep:
+            d[l[0]] = newval
+    else:
+        d[l[0]] = traverse_dict_and_set(d[l[0]], l[1:], newval, keep)
+    return d
+
+
+def traverse_dict_and_get(d, l):
+    """
+    Traverses the dict and gets the value described by the path in the list.
+    Example: d = {"a": {"b": {"c": "val"}}} with l=["a","b","c"], will retun "val"  
+    :param d: 
+    :param l: 
+    :return: value described by path
+    """
+    if len(l) == 1:
+        return d[l[0]]
+    else:
+        return traverse_dict_and_get(d[l[0]], l[1:])
+
+
+def traverse_dict_and_add_to_list(d, l, toadd):
+    """
+    Traverses the dict to the list described by the path and adds the element to that list. If no list exists it will be created.
+    :rtype : the updated dictionary
+    """
+    if len(l) == 1:
+        if l[0] not in d.keys():
+            d[l[0]] = []
+        d[l[0]].append(toadd)
+        return d
+    else:
+        if l[0] not in d.keys():
+            d[l[0]] = {}
+        d[l[0]] = traverse_dict_and_add_to_list(d[l[0]], l[1:], toadd)
+    return d
+
+def traverse_dict_and_add_to_dict(d, l, key, value):
+    if len(l) == 1:
+        if l[0] not in d.keys():
+            d[l[0]] = {}
+        d[l[0]][key] = value
+        return d 
+    else:
+        if l[0] not in d.keys():
+            d[l[0]] = {}
+        d[l[0]] = traverse_dict_and_add_to_dict(d[l[0]], l[1:], key, value)
+    return d
+
+
+def replace_setting_with_dict(d: dict):
+    for k, v in d.items():
+        if isinstance(v, dict):
+            d[k] = replace_setting_with_dict(d[k])
+        if isinstance(v, Setting):
+            d[k] = v.get_settings_dict()
+            d[k]["value"] = v.get()
+    return d
+        
+
 def get_settings_dict() -> dict:
-    all_settings_dict = {}
-    # Iterate over the enums which are our main categories
-    for sectionname, sectionsettings in all_known_settings.items():
-        if sectionname not in all_settings_dict.keys():
-            all_settings_dict[sectionname] = {}
-        for setting in sectionsettings:
-            # And add the individual settings as dict with name as key and the whole setting as value
-            setting_dict = setting.get_settings_dict()
-            # And read and add the actual value
-            setting_dict["value"] = cfg.section(setting.category).get(setting.name, setting.default)
-            all_settings_dict[setting.category][setting.name] = setting_dict
+    
+    all_settings_dict = all_known_settings.copy()
+    all_settings_dict = replace_setting_with_dict(all_settings_dict)
+    
 
     return all_settings_dict
 
 
+def traverse_settings_dict_and_transfer(d, section):
+    """
+    Traverses the given dict and sets the settings to the new values stored in the dict.
+    :param section: The section under which the upper level of settings is stored. Should be root cfg for the first call
+    :param d: 
+    """
+    for k, v in d.items():
+        if isinstance(v, dict):
+            if "value" in v.keys() and "name" in v.keys(): #If we have a "value" and a "name" key we consider this a setting from which we transfer the value to the settings. 
+                section[k] = v["value"]
+            else:
+                traverse_settings_dict_and_transfer(v, section.section(k)) #Otherwise it's just a section with more dicts of sections (we don't support a mix of sections and settings on the same parent path) 
+
+
 def set_settings_from_dict(new_settings: dict):
-    for sectionname, settings in new_settings.items():
-        for settingname, setting in settings.items():
-            cfg.section(sectionname)[settingname] = setting["value"]
+    traverse_settings_dict_and_transfer(new_settings, cfg)
     cfg.sync()
 
 
@@ -148,13 +238,18 @@ def register_settings(cls):
         if not i.startswith("_"):
             setting = getattr(cls, i)
             setting.category = cls._path
-            if cls._path not in all_known_settings.keys():
-                all_known_settings[cls._path] = []
-            all_known_settings[cls._path].append(setting)
-            print("Initializing %s with default %s and valuetype %s" % (setting.name, setting.default, setting.valuetype))
-            if setting.category not in cfg.sections():
-                cfg.section(setting.category, create=True)
-            cfg.section(setting.category).init(setting.name, setting.default, setting.valuetype, setting.comment)
+
+            path = setting.category
+            sectionnames = path.split(".")
+            section = cfg
+            for s in sectionnames:
+                section = section.section(s, create=True)
+            print("Initializing %s.%s with default %s and valuetype %s" % (setting.category, setting.name, setting.default, setting.valuetype))
+            section.init(setting.name, setting.default, setting.valuetype, setting.comment)
+
+            traverse_dict_and_add_to_dict(all_known_settings, sectionnames, setting.name, setting)
+
+            # traverse_dict_and_set(all_known_settings, sectionnames, setting)
 
     return cls
 
@@ -246,32 +341,39 @@ class DownloaderSettings(object):
                                   comment="Determines how NZBs are added to downloaders. Either by sending a link to the downloader (""link"") or by sending the actual NZB (""nzb"").")
 
 
+class ProviderSettings(object):
+    
+    def __init__(self):
+        self.enabled = Setting(name="enabled", default=True, valuetype=bool, comment=None)
+        self.dbid = Setting(name="dbid", default=0, valuetype=int, comment=None)  # TODO: hide in GUI
+
 @register_settings
-class ProviderBinsearchSettings(object):
-    _path = "providers.binsearch"
+class ProviderBinsearchSettings(ProviderSettings):
 
-    enabled = Setting(name="enabled", default=True, valuetype=bool, comment=None)
+    def __init__(self):
+        self.dbid = Setting(name="dbid", default=1, valuetype=int, comment=None)  # TODO: hide in GUI
+        self._path = "providers.binsearch"
 
 
 @register_settings
-class ProviderNzbclubSettings(object):
+class ProviderNzbclubSettings(ProviderSettings):
     _path = "providers.nzbclub"
 
-    enabled = Setting(name="enabled", default=True, valuetype=bool, comment=None)
+    dbid = Setting(name="dbid", default=2, valuetype=int, comment=None)  # TODO: hide in GUI
 
 
 @register_settings
-class ProviderNzbindexSettings(object):
+class ProviderNzbindexSettings(ProviderSettings):
     _path = "providers.nzbindex"
 
-    enabled = Setting(name="enabled", default=True, valuetype=bool, comment=None)
+    dbid = Setting(name="dbid", default=3, valuetype=int, comment=None)  # TODO: hide in GUI
 
 
 @register_settings
-class ProviderWombleSettings(object):
+class ProviderWombleSettings(ProviderSettings):
     _path = "providers.womble"
 
-    enabled = Setting(name="enabled", default=True, valuetype=bool, comment=None)
+    dbid = Setting(name="dbid", default=4, valuetype=int, comment=None)  # TODO: hide in GUI
 
 
 class SearchIdSelection(Enum):
@@ -280,78 +382,76 @@ class SearchIdSelection(Enum):
     imdbid = SettingSelection(name="imdbid", comment=None)
 
 
-# Convert list of SearchIdSelections to string and back
-cfg.coercer.register("SearchIdSelectionList", lambda l: ",".join([x.name for x in l]), lambda string: [SearchIdSelection[x] for x in string.split(",")])
+# I would like to have solved this more generically but got stuck. This way it works and I hope nobody uses / actually needs for than 6 of these.
+# As we only need the attributes to contain information on what setting to get we can create instances and pass them around and still don't need
+# to worry about synchronization of settings
 
+class ProviderNewznabSettings(ProviderSettings):
+    
+    def __init__(self):
+        self.ssl = Setting(name="ssl", default=True, valuetype=bool, comment=None)
+        self.host = Setting(name="host", default=None, valuetype=str, comment=None)
+        self.apikey = Setting(name="apikey", default=None, valuetype=str, comment=None)
+        self.search_ids = MultiSelectSetting(name="search_ids", default=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid], selections=SearchIdSelection, valuetype="SearchIdSelectionList", comment=None)
 
-#I would like to have solved this more generically but got stuck. This way it works and I hope nobody uses / actually needs for than 6 of these.
 
 @register_settings
-class ProviderNewznab1Settings(object):
+class ProviderNewznab1Settings(ProviderNewznabSettings):
     _path = "providers.newznab.1"
-    enabled = Setting(name="enabled", default=True, valuetype=bool, comment=None)
-    ssl = Setting(name="ssl", default=True, valuetype=bool, comment=None)
-    host = Setting(name="host", default=None, valuetype=str, comment=None)
-    apikey = Setting(name="apikey", default=None, valuetype=str, comment=None)
-    search_ids = MultiSelectSetting(name="search_ids", default=[], selections=SearchIdSelection, valuetype="SearchIdSelectionList", comment=None)
+    dbid = Setting(name="dbid", default=5, valuetype=int, comment=None)  # TODO: hide in GUI
 
 
 @register_settings
-class ProviderNewznab2Settings(object):
+class ProviderNewznab2Settings(ProviderNewznabSettings):
     _path = "providers.newznab.2"
-    enabled = Setting(name="enabled", default=True, valuetype=bool, comment=None)
-    ssl = Setting(name="ssl", default=True, valuetype=bool, comment=None)
-    host = Setting(name="host", default=None, valuetype=str, comment=None)
-    apikey = Setting(name="apikey", default=None, valuetype=str, comment=None)
-    search_ids = MultiSelectSetting(name="search_ids", default=[], selections=SearchIdSelection, valuetype="SearchIdSelectionList", comment=None)
+    dbid = Setting(name="dbid", default=6, valuetype=int, comment=None)  # TODO: hide in GUI
 
 
 @register_settings
-class ProviderNewznab3Settings(object):
+class ProviderNewznab3Settings(ProviderNewznabSettings):
     _path = "providers.newznab.3"
-    enabled = Setting(name="enabled", default=True, valuetype=bool, comment=None)
-    ssl = Setting(name="ssl", default=True, valuetype=bool, comment=None)
-    host = Setting(name="host", default=None, valuetype=str, comment=None)
-    apikey = Setting(name="apikey", default=None, valuetype=str, comment=None)
-    search_ids = MultiSelectSetting(name="search_ids", default=[], selections=SearchIdSelection, valuetype="SearchIdSelectionList", comment=None)
+    dbid = Setting(name="dbid", default=7, valuetype=int, comment=None)  # TODO: hide in GUI
 
 
 @register_settings
-class ProviderNewznab4Settings(object):
+class ProviderNewznab4Settings(ProviderNewznabSettings):
     _path = "providers.newznab.4"
-    enabled = Setting(name="enabled", default=True, valuetype=bool, comment=None)
-    ssl = Setting(name="ssl", default=True, valuetype=bool, comment=None)
-    host = Setting(name="host", default=None, valuetype=str, comment=None)
-    apikey = Setting(name="apikey", default=None, valuetype=str, comment=None)
-    search_ids = MultiSelectSetting(name="search_ids", default=[], selections=SearchIdSelection, valuetype="SearchIdSelectionList", comment=None)
+    dbid = Setting(name="dbid", default=8, valuetype=int, comment=None)  # TODO: hide in GUI
 
 
 @register_settings
-class ProviderNewznab5Settings(object):
+class ProviderNewznab5Settings(ProviderNewznabSettings):
     _path = "providers.newznab.5"
-    enabled = Setting(name="enabled", default=True, valuetype=bool, comment=None)
-    ssl = Setting(name="ssl", default=True, valuetype=bool, comment=None)
-    host = Setting(name="host", default=None, valuetype=str, comment=None)
-    apikey = Setting(name="apikey", default=None, valuetype=str, comment=None)
-    search_ids = MultiSelectSetting(name="search_ids", default=[], selections=SearchIdSelection, valuetype="SearchIdSelectionList", comment=None)
+    dbid = Setting(name="dbid", default=9, valuetype=int, comment=None)  # TODO: hide in GUI
 
 
 @register_settings
-class ProviderNewznab6Settings(object):
+class ProviderNewznab6Settings(ProviderNewznabSettings):
     _path = "providers.newznab.6"
-    enabled = Setting(name="enabled", default=True, valuetype=bool, comment=None)
-    ssl = Setting(name="ssl", default=True, valuetype=bool, comment=None)
-    host = Setting(name="host", default=None, valuetype=str, comment=None)
-    apikey = Setting(name="apikey", default=None, valuetype=str, comment=None)
-    search_ids = MultiSelectSetting(name="search_ids", default=[], selections=SearchIdSelection, valuetype="SearchIdSelectionList", comment=None)
+    dbid = Setting(name="dbid", default=10, valuetype=int, comment=None)  # TODO: hide in GUI
+
+
+@register_settings
+class ProviderNewznab7Settings(ProviderNewznabSettings):
+    _path = "providers.newznab.7"
+    dbid = Setting(name="dbid", default=11, valuetype=int, comment=None)  # TODO: hide in GUI
+
+
+@register_settings
+class ProviderNewznab8Settings(ProviderNewznabSettings):
+    _path = "providers.newznab.8"
+    dbid = Setting(name="dbid", default=12, valuetype=int, comment=None)  # TODO: hide in GUI
 
 
 def get_newznab_setting_by_id(id):
+    id = str(id)
     return {
-        "1": ProviderNewznab1Settings,
-        "2": ProviderNewznab1Settings,
-        "3": ProviderNewznab1Settings,
-        "4": ProviderNewznab1Settings,
-        "5": ProviderNewznab1Settings,
-        "6": ProviderNewznab1Settings,
+        "1": ProviderNewznab1Settings(),
+        "2": ProviderNewznab2Settings(),
+        "3": ProviderNewznab3Settings(),
+        "4": ProviderNewznab4Settings(),
+        "5": ProviderNewznab5Settings(),
+        "6": ProviderNewznab6Settings(),
+        "7": ProviderNewznab5Settings(),
+        "8": ProviderNewznab6Settings(),
     }[id]

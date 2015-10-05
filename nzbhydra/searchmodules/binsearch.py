@@ -12,8 +12,8 @@ logger = logging.getLogger('root')
 
 
 class Binsearch(SearchModule):
-    def __init__(self, provider):
-        super(Binsearch, self).__init__(provider)
+    def __init__(self, settings):
+        super(Binsearch, self).__init__(settings)
         self.module = "binsearch"
         self.name = "Binsearch"
 
@@ -173,5 +173,5 @@ class Binsearch(SearchModule):
 
     
 
-def get_instance(provider):
-    return Binsearch(provider)
+def get_instance(settings):
+    return Binsearch(settings)

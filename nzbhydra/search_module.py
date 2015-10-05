@@ -7,8 +7,8 @@ import requests
 from requests import RequestException
 
 from nzbhydra import config
-from nzbhydra.config import SearchingSettings
-from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus
+from nzbhydra.config import SearchingSettings, ProviderSettings
+from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus, Provider
 from nzbhydra.exceptions import ProviderConnectionException, ProviderResultParsingException, ProviderAuthException, ProviderAccessException
 
 
@@ -22,21 +22,18 @@ class SearchModule(object):
     # possibly use newznab qualities as base, map for other providers (nzbclub etc)
 
 
-    def __init__(self, provider):
-        self.provider = provider  # Database object of this module
+    def __init__(self, settings: ProviderSettings):
+        self.provider = Provider.get(Provider.id == settings.dbid)
         self.name = self.provider.name
         self.module = "Abstract search module"
         self.supports_queries = True
         self.needs_queries = False
         self.category_search = True  # If true the provider supports searching in a given category (possibly without any query or id)
+        
 
     @property
-    def query_url(self):
+    def host(self):
         return self.provider.settings.get("query_url")
-
-    @property
-    def base_url(self):
-        return self.provider.settings.get("base_url")
 
     @property
     def getsettings(self):
