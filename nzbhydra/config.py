@@ -11,19 +11,13 @@ def load(filename):
     # Manually set the source to this settings file so that when syncing the settings are written back. If we don't do this it loads the settings but doesn't write them back. Or we would need to store the
     # settings filename and call write(filename)
     cfg.sources = [filename]
+    cfg.sync()
 
 
 def init(path, value, type, comment=None):
     global cfg
     cfg.init(path, value, type, comment)
     # Write this to console for now, later we can use it to collect all available/expected config data
-
-
-# The following classes allow us to access settings using indexed values instead of strings. They are initialized at startup with a decorator and added to profig.
-# We can access them using e.g.
-#    get(Host)
-# We can also add possible values for comparison, e.g. for DownloaderAddtype:
-#   get(DownloaderAddtype) == DownloaderAddtype.redirect -> bool
 
 
 def get(setting, section=None, default=None):
@@ -33,7 +27,7 @@ def get(setting, section=None, default=None):
 
 def set(setting, value, section=None):
     parent = cfg.section(section) if section is not None else cfg
-    parent[setting.setting] = value
+    parent[setting.name] = value
 
 
 class InitSettings(object):
