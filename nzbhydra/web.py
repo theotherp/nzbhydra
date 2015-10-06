@@ -10,12 +10,11 @@ from flask import Flask, render_template, request, jsonify, Response
 from flask.ext.cache import Cache
 from webargs import fields
 from webargs.flaskparser import use_args, parser
-
 from werkzeug.exceptions import Unauthorized
 
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log
 from nzbhydra import config, search, infos
-from nzbhydra.config import NzbAccessTypeSelection, NzbAddingTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection, nzbgetSettings, DownloaderSelection
+from nzbhydra.config import NzbAccessTypeSelection, NzbAddingTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection, DownloaderSelection
 from nzbhydra.downloader import Nzbget, Sabnzbd
 
 logger = logging.getLogger('root')
@@ -33,6 +32,17 @@ def handle_error(error):
     logger.error("Web args error: " + error)
     raise CustomError(error)
 
+@app.after_request
+def disable_caching(response):
+    if mainSettings.debug:
+        
+        #Disable browser caching for development so resources are always served fresh :-)
+        response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Epires'] = '0'
+        return response
+
 
 def check_auth(username, password):
     """This function is called to check if a username /
@@ -46,6 +56,11 @@ def authenticate():
     return Response(
         'Could not verify your access level for that URL. You have to login with proper credentials', 401,
         {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+
+# TODO: use this to create generic responses. the gui should have a service to intercept this and forward only the data (if it was successful) or else show the error, possibly log it
+def create_json_response(success=True, data=None, error_message=None):
+    return jsonify({"success": success, "data": data, "error_message": error_message})
 
 
 def requires_auth(f):
@@ -64,6 +79,7 @@ def requires_auth(f):
 @app.route('/', defaults={"path": None})
 @requires_auth
 def base(path):
+    logger.debug("Sending index.html")
     return send_file("static/index.html")
 
 
@@ -301,14 +317,14 @@ def internalapi_addnzb(args):
         downloader = Nzbget()
     else:
         downloader = Sabnzbd()
-    
-    
+
     if downloaderSettings.nzbAddingType.isSetting(NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
         link = get_nzb_link(args["provider"], args["providerguid"], args["title"], args["searchid"])
         added = downloader.add_link(link, args["title"], args["category"])
         if added:
             return "Success"
         else:
+            logger.error("Downloaded returned error while trying to add NZB for %s" % args["title"])
             return "Error", 500
     elif downloaderSettings.nzbAddingType.isSetting(NzbAddingTypeSelection.nzb):  # We download an NZB send it to the downloader
         nzbdownloadresult = download_nzb_and_log(args["provider"], args["providerguid"], args["title"], args["searchid"])
@@ -318,6 +334,7 @@ def internalapi_addnzb(args):
         if added:
             return "Success"
         else:
+            logger.error("Downloaded returned error while trying to add NZB for %s" % args["title"])
             return "Error", 500
     else:
         logger.error("Invalid value of %s" % downloaderSettings.nzbAddingType)
@@ -329,6 +346,11 @@ def internalapi_addnzb(args):
 def internalapi_getsettings():
     logger.debug("Get settings request")
     return jsonify(config.get_settings_dict())
+
+#Allows us to easily load a static class with results without having to load them
+@app.route("/development/staticindex.html")
+def development_staticindex():
+    return send_file("static/index.html")
 
 
 def run(host, port):
