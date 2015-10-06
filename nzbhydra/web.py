@@ -6,9 +6,8 @@ import ssl
 from flask import send_file, redirect
 from flask import Flask, render_template, request, jsonify, Response
 from flask.ext.cache import Cache
-from webargs import Arg
-
-from webargs.flaskparser import use_args
+from webargs import fields
+from webargs.flaskparser import use_args, parser
 
 from werkzeug.exceptions import Unauthorized
 
@@ -24,57 +23,117 @@ app = Flask(__name__)
 cache = Cache()
 
 externalapi_args = {
-    "input": Arg(str),
-    "apikey": Arg(str),
-    "t": Arg(str),
-    "q": Arg(str),
-    "query": Arg(str),
-    "group": Arg(str),
-    "limit": Arg(int),
-    "offset": Arg(str),
-    "cat": Arg(str),
-    "o": Arg(str),
-    "attrs": Arg(str),
-    "extended": Arg(bool),
-    "del": Arg(str),
-    "rid": Arg(str),
-    "genre": Arg(str),
-    "imdbid": Arg(str),
-    "tvdbid": Arg(str),
-    "season": Arg(str),
-    "ep": Arg(str)
+    "input": fields.String(missing=None),
+    "apikey": fields.String(missing=None),
+    "t": fields.String(missing=None),
+    "q": fields.String(missing=None),
+    "query": fields.String(missing=None),
+    "group": fields.String(missing=None),
+    "limit": fields.Integer(missing=None),
+    "offset": fields.String(missing=None),
+    "cat": fields.String(missing=None),
+    "o": fields.String(missing=None),
+    "attrs": fields.String(missing=None),
+    "extended": fields.Bool(missing=None),
+    "del": fields.String(missing=None),
+    "rid": fields.String(missing=None),
+    "genre": fields.String(missing=None),
+    "imdbid": fields.String(missing=None),
+    "tvdbid": fields.String(missing=None),
+    "season": fields.String(missing=None),
+    "ep": fields.String(missing=None)
 }
 
 internalapi_args = {
-    "apikey": Arg(str),
-    "t": Arg(str),
-    "query": Arg(str),
-    "category": Arg(str),
-    "title": Arg(str),
-    "rid": Arg(str),
-    "imdbid": Arg(str),
-    "tvdbid": Arg(str),
-    "season": Arg(str),
-    "episode": Arg(str),
+    "apikey": fields.String(missing=None),
+    "t": fields.String(missing=None),
+    "query": fields.String(missing=None),
+    "category": fields.String(missing=None),
+    "title": fields.String(missing=None),
+    "rid": fields.String(missing=None),
+    "imdbid": fields.String(missing=None),
+    "tvdbid": fields.String(missing=None),
+    "season": fields.String(missing=None),
+    "episode": fields.String(missing=None),
 
-    "minsize": Arg(int),
-    "maxsize": Arg(int),
-    "minage": Arg(int),
-    "maxage": Arg(int),
+    "minsize": fields.Integer(missing=None),
+    "maxsize": fields.Integer(missing=None),
+    "minage": fields.Integer(missing=None),
+    "maxage": fields.Integer(missing=None),
 
-    "input": Arg(str),
-    "guid": Arg(str),
-    "provider": Arg(str),
-    "searchid": Arg(str),
+    "input": fields.String(missing=None),
+    "guid": fields.String(missing=None),
+    "provider": fields.String(missing=None),
+    "searchid": fields.String(missing=None),
 
-    "link": Arg(str),
-    "downloader": Arg(str),
-
+    "link": fields.String(missing=None),
+    "downloader": fields.String(missing=None),
 }
 
-from webargs import core
+internalapi_search_args = {
+    "query": fields.String(missing=None),
+    "category": fields.String(missing=None),
+    "title": fields.String(missing=None),
 
-parser = core.Parser()
+    "minsize": fields.Integer(missing=None),
+    "maxsize": fields.Integer(missing=None),
+    "minage": fields.Integer(missing=None),
+    "maxage": fields.Integer(missing=None)
+}
+
+internalapi_tvsearch_args = {
+    "query": fields.String(missing=None),
+    "category": fields.String(missing=None),
+    "title": fields.String(missing=None),
+    "tvdbid": fields.String(missing=None),
+    "rid": fields.String(missing=None),
+    "season": fields.String(missing=None),
+    "episode": fields.String(missing=None),
+
+    "minsize": fields.Integer(missing=None),
+    "maxsize": fields.Integer(missing=None),
+    "minage": fields.Integer(missing=None),
+    "maxage": fields.Integer(missing=None)
+}
+
+internalapi_moviesearch_args = {
+    "query": fields.String(missing=None),
+    "category": fields.String(missing=None),
+    "title": fields.String(missing=None),
+    "imdbid": fields.String(missing=None),
+
+    "minsize": fields.Integer(missing=None),
+    "maxsize": fields.Integer(missing=None),
+    "minage": fields.Integer(missing=None),
+    "maxage": fields.Integer(missing=None)
+}
+
+internalapi__getnzb_args = {
+    "input": fields.String(missing=None),
+    "guid": fields.String(missing=None),
+    "provider": fields.String(missing=None),
+    "searchid": fields.String(missing=None)
+}
+
+internalapi__addnzb_args = {
+    "title": fields.String(missing=None),
+    "input": fields.String(missing=None),
+    "guid": fields.String(missing=None),
+    "provider": fields.String(missing=None),
+    "searchid": fields.String(missing=None)
+}
+
+internalapi__getnfo_args = {
+    "guid": fields.String(missing=None),
+    "provider": fields.String(missing=None),
+}
+
+internalapi__autocomplete_args = {
+    "input": fields.String(missing=None),
+    "type": fields.String(missing=None),
+}
+
+
 
 
 class CustomError(Exception):
@@ -132,7 +191,6 @@ def api(args):
     # Map newznab api parameters to internal
     if args["q"] is not None:
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
-    # todo: category mapping, completely forgot that
     if config.get(mainSettings.apikey, None) is not None and ("apikey" not in args or args["apikey"] != config.get(mainSettings.apikey)):
         raise Unauthorized("API key not provided or invalid")
     elif args["t"] == "search":
@@ -145,51 +203,100 @@ def api(args):
     results = process_for_external_api(results)
     return render_search_results_for_api(results)
 
+def process_and_jsonify_for_internalapi(results):
+    if results is not None:
+        results = process_for_internal_api(results)
+        return jsonify(results)  # Flask cannot return lists
+    else:
+        return "No results", 500
 
-@app.route('/internalapi')
+@app.route('/internalapi/search')
 @requires_auth
-@use_args(internalapi_args, locations=['querystring'])
+@use_args(internalapi_search_args, locations=['querystring'])
 @cache.memoize()
-def internal_api(args):
-    results = None
+def internalapi_search(args):
+    results = search.search(True, args)
+    return process_and_jsonify_for_internalapi(results)
 
-    if args["t"] in ("search", "tvsearch", "moviesearch"):
-        if args["t"] == "search":
-            results = search.search(True, args)
-        if args["t"] == "tvsearch":
-            results = search.search_show(True, args)
-        if args["t"] == "moviesearch":
-            results = search.search_movie(True, args)
 
-        if results is not None:
-            results = process_for_internal_api(results)
-            return jsonify(results)  # Flask cannot return lists
-        else:
-            return "No results", 500
-    if args["t"] == "autocompletemovie":
+
+
+@app.route('/internalapi/moviesearch')
+@requires_auth
+@use_args(internalapi_moviesearch_args, locations=['querystring'])
+@cache.memoize()
+def internalapi_moviesearch(args):
+    results = search.search_movie(True, args)
+    return process_and_jsonify_for_internalapi(results)
+
+
+@app.route('/internalapi/tvsearch')
+@requires_auth
+@use_args(internalapi_tvsearch_args, locations=['querystring'])
+@cache.memoize()
+def internalapi_tvsearch(args):
+    results = search.search_show(True, args)
+    return process_and_jsonify_for_internalapi(results)
+
+
+@app.route('/internalapi/autocomplete')
+@requires_auth
+@use_args(internalapi__autocomplete_args, locations=['querystring'])
+@cache.memoize()
+def internalapi_autocomplete(args):
+    if args["type"] == "movie":
         results = infos.find_movie_ids(args["input"])
         return jsonify({"results": results})
-    if args["t"] == "autocompleteseries":
+    elif args["type"] == "tv":
         results = infos.find_series_ids(args["input"])
         return jsonify({"results": results})
-    if args["t"] == "categories":
-        return jsonify(search.categories)
-    if args["t"] == "getnfo":
-        nfo = get_nfo(args["provider"], args["guid"])
-        return jsonify(nfo)
-    if args["t"] == "getnzb":  # Returns an NZB. This will probably be only called (internally) if the user wants to download an NZB instead of adding it to the downloader
-        if downloaderSettings.nzbaccesstype.isSetting(NzbAccessTypeSelection.redirect):  # I'd like to have this in api but don't want to have to use redirect() there...
-            link = get_nzb_link(args["provider"], args["guid"], args["title"], args["searchid"])
-            if link is not None:
-                return redirect(link)
-            else:
-                return "Unable to build link to NZB", 404
-        elif downloaderSettings.nzbaccesstype.isSetting(NzbAccessTypeSelection.serve):
-            return get_nzb_response(args["provider"], args["guid"], args["title"], args["searchid"])
+    else:
+        return "No results", 500
+
+
+@app.route('/internalapi/getnfo')
+@requires_auth
+@use_args(internalapi__getnfo_args, locations=['querystring'])
+@cache.memoize()
+def internalapi_getnfo(args):
+    nfo = get_nfo(args["provider"], args["guid"])
+    return jsonify(nfo)
+
+
+@app.route('/internalapi/getnzb')
+@requires_auth
+@use_args(internalapi__getnzb_args, locations=['querystring'])
+@cache.memoize()
+def internalapi_getnzb(args):
+    if downloaderSettings.nzbaccesstype.isSetting(NzbAccessTypeSelection.redirect):  # I'd like to have this in api but don't want to have to use redirect() there...
+        link = get_nzb_link(args["provider"], args["guid"], args["title"], args["searchid"])
+        if link is not None:
+            return redirect(link)
         else:
-            logger.error("Invalid value of %s" % downloaderSettings.nzbaccesstype)
-            return "downloader.add_type has wrong value", 500  # "direct" would never end up here, so it must be a wrong value
-    if args["t"] == "addnzb":
+            return "Unable to build link to NZB", 404
+    elif downloaderSettings.nzbaccesstype.isSetting(NzbAccessTypeSelection.serve):
+        return get_nzb_response(args["provider"], args["guid"], args["title"], args["searchid"])
+    else:
+        logger.error("Invalid value of %s" % downloaderSettings.nzbaccesstype)
+        return "downloader.add_type has wrong value", 500  # "direct" would never end up here, so it must be a wrong value
+
+
+@app.route('/internalapi/addnzb')
+@requires_auth
+@use_args(internalapi__addnzb_args, locations=['querystring'])
+@cache.memoize()
+def internalapi_addnzb(args):
+    if downloaderSettings.nzbaccesstype.isSetting(NzbAccessTypeSelection.redirect):  # I'd like to have this in api but don't want to have to use redirect() there...
+        link = get_nzb_link(args["provider"], args["guid"], args["title"], args["searchid"])
+        if link is not None:
+            return redirect(link)
+        else:
+            return "Unable to build link to NZB", 404
+    elif downloaderSettings.nzbaccesstype.isSetting(NzbAccessTypeSelection.serve):
+        return get_nzb_response(args["provider"], args["guid"], args["title"], args["searchid"])
+    else:
+        logger.error("Invalid value of %s" % downloaderSettings.nzbaccesstype)
+        return "downloader.add_type has wrong value", 500  # "direct" would never end up here, so it must be a wrong value
         # todo read config
         downloader = Nzbget()
         if downloaderSettings.nzbAddingType.isSetting(NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
@@ -209,10 +316,81 @@ def internal_api(args):
         else:
             logger.error("Invalid value of %s" % downloaderSettings.nzbAddingType)
             return "downloader.add_type has wrong value", 500  # "direct" would never end up here, so it must be a wrong value
-    if args["t"] == "getsettings":
-        return jsonify(config.get_settings_dict())
 
-    return "hello internal api", 500
+
+@app.route('/internalapi/getsettings')
+@requires_auth
+def internalapi_getsettings():
+    return jsonify(config.get_settings_dict())
+
+
+# @app.route('/internalapi/search')
+# @requires_auth
+# @use_args(internalapi_args, locations=['querystring'])
+# @cache.memoize()
+# def internal_api(args):
+#     results = None
+# 
+#     if args["t"] in ("search", "tvsearch", "moviesearch"):
+#         if args["t"] == "search":
+#             results = search.search(True, args)
+#         if args["t"] == "tvsearch":
+#             results = search.search_show(True, args)
+#         if args["t"] == "moviesearch":
+#             results = search.search_movie(True, args)
+# 
+#         if results is not None:
+#             results = process_for_internal_api(results)
+#             return jsonify(results)  # Flask cannot return lists
+#         else:
+#             return "No results", 500
+#     if args["t"] == "autocompletemovie":
+#         results = infos.find_movie_ids(args["input"])
+#         return jsonify({"results": results})
+#     if args["t"] == "autocompleteseries":
+#         results = infos.find_series_ids(args["input"])
+#         return jsonify({"results": results})
+#     if args["t"] == "categories":
+#         return jsonify(search.categories)
+#     if args["t"] == "getnfo":
+#         nfo = get_nfo(args["provider"], args["guid"])
+#         return jsonify(nfo)
+#     if args["t"] == "getnzb":  # Returns an NZB. This will probably be only called (internally) if the user wants to download an NZB instead of adding it to the downloader
+#         if downloaderSettings.nzbaccesstype.isSetting(NzbAccessTypeSelection.redirect):  # I'd like to have this in api but don't want to have to use redirect() there...
+#             link = get_nzb_link(args["provider"], args["guid"], args["title"], args["searchid"])
+#             if link is not None:
+#                 return redirect(link)
+#             else:
+#                 return "Unable to build link to NZB", 404
+#         elif downloaderSettings.nzbaccesstype.isSetting(NzbAccessTypeSelection.serve):
+#             return get_nzb_response(args["provider"], args["guid"], args["title"], args["searchid"])
+#         else:
+#             logger.error("Invalid value of %s" % downloaderSettings.nzbaccesstype)
+#             return "downloader.add_type has wrong value", 500  # "direct" would never end up here, so it must be a wrong value
+#     if args["t"] == "addnzb":
+#         # todo read config
+#         downloader = Nzbget()
+#         if downloaderSettings.nzbAddingType.isSetting(NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
+#             link = get_nzb_link(args["provider"], args["guid"], args["title"], args["searchid"])
+#             added = downloader.add_link(link, args["title"], args["category"])
+#             if added:
+#                 return "Success"
+#             else:
+#                 return "Error", 500
+#         elif downloaderSettings.nzbAddingType.isSetting(NzbAddingTypeSelection.nzb):  # We download an NZB send it to the downloader
+#             nzbdownloadresult = download_nzb_and_log(args["provider"], args["guid"], args["title"], args["searchid"])
+#             added = downloader.add_nzb(nzbdownloadresult.content, args["title"], args["category"])
+#             if added:
+#                 return "Success"
+#             else:
+#                 return "Error", 500
+#         else:
+#             logger.error("Invalid value of %s" % downloaderSettings.nzbAddingType)
+#             return "downloader.add_type has wrong value", 500  # "direct" would never end up here, so it must be a wrong value
+#     if args["t"] == "getsettings":
+#         return jsonify(config.get_settings_dict())
+# 
+#     return "hello internal api", 500
 
 
 def run(host, port):

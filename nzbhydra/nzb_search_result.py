@@ -12,7 +12,7 @@ class NzbSearchResult:
         self.category = category
         self.description = None
         self.comments = None
-        self.attributes = attributes
+        self.attributes = attributes #Attributes like newznab:attribute. Only needed for external API
         self.search_types = [] #"general", "tv", "movie"
         self.supports_queries = True #Providers might only provide a feed of the latest releases, e.g. womble
         self.search_ids = [] #"tvdbid", "rid", "imdbid"

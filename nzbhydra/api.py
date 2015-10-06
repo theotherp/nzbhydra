@@ -152,7 +152,7 @@ def process_for_external_api(results):
 
 
 def process_for_internal_api(search_result):
-    # results: list of dicts, <provider>:dict "providersearchdbentry":<ProviderSearch>,"results":[<NzbSearchResult>]
+    
     nzbsearchresults = []
     providersearchdbentries = []
     for results_and_dbentry in search_result["results"].values():

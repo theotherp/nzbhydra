@@ -119,9 +119,11 @@ class MultiSelectSetting(Setting):
     def get_setting_type(self):
         return SettingsType.Multi
 
+    
+    
     @property
-    def names(self):
-        return [x.name for x in self.selections]
+    def values(self):
+        return [x.name for x in self.get()]
 
 
 all_known_settings = {}

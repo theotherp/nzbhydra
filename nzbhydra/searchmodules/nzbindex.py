@@ -113,6 +113,8 @@ class NzbIndex(SearchModule):
             else:
                 logger.debug("Did not find link in row")
                 
+            entry.category = "N/A"
+                
             
             sizetd = tds[2]
             p = re.compile(r"(?P<size>[0-9]+(\.[0-9]+)?).(?P<unit>(GB|MB|KB))")

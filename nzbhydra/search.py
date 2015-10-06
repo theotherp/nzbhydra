@@ -56,7 +56,7 @@ def pick_providers(query_supplied=True, identifier_key=None, category=None, inte
             logger.debug("Did not pick %s because no query was supplied but the provider needs queries" % p)
             continue
         allow_query_generation = (config.cfg.get("searching.allow_query_generation") == "both") or (config.cfg.get("searching.allow_query_generation") == "internal" and internal) or (config.cfg.get("searching.allow_query_generation") == "external" and not internal)
-        if not (identifier_key is None or identifier_key in p.search_ids or (allow_query_generation and p.generate_queries)):
+        if not (identifier_key is None or identifier_key in p.settings.search_ids.values or (allow_query_generation and p.generate_queries)):
             logger.debug("Did not pick %s because search will be done by an identifier and the provider or system wide settings don't allow query generation" % p)
             continue
 
@@ -79,9 +79,7 @@ def search(internal, args):
         providersearchentry.search = dbsearch
         providersearchentry.save()
     
-    search_result = {"results": results_by_provider, "dbsearchid": dbsearch.id}
-    
-    return search_result
+    return {"results": results_by_provider, "dbsearchid": dbsearch.id}
 
 
 def search_show(internal, args):
@@ -94,10 +92,11 @@ def search_show(internal, args):
 
     results_by_provider = start_search_futures(providers_to_call, "search_show", args)
     for i in results_by_provider.values():
-        providersearchentry = i["providersearchdbentry"]
+        providersearchentry = i.dbentry
         providersearchentry.search = dbsearch
         providersearchentry.save()
-    return results_by_provider
+    
+    return {"results": results_by_provider, "dbsearchid": dbsearch.id}
     
 
 def search_movie(internal, args):
@@ -106,12 +105,12 @@ def search_movie(internal, args):
     dbsearch.save()
     providers_to_call = pick_providers(query_supplied=True if args["query"] is not None else False, identifier_key="imdbid" if args["imdbid"] is not None else None, category=args["category"], internal=internal)
 
-    provider_to_searchresults = start_search_futures(providers_to_call, "search_movie", args)
-    for search_result in provider_to_searchresults.values():
-        providersearchentry = search_result["providersearchdbentry"]
+    results_by_provider = start_search_futures(providers_to_call, "search_movie", args)
+    for i in results_by_provider.values():
+        providersearchentry = i.dbentry
         providersearchentry.search = dbsearch
         providersearchentry.save()
-    return provider_to_searchresults
+    return {"results": results_by_provider, "dbsearchid": dbsearch.id}
 
 
 def execute(provider, search_function, args):

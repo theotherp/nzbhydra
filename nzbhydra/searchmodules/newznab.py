@@ -18,6 +18,8 @@ from nzbhydra.search_module import SearchModule, EntriesAndQueries
 logger = logging.getLogger('root')
 
 categories_to_newznab = {
+    #Used to map sabnzbd categories to our categories. newznab results always return a general category and optionally a more specific one, for example 2000,2030. In that case we know it's an SD movie. 
+    # If it would return 2000,2010 (=foreign) we could still map it to ourt general movies category 
     'All': [],
     'Movies': [2000],
     'Movies HD': [2040, 2050, 2060],
@@ -188,6 +190,7 @@ class NewzNab(SearchModule):
 
     def check_auth(self, body: str):
         # TODO: unfortunately in case of an auth problem newznab doesn't return json even if requested. So this would be easier/better if we used XML responses instead of json
+        #See http://newznab.readthedocs.org/en/latest/misc/api/ for full list
         if '<error code="100"' in body:
             raise ProviderAuthException("The API key seems to be incorrect.", self)
         if '<error code="101"' in body:

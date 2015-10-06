@@ -42,7 +42,7 @@ class SearchModule(object):
 
     @property
     def search_ids(self):
-        return self.settings.search_ids.get()
+        return self.settings.search_ids.values
 
     @property
     def generate_queries(self):
@@ -168,7 +168,7 @@ class SearchModule(object):
         return requests.get(url, timeout=timeout, verify=False, cookies=cookies)
 
     def get_url_with_papi_access(self, url, type, cookies=None, timeout=None):
-        papiaccess = ProviderApiAccess(provider=self.provider, type=type, url=url)
+        papiaccess = ProviderApiAccess(provider=self.provider, type=type, url=url, time=arrow.utcnow().datetime)
 
         try:
             response = self.get(url, cookies=cookies, timeout=timeout)

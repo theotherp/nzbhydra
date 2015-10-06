@@ -245,7 +245,7 @@ nzbhydraapp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, nf
 
 nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '$location', '$modal', '$sce', function ($scope, $http, $routeParams, $location, $modal, $sce) {
 
-    $scope.category = (typeof $routeParams.category === "undefined") ? "All" : $routeParams.category;
+    $scope.category = (typeof $routeParams.category === "undefined" || $routeParams.category == "") ? "All" : $routeParams.category;
 
     $scope.searchTerm = (typeof $routeParams.query === "undefined") ? "" : $routeParams.query;
 
@@ -272,10 +272,11 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
     if ($routeParams.mode != "landing") {
 
         //Search start. TODO: Move to service
-
-        var uri = new URI("/internalapi");
+        console.log("Category: " + $scope.category);
+        var uri;
         if ($scope.category.indexOf("Movies") > -1) {
-            uri.addQuery("t", "moviesearch");
+            console.log("Search for movies");
+            uri = new URI("/internalapi/moviesearch");
             if ($scope.imdbid != "undefined") {
                 console.log("moviesearch per imdbid");
                 uri.addQuery("imdbid", $scope.imdbid);
@@ -286,7 +287,8 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
             }
 
         } else if ($scope.category.indexOf("TV") > -1) {
-            uri.addQuery("t", "tvsearch");
+            console.log("Search for shows");
+            uri = new URI("/internalapi/tvsearch");
             if ($scope.tvdbid) {
                 uri.addQuery("tvdbid", $scope.tvdbid);
                 uri.addQuery("title", $scope.title);
@@ -299,7 +301,9 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
                 uri.addQuery("episode", $scope.episode);
             }
         } else {
-            uri.addQuery("t", "search").addQuery("query", $scope.searchTerm).addQuery("category", $scope.category);
+            console.log("Search for all");
+            uri = new URI("/internalapi/search");
+            uri.addQuery("query", $scope.searchTerm).addQuery("category", $scope.category);
         }
 
         if ($scope.minsize != "") {
@@ -392,7 +396,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
         }
 
         if ($scope.category.indexOf("Movies") > -1) {
-            return $http.get('internalapi?t=autocompletemovie', {
+            return $http.get('/internalapi/autocomplete?type=movie', {
                 params: {
                     input: val
                 }
@@ -402,7 +406,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
             });
         } else if ($scope.category.indexOf("TV") > -1) {
 
-            return $http.get('internalapi?t=autocompleteseries', {
+            return $http.get('/internalapi/autocomplete?type=tv', {
                 params: {
                     input: val
                 }
@@ -452,8 +456,9 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
             uri.addQuery("maxage", $scope.maxage);
         }
 
-        $location.url(uri)
-
+        $location.url(uri);
+        $scope.imdbid = "";
+        $scope.tvdbid = "";
     };
 
 
@@ -501,8 +506,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
 
 
     $scope.showNfo = function (resultItem) {
-        var uri = new URI("/internalapi");
-        uri.addQuery("t", "getnfo");
+        var uri = new URI("/internalapi/getnfo");
         uri.addQuery("provider", resultItem.provider);
         uri.addQuery("guid", resultItem.guid);
         return $http.get(uri).then(function (response) {
@@ -519,8 +523,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
     $scope.nzbgetEnabled = true;
 
     $scope.addNzb = function (resultItem) {
-        var uri = new URI("/internalapi");
-        uri.addQuery("t", "addnzb");
+        var uri = new URI("/internalapi/addnzb");
         uri.addQuery("title", resultItem.title);
         uri.addQuery("guid", resultItem.guid);
         uri.addQuery("provider", resultItem.provider);
@@ -562,8 +565,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
 
 nzbhydraapp.filter('nzblink', function () {
     return function (resultItem) {
-        var uri = new URI("/internalapi");
-        uri.addQuery("t", "getnzb");
+        var uri = new URI("/internalapi/getnzb");
         uri.addQuery("guid", resultItem.guid);
         uri.addQuery("title", resultItem.title);
         uri.addQuery("provider", resultItem.provider);

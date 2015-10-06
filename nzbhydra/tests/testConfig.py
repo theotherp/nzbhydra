@@ -64,11 +64,10 @@ def testThatWritingSettingsWorks():
 def testThatMultiSelectionSettingsWork():
     nsettings = config.get_newznab_setting_by_id(1)
     config.set(nsettings.search_ids, [SearchIdSelection.imdbid])
-    assert config.get(nsettings.search_ids) == [SearchIdSelection.imdbid]
-    assert SearchIdSelection["imdbid"] == SearchIdSelection.imdbid
-    assert "imdbid" == SearchIdSelection["imdbid"].value.name
+    assert nsettings.search_ids.get() == [SearchIdSelection.imdbid]
+    assert len(nsettings.search_ids.get()) == 1
+    assert nsettings.search_ids.values[0] == "imdbid"
     
-    assert "imdbid" in nsettings.search_ids.names
     
     config.cfg.sync()
 
