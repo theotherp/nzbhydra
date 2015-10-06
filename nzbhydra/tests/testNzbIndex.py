@@ -1,22 +1,24 @@
 from freezegun import freeze_time
 
 from furl import furl
+import pytest
 import requests
+from nzbhydra import config
 
-from nzbhydra.database import Provider
 from nzbhydra.searchmodules.nzbindex import NzbIndex
 from nzbhydra.tests.db_prepare import set_and_drop
 from nzbhydra.tests.providerTest import ProviderTestcase
 
 
 class MyTestCase(ProviderTestcase):
+    @pytest.fixture
     def setUp(self):
         set_and_drop()
-        self.nzbindex = Provider(module="nzbindex", name="NZBIndex", settings={"query_url": "http://127.0.0.1:5001/nzbindex", "base_url": "http://127.0.0.1:5001/nzbindex", "search_ids": []})
-        self.nzbindex.save()
+        config.load("testsettings.cfg")
+         
 
     def testUrlGeneration(self):
-        w = NzbIndex(self.nzbindex)
+        w = NzbIndex(config.providerNzbindexSettings)
         self.args.update({"query": "a showtitle", "season": 1, "episode": 2})
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
@@ -27,12 +29,13 @@ class MyTestCase(ProviderTestcase):
         urls = w.get_showsearch_urls(args=self.args)
         self.assertEqual(1, len(urls))
         self.assertEqual('a showtitle s01 | "season 1"', furl(urls[0]).args["q"])
+        
 
     @freeze_time("2015-10-03 20:15:00", tz_offset=+2)
     def testProcess_results(self):
-        w = NzbIndex(self.nzbindex)
+        w = NzbIndex(config.providerNzbindexSettings)
         with open("mock/nzbindex--q-avengers.html") as f:
-            entries = w.process_query_result(f.read(), "aquery")["entries"]
+            entries = w.process_query_result(f.read(), "aquery").entries
             self.assertEqual('114143855', entries[0].guid)
             self.assertEqual('Avengers.Assemble.S02E05.Beneath.the.Surface.WEB-DL.x264.AAC', entries[0].title)
             self.assertFalse(entries[0].has_nfo)
@@ -42,7 +45,7 @@ class MyTestCase(ProviderTestcase):
             self.assertEqual("2014-11-04T10:39:00+01:00", entries[0].pubdate_utc) # would be perfect, that is the exact pubdate 
             self.assertEqual(1415093940, entries[0].epoch)
             self.assertEqual(333, entries[0].age_days)
-    #         
+           
 
     def testCookies(self):
         url = "https://nzbindex.com/search/?q=avengers&age=&max=250&minage=&sort=agedesc&minsize=1&maxsize=&dq=&poster=&nfo=&hidecross=1&complete=1&hidespam=0&hidespam=1&more=1"
@@ -51,6 +54,6 @@ class MyTestCase(ProviderTestcase):
         assert "I agree" not in text
 
     def testGetNzbLink(self):
-        n = NzbIndex(self.nzbindex)
+        n = NzbIndex(config.providerNzbindexSettings)
         link = n.get_nzb_link("guid", "title")
         self.assertEqual("http://127.0.0.1:5001/nzbindex/download/guid/title.nzb", link)

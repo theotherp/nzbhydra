@@ -1,6 +1,7 @@
 from nzbhydra import config
 from nzbhydra.config import mainSettings, downloaderSettings, NzbAccessTypeSelection, SearchIdSelection, traverse_dict_and_set, traverse_dict_and_get, traverse_dict_and_add_to_dict, traverse_dict_and_add_to_list
 
+print("Loading config from testsettings.cfg")
 config.load("testsettings.cfg")
 
 
@@ -11,6 +12,9 @@ def testThatGetAndSetWork():
 
     config.set(mainSettings.host, "192.168.0.1")
     assert config.get(mainSettings.host) == "192.168.0.1"
+
+    assert str(mainSettings.host) == "host: 192.168.0.1"
+
     # set back for later tests
     config.set(mainSettings.host, "127.0.0.1")
 
@@ -61,6 +65,11 @@ def testThatMultiSelectionSettingsWork():
     nsettings = config.get_newznab_setting_by_id(1)
     config.set(nsettings.search_ids, [SearchIdSelection.imdbid])
     assert config.get(nsettings.search_ids) == [SearchIdSelection.imdbid]
+    assert SearchIdSelection["imdbid"] == SearchIdSelection.imdbid
+    assert "imdbid" == SearchIdSelection["imdbid"].value.name
+    
+    assert "imdbid" in nsettings.search_ids.names
+    
     config.cfg.sync()
 
 
@@ -74,7 +83,8 @@ def testGetNewznabSettingById():
 
 
 def testTraversal():
-    config.cfg.section("a").section("b").section("c")["ckey"] = "cvalue"
+    config.cfg.init("a.b.c.ckey", "", str)
+    config.cfg.section("a", create=True).section("b", create=True).section("c", create=True)["ckey"] = "cvalue"
     assert len(list(config.cfg.section("a").sections())) == 1
     assert len(list(config.cfg.section("a").section("b").sections())) == 1
 
@@ -118,3 +128,4 @@ def testTraversal():
     d = {}
     traverse_dict_and_add_to_list(d, ["a"], "added")
     assert len(d["a"]) == 1
+

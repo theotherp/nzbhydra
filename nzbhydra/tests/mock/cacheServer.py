@@ -26,13 +26,14 @@ def nzbindexapi(guid):
     return r.text, r.status_code
 
 
-@app.route('/nzbclub')
-def nzbclubrss():
+@app.route('/nzbclub/<path:path>')
+def nzbclubrss(path):
     return handle_request(request.args.items(), "https://www.nzbclub.com/nzbrss.aspx")
 
 
 @app.route('/womble')
-def womble():
+@app.route('/womble/<path:path>')
+def womble(path):
     return handle_request(request.args.items(), "https://www.newshost.co.za/rss/")
 
 
@@ -51,7 +52,7 @@ def binsearch(file):
 @cache.memoize()
 def get(url, cookies):
     print("Requesting URL " + url)
-    r = requests.get(url, verify=False, cookies=cookies)
+    r = requests.get(url, verify=False, cookies=cookies, timeout=5)
     if r.status_code != 200:
         return r.text, 500
     else:

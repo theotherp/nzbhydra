@@ -151,22 +151,23 @@
 
 <div class="row" ng-if="providersearches" style="margin-top: 50px">
 
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
+    <div class="col-md-2"></div>
+    <!-- TODO: Make box smaller if no error messages exist-->
+    <div class="col-md-8">
         <table class="table" style="margin-bottom: 0px">
             <thead>
             <tr>
-                <th class="text-left">
+                <th class="col-md-2 text-left">
                     Provider
                 </th>
-                <th class="text-left">
+                <th class="col-md-1 text-left">
                     Results
                 </th>
-                <th class="text-left">
+                <th class="col-md-3 text-left">
                     Avg. response time
                 </th>
-                <th class="text-left">
-                    Message
+                <th class="col-md-6 text-left">
+                    Status
                 </th>
 
             </tr>
@@ -177,7 +178,7 @@
             <!-- First result in the list, show regularly -->
             <tr>
                 <td class="text-left">
-                    <input type="checkbox" ng-model="showProviders[ps.provider]"
+                    <input ng-disabled="!ps.successful" ng-model="ps.successful" type="checkbox" ng-model="showProviders[ps.provider]"
                            tooltip="Uncheck to hide results from this provider"
                            tooltip-placement="top"
                            tooltip-trigger="mouseenter"
@@ -190,7 +191,12 @@
                     {{ ps.averageResponseTime }}ms
                 </td>
                 <td class="text-left">
-                    {{ ps.error }}
+                    <span class="glyphicon" ng-class="{'glyphicon-ok' : ps.successful, 'glyphicon-remove' : !ps.successful}" ></span>
+                    <span ng-repeat="apiaccess in ps.api_accesses">
+                        <span ng-if="$index == 0">{{ apiaccess.error }}</span>
+                        <div ng-if="$index > 0">{{ apiaccess.error }}</div>
+                        
+                    </span>
                 </td>
             </tr>
 

@@ -2,7 +2,7 @@ from enum import Enum
 
 import profig
 
-cfg = profig.Config(strict=False)
+cfg = profig.Config(strict=True)
 
 
 def a(l):
@@ -11,7 +11,7 @@ def a(l):
 
 def b(string):
     if isinstance(string, list):
-        return string #Haven't found out yet why this gets called with a list but it does, so we just return it 
+        return string  # Haven't found out yet why this gets called with a list but it does, so we just return it 
     return [SearchIdSelection[x] for x in string.split(",")] if string else []
 
 
@@ -67,6 +67,9 @@ class Setting(object):
     def set(self, value):
         cfg.section(self.category)[self.name] = value
 
+    def __str__(self):
+        return "%s: %s" % (self.name, self.get())
+
 
 class SettingSelection(object):
     """
@@ -95,7 +98,7 @@ class SelectSetting(Setting):
     def get_setting_type(self):
         return SettingsType.Select
 
-    def isSetting(self, compare: SettingSelection) -> bool:
+    def isSetting(self, compare: Enum) -> bool:
         return get(self) == compare.name
 
 
@@ -116,6 +119,10 @@ class MultiSelectSetting(Setting):
     def get_setting_type(self):
         return SettingsType.Multi
 
+    @property
+    def names(self):
+        return [x.name for x in self.selections]
+
 
 all_known_settings = {}
 
@@ -126,6 +133,7 @@ def load(filename):
     # Manually set the source to this settings file so that when syncing the settings are written back. If we don't do this it loads the settings but doesn't write them back. Or we would need to store the
     # settings filename and call write(filename)
     cfg.sources = [filename]
+    set(mainSettings.host, "127.0.0.1")
     cfg.sync()
 
 
@@ -255,7 +263,7 @@ def register_settings(cls):
             section = cfg
             for s in sectionnames:
                 section = section.section(s, create=True)
-            print("Initializing %s.%s with default %s and valuetype %s" % (setting.category, setting.name, setting.default, setting.valuetype))
+            #print("Initializing %s.%s with default %s and valuetype %s" % (setting.category, setting.name, setting.default, setting.valuetype))
             section.init(setting.name, setting.default, setting.valuetype, setting.comment)
 
             traverse_dict_and_add_to_dict(all_known_settings, sectionnames, setting.name, setting)
@@ -269,6 +277,11 @@ class SettingsCategory(object):
     def __init__(self):
         pass
 
+
+    
+class CacheTypeSelection(Enum):
+    file = SettingSelection(name="file", comment=None)
+    memory = SettingSelection(name="memory", comment=None)
 
 class MainSettings(SettingsCategory):
     """
@@ -291,6 +304,11 @@ class MainSettings(SettingsCategory):
         self.password = Setting(name="password", default="", valuetype=str, comment=None)
         self.apikey = Setting(name="apikey", default="", valuetype=str, comment="API key for external tools to authenticate (newznab API)")
         self.enable_auth = Setting(name="enableAuth", default=True, valuetype=bool, comment="Select if you want to enable autorization via username / password.")
+        self.cache_enabled = Setting(name="enableCache", default=True, valuetype=bool, comment="Select if you want to enable cache results.")
+        self.cache_type = SelectSetting(name="cacheType", default=CacheTypeSelection.memory, selections=CacheTypeSelection, valuetype=str, comment="Select the of cache you want to use.")
+        self.cache_timeout = Setting(name="cacheTimeout", default=30, valuetype=int, comment="Cache timeout in minutes.")
+        self.cache_threshold = Setting(name="cachethreshold", default=25, valuetype=int, comment="Maximum amount of cached items.")
+        self.cache_folder = Setting(name="cacheFolder", default="cache", valuetype=str, comment="Name of the folder where cache items should be stored. Only applies for file cache.")
         register_settings(self)
 
 
@@ -341,6 +359,7 @@ class NzbAddingTypeSelection(Enum):
     nzb = SettingSelection(name="nzb", comment=None)
 
 
+
 class SabnzbdSettings(SettingsCategory):
     def __init__(self):
         super().__init__()
@@ -348,9 +367,9 @@ class SabnzbdSettings(SettingsCategory):
         self.host = Setting(name="host", default="127.0.0.1", valuetype=str, comment=None)
         self.port = Setting(name="port", default=8086, valuetype=int, comment=None)
         self.ssl = Setting(name="ssl", default=False, valuetype=bool, comment=None)
-        self.apikey = Setting(name="apikey", default="", valuetype=str, comment=None)
-        self.username = Setting(name="username", default="", valuetype=str, comment=None)
-        self.password = Setting(name="password", default="", valuetype=str, comment=None)
+        self.apikey = Setting(name="apikey", default=None, valuetype=str, comment=None)
+        self.username = Setting(name="username", default=None, valuetype=str, comment=None)
+        self.password = Setting(name="password", default=None, valuetype=str, comment=None)
         register_settings(self)
 
 
@@ -386,18 +405,35 @@ class DownloaderSettings(SettingsCategory):
 downloaderSettings = DownloaderSettings()
 
 
+class SearchIdSelection(Enum):
+    rid = SettingSelection(name="rid", comment=None)
+    tvdbid = SettingSelection(name="tvdbid", comment=None)
+    imdbid = SettingSelection(name="imdbid", comment=None)
+
+
+class GenerateQueriesSelection(Enum):
+    internal = SettingSelection(name="internal", comment=None)
+    external = SettingSelection(name="external", comment=None)
+    both = SettingSelection(name="both", comment=None)
+    never = SettingSelection(name="never", comment=None)
+
+
 class ProviderSettings(SettingsCategory):
     def __init__(self):
         super().__init__()
-        self.enabled = Setting(name="enabled", default=True, valuetype=bool, comment=None)
-        self.dbid = Setting(name="dbid", default=0, valuetype=int, comment=None)  # TODO: hide in GUI
+        self.name = Setting(name="name", default=None, valuetype=str, comment="Name of the provider. Used when displayed. If changed all references, history and stats get lost!")
+        self.host = Setting(name="host", default=None, valuetype=str, comment="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
+        self.enabled = Setting(name="enabled", default=True, valuetype=bool, comment="")  
+        self.search_ids = MultiSelectSetting(name="search_ids", default=[], selections=SearchIdSelection, valuetype="SearchIdSelectionList", comment=None)
+        self.generate_queries = SelectSetting(name="generate_queries", default=GenerateQueriesSelection.internal, selections=GenerateQueriesSelection, valuetype=str, comment=None)
 
 
 class ProviderBinsearchSettings(ProviderSettings):
     def __init__(self):
-        super(ProviderBinsearchSettings, self).__init__()
-        self.dbid = Setting(name="dbid", default=1, valuetype=int, comment=None)  # TODO: hide in GUI
         self._path = "providers.binsearch"
+        super(ProviderBinsearchSettings, self).__init__()
+        self.host = Setting(name="host", default="https://binsearch.com", valuetype=str, comment="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
+        self.name = Setting(name="name", default="binsearch", valuetype=str, comment="Name of the provider. Used when displayed. If changed all references, history and stats get lost!")
         register_settings(self)
 
 
@@ -406,39 +442,34 @@ providerBinsearchSettings = ProviderBinsearchSettings()
 
 class ProviderNzbclubSettings(ProviderSettings):
     def __init__(self):
-        super(ProviderSettings, self).__init__()
         self._path = "providers.nzbclub"
-        self.dbid = Setting(name="dbid", default=2, valuetype=int, comment=None)  # TODO: hide in GUI
+        super(ProviderNzbclubSettings, self).__init__()
+        self.host = Setting(name="host", default="http://nzbclub.com", valuetype=str, comment="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
+        self.name = Setting(name="name", default="nzbclub", valuetype=str, comment="Name of the provider. Used when displayed. If changed all references, history and stats get lost!")
         register_settings(self)
-
-
-providerNzbclubSettings = ProviderNzbclubSettings
+providerNzbclubSettings = ProviderNzbclubSettings()
 
 
 class ProviderNzbindexSettings(ProviderSettings):
     def __init__(self):
-        super(ProviderSettings, self).__init__()
         self._path = "providers.nzbindex"
-        self.dbid = Setting(name="dbid", default=3, valuetype=int, comment=None)  # TODO: hide in GUI
+        super(ProviderNzbindexSettings, self).__init__()
+        self.host = Setting(name="host", default="https://nzbindex.com", valuetype=str, comment="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
+        self.name = Setting(name="name", default="nzbindex", valuetype=str, comment="Name of the provider. Used when displayed. If changed all references, history and stats get lost!")
         register_settings(self)
-
 
 providerNzbindexSettings = ProviderNzbindexSettings()
 
 
 class ProviderWombleSettings(ProviderSettings):
     def __init__(self):
-        super().__init__()
         self._path = "providers.womble"
-        self.dbid = Setting(name="dbid", default=4, valuetype=int, comment=None)  # TODO: hide in GUI
+        super(ProviderWombleSettings, self).__init__()
+        self.host = Setting(name="womble", default="https://newshost.co.za", valuetype=str, comment="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
+        self.name = Setting(name="name", default="womble", valuetype=str, comment="Name of the provider. Used when displayed. If changed all references, history and stats get lost!")
         register_settings(self)
-
-
-class SearchIdSelection(Enum):
-    rid = SettingSelection(name="rid", comment=None)
-    tvdbid = SettingSelection(name="tvdbid", comment=None)
-    imdbid = SettingSelection(name="imdbid", comment=None)
-
+        # todo make settings hideable in GUI and hide generate_queries for this (and others which don't match the particular provider)
+providerWombleSettings = ProviderWombleSettings()
 
 # I would like to have solved this more generically but got stuck. This way it works and I hope nobody uses / actually needs for than 6 of these.
 # As we only need the attributes to contain information on what setting to get we can create instances and pass them around and still don't need
@@ -447,85 +478,77 @@ class SearchIdSelection(Enum):
 class ProviderNewznabSettings(ProviderSettings):
     def __init__(self):
         super(ProviderNewznabSettings, self).__init__()
-        self.ssl = Setting(name="ssl", default=True, valuetype=bool, comment=None)
-        self.host = Setting(name="host", default=None, valuetype=str, comment=None)
         self.apikey = Setting(name="apikey", default=None, valuetype=str, comment=None)
         self.search_ids = MultiSelectSetting(name="search_ids", default=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid], selections=SearchIdSelection, valuetype="SearchIdSelectionList", comment=None)
+        self.enabled = Setting(name="enabled", default=False, valuetype=bool, comment="") #Disable by default because we have no meaningful initial data
 
 
 class ProviderNewznab1Settings(ProviderNewznabSettings):
     def __init__(self):
-        super().__init__()
         self._path = "providers.newznab.1"
-        self.dbid = Setting(name="dbid", default=5, valuetype=int, comment=None)  # TODO: hide in GUI
+        super().__init__()
         register_settings(self)
+providerNewznab1Settings = ProviderNewznab1Settings()
 
 
 class ProviderNewznab2Settings(ProviderNewznabSettings):
     def __init__(self):
-        super().__init__()
         self._path = "providers.newznab.2"
-        self.dbid = Setting(name="dbid", default=6, valuetype=int, comment=None)  # TODO: hide in GUI
+        super().__init__()
         register_settings(self)
-
+providerNewznab2Settings = ProviderNewznab2Settings()
 
 class ProviderNewznab3Settings(ProviderNewznabSettings):
     def __init__(self):
-        super().__init__()
         self._path = "providers.newznab.3"
-        self.dbid = Setting(name="dbid", default=7, valuetype=int, comment=None)  # TODO: hide in GUI
+        super().__init__()
         register_settings(self)
-
+providerNewznab3Settings = ProviderNewznab3Settings()
 
 class ProviderNewznab4Settings(ProviderNewznabSettings):
     def __init__(self):
-        super().__init__()
         self._path = "providers.newznab.4"
-        self.dbid = Setting(name="dbid", default=8, valuetype=int, comment=None)  # TODO: hide in GUI
+        super().__init__()
         register_settings(self)
-
+providerNewznab4Settings = ProviderNewznab4Settings()
 
 class ProviderNewznab5Settings(ProviderNewznabSettings):
     def __init__(self):
-        super().__init__()
         self._path = "providers.newznab.5"
-        self.dbid = Setting(name="dbid", default=9, valuetype=int, comment=None)  # TODO: hide in GUI
+        super().__init__()
         register_settings(self)
-
+providerNewznab5Settings = ProviderNewznab5Settings()
 
 class ProviderNewznab6Settings(ProviderNewznabSettings):
     def __init__(self):
-        super().__init__()
         self._path = "providers.newznab.6"
-        self.dbid = Setting(name="dbid", default=10, valuetype=int, comment=None)  # TODO: hide in GUI
+        super().__init__()
         register_settings(self)
-
+providerNewznab6Settings = ProviderNewznab6Settings()
 
 class ProviderNewznab7Settings(ProviderNewznabSettings):
     def __init__(self):
-        super().__init__()
         self._path = "providers.newznab.7"
-        self.dbid = Setting(name="dbid", default=11, valuetype=int, comment=None)  # TODO: hide in GUI
+        super().__init__()
         register_settings(self)
-
+providerNewznab7Settings = ProviderNewznab7Settings()
 
 class ProviderNewznab8Settings(ProviderNewznabSettings):
     def __init__(self):
-        super().__init__()
         self._path = "providers.newznab.8"
-        self.dbid = Setting(name="dbid", default=12, valuetype=int, comment=None)  # TODO: hide in GUI
+        super().__init__()
         register_settings(self)
-
+providerNewznab8Settings = ProviderNewznab8Settings()
 
 def get_newznab_setting_by_id(id):
     id = str(id)
     return {
-        "1": ProviderNewznab1Settings(),
-        "2": ProviderNewznab2Settings(),
-        "3": ProviderNewznab3Settings(),
-        "4": ProviderNewznab4Settings(),
-        "5": ProviderNewznab5Settings(),
-        "6": ProviderNewznab6Settings(),
-        "7": ProviderNewznab5Settings(),
-        "8": ProviderNewznab6Settings(),
+        "1": providerNewznab1Settings,
+        "2": providerNewznab2Settings,
+        "3": providerNewznab3Settings,
+        "4": providerNewznab4Settings,
+        "5": providerNewznab5Settings,
+        "6": providerNewznab6Settings,
+        "7": providerNewznab5Settings,
+        "8": providerNewznab6Settings,
     }[id]

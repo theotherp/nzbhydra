@@ -3,6 +3,8 @@ import re
 import arrow
 from furl import furl
 import xml.etree.ElementTree as ET
+from nzbhydra.config import GenerateQueriesSelection
+from nzbhydra.exceptions import ProviderResultParsingException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
 from nzbhydra.search_module import SearchModule, EntriesAndQueries
@@ -17,9 +19,8 @@ class Womble(SearchModule):
     def __init__(self, provider):
         super(Womble, self).__init__(provider)
         self.module = "womble"
-        self.name = "Womble's NZB Index"
         
-        self.getsettings["generate_queries"] = False #Doesn't matter because supports_queries is False
+        self.settings.generate_queries = GenerateQueriesSelection.never #Doesn't matter because supports_queries is False
         self.needs_queries = False
         self.category_search = True
         self.supports_queries = False  # Only as support for general tv search
@@ -57,8 +58,9 @@ class Womble(SearchModule):
         try:
             tree = ET.fromstring(xml)
         except Exception:
-            logger.exception("Error parsing XML")
-            return []
+            logger.exception("Error parsing XML: %s..." % xml[:500])
+            logger.debug(xml)
+            raise ProviderResultParsingException("Error parsing XML", self)
         for elem in tree.iter('item'):
             title = elem.find("title")
             url = elem.find("enclosure")

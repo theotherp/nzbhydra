@@ -6,6 +6,7 @@ import arrow
 
 from furl import furl
 import requests
+from nzbhydra.exceptions import ProviderResultParsingException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule, EntriesAndQueries
@@ -19,18 +20,18 @@ class NzbClub(SearchModule):
     def __init__(self, provider):
         super(NzbClub, self).__init__(provider)
         self.module = "nzbclub"
-        self.name = "NZBClub"
 
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = True
         self.category_search = False
-
-    @property
-    def max_results(self):
-        return self.getsettings.get("max_results", 250)
+        self.max_results = 250
+    
+    
 
     def build_base_url(self):
-        url = furl(self.query_url).add({"ig": "2", "rpp": self.max_results, "st": 5, "ns": 1, "sn": 1})  # I need to find out wtf these values are
+        f = furl(self.host)
+        f.path.add("nzbrss.aspx")
+        url = f.add({"ig": "2", "rpp": self.max_results, "st": 5, "ns": 1, "sn": 1})  # I need to find out wtf these values are
         return url
 
     def get_search_urls(self, args):
@@ -54,8 +55,9 @@ class NzbClub(SearchModule):
         try:
             tree = ET.fromstring(xml)
         except Exception:
-            logger.exception("Error parsing XML")
-            return []
+            logger.exception("Error parsing XML: %s..." % xml[:500])
+            logger.debug(xml)
+            raise ProviderResultParsingException("Error while parsing XML from NZBClub", self)
         for elem in tree.iter('item'):
             title = elem.find("title")
             url = elem.find("enclosure")

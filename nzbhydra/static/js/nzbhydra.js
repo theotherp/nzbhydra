@@ -119,7 +119,8 @@ nzbhydraapp.factory('RequestsErrorHandler', ['$q', 'growl', function ($q, growl)
                 if (rejection.data) {
                     message += "<br><br>" + rejection.data;
                 }
-                growl.error(message);
+                //growl.error(message);
+                alert(message);
             }
 
             return $q.reject(rejection);
@@ -525,9 +526,9 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
         uri.addQuery("provider", resultItem.provider);
         $scope.nzbgetclass[resultItem.guid] = "nzb-spinning";
         return $http.get(uri).success(function () {
-            $scope.nzbgetclass[resultItem.guid] = "nzbget-success";
+            $scope.nzbgetclass[resultItem.guid] = "nzb-success";
         }).error(function () {
-            $scope.nzbgetclass[resultItem.guid] = "nzbget-error";
+            $scope.nzbgetclass[resultItem.guid] = "nzb-error";
         })
             ;
     };
@@ -536,7 +537,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
         if ($scope.nzbgetclass[resultItem.guid]) {
             return $scope.nzbgetclass[resultItem.guid];
         } else {
-            return "nzbget";
+            return "nzb";
         }
     }
 

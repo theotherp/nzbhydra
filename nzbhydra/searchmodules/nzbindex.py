@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from furl import furl
 import xml.etree.ElementTree as ET
 import requests
-from nzbhydra.exceptions import ProviderIllegalSearchException
+from nzbhydra.exceptions import ProviderIllegalSearchException, ProviderResultParsingException, ProviderAccessException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
 from nzbhydra.search_module import SearchModule, EntriesAndQueries
@@ -20,20 +20,16 @@ class NzbIndex(SearchModule):
     def __init__(self, provider):
         super(NzbIndex, self).__init__(provider)
         self.module = "nzbindex"
-        self.name = "NZBIndex"
         
         self.supports_queries = True #We can only search using queries
         self.needs_queries = True
         self.category_search = False
+        self.max_results = 250
         
         
-    @property
-    def max_results(self):
-        return self.getsettings.get("max_results", 250)
-        
-
+    
     def build_base_url(self):
-        f = furl(self.query_url)
+        f = furl(self.host)
         f.path.add("search")
         f = f.add({"more": "1", "max": self.max_results, "hidecross": 1}) 
         return f
@@ -73,9 +69,12 @@ class NzbIndex(SearchModule):
         soup = BeautifulSoup(html, 'html.parser')
         main_table = soup.find(id="results").find('table')
 
-        if not main_table:
-            logger.error("Unable to find main table in NZBIndex page")
-            return {"entries": [], "queries": []}
+        
+
+        if not main_table or not  main_table.find("tbody"):
+            logger.error("Unable to find main table in NZBIndex page: %s..." % html[:500])
+            logger.debug(html)
+            raise ProviderResultParsingException("Unable to find main table in NZBIndex page", self)
 
         items = main_table.find("tbody").find_all('tr')
 
@@ -162,7 +161,7 @@ class NzbIndex(SearchModule):
     
         
     def get_nfo(self, guid):
-        f = furl(self.base_url)
+        f = furl(self.host)
         f.path.add("nfo")
         f.path.add(guid)
         r, papiaccess = self.get_url_with_papi_access(f.tostr(), "nfo", cookies={"agreed": "true"})
@@ -177,11 +176,15 @@ class NzbIndex(SearchModule):
     
     def get_nzb_link(self, guid, title):
         #https://nzbindex.com/download/126435066/ATG-Avengers-02-Lre-dUltron-2015-TF-720p.zip.nzb
-        f = furl(self.base_url)
+        f = furl(self.host)
         f.path.add("download")
         f.path.add("guid")
         f.path.add("title" + ".nzb")
         return f.tostr()
+    
+    def check_auth(self, body: str):
+        if "503 Service Temporarily Unavailable" in body or "The search service is temporarily unavailable" in body:
+            raise ProviderAccessException("The search service is temporarily unavailable.", self) #The server should return code 503 instead of 200...
 
 
 def get_instance(provider):

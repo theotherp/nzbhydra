@@ -1,16 +1,14 @@
-from typing import Dict, List
 import logging
-
-import arrow
 import collections
+
+from typing import Dict, List
+import arrow
 import requests
 from requests import RequestException
 
-from nzbhydra import config
-from nzbhydra.config import SearchingSettings, ProviderSettings, searchingSettings
+from nzbhydra.config import ProviderSettings, searchingSettings
 from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus, Provider
-from nzbhydra.exceptions import ProviderConnectionException, ProviderResultParsingException, ProviderAuthException, ProviderAccessException
-
+from nzbhydra.exceptions import ProviderResultParsingException, ProviderAuthException, ProviderAccessException
 
 ResultsAndProviderSearchDbEntry = collections.namedtuple("ResultsAndProviderSearchDbEntry", "results dbentry")
 EntriesAndQueries = collections.namedtuple("ResultsAndQueris", "entries queries")
@@ -24,33 +22,40 @@ class SearchModule(object):
 
     def __init__(self, settings: ProviderSettings):
         self.settings = settings
-        self.provider = Provider.get(Provider.id == settings.dbid.get())
-        self.name = self.provider.name
         self.module = "Abstract search module"
         self.supports_queries = True
         self.needs_queries = False
         self.category_search = True  # If true the provider supports searching in a given category (possibly without any query or id)
         
-
     @property
-    def getsettings(self):
-        return self.provider.settings
+    def provider(self):
+        return Provider.get(Provider.name == self.settings.name.get())
+    
+    @property 
+    def host(self):
+        return self.settings.host.get()
+    
+    @property
+    def name(self):
+        return self.settings.name.get()
+
 
     @property
     def search_ids(self):
-        return self.provider.settings.get("search_ids", [])
+        return self.settings.search_ids.get()
 
     @property
     def generate_queries(self):
-        return self.provider.settings.get("generate_queries", True)  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for providers which don't support id-based searches
+        return True #TODO pass when used check for internal vs external
+        #return self.provider.settings.get("generate_queries", True)  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for providers which don't support id-based searches
 
-    @property
-    def max_api_hits(self):
-        return self.provider.settings.get("max_api_hits")  # todo: when to check this? when picking a provider? Also this is checked by the provider and we check the returned result, so do we really need this?
-
-    @property
-    def api_hits_reset(self):
-        return self.provider.settings.get("api_hits_reset")
+    # @property
+    # def max_api_hits(self):
+    #     return self.provider.settings.get("max_api_hits")  # todo: when to check this? when picking a provider? Also this is checked by the provider and we check the returned result, so do we really need this?
+    # 
+    # @property
+    # def api_hits_reset(self):
+    #     return self.provider.settings.get("api_hits_reset")
 
     def search(self, args):
         urls = self.get_search_urls(args)
@@ -120,10 +125,10 @@ class SearchModule(object):
     def process_query_result(self, result: str, query: str) -> EntriesAndQueries:
         return []
 
-    def check_auth(self, body : str):
+    def check_auth(self, body: str):
         # check the response body to see if request was authenticated. If yes, do nothing, if no, raise exception 
         return []
-    
+
     disable_periods = [0, 15, 30, 60, 3 * 60, 6 * 60, 12 * 60, 24 * 60]
 
     def handle_provider_success(self):
@@ -157,14 +162,14 @@ class SearchModule(object):
             provider_status.disabled_until = arrow.utcnow().replace(minutes=self.disable_periods[provider_status.level])
 
         provider_status.save()
-            
+
     def get(self, url, timeout=None, cookies=None):
-        #overwrite for special handling, e.g. cookies
+        # overwrite for special handling, e.g. cookies
         return requests.get(url, timeout=timeout, verify=False, cookies=cookies)
 
     def get_url_with_papi_access(self, url, type, cookies=None, timeout=None):
         papiaccess = ProviderApiAccess(provider=self.provider, type=type, url=url)
-        
+
         try:
             response = self.get(url, cookies=cookies, timeout=timeout)
             response.raise_for_status()
@@ -180,16 +185,12 @@ class SearchModule(object):
             papiaccess.save()
         return response, papiaccess
 
-
     def get_nfo(self, guid):
         return None
-    
-    
+
     def get_nzb_link(self, guid, title):
         return None
-    
 
-    
     def execute_queries(self, queries) -> ResultsAndProviderSearchDbEntry:
         # todo call all queries, check if further should be called, return all results when done or timeout or whatever
         """
@@ -210,44 +211,46 @@ class SearchModule(object):
                 self.logger.debug("Requesting URL %s with timeout %d" % (query, searchingSettings.timeout.get()))
                 request, papiaccess = self.get_url_with_papi_access(query, "search")
                 papiaccess.provider_search = psearch
-                
+
                 executed_queries.add(query)
                 papiaccess.save()
-                
+
                 if request is not None:
-                    self.check_auth(request)
+                    self.check_auth(request.text)
                     self.logger.debug("Successfully loaded URL %s" % request.url)
-                    papiaccess.response_successful = True
                     try:
                         parsed_results = self.process_query_result(request.text, query)
                         results.extend(parsed_results.entries)  # Retrieve the processed results
                         queries.extend(parsed_results.queries)  # Add queries that were added as a result of the parsing, e.g. when the next result page should also be loaded
+                        papiaccess.response_successful = True
                         self.handle_provider_success()
                     except Exception as e:
-                        self.logger.exception("Error while processing search results from provider %s" % self, e)
+                        self.logger.exception("Error while processing search results from provider %s" % self)
                         raise ProviderResultParsingException("Error while parsing the results from provider", self)
             except ProviderAuthException as e:
                 self.logger.error("Unable to authorize with %s: %s" % (e.search_module, e.message))
                 papiaccess.error = "Authorization error :%s" % e.message
                 self.handle_provider_failure(reason="Authentication failed", disable_permanently=True)
+                papiaccess.response_successful = False
             except ProviderAccessException as e:
                 self.logger.error("Unable to access %s: %s" % (e.search_module, e.message))
-                papiaccess.error = "Access error :%s" % e.message
+                papiaccess.error = "Access error: %s" % e.message
                 self.handle_provider_failure(reason="Access failed")
+                papiaccess.response_successful = False
             except ProviderResultParsingException as e:
-                papiaccess.error = "Access error :%s" % e.message
+                papiaccess.error = "Access error: %s" % e.message
                 self.handle_provider_failure(reason="Parsing results failed")
+                papiaccess.response_successful = False
             except Exception as e:
                 self.logger.exception("An error error occurred while searching: %s", e)
                 papiaccess.error = "Unknown error :%s" % e
+                papiaccess.response_successful = False
             finally:
                 papiaccess.save()
                 psearch.results = len(results)
-                psearch.successful = True
+                psearch.successful = papiaccess.response_successful
                 psearch.save()
         return ResultsAndProviderSearchDbEntry(results=results, dbentry=psearch)
-
-      
 
 
 def get_instance(provider):

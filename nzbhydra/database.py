@@ -29,10 +29,7 @@ class DateTimeUTCField(DateTimeField):
 
 
 class Provider(Model):
-    name = CharField(unique=True)
-    module = CharField()
-    enabled = BooleanField(default=True)
-    settings = JSONField(default={})
+    name = CharField(unique=True) #The name of the provider. So if the user changes the name all references get lost (except we handle that if he does it in the GUI).
 
     class Meta:
         database = db

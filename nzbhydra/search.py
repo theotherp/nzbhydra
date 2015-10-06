@@ -4,7 +4,7 @@ import logging
 
 import arrow
 from requests_futures.sessions import FuturesSession
-from nzbhydra.config import SearchingSettings
+from nzbhydra.config import SearchingSettings, searchingSettings
 
 from nzbhydra.database import ProviderStatus, Search
 from nzbhydra import config
@@ -40,7 +40,7 @@ def pick_providers(query_supplied=True, identifier_key=None, category=None, inte
             continue
         try:
             status = p.provider.status.get()
-            if status.disabled_until > arrow.utcnow() and not config.get(SearchingSettings.ignoreTemporarilyDisabled, False):
+            if status.disabled_until > arrow.utcnow() and not searchingSettings.ignoreTemporarilyDisabled.get_with_default(False):
                 logger.info("Did not pick %s because it is disabled temporarily due to an error: %s" % (p, status.reason))
                 continue
         except ProviderStatus.DoesNotExist:

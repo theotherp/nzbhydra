@@ -4,6 +4,8 @@ import re
 import arrow
 from bs4 import BeautifulSoup
 from furl import furl
+from nzbhydra.config import ProviderBinsearchSettings
+from nzbhydra.exceptions import ProviderResultParsingException, ProviderAccessException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule, EntriesAndQueries
@@ -12,20 +14,19 @@ logger = logging.getLogger('root')
 
 
 class Binsearch(SearchModule):
-    def __init__(self, settings):
+    def __init__(self, settings: ProviderBinsearchSettings):
         super(Binsearch, self).__init__(settings)
         self.module = "binsearch"
-        self.name = "Binsearch"
-        self.host = "https://binsearch.info"
 
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = True
         self.category_search = False
+        self.max_results = 250
 
     def build_base_url(self):
         f = furl(self.host)
         f.path.add("index.php")
-        url = f.add({"max": self.provider.settings.get("max_results", 250),
+        url = f.add({"max": self.max_results,
                      "adv_col": "on",  # collections only 
                      "postdate": "date",  # show pubDate, not age
                      # "adv_nfo": "off", #if enabled only show results with nfo file #todo make configurable. setting it to off doesnt work, its still done
@@ -76,8 +77,9 @@ class Binsearch(SearchModule):
         main_table = soup.find('table', attrs={'id': 'r2'})
 
         if not main_table:
-            logger.error("Unable to find main table in binsearch page")
-            return {"entries": [], "queries": []}
+            logger.error("Unable to find main table in binsearch page: %s..." % html)
+            logger.debug(html)
+            raise ProviderResultParsingException("Unable to find main table in binsearch page", self)
 
         items = main_table.find_all('tr')
 
@@ -167,9 +169,13 @@ class Binsearch(SearchModule):
         return None
     
     def get_nzb_link(self, guid, title):
-        f = furl(self.base_url)
+        f = furl(self.host)
         f.add({"action": "nzb", guid: "1"})
         return f.tostr()
+    
+    def check_auth(self, body: str):
+        if "The search service is temporarily unavailable" in body:
+            raise ProviderAccessException("The search service is temporarily unavailable.", self)
 
 
     

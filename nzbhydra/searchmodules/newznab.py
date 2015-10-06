@@ -8,9 +8,10 @@ import xml.etree.ElementTree as ET
 
 import arrow
 from furl import furl
+from nzbhydra.config import ProviderNewznabSettings
 
 from nzbhydra.datestuff import now
-from nzbhydra.exceptions import ProviderAuthException, ProviderAccessException
+from nzbhydra.exceptions import ProviderAuthException, ProviderAccessException, ProviderResultParsingException
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule, EntriesAndQueries
 
@@ -54,12 +55,9 @@ def map_category(category):
 
 class NewzNab(SearchModule):
     # todo feature: read caps from server on first run and store them in the config/database
-    def __init__(self, provider):
-        """
-
-        :type provider: NewznabProvider
-        """
-        super(NewzNab, self).__init__(provider)
+    def __init__(self, settings: ProviderNewznabSettings):
+        super(NewzNab, self).__init__(settings)
+        self.settings = settings    #Already done by super.__init__ but this way PyCharm knows the correct type
         self.module = "newznab"
         self.category_search = True
         self.limit = 100
@@ -68,7 +66,9 @@ class NewzNab(SearchModule):
         return "Provider: %s" % self.name
 
     def build_base_url(self, action, category, o="json", extended=1):
-        url = furl(self.provider.settings.get("query_url")).add({"apikey": self.provider.settings.get("apikey"), "o": o, "extended": extended, "t": action, "limit": self.limit, "offset": 0})
+        f = furl(self.settings.host.get())
+        f.path.add("api")
+        url = f.add({"apikey": self.settings.apikey.get(), "o": o, "extended": extended, "t": action, "limit": self.limit, "offset": 0})
 
         categories = map_category(category)
         if len(categories) > 0:
@@ -124,11 +124,19 @@ class NewzNab(SearchModule):
         import json
         entries = []
         queries = []
-        json_result = json.loads(json_response)
+        
+        try:
+            json_result = json.loads(json_response)
+        except:
+            logger.exception("Error parsing newznab response: %s" % json_response[:500])
+            logger.debug(json_response)
+            raise ProviderResultParsingException("Unable to parse response", self)
+            
         total = int(json_result["channel"]["response"]["@attributes"]["total"])
         offset = int(json_result["channel"]["response"]["@attributes"]["offset"])
         if total == 0:
-            return {"entries": entries, "queries": []}
+            logger.info("Query at %s returned no results" % self)
+            return EntriesAndQueries(entries=entries, queries=[])
         result_items = json_result["channel"]["item"]
         if "title" in result_items:
             # Only one item, put it in a list so the for-loop works
@@ -212,7 +220,7 @@ class NewzNab(SearchModule):
     def get_nzb_link(self, guid, title):
         f = furl(self.base_url)
         f.path.add("api")
-        f.add({"t": "get", "apikey": self.getsettings["apikey"], "id": guid})
+        f.add({"t": "get", "apikey": self.settings.apikey.get(), "id": guid})
         return f.tostr()
 
 
