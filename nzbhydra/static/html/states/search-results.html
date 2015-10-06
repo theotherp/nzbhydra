@@ -1,0 +1,158 @@
+<div class="row" ng-if="providersearches" style="margin-top: 50px">
+
+    <div class="col-md-2"></div>
+    <!-- TODO: Make box smaller if no error messages exist-->
+    <div class="col-md-8">
+        <table class="table" style="margin-bottom: 0px">
+            <thead>
+            <tr>
+                <th class="col-md-2 text-left">
+                    Provider
+                </th>
+                <th class="col-md-1 text-left">
+                    Results
+                </th>
+                <th class="col-md-3 text-left">
+                    Avg. response time
+                </th>
+                <th class="col-md-6 text-left">
+                    Status
+                </th>
+
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr ng-repeat-start="ps in providersearches " ng-if="0"></tr>
+            <!-- First result in the list, show regularly -->
+            <tr>
+                <td class="text-left">
+                    <input ng-disabled="!ps.successful" type="checkbox" ng-model="showProviders[ps.provider]"
+                           tooltip="Uncheck to hide results from this provider"
+                           tooltip-placement="top"
+                           tooltip-trigger="mouseenter"
+                            />{{ ps.provider }}
+                </td>
+                <td class="text-left">
+                    {{ ps.results }}
+                </td>
+                <td class="text-left">
+                    {{ ps.averageResponseTime }}ms
+                </td>
+                <td class="text-left">
+                    <span class="glyphicon" ng-class="{'glyphicon-ok' : ps.successful, 'glyphicon-remove' : !ps.successful}" ></span>
+                    <span ng-repeat="apiaccess in ps.api_accesses">
+                        <span ng-if="$index == 0">{{ apiaccess.error }}</span>
+                        <div ng-if="$index > 0">{{ apiaccess.error }}</div>
+                        
+                    </span>
+                </td>
+            </tr>
+
+            <tr ng-repeat-end ng-if="0"></tr>
+            </tbody>
+        </table>
+    </div>
+    
+
+
+</div>
+
+<div class="row" ng-if="providersearches" style="margin-top: 30px">
+
+    <table class="table" style="margin-bottom: 0">
+        <thead>
+        <tr>
+            <th class="col-md-6 text-left cursor-default" ng-click="setSorting('title', false)" style="vertical-align: top">
+                Title <span ng-show="predicate=='title'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+            </th>
+            <th class="col-md-1 text-left cursor-default" ng-click="setSorting('provider', true)">
+                <div style="width: 100px;" style="vertical-align: top">
+                    Provider <span ng-show="predicate=='provider'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                </div>
+            </th>
+            <th class="col-md-1 text-left cursor-default" ng-click="setSorting('category', false)" style="vertical-align: top">
+                <div style="width: 80px;">
+                    Category <span ng-show="predicate=='category'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                </div>
+            </th>
+            <th class="col-md-1 text-left cursor-default" ng-click="setSorting('size', true)" style="vertical-align: top">
+                <div style="width: 50px;">
+                    Size <span ng-show="predicate=='size'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                </div>
+            </th>
+            <th class="col-md-1 text-left cursor-default" ng-click="setSorting('age_days', false)" style="vertical-align: top">
+                <div style="width: 50px;">
+                    Age <span ng-show="predicate=='age_days'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                </div>
+            </th>
+            <th class="col-md-2 text-left" style="vertical-align: top">
+                <div style="width: 100px;">
+                    Links
+                </div>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+
+
+        <!--<tr ng-repeat-start="resultwithduplicates in results | sortResults:predicate:reversed" ng-if="0"></tr>-->
+        <tr ng-repeat-start="resultwithduplicates in results" ng-if="0"></tr>
+        <!-- First result in the list, show regularly -->
+        <!--<tr ng-repeat="result in resultwithduplicates | firstShownResult:isShow">-->
+        <tr ng-repeat="result in resultwithduplicates">
+            <td class="col-md-6  text-left">
+                {{ result.title }}
+            </td>
+            <td class="col-md-1 text-left">
+                {{ result.provider }}
+            </td>
+            <td class="col-md-1 text-left">
+                {{ result.category }}
+            </td>
+            <td class="col-md-1 text-left">
+                {{ result.size | bytes }}
+            </td>
+            <td class="col-md-1 text-left">
+                {{ result.age_days }}d
+            </td>
+            <td class="col-md-2 text-left">
+                <a href="#" ng-if="result.has_nfo" ng-click="showNfo(result)">NFO</a>
+                <a target="_blank" href="{{ result.link }}">NZB</a>
+                <addable-nzb item="result"></addable-nzb>
+                Details
+            </td>
+        </tr>
+        <!-- Show all the duplicates of this entry-->
+
+        <tr ng-repeat="result in resultwithduplicates | shownDuplicates:isShow">
+            <td class="col-md-6 text-left td-embedded">
+            </td>
+            <td class="col-md-1 text-left td-embedded">
+                {{ result.provider }}
+            </td>
+            <td class="col-md-1 text-left td-embedded">
+                {{ result.category }}
+            </td>
+            <td class="col-md-1 text-left td-embedded">
+                {{ result.size | bytes }}
+            </td>
+            <td class="col-md-1 text-left td-embedded">
+                {{ result.age_days }}d
+            </td>
+            <td class="col-md-2 text-left td-embedded">
+                <a ng-if="result.has_nfo" ng-click="showNfo(result)">NFO</a>
+                <a target="_blank" href="{{ result.link }}">NZB</a> Details
+                <addable-nzb item="result"></addable-nzb>
+            </td>
+        </tr>
+
+
+        <tr ng-repeat-end ng-if="0"></tr>
+
+
+        </tbody>
+    </table>
+
+
+</div>

@@ -29,7 +29,7 @@ class CustomError(Exception):
 
 @parser.error_handler
 def handle_error(error):
-    logger.error("Web args error: " + error)
+    logger.error("Web args error: %s" % error)
     raise CustomError(error)
 
 @app.after_request
