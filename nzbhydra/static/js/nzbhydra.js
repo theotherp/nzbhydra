@@ -525,7 +525,7 @@ nzbhydraapp.controller('SearchController', ['$scope', '$http', '$routeParams', '
     $scope.addNzb = function (resultItem) {
         var uri = new URI("/internalapi/addnzb");
         uri.addQuery("title", resultItem.title);
-        uri.addQuery("guid", resultItem.guid);
+        uri.addQuery("providerguid", resultItem.providerguid);
         uri.addQuery("provider", resultItem.provider);
         $scope.nzbgetclass[resultItem.guid] = "nzb-spinning";
         return $http.get(uri).success(function () {

@@ -45,6 +45,10 @@ class MyTestCase(ProviderTestcase):
             self.assertEqual("2014-11-04T10:39:00+01:00", entries[0].pubdate_utc) # would be perfect, that is the exact pubdate 
             self.assertEqual(1415093940, entries[0].epoch)
             self.assertEqual(333, entries[0].age_days)
+            
+            self.assertEqual(0, entries[1].age_days)
+            self.assertEqual("2015-10-03T20:15:00+01:00", entries[1].pubdate_utc) # would be perfect, that is the exact pubdate 
+            self.assertEqual(1443899700, entries[1].epoch)
            
 
     def testCookies(self):

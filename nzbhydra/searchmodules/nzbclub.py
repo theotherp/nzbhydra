@@ -97,7 +97,7 @@ class NzbClub(SearchModule):
         return EntriesAndQueries(entries=entries, queries=[])
     
     def get_nfo(self, guid):
-        f = furl(self.base_url)
+        f = furl(self.settings.host.get())
         f.path.add("api/NFO")
         f.path.segments.append(guid)
         r, papiaccess = self.get_url_with_papi_access(f.tostr(), "nfo")
@@ -108,7 +108,7 @@ class NzbClub(SearchModule):
             return r.json()["Data"][0]["NFOContentData"]
         
     def get_nzb_link(self, guid, title):
-        f = furl(self.base_url)
+        f = furl(self.settings.host.get())
         f.path.add("nzb_get")
         f.path.add("guid")
         f.path.add("title" + ".nzb")

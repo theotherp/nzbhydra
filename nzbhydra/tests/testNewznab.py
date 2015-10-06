@@ -4,6 +4,7 @@ import re
 import unittest
 from freezegun import freeze_time
 import responses
+from nzbhydra import config
 from nzbhydra.database import Provider
 
 from nzbhydra.searchmodules.newznab import NewzNab
@@ -15,20 +16,26 @@ from nzbhydra.tests.providerTest import ProviderTestcase
 class MyTestCase(ProviderTestcase):
 
     def setUp(self):    
-        set_and_drop()    
-        self.nzbsorg = Provider(module="newznab", name="NZBs.org", settings={"apikey": "apikeynzbsorg", "query_url": "http://127.0.0.1:5001/nzbsorg", "base_url": "http://127.0.0.1:5001/nzbsorg", "search_types": ["tv", "general", "movie"], "search_ids": ["imdbid", "tvdbid", "rid"]})
-        self.nzbsorg.save()
-        self.dognzb = Provider(module="newznab", name="DOGNzb", settings={"apikey": "apikeydognzb", "query_url": "http://127.0.0.1:5001/dognzb", "base_url": "http://127.0.0.1:5001/dognzb", "search_types": ["tv", "general"], "search_ids": ["tvdbid", "rid"]})
-        self.dognzb.save()
+        set_and_drop()
+        config.load("testsettings.cfg")
+        self.nzbsorgdb = Provider(name="NZBs.org")
+        self.nzbsorgdb.save()
+        self.dognzbdb = Provider(name="DOGNzb")
+        self.dognzbdb.save()
+        
+        config.providerNewznab1Settings.enabled = True
+        config.providerNewznab1Settings.host.set("http://127.0.0.1:5001/nzbsorg")
+        config.providerNewznab1Settings.apikey.set("apikeynzbsorg")
+        self.n1 = NewzNab(config.providerNewznab1Settings)
+        self.n2 = NewzNab(config.providerNewznab2Settings)
+        
     
     @freeze_time("2015-09-20 14:00:00", tz_offset=-4)
     def testParseJsonToNzbSearchResult(self):
         
-        n = NewzNab(self.nzbsorg)
-        
         #nzbsorg
         with open("mock/nzbsorg_q_avengers_3results.json") as f:
-            entries = n.process_query_result(f.read(), "aquery")["entries"]
+            entries = self.n1.process_query_result(f.read(), "aquery").entries
         self.assertEqual(3, len(entries))
         
         self.assertEqual(entries[0].title, "Avengers.Age.Of.Ultron.2015.FRENCH.720p.BluRay.x264-Goatlove")
@@ -48,10 +55,10 @@ class MyTestCase(ProviderTestcase):
         assert entries[2].guid == "41b305ac99507f70ed6a10e45177065c"
         
         
-        n = NewzNab(self.dognzb)
+        n = NewzNab(config.providerNewznab2Settings)
         #dognzb
         with open("mock/dognzb_q_avengers_3results.json") as f:
-            entries = n.process_query_result(f.read(), "aquery")["entries"]
+            entries = self.n2.process_query_result(f.read(), "aquery").entries
         pprint(entries)
         assert len(entries) == 3
         
@@ -70,9 +77,9 @@ class MyTestCase(ProviderTestcase):
     
     def testNewznabSearchQueries(self):
         
-        nzbsorg = NewzNab(self.nzbsorg)
+        
         self.args.update({"query": "aquery"})
-        queries = nzbsorg.get_search_urls(self.args)
+        queries = self.n1.get_search_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg" in query
@@ -82,38 +89,38 @@ class MyTestCase(ProviderTestcase):
         assert "o=json" in query
         
         self.args.update({"query": None})
-        queries = nzbsorg.get_showsearch_urls(self.args)
+        queries = self.n1.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
-        assert "http://127.0.0.1:5001/nzbsorg?" in query
+        assert "http://127.0.0.1:5001/nzbsorg" in query
         assert "apikey=apikeynzbsorg" in query
         assert "t=tvsearch" in query
         assert "o=json" in query
         
         self.args.update({"category": "All"})
-        queries = nzbsorg.get_showsearch_urls(self.args)
+        queries = self.n1.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
-        assert "http://127.0.0.1:5001/nzbsorg?" in query
+        assert "http://127.0.0.1:5001/nzbsorg" in query
         assert "apikey=apikeynzbsorg" in query
         assert "t=tvsearch" in query
         assert "o=json" in query
         
         self.args.update({"rid": "8511"})
-        queries = nzbsorg.get_showsearch_urls(self.args)
+        queries = self.n1.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
-        assert "http://127.0.0.1:5001/nzbsorg?" in query
+        assert "http://127.0.0.1:5001/nzbsorg" in query
         assert "apikey=apikeynzbsorg" in query
         assert "t=tvsearch" in query
         assert "rid=8511" in query
         assert "o=json" in query
         
         self.args.update({"rid": "8511", "season": "1"})
-        queries = nzbsorg.get_showsearch_urls(self.args)
+        queries = self.n1.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
-        assert "http://127.0.0.1:5001/nzbsorg?" in query
+        assert "http://127.0.0.1:5001/nzbsorg" in query
         assert "apikey=apikeynzbsorg" in query
         assert "t=tvsearch" in query
         assert "rid=8511" in query
@@ -121,10 +128,10 @@ class MyTestCase(ProviderTestcase):
         assert "season=1" in query
         
         self.args.update({"rid": "8511", "season": "1", "episode":"2"})
-        queries = nzbsorg.get_showsearch_urls(self.args)
+        queries = self.n1.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
-        assert "http://127.0.0.1:5001/nzbsorg?" in query
+        assert "http://127.0.0.1:5001/nzbsorg" in query
         assert "apikey=apikeynzbsorg" in query
         assert "t=tvsearch" in query
         assert "rid=8511" in query
@@ -133,20 +140,20 @@ class MyTestCase(ProviderTestcase):
         assert "ep=2" in query
         
         self.args.update({"imdbid": "12345678"})
-        queries = nzbsorg.get_moviesearch_urls(self.args)
+        queries = self.n1.get_moviesearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
-        assert "http://127.0.0.1:5001/nzbsorg?" in query
+        assert "http://127.0.0.1:5001/nzbsorg" in query
         assert "apikey=apikeynzbsorg" in query
         assert "t=movie" in query
         assert "imdbid=12345678" in query
         assert "o=json" in query
         
         self.args.update({"imdbid": "12345678", "category": "Movies"})
-        queries = nzbsorg.get_moviesearch_urls(self.args)
+        queries = self.n1.get_moviesearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
-        assert "http://127.0.0.1:5001/nzbsorg?" in query
+        assert "http://127.0.0.1:5001/nzbsorg" in query
         assert "apikey=apikeynzbsorg" in query
         assert "t=movie" in query
         assert "imdbid=12345678" in query
@@ -163,13 +170,12 @@ class MyTestCase(ProviderTestcase):
             responses.add(responses.GET, url_re,
                           body=xml, status=200,
                           content_type='application/x-html')
-            dog = NewzNab(self.dognzb)
-            nfo = dog.get_nfo("b4ba74ecb5f5962e98ad3c40c271dcc8")
+            nfo = self.n2.get_nfo("b4ba74ecb5f5962e98ad3c40c271dcc8")
             assert "Road Hard" in nfo
             
     @responses.activate
     def testOffsetStuff(self):
-        nzbsorg = NewzNab(self.nzbsorg)
+        
         
         mockitem_nzbs = []
         for i in range(100):
@@ -181,20 +187,26 @@ class MyTestCase(ProviderTestcase):
             mockitem_nzbs.append(mockbuilder.buildNewznabItem("myId", "myTitle", "myGuid", "http://nzbs.org/myId.nzb", None, None, 12345, "NZBs.org", [2000, 2040]))
         mockresponse_nzbs2 = mockbuilder.buildNewznabResponse("NZBs.org", mockitem_nzbs, offset=100, total=200)
 
-        r = nzbsorg.process_query_result(json.dumps(mockresponse_nzbs1), "http://127.0.0.1:5001/nzbsorg/q=whatever&offset=0&limit=0")
-        further_queries = r["queries"]
+        r = self.n1.process_query_result(json.dumps(mockresponse_nzbs1), "http://127.0.0.1:5001/nzbsorg/q=whatever&offset=0&limit=0")
+        further_queries = r.queries
         self.assertEqual(1, len(further_queries))
         assert "offset=100" in further_queries[0]
         
-        r = nzbsorg.process_query_result(json.dumps(mockresponse_nzbs2), "http://127.0.0.1:5001/nzbsorg/q=whatever&offset=0&limit=0")
-        further_queries = r["queries"]
+        r = self.n1.process_query_result(json.dumps(mockresponse_nzbs2), "http://127.0.0.1:5001/nzbsorg/q=whatever&offset=0&limit=0")
+        further_queries = r.queries
         self.assertEqual(0, len(further_queries))
         
     
     def testGetNzbLink(self):
-        nzbsorg = NewzNab(self.nzbsorg)
-        link = nzbsorg.get_nzb_link("guid", None)
+        link = self.n1.get_nzb_link("guid", None)
         assert "id=guid" in link
         assert "t=get" in link
-        assert "apikey=apikeynzbsorg" in link
         
+    def testMapCats(self):
+        from nzbhydra.searchmodules import newznab
+        assert newznab.map_category("Movies") == [2000]
+        assert newznab.map_category("2000") == [2000]
+        newznabcats = newznab.map_category("2030,2040")
+        assert len(newznabcats) == 2
+        assert 2030 in newznabcats
+        assert 2040 in newznabcats

@@ -4,7 +4,8 @@ from furl import furl
 import requests
 
 app = Flask(__name__)
-cache = Cache(app, config={'CACHE_TYPE': 'filesystem', 'CACHE_DIR': 'cache'})
+cache = Cache(app, config={'CACHE_TYPE': 'filesystem', 'CACHE_DIR': 'cache', 'DEFAULT_THRESHOLD': 500, 'DEFAULT_TIMEOUT': 60 * 60 * 24 * 7})
+#cache = Cache(app, config={'CACHE_TYPE': 'null', 'CACHE_DIR': 'cache', 'DEFAULT_THRESHOLD': 500, 'DEFAULT_TIMEOUT': 60 * 60 * 24 * 7})
 
 
 @app.route('/nzbsorg')

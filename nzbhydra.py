@@ -31,12 +31,14 @@ def run():
     parser = argparse.ArgumentParser(description='Demo')
     parser.add_argument('--config', action='store', help='Settings file to load', default="settings.cfg")
     parser.add_argument('--database', action='store', help='Database file to load', default="nzbhydra.db")
-    parser.add_argument('--host', action='store', help='Host to run on', default="127.0.0.1")
-    parser.add_argument('--port', action='store', help='Port to run on', default=5050, type=int)
+    parser.add_argument('--host', action='store', help='Host to run on')
+    parser.add_argument('--port', action='store', help='Port to run on', type=int)
     args = parser.parse_args()
-
+    
     settings_file = args.config
     database_file = args.database
+    
+
 
     print("Loading settings from %s" % settings_file)
     config.load(settings_file)
@@ -47,8 +49,8 @@ def run():
     database.db.connect()
     providers.read_providers_from_config()
 
-    host = config.mainSettings.host.get() if args.host is not None else args.host
-    port = config.mainSettings.port.get() if args.port is not None else args.port
+    host = config.mainSettings.host.get() if args.host is None else args.host
+    port = config.mainSettings.port.get() if args.port is None else args.port
     
     if config.mainSettings.debug.get():
         logger.info("Debug mode enabled")

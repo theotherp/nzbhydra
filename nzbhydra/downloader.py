@@ -119,8 +119,10 @@ class Sabnzbd(Downloader):
     def get_sab(self):
         f = furl()
         # if username is not None:
-        f.username = sabnzbdSettings.username.get()
-        f.password = sabnzbdSettings.password.get()
+        if sabnzbdSettings.username.get():
+            f.username = sabnzbdSettings.username.get()
+        if sabnzbdSettings.password.get():
+            f.password = sabnzbdSettings.password.get()
         if sabnzbdSettings.apikey.get():
             f.add({"apikey": sabnzbdSettings.apikey.get()})
         f.scheme = "https" if sabnzbdSettings.ssl.get() else "http"

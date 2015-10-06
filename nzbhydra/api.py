@@ -1,7 +1,9 @@
 from collections import namedtuple
 from itertools import groupby
+import json
 import logging
 from io import BytesIO
+import urllib
 
 from flask import request, send_file
 from furl import furl
@@ -104,6 +106,7 @@ class NzbSearchResultSchema(Schema):
     age_precise = fields.Boolean()
     provider = fields.String()
     guid = fields.String()
+    providerguid = fields.String()
     size = fields.Integer()
     category = fields.String()
     has_nfo = fields.Boolean()
@@ -134,20 +137,39 @@ def get_root_url():
 
 
 def transform_links(results, dbsearchid):
-    if config.isSettingSelection(downloaderSettings.nzbaccesstype, NzbAccessTypeSelection.serve):  # We don't change the link, the results lead directly to the NZB
+    if config.isSettingSelection(downloaderSettings.nzbaccesstype, NzbAccessTypeSelection.direct):  # We don't change the link, the results lead directly to the NZB
         return results
 
     for i in results:
         f = furl(get_root_url())
-        f.path.add("internalapi")
-        f.add({"t": "getnzb", "provider": i.provider, "guid": i.guid, "searchid": dbsearchid, "title": i.title})
+        f.path.add("internalapi/getnzb")
+        data_getnzb = {"provider": i.provider, "guid": i.guid, "searchid": dbsearchid, "title": i.title} #All the data we would like to have when an NZB is downloaded
+        f.add(data_getnzb)  #Here we insert it directly into the link as parameters
         i.link = f.url
-
+        i.providerguid = i.guid #Save the provider's original GUID so that we can send it later from the GUI to identify the result
+        i.guid = f.url #For now it's the same as the link to the NZB, later we might link to a details page that at the least redirects to the original provider's page
+        
+        #Add our pseudo-guid (not the one above, with the link, just an identifier) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
+        has_guid = False
+        for a in i.attributes:
+            if a["name"] == "guid":
+                a["value"] = urllib.parse.quote(json.dumps(data_getnzb)) 
+                has_guid = True
+                break
+        if not has_guid:
+            i.attributes.append({"name": "guid", "value": urllib.parse.quote(json.dumps(data_getnzb))}) #If it wasn't set before now it is (for results from newznab-indexers)
+            
+        
     return results
 
 
 def process_for_external_api(results):
-    results = transform_links(results, "todo")
+    searchresults = []
+    for r in results["results"].values(): #results is a dict with a list of providerapiaccess lists and results. those results are again a dictionary of provider to the provider's search results
+        searchresults.extend(r.results) #That is then a ResultsAndProviderSearchDbEntry
+    
+    results = transform_links(searchresults, results["dbsearchid"]) #todo dbsearchid
+    
     return results
 
 

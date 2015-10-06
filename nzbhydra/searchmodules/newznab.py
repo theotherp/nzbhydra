@@ -8,8 +8,8 @@ import xml.etree.ElementTree as ET
 
 import arrow
 from furl import furl
-from nzbhydra.config import ProviderNewznabSettings
 
+from nzbhydra.config import ProviderNewznabSettings
 from nzbhydra.datestuff import now
 from nzbhydra.exceptions import ProviderAuthException, ProviderAccessException, ProviderResultParsingException
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -18,7 +18,7 @@ from nzbhydra.search_module import SearchModule, EntriesAndQueries
 logger = logging.getLogger('root')
 
 categories_to_newznab = {
-    #Used to map sabnzbd categories to our categories. newznab results always return a general category and optionally a more specific one, for example 2000,2030. In that case we know it's an SD movie. 
+    # Used to map sabnzbd categories to our categories. newznab results always return a general category and optionally a more specific one, for example 2000,2030. In that case we know it's an SD movie. 
     # If it would return 2000,2010 (=foreign) we could still map it to ourt general movies category 
     'All': [],
     'Movies': [2000],
@@ -48,18 +48,34 @@ def get_age_from_pubdate(pubdate):
 
 
 def map_category(category):
-    # If we know this category we return a list of newznab categories
-    if category in categories_to_newznab.keys():
-        return categories_to_newznab[category]
-    # If not we return an empty list so that we search in all categories
-    return []
+    # This is somewhat hack, will need to fix this later (or never)
+    # We check if the category string looks like a typical newznab string (e.g. "2030,2040") and if yes just return it. If not we map it because it probably/hopefully came from us
+
+    if category is None:
+        return []
+    catparts = category.split(",")
+    try:
+        cats = []
+        for cat in catparts:
+            intcat = int(cat)
+            cats.append(intcat)
+        return cats
+    except ValueError:
+        # Apparently no newznab category string
+        # If we know this category we return a list of newznab categories
+        if category in categories_to_newznab.keys():
+            return categories_to_newznab[category]
+        else:
+            # If not we return an empty list so that we search in all categories
+            return []
+
 
 
 class NewzNab(SearchModule):
     # todo feature: read caps from server on first run and store them in the config/database
     def __init__(self, settings: ProviderNewznabSettings):
         super(NewzNab, self).__init__(settings)
-        self.settings = settings    #Already done by super.__init__ but this way PyCharm knows the correct type
+        self.settings = settings  # Already done by super.__init__ but this way PyCharm knows the correct type
         self.module = "newznab"
         self.category_search = True
         self.limit = 100
@@ -78,7 +94,7 @@ class NewzNab(SearchModule):
         return url
 
     def get_search_urls(self, args):
-        f = self.build_base_url("search", "All")
+        f = self.build_base_url("search", args["category"])
         if args["query"]:
             f = f.add({"q": args["query"]})
         if args["minsize"]:
@@ -126,14 +142,14 @@ class NewzNab(SearchModule):
         import json
         entries = []
         queries = []
-        
+
         try:
             json_result = json.loads(json_response)
         except:
             logger.exception("Error parsing newznab response: %s" % json_response[:500])
             logger.debug(json_response)
             raise ProviderResultParsingException("Unable to parse response", self)
-            
+
         total = int(json_result["channel"]["response"]["@attributes"]["total"])
         offset = int(json_result["channel"]["response"]["@attributes"]["offset"])
         if total == 0:
@@ -190,7 +206,7 @@ class NewzNab(SearchModule):
 
     def check_auth(self, body: str):
         # TODO: unfortunately in case of an auth problem newznab doesn't return json even if requested. So this would be easier/better if we used XML responses instead of json
-        #See http://newznab.readthedocs.org/en/latest/misc/api/ for full list
+        # See http://newznab.readthedocs.org/en/latest/misc/api/ for full list
         if '<error code="100"' in body:
             raise ProviderAuthException("The API key seems to be incorrect.", self)
         if '<error code="101"' in body:
@@ -204,7 +220,7 @@ class NewzNab(SearchModule):
 
     def get_nfo(self, guid):
         # try to get raw nfo. if it is xml the provider doesn't actually return raw nfos (I'm looking at you, DOGNzb)
-        url = furl(self.provider.settings.get("query_url")).add({"apikey": self.provider.settings.get("apikey"), "t": "getnfo", "o": "xml", "id": guid})  # todo: should use build_base_url but that adds search specific stuff
+        url = furl(self.settings.host.get()).add({"apikey": self.settings.apikey.get(), "t": "getnfo", "o": "xml", "id": guid})  # todo: should use build_base_url but that adds search specific stuff
 
         response, papiaccess = self.get_url_with_papi_access(url, "nfo")
         if response is not None:
@@ -221,7 +237,7 @@ class NewzNab(SearchModule):
         return None
 
     def get_nzb_link(self, guid, title):
-        f = furl(self.base_url)
+        f = furl(self.settings.host.get())
         f.path.add("api")
         f.add({"t": "get", "apikey": self.settings.apikey.get(), "id": guid})
         return f.tostr()

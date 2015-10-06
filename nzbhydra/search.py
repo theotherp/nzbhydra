@@ -46,9 +46,9 @@ def pick_providers(query_supplied=True, identifier_key=None, category=None, inte
         except ProviderStatus.DoesNotExist:
             pass
 
-        if category is not None and p.provider.settings.get("categories") is not None and category not in p.provider.settings.get("categories", []):
-            logger.debug("Did not pick %s because it is not enabled for category %s" % (p, category))
-            continue
+        # if category is not None and p.provider.settings.get("categories") is not None and category not in p.provider.settings.get("categories", []):
+        #     logger.debug("Did not pick %s because it is not enabled for category %s" % (p, category))
+        #     continue
         if query_supplied and not p.supports_queries:
             logger.debug("Did not pick %s because a query was supplied but the provider does not support queries" % p)
             continue

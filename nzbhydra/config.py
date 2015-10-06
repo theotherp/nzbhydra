@@ -135,7 +135,6 @@ def load(filename):
     # Manually set the source to this settings file so that when syncing the settings are written back. If we don't do this it loads the settings but doesn't write them back. Or we would need to store the
     # settings filename and call write(filename)
     cfg.sources = [filename]
-    set(mainSettings.host, "127.0.0.1")
     cfg.sync()
 
 
@@ -152,7 +151,7 @@ def set(setting, value):
     cfg.section(setting.category)[setting.name] = value
 
 
-def isSettingSelection(setting: Setting, compare: SettingSelection) -> bool:
+def isSettingSelection(setting: Setting, compare: Enum) -> bool:
     return get(setting) == compare.name
 
 
@@ -393,6 +392,10 @@ class NzbgetSettings(SettingsCategory):
 nzbgetSettings = NzbgetSettings()
 
 
+class DownloaderSelection(Enum):
+    sabnzbd = SettingSelection(name="sabnzbd", comment=None)
+    nzbget = SettingSelection(name="nzbget", comment=None)
+
 class DownloaderSettings(SettingsCategory):
     def __init__(self):
         super().__init__()
@@ -401,6 +404,8 @@ class DownloaderSettings(SettingsCategory):
                                            comment="Determines how we provide access to NZBs  ""Serve"": Provide a link to NZBHydra via which the NZB is downloaded and returned. ""Redirect"": Provide a link to NZBHydra which redirects to the provider. ""Direct"": Create direct links (as returned by the provider=. Not recommended.")
         self.nzbAddingType = SelectSetting(name="nzbAddingType", default=NzbAddingTypeSelection.nzb, selections=NzbAddingTypeSelection, valuetype=str,
                                            comment="Determines how NZBs are added to downloaders. Either by sending a link to the downloader (""link"") or by sending the actual NZB (""nzb"").")
+        self.downloader = SelectSetting(name="downloader", default=DownloaderSelection.nzbget, selections=DownloaderSelection, valuetype=str, comment="Choose the downloader you want to use when adding NZBs via the GUI.")
+        
         register_settings(self)
 
 

@@ -1,5 +1,5 @@
 class NzbSearchResult:
-    def __init__(self, title=None, link=None, provider=None, guid=None, size=None, category="N/A", attributes=[], epoch=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=True):
+    def __init__(self, title=None, link=None, provider=None, guid=None, size=None, category="N/A", attributes=[], epoch=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=True, providerguid=None):
         self.title = title
         self.link = link
         self.epoch = epoch
@@ -8,6 +8,7 @@ class NzbSearchResult:
         self.age_precise = True #Set to false if the age is not received from a pubdate but from an age. That might influence duplicity check
         self.provider = provider
         self.guid = guid
+        self.providerguid = providerguid #The GUID of the provider which we will later need to download the actual NZB 
         self.size = size
         self.category = category
         self.description = None

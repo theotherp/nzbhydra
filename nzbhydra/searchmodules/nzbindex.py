@@ -181,7 +181,7 @@ class NzbIndex(SearchModule):
         f = furl(self.host)
         f.path.add("download")
         f.path.add("guid")
-        f.path.add("title" + ".nzb")
+        f.path.add(title + ".nzb")
         return f.tostr()
     
     def check_auth(self, body: str):
