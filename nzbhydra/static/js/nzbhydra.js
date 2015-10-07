@@ -10,33 +10,45 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             templateUrl: "/static/html/states/search.html",
             controller: "SearchController",
             params: {
-                "mode": "landing"
+                mode: "landing"
             }
         })
         .state("search", {
-            url: "/search?category&query",
+            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage",
             templateUrl: "/static/html/states/search.html",
             controller: "SearchController",
             params: {
-                "category": "All"
+                "category": "All",
+                mode: "search"
             }
-        }).
-        state("search.results", {
+        })
+        .state("search.results", {
             templateUrl: "/static/html/states/search-results.html",
             controller: "SearchResultsController",
+            options: {
+                inherit: false
+            },
             params: {
                 results: [],
-                providersearches: []
+                providersearches: [],
+                mode: "results"
             }
-        });
+        })
+        ;
         
         $locationProvider.html5Mode(true);
 
 });
 
-angular.module('nzbhydraApp').config(function($logProvider){
-    $logProvider.debugEnabled(true);
+angular.module('nzbhydraApp').config(function(blockUIConfig) {
+  blockUIConfig.autoBlock = false;
+
 });
+
+//angular.module('nzbhydraApp').config(function($logProvider, blockUI){
+//    $logProvider.debugEnabled(true);
+//    //blockUI.autoBlock = false;
+//});
 
 
 /*
@@ -236,11 +248,11 @@ nzbhydraapp.config(['$provide', '$httpProvider', function ($provide, $httpProvid
 
 
 nzbhydraapp.directive('ngEnter', function () {
-    return function (scope, element, attrs) {
+    return function (scope, element, attr) {
         element.bind("keydown keypress", function (event) {
             if (event.which === 13) {
                 scope.$apply(function () {
-                    scope.startSearch();
+                    scope.$evalAsync(attr.ngEnter);
                 });
 
                 event.preventDefault();
@@ -301,6 +313,14 @@ nzbhydraapp.filter('shownDuplicates', function () {
             return [];
         }
     };
+});
+
+nzbhydraapp.factory('focus', function ($rootScope, $timeout) {
+  return function(name) {
+    $timeout(function (){
+      $rootScope.$broadcast('focusOn', name);
+    });
+  }
 });
 
 

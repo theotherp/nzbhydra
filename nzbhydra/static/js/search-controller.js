@@ -3,24 +3,15 @@ angular
     .controller('SearchController', SearchController);
 
 
+SearchController.$inject = ['$scope', '$http', '$stateParams','$modal', '$sce', '$state', 'SearchService', 'focus'];
+function SearchController($scope, $http, $stateParams,$modal, $sce, $state, SearchService, focus) {
+
+    console.log("STart of search controller");
 
 
-
-SearchController.$inject = ['$scope', '$http', '$stateParams', '$location', '$modal', '$sce', '$state', 'SearchService'];
-function SearchController($scope, $http, $stateParams, $location, $modal, $sce, $state, SearchService) {
-    
-    console.log("SearchController");
-    console.log($stateParams.category);
-    console.log($stateParams);
-    
-    
-    
-    
-    
-    
     $scope.category = (typeof $stateParams.category === "undefined" || $stateParams.category == "") ? "All" : $stateParams.category;
 
-    $scope.searchTerm = (typeof $stateParams.query === "undefined") ? "" : $stateParams.query;
+    $scope.query = (typeof $stateParams.query === "undefined") ? "" : $stateParams.query;
 
     $scope.imdbid = (typeof $stateParams.imdbid === "undefined") ? "" : $stateParams.imdbid;
     $scope.tvdbid = (typeof $stateParams.tvdbid === "undefined") ? "" : $stateParams.tvdbid;
@@ -34,32 +25,12 @@ function SearchController($scope, $http, $stateParams, $location, $modal, $sce, 
     $scope.maxage = (typeof $stateParams.maxage === "undefined") ? "" : $stateParams.maxage;
 
     $scope.showProviders = {};
-    
-    
-    
-    SearchService.search("All", "avengers").then(function(searchResult) {
-        //$scope.results = searchResult.results;
-        //$scope.providersearches = searchResult.providersearches;
-        ///console.log(searchResult.results);
-        $state.go("search.results", {"results": searchResult.results, "providersearches": searchResult.providersearches});
-    });
 
 
     if ($scope.title != "" && $scope.query == "") {
-        $scope.searchTerm = $scope.title;
+        $scope.query = $scope.title;
     }
 
-//Only start search if we're in search mode, landing mode just shows the search box
-    
-    
-    
-    
-    console.log($stateParams.mode);
-    if ($stateParams.mode != "landing") {
-
-        
-    }
-    
 
     $scope.typeAheadWait = 300;
     $scope.selectedItem = "";
@@ -77,6 +48,8 @@ function SearchController($scope, $http, $stateParams, $location, $modal, $sce, 
 
         //Show checkbox to ask if the user wants to search by ID (using autocomplete)
         $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 );
+        
+        focus('focus-query-box');
     };
 
 
@@ -119,45 +92,54 @@ function SearchController($scope, $http, $stateParams, $location, $modal, $sce, 
     };
 
     $scope.startSearch = function () {
-        var uri;
+        SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage).then(function (searchResult) {
+            $state.go("search.results", {"results": searchResult.results, "providersearches": searchResult.providersearches});
+            $scope.imdbid = "";
+            $scope.tvdbid = "";
+        });
+    };
+    
+    
+    $scope.goToSearchUrl = function () {
+        var state;
+        var stateParams = {};
         if ($scope.imdbid != "") {
-            uri = new URI("/searchmovies");
-            uri.segment($scope.category);
-            uri.segment($scope.imdbid);
-            uri.segment($scope.title);
+            stateParams.imdbid = $scope.imdbid;
+            stateParams.title = $scope. title;
+            
+
         } else if ($scope.tvdbid != "") {
-            uri = new URI("/searchtv");
-            uri.segment($scope.category);
-            uri.segment($scope.tvdbid);
-            uri.segment($scope.title);
+            stateParams.tvdbid = $scope.tvdbid;
+            stateParams.title = $scope. title;
+
             if ($scope.season != "") {
-                uri.segment($scope.season);
+                stateParams.season = $scope.season;
             }
             if ($scope.episode != "") {
-                uri.segment($scope.episode);
+                stateParams.episode = $scope.episode;
             }
         } else {
-            uri = new URI("/search");
-            uri.segment($scope.category);
-            uri.segment($scope.searchTerm);
+            stateParams.query = $scope.query;
         }
 
         if ($scope.minsize != "") {
-            uri.addQuery("minsize", $scope.minsize);
+            stateParams.minsize = $scope.minsize;
         }
         if ($scope.maxsize != "") {
-            uri.addQuery("maxsize", $scope.maxsize);
+            stateParams.maxsize = $scope.maxsize;
         }
         if ($scope.minage != "") {
-            uri.addQuery("minage", $scope.minage);
+        stateParams.minage = $scope.minage;
         }
         if ($scope.maxage != "") {
-            uri.addQuery("maxage", $scope.maxage);
+            stateParams.maxage = $scope.maxage;
         }
 
-        $location.url(uri);
-        $scope.imdbid = "";
-        $scope.tvdbid = "";
+        stateParams.category = $scope.category;
+
+        console.log("Going to search state with params...");
+        console.log(stateParams);
+        $state.go("search", stateParams, {inherit: false});
     };
 
 
@@ -169,20 +151,20 @@ function SearchController($scope, $http, $stateParams, $location, $modal, $sce, 
         } else if ($scope.category.indexOf("TV") > -1) {
             $scope.tvdbid = $item.value;
         }
-        $scope.startSearch();
+        $scope.query = "";
+        $scope.goToSearchUrl();
     };
 
 
     $scope.autocompleteActive = function () {
+        return false;
         return ($scope.category.indexOf("TV") > -1) || ($scope.category.indexOf("Movies") > -1)
     };
 
     $scope.seriesSelected = function () {
+        return false;
         return ($scope.category.indexOf("TV") > -1);
     };
-
-
-
 
 
     $scope.showNfo = function (resultItem) {
@@ -198,33 +180,6 @@ function SearchController($scope, $http, $stateParams, $location, $modal, $sce, 
         });
     };
 
-
-    $scope.nzbgetclass = {};
-    $scope.nzbgetEnabled = true;
-
-    $scope.addNzb = function (resultItem) {
-        var uri = new URI("/internalapi/addnzb");
-        uri.addQuery("title", resultItem.title);
-        uri.addQuery("providerguid", resultItem.providerguid);
-        uri.addQuery("provider", resultItem.provider);
-        $scope.nzbgetclass[resultItem.guid] = "nzb-spinning";
-        return $http.get(uri).success(function () {
-            $scope.nzbgetclass[resultItem.guid] = "nzb-success";
-        }).error(function () {
-            $scope.nzbgetclass[resultItem.guid] = "nzb-error";
-        })
-            ;
-    };
-
-    $scope.nzbclass = function (resultItem) {
-        if ($scope.nzbgetclass[resultItem.guid]) {
-            return $scope.nzbgetclass[resultItem.guid];
-        } else {
-            return "nzb";
-        }
-    }
-
-
     $scope.open = function (size, nfo) {
 
         var modalInstance = $modal.open({
@@ -239,5 +194,13 @@ function SearchController($scope, $http, $stateParams, $location, $modal, $sce, 
             }
         });
     };
+
+
+    if ($stateParams.mode != "landing") {
+        //(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage)
+        console.log("Came from search url, will start searching");
+        $scope.startSearch();
+    }
+
 
 }

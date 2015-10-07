@@ -117,7 +117,7 @@ class NzbIndex(SearchModule):
                 
             
             sizetd = tds[2]
-            p = re.compile(r"(?P<size>[0-9]+(\.[0-9]+)?).(?P<unit>(GB|MB|KB))")
+            p = re.compile(r"(?P<size>[0-9]+(\.[0-9]+)?).(?P<unit>(GB|MB|KB|B))")
             m = p.search(sizetd.text)
             if not m:
                 logger.debug("Unable to find size information in %s" % sizetd.text)

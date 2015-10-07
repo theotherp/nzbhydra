@@ -65,7 +65,7 @@
             <th class="col-md-6 text-left cursor-default" ng-click="setSorting('title', false)" style="vertical-align: top">
                 Title <span ng-show="predicate=='title'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
             </th>
-            <th class="col-md-1 text-left cursor-default" ng-click="setSorting('provider', true)">
+            <th class="col-md-1 text-left cursor-default" ng-click="setSorting('provider', false)">
                 <div style="width: 100px;" style="vertical-align: top">
                     Provider <span ng-show="predicate=='provider'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
                 </div>
@@ -94,9 +94,7 @@
         </thead>
         <tbody>
         
-        <!-- orderBy:firstResultPredicate:sortReversed-->
         <tr ng-repeat-start="resultwithduplicates in filteredResults  track by groupId(resultwithduplicates)" ng-if="0"></tr>
-        <!--<tr ng-repeat-start="resultwithduplicates in filteredResults track by groupId(resultwithduplicates)" ng-if="0"></tr>-->
         <!-- First result in the list, show regularly -->
         <tr ng-repeat="result in resultwithduplicates" ng-if="$index == 0">
             <td class="col-md-6  text-left">

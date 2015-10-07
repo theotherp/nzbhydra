@@ -4,7 +4,7 @@ angular
 
 
 //SearchResultsController.$inject = ['blockUi'];
-function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, blockUIConfig) {
+function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI) {
 
     $scope.sortPredicate = "age_days";
     $scope.sortReversed = false;
@@ -114,10 +114,3 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, bl
     }
 
 }
-
-
-Array.prototype.remove = function (from, to) {
-    var rest = this.slice((to || from) + 1 || this.length);
-    this.length = from < 0 ? this.length + from : from;
-    return this.push.apply(this, rest);
-};

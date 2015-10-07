@@ -73,15 +73,17 @@ def test_for_duplicate(search_result_1, search_result_2):
 
     if search_result_1.title.lower() != search_result_2.title.lower():
         return False
+    if not search_result_1.size or not search_result_2.size:
+        return False
     size_threshold = config.get(resultProcessingSettings.duplicateSizeThresholdInPercent)
     size_difference = search_result_1.size - search_result_2.size
     size_average = (search_result_1.size + search_result_2.size) / 2
     size_difference_percent = abs(size_difference / size_average) * 100
-
-
-    # TODO: Ignore age threshold if no precise date is known or account for score (if we have sth like that...) 
-    age_threshold = config.get(resultProcessingSettings.duplicateAgeThreshold)
     same_size = size_difference_percent <= size_threshold
+    
+    age_threshold = config.get(resultProcessingSettings.duplicateAgeThreshold)
+    if not search_result_1.epoch or not search_result_2.epoch:
+        return False
     same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold  # epoch difference (ms) to minutes
 
     # If all nweznab providers would provide poster/group in their infos then this would be a lot easier and more precise

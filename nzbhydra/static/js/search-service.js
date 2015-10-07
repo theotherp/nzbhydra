@@ -38,7 +38,7 @@ function SearchService($http) {
         } else {
             console.log("Search for all");
             uri = new URI("/internalapi/search");
-            uri.addQuery("query", query).addQuery("category", category);
+            uri.addQuery("query", query);
         }
 
         if (!_.isNullOrEmpty(minsize)) {
@@ -53,6 +53,8 @@ function SearchService($http) {
         if (!_.isNullOrEmpty(maxage)) {
             uri.addQuery("maxage", maxage);
         }
+        
+        uri.addQuery("category", category);
 
         console.log("Calling " + uri);
         return $http.get(uri).then(processData);
@@ -97,3 +99,8 @@ function SearchService($http) {
     };
 }
 
+_.mixin({
+    isNullOrEmpty: function(string) {
+      return (_.isUndefined(string) || _.isNull(string) || string.trim().length === 0)
+    }
+  });
