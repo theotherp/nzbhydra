@@ -93,10 +93,10 @@
         </tr>
         </thead>
         <tbody>
-
-
-        <!--<tr ng-repeat-start="resultwithduplicates in results | sortResults:sortPredicate:sortReversed" ng-if="0"></tr>-->
-        <tr ng-repeat-start="resultwithduplicates in filteredResults | orderBy:firstResultPredicate:sortReversed" ng-if="0"></tr>
+        
+        <!-- orderBy:firstResultPredicate:sortReversed-->
+        <tr ng-repeat-start="resultwithduplicates in filteredResults  track by groupId(resultwithduplicates)" ng-if="0"></tr>
+        <!--<tr ng-repeat-start="resultwithduplicates in filteredResults track by groupId(resultwithduplicates)" ng-if="0"></tr>-->
         <!-- First result in the list, show regularly -->
         <tr ng-repeat="result in resultwithduplicates" ng-if="$index == 0">
             <td class="col-md-6  text-left">
@@ -122,8 +122,6 @@
             </td>
         </tr>
         <!-- Show all the duplicates of this entry-->
-
-        <!--<tr ng-repeat="result in resultwithduplicates | shownDuplicates:isShow">-->
         <tr ng-repeat="result in resultwithduplicates" ng-if="$index > 0">
             <td class="col-md-6 text-left td-embedded">
             </td>
@@ -145,13 +143,13 @@
                 <addable-nzb item="result"></addable-nzb>
             </td>
         </tr>
-
-
+        <!--<tr on-finish-render="stopBlocking()" item="resultwithduplicates">Hallo</tr>-->
+        <tr on-finish-render="stopBlocking()" ></tr>
         <tr ng-repeat-end ng-if="0"></tr>
-
-
+        
         </tbody>
     </table>
+
 
 
 </div>

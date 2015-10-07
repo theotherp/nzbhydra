@@ -1,6 +1,6 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.bootstrap-slider', 'ui.router']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.bootstrap-slider', 'ui.router', 'blockUI']);
 
-nzbhydraapp.config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
+angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
     //$urlRouterProvider.otherwise("/search/");
 
@@ -32,6 +32,10 @@ nzbhydraapp.config(function ($stateProvider, $urlRouterProvider, $locationProvid
         
         $locationProvider.html5Mode(true);
 
+});
+
+angular.module('nzbhydraApp').config(function($logProvider){
+    $logProvider.debugEnabled(true);
 });
 
 

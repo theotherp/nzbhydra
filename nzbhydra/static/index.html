@@ -16,6 +16,7 @@
     <link href="/static/lib/typicons/typicons.min.css" rel="stylesheet" media="screen">
     <link href="/static/lib/angular-busy/angular-busy.css" rel="stylesheet" media="screen">
     <link href="/static/lib/seiyria-bootstrap-slider/bootstrap-slider.css" rel="stylesheet" media="screen">
+    <link href="/static/lib/angular-block-ui/angular-block-ui.css" rel="stylesheet" media="screen">
     <link href="/static/css/nzbhydra.css" rel="stylesheet" media="screen">
     <!--endbuild-->
     <link rel="icon" type="image/vnd.microsoft.icon" href="/static/img/crap.ico">
@@ -26,14 +27,14 @@
 <h1>NZB Hydra</h1>
 
 <div style="margin: auto; max-width: 1400px;">
-    <div ui-view class="container-fluid">
+    <div ui-view class="container-fluid" block-ui="main">
 
     </div>
 </div>
 </body>
 <!-- build:js /js/static/libs.js -->
-<!--<script src="/static/lib/jquery/jquery.js"></script>-->
-<!--<script src="/static/lib/jquery-ui/jquery-ui.js"></script>-->
+<script src="/static/lib/jquery/jquery.js"></script>
+<script src="/static/lib/jquery-ui/jquery-ui.js"></script>
 <script src="/static/lib/angular/angular.js"></script>
 <script src="/static/lib/angular-route/angular-route.js"></script>
 <script src="/static/lib/angular-cookie/angular-cookie.js"></script>
@@ -43,6 +44,7 @@
 <script src="/static/lib/angular-growl-2/angular-growl.js"></script>
 <script src="/static/lib/angular-loadingbar/loading-bar.js"></script>
 <script src="/static/lib/angular-ui-router/angular-ui-router.js"></script>
+<script src="/static/lib/angular-block-ui/angular-block-ui.js"></script>
 
 
 <script src="/static/lib/bootstrap/bootstrap.js"></script>
@@ -60,6 +62,7 @@
 <script src="/static/js/filters.js"></script>
 <script src="/static/js/nzbhydra.js"></script>
 <script src="/static/js/directives/addable-nzb.js"></script>
+<script src="/static/js/directives/on-finish-render.js"></script>
 <script src="/static/js/search-controller.js"></script>
 <script src="/static/js/search-service.js"></script>
 <script src="/static/js/search-results-controller.js"></script>
