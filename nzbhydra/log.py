@@ -35,7 +35,7 @@ def setup_custom_logger(name):
     stream_handler.setLevel(config.get(mainSettings.consolelevel))
     stream_handler.setFormatter(formatter)
     
-    file_handler = TimedRotatingFileHandler(filename=config.get(mainSettings.logfile), when='D', interval=7)
+    file_handler = TimedRotatingFileHandler(filename=config.get(mainSettings.logfilename), when='D', interval=7)
     file_handler.setLevel(config.get(mainSettings.logfilelevel))
     file_handler.setFormatter(formatter)
 

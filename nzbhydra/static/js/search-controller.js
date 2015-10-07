@@ -50,6 +50,7 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
         $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 );
         
         focus('focus-query-box');
+        $scope.query = "";
     };
 
 

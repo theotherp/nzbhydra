@@ -32,11 +32,11 @@ def handle_error(error):
     logger.error("Web args error: %s" % error)
     raise CustomError(error)
 
+
 @app.after_request
 def disable_caching(response):
     if mainSettings.debug:
-        
-        #Disable browser caching for development so resources are always served fresh :-)
+        # Disable browser caching for development so resources are always served fresh :-)
         response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         response.headers['Pragma'] = 'no-cache'
@@ -345,9 +345,17 @@ def internalapi_addnzb(args):
 @requires_auth
 def internalapi_getsettings():
     logger.debug("Get settings request")
-    return jsonify(config.get_settings_dict())
+    return jsonify(config.get_settings_as_dict_without_lists())
 
-#Allows us to easily load a static class with results without having to load them
+
+@app.route('/internalapi/getsettingsschema')
+@requires_auth
+def internalapi_getsettings_schema():
+    logger.debug("Get settings schema request")
+    return jsonify(config.get_settings_schema())
+
+
+# Allows us to easily load a static class with results without having to load them
 @app.route("/development/staticindex.html")
 def development_staticindex():
     return send_file("static/index.html")
@@ -363,7 +371,7 @@ def run(host, port):
 
 def configure_cache():
     if mainSettings.cache_enabled.get():
-        if mainSettings.cache_type.isSetting(CacheTypeSelection.memory):
+        if mainSettings.cache_type == CacheTypeSelection.memory:
             logger.info("Using memory based cache")
             cache_type = "simple"
         else:
