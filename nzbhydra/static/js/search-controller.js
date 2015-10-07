@@ -182,26 +182,7 @@ function SearchController($scope, $http, $stateParams, $location, $modal, $sce, 
     };
 
 
-    $scope.results = [];
-    $scope.isShowDuplicates = true;
-    $scope.predicate = 'age_days';
-    $scope.reversed = false;
 
-
-    $scope.setSorting = function (predicate, reversedDefault) {
-        if (predicate == $scope.predicate) {
-            $scope.reversed = !$scope.reversed;
-        } else {
-            $scope.reversed = reversedDefault;
-        }
-        $scope.predicate = predicate;
-    };
-
-
-//True if the provider is selected in the table filter, false else 
-    $scope.isShow = function (item) {
-        return $scope.showProviders[item.provider];
-    };
 
 
     $scope.showNfo = function (resultItem) {

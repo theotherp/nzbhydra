@@ -69,10 +69,7 @@ function SearchService($http) {
                 }, 0);
                 ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
             });
-
-            //_.each(providersearches, function (ps) {
-            //    showProviders[ps.provider] = true;
-            //});
+            
 
             //Filter the events once. Not all providers follow or allow all the restrictions, so we enfore them here
             filteredResults = _.filter(results, function (item) {

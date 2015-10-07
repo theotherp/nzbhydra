@@ -230,28 +230,6 @@ nzbhydraapp.config(['$provide', '$httpProvider', function ($provide, $httpProvid
 }]);
 
 
-function sortResults(input, predicate, reversed) {
-    var sorted = _.sortBy(input, function (i) {
-        return i[0][predicate];
-    });
-    if (reversed) {
-        sorted.reverse();
-    }
-    return sorted;
-}
-
-nzbhydraapp.filter('sortResults', function () {
-    return function (input, predicate, reversed) {
-        var sorted = _.sortBy(input, function (i) {
-            return i[0][predicate];
-        });
-        if (reversed) {
-            sorted.reverse();
-        }
-        return sorted;
-    }
-});
-
 
 nzbhydraapp.directive('ngEnter', function () {
     return function (scope, element, attrs) {

@@ -27,7 +27,7 @@
             <!-- First result in the list, show regularly -->
             <tr>
                 <td class="text-left">
-                    <input ng-disabled="!ps.successful" type="checkbox" ng-model="showProviders[ps.provider]"
+                    <input ng-disabled="!ps.successful" type="checkbox" ng-model="providerDisplayState[ps.provider]" ng-click="toggleProviderDisplay(ps.provider)"
                            tooltip="Uncheck to hide results from this provider"
                            tooltip-placement="top"
                            tooltip-trigger="mouseenter"
@@ -40,7 +40,7 @@
                     {{ ps.averageResponseTime }}ms
                 </td>
                 <td class="text-left">
-                    <span class="glyphicon" ng-class="{'glyphicon-ok' : ps.successful, 'glyphicon-remove' : !ps.successful}" ></span>
+                    <span class="glyphicon" ng-class="{'glyphicon-ok' : ps.successful, 'glyphicon-remove' : !ps.successful}"></span>
                     <span ng-repeat="apiaccess in ps.api_accesses">
                         <span ng-if="$index == 0">{{ apiaccess.error }}</span>
                         <div ng-if="$index > 0">{{ apiaccess.error }}</div>
@@ -53,7 +53,6 @@
             </tbody>
         </table>
     </div>
-    
 
 
 </div>
@@ -96,11 +95,10 @@
         <tbody>
 
 
-        <!--<tr ng-repeat-start="resultwithduplicates in results | sortResults:predicate:reversed" ng-if="0"></tr>-->
-        <tr ng-repeat-start="resultwithduplicates in results" ng-if="0"></tr>
+        <!--<tr ng-repeat-start="resultwithduplicates in results | sortResults:sortPredicate:sortReversed" ng-if="0"></tr>-->
+        <tr ng-repeat-start="resultwithduplicates in filteredResults | orderBy:firstResultPredicate:sortReversed" ng-if="0"></tr>
         <!-- First result in the list, show regularly -->
-        <!--<tr ng-repeat="result in resultwithduplicates | firstShownResult:isShow">-->
-        <tr ng-repeat="result in resultwithduplicates">
+        <tr ng-repeat="result in resultwithduplicates" ng-if="$index == 0">
             <td class="col-md-6  text-left">
                 {{ result.title }}
             </td>
@@ -125,7 +123,8 @@
         </tr>
         <!-- Show all the duplicates of this entry-->
 
-        <tr ng-repeat="result in resultwithduplicates | shownDuplicates:isShow">
+        <!--<tr ng-repeat="result in resultwithduplicates | shownDuplicates:isShow">-->
+        <tr ng-repeat="result in resultwithduplicates" ng-if="$index > 0">
             <td class="col-md-6 text-left td-embedded">
             </td>
             <td class="col-md-1 text-left td-embedded">
