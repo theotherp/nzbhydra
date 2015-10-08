@@ -45,6 +45,8 @@
     "underscore": "~1.8.3",
     "query": "~0.0.2",
     "superagent": "~1.4.0",
-    "urijs": "~1.16.1"
+    "urijs": "~1.16.1",
+    "angular-schema-form-dynamic-select": "~0.12.4",
+    "angular-strap": "~2.3.3"
   }
 }

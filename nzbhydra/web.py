@@ -3,6 +3,7 @@ import json
 import logging
 from pprint import pprint
 import ssl
+from time import sleep
 import urllib
 
 from flask import send_file, redirect
@@ -341,18 +342,26 @@ def internalapi_addnzb(args):
         return "downloader.add_type has wrong value", 500  # "direct" would never end up here, so it must be a wrong value
 
 
-@app.route('/internalapi/getsettings')
+@app.route('/internalapi/setsettings', methods=["PUT"])
 @requires_auth
-def internalapi_getsettings():
-    logger.debug("Get settings request")
-    return jsonify(config.get_settings_as_dict_without_lists())
+def internalapi_setsettings():
+    logger.debug("Set settings request")
+    try:
+        config.set_settings_from_dict(request.get_json(force=True))
+        return "OK"
+    except Exception as e:
+        return "Error: %s" % e 
 
 
-@app.route('/internalapi/getsettingsschema')
+@app.route('/internalapi/getconfig')
 @requires_auth
-def internalapi_getsettings_schema():
-    logger.debug("Get settings schema request")
-    return jsonify(config.get_settings_schema())
+def internalapi_getconfig():
+    logger.debug("Get config request")
+    schema = config.get_settings_schema()
+    settings = config.get_settings_as_dict_without_lists()
+    form = config.get_settings_form()
+    
+    return jsonify({"schema": schema, "settings": settings, "form": form})
 
 
 # Allows us to easily load a static class with results without having to load them

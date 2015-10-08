@@ -1,0 +1,65 @@
+[
+  "tabs",
+  {
+    "type": "tabs",
+    "tabs": [
+      {
+        "title": "tab1",
+        "items": [
+          {
+            "key": "main.password",
+            "type": "password",
+            "placeholder": "Make a comment"
+          },
+          {
+            "key": "downloader.downloader",
+            "type": "strapselect",
+            "titleMap": [
+              {
+                "value": "sabnzbd",
+                "name": "SAB"
+              },
+              {
+                "value": "nzbget",
+                "name": "NZBGet"
+              }
+            ]
+          },
+          {
+            "key": "providers.binsearch.search_ids",
+            "type": "strapselect",
+            "options": {
+              "multiple": "true"
+            },
+            "titleMap": [
+              {
+                "value": "value1",
+                "name": "IMDB ID"
+              },
+              {
+                "value": "value2",
+                "name": "TVRage ID"
+              },
+              {
+                "value": "value3",
+                "name": "TheTVDB ID"
+              }
+            ]
+          }
+          
+        ]
+      },
+      
+      {
+        "title": "tab2",
+        "items": [
+          "*",
+          {
+            "type": "submit",
+            "title": "Save"
+          }
+        ]
+      }
+    ]
+  }
+]

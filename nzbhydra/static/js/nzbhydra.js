@@ -1,7 +1,9 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.bootstrap-slider', 'ui.router', 'blockUI', 'schemaForm']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.bootstrap-slider', 'ui.router', 'blockUI', 'schemaForm', 'mgcrea.ngStrap']);
 
-angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
+angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig) {
+
+    blockUIConfig.autoBlock = false;
     //$urlRouterProvider.otherwise("/search/");
 
     $stateProvider
@@ -38,16 +40,10 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             url: "/config",
             templateUrl: "/static/html/states/config.html",
             controller: "ConfigController"
-            
         })
-        ;
-        
-        $locationProvider.html5Mode(true);
+    ;
 
-});
-
-angular.module('nzbhydraApp').config(function(blockUIConfig) {
-  blockUIConfig.autoBlock = false;
+    $locationProvider.html5Mode(true);
 
 });
 
@@ -85,8 +81,6 @@ nzbhydraapp.config(['growlProvider', function (growlProvider) {
 }]);
 
 
-
-
 nzbhydraapp.directive('ngEnter', function () {
     return function (scope, element, attr) {
         element.bind("keydown keypress", function (event) {
@@ -116,7 +110,6 @@ nzbhydraapp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, nf
 });
 
 
-
 nzbhydraapp.filter('nzblink', function () {
     return function (resultItem) {
         var uri = new URI("/internalapi/getnzb");
@@ -130,16 +123,16 @@ nzbhydraapp.filter('nzblink', function () {
 
 
 nzbhydraapp.factory('focus', function ($rootScope, $timeout) {
-  return function(name) {
-    $timeout(function (){
-      $rootScope.$broadcast('focusOn', name);
-    });
-  }
+    return function (name) {
+        $timeout(function () {
+            $rootScope.$broadcast('focusOn', name);
+        });
+    }
 });
 
 
 _.mixin({
-    isNullOrEmpty: function(string) {
-      return (_.isUndefined(string) || _.isNull(string) || string.trim().length === 0)
+    isNullOrEmpty: function (string) {
+        return (_.isUndefined(string) || _.isNull(string) || string.trim().length === 0)
     }
-  });
+});

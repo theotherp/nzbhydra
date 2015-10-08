@@ -48,25 +48,20 @@ def testGetNewznabSettingById():
     config.get(nsettings.apikey, "456")
 
 
-def testGetSettingsAsDict():
+def testGetAndSetSettingsAsDict():
     config.set(mainSettings.host, "127.0.0.1")
 
-    # d = config.get_settings_as_dict()
-    # 
-    # assert d["downloader"]["nzbaccesstype"] == "serve"
-    # 
-    # assert config.get(mainSettings.host) == "127.0.0.1"
-    # # Write back changed settings
-    # d["main"]["host"] = "192.168.0.1"
-    # config.set_settings_from_dict(d)
-    # assert config.get(mainSettings.host) == "192.168.0.1"
-    # 
-    # # set back for later tests
-    # config.set(mainSettings.host, "127.0.0.1")
-    # config.cfg.sync()
-    # 
-    # json.dumps(d)
+    d = config.get_settings_as_dict_without_lists()
 
-    d = config.cfg.as_dict(flat=True)
-    d = config.cfg.as_dict(dict_type=dict)
-    pass
+    assert d["downloader"]["nzbaccesstype"] == "serve"
+
+    # Write back changed settings
+    d["main"]["host"] = "192.168.0.1"
+    d["downloader"]["nzbaccesstype"] = "nzb"
+    
+    config.set_settings_from_dict(d)
+    assert config.get(mainSettings.host) == "192.168.0.1"
+    assert d["downloader"]["nzbaccesstype"] == "nzb"
+
+    #Just make sure we can dump it as json
+    json.dumps(d)
