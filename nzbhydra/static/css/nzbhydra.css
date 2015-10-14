@@ -255,8 +255,8 @@ th {
 }
 @font-face {
   font-family: 'Glyphicons Halflings';
-  src: url('/static/lib/bootstrap/glyphicons-halflings-regular.eot');
-  src: url('/static/lib/bootstrap/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('/static/lib/bootstrap/glyphicons-halflings-regular.woff2') format('woff2'), url('/static/lib/bootstrap/glyphicons-halflings-regular.woff') format('woff'), url('/static/lib/bootstrap/glyphicons-halflings-regular.ttf') format('truetype'), url('/static/lib/bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+  src: url('/static/lib/bootstrap/fonts/glyphicons-halflings-regular.eot');
+  src: url('/static/lib/bootstrap/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('/static/lib/bootstrap/fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('/static/lib/bootstrap/fonts/glyphicons-halflings-regular.woff') format('woff'), url('/static/lib/bootstrap/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('/static/lib/bootstrap/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 }
 .glyphicon {
   position: relative;
@@ -6642,4 +6642,26 @@ textarea.by-id-checkbox {
   width: 16px;
   height: 16px;
   background-repeat: no-repeat;
+}
+.config-tab-content {
+  background-color: #3a3f44;
+  margin: 30px;
+  padding: 20px;
+}
+.config-field {
+  width: 400px;
+}
+.checkbox-field {
+  width: auto;
+}
+.config-select {
+  margin: 30px;
+  text-align: left;
+}
+.config-field-container {
+  margin: 30px;
+  text-align: left;
+}
+.config-select-field > button {
+  background-color: #272b30;
 }

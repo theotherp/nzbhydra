@@ -19,18 +19,19 @@
     <link href="/static/lib/angular-block-ui/angular-block-ui.css" rel="stylesheet" media="screen">
     <link href="/static/css/nzbhydra.css" rel="stylesheet" media="screen">
 
-    <link rel="icon" type="image/vnd.microsoft.icon" href="/static/img/crap.ico">
+    <link rel="icon" type="image/vnd.microsoft.icon" href="/static/img/hydra.ico">
 
 
 </head>
 <body style="text-align: center">
-<h1>NZB Hydra</h1>
+<a ui-sref="home"><h1>NZB Hydra</h1></a>
 
 <div style="margin: auto; max-width: 1400px;">
     <div ui-view class="container-fluid" block-ui="main">
 
     </div>
 </div>
+<a ui-sref="config"><h1>Config</h1></a>
 </body>
 
 
@@ -54,6 +55,8 @@
 <script src="/static/lib/angular-schema-form/schema-form.js"></script>
 <script src="/static/lib/angular-schema-form/bootstrap-decorator.js"></script>
 <script src="/static/lib/angular-schema-form-dynamic-select/angular-schema-form-dynamic-select.js"></script>
+<script src="/static/lib/angular-vs-repeat/angular-vs-repeat.js"></script>
+<script src="/static/lib/angularUtils-pagination/dirPagination.js"></script>
 
 
 <script src="/static/lib/bootstrap/bootstrap.js"></script>

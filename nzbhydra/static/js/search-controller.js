@@ -3,10 +3,10 @@ angular
     .controller('SearchController', SearchController);
 
 
-SearchController.$inject = ['$scope', '$http', '$stateParams','$modal', '$sce', '$state', 'SearchService', 'focus'];
-function SearchController($scope, $http, $stateParams,$modal, $sce, $state, SearchService, focus) {
+SearchController.$inject = ['$scope', '$http', '$stateParams','$modal', '$sce', '$state', 'SearchService', 'focus', 'ConfigService'];
+function SearchController($scope, $http, $stateParams,$modal, $sce, $state, SearchService, focus, ConfigService) {
 
-    console.log("STart of search controller");
+    console.log("Start of search controller");
 
 
     $scope.category = (typeof $stateParams.category === "undefined" || $stateParams.category == "") ? "All" : $stateParams.category;
@@ -23,6 +23,7 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
     $scope.maxsize = (typeof $stateParams.maxsize === "undefined") ? "" : $stateParams.maxsize;
     $scope.minage = (typeof $stateParams.minage === "undefined") ? "" : $stateParams.minage;
     $scope.maxage = (typeof $stateParams.maxage === "undefined") ? "" : $stateParams.maxage;
+    $scope.selectedProviders = (typeof $stateParams.providers === "undefined") ? "" : $stateParams.providers;
 
     $scope.showProviders = {};
 
@@ -39,8 +40,13 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
 
     $scope.isAskById = false; //If true a check box will be shown asking the user if he wants to search by ID 
     $scope.isById = {value: true}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
+    
+    $scope.availableProviders = [];
 
 
+    
+    
+    
     $scope.autocompleteClass = "autocompletePosterMovies";
 
     $scope.toggle = function (searchCategory) {
@@ -54,7 +60,7 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
     };
 
 
-// Any function returning a promise object can be used to load values asynchronously
+    // Any function returning a promise object can be used to load values asynchronously
     $scope.getAutocomplete = function (val) {
         $scope.autocompleteLoading = true;
         //Expected model returned from API:
@@ -93,7 +99,7 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
     };
 
     $scope.startSearch = function () {
-        SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage).then(function (searchResult) {
+        SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, $scope.selectedProviders).then(function (searchResult) {
             $state.go("search.results", {"results": searchResult.results, "providersearches": searchResult.providersearches});
             $scope.imdbid = "";
             $scope.tvdbid = "";
@@ -135,6 +141,8 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
         if ($scope.maxage != "") {
             stateParams.maxage = $scope.maxage;
         }
+        
+        stateParams.providers = _.pluck($scope.availableProviders, "name").join(",");
 
         stateParams.category = $scope.category;
 
@@ -195,8 +203,18 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
             }
         });
     };
+    
+    ConfigService.get().then(function(config) {
+        console.log(config);
+        $scope.availableProviders = _.filter(config.settings.providers, function(provider) {
+           return provider.enabled; 
+        }).map(function (provider) {
+            return {name: provider.name, activated: true};
+        });
+       console.log($scope.availableProviders); 
+    });
 
-
+    //Resolve the search request from URL
     if ($stateParams.mode != "landing") {
         //(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage)
         console.log("Came from search url, will start searching");

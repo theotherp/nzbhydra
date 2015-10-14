@@ -7,7 +7,7 @@ from nzbhydra.config import GenerateQueriesSelection
 from nzbhydra.exceptions import ProviderResultParsingException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
-from nzbhydra.search_module import SearchModule, EntriesAndQueries
+from nzbhydra.search_module import SearchModule, ProviderProcessingResult
 
 logger = logging.getLogger('root')
 
@@ -53,7 +53,7 @@ class Womble(SearchModule):
         logger.error("This provider does not support movie search")
         return []
 
-    def process_query_result(self, xml, query) -> EntriesAndQueries:
+    def process_query_result(self, xml, query) -> ProviderProcessingResult:
         entries = []
         try:
             tree = ET.fromstring(xml)
@@ -94,7 +94,7 @@ class Womble(SearchModule):
              
             entries.append(entry)
             
-        return EntriesAndQueries(entries=entries, queries=[])
+        return ProviderProcessingResult(entries=entries, queries=[])
     
     def get_nzb_link(self, guid, title):
         f = furl(self.base_url)

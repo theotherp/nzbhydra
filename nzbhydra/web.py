@@ -3,35 +3,43 @@ import json
 import logging
 from pprint import pprint
 import ssl
-from time import sleep
 import urllib
 
-from flask import send_file, redirect
+from flask import send_file, redirect, session
 from flask import Flask, render_template, request, jsonify, Response
 from flask.ext.cache import Cache
+from flask.ext.session import Session
 from webargs import fields
-from webargs.flaskparser import use_args, parser
+
+from webargs.flaskparser import use_args
+
 from werkzeug.exceptions import Unauthorized
 
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log
-from nzbhydra import config, search, infos
+from nzbhydra import config, search, infos, database
 from nzbhydra.config import NzbAccessTypeSelection, NzbAddingTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection, DownloaderSelection
 from nzbhydra.downloader import Nzbget, Sabnzbd
 
 logger = logging.getLogger('root')
 
 app = Flask(__name__)
-cache = Cache()
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
+search_cache = Cache()
+internal_cache = Cache(app, config={'CACHE_TYPE': "simple", #Cache for internal data like settings, form, schema, etc. which will be invalidated on request
+                                    "CACHE_DEFAULT_TIMEOUT": 60 * 30})
 
 
-class CustomError(Exception):
-    pass
+@app.before_request
+def _db_connect():
+    if not request.endpoint.endswith("static"):  # No point in opening a db connection if we only serve a static file
+        database.db.connect()
 
 
-@parser.error_handler
-def handle_error(error):
-    logger.error("Web args error: %s" % error)
-    raise CustomError(error)
+@app.teardown_request
+def _db_disconnect(esc):
+    if not database.db.is_closed():
+        database.db.close()
 
 
 @app.after_request
@@ -67,7 +75,7 @@ def create_json_response(success=True, data=None, error_message=None):
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if config.get(mainSettings.enable_auth):
+        if mainSettings.enable_auth.get():
             auth = request.authorization
             if not auth or not check_auth(auth.username, auth.password):
                 return authenticate()
@@ -95,8 +103,8 @@ externalapi_args = {
     "q": fields.String(missing=None),
     "query": fields.String(missing=None),
     "group": fields.String(missing=None),
-    "limit": fields.Integer(missing=None),
-    "offset": fields.String(missing=None),
+    "limit": fields.Integer(missing=500),
+    "offset": fields.Integer(missing=0),
     "cat": fields.String(missing=None),
     "o": fields.String(missing=None),
     "attrs": fields.String(missing=None),
@@ -117,22 +125,26 @@ externalapi_args = {
     "minsize": fields.Integer(missing=None),
     "maxsize": fields.Integer(missing=None),
     "minage": fields.Integer(missing=None),
-    "maxage": fields.Integer(missing=None)
+    "maxage": fields.Integer(missing=None),
+    "dbsearchid": fields.String(missing=None),
+    "providers": fields.String(missing=None),
+    "provider": fields.String(missing=None),
+    "offsets": fields.String(missing=None),
+    
 }
 
 
 @app.route('/api')
 @use_args(externalapi_args)
 def api(args):
-    print(args)
-    print(request.url)
+    
     # Map newznab api parameters to internal
     args["category"] = args["cat"]
     args["episode"] = args["ep"]
 
     if args["q"] is not None:
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
-    if config.get(mainSettings.apikey, None) and ("apikey" not in args or args["apikey"] != config.get(mainSettings.apikey)):
+    if mainSettings.apikey.get_with_default(None) and ("apikey" not in args or args["apikey"] != mainSettings.apikey.get()):
         raise Unauthorized("API key not provided or invalid")
     elif args["t"] == "search":
         results = search.search(False, args)
@@ -162,6 +174,9 @@ internalapi_search_args = {
     "query": fields.String(missing=None),
     "category": fields.String(missing=None),
     "title": fields.String(missing=None),
+    "dbsearchid": fields.Integer(missing=None),
+    "providers": fields.String(missing=None), #comma separated list of names of those providers the user picked
+    "offsets": fields.String(missing=None), #comma separated list of offsets for providers in the order of the list above
 
     "minsize": fields.Integer(missing=None),
     "maxsize": fields.Integer(missing=None),
@@ -173,9 +188,12 @@ internalapi_search_args = {
 @app.route('/internalapi/search')
 @requires_auth
 @use_args(internalapi_search_args, locations=['querystring'])
-@cache.memoize()
+@search_cache.memoize()
 def internalapi_search(args):
     logger.debug("Search request with args %s" % args)
+    if session.get("key", None):
+        print("FOund session infos")
+    session["key"] = "info"
     results = search.search(True, args)
     return process_and_jsonify_for_internalapi(results)
 
@@ -196,7 +214,7 @@ internalapi_moviesearch_args = {
 @app.route('/internalapi/moviesearch')
 @requires_auth
 @use_args(internalapi_moviesearch_args, locations=['querystring'])
-@cache.memoize()
+@search_cache.memoize()
 def internalapi_moviesearch(args):
     logger.debug("Movie search request with args %s" % args)
     results = search.search_movie(True, args)
@@ -222,7 +240,7 @@ internalapi_tvsearch_args = {
 @app.route('/internalapi/tvsearch')
 @requires_auth
 @use_args(internalapi_tvsearch_args, locations=['querystring'])
-@cache.memoize()
+@search_cache.memoize()
 def internalapi_tvsearch(args):
     logger.debug("TV search request with args %s" % args)
     results = search.search_show(True, args)
@@ -238,7 +256,7 @@ internalapi__autocomplete_args = {
 @app.route('/internalapi/autocomplete')
 @requires_auth
 @use_args(internalapi__autocomplete_args, locations=['querystring'])
-@cache.memoize()
+@search_cache.memoize()
 def internalapi_autocomplete(args):
     logger.debug("Autocomplete request with args %s" % args)
     if args["type"] == "movie":
@@ -260,7 +278,7 @@ internalapi__getnfo_args = {
 @app.route('/internalapi/getnfo')
 @requires_auth
 @use_args(internalapi__getnfo_args, locations=['querystring'])
-@cache.memoize()
+@search_cache.memoize()
 def internalapi_getnfo(args):
     logger.debug("Get NFO  request with args %s" % args)
     nfo = get_nfo(args["provider"], args["guid"])
@@ -279,7 +297,7 @@ internalapi__getnzb_args = {
 @app.route('/internalapi/getnzb')
 @requires_auth
 @use_args(internalapi__getnzb_args, locations=['querystring'])
-@cache.memoize()
+@search_cache.memoize()
 def internalapi_getnzb(args):
     logger.debug("Get NZB request with args %s" % args)
     return extract_nzb_infos_and_return_response(args["provider"], args["guid"], args["title"], args["searchid"])
@@ -311,7 +329,6 @@ internalapi__addnzb_args = {
 @app.route('/internalapi/addnzb')
 @requires_auth
 @use_args(internalapi__addnzb_args, locations=['querystring'])
-@cache.memoize()
 def internalapi_addnzb(args):
     logger.debug("Add NZB request with args %s" % args)
     if downloaderSettings.downloader.isSetting(DownloaderSelection.nzbget):
@@ -347,20 +364,23 @@ def internalapi_addnzb(args):
 def internalapi_setsettings():
     logger.debug("Set settings request")
     try:
-        config.set_settings_from_dict(request.get_json(force=True))
+        config.import_config_data(request.get_json(force=True))
+        internal_cache.delete_memoized(internalapi_getconfig)
         return "OK"
     except Exception as e:
-        return "Error: %s" % e 
+        logger.exception("Error saving settings")
+        return "Error: %s" % e
 
 
 @app.route('/internalapi/getconfig')
 @requires_auth
+@internal_cache.memoize()
 def internalapi_getconfig():
     logger.debug("Get config request")
     schema = config.get_settings_schema()
-    settings = config.get_settings_as_dict_without_lists()
+    settings = config.cfg
     form = config.get_settings_form()
-    
+
     return jsonify({"schema": schema, "settings": settings, "form": form})
 
 
@@ -372,9 +392,7 @@ def development_staticindex():
 
 def run(host, port):
     context = create_context()
-
     configure_cache()
-
     app.run(host=host, port=port, debug=config.mainSettings.debug.get(), ssl_context=context)
 
 
@@ -389,11 +407,11 @@ def configure_cache():
     else:
         logger.info("Not using any caching")
         cache_type = "null"
-    cache.init_app(app, config={'CACHE_TYPE': cache_type,
-                                "CACHE_DEFAULT_TIMEOUT": mainSettings.cache_timeout.get() * 60,
-                                "CACHE_THRESHOLD": mainSettings.cache_threshold.get(),
-                                "CACHE_DIR": mainSettings.cache_folder.get(),
-                                "CACHE_NO_NULL_WARNING": True})
+    search_cache.init_app(app, config={'CACHE_TYPE': cache_type,
+                                       "CACHE_DEFAULT_TIMEOUT": mainSettings.cache_timeout.get() * 60,
+                                       "CACHE_THRESHOLD": mainSettings.cache_threshold.get(),
+                                       "CACHE_DIR": mainSettings.cache_folder.get(),
+                                       "CACHE_NO_NULL_WARNING": True})
 
 
 def create_context():

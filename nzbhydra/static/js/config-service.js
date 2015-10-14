@@ -1,23 +1,56 @@
 angular
     .module('nzbhydraApp')
-    .service('ConfigService', ConfigService);
+    .factory('ConfigService', ConfigService);
 
-function ConfigService($http) {
+function ConfigService($http, $q) {
+
+    var config;
     
-this.getSettingsAndSchemaAndForm = function() {
-        
-        function loadAll() {
-        return $http.get('/internalapi/getconfig')
-            .then(function (config) {
-               return config.data;
+    var service = {
+        set: setConfig,
+        get: getConfig
+    };
+    
+    return service;
+    
+    
+
+    function setConfig(settings) {
+        console.log("Starting setConfig");
+
+        $http.put('/internalapi/setsettings', settings)
+            .then(function (successresponse) {
+                console.log("Settings saved. Updating cache");
+                config.settings = settings;
+            }, function (errorresponse) {
+                console.log("Error saving settings: " + errorresponse);
             });
-            
+
+    }
+
+    function getConfig() {
+
+        function loadAll() {
+            if (!angular.isUndefined(config)) {
+                var deferred = $q.defer();
+                deferred.resolve(config);
+                console.log("Returning config from cache");
+                return deferred.promise;
+            }
+
+            return $http.get('/internalapi/getconfig')
+                .then(function (configResponse) {
+                    console.log("Updating config cache");
+                    config = configResponse.data;
+                    return configResponse.data;
+                });
+
         }
 
-        
-        return loadAll().then(function(config) {
+
+        return loadAll().then(function (config) {
             return {schema: config.schema, settings: config.settings, form: config.form}
         });
-        
+
     }
 }

@@ -34,7 +34,7 @@
                             />{{ ps.provider }}
                 </td>
                 <td class="text-left">
-                    {{ ps.results }}
+                    {{ providerResultsInfo[ps.provider].loadedResults }}/{{ ps.total }} <a ng-href ng-click="loadMore(ps.provider)">+</a>
                 </td>
                 <td class="text-left">
                     {{ ps.averageResponseTime }}ms
@@ -58,7 +58,7 @@
 </div>
 
 <div class="row" ng-if="providersearches" style="margin-top: 30px">
-
+    <dir-pagination-controls></dir-pagination-controls>
     <table class="table" style="margin-bottom: 0">
         <thead>
         <tr>
@@ -94,23 +94,24 @@
         </thead>
         <tbody>
         
-        <tr ng-repeat-start="resultwithduplicates in filteredResults  track by groupId(resultwithduplicates)" ng-if="0"></tr>
+        <!--<tr ng-repeat-start="resultwithduplicates in filteredResults | limitTo:limitTo track by groupId(resultwithduplicates) " ng-if="0"></tr>-->
+        <tr dir-paginate-start="resultwithduplicates in filteredResults | itemsPerPage:limitTo track by groupId(resultwithduplicates)" ng-show="0"></tr>
         <!-- First result in the list, show regularly -->
-        <tr ng-repeat="result in resultwithduplicates" ng-if="$index == 0">
+        <tr ng-repeat="result in resultwithduplicates track by result.guid" ng-if="$index == 0">
             <td class="col-md-6  text-left">
-                {{ result.title }}
+                {{ ::result.title }}
             </td>
             <td class="col-md-1 text-left">
-                {{ result.provider }}
+                {{ ::result.provider }}
             </td>
             <td class="col-md-1 text-left">
-                {{ result.category }}
+                {{ ::result.category }}
             </td>
             <td class="col-md-1 text-left">
-                {{ result.size | bytes }}
+                {{ ::result.size | bytes }}
             </td>
             <td class="col-md-1 text-left">
-                {{ result.age_days }}d
+                {{ ::result.age_days }}d
             </td>
             <td class="col-md-2 text-left">
                 <a href="#" ng-if="result.has_nfo" ng-click="showNfo(result)">NFO</a>
@@ -124,16 +125,16 @@
             <td class="col-md-6 text-left td-embedded">
             </td>
             <td class="col-md-1 text-left td-embedded">
-                {{ result.provider }}
+                {{ ::result.provider }}
             </td>
             <td class="col-md-1 text-left td-embedded">
-                {{ result.category }}
+                {{ ::result.category }}
             </td>
             <td class="col-md-1 text-left td-embedded">
-                {{ result.size | bytes }}
+                {{ ::result.size | bytes }}
             </td>
             <td class="col-md-1 text-left td-embedded">
-                {{ result.age_days }}d
+                {{ ::result.age_days }}d
             </td>
             <td class="col-md-2 text-left td-embedded">
                 <a ng-if="result.has_nfo" ng-click="showNfo(result)">NFO</a>
@@ -143,10 +144,11 @@
         </tr>
         <!--<tr on-finish-render="stopBlocking()" item="resultwithduplicates">Hallo</tr>-->
         <tr on-finish-render="stopBlocking()" ></tr>
-        <tr ng-repeat-end ng-if="0"></tr>
+        <tr dir-paginate-end ng-show="0"></tr>
         
         </tbody>
     </table>
+    <dir-pagination-controls></dir-pagination-controls>
 
 
 

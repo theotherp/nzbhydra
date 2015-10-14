@@ -90,13 +90,13 @@ class MyTestCase(unittest.TestCase):
         config.cfg["downloader.add_type"] = "direct"
         result = NzbSearchResult(provider="provider", guid="guid", link="oldlink")
         results = [result]
-        results = api.transform_links(results)
+        results = api.transform_results(results)
         self.assertEqual("oldlink", results[0].link)
         
         config.cfg["downloader.add_type"] = "nzb"
         result = NzbSearchResult(provider="provider", guid="guid", link="oldlink")
         results = [result]
-        results = api.transform_links(results)        
+        results = api.transform_results(results)        
         assert "provider=provider" in results[0].link
         assert "t=getnzb" in  results[0].link
         assert "guid=guid" in  results[0].link

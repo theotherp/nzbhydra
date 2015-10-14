@@ -1,4 +1,4 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.bootstrap-slider', 'ui.router', 'blockUI', 'schemaForm', 'mgcrea.ngStrap']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.bootstrap-slider', 'ui.router', 'blockUI', 'schemaForm', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination']);
 
 
 angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig) {
@@ -16,7 +16,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             }
         })
         .state("search", {
-            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage",
+            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&providers&offsets",
             templateUrl: "/static/html/states/search.html",
             controller: "SearchController",
             params: {
@@ -45,6 +45,10 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
 
     $locationProvider.html5Mode(true);
 
+});
+
+nzbhydraapp.config(function(paginationTemplateProvider) {
+    paginationTemplateProvider.setPath('/static/lib/angularUtils-pagination/dirPagination.tpl.html');
 });
 
 

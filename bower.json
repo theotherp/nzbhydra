@@ -47,6 +47,8 @@
     "superagent": "~1.4.0",
     "urijs": "~1.16.1",
     "angular-schema-form-dynamic-select": "~0.12.4",
-    "angular-strap": "~2.3.3"
+    "angular-strap": "~2.3.3",
+    "angular-vs-repeat": "~1.0.0-rc9",
+    "angularUtils-pagination": "angular-utils-pagination#~0.9.0"
   }
 }

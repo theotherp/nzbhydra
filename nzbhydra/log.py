@@ -15,9 +15,9 @@ class SensitiveDataFilter(logging.Filter):
         #     sensitive_strings.append(section.get("username"))
         #     sensitive_strings.append(section.get("password"))
             
-        sensitive_strings.append(config.get(mainSettings.username))
-        sensitive_strings.append(config.get(mainSettings.password))
-        sensitive_strings.append(config.get(mainSettings.apikey))
+        sensitive_strings.append(mainSettings.username.get())
+        sensitive_strings.append(mainSettings.password.get())
+        sensitive_strings.append(mainSettings.apikey.get())
         
         msg = record.msg
         for sensitive_string in sensitive_strings:
@@ -32,11 +32,11 @@ def setup_custom_logger(name):
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
 
     stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setLevel(config.get(mainSettings.consolelevel))
+    stream_handler.setLevel(mainSettings.logging.consolelevel.get())
     stream_handler.setFormatter(formatter)
     
-    file_handler = TimedRotatingFileHandler(filename=config.get(mainSettings.logfilename), when='D', interval=7)
-    file_handler.setLevel(config.get(mainSettings.logfilelevel))
+    file_handler = TimedRotatingFileHandler(filename=mainSettings.logging.logfilename.get(), when='D', interval=7)
+    file_handler.setLevel(mainSettings.logging.logfilelevel.get())
     file_handler.setFormatter(formatter)
 
     logger = logging.getLogger(name)

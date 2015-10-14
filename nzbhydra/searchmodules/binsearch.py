@@ -4,11 +4,11 @@ import re
 import arrow
 from bs4 import BeautifulSoup
 from furl import furl
-from nzbhydra.config import ProviderBinsearchSettings
+from nzbhydra.config import ProviderBinsearchSettings, resultProcessingSettings
 from nzbhydra.exceptions import ProviderResultParsingException, ProviderAccessException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
-from nzbhydra.search_module import SearchModule, EntriesAndQueries
+from nzbhydra.search_module import SearchModule, ProviderProcessingResult
 
 logger = logging.getLogger('root')
 
@@ -21,27 +21,29 @@ class Binsearch(SearchModule):
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = True
         self.category_search = False
-        self.max_results = 250
+        
+        self.last_results_count = 0
 
-    def build_base_url(self):
+    def build_base_url(self, offset=0):
         f = furl(self.host)
         f.path.add("index.php")
-        url = f.add({"max": self.max_results,
+        url = f.add({"max": self.limit,
                      "adv_col": "on",  # collections only 
                      "postdate": "date",  # show pubDate, not age
                      # "adv_nfo": "off", #if enabled only show results with nfo file #todo make configurable. setting it to off doesnt work, its still done
-                     "adv_sort": "date"  # prefer the newest
+                     "adv_sort": "date",  # prefer the newest
+                     "min": offset
                      })
         return url
 
     def get_search_urls(self, args):
-        f = self.build_base_url().add({"q": args["query"]})
-        if args["minsize"]:
-            f = f.add({"minsize": args["minsize"]})
-        if args["maxsize"]:
-            f = f.add({"maxsize": args["maxsize"]})
-        if args["maxage"]:
-            f = f.add({"adv_age": args["maxage"]})
+        f = self.build_base_url(offset=args.offset).add({"q": args.query})
+        # if args["minsize"]:
+        #     f = f.add({"minsize": args["minsize"]})
+        # if args["maxsize"]:
+        #     f = f.add({"maxsize": args["maxsize"]})
+        # if args["maxage"]:
+        #     f = f.add({"adv_age": args["maxage"]})
 
         return [f.tostr()]
 
@@ -69,10 +71,12 @@ class Binsearch(SearchModule):
     def get_moviesearch_urls(self, args):
         return self.get_search_urls(args)
 
-    def process_query_result(self, html, query) -> EntriesAndQueries:
-
+    def process_query_result(self, html, query) -> ProviderProcessingResult:
+        logger.debug("Binsearch started processing results")
+        logger.info("Last results count %d" % self.last_results_count)
         entries = []
-        soup = BeautifulSoup(html, 'html.parser')
+        soup = BeautifulSoup(html, resultProcessingSettings.htmlParser.get())
+        logger.debug("Using HTML parser %s" % resultProcessingSettings.htmlParser.get())
 
         main_table = soup.find('table', attrs={'id': 'r2'})
 
@@ -90,6 +94,7 @@ class Binsearch(SearchModule):
             title = row.find('span', attrs={'class': 's'})
 
             if title is None:
+                logger.debug("Ignored entry because it has no title")
                 continue
             title = title.text
 
@@ -104,6 +109,7 @@ class Binsearch(SearchModule):
             entry.link = "https://www.binsearch.info/fcgi/nzb.fcgi?q=%s" % entry.guid
             info = row.find("span", attrs={"class": "d"})
             if info is None:
+                logger.debug("Ignored entry because it has no info")
                 continue
 
             collection_link = info.find("a")["href"]  # '/?b=MARVELS.AVENGERS.AGE.OF.ULTRON.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250'
@@ -143,7 +149,7 @@ class Binsearch(SearchModule):
 
             # Age
             try:
-                pubdate = re.compile(r"(\d{1,2}\-\w{3}\-\d{4})").search(row.find("td").text).group(1)
+                pubdate = re.compile(r"(\d{1,2}\-\w{3}\-\d{4})").search(row.find_all("td")[-1:][0].text).group(1)
                 pubdate = arrow.get(pubdate, "DD-MMM-YYYY")
                 entry.epoch = pubdate.timestamp
                 entry.pubdate_utc = str(pubdate)
@@ -155,8 +161,12 @@ class Binsearch(SearchModule):
                 logger.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
 
             entries.append(entry)
+            
+        logger.debug("Binsearch finished processing %d results" % len(entries))
+        self.last_results_count = len(entries)
 
-        return EntriesAndQueries(entries=entries, queries=[])
+        logger.warn("Hasmore and total not yet implemented")
+        return ProviderProcessingResult(entries=entries, queries=[], total_known=False, has_more=False, offset=None, total=0) #TODO
 
     def get_nfo(self, guid):
         f = furl(self.base_url)

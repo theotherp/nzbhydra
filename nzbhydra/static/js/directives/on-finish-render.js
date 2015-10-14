@@ -10,6 +10,7 @@ function onFinishRender($timeout) {
         
         if (scope.$last === true) {
                 $timeout(function () {
+                    console.log("Finished last render");
                     scope.$evalAsync(attr.onFinishRender);
                 });
             }

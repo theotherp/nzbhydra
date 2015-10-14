@@ -5,7 +5,6 @@ import requests
 
 app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'filesystem', 'CACHE_DIR': 'cache', 'DEFAULT_THRESHOLD': 500, 'DEFAULT_TIMEOUT': 60 * 60 * 24 * 7})
-#cache = Cache(app, config={'CACHE_TYPE': 'null', 'CACHE_DIR': 'cache', 'DEFAULT_THRESHOLD': 500, 'DEFAULT_TIMEOUT': 60 * 60 * 24 * 7})
 
 
 @app.route('/nzbsorg')
@@ -18,6 +17,11 @@ def apinzbsorg():
 @app.route('/dognzb/api')
 def apidog():
     return handle_request(request.args.items(), "https://api.dognzb.cr/api")
+
+@app.route('/drunken')
+@app.route('/drunkenslug/api')
+def apislug():
+    return handle_request(request.args.items(), "https://drunkenslug.com/api")
 
 
 @app.route('/nzbclub/api/NFO/<path:guid>')

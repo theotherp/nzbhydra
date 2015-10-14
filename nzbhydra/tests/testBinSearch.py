@@ -20,7 +20,7 @@ class MyTestCase(ProviderTestcase):
         
 
     def testUrlGeneration(self):
-        w = Binsearch(config.providerBinsearchSettings)
+        w = Binsearch(config.providerSettings.binsearch)
         self.args.update({"query": "a showtitle", "season": 1, "episode": 2})
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(2, len(urls))
@@ -35,7 +35,7 @@ class MyTestCase(ProviderTestcase):
 
     @freeze_time("2015-09-30 14:00:00", tz_offset=-4)
     def testProcess_results(self):
-        w = Binsearch(config.providerBinsearchSettings)
+        w = Binsearch(config.providerSettings.binsearch)
         with open("mock/binsearch--q-avengers.html", encoding="latin-1") as f:
             body = f.read()
             entries = w.process_query_result(body, "aquery").entries
@@ -54,7 +54,7 @@ class MyTestCase(ProviderTestcase):
             
                 
     def testGetNzbLink(self):
-        n = Binsearch(config.providerBinsearchSettings)
+        n = Binsearch(config.providerSettings.binsearch)
         link = n.get_nzb_link("guid", "title")
         assert "action=nzb" in link
         assert "guid=1" in link

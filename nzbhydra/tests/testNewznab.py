@@ -23,56 +23,29 @@ class MyTestCase(ProviderTestcase):
         self.dognzbdb = Provider(name="DOGNzb")
         self.dognzbdb.save()
         
-        config.providerNewznab1Settings.enabled = True
-        config.providerNewznab1Settings.host.set("http://127.0.0.1:5001/nzbsorg")
-        config.providerNewznab1Settings.apikey.set("apikeynzbsorg")
-        self.n1 = NewzNab(config.providerNewznab1Settings)
-        self.n2 = NewzNab(config.providerNewznab2Settings)
+        
+        config.providerSettings.newznab1.enabled = True
+        config.providerSettings.newznab1.host.set("http://127.0.0.1:5001/nzbsorg")
+        config.providerSettings.newznab1.apikey.set("apikeynzbsorg")
+        self.n1 = NewzNab(config.providerSettings.newznab1)
+        self.n2 = NewzNab(config.providerSettings.newznab2)
         
     
-    @freeze_time("2015-09-20 14:00:00", tz_offset=-4)
+    @freeze_time("2015-10-12 20:00:00", tz_offset=-4)
     def testParseJsonToNzbSearchResult(self):
         
         #nzbsorg
-        with open("mock/nzbsorg_q_avengers_3results.json") as f:
+        with open("mock/nzbsorg_q_avengers_3results.xml") as f:
             entries = self.n1.process_query_result(f.read(), "aquery").entries
         self.assertEqual(3, len(entries))
         
-        self.assertEqual(entries[0].title, "Avengers.Age.Of.Ultron.2015.FRENCH.720p.BluRay.x264-Goatlove")
-        assert entries[0].size == 6719733587
-        assert entries[0].guid == "9c9d30fa2767e05ffd387db52d318ad7"
-        self.assertEqual(entries[0].age_days, 2)
-        self.assertEqual(entries[0].epoch, 1442581037)
-        self.assertEqual(entries[0].pubdate_utc, "2015-09-18T12:57:17+00:00")
+        self.assertEqual(entries[0].title, "AVENGERS AGE OF ULTRON (2015)")
+        assert entries[0].size == 2893890900
+        assert entries[0].guid == "eff551fbdb69d6777d5030c209ee5d4b"
+        self.assertEqual(entries[0].age_days, 1)
+        self.assertEqual(entries[0].epoch, 1444584857)
+        self.assertEqual(entries[0].pubdate_utc, "2015-10-11T17:34:17+00:00")
         
-        
-        assert entries[1].title == "Avengers.Age.of.Ultron.2015.1080p.BluRay.x264.AC3.5.1-BUYMORE"
-        assert entries[1].size == 4910931143
-        assert entries[1].guid == "eb74f6c0bf2125c0b410936276ac38f0"
-        
-        assert entries[2].title == "Avengers.Age.of.Ultron.2015.1080p.BluRay.DTS.x264-CyTSuNee"
-        assert entries[2].size == 15010196044
-        assert entries[2].guid == "41b305ac99507f70ed6a10e45177065c"
-        
-        
-        n = NewzNab(config.providerNewznab2Settings)
-        #dognzb
-        with open("mock/dognzb_q_avengers_3results.json") as f:
-            entries = self.n2.process_query_result(f.read(), "aquery").entries
-        pprint(entries)
-        assert len(entries) == 3
-        
-        assert entries[0].title == "Avengers.Age.Of.Ultron.2015.FRENCH.720p.BluRay.x264-Goatlove"
-        assert entries[0].size == 6718866639
-        assert entries[0].guid == "c6214fe5ae317b36906f0507042ca889"
-        
-        assert entries[1].title == "Avengers.Age.Of.Ultron.2015.1080p.BluRay.Hevc.X265.DTS-SANTI"
-        assert entries[1].size == 5674463318
-        assert entries[1].guid == "0199594cb9af69efb663e761848a76c2"
-        
-        assert entries[2].title == "Avengers.Age.Of.Ultron.2015.Truefrench.720p.BluRay.x264-AVITECH"
-        assert entries[2].size == 6340781948
-        assert entries[2].guid == "ea1b68d2ff97a5f0528b3d22c73f11ad"
         
     
     def testNewznabSearchQueries(self):

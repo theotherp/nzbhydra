@@ -70,7 +70,8 @@ def test_for_duplicate(search_result_1, search_result_2):
     :type search_result_1: NzbSearchResult
     :type search_result_2: NzbSearchResult
     """
-
+    if search_result_1.provider == search_result_2.provider:
+        return False
     if search_result_1.title.lower() != search_result_2.title.lower():
         return False
     if not search_result_1.size or not search_result_2.size:
@@ -138,8 +139,8 @@ def get_root_url():
     return request.url_root
 
 
-def transform_links(results, dbsearchid):
-    if config.isSettingSelection(downloaderSettings.nzbaccesstype, NzbAccessTypeSelection.direct):  # We don't change the link, the results lead directly to the NZB
+def transform_results(results, dbsearchid):
+    if downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.direct:  # We don't change the link, the results lead directly to the NZB
         return results
 
     for i in results:
@@ -164,13 +165,15 @@ def transform_links(results, dbsearchid):
         
     return results
 
+def sizeof_fmt(num, suffix='B'):
+    for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+        if abs(num) < 1024.0:
+            return "%3.1f%s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f%s%s" % (num, 'Yi', suffix)
 
 def process_for_external_api(results):
-    searchresults = []
-    for r in results["results"].values(): #results is a dict with a list of providerapiaccess lists and results. those results are again a dictionary of provider to the provider's search results
-        searchresults.extend(r.results) #That is then a ResultsAndProviderSearchDbEntry
-    
-    results = transform_links(searchresults, results["dbsearchid"]) #todo dbsearchid
+    results = transform_results(results["results"], results["dbsearchid"]) #todo dbsearchid
     
     return results
 
@@ -181,9 +184,15 @@ def process_for_internal_api(search_result):
     providersearchdbentries = []
     for results_and_dbentry in search_result["results"].values():
         nzbsearchresults.extend(results_and_dbentry.results)
-        providersearchdbentries.append(ProviderSearchSchema().dump(results_and_dbentry.dbentry).data)
+        provider_search_info = ProviderSearchSchema().dump(results_and_dbentry.dbentry).data
+        provider_search_info["total"] = results_and_dbentry.total_results
+        provider_search_info["offset"] = results_and_dbentry.offset
+        provider_search_info["loaded_results"] = results_and_dbentry.loaded_results
+        provider_search_info["total_known"] = results_and_dbentry.total_known
+        provider_search_info["has_more"] = results_and_dbentry.has_more
+        providersearchdbentries.append(provider_search_info)
 
-    nzbsearchresults = transform_links(nzbsearchresults, search_result["dbsearchid"])
+    nzbsearchresults = transform_results(nzbsearchresults, search_result["dbsearchid"])
 
     grouped_by_sameness = find_duplicates(nzbsearchresults)
 
@@ -193,11 +202,13 @@ def process_for_internal_api(search_result):
     for g in results:
         serialized.append(serialize_nzb_search_result(g).data)
 
-    # We give each group of results a unique count value by which they can be identified later even if they're "taken apart"
-    for count, group in enumerate(serialized):
+    allresults = []
+    # We give each group of results a unique value by which they can be identified later even if they're "taken apart"
+    for group in serialized:
         for i in group:
-            i["count"] = count
-    return {"results": serialized, "providersearches": providersearchdbentries, "searchentryid": search_result["dbsearchid"]}
+            i["hash"] = hash(group[0]["guid"])
+            allresults.append(i)
+    return {"results": allresults, "providersearches": providersearchdbentries, "searchentryid": search_result["dbsearchid"]}
 
 
 def serialize_nzb_search_result(result):
@@ -207,7 +218,7 @@ def serialize_nzb_search_result(result):
 def get_nfo(provider_name, guid):
     nfo = None
     result = {}
-    for p in providers.providers:
+    for p in providers.configured_providers:
         if p.name == provider_name:
             nfo = p.get_nfo(guid)
             break
@@ -229,7 +240,7 @@ def get_nzb_link(provider_name, guid, title, searchid):
     when the NZB will be actually downloaded later (by us or a downloader) 
     :return: str
     """
-    for p in providers.providers:
+    for p in providers.configured_providers:
         if p.name == provider_name:
             link = p.get_nzb_link(guid, title)
 
@@ -263,7 +274,7 @@ def download_nzb_and_log(provider_name, guid, title, searchid) -> ProviderNzbDow
     :param searchid: the id of the ProviderSearch entry so we can link the download to a search
     :return: ProviderNzbDownloadResult
     """
-    for p in providers.providers:
+    for p in providers.configured_providers:
         if p.name == provider_name:
 
             link = p.get_nzb_link(guid, title)

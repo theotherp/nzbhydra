@@ -10,8 +10,8 @@ from nzbhydra.config import ProviderSettings, searchingSettings
 from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus, Provider
 from nzbhydra.exceptions import ProviderResultParsingException, ProviderAuthException, ProviderAccessException
 
-ResultsAndProviderSearchDbEntry = collections.namedtuple("ResultsAndProviderSearchDbEntry", "results dbentry")
-EntriesAndQueries = collections.namedtuple("ResultsAndQueris", "entries queries")
+QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "results dbentry total_results offset loaded_results total_known has_more")
+ProviderProcessingResult = collections.namedtuple("ProviderProcessingResult", "entries queries offset total total_known has_more")
 
 
 class SearchModule(object):
@@ -26,19 +26,19 @@ class SearchModule(object):
         self.supports_queries = True
         self.needs_queries = False
         self.category_search = True  # If true the provider supports searching in a given category (possibly without any query or id)
-        
+        self.limit = 100
+
     @property
     def provider(self):
         return Provider.get(Provider.name == self.settings.name.get())
-    
-    @property 
+
+    @property
     def host(self):
         return self.settings.host.get()
-    
+
     @property
     def name(self):
         return self.settings.name.get()
-
 
     @property
     def search_ids(self):
@@ -46,22 +46,17 @@ class SearchModule(object):
 
     @property
     def generate_queries(self):
-        return True #TODO pass when used check for internal vs external
-        #return self.provider.settings.get("generate_queries", True)  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for providers which don't support id-based searches
+        return True  # TODO pass when used check for internal vs external
+        # return self.provider.settings.get("generate_queries", True)  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for providers which don't support id-based searches
 
-    # @property
-    # def max_api_hits(self):
-    #     return self.provider.settings.get("max_api_hits")  # todo: when to check this? when picking a provider? Also this is checked by the provider and we check the returned result, so do we really need this?
-    # 
-    # @property
-    # def api_hits_reset(self):
-    #     return self.provider.settings.get("api_hits_reset")
 
-    def search(self, args):
-        urls = self.get_search_urls(args)
-        return self.execute_queries(urls)
 
-    def search_movie(self, args: Dict[str, str]) -> ResultsAndProviderSearchDbEntry:
+    def search(self, search_request):
+        urls = self.get_search_urls(search_request)
+        queries_execution_result = self.execute_queries(urls)
+        return queries_execution_result
+
+    def search_movie(self, args: Dict[str, str]) -> QueriesExecutionResult:
         if args["query"] is None and args["title"] is None and args["imdbid"] is None and self.needs_queries:
             self.logger.error("Movie search without query or IMDB id or title is not possible with this provider")
             return []
@@ -82,7 +77,7 @@ class SearchModule(object):
             urls = self.get_moviesearch_urls(args)
         return self.execute_queries(urls)
 
-    def search_show(self, args: Dict[str, str]) -> ResultsAndProviderSearchDbEntry:
+    def search_show(self, args: Dict[str, str]) -> QueriesExecutionResult:
         if args["query"] is None and args["title"] is None and args["rid"] and args["tvdbid"] is None and self.needs_queries:
             self.logger.error("TV search without query or id or title is not possible with this provider")
             return []
@@ -122,12 +117,14 @@ class SearchModule(object):
         # if module doesnt support it possibly use (configurable) size restrictions when searching
         return []
 
-    def process_query_result(self, result: str, query: str) -> EntriesAndQueries:
+    def process_query_result(self, result: str, query: str) -> ProviderProcessingResult:
         return []
 
     def check_auth(self, body: str):
         # check the response body to see if request was authenticated. If yes, do nothing, if no, raise exception 
         return []
+
+    
 
     disable_periods = [0, 15, 30, 60, 3 * 60, 6 * 60, 12 * 60, 24 * 60]
 
@@ -191,7 +188,7 @@ class SearchModule(object):
     def get_nzb_link(self, guid, title):
         return None
 
-    def execute_queries(self, queries) -> ResultsAndProviderSearchDbEntry:
+    def execute_queries(self, queries) -> QueriesExecutionResult:
         # todo call all queries, check if further should be called, return all results when done or timeout or whatever
         """
 
@@ -201,6 +198,10 @@ class SearchModule(object):
         executed_queries = set()
         psearch = ProviderSearch(provider=self.provider)
         psearch.save()
+        total_results = 0
+        offset = 0
+        total_known = False
+        has_more = False
         while len(queries) > 0:
             query = queries.pop()
             if query in executed_queries:
@@ -219,9 +220,15 @@ class SearchModule(object):
                     self.check_auth(request.text)
                     self.logger.debug("Successfully loaded URL %s" % request.url)
                     try:
+
                         parsed_results = self.process_query_result(request.text, query)
                         results.extend(parsed_results.entries)  # Retrieve the processed results
                         queries.extend(parsed_results.queries)  # Add queries that were added as a result of the parsing, e.g. when the next result page should also be loaded
+                        total_results += parsed_results.total
+                        offset = parsed_results.offset
+                        total_known = parsed_results.total_known
+                        has_more = parsed_results.has_more
+
                         papiaccess.response_successful = True
                         self.handle_provider_success()
                     except Exception as e:
@@ -247,10 +254,10 @@ class SearchModule(object):
                 papiaccess.response_successful = False
             finally:
                 papiaccess.save()
-                psearch.results = len(results)
+                psearch.results = total_results
                 psearch.successful = papiaccess.response_successful
                 psearch.save()
-        return ResultsAndProviderSearchDbEntry(results=results, dbentry=psearch)
+        return QueriesExecutionResult(results=results, dbentry=psearch, total_results=total_results, offset=offset, loaded_results=len(results), total_known=total_known, has_more=has_more)
 
 
 def get_instance(provider):

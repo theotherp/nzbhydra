@@ -9,13 +9,13 @@ import requests
 from nzbhydra.exceptions import ProviderResultParsingException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
-from nzbhydra.search_module import SearchModule, EntriesAndQueries
+from nzbhydra.search_module import SearchModule, ProviderProcessingResult
 
 logger = logging.getLogger('root')
 
 
 class NzbClub(SearchModule):
-    # TODO init of config which is dynmic with its path
+    
 
     def __init__(self, provider):
         super(NzbClub, self).__init__(provider)
@@ -38,7 +38,7 @@ class NzbClub(SearchModule):
         f = self.build_base_url().add({"q": args["query"]})
         return [f.tostr()]
 
-    def get_showsearch_urls(self, args) -> EntriesAndQueries:
+    def get_showsearch_urls(self, args) -> ProviderProcessingResult:
         if args["season"] is not None:
             # Restrict query if season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
             if args["episode"] is not None:
@@ -51,6 +51,7 @@ class NzbClub(SearchModule):
         return self.get_search_urls(args)
 
     def process_query_result(self, xml, query):
+        logger.debug("%s started processing results" % self.name)
         entries = []
         try:
             tree = ET.fromstring(xml)
@@ -93,8 +94,9 @@ class NzbClub(SearchModule):
             entry.age_days = (arrow.utcnow() - pubdate).days
 
             entries.append(entry)
-
-        return EntriesAndQueries(entries=entries, queries=[])
+            
+        logger.debug("%s finished processing results" % self.name)
+        return ProviderProcessingResult(entries=entries, queries=[])
     
     def get_nfo(self, guid):
         f = furl(self.settings.host.get())

@@ -13,7 +13,7 @@ from nzbhydra.config import ProviderNewznabSettings
 from nzbhydra.datestuff import now
 from nzbhydra.exceptions import ProviderAuthException, ProviderAccessException, ProviderResultParsingException
 from nzbhydra.nzb_search_result import NzbSearchResult
-from nzbhydra.search_module import SearchModule, EntriesAndQueries
+from nzbhydra.search_module import SearchModule, ProviderProcessingResult
 
 logger = logging.getLogger('root')
 
@@ -70,7 +70,6 @@ def map_category(category):
             return []
 
 
-
 class NewzNab(SearchModule):
     # todo feature: read caps from server on first run and store them in the config/database
     def __init__(self, settings: ProviderNewznabSettings):
@@ -78,31 +77,30 @@ class NewzNab(SearchModule):
         self.settings = settings  # Already done by super.__init__ but this way PyCharm knows the correct type
         self.module = "newznab"
         self.category_search = True
-        self.limit = 100
 
     def __repr__(self):
         return "Provider: %s" % self.name
 
-    def build_base_url(self, action, category, o="json", extended=1):
+    def build_base_url(self, action, category, offset=0):
         f = furl(self.settings.host.get())
         f.path.add("api")
-        url = f.add({"apikey": self.settings.apikey.get(), "o": o, "extended": extended, "t": action, "limit": self.limit, "offset": 0})
+        url = f.add({"apikey": self.settings.apikey.get(), "extended": 1, "t": action, "limit": self.limit, "offset": offset})
 
         categories = map_category(category)
         if len(categories) > 0:
             url.add({"cat": ",".join(str(x) for x in categories)})
         return url
 
-    def get_search_urls(self, args):
-        f = self.build_base_url("search", args["category"])
-        if args["query"]:
-            f = f.add({"q": args["query"]})
-        if args["minsize"]:
-            f = f.add({"minsize": args["minsize"]})
-        if args["maxsize"]:
-            f = f.add({"maxsize": args["maxsize"]})
-        if args["maxage"]:
-            f = f.add({"age": args["maxage"]})
+    def get_search_urls(self, search_request):
+        f = self.build_base_url("search", search_request.category, offset=search_request.offset)
+        if search_request.query:
+            f = f.add({"q": search_request.query})
+        # if args["minsize"]:
+        #     f = f.add({"minsize": args["minsize"]})
+        # if args["maxsize"]:
+        #     f = f.add({"maxsize": args["maxsize"]})
+        # if args["maxage"]:
+        #     f = f.add({"age": args["maxage"]})
         return [f.url]
 
     def get_showsearch_urls(self, args):
@@ -110,7 +108,7 @@ class NewzNab(SearchModule):
             args["category"] = "TV"
 
         if args["query"] is None:
-            url = self.build_base_url("tvsearch", args["category"])
+            url = self.build_base_url("tvsearch", args["category"], offset=self.get_provider_offset(args))
             if args["rid"] is not None:
                 url.add({"rid": args["rid"]})
             if args["tvdbid"] is not None:
@@ -120,7 +118,7 @@ class NewzNab(SearchModule):
             if args["season"] is not None:
                 url.add({"season": args["season"]})
         else:
-            url = self.build_base_url("search", args["category"]).add({"q": args["query"]})
+            url = self.build_base_url("search", args["category"], offset=self.get_provider_offset(args)).add({"q": args["query"]})
 
         return [url.url]
 
@@ -128,42 +126,38 @@ class NewzNab(SearchModule):
         if args["category"] is None:
             args["category"] = "Movies"
         if args["query"] is None:
-            url = self.build_base_url("movie", args["category"])
+            url = self.build_base_url("movie", args["category"], offset=self.get_provider_offset(args))
             if args["imdbid"] is not None:
                 url.add({"imdbid": args["imdbid"]})
         else:
-            url = self.build_base_url("search", args["category"]).add({"q": args["query"]})
+            url = self.build_base_url("search", args["category"], offset=self.get_provider_offset(args)).add({"q": args["query"]})
 
         return [url.url]
 
     test = 0
 
-    def process_query_result(self, json_response, query) -> EntriesAndQueries:
-        import json
+    def process_query_result(self, xml_response, query) -> ProviderProcessingResult:
+        logger.debug("%s started processing results" % self.name)
+
         entries = []
         queries = []
 
         try:
-            json_result = json.loads(json_response)
-        except:
-            logger.exception("Error parsing newznab response: %s" % json_response[:500])
-            logger.debug(json_response)
-            raise ProviderResultParsingException("Unable to parse response", self)
-
-        total = int(json_result["channel"]["response"]["@attributes"]["total"])
-        offset = int(json_result["channel"]["response"]["@attributes"]["offset"])
+            tree = ET.fromstring(xml_response)
+        except Exception:
+            logger.exception("Error parsing XML: %s..." % xml_response[:500])
+            logger.debug(xml_response)
+            raise ProviderResultParsingException("Error parsing XML", self)
+        total = int(tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}).attrib["total"])
+        offset = int(tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}).attrib["offset"])
         if total == 0:
             logger.info("Query at %s returned no results" % self)
-            return EntriesAndQueries(entries=entries, queries=[])
-        result_items = json_result["channel"]["item"]
-        if "title" in result_items:
-            # Only one item, put it in a list so the for-loop works
-            result_items = [result_items]
-        for item in result_items:
+            return ProviderProcessingResult(entries=entries, queries=[])
+        for item in tree.find("channel").findall("item"):
             entry = NzbSearchResult()
-            entry.title = item["title"]
-            entry.link = item["link"]
-            entry.pubDate = item["pubDate"]
+            entry.title = item.find("title").text
+            entry.link = item.find("link").text
+            entry.pubDate = item.find("pubDate").text
             pubdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
             entry.epoch = pubdate.timestamp
             entry.pubdate_utc = str(pubdate)
@@ -173,18 +167,19 @@ class NewzNab(SearchModule):
             entry.attributes = []
 
             categories = []
-            for i in item["attr"]:
-                if i["@attributes"]["name"] == "size":
-                    entry.size = int(i["@attributes"]["value"])
-                    # entry.sizeReadable = sizeof_readable(entry.size)
-                elif i["@attributes"]["name"] == "guid":
-                    entry.guid = i["@attributes"]["value"]
-                elif i["@attributes"]["name"] == "category":
-                    categories.append(int(i["@attributes"]["value"]))
-                elif i["@attributes"]["name"] == "poster":
-                    entry.poster = (i["@attributes"]["value"])
+            for i in item.findall("./newznab:attr", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}):
+                attribute_name = i.attrib["name"]
+                attribute_value = i.attrib["value"]
+                if attribute_name == "size":
+                    entry.size = int(attribute_value)
+                elif attribute_name == "guid":
+                    entry.guid = attribute_value
+                elif attribute_name == "category":
+                    categories.append(int(attribute_value))
+                elif attribute_name == "poster":
+                    entry.poster = attribute_value
                 # Store all the extra attributes, we will return them later for external apis
-                entry.attributes.append({"name": i["@attributes"]["name"], "value": i["@attributes"]["value"]})
+                entry.attributes.append({"name": attribute_name, "value": attribute_value})
             # Map category. Try to find the most specific category (like 2040), then the more general one (like 2000)
             categories = sorted(categories, reverse=True)  # Sort to make the most specific category appear first
             if len(categories) > 0:
@@ -195,18 +190,18 @@ class NewzNab(SearchModule):
                             break
 
             entries.append(entry)
-        offset += self.limit
-        if offset < total and offset < 400:
-            f = furl(query)
-            query = f.remove("offset").add({"offset": offset})
-            queries.append(query.url)
-
-            return EntriesAndQueries(entries=entries, queries=queries)
-        return EntriesAndQueries(entries=entries, queries=[])
+        # offset += self.limit
+        # if offset < total and offset < 400:
+        #     f = furl(query)
+        #     query = f.remove("offset").add({"offset": offset})
+        #     queries.append(query.url)
+        # 
+        #     logger.debug("%s started processing results" % self.name)
+        #     return ProviderProcessingResult(entries=entries, queries=queries)
+        # logger.debug("%s finished processing results" % self.name)
+        return ProviderProcessingResult(entries=entries, queries=[], offset=offset, total=total, total_known=True, has_more=offset + len(entries) < total)
 
     def check_auth(self, body: str):
-        # TODO: unfortunately in case of an auth problem newznab doesn't return json even if requested. So this would be easier/better if we used XML responses instead of json
-        # See http://newznab.readthedocs.org/en/latest/misc/api/ for full list
         if '<error code="100"' in body:
             raise ProviderAuthException("The API key seems to be incorrect.", self)
         if '<error code="101"' in body:

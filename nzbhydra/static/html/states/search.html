@@ -115,32 +115,15 @@
             <div class="form-group">
 
                 <label for="inputEmail3" class="col-sm-1 control-label">Providers</label>
+                <table style="background-color: transparent; border-spacing: 35px; border-collapse: inherit;">
+                    <tr>
+                        <td ng-repeat="provider in availableProviders">
+                            <input type="checkbox" class="form-control" ng-model="provider.activated"/>{{ provider.name  }}
+                        </td>
+                    </tr>
+                </table>
+                
 
-                <div class="col-sm-1">
-                    <div class="input-group">
-                        <input type="checkbox" class="form-control">Provider1
-                    </div>
-                </div>
-                <div class="col-sm-1">
-                    <div class="input-group">
-                        <input type="checkbox" class="form-control">Provider2
-                    </div>
-                </div>
-                <div class="col-sm-1">
-                    <div class="input-group">
-                        <input type="checkbox" class="form-control">Provider3
-                    </div>
-                </div>
-                <div class="col-sm-1">
-                    <div class="input-group">
-                        <input type="checkbox" class="form-control">Provider4
-                    </div>
-                </div>
-                <div class="col-sm-1">
-                    <div class="input-group">
-                        <input type="checkbox" class="form-control">Provider5
-                    </div>
-                </div>
 
             </div>
         </form>

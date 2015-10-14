@@ -1,12 +1,16 @@
 angular
     .module('nzbhydraApp')
-    .service('SearchService', SearchService);
+    .factory('SearchService', SearchService);
 
 function SearchService($http) {
-    this.search = function (category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage) {
+    
 
+    var lastExecutedQuery;
+    
+    var service = {search: search, loadMore: loadMore};
+    return service;
 
-        //Search start. TODO: Move to service
+    function search(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, selectedProviders) {
         console.log("Category: " + category);
         var uri;
         if (category.indexOf("Movies") > -1) {
@@ -53,25 +57,45 @@ function SearchService($http) {
         if (!_.isNullOrEmpty(maxage)) {
             uri.addQuery("maxage", maxage);
         }
-        
+        if (!_.isNullOrEmpty(selectedProviders)) {
+            uri.addQuery("providers", selectedProviders);
+        }
+
         uri.addQuery("category", category);
 
         console.log("Calling " + uri);
+        lastExecutedQuery = uri;
         return $http.get(uri).then(processData);
-
-
-        function processData(response) {
+        
+    }
+    
+    function loadMore(providers, offsets) {
+        lastExecutedQuery.removeQuery("providers");
+        lastExecutedQuery.removeQuery("offsets");
+        lastExecutedQuery.addQuery("providers", providers.join(","));
+        lastExecutedQuery.addQuery("offsets", offsets.join(","));
+        
+        console.log("Calling " + lastExecutedQuery);
+        return $http.get(lastExecutedQuery).then(processData);
+    }
+    
+    function processData(response) {
             var results = response.data.results;
             var providersearches = response.data.providersearches;
+        
+            results = _.groupBy(results, function(element) {
+                return element.hash; 
+            });
 
             //Sum up response times of providers from individual api accesses
+            //TODO: Move this to search result controller because we need to update it every time we loaded more results
             _.each(providersearches, function (ps) {
                 ps.averageResponseTime = _.reduce(ps.api_accesses, function (memo, rp) {
                     return memo + rp.response_time;
                 }, 0);
                 ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
             });
-            
+
 
             //Filter the events once. Not all providers follow or allow all the restrictions, so we enfore them here
             filteredResults = _.filter(results, function (item) {
@@ -94,13 +118,10 @@ function SearchService($http) {
 
             return {"results": results, "providersearches": providersearches}
         }
-
-
-    };
 }
 
 _.mixin({
-    isNullOrEmpty: function(string) {
-      return (_.isUndefined(string) || _.isNull(string) || string.trim().length === 0)
+    isNullOrEmpty: function (string) {
+        return (_.isUndefined(string) || _.isNull(string) || string.trim().length === 0)
     }
-  });
+});

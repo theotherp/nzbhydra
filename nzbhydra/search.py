@@ -1,14 +1,17 @@
 import concurrent
 from concurrent.futures import ThreadPoolExecutor
 import logging
+from types import SimpleNamespace
 
 import arrow
-from requests_futures.sessions import FuturesSession
-from nzbhydra.config import SearchingSettings, searchingSettings
+import collections
 
+from requests_futures.sessions import FuturesSession
+
+from nzbhydra.config import searchingSettings
 from nzbhydra.database import ProviderStatus, Search
 from nzbhydra import config
-from nzbhydra import providers 
+from nzbhydra import providers
 
 categories = {'All': {"pretty": "All", "index": 0},
               'Movies': {"pretty": "Movie", "index": 1},
@@ -25,22 +28,26 @@ categories = {'All': {"pretty": "All", "index": 0},
               'XXX': {"pretty": "XXX", "index": 12}
               }
 
-
 logger = logging.getLogger('root')
 
 session = FuturesSession()
 
+SearchRequest = collections.namedtuple("SearchRequest", "query imdbid tvdbid rid title category minsize maxsize minage maxage offset limit")
+    
 
-def pick_providers(query_supplied=True, identifier_key=None, category=None, internal=True):
+def pick_providers(query_supplied=True, identifier_key=None, internal=True, selected_providers=None):
     picked_providers = []
-
-    for p in providers.providers:
+    selected_providers = selected_providers.split(",") if selected_providers is not None else None
+    for p in providers.configured_providers:
         if not p.settings.enabled.get():
             logger.debug("Did not pick %s because it is disabled" % p)
             continue
+        if selected_providers and p.name not in selected_providers:
+            logger.debug("Did not pick %s because it was not selected by the user" % p)
+            continue
         try:
             status = p.provider.status.get()
-            if status.disabled_until > arrow.utcnow() and not searchingSettings.ignoreTemporarilyDisabled.get_with_default(False):
+            if status.disabled_until > arrow.utcnow() and searchingSettings.temporarilyDisableProblemIndexers.get_with_default(True):
                 logger.info("Did not pick %s because it is disabled temporarily due to an error: %s" % (p, status.reason))
                 continue
         except ProviderStatus.DoesNotExist:
@@ -65,21 +72,82 @@ def pick_providers(query_supplied=True, identifier_key=None, category=None, inte
     return picked_providers
 
 
+class Hashabledict(dict):
+    def __hash__(self):
+        return hash(frozenset(self))
+
+
+pseudo_cache = {}
 
 
 def search(internal, args):
-    logger.info("Searching for query '%s'" % args["query"])
-    dbsearch = Search(internal=internal, query=args["query"], category=args["category"])
-    dbsearch.save()
-    providers_to_call = pick_providers(query_supplied=True, internal=internal)
-
-    results_by_provider = start_search_futures(providers_to_call, "search", args)
-    for i in results_by_provider.values():
-        providersearchentry = i.dbentry
-        providersearchentry.search = dbsearch
-        providersearchentry.save()
+    search_request = SimpleNamespace(query=args["query"], tvdbid=args["tvdbid"], type="general", category=args["cat"], offset=args["offset"], dbsearchid=None, limit=args["limit"]) # to expand
     
-    return {"results": results_by_provider, "dbsearchid": dbsearch.id}
+    args2 = args.copy()
+    args2["offset"] = None
+    args2["limit"] = None
+    
+    h = hash(frozenset(args2.items()))
+    if h in pseudo_cache.keys():
+        cache_entry = pseudo_cache[h]
+        print("Found this query in cache. Would try to return from already loaded results")
+        # Load the next <limit> results with offset <offset>
+        # If we need more results than are cached we need to call the providers again. We check which providers actually have more results to offer
+        # and increase their offset by their limit
+        if search_request.offset + search_request.limit > len(cache_entry["results"]):
+            print("We want %d + %d results but only have %d cached" % (search_request.offset, search_request.limit, len(cache_entry["results"])))
+            providers_to_call = {}
+            for provider, info in cache_entry["provider_infos"].items():
+                if info["has_more"]:
+                    print("Would now get more results from %s" % provider)
+                    provider_search_request = info["search_request"]
+                    provider_search_request.offset += 100
+                    print("Increased the offset for %s to %d" % (provider, provider_search_request.offset))
+                    providers_to_call[provider] = provider_search_request
+                else:
+                    print("%s has no more results to offer" % provider)
+            result = search_and_handle_db(Search().get(Search.id == cache_entry["dbsearchid"]), providers_to_call)
+            nzb_search_results = []
+            for provider, queries_execution_result in result["results"].items():
+                nzb_search_results.extend(queries_execution_result.results)
+                cache_entry["provider_search_entries"][provider] = queries_execution_result.dbentry
+                cache_entry[provider] = {"offset": queries_execution_result.offset, "has_more": queries_execution_result.has_more}
+            cache_entry["results"].extend(nzb_search_results)
+        else:
+            print("We want %d + %d results and still have %d cached" % (search_request.offset, search_request.limit, len(cache_entry["results"])))
+    else:
+        print("Didn't find this query in cache")
+
+        cache_entry = {"results": [], "provider_search_entries": {}}
+
+        #logger.info("Searching for query '%s'" % args["query"])
+        if search_request.dbsearchid is None:
+            # This is a "new" search
+            dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category)
+        else:
+            # We're actually only loading additional results
+            dbsearch = Search().get(Search.id == args["dbsearchid"])
+        dbsearch.save()
+        providers_to_call = pick_providers(query_supplied=True, internal=internal, selected_providers=args["providers"])
+
+        
+        providers_and_search_requests = {}
+        for p in providers_to_call:
+            providers_and_search_requests[p] = search_request
+        result = search_and_handle_db(dbsearch, providers_and_search_requests)
+        nzb_search_results = []
+        cache_entry["provider_infos"] = {}
+        for provider, queries_execution_result in result["results"].items():
+            nzb_search_results.extend(queries_execution_result.results)
+            cache_entry["provider_search_entries"][provider] = queries_execution_result.dbentry
+            cache_entry["provider_infos"][provider] = {"search_request": search_request, "has_more": queries_execution_result.has_more}
+        cache_entry["results"].extend(nzb_search_results)
+        cache_entry["dbsearchid"] = result["dbsearchid"]
+
+        pseudo_cache[h] = cache_entry
+
+    
+    return {"results": cache_entry["results"][search_request.offset:(search_request.offset + search_request.limit)], "provider_searches": cache_entry["provider_search_entries"], "dbsearchid": cache_entry["dbsearchid"]}
 
 
 def search_show(internal, args):
@@ -88,28 +156,27 @@ def search_show(internal, args):
     identifier_value = args[identifier_key] if identifier_key else None
     dbsearch = Search(internal=internal, query=args["query"], identifier_key=identifier_key, identifier_value=identifier_value, season=args["season"], category=args["category"])
     dbsearch.save()
-    providers_to_call = pick_providers(query_supplied=True if args["query"] is not None else False, identifier_key=identifier_key, category=args["category"], internal=internal)
+    providers_to_call = pick_providers(query_supplied=True if args["query"] is not None else False, identifier_key=identifier_key, internal=internal)
 
-    results_by_provider = start_search_futures(providers_to_call, "search_show", args)
-    for i in results_by_provider.values():
-        providersearchentry = i.dbentry
-        providersearchentry.search = dbsearch
-        providersearchentry.save()
-    
-    return {"results": results_by_provider, "dbsearchid": dbsearch.id}
-    
+    return search_and_handle_db(args, dbsearch, providers_to_call)
+
 
 def search_movie(internal, args):
     logger.info("Searching for movie")  # todo:extend
     dbsearch = Search(internal=internal, query=args["query"], category=args["category"], identifier_key="imdbid" if args["imdbid"] is not None else None, identifier_value=args["imdbid"] if args["imdbid"] is not None else None)
     dbsearch.save()
-    providers_to_call = pick_providers(query_supplied=True if args["query"] is not None else False, identifier_key="imdbid" if args["imdbid"] is not None else None, category=args["category"], internal=internal)
+    providers_to_call = pick_providers(query_supplied=True if args["query"] is not None else False, identifier_key="imdbid" if args["imdbid"] is not None else None, internal=internal)
 
-    results_by_provider = start_search_futures(providers_to_call, "search_movie", args)
+    return search_and_handle_db(args, dbsearch, providers_to_call)
+
+
+def search_and_handle_db(dbsearch, providers_and_search_requests):
+    results_by_provider = start_search_futures(providers_and_search_requests)
     for i in results_by_provider.values():
         providersearchentry = i.dbentry
         providersearchentry.search = dbsearch
         providersearchentry.save()
+    logger.debug("Returning search results now")
     return {"results": results_by_provider, "dbsearchid": dbsearch.id}
 
 
@@ -117,16 +184,16 @@ def execute(provider, search_function, args):
     return getattr(provider, search_function)(args)
 
 
-def start_search_futures(providers_to_call, search_function, args):
+def start_search_futures(providers_and_search_requests):
     provider_to_searchresults = {}
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=len(providers_to_call)) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(providers_and_search_requests)) as executor:
         futures_to_providers = {}
         count = 1
-        for provider in providers_to_call:
-            future = executor.submit(execute, provider, search_function, args)
+        for provider, search_request in providers_and_search_requests.items():
+            future = executor.submit(provider.search, search_request)
             futures_to_providers[future] = provider
-            logger.debug("Added %d of %d calls to executor" % (count, len(providers_to_call)))
+            logger.debug("Added %d of %d calls to executor" % (count, len(providers_and_search_requests)))
             count += 1
         count = 1
         for f in concurrent.futures.as_completed(futures_to_providers.keys()):
