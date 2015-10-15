@@ -8,17 +8,16 @@ import urllib
 from flask import send_file, redirect, session
 from flask import Flask, render_template, request, jsonify, Response
 from flask.ext.cache import Cache
-from flask.ext.session import Session
 from webargs import fields
-
 from webargs.flaskparser import use_args
-
 from werkzeug.exceptions import Unauthorized
 
+from flask.ext.session import Session
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log
 from nzbhydra import config, search, infos, database
 from nzbhydra.config import NzbAccessTypeSelection, NzbAddingTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection, DownloaderSelection
 from nzbhydra.downloader import Nzbget, Sabnzbd
+from nzbhydra.search import SearchRequest
 
 logger = logging.getLogger('root')
 
@@ -26,7 +25,7 @@ app = Flask(__name__)
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 search_cache = Cache()
-internal_cache = Cache(app, config={'CACHE_TYPE': "simple", #Cache for internal data like settings, form, schema, etc. which will be invalidated on request
+internal_cache = Cache(app, config={'CACHE_TYPE': "simple",  # Cache for internal data like settings, form, schema, etc. which will be invalidated on request
                                     "CACHE_DEFAULT_TIMEOUT": 60 * 30})
 
 
@@ -92,8 +91,8 @@ def base(path):
     return send_file("static/index.html")
 
 
-def render_search_results_for_api(search_results):
-    return render_template("api.html", channel={}, items=search_results)
+def render_search_results_for_api(search_results, total, offset):
+    return render_template("api.html", channel={}, items=search_results, total=total, offset=offset)
 
 
 externalapi_args = {
@@ -103,7 +102,7 @@ externalapi_args = {
     "q": fields.String(missing=None),
     "query": fields.String(missing=None),
     "group": fields.String(missing=None),
-    "limit": fields.Integer(missing=500),
+    "limit": fields.Integer(missing=100),
     "offset": fields.Integer(missing=0),
     "cat": fields.String(missing=None),
     "o": fields.String(missing=None),
@@ -130,14 +129,14 @@ externalapi_args = {
     "providers": fields.String(missing=None),
     "provider": fields.String(missing=None),
     "offsets": fields.String(missing=None),
-    
+
 }
 
 
 @app.route('/api')
 @use_args(externalapi_args)
 def api(args):
-    
+    logger.debug("API request: %s" % args)
     # Map newznab api parameters to internal
     args["category"] = args["cat"]
     args["episode"] = args["ep"]
@@ -146,10 +145,25 @@ def api(args):
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
     if mainSettings.apikey.get_with_default(None) and ("apikey" not in args or args["apikey"] != mainSettings.apikey.get()):
         raise Unauthorized("API key not provided or invalid")
-    elif args["t"] == "search":
-        results = search.search(False, args)
-    elif args["t"] == "tvsearch":
-        results = search.search_show(False, args)
+
+    elif args["t"] in ("search", "tvsearch", "movies"):
+        search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], )
+        if args["t"] == "search":
+            search_request.query = args["query"]
+            search_request.type = "general"
+        elif args["t"] == "tvsearch":
+            identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
+            identifier_value = args[identifier_key] if identifier_key else None
+            search_request.type = "tv"
+            search_request.identifier_key = identifier_key
+            search_request.identifier_value = identifier_value
+        elif args["t"] == "movie":
+            search_request.identifier_key = "imdbid" if args["imdbid"] is not None else None
+            search_request.identifier_value = args["imdbid"] if args["imdbid"] is not None else None
+        result = search.search(False, search_request)
+        results = process_for_external_api(result)
+        return render_search_results_for_api(results, result["total"], result["offset"])
+
     elif args["t"] == "get":
         args = json.loads(urllib.parse.unquote(args["id"]))
         return extract_nzb_infos_and_return_response(args["provider"], args["guid"], args["title"], args["searchid"])
@@ -158,8 +172,6 @@ def api(args):
     else:
         pprint(request)
         return "hello api"
-    results = process_for_external_api(results)
-    return render_search_results_for_api(results)
 
 
 def process_and_jsonify_for_internalapi(results):
@@ -175,8 +187,8 @@ internalapi_search_args = {
     "category": fields.String(missing=None),
     "title": fields.String(missing=None),
     "dbsearchid": fields.Integer(missing=None),
-    "providers": fields.String(missing=None), #comma separated list of names of those providers the user picked
-    "offsets": fields.String(missing=None), #comma separated list of offsets for providers in the order of the list above
+    "providers": fields.String(missing=None),  # comma separated list of names of those providers the user picked
+    "offsets": fields.String(missing=None),  # comma separated list of offsets for providers in the order of the list above
 
     "minsize": fields.Integer(missing=None),
     "maxsize": fields.Integer(missing=None),

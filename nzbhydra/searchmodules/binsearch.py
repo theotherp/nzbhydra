@@ -36,8 +36,8 @@ class Binsearch(SearchModule):
                      })
         return url
 
-    def get_search_urls(self, args):
-        f = self.build_base_url(offset=args.offset).add({"q": args.query})
+    def get_search_urls(self, search_request):
+        f = self.build_base_url(offset=search_request.offset).add({"q": search_request.query})
         # if args["minsize"]:
         #     f = f.add({"minsize": args["minsize"]})
         # if args["maxsize"]:
@@ -47,25 +47,25 @@ class Binsearch(SearchModule):
 
         return [f.tostr()]
 
-    def get_showsearch_urls(self, args):
+    def get_showsearch_urls(self, search_request):
         urls = []
-        query = args["query"]
-        if args["query"]:
+        query = search_request.query
+        if search_request.query:
             urls = self.get_search_urls(args)
-        if args["season"] is not None:
+        if search_request.season is not None:
             # Restrict query if  season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
             # binsearch doesn't seem to support "or" in searches, so create separate queries
             urls = []
-            if args["episode"] is not None:
-                args["query"] = "%s s%02de%02d" % (query, args["season"], args["episode"])
-                urls.extend(self.get_search_urls(args))
-                args["query"] = "%s %dx%02d" % (query, args["season"], args["episode"])
-                urls.extend(self.get_search_urls(args))
+            if search_request.episode is not None:
+                search_request.query = "%s s%02de%02d" % (query, search_request.season, search_request.episode)
+                urls.extend(self.get_search_urls(search_request))
+                search_request.query = "%s %dx%02d" % (query, search_request.season, search_request.episode)
+                urls.extend(self.get_search_urls(search_request))
             else:
-                args["query"] = "%s s%02d" % (query, args["season"])
-                urls.extend(self.get_search_urls(args))
-                args["query"] = '%s "season %d"' % (query, args["season"])
-                urls.extend(self.get_search_urls(args))
+                search_request.query = "%s s%02d" % (query, search_request.season)
+                urls.extend(self.get_search_urls(search_request))
+                search_request.query = '%s "season %d"' % (query, search_request.season)
+                urls.extend(self.get_search_urls(search_request))
         return urls
 
     def get_moviesearch_urls(self, args):

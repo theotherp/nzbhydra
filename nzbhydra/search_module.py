@@ -10,7 +10,7 @@ from nzbhydra.config import ProviderSettings, searchingSettings
 from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus, Provider
 from nzbhydra.exceptions import ProviderResultParsingException, ProviderAuthException, ProviderAccessException
 
-QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "results dbentry total_results offset loaded_results total_known has_more")
+QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "results dbentry total offset loaded_results total_known has_more")
 ProviderProcessingResult = collections.namedtuple("ProviderProcessingResult", "entries queries offset total total_known has_more")
 
 
@@ -42,7 +42,7 @@ class SearchModule(object):
 
     @property
     def search_ids(self):
-        return self.settings.search_ids.values
+        return self.settings.search_ids.get()
 
     @property
     def generate_queries(self):
@@ -50,69 +50,66 @@ class SearchModule(object):
         # return self.provider.settings.get("generate_queries", True)  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for providers which don't support id-based searches
 
 
-
     def search(self, search_request):
-        urls = self.get_search_urls(search_request)
+        if search_request.type == "tv":
+            if search_request.query is None and search_request.identifier_key is None and self.needs_queries:
+                self.logger.error("TV search without query or id or title is not possible with this provider")
+                return []
+            if search_request.query is None and not self.generate_queries:
+                self.logger.error("TV search is not possible with this provideer because query generation is disabled")
+            if search_request.identifier_key in self.search_ids:
+                # Best case, we can search using the ID
+                urls = self.get_showsearch_urls(search_request)
+            elif search_request.title is not None:
+                # If we cannot search using the ID we generate a query using the title provided by the GUI
+                search_request.query = search_request.title
+                urls = self.get_showsearch_urls(search_request)
+            elif search_request.query is not None:
+                # Simple case, just a regular raw search but in movie category
+                urls = self.get_showsearch_urls(search_request)
+            else:
+                # Just show all the latest movie releases
+                urls = self.get_showsearch_urls(search_request)
+        elif search_request.type == "movie":
+            if search_request.query is None and search_request.title is None and search_request.imdbid is None and self.needs_queries:
+                self.logger.error("Movie search without query or IMDB id or title is not possible with this provider")
+                return []
+            if search_request.query is None and not self.generate_queries:
+                self.logger.error("Movie search is not possible with this provideer because query generation is disabled")
+            if search_request.imdbid is not None and "imdbid" in self.search_ids:
+                # Best case, we can search using IMDB id
+                urls = self.get_moviesearch_urls(search_request)
+            elif search_request.title is not None:
+                # If we cannot search using the ID we generate a query using the title provided by the GUI
+                search_request.query = search_request.title
+                urls = self.get_moviesearch_urls(search_request)
+            elif search_request.query is not None:
+                # Simple case, just a regular raw search but in movie category
+                urls = self.get_moviesearch_urls(search_request)
+            else:
+                # Just show all the latest movie releases
+                urls = self.get_moviesearch_urls(search_request)
+            return self.execute_queries(urls)
+        else:
+            urls = self.get_search_urls(search_request)
         queries_execution_result = self.execute_queries(urls)
         return queries_execution_result
 
-    def search_movie(self, args: Dict[str, str]) -> QueriesExecutionResult:
-        if args["query"] is None and args["title"] is None and args["imdbid"] is None and self.needs_queries:
-            self.logger.error("Movie search without query or IMDB id or title is not possible with this provider")
-            return []
-        if args["query"] is None and not self.generate_queries:
-            self.logger.error("Movie search is not possible with this provideer because query generation is disabled")
-        if args["imdbid"] is not None and "imdbid" in self.search_ids:
-            # Best case, we can search using IMDB id
-            urls = self.get_moviesearch_urls(args)
-        elif args["title"] is not None:
-            # If we cannot search using the ID we generate a query using the title provided by the GUI
-            args["query"] = args["title"]
-            urls = self.get_moviesearch_urls(args)
-        elif args["query"] is not None:
-            # Simple case, just a regular raw search but in movie category
-            urls = self.get_moviesearch_urls(args)
-        else:
-            # Just show all the latest movie releases
-            urls = self.get_moviesearch_urls(args)
-        return self.execute_queries(urls)
-
-    def search_show(self, args: Dict[str, str]) -> QueriesExecutionResult:
-        if args["query"] is None and args["title"] is None and args["rid"] and args["tvdbid"] is None and self.needs_queries:
-            self.logger.error("TV search without query or id or title is not possible with this provider")
-            return []
-        if args["query"] is None and not self.generate_queries:
-            self.logger.error("TV search is not possible with this provideer because query generation is disabled")
-        if (args["rid"] is not None and "rid" in self.search_ids) or (args["tvdbid"] is not None and "tvdbid" in self.search_ids):
-            # Best case, we can search using the ID
-            urls = self.get_showsearch_urls(args)
-        elif args["title"] is not None:
-            # If we cannot search using the ID we generate a query using the title provided by the GUI
-            args["query"] = args["title"]
-            urls = self.get_showsearch_urls(args)
-        elif args["query"] is not None:
-            # Simple case, just a regular raw search but in movie category
-            urls = self.get_showsearch_urls(args)
-        else:
-            # Just show all the latest movie releases
-            urls = self.get_showsearch_urls(args)
-
-        return self.execute_queries(urls)
 
     # Access to most basic functions
-    def get_search_urls(self, args: Dict[str, str]) -> List[str]:
+    def get_search_urls(self, search_request) -> List[str]:
         # return url(s) to search. Url is then retrieved and result is returned if OK
         # we can return multiple urls in case a module needs to make multiple requests (e.g. when searching for a show
         # using general queries
         return []
 
-    def get_showsearch_urls(self, args: Dict[str, str]):
+    def get_showsearch_urls(self, args):
         # to extend
         # if module supports it, search specifically for show, otherwise make sure we create a query that searches
         # for for s01e01, 1x1 etc
         return []
 
-    def get_moviesearch_urls(self, args: Dict[str, str]):
+    def get_moviesearch_urls(self, args):
         # to extend
         # if module doesnt support it possibly use (configurable) size restrictions when searching
         return []
@@ -257,7 +254,7 @@ class SearchModule(object):
                 psearch.results = total_results
                 psearch.successful = papiaccess.response_successful
                 psearch.save()
-        return QueriesExecutionResult(results=results, dbentry=psearch, total_results=total_results, offset=offset, loaded_results=len(results), total_known=total_known, has_more=has_more)
+        return QueriesExecutionResult(results=results, dbentry=psearch, total=total_results, offset=offset, loaded_results=len(results), total_known=total_known, has_more=has_more)
 
 
 def get_instance(provider):

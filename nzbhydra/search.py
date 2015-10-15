@@ -1,11 +1,9 @@
 import concurrent
 from concurrent.futures import ThreadPoolExecutor
+import copy
 import logging
-from types import SimpleNamespace
 
 import arrow
-import collections
-
 from requests_futures.sessions import FuturesSession
 
 from nzbhydra.config import searchingSettings
@@ -32,8 +30,28 @@ logger = logging.getLogger('root')
 
 session = FuturesSession()
 
-SearchRequest = collections.namedtuple("SearchRequest", "query imdbid tvdbid rid title category minsize maxsize minage maxage offset limit")
-    
+
+class SearchRequest(object):
+    def __init__(self, type=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, title=None, category=None, minsize=None, maxsize=None, minage=None, maxage=None, offset=0, limit=100):
+        self.type = type
+        self.query = query
+        self.identifier_key = identifier_key
+        self.identifier_value = identifier_value
+        self.title = title
+        self.season = season
+        self.episode = episode
+        self.category = category
+        self.minsize = minsize
+        self.maxsize = maxsize
+        self.minage = minage
+        self.maxage = maxage
+        self.offset = offset
+        self.limit = limit
+        
+    @property
+    def search_hash(self):
+        return hash(frozenset([self.type, self.query, self.identifier_key, self.identifier_value, self.title, self.season, self.episode, self.category, self.minsize, self.maxsize, self.minage, self.maxage]))
+
 
 def pick_providers(query_supplied=True, identifier_key=None, internal=True, selected_providers=None):
     picked_providers = []
@@ -63,7 +81,7 @@ def pick_providers(query_supplied=True, identifier_key=None, internal=True, sele
             logger.debug("Did not pick %s because no query was supplied but the provider needs queries" % p)
             continue
         allow_query_generation = (config.cfg.get("searching.allow_query_generation") == "both") or (config.cfg.get("searching.allow_query_generation") == "internal" and internal) or (config.cfg.get("searching.allow_query_generation") == "external" and not internal)
-        if not (identifier_key is None or identifier_key in p.settings.search_ids.values or (allow_query_generation and p.generate_queries)):
+        if not (identifier_key is None or identifier_key not in p.settings.search_ids.get() or (allow_query_generation and p.generate_queries)):
             logger.debug("Did not pick %s because search will be done by an identifier and the provider or system wide settings don't allow query generation" % p)
             continue
 
@@ -72,24 +90,14 @@ def pick_providers(query_supplied=True, identifier_key=None, internal=True, sele
     return picked_providers
 
 
-class Hashabledict(dict):
-    def __hash__(self):
-        return hash(frozenset(self))
-
 
 pseudo_cache = {}
 
 
-def search(internal, args):
-    search_request = SimpleNamespace(query=args["query"], tvdbid=args["tvdbid"], type="general", category=args["cat"], offset=args["offset"], dbsearchid=None, limit=args["limit"]) # to expand
-    
-    args2 = args.copy()
-    args2["offset"] = None
-    args2["limit"] = None
-    
-    h = hash(frozenset(args2.items()))
-    if h in pseudo_cache.keys():
-        cache_entry = pseudo_cache[h]
+def search(internal, search_request: SearchRequest):
+    search_hash = search_request.search_hash
+    if search_hash in pseudo_cache.keys():
+        cache_entry = pseudo_cache[search_hash]
         print("Found this query in cache. Would try to return from already loaded results")
         # Load the next <limit> results with offset <offset>
         # If we need more results than are cached we need to call the providers again. We check which providers actually have more results to offer
@@ -120,17 +128,17 @@ def search(internal, args):
 
         cache_entry = {"results": [], "provider_search_entries": {}}
 
-        #logger.info("Searching for query '%s'" % args["query"])
-        if search_request.dbsearchid is None:
-            # This is a "new" search
+        # logger.info("Searching for query '%s'" % args["query"])
+        if search_request.type == "general":
             dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category)
-        else:
-            # We're actually only loading additional results
-            dbsearch = Search().get(Search.id == args["dbsearchid"])
-        dbsearch.save()
-        providers_to_call = pick_providers(query_supplied=True, internal=internal, selected_providers=args["providers"])
+            dbsearch.save()
+            providers_to_call = pick_providers(query_supplied=True, internal=internal, selected_providers=None)
 
-        
+        elif search_request.type == "tv":
+            dbsearch = Search(internal=internal, query=search_request.query, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode)
+            dbsearch.save()
+            providers_to_call = pick_providers(query_supplied=True if search_request.query is not None else False, identifier_key=search_request.identifier_key, internal=internal)
+
         providers_and_search_requests = {}
         for p in providers_to_call:
             providers_and_search_requests[p] = search_request
@@ -140,14 +148,20 @@ def search(internal, args):
         for provider, queries_execution_result in result["results"].items():
             nzb_search_results.extend(queries_execution_result.results)
             cache_entry["provider_search_entries"][provider] = queries_execution_result.dbentry
-            cache_entry["provider_infos"][provider] = {"search_request": search_request, "has_more": queries_execution_result.has_more}
+            cache_entry["provider_infos"][provider] = {"search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known}
         cache_entry["results"].extend(nzb_search_results)
         cache_entry["dbsearchid"] = result["dbsearchid"]
 
-        pseudo_cache[h] = cache_entry
+        pseudo_cache[search_hash] = cache_entry
+    # Try to find an approximately realistic total count. If a provider returns its total precisely use it, otherwise just prepend it has 100 more if it has any more
+    total = 0
+    for info in cache_entry["provider_infos"].values():
+        if info["total_known"]:
+            total += info["total"]
+        elif info["has_more"]:
+            total += 100
 
-    
-    return {"results": cache_entry["results"][search_request.offset:(search_request.offset + search_request.limit)], "provider_searches": cache_entry["provider_search_entries"], "dbsearchid": cache_entry["dbsearchid"]}
+    return {"results": cache_entry["results"][search_request.offset:(search_request.offset + search_request.limit)], "provider_searches": cache_entry["provider_search_entries"], "dbsearchid": cache_entry["dbsearchid"], "total": total, "offset": search_request.offset}
 
 
 def search_show(internal, args):

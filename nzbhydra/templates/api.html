@@ -7,7 +7,7 @@
         <language>en-gb</language>
         <webMaster>TheOtherP@web.de (TheOtherP)</webMaster>
 
-        <newznab:response offset="0" total="{{ items|length }}"/>
+        <newznab:response offset="{{ offset }}" total="{{ total }}"/>
 
         {% for row in items -%}
             <item>

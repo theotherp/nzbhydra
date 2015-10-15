@@ -41,7 +41,7 @@ class Search(Model):
     time = DateTimeField()
     identifier_key = CharField(null=True)
     identifier_value = CharField(null=True)
-    category = JSONField(null=True)
+    category = TextField(null=True)
     season = IntegerField(null=True)
     episode = IntegerField(null=True)
 

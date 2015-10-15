@@ -103,34 +103,32 @@ class NewzNab(SearchModule):
         #     f = f.add({"age": args["maxage"]})
         return [f.url]
 
-    def get_showsearch_urls(self, args):
-        if args["category"] is None:
-            args["category"] = "TV"
+    def get_showsearch_urls(self, search_request):
+        if search_request.category is None:
+            search_request.category = "TV"
 
-        if args["query"] is None:
-            url = self.build_base_url("tvsearch", args["category"], offset=self.get_provider_offset(args))
-            if args["rid"] is not None:
-                url.add({"rid": args["rid"]})
-            if args["tvdbid"] is not None:
-                url.add({"tvdbid": args["tvdbid"]})
-            if args["episode"] is not None:
-                url.add({"ep": args["episode"]})
-            if args["season"] is not None:
-                url.add({"season": args["season"]})
+        if search_request.query is None:
+            url = self.build_base_url("tvsearch", search_request.category, offset=search_request.offset)
+            if search_request.identifier_key is not None:
+                url.add({search_request.identifier_key: search_request.identifier_value})
+            if search_request.episode is not None:
+                url.add({"ep": search_request.episode})
+            if search_request.season is not None:
+                url.add({"season": search_request.season})
         else:
-            url = self.build_base_url("search", args["category"], offset=self.get_provider_offset(args)).add({"q": args["query"]})
+            url = self.build_base_url("search", search_request.category, offset=search_request.offset).add({"q": search_request.query})
 
         return [url.url]
 
-    def get_moviesearch_urls(self, args):
-        if args["category"] is None:
-            args["category"] = "Movies"
-        if args["query"] is None:
-            url = self.build_base_url("movie", args["category"], offset=self.get_provider_offset(args))
-            if args["imdbid"] is not None:
-                url.add({"imdbid": args["imdbid"]})
+    def get_moviesearch_urls(self, search_request):
+        if search_request.category is None:
+            search_request.category = "Movies"
+        if search_request.query is None:
+            url = self.build_base_url("movie", search_request.category, offset=search_request.offset)
+            if search_request.imdbid is not None:
+                url.add({"imdbid": search_request.imdbid})
         else:
-            url = self.build_base_url("search", args["category"], offset=self.get_provider_offset(args)).add({"q": args["query"]})
+            url = self.build_base_url("search", search_request.category, offset=search_request.offset).add({"q": search_request.query})
 
         return [url.url]
 
