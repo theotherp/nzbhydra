@@ -6,6 +6,7 @@ from freezegun import freeze_time
 import responses
 from nzbhydra import config
 from nzbhydra.database import Provider
+from nzbhydra.search import SearchRequest
 
 from nzbhydra.searchmodules.newznab import NewzNab
 from nzbhydra.tests import mockbuilder
@@ -50,8 +51,7 @@ class MyTestCase(ProviderTestcase):
     
     def testNewznabSearchQueries(self):
         
-        
-        self.args.update({"query": "aquery"})
+        self.args = SearchRequest(query="aquery")
         queries = self.n1.get_search_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
@@ -59,37 +59,24 @@ class MyTestCase(ProviderTestcase):
         assert "apikey=apikeynzbsorg" in query
         assert "t=search" in query
         assert "q=aquery" in query
-        assert "o=json" in query
         
-        self.args.update({"query": None})
+        self.args = SearchRequest(query=None)
         queries = self.n1.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg" in query
         assert "apikey=apikeynzbsorg" in query
         assert "t=tvsearch" in query
-        assert "o=json" in query
         
-        self.args.update({"category": "All"})
+        self.args = SearchRequest(category="All")
         queries = self.n1.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         assert "http://127.0.0.1:5001/nzbsorg" in query
         assert "apikey=apikeynzbsorg" in query
         assert "t=tvsearch" in query
-        assert "o=json" in query
         
-        self.args.update({"rid": "8511"})
-        queries = self.n1.get_showsearch_urls(self.args)
-        assert len(queries) == 1
-        query = queries[0]
-        assert "http://127.0.0.1:5001/nzbsorg" in query
-        assert "apikey=apikeynzbsorg" in query
-        assert "t=tvsearch" in query
-        assert "rid=8511" in query
-        assert "o=json" in query
-        
-        self.args.update({"rid": "8511", "season": "1"})
+        self.args = SearchRequest(identifier_value="8511", identifier_key="rid")
         queries = self.n1.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
@@ -97,10 +84,18 @@ class MyTestCase(ProviderTestcase):
         assert "apikey=apikeynzbsorg" in query
         assert "t=tvsearch" in query
         assert "rid=8511" in query
-        assert "o=json" in query
+        
+        self.args = SearchRequest(identifier_value="8511", identifier_key="rid", season=1)
+        queries = self.n1.get_showsearch_urls(self.args)
+        assert len(queries) == 1
+        query = queries[0]
+        assert "http://127.0.0.1:5001/nzbsorg" in query
+        assert "apikey=apikeynzbsorg" in query
+        assert "t=tvsearch" in query
+        assert "rid=8511" in query
         assert "season=1" in query
         
-        self.args.update({"rid": "8511", "season": "1", "episode":"2"})
+        self.args = SearchRequest(identifier_value="8511", identifier_key="rid", season=1, episode=2)
         queries = self.n1.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
@@ -108,11 +103,10 @@ class MyTestCase(ProviderTestcase):
         assert "apikey=apikeynzbsorg" in query
         assert "t=tvsearch" in query
         assert "rid=8511" in query
-        assert "o=json" in query
         assert "season=1" in query
         assert "ep=2" in query
         
-        self.args.update({"imdbid": "12345678"})
+        self.args = SearchRequest(identifier_value="12345678", identifier_key="imdbid")
         queries = self.n1.get_moviesearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
@@ -120,9 +114,8 @@ class MyTestCase(ProviderTestcase):
         assert "apikey=apikeynzbsorg" in query
         assert "t=movie" in query
         assert "imdbid=12345678" in query
-        assert "o=json" in query
         
-        self.args.update({"imdbid": "12345678", "category": "Movies"})
+        self.args = SearchRequest(identifier_value="12345678", identifier_key="imdbid", category="Movies")
         queries = self.n1.get_moviesearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
@@ -130,7 +123,6 @@ class MyTestCase(ProviderTestcase):
         assert "apikey=apikeynzbsorg" in query
         assert "t=movie" in query
         assert "imdbid=12345678" in query
-        assert "o=json" in query
         assert "cat=2000" in query
         
         

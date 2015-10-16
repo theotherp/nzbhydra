@@ -1,10 +1,14 @@
-from flask import Flask, request, redirect
+from flask import Flask, request, redirect, make_response, send_file
 from flask.ext.cache import Cache
 from furl import furl
 import requests
 
 app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'filesystem', 'CACHE_DIR': 'cache', 'DEFAULT_THRESHOLD': 500, 'DEFAULT_TIMEOUT': 60 * 60 * 24 * 7})
+
+@app.route('/rss/')
+def nothing():
+    return send_file("womble--sec-tv-dvd.xml")
 
 
 @app.route('/nzbsorg')

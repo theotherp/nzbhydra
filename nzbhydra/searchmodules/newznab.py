@@ -125,8 +125,8 @@ class NewzNab(SearchModule):
             search_request.category = "Movies"
         if search_request.query is None:
             url = self.build_base_url("movie", search_request.category, offset=search_request.offset)
-            if search_request.imdbid is not None:
-                url.add({"imdbid": search_request.imdbid})
+            if search_request.identifier_key == "imdbid":
+                url.add({"imdbid": search_request.identifier_value})
         else:
             url = self.build_base_url("search", search_request.category, offset=search_request.offset).add({"q": search_request.query})
 
@@ -197,7 +197,7 @@ class NewzNab(SearchModule):
         #     logger.debug("%s started processing results" % self.name)
         #     return ProviderProcessingResult(entries=entries, queries=queries)
         # logger.debug("%s finished processing results" % self.name)
-        return ProviderProcessingResult(entries=entries, queries=[], offset=offset, total=total, total_known=True, has_more=offset + len(entries) < total)
+        return ProviderProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total)
 
     def check_auth(self, body: str):
         if '<error code="100"' in body:

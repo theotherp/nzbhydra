@@ -316,13 +316,13 @@ def internalapi_getnzb(args):
 
 
 def extract_nzb_infos_and_return_response(provider, guid, title, searchid):
-    if downloaderSettings.nzbaccesstype.isSetting(NzbAccessTypeSelection.redirect):  # I'd like to have this in api but don't want to have to use redirect() there...
+    if downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.redirect:  # I'd like to have this in api but don't want to have to use redirect() there...
         link = get_nzb_link(provider, guid, title, searchid)
         if link is not None:
             return redirect(link)
         else:
             return "Unable to build link to NZB", 404
-    elif downloaderSettings.nzbaccesstype.isSetting(NzbAccessTypeSelection.serve):
+    elif downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.serve.name:
         return get_nzb_response(provider, guid, title, searchid)
     else:
         logger.error("Invalid value of %s" % downloaderSettings.nzbaccesstype)

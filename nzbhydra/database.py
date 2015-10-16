@@ -63,7 +63,7 @@ class ProviderSearch(Model):
     results = IntegerField(null=True)  # number of results returned
 
     class Meta:
-        database = db  # This model uses the "people.db" database.
+        database = db  
 
     def save(self, *args, **kwargs):
         if self.time is None:

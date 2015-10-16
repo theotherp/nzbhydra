@@ -51,7 +51,7 @@ class Binsearch(SearchModule):
         urls = []
         query = search_request.query
         if search_request.query:
-            urls = self.get_search_urls(args)
+            urls = self.get_search_urls(search_request)
         if search_request.season is not None:
             # Restrict query if  season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
             # binsearch doesn't seem to support "or" in searches, so create separate queries
@@ -163,10 +163,18 @@ class Binsearch(SearchModule):
             entries.append(entry)
             
         logger.debug("Binsearch finished processing %d results" % len(entries))
-        self.last_results_count = len(entries)
-
+        
+        page_links = soup.find_all('table', attrs={'class': 'xMenuT'})[1].find_all("a")
+        has_more = len(page_links) > 0 and page_links[-1].text == ">"
+        total = 0
+        if len(page_links) == 0:
+            m = re.compile(r".*(\d+) records.*").search(soup.find_all('table', attrs={'class': 'xMenuT'})[1].text)
+            if m:
+                total = int(m.group(1))
+                
+        
         logger.warn("Hasmore and total not yet implemented")
-        return ProviderProcessingResult(entries=entries, queries=[], total_known=False, has_more=False, offset=None, total=0) #TODO
+        return ProviderProcessingResult(entries=entries, queries=[], total_known=False, has_more=has_more, total=total) 
 
     def get_nfo(self, guid):
         f = furl(self.base_url)

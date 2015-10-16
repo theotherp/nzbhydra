@@ -34,21 +34,21 @@ class NzbClub(SearchModule):
         url = f.add({"ig": "2", "rpp": self.max_results, "st": 5, "ns": 1, "sn": 1})  # I need to find out wtf these values are
         return url
 
-    def get_search_urls(self, args):
-        f = self.build_base_url().add({"q": args["query"]})
+    def get_search_urls(self, search_request):
+        f = self.build_base_url().add({"q": search_request.query})
         return [f.tostr()]
 
-    def get_showsearch_urls(self, args) -> ProviderProcessingResult:
-        if args["season"] is not None:
+    def get_showsearch_urls(self, search_request) -> ProviderProcessingResult:
+        if search_request.season is not None:
             # Restrict query if season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
-            if args["episode"] is not None:
-                args["query"] = "%s s%02de%02d or %s %dx%02d" % (args["query"], args["season"], args["episode"], args["query"], args["season"], args["episode"])
+            if search_request.episode is not None:
+                search_request.query = "%s s%02de%02d or %s %dx%02d" % (search_request.query, search_request.season, search_request.episode, search_request.query, search_request.season, search_request.episode)
             else:
-                args["query"] = '%s s%02d or %s "season %d"' % (args["query"], args["season"], args["query"], args["season"])
-        return self.get_search_urls(args)
+                search_request.query = '%s s%02d or %s "season %d"' % (search_request.query, search_request.season, search_request.query, search_request.season)
+        return self.get_search_urls(search_request)
 
-    def get_moviesearch_urls(self, args):
-        return self.get_search_urls(args)
+    def get_moviesearch_urls(self, search_request):
+        return self.get_search_urls(search_request)
 
     def process_query_result(self, xml, query):
         logger.debug("%s started processing results" % self.name)
@@ -96,7 +96,7 @@ class NzbClub(SearchModule):
             entries.append(entry)
             
         logger.debug("%s finished processing results" % self.name)
-        return ProviderProcessingResult(entries=entries, queries=[])
+        return ProviderProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False) #No paging with RSS. Might need/want to change to HTML and BS
     
     def get_nfo(self, guid):
         f = furl(self.settings.host.get())

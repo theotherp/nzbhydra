@@ -11,7 +11,7 @@ from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus,
 from nzbhydra.exceptions import ProviderResultParsingException, ProviderAuthException, ProviderAccessException
 
 QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "results dbentry total offset loaded_results total_known has_more")
-ProviderProcessingResult = collections.namedtuple("ProviderProcessingResult", "entries queries offset total total_known has_more")
+ProviderProcessingResult = collections.namedtuple("ProviderProcessingResult", "entries queries total total_known has_more")
 
 
 class SearchModule(object):
@@ -222,7 +222,6 @@ class SearchModule(object):
                         results.extend(parsed_results.entries)  # Retrieve the processed results
                         queries.extend(parsed_results.queries)  # Add queries that were added as a result of the parsing, e.g. when the next result page should also be loaded
                         total_results += parsed_results.total
-                        offset = parsed_results.offset
                         total_known = parsed_results.total_known
                         has_more = parsed_results.has_more
 
@@ -254,7 +253,7 @@ class SearchModule(object):
                 psearch.results = total_results
                 psearch.successful = papiaccess.response_successful
                 psearch.save()
-        return QueriesExecutionResult(results=results, dbentry=psearch, total=total_results, offset=offset, loaded_results=len(results), total_known=total_known, has_more=has_more)
+        return QueriesExecutionResult(results=results, dbentry=psearch, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)
 
 
 def get_instance(provider):

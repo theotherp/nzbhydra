@@ -11,8 +11,6 @@ from nzbhydra.search_module import SearchModule, ProviderProcessingResult
 
 logger = logging.getLogger('root')
 
-
-# Probably only as RSS supply, not for searching. Will need to do a (config) setting defining that. When searches without specifier are done we can include indexers like that
 class Womble(SearchModule):
     # TODO init of config which is dynmic with its path
 
@@ -29,27 +27,27 @@ class Womble(SearchModule):
         url = furl(self.provider.settings.get("query_url")).add({"fr": "false"})
         return url
 
-    def get_search_urls(self, args):
+    def get_search_urls(self, search_request):
         logger.error("This provider does not support queries")
         return []
 
-    def get_showsearch_urls(self, args):
+    def get_showsearch_urls(self, search_request):
         urls = []
-        if args["query"] or args["imdbid"] or args["rid"] or args["tvdbid"] or args["season"] or args["episode"]:
+        if search_request.query or search_request.imdbid or search_request.rid or search_request.tvdbid or search_request.season or search_request.episode:
             logger.error("This provider does not support specific searches")
             return []
-        if args["category"]:
-            if args["category"] == "TV SD" or args["category"] == "TV":
+        if search_request.category:
+            if search_request.category == "TV SD" or search_request.category == "TV":
                 urls.append(self.build_base_url().add({"sec": "tv-dvd"}).tostr())
                 urls.append(self.build_base_url().add({"sec": "tv-sd"}).tostr())
-            if args["category"] == "TV HD" or args["category"] == "TV":
+            if search_request.category == "TV HD" or search_request.category == "TV":
                 urls.append(self.build_base_url().add({"sec": "tv-x264"}).tostr())
                 urls.append(self.build_base_url().add({"sec": "tv-hd"}).tostr())
         else:
             urls.append(self.build_base_url().tostr())
         return urls
 
-    def get_moviesearch_urls(self, args):
+    def get_moviesearch_urls(self, search_request):
         logger.error("This provider does not support movie search")
         return []
 

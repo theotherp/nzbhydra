@@ -24,37 +24,37 @@ class NzbIndex(SearchModule):
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = True
         self.category_search = False
-        self.max_results = 250
 
     def build_base_url(self):
         f = furl(self.host)
         f.path.add("search")
-        f = f.add({"more": "1", "max": self.max_results, "hidecross": 1})
+        f = f.add({"more": "1", "max": self.limit, "hidecross": 1})
         return f
 
-    def get_search_urls(self, args):
-        f = self.build_base_url().add({"q": args["query"]})
-        if args["minsize"]:
-            f = f.add({"minsize": args["minsize"]})
-        if args["maxsize"]:
-            f = f.add({"maxsize": args["maxsize"]})
-        if args["minage"]:
-            f = f.add({"minage": args["minage"]})
-        if args["maxage"]:
-            f = f.add({"age": args["maxage"]})
+    def get_search_urls(self, search_request):
+        f = self.build_base_url().add({"q": search_request.query})
+        if search_request.minsize:
+            f = f.add({"minsize": search_request.minsize})
+        if search_request.maxsize:
+            f = f.add({"maxsize": search_request.maxsize})
+        if search_request.minage:
+            f = f.add({"minage": search_request.minage})
+        if search_request.maxage:
+            f = f.add({"age": search_request.maxage})
+        f.query.params["p"] = self.limit / search_request.offset if search_request.offset > 0 else 1
         return [f.tostr()]
 
-    def get_showsearch_urls(self, args):
-        if args["season"] is not None:
+    def get_showsearch_urls(self, search_request):
+        if search_request.season is not None:
             # Restrict query if generated and season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
-            if args["episode"] is not None:
-                args["query"] = "%s s%02de%02d | %dx%02d" % (args["query"], args["season"], args["episode"], args["season"], args["episode"])
+            if search_request.episode is not None:
+                search_request.query = "%s s%02de%02d | %dx%02d" % (search_request.query, search_request.season, search_request.episode, search_request.season, search_request.episode)
             else:
-                args["query"] = '%s s%02d | "season %d"' % (args["query"], args["season"], args["season"])
-        return self.get_search_urls(args)
+                search_request.query = '%s s%02d | "season %d"' % (search_request.query, search_request.season, search_request.season)
+        return self.get_search_urls(search_request)
 
-    def get_moviesearch_urls(self, args):
-        return self.get_search_urls(args)
+    def get_moviesearch_urls(self, search_request):
+        return self.get_search_urls(search_request)
 
     def get(self, query, timeout=None, cookies=None):
         # overwrite for special handling, e.g. cookies
@@ -154,8 +154,13 @@ class NzbIndex(SearchModule):
             else:
                 logger.debug("Found no age info in %s" % str(agetd))
             entries.append(entry)
+            
+        pagecount = int(main_table.find("tfoot").find_all("tr")[1].find_all('a')[-2].text)
+        currentpage = int(main_table.find("tfoot").find_all("tr")[1].find("b").text) #Don't count "next"
+        has_more = pagecount > currentpage
+        total = self.limit * pagecount #Good enough
         logger.debug("%s finished processing results" % self.name)
-        return ProviderProcessingResult(entries=entries, queries=[])
+        return ProviderProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=has_more)
 
     def get_nfo(self, guid):
         f = furl(self.host)

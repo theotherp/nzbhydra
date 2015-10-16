@@ -1,6 +1,5 @@
 import concurrent
 from concurrent.futures import ThreadPoolExecutor
-import copy
 import logging
 
 import arrow
@@ -47,7 +46,7 @@ class SearchRequest(object):
         self.maxage = maxage
         self.offset = offset
         self.limit = limit
-        
+
     @property
     def search_hash(self):
         return hash(frozenset([self.type, self.query, self.identifier_key, self.identifier_value, self.title, self.season, self.episode, self.category, self.minsize, self.maxsize, self.minage, self.maxage]))
@@ -90,7 +89,6 @@ def pick_providers(query_supplied=True, identifier_key=None, internal=True, sele
     return picked_providers
 
 
-
 pseudo_cache = {}
 
 
@@ -107,7 +105,6 @@ def search(internal, search_request: SearchRequest):
             providers_to_call = {}
             for provider, info in cache_entry["provider_infos"].items():
                 if info["has_more"]:
-                    print("Would now get more results from %s" % provider)
                     provider_search_request = info["search_request"]
                     provider_search_request.offset += 100
                     print("Increased the offset for %s to %d" % (provider, provider_search_request.offset))
@@ -129,15 +126,10 @@ def search(internal, search_request: SearchRequest):
         cache_entry = {"results": [], "provider_search_entries": {}}
 
         # logger.info("Searching for query '%s'" % args["query"])
-        if search_request.type == "general":
-            dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category)
-            dbsearch.save()
-            providers_to_call = pick_providers(query_supplied=True, internal=internal, selected_providers=None)
-
-        elif search_request.type == "tv":
-            dbsearch = Search(internal=internal, query=search_request.query, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode)
-            dbsearch.save()
-            providers_to_call = pick_providers(query_supplied=True if search_request.query is not None else False, identifier_key=search_request.identifier_key, internal=internal)
+        dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode)
+        dbsearch.save()
+        providers_to_call = pick_providers(query_supplied=True if search_request.query is not None else False, identifier_key=search_request.identifier_key, internal=internal)
+        
 
         providers_and_search_requests = {}
         for p in providers_to_call:
@@ -153,7 +145,7 @@ def search(internal, search_request: SearchRequest):
         cache_entry["dbsearchid"] = result["dbsearchid"]
 
         pseudo_cache[search_hash] = cache_entry
-    # Try to find an approximately realistic total count. If a provider returns its total precisely use it, otherwise just prepend it has 100 more if it has any more
+    # Try to find an approximately realistic total count. If a provider returns its total precisely use it, otherwise just pretend it has 100 more if it has any more at all
     total = 0
     for info in cache_entry["provider_infos"].values():
         if info["total_known"]:
@@ -162,26 +154,6 @@ def search(internal, search_request: SearchRequest):
             total += 100
 
     return {"results": cache_entry["results"][search_request.offset:(search_request.offset + search_request.limit)], "provider_searches": cache_entry["provider_search_entries"], "dbsearchid": cache_entry["dbsearchid"], "total": total, "offset": search_request.offset}
-
-
-def search_show(internal, args):
-    logger.info("Searching for show")  # todo:extend
-    identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
-    identifier_value = args[identifier_key] if identifier_key else None
-    dbsearch = Search(internal=internal, query=args["query"], identifier_key=identifier_key, identifier_value=identifier_value, season=args["season"], category=args["category"])
-    dbsearch.save()
-    providers_to_call = pick_providers(query_supplied=True if args["query"] is not None else False, identifier_key=identifier_key, internal=internal)
-
-    return search_and_handle_db(args, dbsearch, providers_to_call)
-
-
-def search_movie(internal, args):
-    logger.info("Searching for movie")  # todo:extend
-    dbsearch = Search(internal=internal, query=args["query"], category=args["category"], identifier_key="imdbid" if args["imdbid"] is not None else None, identifier_value=args["imdbid"] if args["imdbid"] is not None else None)
-    dbsearch.save()
-    providers_to_call = pick_providers(query_supplied=True if args["query"] is not None else False, identifier_key="imdbid" if args["imdbid"] is not None else None, internal=internal)
-
-    return search_and_handle_db(args, dbsearch, providers_to_call)
 
 
 def search_and_handle_db(dbsearch, providers_and_search_requests):
