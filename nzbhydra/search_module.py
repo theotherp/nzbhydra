@@ -10,7 +10,7 @@ from nzbhydra.config import ProviderSettings, searchingSettings
 from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus, Provider
 from nzbhydra.exceptions import ProviderResultParsingException, ProviderAuthException, ProviderAccessException
 
-QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "results dbentry total offset loaded_results total_known has_more")
+QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "results dbentry total loaded_results total_known has_more")
 ProviderProcessingResult = collections.namedtuple("ProviderProcessingResult", "entries queries total total_known has_more")
 
 

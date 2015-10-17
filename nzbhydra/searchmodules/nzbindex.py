@@ -41,7 +41,7 @@ class NzbIndex(SearchModule):
             f = f.add({"minage": search_request.minage})
         if search_request.maxage:
             f = f.add({"age": search_request.maxage})
-        f.query.params["p"] = self.limit / search_request.offset if search_request.offset > 0 else 1
+        f.query.params["p"] = search_request.offset / self.limit if search_request.offset > 0 else 1
         return [f.tostr()]
 
     def get_showsearch_urls(self, search_request):
@@ -154,11 +154,16 @@ class NzbIndex(SearchModule):
             else:
                 logger.debug("Found no age info in %s" % str(agetd))
             entries.append(entry)
+        try:
+            pagecount = int(main_table.find("tfoot").find_all("tr")[1].find_all('a')[-2].text)
+            currentpage = int(main_table.find("tfoot").find_all("tr")[1].find("b").text) #Don't count "next"
+            has_more = pagecount > currentpage
+            total = self.limit * pagecount #Good enough
+        except Exception as e:
+            logger.exception("Error while trying to find page count")
+            total = len(entries)
+            has_more = False
             
-        pagecount = int(main_table.find("tfoot").find_all("tr")[1].find_all('a')[-2].text)
-        currentpage = int(main_table.find("tfoot").find_all("tr")[1].find("b").text) #Don't count "next"
-        has_more = pagecount > currentpage
-        total = self.limit * pagecount #Good enough
         logger.debug("%s finished processing results" % self.name)
         return ProviderProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=has_more)
 

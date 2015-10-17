@@ -5,7 +5,7 @@ from pprint import pprint
 import ssl
 import urllib
 
-from flask import send_file, redirect, session
+from flask import send_file, redirect, session, make_response
 from flask import Flask, render_template, request, jsonify, Response
 from flask.ext.cache import Cache
 from webargs import fields
@@ -162,7 +162,10 @@ def api(args):
             search_request.identifier_value = args["imdbid"] if args["imdbid"] is not None else None
         result = search.search(False, search_request)
         results = process_for_external_api(result)
-        return render_search_results_for_api(results, result["total"], result["offset"])
+        content = render_search_results_for_api(results, result["total"], result["offset"])
+        response = make_response(content)
+        response.headers["Content-Type"] = "application/xml"
+        return content
 
     elif args["t"] == "get":
         args = json.loads(urllib.parse.unquote(args["id"]))

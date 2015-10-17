@@ -116,7 +116,7 @@ def search(internal, search_request: SearchRequest):
             for provider, queries_execution_result in result["results"].items():
                 nzb_search_results.extend(queries_execution_result.results)
                 cache_entry["provider_search_entries"][provider] = queries_execution_result.dbentry
-                cache_entry[provider] = {"offset": queries_execution_result.offset, "has_more": queries_execution_result.has_more}
+                cache_entry[provider] = {"has_more": queries_execution_result.has_more}
             cache_entry["results"].extend(nzb_search_results)
         else:
             print("We want %d + %d results and still have %d cached" % (search_request.offset, search_request.limit, len(cache_entry["results"])))
