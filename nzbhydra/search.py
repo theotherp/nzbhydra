@@ -93,20 +93,23 @@ pseudo_cache = {}
 
 
 def search(internal, search_request: SearchRequest):
+    limit = search_request.limit# todo use actual configured limit
+    external_offset = int(search_request.offset)
     search_hash = search_request.search_hash
     if search_hash in pseudo_cache.keys():
         cache_entry = pseudo_cache[search_hash]
-        print("Found this query in cache. Would try to return from already loaded results")
-        # Load the next <limit> results with offset <offset>
-        # If we need more results than are cached we need to call the providers again. We check which providers actually have more results to offer
-        # and increase their offset by their limit
-        if search_request.offset + search_request.limit > len(cache_entry["results"]):
-            print("We want %d + %d results but only have %d cached" % (search_request.offset, search_request.limit, len(cache_entry["results"])))
+        internal_offset = divmod(external_offset, len(cache_entry["provider_infos"]) * limit)[0] * limit  
+        print("Internal offset: %d. External offset: %d. Cached results: %d" % (internal_offset, external_offset, len(cache_entry["results"])))
+        if external_offset + limit > len(cache_entry["results"]) or cache_entry["results"][external_offset] is None:
+            print("Not enough cached results: %s" % (int(internal_offset) + int(search_request.limit) > len(cache_entry["results"])))
+            if len(cache_entry["results"]) > internal_offset:
+                print("Offset range not yet cached: %s" % cache_entry["results"][internal_offset] is None)
+
             providers_to_call = {}
             for provider, info in cache_entry["provider_infos"].items():
                 if info["has_more"]:
                     provider_search_request = info["search_request"]
-                    provider_search_request.offset += 100
+                    provider_search_request.offset = internal_offset
                     print("Increased the offset for %s to %d" % (provider, provider_search_request.offset))
                     providers_to_call[provider] = provider_search_request
                 else:
@@ -117,9 +120,21 @@ def search(internal, search_request: SearchRequest):
                 nzb_search_results.extend(queries_execution_result.results)
                 cache_entry["provider_search_entries"][provider] = queries_execution_result.dbentry
                 cache_entry[provider] = {"has_more": queries_execution_result.has_more}
-            cache_entry["results"].extend(nzb_search_results)
+            nzb_search_results = sorted(nzb_search_results, key=lambda x: x.epoch, reverse=True)
+            if external_offset == len(cache_entry["results"]):
+                print("We have %d results cached and now append another %d" % (len(cache_entry["results"]), len(nzb_search_results)))
+            elif external_offset > len(cache_entry["results"]):
+                print("We have want to insert the results at external offset %d (internal offset %d) but so far have only retrieved %d results" % (external_offset, internal_offset, len(cache_entry["results"])))
+                print("We add %d empty results to the cached results" % (external_offset - len(cache_entry["results"])))
+                cache_entry["results"].extend([None for x in range((external_offset - len(cache_entry["results"])))])
+            else:
+                print("This result range was not yet retrieved (we jumped back) so we need to delete the None placeholders between %d and %d" % (internal_offset, internal_offset + len(nzb_search_results)))
+                for i in range(len(nzb_search_results)): 
+                    cache_entry["results"].pop(internal_offset)
+                
+            cache_entry["results"][internal_offset:internal_offset] = nzb_search_results
         else:
-            print("We want %d + %d results and still have %d cached" % (search_request.offset, search_request.limit, len(cache_entry["results"])))
+            print("We want %d + %d results and still have %d cached" % (external_offset, search_request.limit, len(cache_entry["results"])))
     else:
         print("Didn't find this query in cache")
 
@@ -129,7 +144,10 @@ def search(internal, search_request: SearchRequest):
         dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode)
         dbsearch.save()
         providers_to_call = pick_providers(query_supplied=True if search_request.query is not None else False, identifier_key=search_request.identifier_key, internal=internal)
+        internal_offset = divmod(search_request.offset, len(providers_to_call) * limit)[0] * limit  
+        internal_limit = len(providers_to_call) * limit 
         
+        search_request.offset = internal_offset
 
         providers_and_search_requests = {}
         for p in providers_to_call:
@@ -137,11 +155,18 @@ def search(internal, search_request: SearchRequest):
         result = search_and_handle_db(dbsearch, providers_and_search_requests)
         nzb_search_results = []
         cache_entry["provider_infos"] = {}
+        cached_position = len(providers_to_call) * internal_offset
         for provider, queries_execution_result in result["results"].items():
             nzb_search_results.extend(queries_execution_result.results)
             cache_entry["provider_search_entries"][provider] = queries_execution_result.dbentry
             cache_entry["provider_infos"][provider] = {"search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known}
-        cache_entry["results"].extend(nzb_search_results)
+        if external_offset > len(cache_entry["results"]):
+            print("We have want to insert the results at external position %d (internal offset %d) but so far have only retrieved %d results" % (cached_position, internal_offset, len(cache_entry["results"])))
+            print("We add %d empty results to the cached results" % cached_position)
+            cache_entry["results"].extend([None for x in range(cached_position)])
+        print("Addding results to cache at position %d" % cached_position)
+        nzb_search_results = sorted(nzb_search_results, key=lambda x: x.epoch, reverse=True)
+        cache_entry["results"][cached_position:cached_position] = nzb_search_results
         cache_entry["dbsearchid"] = result["dbsearchid"]
 
         pseudo_cache[search_hash] = cache_entry
@@ -151,9 +176,11 @@ def search(internal, search_request: SearchRequest):
         if info["total_known"]:
             total += info["total"]
         elif info["has_more"]:
-            total += 100
+            total += limit
 
-    return {"results": cache_entry["results"][search_request.offset:(search_request.offset + search_request.limit)], "provider_searches": cache_entry["provider_search_entries"], "dbsearchid": cache_entry["dbsearchid"], "total": total, "offset": search_request.offset}
+    nzb_search_results = cache_entry["results"][external_offset:(external_offset + limit)]
+    nzb_search_results = [x for x in nzb_search_results if x is not None] #Don't include any left placeholders
+    return {"results": nzb_search_results, "provider_searches": cache_entry["provider_search_entries"], "dbsearchid": cache_entry["dbsearchid"], "total": total, "offset": external_offset}
 
 
 def search_and_handle_db(dbsearch, providers_and_search_requests):

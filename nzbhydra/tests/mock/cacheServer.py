@@ -1,10 +1,14 @@
-from flask import Flask, request, redirect, make_response, send_file
+from random import randint
+
+import arrow
+from flask import Flask, request, redirect, send_file, render_template
 from flask.ext.cache import Cache
 from furl import furl
 import requests
 
 app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'filesystem', 'CACHE_DIR': 'cache', 'DEFAULT_THRESHOLD': 500, 'DEFAULT_TIMEOUT': 60 * 60 * 24 * 7})
+
 
 @app.route('/rss/')
 def nothing():
@@ -14,13 +18,22 @@ def nothing():
 @app.route('/nzbsorg')
 @app.route('/nzbsorg/api')
 def apinzbsorg():
+    if "q" in request.args.keys() and request.args.get("q") == "pagingtest":
+        start = int(request.args.get("offset") if "offset" in request.args.keys() else 0)
+        end = start + 100
+        return render_template("api.html", items=[{"count": x, "date": arrow.get(10000-x).format('ddd, DD MMM YYYY HH:mm:ss Z')} for x in range(start, end)], offset=request.args.get("offset"), total=500, provider="nzbsorg")
     return handle_request(request.args.items(), "https://nzbs.org/api")
 
 
 @app.route('/dognzb')
 @app.route('/dognzb/api')
 def apidog():
+    if "q" in request.args.keys() and request.args.get("q") == "pagingtest":
+        start = 0
+        end = 75
+        return render_template("api.html", items=[{"count": x, "date": arrow.get(10000-x).format('ddd, DD MMM YYYY HH:mm:ss Z')} for x in range(start, end)], offset=request.args.get("offset"), total=75, provider="dognzb")
     return handle_request(request.args.items(), "https://api.dognzb.cr/api")
+
 
 @app.route('/drunken')
 @app.route('/drunkenslug/api')
