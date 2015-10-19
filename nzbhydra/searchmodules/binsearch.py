@@ -155,6 +155,7 @@ class Binsearch(SearchModule):
                 entry.pubdate_utc = str(pubdate)
                 entry.age_days = (arrow.utcnow() - pubdate).days
                 entry.age_precise = False
+                entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
             except Exception as e:
                 entry.epoch = 0
 

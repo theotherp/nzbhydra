@@ -115,6 +115,8 @@ class NewzNab(SearchModule):
                 url.add({"ep": search_request.episode})
             if search_request.season is not None:
                 url.add({"season": search_request.season})
+            if search_request.query is not None:
+                url.add({"q": search_request.query})
         else:
             url = self.build_base_url("search", search_request.category, offset=search_request.offset).add({"q": search_request.query})
 

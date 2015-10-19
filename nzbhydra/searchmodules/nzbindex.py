@@ -41,7 +41,8 @@ class NzbIndex(SearchModule):
             f = f.add({"minage": search_request.minage})
         if search_request.maxage:
             f = f.add({"age": search_request.maxage})
-        f.query.params["p"] = search_request.offset / self.limit if search_request.offset > 0 else 1
+        if search_request.offset > 0:
+            f.query.params["p"] = int(search_request.offset / self.limit)
         return [f.tostr()]
 
     def get_showsearch_urls(self, search_request):
@@ -151,6 +152,7 @@ class NzbIndex(SearchModule):
                 entry.pubdate_utc = str(pubdate)
                 entry.age_days = (arrow.utcnow() - pubdate).days
                 entry.age_precise = True  # Precise to 2.4 hours, should be enough for duplicate detection
+                entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z") 
             else:
                 logger.debug("Found no age info in %s" % str(agetd))
             entries.append(entry)

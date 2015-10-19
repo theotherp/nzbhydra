@@ -88,6 +88,7 @@ class Womble(SearchModule):
             pubdate = arrow.get(pubdate.text, 'M/D/YYYY h:mm:ss A')
             entry.epoch = pubdate.timestamp
             entry.pubdate_utc = str(pubdate)
+            entry.pubDate = pubdate.format("'ddd, DD MMM YYYY HH:mm:ss Z")
             entry.age_days = (arrow.utcnow() - pubdate).days
              
             entries.append(entry)

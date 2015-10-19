@@ -136,6 +136,7 @@ externalapi_args = {
 @app.route('/api')
 @use_args(externalapi_args)
 def api(args):
+    logger.debug(request.url)
     logger.debug("API request: %s" % args)
     # Map newznab api parameters to internal
     args["category"] = args["cat"]
@@ -152,11 +153,16 @@ def api(args):
             search_request.query = args["query"]
             search_request.type = "general"
         elif args["t"] == "tvsearch":
-            identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
-            identifier_value = args[identifier_key] if identifier_key else None
             search_request.type = "tv"
-            search_request.identifier_key = identifier_key
-            search_request.identifier_value = identifier_value
+            identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
+            if identifier_key is not None:
+                identifier_value = args[identifier_key]
+                search_request.title = infos.title_from_id(identifier_key, identifier_value)
+                search_request.identifier_key = identifier_key
+                search_request.identifier_value = identifier_value
+            search_request.season = int(args["season"]) if args["season"] else None
+            search_request.episode = int(args["episode"]) if args["episode"] else None
+            
         elif args["t"] == "movie":
             search_request.identifier_key = "imdbid" if args["imdbid"] is not None else None
             search_request.identifier_value = args["imdbid"] if args["imdbid"] is not None else None

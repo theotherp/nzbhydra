@@ -457,7 +457,7 @@ nzbgetSettings = NzbgetSettings()
 
 
 class SearchIdSelection(object):
-    rid = SelectOption("tvrage", "TvRage ID")
+    rid = SelectOption("rid", "TvRage ID")
     tvdbid = SelectOption("tvdbid", "TVDB ID")
     imdbid = SelectOption("imdbid", "IMDB ID")
 

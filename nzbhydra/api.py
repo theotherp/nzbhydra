@@ -142,7 +142,7 @@ def get_root_url():
 def transform_results(results, dbsearchid):
     if downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.direct:  # We don't change the link, the results lead directly to the NZB
         return results
-
+    transformed = []
     for i in results:
         f = furl(get_root_url())
         f.path.add("internalapi/getnzb")
@@ -154,16 +154,20 @@ def transform_results(results, dbsearchid):
         
         #Add our pseudo-guid (not the one above, with the link, just an identifier) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
         has_guid = False
+        has_size = False
         for a in i.attributes:
             if a["name"] == "guid":
                 a["value"] = urllib.parse.quote(json.dumps(data_getnzb)) 
                 has_guid = True
-                break
+            if a["name"] == "size":
+                has_size = True
         if not has_guid:
             i.attributes.append({"name": "guid", "value": urllib.parse.quote(json.dumps(data_getnzb))}) #If it wasn't set before now it is (for results from newznab-indexers)
-            
+        if not has_size:
+            i.attributes.append({"name": "size", "value": i.size}) #If it wasn't set before now it is (for results from newznab-indexers)
+        transformed.append(i)
         
-    return results
+    return transformed
 
 def sizeof_fmt(num, suffix='B'):
     for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
@@ -174,6 +178,7 @@ def sizeof_fmt(num, suffix='B'):
 
 def process_for_external_api(results):
     results = transform_results(results["results"], results["dbsearchid"]) #todo dbsearchid
+    
     return results
 
 
