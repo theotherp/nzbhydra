@@ -14,7 +14,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
     $scope.results = $stateParams.results;
     $scope.total = $stateParams.total;
-    $scope.countLoaded = Object.keys($scope.results).length;
+    $scope.resultsCount = $stateParams.resultsCount;
     setSorting($scope.sortPredicate, $scope.sortReversed);
     
     $scope.filteredResults = $stateParams.results;
@@ -128,7 +128,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
                 angular.extend($scope.results, data.results);
                 $scope.filteredResults = sortAndFilter($scope.results);
                 $scope.total = data.total;
-                $scope.countLoaded = Object.keys($scope.results).length;
+                $scope.resultsCount += data.resultsCount;
                 
                 stopBlocking();
             });

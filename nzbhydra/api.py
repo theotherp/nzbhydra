@@ -59,6 +59,8 @@ def find_duplicates(results):
                 seen2.add(group[j])
                 if test_for_duplicate(group[i], group[j]):
                     same_results.append(group[j])
+                else:
+                    grouped_by_sameness.append([group[j]])
             grouped_by_sameness.append(same_results)
 
     return grouped_by_sameness
@@ -198,7 +200,7 @@ def process_for_internal_api(search_result):
     nzbsearchresults = transform_results(nzbsearchresults, search_result["dbsearch"])
 
     grouped_by_sameness = find_duplicates(nzbsearchresults)
-    logger.debug("Duplicate check left %d groups" % len(grouped_by_sameness))
+    logger.debug("Duplicate check left %d groups of separate results" % len(grouped_by_sameness))
     # Will be sorted by GUI later anyway but makes debugging easier
     results = sorted(grouped_by_sameness, key=lambda x: x[0].epoch, reverse=True)
     serialized = []
@@ -207,14 +209,10 @@ def process_for_internal_api(search_result):
 
     allresults = []
     # We give each group of results a unique value by which they can be identified later even if they're "taken apart"
-    count = 0
     for group in serialized:
         for i in group:
             i["hash"] = hash(group[0]["guid"])
             allresults.append(i)
-            count += 1
-    logger.debug("Count: %d" % count)
-    logger.debug("Processing left %d results" % len(allresults))
     return {"results": allresults, "providersearches": providersearchdbentries, "searchentryid": search_result["dbsearch"], "total": search_result["total"]}
 
 

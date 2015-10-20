@@ -34,6 +34,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                 results: [],
                 providersearches: [],
                 total : 0,
+                resultsCount: 0,
                 mode: "results"
             }
         })
