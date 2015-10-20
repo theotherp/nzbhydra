@@ -100,7 +100,7 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
 
     $scope.startSearch = function () {
         SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, $scope.selectedProviders).then(function (searchResult) {
-            $state.go("search.results", {"results": searchResult.results, "providersearches": searchResult.providersearches});
+            $state.go("search.results", {"results": searchResult.results, "providersearches": searchResult.providersearches, total: searchResult.total});
             $scope.imdbid = "";
             $scope.tvdbid = "";
         });

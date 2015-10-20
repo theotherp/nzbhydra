@@ -34,7 +34,7 @@
                             />{{ ps.provider }}
                 </td>
                 <td class="text-left">
-                    {{ providerResultsInfo[ps.provider].loadedResults }}/{{ ps.total }} <a ng-href ng-click="loadMore(ps.provider)">+</a>
+                    {{ ps.total }}
                 </td>
                 <td class="text-left">
                     {{ ps.averageResponseTime }}ms
@@ -58,7 +58,15 @@
 </div>
 
 <div class="row" ng-if="providersearches" style="margin-top: 30px">
-    <dir-pagination-controls></dir-pagination-controls>
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <dir-pagination-controls auto-hide="true" template-url="/static/html/results-pagination.html"></dir-pagination-controls>
+    </div>
+
+    <div class="col-md-3" style="text-align: right; padding-right: 0">
+        <button style="margin-top:20px; margin-bottom:20px;" type="button" ng-click="loadMore()" class="btn btn-default"><span class="badge" style="margin-right: 10px;">Loaded {{ countLoaded }} of {{ total }} results</span>Load more</button>
+    </div>
+
     <table class="table" style="margin-bottom: 0">
         <thead>
         <tr>
@@ -93,7 +101,7 @@
         </tr>
         </thead>
         <tbody>
-        
+
         <!--<tr ng-repeat-start="resultwithduplicates in filteredResults | limitTo:limitTo track by groupId(resultwithduplicates) " ng-if="0"></tr>-->
         <tr dir-paginate-start="resultwithduplicates in filteredResults | itemsPerPage:limitTo track by groupId(resultwithduplicates)" ng-show="0"></tr>
         <!-- First result in the list, show regularly -->
@@ -143,13 +151,12 @@
             </td>
         </tr>
         <!--<tr on-finish-render="stopBlocking()" item="resultwithduplicates">Hallo</tr>-->
-        <tr on-finish-render="stopBlocking()" ></tr>
+        <tr on-finish-render="stopBlocking()"></tr>
         <tr dir-paginate-end ng-show="0"></tr>
-        
+
         </tbody>
     </table>
-    <dir-pagination-controls></dir-pagination-controls>
-
+    <dir-pagination-controls auto-hide="false"></dir-pagination-controls>
 
 
 </div>

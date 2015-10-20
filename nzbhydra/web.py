@@ -157,7 +157,7 @@ def api(args):
             identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
             if identifier_key is not None:
                 identifier_value = args[identifier_key]
-                search_request.title = infos.title_from_id(identifier_key, identifier_value)
+                search_request.title = infos.title_from_id(identifier_key, identifier_value) #todo: move to search and only execute if needed
                 search_request.identifier_key = identifier_key
                 search_request.identifier_value = identifier_value
             search_request.season = int(args["season"]) if args["season"] else None
@@ -194,10 +194,7 @@ def process_and_jsonify_for_internalapi(results):
 internalapi_search_args = {
     "query": fields.String(missing=None),
     "category": fields.String(missing=None),
-    "title": fields.String(missing=None),
-    "dbsearchid": fields.Integer(missing=None),
-    "providers": fields.String(missing=None),  # comma separated list of names of those providers the user picked
-    "offsets": fields.String(missing=None),  # comma separated list of offsets for providers in the order of the list above
+    "offset": fields.Integer(missing=0),
 
     "minsize": fields.Integer(missing=None),
     "maxsize": fields.Integer(missing=None),
@@ -212,10 +209,8 @@ internalapi_search_args = {
 @search_cache.memoize()
 def internalapi_search(args):
     logger.debug("Search request with args %s" % args)
-    if session.get("key", None):
-        print("FOund session infos")
-    session["key"] = "info"
-    results = search.search(True, args)
+    search_request = SearchRequest(type="general", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"])
+    results = search.search(True, search_request)
     return process_and_jsonify_for_internalapi(results)
 
 

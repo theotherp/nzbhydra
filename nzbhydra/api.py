@@ -139,14 +139,14 @@ def get_root_url():
     return request.url_root
 
 
-def transform_results(results, dbsearchid):
+def transform_results(results, dbsearch):
     if downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.direct:  # We don't change the link, the results lead directly to the NZB
         return results
     transformed = []
     for i in results:
         f = furl(get_root_url())
         f.path.add("internalapi/getnzb")
-        data_getnzb = {"provider": i.provider, "guid": i.guid, "searchid": dbsearchid, "title": i.title} #All the data we would like to have when an NZB is downloaded
+        data_getnzb = {"provider": i.provider, "guid": i.guid, "searchid": dbsearch, "title": i.title} #All the data we would like to have when an NZB is downloaded
         f.add(data_getnzb)  #Here we insert it directly into the link as parameters
         i.link = f.url
         i.providerguid = i.guid #Save the provider's original GUID so that we can send it later from the GUI to identify the result
@@ -184,22 +184,21 @@ def process_for_external_api(results):
 
 def process_for_internal_api(search_result):
     
-    nzbsearchresults = []
+    nzbsearchresults = search_result["results"]
+    logger.debug("Processing %d results" % len(nzbsearchresults))
     providersearchdbentries = []
-    for results_and_dbentry in search_result["results"].values():
-        nzbsearchresults.extend(results_and_dbentry.results)
-        provider_search_info = ProviderSearchSchema().dump(results_and_dbentry.dbentry).data
-        provider_search_info["total"] = results_and_dbentry.total_results
-        provider_search_info["offset"] = results_and_dbentry.offset
-        provider_search_info["loaded_results"] = results_and_dbentry.loaded_results
-        provider_search_info["total_known"] = results_and_dbentry.total_known
-        provider_search_info["has_more"] = results_and_dbentry.has_more
+    for provider, provider_info in search_result["provider_infos"].items():
+        provider_search_info = ProviderSearchSchema().dump(provider_info["provider_search"]).data
+        provider_search_info["total"] = provider_info["total"]
+        provider_search_info["offset"] = search_result["provider_infos"][provider]["search_request"].offset 
+        provider_search_info["total_known"] = provider_info["total_known"]
+        provider_search_info["has_more"] = provider_info["has_more"]
         providersearchdbentries.append(provider_search_info)
 
-    nzbsearchresults = transform_results(nzbsearchresults, search_result["dbsearchid"])
+    nzbsearchresults = transform_results(nzbsearchresults, search_result["dbsearch"])
 
     grouped_by_sameness = find_duplicates(nzbsearchresults)
-
+    logger.debug("Duplicate check left %d groups" % len(grouped_by_sameness))
     # Will be sorted by GUI later anyway but makes debugging easier
     results = sorted(grouped_by_sameness, key=lambda x: x[0].epoch, reverse=True)
     serialized = []
@@ -208,11 +207,15 @@ def process_for_internal_api(search_result):
 
     allresults = []
     # We give each group of results a unique value by which they can be identified later even if they're "taken apart"
+    count = 0
     for group in serialized:
         for i in group:
             i["hash"] = hash(group[0]["guid"])
             allresults.append(i)
-    return {"results": allresults, "providersearches": providersearchdbentries, "searchentryid": search_result["dbsearchid"]}
+            count += 1
+    logger.debug("Count: %d" % count)
+    logger.debug("Processing left %d results" % len(allresults))
+    return {"results": allresults, "providersearches": providersearchdbentries, "searchentryid": search_result["dbsearch"], "total": search_result["total"]}
 
 
 def serialize_nzb_search_result(result):

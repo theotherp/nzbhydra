@@ -6,12 +6,16 @@ angular
 //SearchResultsController.$inject = ['blockUi'];
 function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService) {
 
-    $scope.sortPredicate = "age_days";
+    $scope.sortPredicate = "epoch";
     $scope.sortReversed = false;
 
-    $scope.limitTo = 100;
+    $scope.limitTo = 101;
+    $scope.offset = 0;
 
-    var results = $stateParams.results;
+    $scope.results = $stateParams.results;
+    $scope.total = $stateParams.total;
+    $scope.countLoaded = Object.keys($scope.results).length;
+    setSorting($scope.sortPredicate, $scope.sortReversed);
     
     $scope.filteredResults = $stateParams.results;
     $scope.providersearches = $stateParams.providersearches;
@@ -58,15 +62,15 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     //Sorting (and filtering) are really slow (about 2 seconds for 1000 results from 5 providers) but I haven't found any way of making it faster, apart from the tracking 
     $scope.setSorting = setSorting;
     function setSorting(predicate, reversedDefault) {
-        startBlocking("Sorting. Sorry...").then(function () {
+        
             if (predicate == $scope.sortPredicate) {
                 $scope.sortReversed = !$scope.sortReversed;
             } else {
                 $scope.sortReversed = reversedDefault;
             }
             $scope.sortPredicate = predicate;
-            $scope.filteredResults = sortAndFilter(results);
-        });
+            $scope.filteredResults = sortAndFilter($scope.results);
+        
     }
 
     function addDummyRow(filteredResults) {
@@ -95,7 +99,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     function removeDummyRow() {
         var possibleDummyIndex = _.min([$scope.limitTo-1, $scope.filteredResults.length-1]); //If the row was added the length of filteredResults is increased by one so we subtract 1 
         console.log("$scope.limitTo:" + $scope.limitTo + ", filteredResults.length:" +  $scope.filteredResults.length-1);
-        if ($scope.filteredResults[possibleDummyIndex][0].title == "DUMMY") {
+        if (!_.isUndefined($scope.filteredResults[possibleDummyIndex]) && $scope.filteredResults[possibleDummyIndex][0].title == "DUMMY") {
             $scope.filteredResults.splice(possibleDummyIndex, 1);
             console.log("Removed dummy row at location " + possibleDummyIndex);
         } else {
@@ -111,20 +115,24 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     }
 
     $scope.loadMore = loadMore;
-    function loadMore(providerName) {
-        console.log("For " + providerName + " load next results with offset " + $scope.providerResultsInfo[providerName].loadedResults);
-        SearchService.loadMore([providerName], [$scope.providerResultsInfo[providerName].loadedResults]).then(function (data) {
-            console.log("Returned more results:");
-            console.log(data.results);
-            results.push.apply(results, data.results);
-            $scope.filteredResults = sortAndFilter(results);
-            _.forEach(data.providersearches, function (ps) {
-                var info = $scope.providerResultsInfo[ps.provider];
-                console.log("Addding " +  ps.loaded_results + " to " + info.loadedResults + " already loaded results");
-                 $scope.providerResultsInfo[ps.provider] = {loadedResults: info.loadedResults + ps.loaded_results};
+    function loadMore() {
+        $scope.offset += 100;
+        console.log("Increasing the offset to " + $scope.offset);
+        
+        startBlocking("Loading more results...").then(function () {
+            SearchService.loadMore($scope.offset).then(function (data) {
+                console.log("Returned more results:");
+                console.log(data.results);
+                console.log($scope.results);
+                console.log("Total: " + data.total);
+                angular.extend($scope.results, data.results);
+                $scope.filteredResults = sortAndFilter($scope.results);
+                $scope.total = data.total;
+                $scope.countLoaded = Object.keys($scope.results).length;
+                
+                stopBlocking();
             });
         });
-
     }
 
 
@@ -145,12 +153,17 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
                 }
             }
 
-            _.each(results, addFilteredGroups);
+            _.each($scope.results, addFilteredGroups);
 
             filteredResults = addDummyRow(filteredResults);
             $scope.filteredResults = filteredResults;
 
         })
+    }
+    
+    $scope.countResults = countResults;
+    function countResults() {
+        return $scope.results.length;
     }
 
 }

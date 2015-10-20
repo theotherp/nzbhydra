@@ -146,7 +146,7 @@ def search(internal, search_request: SearchRequest):
     nzb_search_results = cache_entry["results"][external_offset:(external_offset + limit)]
     cache_entry["last_access"] = arrow.utcnow()
     print("We have %d cached results and return %d-%d of %d total available" % (len(cache_entry["results"]), external_offset, external_offset + limit, cache_entry["total"]))
-    return {"results": nzb_search_results, "provider_searches": {x: y["provider_search"] for x, y in cache_entry["provider_infos"].items()}, "dbsearchid": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset}
+    return {"results": nzb_search_results, "provider_infos": cache_entry["provider_infos"], "dbsearch": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset}
 
 
 def search_and_handle_db(dbsearch, providers_and_search_requests):

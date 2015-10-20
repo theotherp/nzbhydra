@@ -69,11 +69,9 @@ function SearchService($http) {
         
     }
     
-    function loadMore(providers, offsets) {
-        lastExecutedQuery.removeQuery("providers");
-        lastExecutedQuery.removeQuery("offsets");
-        lastExecutedQuery.addQuery("providers", providers.join(","));
-        lastExecutedQuery.addQuery("offsets", offsets.join(","));
+    function loadMore(offset) {
+        lastExecutedQuery.removeQuery("offset");
+        lastExecutedQuery.addQuery("offset", offset);
         
         console.log("Calling " + lastExecutedQuery);
         return $http.get(lastExecutedQuery).then(processData);
@@ -82,6 +80,7 @@ function SearchService($http) {
     function processData(response) {
             var results = response.data.results;
             var providersearches = response.data.providersearches;
+            var total = response.data.total;
         
             results = _.groupBy(results, function(element) {
                 return element.hash; 
@@ -116,7 +115,7 @@ function SearchService($http) {
                 return doShow;
             });
 
-            return {"results": results, "providersearches": providersearches}
+            return {"results": results, "providersearches": providersearches, "total": total}
         }
 }
 
