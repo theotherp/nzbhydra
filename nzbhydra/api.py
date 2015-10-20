@@ -44,15 +44,16 @@ def find_duplicates(results):
     sorted_results = sorted(results, key=lambda x: x.title.lower())
     grouped_by_title = groupby(sorted_results, key=lambda x: x.title.lower())
     grouped_by_sameness = []
-
     for key, group in grouped_by_title:
         seen2 = set()
         group = list(group)
+        
         for i in range(len(group)):
             if group[i] in seen2:
                 continue
             seen2.add(group[i])
-            same_results = [group[i]]  # All elements in this list are duplicates of each other 
+            same_results = [group[i]]  # All elements in this list are duplicates of each other
+            different_results = []
             for j in range(i + 1, len(group)):
                 if group[j] in seen2:
                     continue
@@ -60,9 +61,16 @@ def find_duplicates(results):
                 if test_for_duplicate(group[i], group[j]):
                     same_results.append(group[j])
                 else:
-                    grouped_by_sameness.append([group[j]])
+                    different_results.append([group[j]])
             grouped_by_sameness.append(same_results)
-
+            grouped_by_sameness.extend(different_results)
+            #logger.debug("Adding %d elements to end results" % len(same_results))
+            if len(group) != len(same_results) + len(different_results):
+                pass
+            if len(same_results) > 1:
+                logger.debug("Found %d duplicates out of %d results for %s" % (len(same_results), len(group), key))
+            
+    
     return grouped_by_sameness
 
 
@@ -78,14 +86,14 @@ def test_for_duplicate(search_result_1, search_result_2):
         return False
     if not search_result_1.size or not search_result_2.size:
         return False
-    size_threshold = config.get(resultProcessingSettings.duplicateSizeThresholdInPercent)
+    size_threshold = config.resultProcessingSettings.duplicateSizeThresholdInPercent.get()
     size_difference = search_result_1.size - search_result_2.size
     size_average = (search_result_1.size + search_result_2.size) / 2
     size_difference_percent = abs(size_difference / size_average) * 100
     same_size = size_difference_percent <= size_threshold
     
-    age_threshold = config.get(resultProcessingSettings.duplicateAgeThreshold)
-    if not search_result_1.epoch or not search_result_2.epoch:
+    age_threshold = config.resultProcessingSettings.duplicateAgeThreshold.get()
+    if search_result_1.epoch is None or search_result_2.epoch is None:
         return False
     same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold  # epoch difference (ms) to minutes
 

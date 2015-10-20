@@ -7,7 +7,7 @@ angular
 function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService) {
 
     $scope.sortPredicate = "epoch";
-    $scope.sortReversed = false;
+    $scope.sortReversed = true;
 
     $scope.limitTo = 101;
     $scope.offset = 0;
@@ -15,9 +15,9 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.results = $stateParams.results;
     $scope.total = $stateParams.total;
     $scope.resultsCount = $stateParams.resultsCount;
-    setSorting($scope.sortPredicate, $scope.sortReversed);
+    $scope.filteredResults = sortAndFilter($scope.results);
     
-    $scope.filteredResults = $stateParams.results;
+    
     $scope.providersearches = $stateParams.providersearches;
 
     $scope.providerDisplayState = []; //Stores if a provider's results should be displayed or not

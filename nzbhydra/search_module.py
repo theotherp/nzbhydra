@@ -71,12 +71,12 @@ class SearchModule(object):
                 # Just show all the latest movie releases
                 urls = self.get_showsearch_urls(search_request)
         elif search_request.type == "movie":
-            if search_request.query is None and search_request.title is None and search_request.imdbid is None and self.needs_queries:
+            if search_request.query is None and search_request.title is None and search_request.identifier_key is None and self.needs_queries:
                 self.logger.error("Movie search without query or IMDB id or title is not possible with this provider")
                 return []
             if search_request.query is None and not self.generate_queries:
                 self.logger.error("Movie search is not possible with this provideer because query generation is disabled")
-            if search_request.imdbid is not None and "imdbid" in self.search_ids:
+            if search_request.identifier_key is not None and "imdbid" in self.search_ids:
                 # Best case, we can search using IMDB id
                 urls = self.get_moviesearch_urls(search_request)
             elif search_request.title is not None:

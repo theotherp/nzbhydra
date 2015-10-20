@@ -219,6 +219,7 @@ internalapi_moviesearch_args = {
     "category": fields.String(missing=None),
     "title": fields.String(missing=None),
     "imdbid": fields.String(missing=None),
+    "offset": fields.Integer(missing=0),
 
     "minsize": fields.Integer(missing=None),
     "maxsize": fields.Integer(missing=None),
@@ -233,7 +234,11 @@ internalapi_moviesearch_args = {
 @search_cache.memoize()
 def internalapi_moviesearch(args):
     logger.debug("Movie search request with args %s" % args)
-    results = search.search_movie(True, args)
+    search_request = SearchRequest(type="movie", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"])
+    if args["imdbid"]:
+        search_request.identifier_key = "imdbid"
+        search_request.identifier_value = args["imdbid"]
+    results = search.search(True, search_request)
     return process_and_jsonify_for_internalapi(results)
 
 
