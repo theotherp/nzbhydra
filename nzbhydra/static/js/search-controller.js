@@ -3,8 +3,8 @@ angular
     .controller('SearchController', SearchController);
 
 
-SearchController.$inject = ['$scope', '$http', '$stateParams','$modal', '$sce', '$state', 'SearchService', 'focus', 'ConfigService', 'blockUI'];
-function SearchController($scope, $http, $stateParams, $modal, $sce, $state, SearchService, focus, ConfigService, blockUI) {
+SearchController.$inject = ['$scope', '$http', '$stateParams','$uibModal', '$sce', '$state', 'SearchService', 'focus', 'ConfigService', 'blockUI'];
+function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, SearchService, focus, ConfigService, blockUI) {
 
     console.log("Start of search controller");
 
@@ -207,7 +207,7 @@ function SearchController($scope, $http, $stateParams, $modal, $sce, $state, Sea
 
     $scope.open = function (size, nfo) {
 
-        var modalInstance = $modal.open({
+        $uibModal.open({
             animation: $scope.animationsEnabled,
             template: '<pre><span ng-bind-html="nfo"></span></pre>',
             controller: 'ModalInstanceCtrl',

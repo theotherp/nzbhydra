@@ -22,7 +22,7 @@
   "dependencies": {
     "angular-animate": "~1.4.7",
     "angular-block-ui": "~0.2.0",
-    "angular-bootstrap": "~0.13.4",
+    "angular-bootstrap": "~0.14.2",
     "angular-cookie": "~4.0.9",
     "angular-loading-bar": "~0.8.0",
     "angular-growl-v2": "angular-growl-2#~0.7.5",
