@@ -1,5 +1,6 @@
 import concurrent
 from concurrent.futures import ThreadPoolExecutor
+import copy
 import logging
 
 import arrow
@@ -148,7 +149,7 @@ def search(internal, search_request: SearchRequest):
         search_results = sorted(search_results, key=lambda x: x.epoch, reverse=True)
         cache_entry["results"].extend(search_results)
 
-    nzb_search_results = cache_entry["results"][external_offset:(external_offset + limit)]
+    nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:(external_offset + limit)])
     cache_entry["last_access"] = arrow.utcnow()
     print("We have %d cached results and return %d-%d of %d total available" % (len(cache_entry["results"]), external_offset, external_offset + limit, cache_entry["total"]))
     return {"results": nzb_search_results, "provider_infos": cache_entry["provider_infos"], "dbsearch": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset}
