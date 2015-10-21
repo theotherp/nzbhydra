@@ -1,0 +1,148 @@
+{
+    "providers": {
+        "newznab1": {
+            "host": "http://127.0.0.1",
+            "search_ids": [
+                "imdbid",
+                "rid",
+                "tvdbid"
+            ],
+            "name": null,
+            "apikey": null,
+            "enabled": false
+        },
+        "newznab3": {
+            "host": null,
+            "search_ids": [
+                "imdbid",
+                "rid",
+                "tvdbid"
+            ],
+            "name": null,
+            "apikey": null,
+            "enabled": false
+        },
+        "newznab6": {
+            "host": null,
+            "search_ids": [
+                "imdbid",
+                "rid",
+                "tvdbid"
+            ],
+            "name": null,
+            "apikey": null,
+            "enabled": false
+        },
+        "binsearch": {
+            "host": "https://binsearch.com",
+            "search_ids": [],
+            "name": "binsearch",
+            "enabled": true
+        },
+        "nzbclub": {
+            "host": "http://nzbclub.com",
+            "search_ids": [],
+            "name": "nzbclub",
+            "enabled": true
+        },
+        "newznab2": {
+            "host": null,
+            "search_ids": [
+                "imdbid",
+                "rid",
+                "tvdbid"
+            ],
+            "name": null,
+            "apikey": null,
+            "enabled": false
+        },
+        "nzbindex": {
+            "host": "https://nzbindex.com",
+            "search_ids": [],
+            "name": "nzbindex",
+            "enabled": true
+        },
+        "womble": {
+            "host": "https://newshost.co.za",
+            "search_ids": [],
+            "name": "womble",
+            "enabled": true
+        },
+        "newznab4": {
+            "host": null,
+            "search_ids": [
+                "imdbid",
+                "rid",
+                "tvdbid"
+            ],
+            "name": null,
+            "apikey": null,
+            "enabled": false
+        },
+        "newznab5": {
+            "host": null,
+            "search_ids": [
+                "imdbid",
+                "rid",
+                "tvdbid"
+            ],
+            "name": null,
+            "apikey": null,
+            "enabled": false
+        }
+    },
+    "main": {
+        "apikey": "hailhydra",
+        "ssl": true,
+        "cacheTimeout": 30,
+        "host": "127.0.0.1",
+        "cachethreshold": 25,
+        "logging": {
+            "logfile-level": "INFO",
+            "consolelevel": "ERROR",
+            "logfile-filename": "nzbhydra.log"
+        },
+        "port": 5053,
+        "enableAuth": true,
+        "enableCache": true,
+        "password": "",
+        "cacheFolder": "cache",
+        "debug": false,
+        "cacheType": "memory",
+        "username": "",
+        "sslcert": "nzbhydra.crt",
+        "sslkey": "nzbhydra.key"
+    },
+    "downloader": {
+        "nzbAddingType": "nzb",
+        "nzbaccesstype": "serve",
+        "sabnzbd": {
+            "apikey": null,
+            "ssl": false,
+            "host": "127.0.0.1",
+            "username": null,
+            "password": null,
+            "port": 8086
+        },
+        "downloader": "nzbget",
+        "nzbget": {
+            "host": "127.0.0.1",
+            "password": "tegbzn6789",
+            "username": "nzbget",
+            "port": 6789,
+            "ssl": false
+        }
+    },
+    "resultProcessing": {
+        "duplicateSizeThresholdInPercent": 0.1,
+        "htmlParser": "html.parser",
+        "duplicateAgeThreshold": 3600
+    },
+    "searching": {
+        "ignoreTemporarilyDisabled": false,
+        "generate_queries": [
+            "internal"
+        ],
+        "timeout": 5
+    }
+}

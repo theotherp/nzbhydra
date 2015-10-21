@@ -1,11 +1,14 @@
+import os
 from pprint import pprint
+import shutil
 from nzbhydra import config
 from nzbhydra.config import mainSettings, providerSettings, SettingType, ProviderNewznabSettings
 
 print("Loading config from testsettings.cfg")
 
-
-# shutil.copy("testsettings.cfg.orig", "testsettings.cfg")
+if os.path.exists("testsettings.cfg"):
+    os.remove("testsettings.cfg")
+shutil.copy("testsettings.cfg.orig", "testsettings.cfg")
 # config.load("testsettings.cfg")
 
 

@@ -42,6 +42,7 @@ def run():
 
     print("Loading settings from %s" % settings_file)
     config.load(settings_file)
+    config.save(settings_file) #Write any new settings back to the file
     logger = log.setup_custom_logger('root')
     logger.info("Started")
     logger.info("Loading database file %s" % database_file)

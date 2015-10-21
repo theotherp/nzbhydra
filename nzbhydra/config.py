@@ -2,6 +2,7 @@ from enum import Enum
 import json
 import logging
 import os
+import collections
 
 from typing import List
 
@@ -178,6 +179,14 @@ class MultiSelectionSetting(Setting):
     def get(self):
         return super().get()
 
+def update(d, u):
+    for k, v in u.items():
+        if isinstance(v, collections.Mapping):
+            r = update(d.get(k, {}), v)
+            d[k] = r
+        else:
+            d[k] = u[k]
+    return d
 
 def load(filename):
     global cfg
@@ -185,7 +194,9 @@ def load(filename):
     config_file = filename
     if os.path.exists(filename):
         with open(filename, "r") as f:
-            cfg = json.load(f)
+            loaded_config = json.load(f)
+            cfg = update(cfg, loaded_config)
+            pass
 
 
 def import_config_data(data):
@@ -398,6 +409,28 @@ class GenerateQueriesSelection(object):
     options = [internal, external]
 
 
+class CategorySizeSettings(Category):
+    def __init__(self, parent):
+        super().__init__(parent, "categorysizes", "Category sizes")
+        self.movieMin = Setting(self, name="moviemin", default=500, valuetype=int, title="Movies min size", description="")
+        self.movieMax = Setting(self, name="moviemax", default=20000, valuetype=int, title="Movies max size", description="")
+        
+        self.moviehdMin = Setting(self, name="moviehdmin", default=2000, valuetype=int, title="Movies HD min size", description="")
+        self.moviehdMax = Setting(self, name="moviehdmax", default=20000, valuetype=int, title="Movies HD max size", description="")
+        
+        self.moviesdMin = Setting(self, name="moviesdmin", default=500, valuetype=int, title="Movies SD min size", description="")
+        self.moviesdMax = Setting(self, name="moviesdmax", default=3000, valuetype=int, title="Movies SD max size", description="")
+        
+        self.tvMin = Setting(self, name="tvmin", default=50, valuetype=int, title="TV min size", description="")
+        self.tvMax = Setting(self, name="tvmax", default=5000, valuetype=int, title="TV max size", description="")
+        
+        self.tvhdMin = Setting(self, name="tvhdmin", default=300, valuetype=int, title="TV HD min size", description="")
+        self.tvhdMax = Setting(self, name="tvhdmax", default=3000, valuetype=int, title="TV HD max size", description="")
+        
+        self.tvsdMin = Setting(self, name="tvsdmin", default=50, valuetype=int, title="TV SD min size", description="")
+        self.tvsdMax = Setting(self, name="tvsdmax", default=1000, valuetype=int, title="TV SD max size", description="")
+
+
 class SearchingSettings(Category):
     """
     How searching is executed.
@@ -410,6 +443,8 @@ class SearchingSettings(Category):
         self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[GenerateQueriesSelection.internal], options=GenerateQueriesSelection.options, valuetype=str, title="Query generation",
                                                       description="Decide if you want to generate queries for providers in case of ID based searches. The results will probably contain a lot of crap.",
                                                       setting_type=SettingType.multiselect)
+        
+        self.category_sizes = CategorySizeSettings(self)
 
 
 searchingSettings = SearchingSettings()
