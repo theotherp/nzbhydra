@@ -80,7 +80,7 @@ def pick_providers(query_supplied=True, identifier_key=None, internal=True, sele
         if not query_supplied and p.needs_queries and identifier_key is None:
             logger.debug("Did not pick %s because no query was supplied but the provider needs queries" % p)
             continue
-        allow_query_generation = (config.GenerateQueriesSelection.internal.name in config.searchingSettings.generate_queries.get() and internal) or (config.GenerateQueriesSelection.external.name in config.searchingSettings.generate_queries.get() and not internal)
+        allow_query_generation = (config.InternalExternalSelection.internal.name in config.searchingSettings.generate_queries.get() and internal) or (config.InternalExternalSelection.external.name in config.searchingSettings.generate_queries.get() and not internal)
         if (identifier_key is not None and identifier_key not in p.settings.search_ids.get()) and not (allow_query_generation and p.generate_queries):
             logger.debug("Did not pick %s because search will be done by an identifier and the provider or system wide settings don't allow query generation" % p)
             continue

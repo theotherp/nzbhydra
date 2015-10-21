@@ -179,6 +179,7 @@ class MultiSelectionSetting(Setting):
     def get(self):
         return super().get()
 
+
 def update(d, u):
     for k, v in u.items():
         if isinstance(v, collections.Mapping):
@@ -187,6 +188,7 @@ def update(d, u):
         else:
             d[k] = u[k]
     return d
+
 
 def load(filename):
     global cfg
@@ -403,7 +405,8 @@ class ResultProcessingSettings(Category):
 
 resultProcessingSettings = ResultProcessingSettings()
 
-class GenerateQueriesSelection(object):
+
+class InternalExternalSelection(object):
     internal = SelectOption("internal", "Internal searches")
     external = SelectOption("external", "API searches")
     options = [internal, external]
@@ -412,23 +415,45 @@ class GenerateQueriesSelection(object):
 class CategorySizeSettings(Category):
     def __init__(self, parent):
         super().__init__(parent, "categorysizes", "Category sizes")
-        self.movieMin = Setting(self, name="moviemin", default=500, valuetype=int, title="Movies min size", description="")
-        self.movieMax = Setting(self, name="moviemax", default=20000, valuetype=int, title="Movies max size", description="")
-        
-        self.moviehdMin = Setting(self, name="moviehdmin", default=2000, valuetype=int, title="Movies HD min size", description="")
-        self.moviehdMax = Setting(self, name="moviehdmax", default=20000, valuetype=int, title="Movies HD max size", description="")
-        
-        self.moviesdMin = Setting(self, name="moviesdmin", default=500, valuetype=int, title="Movies SD min size", description="")
-        self.moviesdMax = Setting(self, name="moviesdmax", default=3000, valuetype=int, title="Movies SD max size", description="")
-        
-        self.tvMin = Setting(self, name="tvmin", default=50, valuetype=int, title="TV min size", description="")
-        self.tvMax = Setting(self, name="tvmax", default=5000, valuetype=int, title="TV max size", description="")
-        
-        self.tvhdMin = Setting(self, name="tvhdmin", default=300, valuetype=int, title="TV HD min size", description="")
-        self.tvhdMax = Setting(self, name="tvhdmax", default=3000, valuetype=int, title="TV HD max size", description="")
-        
-        self.tvsdMin = Setting(self, name="tvsdmin", default=50, valuetype=int, title="TV SD min size", description="")
-        self.tvsdMax = Setting(self, name="tvsdmax", default=1000, valuetype=int, title="TV SD max size", description="")
+        self.enable_category_sizes = MultiSelectionSetting(self, name="enable_category_sizes", default=[InternalExternalSelection.internal], options=InternalExternalSelection.options, valuetype=str, title="Category sizes",
+                                                           description="If enabled size limits will be automatically used depending on the search category. For internal searches the input boxes will be prefilled, for external searches the limits will be enforced.",
+                                                           setting_type=SettingType.multiselect)
+
+        self.movieMin = Setting(self, name="Movies min", default=500, valuetype=int, title="Movies min size", description="")
+        self.movieMax = Setting(self, name="Movies max", default=20000, valuetype=int, title="Movies max size", description="")
+
+        self.moviehdMin = Setting(self, name="Movies HD min", default=2000, valuetype=int, title="Movies HD min size", description="")
+        self.moviehdMax = Setting(self, name="Movies HD max", default=20000, valuetype=int, title="Movies HD max size", description="")
+
+        self.moviesdMin = Setting(self, name="Movies SD min", default=500, valuetype=int, title="Movies SD min size", description="")
+        self.moviesdMax = Setting(self, name="Movies SD max", default=3000, valuetype=int, title="Movies SD max size", description="")
+
+        self.tvMin = Setting(self, name="TV min", default=50, valuetype=int, title="TV min size", description="")
+        self.tvMax = Setting(self, name="TV max", default=5000, valuetype=int, title="TV max size", description="")
+
+        self.tvhdMin = Setting(self, name="TV HD min", default=300, valuetype=int, title="TV HD min size", description="")
+        self.tvhdMax = Setting(self, name="TV HD max", default=3000, valuetype=int, title="TV HD max size", description="")
+
+        self.tvsdMin = Setting(self, name="TV SD min", default=50, valuetype=int, title="TV SD min size", description="")
+        self.tvsdMax = Setting(self, name="TV SD max", default=1000, valuetype=int, title="TV SD max size", description="")
+
+        self.audioMin = Setting(self, name="Audio min", default=1, valuetype=int, title="Audio min size", description="")
+        self.audioMax = Setting(self, name="Audio max", default=2000, valuetype=int, title="Audio max size", description="")
+
+        self.audioflacmin = Setting(self, name="Audio FLAC min", default=10, valuetype=int, title="Audio FLAC min size", description="")
+        self.audioflacmax = Setting(self, name="Audio FLAC max", default=2000, valuetype=int, title="Audio FLAC max size", description="")
+
+        self.audiomp3min = Setting(self, name="Audio MP3 min", default=1, valuetype=int, title="Audio MP3 min size", description="")
+        self.audiomp3max = Setting(self, name="Audio MP3 max", default=500, valuetype=int, title="Audio MP3 max size", description="")
+
+        self.consolemin = Setting(self, name="Console min", default=100, valuetype=int, title="Console min size", description="")
+        self.consolemax = Setting(self, name="Console max", default=40000, valuetype=int, title="Console max size", description="")
+
+        self.pcmin = Setting(self, name="PC min", default=100, valuetype=int, title="PC min size", description="")
+        self.pcmax = Setting(self, name="PC max", default=50000, valuetype=int, title="PC max size", description="")
+
+        self.xxxmin = Setting(self, name="XXX min", default=100, valuetype=int, title="XXX min size", description="")
+        self.xxxmax = Setting(self, name="XXX max", default=10000, valuetype=int, title="XXX max size", description="")
 
 
 class SearchingSettings(Category):
@@ -440,10 +465,10 @@ class SearchingSettings(Category):
         super().__init__(config_root, "searching", "Searching")
         self.timeout = Setting(self, name="timeout", default=5, valuetype=int, title="Timeout", description="Timeout when accessing providers.")
         self.temporarilyDisableProblemIndexers = Setting(self, name="ignoreTemporarilyDisabled", default=False, valuetype=bool, title="Pause indexers after problems", description="Enable if you want to pause access to indexers for a time after there was a problem.")
-        self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[GenerateQueriesSelection.internal], options=GenerateQueriesSelection.options, valuetype=str, title="Query generation",
+        self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[InternalExternalSelection.internal], options=InternalExternalSelection.options, valuetype=str, title="Query generation",
                                                       description="Decide if you want to generate queries for providers in case of ID based searches. The results will probably contain a lot of crap.",
                                                       setting_type=SettingType.multiselect)
-        
+
         self.category_sizes = CategorySizeSettings(self)
 
 
@@ -512,8 +537,6 @@ class SearchIdSelection(object):
     rid = SelectOption("rid", "TvRage ID")
     tvdbid = SelectOption("tvdbid", "TVDB ID")
     imdbid = SelectOption("imdbid", "IMDB ID")
-
-
 
 
 class ProviderSettingsAbstract(Category):

@@ -26,6 +26,8 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
     $scope.selectedProviders = (typeof $stateParams.providers === "undefined") ? "" : $stateParams.providers;
 
     $scope.showProviders = {};
+    
+    var config;
 
 
     if ($scope.title != "" && $scope.query == "") {
@@ -57,6 +59,17 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
         
         focus('focus-query-box');
         $scope.query = "";
+        
+        if (config.settings.searching.generate_queries.indexOf("internal") > -1) {
+            var min = config.settings.searching.categorysizes[searchCategory + " min"];
+            var max = config.settings.searching.categorysizes[searchCategory + " max"];
+            if (_.isNumber(min)) {
+                $scope.minsize = min;
+            }
+            if (_.isNumber(max)) {
+                $scope.maxsize = max;
+            }
+        }
     };
 
 
@@ -204,9 +217,10 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
         });
     };
     
-    ConfigService.get().then(function(config) {
-        console.log(config);
-        $scope.availableProviders = _.filter(config.settings.providers, function(provider) {
+    ConfigService.get().then(function(cfg) {
+        config = cfg;
+        
+        $scope.availableProviders = _.filter(cfg.settings.providers, function(provider) {
            return provider.enabled; 
         }).map(function (provider) {
             return {name: provider.name, activated: true};

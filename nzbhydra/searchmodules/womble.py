@@ -3,7 +3,7 @@ import re
 import arrow
 from furl import furl
 import xml.etree.ElementTree as ET
-from nzbhydra.config import GenerateQueriesSelection
+from nzbhydra.config import InternalExternalSelection
 from nzbhydra.exceptions import ProviderResultParsingException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
@@ -18,7 +18,7 @@ class Womble(SearchModule):
         super(Womble, self).__init__(provider)
         self.module = "womble"
         
-        self.settings.generate_queries = GenerateQueriesSelection.never #Doesn't matter because supports_queries is False
+        self.settings.generate_queries = InternalExternalSelection.never #Doesn't matter because supports_queries is False
         self.needs_queries = False
         self.category_search = True
         self.supports_queries = False  # Only as support for general tv search
