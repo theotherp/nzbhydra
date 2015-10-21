@@ -95,3 +95,52 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(1, len(results[2]))
         
         
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, provider="1", guid="1")
+        result2 = NzbSearchResult(title="Title1", epoch=100000000, size=1, provider="2", guid="2")
+        results = api.find_duplicates([result1, result2])
+        self.assertEqual(2, len(results))
+        self.assertEqual(1, len(results[0]))
+        self.assertEqual(1, len(results[1]))
+        
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, provider="1", guid="1")
+        result2 = NzbSearchResult(title="Title1", epoch=1, size=100000000, provider="2", guid="2")
+        results = api.find_duplicates([result1, result2])
+        self.assertEqual(2, len(results))
+        self.assertEqual(1, len(results[0]))
+        self.assertEqual(1, len(results[1]))
+        
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, provider="1", guid="1")
+        result2 = NzbSearchResult(title="Title1", epoch=1, size=1, provider="2", guid="2")
+        results = api.find_duplicates([result1, result2])
+        self.assertEqual(1, len(results))
+        self.assertEqual(2, len(results[0]))
+        
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, provider="1", guid="1")
+        result2 = NzbSearchResult(title="Title1", epoch=1000000, size=1, provider="2", guid="2")
+        result3 = NzbSearchResult(title="Title1", epoch=5000000, size=1, provider="2", guid="2")
+        results = api.find_duplicates([result1, result2, result3])
+        self.assertEqual(3, len(results))
+        self.assertEqual(1, len(results[0]))
+        self.assertEqual(1, len(results[1]))
+        self.assertEqual(1, len(results[2]))
+        
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, provider="1", guid="1")
+        result2 = NzbSearchResult(title="Title2", epoch=1000000, size=1, provider="2", guid="2")
+        result3 = NzbSearchResult(title="Title3", epoch=5000000, size=1, provider="2", guid="2")
+        results = api.find_duplicates([result1, result2, result3])
+        self.assertEqual(3, len(results))
+        self.assertEqual(1, len(results[0]))
+        self.assertEqual(1, len(results[1]))
+        self.assertEqual(1, len(results[2]))
+        
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, provider="1", guid="1")
+        result2 = NzbSearchResult(title="Title2", epoch=0, size=1, provider="2", guid="2")
+        result3 = NzbSearchResult(title="Title3", epoch=0, size=1, provider="2", guid="2")
+        results = api.find_duplicates([result1, result2, result3])
+        self.assertEqual(3, len(results))
+        self.assertEqual(1, len(results[0]))
+        self.assertEqual(1, len(results[1]))
+        self.assertEqual(1, len(results[2]))
+        
+        
+        

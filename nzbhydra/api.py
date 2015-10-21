@@ -51,10 +51,10 @@ def find_duplicates(results):
             #Go through the group
             a = group[i]    
             b = group[i + 1]
+            subgroup.add(a)
             same = test_for_duplicate_age(a, b)
             #If two elements are duplicates add them to the current set
             if same:
-                subgroup.add(a)
                 subgroup.add(b)
             #Otherwise start a new set
             else:
@@ -77,15 +77,15 @@ def find_duplicates(results):
             for i in range(len(group) - 1):
                 a = group[i]    
                 b = group[i + 1]
+                subgroup.add(a)
                 same_size = test_for_duplicate_size(a, b)
                 if same_size:
-                    subgroup.add(a)
                     subgroup.add(b)
                 else:
                     if len(subgroup) > 0:
                         subgroups.append(list(subgroup))
-                        subgroup = set()
-                        subgroup.add(b)
+                    subgroup = set()
+                    subgroup.add(b)
             grouped_by_sameness.extend(subgroups)
             if len(subgroup) > 0:
                 grouped_by_sameness.append(list(subgroup))
