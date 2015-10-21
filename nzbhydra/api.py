@@ -187,7 +187,7 @@ def sizeof_fmt(num, suffix='B'):
     return "%.1f%s%s" % (num, 'Yi', suffix)
 
 def process_for_external_api(results):
-    results = transform_results(results["results"], results["dbsearchid"]) #todo dbsearchid
+    results = transform_results(results["results"], results["dbsearch"]) #todo dbsearchid
     
     return results
 

@@ -157,7 +157,6 @@ def api(args):
             identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
             if identifier_key is not None:
                 identifier_value = args[identifier_key]
-                search_request.title = infos.title_from_id(identifier_key, identifier_value) #todo: move to search and only execute if needed
                 search_request.identifier_key = identifier_key
                 search_request.identifier_value = identifier_value
             search_request.season = int(args["season"]) if args["season"] else None
@@ -247,9 +246,9 @@ internalapi_tvsearch_args = {
     "category": fields.String(missing=None),
     "title": fields.String(missing=None),
     "tvdbid": fields.String(missing=None),
-    "rid": fields.String(missing=None),
     "season": fields.String(missing=None),
     "episode": fields.String(missing=None),
+    "offset": fields.Integer(missing=0),
 
     "minsize": fields.Integer(missing=None),
     "maxsize": fields.Integer(missing=None),
@@ -264,7 +263,11 @@ internalapi_tvsearch_args = {
 @search_cache.memoize()
 def internalapi_tvsearch(args):
     logger.debug("TV search request with args %s" % args)
-    results = search.search_show(True, args)
+    search_request = SearchRequest(type="tv", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], episode=args["episode"], season=args["season"], title=args["title"])
+    if args["tvdbid"]:
+        search_request.identifier_key = "tvdbid"
+        search_request.identifier_value = args["tvdbid"]
+    results = search.search(True, search_request)
     return process_and_jsonify_for_internalapi(results)
 
 

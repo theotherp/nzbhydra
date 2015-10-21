@@ -8,8 +8,7 @@ from requests_futures.sessions import FuturesSession
 
 from nzbhydra.config import searchingSettings
 from nzbhydra.database import ProviderStatus, Search
-from nzbhydra import config
-from nzbhydra import providers
+from nzbhydra import config, providers, infos
 
 categories = {'All': {"pretty": "All", "index": 0},
               'Movies': {"pretty": "Movie", "index": 1},
@@ -56,6 +55,7 @@ class SearchRequest(object):
 def pick_providers(query_supplied=True, identifier_key=None, internal=True, selected_providers=None):
     picked_providers = []
     selected_providers = selected_providers.split(",") if selected_providers is not None else None
+    with_query_generation = False
     for p in providers.configured_providers:
         if not p.settings.enabled.get():
             logger.debug("Did not pick %s because it is disabled" % p)
@@ -80,14 +80,16 @@ def pick_providers(query_supplied=True, identifier_key=None, internal=True, sele
         if not query_supplied and p.needs_queries and identifier_key is None:
             logger.debug("Did not pick %s because no query was supplied but the provider needs queries" % p)
             continue
-        allow_query_generation = (config.cfg.get("searching.allow_query_generation") == "both") or (config.cfg.get("searching.allow_query_generation") == "internal" and internal) or (config.cfg.get("searching.allow_query_generation") == "external" and not internal)
+        allow_query_generation = (config.GenerateQueriesSelection.internal.name in config.searchingSettings.generate_queries.get() and internal) or (config.GenerateQueriesSelection.external.name in config.searchingSettings.generate_queries.get() and not internal)
         if (identifier_key is not None and identifier_key not in p.settings.search_ids.get()) and not (allow_query_generation and p.generate_queries):
             logger.debug("Did not pick %s because search will be done by an identifier and the provider or system wide settings don't allow query generation" % p)
             continue
+        else:
+            with_query_generation = True
 
         picked_providers.append(p)
 
-    return picked_providers
+    return picked_providers, with_query_generation
 
 
 pseudo_cache = {}
@@ -100,12 +102,15 @@ def search(internal, search_request: SearchRequest):
     if search_hash not in pseudo_cache.keys() or pseudo_cache[search_hash]["last_access"].replace(minutes=+5) < arrow.utcnow():
         print("Didn't find this query in cache")
         cache_entry = {"results": [], "provider_infos": {}, "total": 0, "last_access": arrow.utcnow()}
-        providers_to_call = pick_providers(query_supplied=True if search_request.query is not None else False, identifier_key=search_request.identifier_key, internal=internal)
+        providers_to_call, with_query_generation = pick_providers(query_supplied=True if search_request.query is not None else False, identifier_key=search_request.identifier_key, internal=internal)
         for p in providers_to_call:
             cache_entry["provider_infos"][p] = {"has_more": True, "search_request": search_request, "total_included": False}
         dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode)
         dbsearch.save()
         cache_entry["dbsearch"] = dbsearch
+        
+        if with_query_generation and search_request.title is None:
+            search_request.title = infos.title_from_id(search_request.identifier_key, search_request.identifier_value) #todo: move to search and only execute if needed
         pseudo_cache[search_hash] = cache_entry
     else:
         cache_entry = pseudo_cache[search_hash]

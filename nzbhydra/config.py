@@ -43,6 +43,21 @@ class Category(object):
     def set_setting(self, setting, value):
         self.get()[setting.settingname] = value
 
+    def __setattr__(self, key, value):
+        if key != "children" and hasattr(self, "children") and key in [x.settingname for x in self.children if isinstance(x, Setting)] and not isinstance(value, Setting):
+            # Allow setting a setting's value directly instead of using set(value)
+            self.get()[key] = value
+        else:
+            return super().__setattr__(key, value)
+
+    def __getattribute__(self, *args, **kwargs):
+        key = args[0]
+        # todo maybe, only works with direct subsettings
+        # if key != "children" and hasattr(self, "children") and key in [x.settingname for x in self.children if isinstance(x, Setting)]:
+        #    return self.get()[key]
+
+        return super().__getattribute__(*args, **kwargs)
+
 
 cfg = {}
 config_file = None
@@ -253,9 +268,6 @@ def get_form_items(category: Category, grouptype="section"):
         if isinstance(child, Setting):
             items.append(create_form_item(child))
 
-    
-
-
     if grouptype == "section":
         main_element = {"type": "section", "htmlClass": "panel panel-default",
                         "items": [
@@ -266,17 +278,13 @@ def get_form_items(category: Category, grouptype="section"):
     else:
         main_element = {"type": "tab", "title": category.title, "items": [{"type": "section", "htmlClass": "config-tab-content", "items": items}]}
 
-    if category in (providerSettings.newznab1, providerSettings.newznab2, providerSettings.newznab3, providerSettings.newznab4 ,providerSettings.newznab5 ,providerSettings.newznab6):
-        #TODO has no effect yet, dunno why
+    if category in (providerSettings.newznab1, providerSettings.newznab2, providerSettings.newznab3, providerSettings.newznab4, providerSettings.newznab5, providerSettings.newznab6):
+        # TODO has no effect yet, dunno why
         if category == providerSettings.newznab2:
             main_element["condition"] = "providers.newznab1.name"
         if category == providerSettings.newznab3:
             main_element["condition"] = "providers.newznab2.name"
-        
-        
-        
-            
-    
+
     return main_element
 
 
@@ -360,11 +368,13 @@ class MainSettings(Category):
 
 mainSettings = MainSettings()
 
+
 class HtmlParserSelection(object):
     html = SelectOption("html.parser", "Default BS (slow)")
     lxml = SelectOption("lxml", "LXML (faster, needs to be installed separately)")
-    
+
     options = [html, lxml]
+
 
 class ResultProcessingSettings(Category):
     """
@@ -377,10 +387,15 @@ class ResultProcessingSettings(Category):
                                                        description="If the size difference between two search entries with the same title is higher than this they won't be considered dplicates.")
         self.duplicateAgeThreshold = Setting(self, name="duplicateAgeThreshold", default=3600, valuetype=int, title="Duplicate age threshold", description="If the age difference in seconds between two search entries with the same title is higher than this they won't be considered dplicates.")
         self.htmlParser = SelectionSetting(self, name="htmlParser", default=HtmlParserSelection.html, valuetype=str, options=HtmlParserSelection.options, title="HTML Parser", description="Used to parse HTML from providers like binsearch. If possible use LXML")
-        #html.parser
+        # html.parser
 
 
 resultProcessingSettings = ResultProcessingSettings()
+
+class GenerateQueriesSelection(object):
+    internal = SelectOption("internal", "Internal searches")
+    external = SelectOption("external", "API searches")
+    options = [internal, external]
 
 
 class SearchingSettings(Category):
@@ -392,7 +407,9 @@ class SearchingSettings(Category):
         super().__init__(config_root, "searching", "Searching")
         self.timeout = Setting(self, name="timeout", default=5, valuetype=int, title="Timeout", description="Timeout when accessing providers.")
         self.temporarilyDisableProblemIndexers = Setting(self, name="ignoreTemporarilyDisabled", default=False, valuetype=bool, title="Pause indexers after problems", description="Enable if you want to pause access to indexers for a time after there was a problem.")
-        # self.allowQueryGeneration = Setting(self, name="allowQueryGeneration", default="both", valuetype=str, title="Allow query generation", description=None) 
+        self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[GenerateQueriesSelection.internal], options=GenerateQueriesSelection.options, valuetype=str, title="Query generation",
+                                                      description="Decide if you want to generate queries for providers in case of ID based searches. The results will probably contain a lot of crap.",
+                                                      setting_type=SettingType.multiselect)
 
 
 searchingSettings = SearchingSettings()
@@ -462,11 +479,6 @@ class SearchIdSelection(object):
     imdbid = SelectOption("imdbid", "IMDB ID")
 
 
-class GenerateQueriesSelection(object):
-    internal = SelectOption("internal", "Only for internal searches")
-    external = SelectOption("external", "Only for API searches")
-    both = SelectOption("both", "Always")
-    never = SelectOption("never", "Never")
 
 
 class ProviderSettingsAbstract(Category):
@@ -478,9 +490,9 @@ class ProviderSettingsAbstract(Category):
         self.search_ids = MultiSelectionSetting(self, name="search_ids", default=[], valuetype=list, title="Search IDs", description="By which IDs the indexer can search releases",
                                                 options=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid],
                                                 setting_type=SettingType.multiselect)
-        self.generate_queries = SelectionSetting(self, name="generate_queries", default=GenerateQueriesSelection.internal, options=[GenerateQueriesSelection.internal, GenerateQueriesSelection.external, GenerateQueriesSelection.both], valuetype=str, title="Query generation",
-                                                 description="Decide if you want to generate queries for providers in case of ID based searches. The results will probably contain a lot of crap.",
-                                                 setting_type=SettingType.select)
+        # self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[GenerateQueriesSelection.internal], options=GenerateQueriesSelection.options, valuetype=str, title="Query generation",
+        #                                          description="Decide if you want to generate queries for providers in case of ID based searches. The results will probably contain a lot of crap.",
+        #                                          setting_type=SettingType.multiselect)
 
 
 class ProviderBinsearchSettings(ProviderSettingsAbstract):

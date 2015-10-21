@@ -14,6 +14,8 @@ def testThatGetAndSetWork():
     assert mainSettings.host.get() == "127.0.0.1"
     mainSettings.host.set("192.168.0.1")
     assert mainSettings.host.get() == "192.168.0.1"
+    mainSettings.host = "192.168.100.100" #We can even set the value directly
+    assert mainSettings.host.get() == "192.168.100.100"
     mainSettings.host.set("127.0.0.1")  # Just set back
 
     # Setting in subcategory
