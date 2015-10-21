@@ -34,56 +34,85 @@ categories = {'Console': {'code': [1000, 1010, 1020, 1030, 1040, 1050, 1060, 107
 
 
 def find_duplicates(results):
-    """
-
-    :type results: list[NzbSearchResult]
-    """
-    # TODO we might want to be able to specify more precisely what item we pick of a group of duplicates, for example by indexer priority 
-
-    # Sort and group by title. We only need to check the items in each individual group against each other because we only consider items with the same title as possible duplicates
     sorted_results = sorted(results, key=lambda x: x.title.lower())
     grouped_by_title = groupby(sorted_results, key=lambda x: x.title.lower())
     grouped_by_sameness = []
     for key, group in grouped_by_title:
-        seen2 = set()
         group = list(group)
+        #Elements cannot be duplicates of themselves...
+        if len(group) == 1:
+            grouped_by_sameness.append(group)
+            continue
+        #Sort by epoch
+        group = sorted(group, key=lambda x: x.epoch)
+        subgroups = []
+        subgroup = set()
+        for i in range(len(group) - 1):
+            #Go through the group
+            a = group[i]    
+            b = group[i + 1]
+            same = test_for_duplicate_age(a, b)
+            #If two elements are duplicates add them to the current set
+            if same:
+                subgroup.add(a)
+                subgroup.add(b)
+            #Otherwise start a new set
+            else:
+                if len(subgroup) > 0:
+                    subgroups.append(subgroup)
+                subgroup = set()
+                subgroup.add(b)
+        #Add the last set if it contains elements
+        if len(subgroup) > 0:
+            subgroups.append(list(subgroup))
         
-        for i in range(len(group)):
-            if group[i] in seen2:
+        #Do the same with size for the subgroups which contain potential duplicates.  
+        for group in subgroups:
+            if len(group) == 1:
+                grouped_by_sameness.append(group)
                 continue
-            seen2.add(group[i])
-            same_results = [group[i]]  # All elements in this list are duplicates of each other
-            different_results = []
-            for j in range(i + 1, len(group)):
-                if group[j] in seen2:
-                    continue
-                seen2.add(group[j])
-                if test_for_duplicate(group[i], group[j]):
-                    same_results.append(group[j])
+            group = sorted(group, key=lambda x: x.size)
+            subgroups = []
+            subgroup = set()
+            for i in range(len(group) - 1):
+                a = group[i]    
+                b = group[i + 1]
+                same_size = test_for_duplicate_size(a, b)
+                if same_size:
+                    subgroup.add(a)
+                    subgroup.add(b)
                 else:
-                    different_results.append([group[j]])
-            grouped_by_sameness.append(same_results)
-            grouped_by_sameness.extend(different_results)
-            #logger.debug("Adding %d elements to end results" % len(same_results))
-            if len(group) != len(same_results) + len(different_results):
-                pass
-            if len(same_results) > 1:
-                logger.debug("Found %d duplicates out of %d results for %s" % (len(same_results), len(group), key))
-            
-    
+                    if len(subgroup) > 0:
+                        subgroups.append(list(subgroup))
+                        subgroup = set()
+                        subgroup.add(b)
+            grouped_by_sameness.extend(subgroups)
+            if len(subgroup) > 0:
+                grouped_by_sameness.append(list(subgroup))
     return grouped_by_sameness
+            
+  
 
 
-def test_for_duplicate(search_result_1, search_result_2):
+def test_for_duplicate_age(search_result_1, search_result_2):
     """
 
     :type search_result_1: NzbSearchResult
     :type search_result_2: NzbSearchResult
     """
-    if search_result_1.provider == search_result_2.provider:
+    age_threshold = config.resultProcessingSettings.duplicateAgeThreshold.get()
+    if search_result_1.epoch is None or search_result_2.epoch is None:
         return False
-    if search_result_1.title.lower() != search_result_2.title.lower():
-        return False
+    same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold  # epoch difference (ms) to minutes
+
+    return same_age
+
+def test_for_duplicate_size(search_result_1, search_result_2):
+    """
+
+    :type search_result_1: NzbSearchResult
+    :type search_result_2: NzbSearchResult
+    """
     if not search_result_1.size or not search_result_2.size:
         return False
     size_threshold = config.resultProcessingSettings.duplicateSizeThresholdInPercent.get()
@@ -92,15 +121,8 @@ def test_for_duplicate(search_result_1, search_result_2):
     size_difference_percent = abs(size_difference / size_average) * 100
     same_size = size_difference_percent <= size_threshold
     
-    age_threshold = config.resultProcessingSettings.duplicateAgeThreshold.get()
-    if search_result_1.epoch is None or search_result_2.epoch is None:
-        return False
-    same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold  # epoch difference (ms) to minutes
-
-    # If all nweznab providers would provide poster/group in their infos then this would be a lot easier and more precise
-    # We could also use something to combine several values to a score, say that if a two posts have the exact size their age may differe more or combine relative and absolute size comparison
-    if same_size and same_age:
-        return True
+    return same_size
+        
 
 
 class ProviderSchema(Schema):

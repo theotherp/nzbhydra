@@ -152,7 +152,7 @@ class NewzNab(SearchModule):
         offset = int(tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}).attrib["offset"])
         if total == 0:
             logger.info("Query at %s returned no results" % self)
-            return ProviderProcessingResult(entries=entries, queries=[])
+            return ProviderProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False)
         for item in tree.find("channel").findall("item"):
             entry = NzbSearchResult()
             entry.title = item.find("title").text

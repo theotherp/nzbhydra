@@ -159,8 +159,6 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
             stateParams.maxage = $scope.maxage;
         }
         
-        stateParams.providers = _.pluck($scope.availableProviders, "name").join(",");
-
         stateParams.category = $scope.category;
 
         console.log("Going to search state with params...");

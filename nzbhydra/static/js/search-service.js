@@ -16,7 +16,7 @@ function SearchService($http) {
         if (category.indexOf("Movies") > -1) {
             console.log("Search for movies");
             uri = new URI("/internalapi/moviesearch");
-            if (imdbid != "undefined") {
+            if (imdbid) {
                 console.log("moviesearch per imdbid");
                 uri.addQuery("imdbid", imdbid);
                 uri.addQuery("title", title);
@@ -57,9 +57,7 @@ function SearchService($http) {
         if (!_.isNullOrEmpty(maxage)) {
             uri.addQuery("maxage", maxage);
         }
-        if (!_.isNullOrEmpty(selectedProviders)) {
-            uri.addQuery("providers", selectedProviders);
-        }
+        
 
         uri.addQuery("category", category);
 
@@ -95,26 +93,7 @@ function SearchService($http) {
             }, 0);
             ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
         });
-
-
-        //Filter the events once. Not all providers follow or allow all the restrictions, so we enfore them here
-        filteredResults = _.filter(results, function (item) {
-            var doShow = true;
-            item = item[0]; //We take the first element of the bunch because their size and age should be nearly identical
-            if (doShow && minsize) {
-                doShow &= item.size > minsize * 1024 * 1024;
-            }
-            if (doShow && maxsize) {
-                doShow &= item.size < maxsize * 1024 * 1024;
-            }
-            if (doShow && minage) {
-                doShow &= item.age_days > minage;
-            }
-            if (doShow && maxage) {
-                doShow &= item.age_days < maxage;
-            }
-            return doShow;
-        });
+        
 
         return {"results": results, "providersearches": providersearches, "total": total, "resultsCount": resultsCount}
     }
