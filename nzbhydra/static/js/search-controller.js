@@ -3,8 +3,8 @@ angular
     .controller('SearchController', SearchController);
 
 
-SearchController.$inject = ['$scope', '$http', '$stateParams','$modal', '$sce', '$state', 'SearchService', 'focus', 'ConfigService'];
-function SearchController($scope, $http, $stateParams,$modal, $sce, $state, SearchService, focus, ConfigService) {
+SearchController.$inject = ['$scope', '$http', '$stateParams','$modal', '$sce', '$state', 'SearchService', 'focus', 'ConfigService', 'blockUI'];
+function SearchController($scope, $http, $stateParams, $modal, $sce, $state, SearchService, focus, ConfigService, blockUI) {
 
     console.log("Start of search controller");
 
@@ -116,6 +116,7 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
     };
 
     $scope.startSearch = function () {
+        blockUI.start("Searching...");
         SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, $scope.selectedProviders).then(function (searchResult) {
             $state.go("search.results", {"results": searchResult.results, "providersearches": searchResult.providersearches, total: searchResult.total, resultsCount: searchResult.resultsCount});
             $scope.imdbid = "";

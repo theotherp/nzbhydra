@@ -16,7 +16,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.total = $stateParams.total;
     $scope.resultsCount = $stateParams.resultsCount;
     $scope.filteredResults = sortAndFilter($scope.results);
-    
+    stopBlocking();
     
     $scope.providersearches = $stateParams.providersearches;
 

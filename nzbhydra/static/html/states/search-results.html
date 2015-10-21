@@ -64,7 +64,7 @@
     </div>
 
     <div class="col-md-3" style="text-align: right; padding-right: 0">
-        <button style="margin-top:20px; margin-bottom:20px;" type="button" ng-click="loadMore()" class="btn btn-default"><span class="badge" style="margin-right: 10px;">Loaded {{ resultsCount }} of {{ total }} results</span>Load more</button>
+        <button style="margin-top:20px; margin-bottom:20px;" type="button" ng-disabled="resultsCount >= total" ng-click="loadMore()" class="btn btn-default"><span class="badge">Loaded {{ resultsCount }} of {{ total }} results</span><span style="margin-left: 10px;" ng-if="resultsCount < total" >Load more</span></button>
     </div>
 
     <table class="table" style="margin-bottom: 0">
