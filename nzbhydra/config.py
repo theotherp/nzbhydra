@@ -415,9 +415,8 @@ class InternalExternalSelection(object):
 class CategorySizeSettings(Category):
     def __init__(self, parent):
         super().__init__(parent, "categorysizes", "Category sizes")
-        self.enable_category_sizes = MultiSelectionSetting(self, name="enable_category_sizes", default=[InternalExternalSelection.internal], options=InternalExternalSelection.options, valuetype=str, title="Category sizes",
-                                                           description="If enabled size limits will be automatically used depending on the search category. For internal searches the input boxes will be prefilled, for external searches the limits will be enforced.",
-                                                           setting_type=SettingType.multiselect)
+        self.enable_category_sizes = Setting(self, name="enable_category_sizes", default=True, valuetype=bool, title="Category sizes",
+                                             description="If enabled when selecting a category size the limit inputs will be prefilled with the category limits.")
 
         self.movieMin = Setting(self, name="Movies min", default=500, valuetype=int, title="Movies min size", description="")
         self.movieMax = Setting(self, name="Movies max", default=20000, valuetype=int, title="Movies max size", description="")

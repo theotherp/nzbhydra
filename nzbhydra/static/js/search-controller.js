@@ -60,14 +60,18 @@ function SearchController($scope, $http, $stateParams,$modal, $sce, $state, Sear
         focus('focus-query-box');
         $scope.query = "";
         
-        if (config.settings.searching.generate_queries.indexOf("internal") > -1) {
+        if (config.settings.searching.categorysizes.enable_category_sizes) {
             var min = config.settings.searching.categorysizes[searchCategory + " min"];
             var max = config.settings.searching.categorysizes[searchCategory + " max"];
             if (_.isNumber(min)) {
                 $scope.minsize = min;
+            } else {
+                $scope.minsize = "";
             }
             if (_.isNumber(max)) {
                 $scope.maxsize = max;
+            } else {
+                $scope.maxsize = "";
             }
         }
     };
