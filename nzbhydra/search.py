@@ -4,7 +4,6 @@ import copy
 import logging
 
 import arrow
-
 from requests_futures.sessions import FuturesSession
 
 from nzbhydra.config import searchingSettings
@@ -97,10 +96,13 @@ pseudo_cache = {}
 
 
 def search(internal, search_request: SearchRequest):
+    for k, v in pseudo_cache.items():
+        if v["last_access"].replace(minutes=+5) < arrow.utcnow():
+            pseudo_cache.pop(k)
     limit = search_request.limit  # todo use actual configured limit
     external_offset = int(search_request.offset)
     search_hash = search_request.search_hash
-    if search_hash not in pseudo_cache.keys() or pseudo_cache[search_hash]["last_access"].replace(minutes=+5) < arrow.utcnow():
+    if search_hash not in pseudo_cache.keys():
         print("Didn't find this query in cache")
         cache_entry = {"results": [], "provider_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0}
         providers_to_call, with_query_generation = pick_providers(query_supplied=True if search_request.query is not None else False, identifier_key=search_request.identifier_key, internal=internal)
@@ -109,9 +111,9 @@ def search(internal, search_request: SearchRequest):
         dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode)
         dbsearch.save()
         cache_entry["dbsearch"] = dbsearch
-        
+
         if with_query_generation and search_request.identifier_key and search_request.title is None:
-            search_request.title = infos.title_from_id(search_request.identifier_key, search_request.identifier_value) #todo: move to search and only execute if needed
+            search_request.title = infos.title_from_id(search_request.identifier_key, search_request.identifier_value)
         pseudo_cache[search_hash] = cache_entry
     else:
         cache_entry = pseudo_cache[search_hash]
@@ -135,7 +137,7 @@ def search(internal, search_request: SearchRequest):
             if queries_execution_result.has_more:
                 providers_to_call.append(provider)
                 print("%s still has more results so we could use it the next round" % provider)
-            
+
             if queries_execution_result.total_known:
                 if not cache_entry["provider_infos"][provider]["total_included"]:
                     cache_entry["total"] += queries_execution_result.total

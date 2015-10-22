@@ -87,7 +87,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     }
 
     function sortAndFilter(results) {
-        $scope.filteredResults = _.filter(results, function(item) {
+        results = _.filter(results, function(item) {
             return $scope.providerDisplayState[item.provider];
         });
         
@@ -156,7 +156,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.toggleProviderDisplay = toggleProviderDisplay;
     function toggleProviderDisplay() {
         startBlocking("Filtering. Sorry...").then(function () {
-            $scope.filteredResults = $scope.sortAndFilter($scope.results);
+            $scope.filteredResults = sortAndFilter($scope.results);
             /*
             var filteredResults = [];
 
