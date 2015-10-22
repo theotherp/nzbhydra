@@ -78,6 +78,7 @@ class NzbClub(SearchModule):
             entry.size = int(url.attrib["length"])
             entry.provider = self.name
             entry.category = "N/A"
+            entry.details_link = elem.find("link").text
 
             entry.guid = elem.find("guid").text[-8:] #GUID looks like "http://www.nzbclub.com/nzb_view58556415" of which we only want the last part
             

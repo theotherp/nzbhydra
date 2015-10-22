@@ -128,6 +128,9 @@ class Setting(object):
 
     def set(self, value):
         self.parent.set_setting(self, value)
+        
+    def isSetting(self, value):
+        return self.get() == value or self.get() == getattr(value, "name")
 
     def __str__(self):
         return "%s: %s" % (self.settingname, self.get())

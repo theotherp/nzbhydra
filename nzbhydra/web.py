@@ -355,12 +355,12 @@ internalapi__addnzb_args = {
 @use_args(internalapi__addnzb_args, locations=['querystring'])
 def internalapi_addnzb(args):
     logger.debug("Add NZB request with args %s" % args)
-    if downloaderSettings.downloader.isSetting(DownloaderSelection.nzbget):
+    if downloaderSettings.downloader.isSetting(config.DownloaderSelection.nzbget):
         downloader = Nzbget()
     else:
         downloader = Sabnzbd()
 
-    if downloaderSettings.nzbAddingType.isSetting(NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
+    if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
         link = get_nzb_link(args["provider"], args["providerguid"], args["title"], args["searchid"])
         added = downloader.add_link(link, args["title"], args["category"])
         if added:
@@ -371,13 +371,13 @@ def internalapi_addnzb(args):
     elif downloaderSettings.nzbAddingType.isSetting(NzbAddingTypeSelection.nzb):  # We download an NZB send it to the downloader
         nzbdownloadresult = download_nzb_and_log(args["provider"], args["providerguid"], args["title"], args["searchid"])
         if nzbdownloadresult is None:
-            return "Error while downloading NZB", 500
+            return "Error while downloading NZB"
         added = downloader.add_nzb(nzbdownloadresult.content, args["title"], args["category"])
         if added:
             return "Success"
         else:
-            logger.error("Downloaded returned error while trying to add NZB for %s" % args["title"])
-            return "Error", 500
+            logger.error("Downloader returned error while trying to add NZB for %s" % args["title"])
+            return "Error"
     else:
         logger.error("Invalid value of %s" % downloaderSettings.nzbAddingType)
         return "downloader.add_type has wrong value", 500  # "direct" would never end up here, so it must be a wrong value

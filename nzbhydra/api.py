@@ -145,6 +145,7 @@ class NzbSearchResultSchema(Schema):
     size = fields.Integer()
     category = fields.String()
     has_nfo = fields.Boolean()
+    details_link = fields.String()
 
 
 class ProviderApiAccessSchema(Schema):

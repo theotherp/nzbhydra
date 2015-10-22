@@ -45,6 +45,7 @@ class MyTestCase(ProviderTestcase):
             self.assertEqual("2014-11-04T10:39:00+01:00", entries[0].pubdate_utc)  # would be perfect, that is the exact pubdate 
             self.assertEqual(1415093940, entries[0].epoch)
             self.assertEqual(333, entries[0].age_days)
+            self.assertEqual("https://nzbindex.com/release/114143855/Avengers.Assemble.S02E05.Beneath.the.Surface.WEB-DL.x264.AAC-Avengers.Assemble.S02E05.Beneath.the.Surface.WEB-DL.x264.AAC.nzb", entries[0].details_link)
 
             self.assertEqual(0, entries[1].age_days)
             self.assertEqual("2015-10-03T20:15:00+01:00", entries[1].pubdate_utc)  # would be perfect, that is the exact pubdate 
@@ -55,7 +56,7 @@ class MyTestCase(ProviderTestcase):
 
     def testCookies(self):
         url = "https://nzbindex.com/search/?q=avengers&age=&max=250&minage=&sort=agedesc&minsize=1&maxsize=&dq=&poster=&nfo=&hidecross=1&complete=1&hidespam=0&hidespam=1&more=1"
-        r = requests.get(url, cookies={"agreed": "true"})
+        r = requests.get(url, cookies={"agreed": "true"}, timeout=5)
         text = r.text
         assert "I agree" not in text
 

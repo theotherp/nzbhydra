@@ -165,6 +165,9 @@ class NewzNab(SearchModule):
             entry.precise_date = True
             entry.provider = self.name
             entry.attributes = []
+            entry.details_link = item.find("comments").text
+            if "#comments" in entry.details_link:
+                entry.details_link = entry.details_link[:-9]
 
             categories = []
             for i in item.findall("./newznab:attr", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}):
@@ -178,6 +181,8 @@ class NewzNab(SearchModule):
                     categories.append(int(attribute_value))
                 elif attribute_name == "poster":
                     entry.poster = attribute_value
+                elif attribute_name == "info":
+                    entry.details_link = attribute_value
                 # Store all the extra attributes, we will return them later for external apis
                 entry.attributes.append({"name": attribute_name, "value": attribute_value})
             # Map category. Try to find the most specific category (like 2040), then the more general one (like 2000)

@@ -17,7 +17,7 @@
     <link href="/static/lib/seiyria-bootstrap-slider/bootstrap-slider.css" rel="stylesheet" media="screen">
     <link href="/static/lib/angular-block-ui/angular-block-ui.css" rel="stylesheet" media="screen">
     <link href="/static/lib/angular-growl-v2/angular-growl.css" rel="stylesheet" media="screen">
-    
+
     <link href="/static/css/nzbhydra.css" rel="stylesheet" media="screen">
 
     <link rel="icon" type="image/vnd.microsoft.icon" href="/static/img/hydra.ico">
@@ -26,14 +26,26 @@
 </head>
 <body style="text-align: center">
 <div growl></div>
-<a ui-sref="home"><h1>NZB Hydra</h1></a>
+
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="active"><a ui-sref="home">Search</a></li>
+                <li class="active"><a href="#">History & Stats</a></li>
+                <li class="active"><a  ui-sref="config">Config</a></li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
 
 <div style="margin: auto; max-width: 1400px;">
     <div ui-view class="container-fluid" block-ui="main">
 
     </div>
 </div>
-<a ui-sref="config"><h1>Config</h1></a>
+
 
 </body>
 
@@ -69,7 +81,6 @@
 <script src="/static/lib/momentjs/moment.js"></script>
 <script src="/static/lib/filesize/filesize.js"></script>
 <script src="/static/lib/urijs/URI.js"></script>
-
 
 
 <script src="/static/js/filters.js"></script>

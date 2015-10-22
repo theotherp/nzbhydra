@@ -125,7 +125,7 @@
                 <a href="#" ng-if="result.has_nfo" ng-click="showNfo(result)">NFO</a>
                 <a target="_blank" href="{{ result.link }}">NZB</a>
                 <addable-nzb item="result"></addable-nzb>
-                Details
+                <a target="_blank" href="{{ ::result.details_link }}">Details</a>
             </td>
         </tr>
         <!-- Show all the duplicates of this entry-->
@@ -148,6 +148,7 @@
                 <a ng-if="result.has_nfo" ng-click="showNfo(result)">NFO</a>
                 <a target="_blank" href="{{ result.link }}">NZB</a> Details
                 <addable-nzb item="result"></addable-nzb>
+                <a target="_blank" href="{{ ::result.details_link }}" ng-if="result.details_link">Details</a>
             </td>
         </tr>
         <!--<tr on-finish-render="stopBlocking()" item="resultwithduplicates">Hallo</tr>-->

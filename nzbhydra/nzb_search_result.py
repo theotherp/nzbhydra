@@ -1,5 +1,5 @@
 class NzbSearchResult:
-    def __init__(self, title=None, link=None, provider=None, guid=None, size=None, category="N/A", attributes=[], epoch=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=True, providerguid=None):
+    def __init__(self, title=None, link=None, provider=None, guid=None, size=None, category="N/A", attributes=[], epoch=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=True, providerguid=None, details_link=None):
         self.title = title
         self.link = link
         self.epoch = epoch
@@ -19,6 +19,7 @@ class NzbSearchResult:
         self.search_ids = [] #"tvdbid", "rid", "imdbid"
         self.poster = poster
         self.has_nfo = has_nfo #False if we know there isn't one, True if there might be one!
+        self.details_link = details_link
         
         
         

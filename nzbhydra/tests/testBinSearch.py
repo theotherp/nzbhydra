@@ -51,6 +51,7 @@ class MyTestCase(ProviderTestcase):
             self.assertFalse(entries[0].age_precise)
             self.assertEqual("Ramer@marmer.com <Clown_nez>", entries[0].poster)
             self.assertFalse(entries[0].has_nfo)
+            self.assertEqual("https://binsearch.com/?b=MARVELS.AVENGERS.AGE.OF.ULTRON.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250", entries[0].details_link)
             
             self.assertTrue(entries[8].has_nfo)
             

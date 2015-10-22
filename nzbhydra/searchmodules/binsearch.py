@@ -113,6 +113,7 @@ class Binsearch(SearchModule):
                 continue
 
             collection_link = info.find("a")["href"]  # '/?b=MARVELS.AVENGERS.AGE.OF.ULTRON.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250'
+            entry.details_link = "%s%s" % (self.host, collection_link)
             m = re.compile(r"&p=(.*)&").search(collection_link)
             if m:
                 poster = m.group(1)

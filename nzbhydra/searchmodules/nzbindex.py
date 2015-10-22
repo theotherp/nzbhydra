@@ -155,6 +155,10 @@ class NzbIndex(SearchModule):
                 entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z") 
             else:
                 logger.debug("Found no age info in %s" % str(agetd))
+
+            collection_links = infotd.findAll("a", href=True, text="View collection")
+            if collection_links is not None and len(collection_links) > 0: 
+                entry.details_link = collection_links[0].attrs["href"]
             entries.append(entry)
         try:
             pagecount = int(main_table.find("tfoot").find_all("tr")[1].find_all('a')[-2].text)

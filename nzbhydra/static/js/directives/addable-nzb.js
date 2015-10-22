@@ -21,10 +21,15 @@ function addableNzb() {
             uri.addQuery("title", $scope.item.title);
             uri.addQuery("providerguid", $scope.item.providerguid);
             uri.addQuery("provider", $scope.item.provider);
-            $http.get(uri).success(function () {
-                $scope.classname = "nzb-success";
+            $http.get(uri).success(function (response) {
+                if (response == "Success") {
+                    $scope.classname = "nzb-success";
+                } else {
+                    $scope.classname = "nzb-error";
+                }
+                
             }).error(function () {
-                $scope.classname = "nzb-error";
+                
             });
         }
         

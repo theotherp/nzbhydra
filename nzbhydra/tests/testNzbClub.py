@@ -40,6 +40,7 @@ class MyTestCase(ProviderTestcase):
             self.assertEqual(1443019463, entries[0].epoch)
             self.assertEqual("2015-09-23T09:44:23-05:00", entries[0].pubdate_utc)
             self.assertEqual(0, entries[0].age_days)
+            self.assertEqual("http://www.nzbclub.com/nzb_view/60269450/Avengers_Age_of_Ultron_720p_BrRip_x264_YIFY_Avengers_Age_of_Ultron_2015_720p_BluRay_x264_YIFY", entries[0].details_link)
 
     
     def testGetNzbLink(self):
