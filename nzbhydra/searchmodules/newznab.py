@@ -166,7 +166,7 @@ class NewzNab(SearchModule):
             entry.provider = self.name
             entry.attributes = []
             entry.details_link = item.find("comments").text
-            if "#comments" in entry.details_link:
+            if entry.details_link is not None and "#comments" in entry.details_link:
                 entry.details_link = entry.details_link[:-9]
 
             categories = []

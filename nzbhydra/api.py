@@ -52,14 +52,17 @@ def find_duplicates(results):
             a = group[i]    
             b = group[i + 1]
             subgroup.add(a)
-            same = test_for_duplicate_age(a, b)
+            if a.provider == b.provider:
+                same = False
+            else:
+                same = test_for_duplicate_age(a, b)
             #If two elements are duplicates add them to the current set
             if same:
                 subgroup.add(b)
             #Otherwise start a new set
             else:
                 if len(subgroup) > 0:
-                    subgroups.append(subgroup)
+                    subgroups.append(list(subgroup))
                 subgroup = set()
                 subgroup.add(b)
         #Add the last set if it contains elements

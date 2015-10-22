@@ -12,27 +12,30 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.limitTo = 101;
     $scope.offset = 0;
 
-    $scope.results = $stateParams.results;
-    $scope.total = $stateParams.total;
-    $scope.resultsCount = $stateParams.resultsCount;
-    $scope.filteredResults = sortAndFilter($scope.results);
-    stopBlocking();
-
+    //Handle incoming data
     $scope.providersearches = $stateParams.providersearches;
 
     $scope.providerDisplayState = []; //Stores if a provider's results should be displayed or not
 
     $scope.providerResultsInfo = {}; //Stores information about the provider's results like how many we already retrieved
 
-    //Initially set visibility of all found providers to true
+    //Initially set visibility of all found providers to true, they're needed for initial filtering / sorting
     _.forEach($scope.providersearches, function (ps) {
         $scope.providerDisplayState[ps.provider] = true;
     });
 
-
     _.forEach($scope.providersearches, function (ps) {
         $scope.providerResultsInfo[ps.provider] = {loadedResults: ps.loaded_results};
     });
+
+    //Process results
+    $scope.results = $stateParams.results;
+    $scope.total = $stateParams.total;
+    $scope.resultsCount = $stateParams.resultsCount;
+    $scope.filteredResults = sortAndFilter($scope.results);
+    stopBlocking();
+
+    
 
 
     //Returns the content of the property (defined by the current sortPredicate) of the first group element 
@@ -44,7 +47,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     //Returns the unique group identifier which allows angular to keep track of the grouped search results even after filtering, making filtering by providers a lot faster (albeit still somewhat slow...)  
     $scope.groupId = groupId;
     function groupId(item) {
-        return item[0].hash;
+        return item[0].title;
     }
 
     //Block the UI and return after timeout. This way we make sure that the blocking is done before angular starts updating the model/view. There's probably a better way to achieve that?
@@ -62,15 +65,17 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     //Sorting (and filtering) are really slow (about 2 seconds for 1000 results from 5 providers) but I haven't found any way of making it faster, apart from the tracking 
     $scope.setSorting = setSorting;
     function setSorting(predicate, reversedDefault) {
-
-        if (predicate == $scope.sortPredicate) {
-            $scope.sortReversed = !$scope.sortReversed;
-        } else {
-            $scope.sortReversed = reversedDefault;
-        }
-        $scope.sortPredicate = predicate;
-        $scope.filteredResults = sortAndFilter($scope.results);
-
+        startBlocking("Sorting / filtering...").then(function () {
+            
+            if (predicate == $scope.sortPredicate) {
+                $scope.sortReversed = !$scope.sortReversed;
+            } else {
+                $scope.sortReversed = reversedDefault;
+            }
+            $scope.sortPredicate = predicate;
+            $scope.filteredResults = sortAndFilter($scope.results);
+            blockUI.reset();
+        });
     }
 
     function addDummyRow(filteredResults) {
@@ -82,6 +87,15 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     }
 
     function sortAndFilter(results) {
+        $scope.filteredResults = _.filter(results, function(item) {
+            return $scope.providerDisplayState[item.provider];
+        });
+        
+        results = _.groupBy(results, function (element) {
+            console.log("!!!!!!!!! Grouping by title instead of hash");
+            return element.title;
+        });
+        
         var filteredResults = _.sortBy(results, function (group) {
             return group[0][$scope.sortPredicate];
         });
@@ -125,10 +139,12 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
                 console.log(data.results);
                 console.log($scope.results);
                 console.log("Total: " + data.total);
-                angular.extend($scope.results, data.results);
+                //angular.extend($scope.results, data.results);
+                $scope.results = $scope.results.concat(data.results);
                 $scope.filteredResults = sortAndFilter($scope.results);
                 $scope.total = data.total;
                 $scope.resultsCount += data.resultsCount;
+                console.log("Total results in $scope.results: " + $scope.results.length);
 
                 stopBlocking();
             });
@@ -140,6 +156,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.toggleProviderDisplay = toggleProviderDisplay;
     function toggleProviderDisplay() {
         startBlocking("Filtering. Sorry...").then(function () {
+            $scope.filteredResults = $scope.sortAndFilter($scope.results);
+            /*
             var filteredResults = [];
 
             function filterByProviderVisibility(item) {
@@ -154,9 +172,10 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
             }
 
             _.each($scope.results, addFilteredGroups);
-
+            
             filteredResults = addDummyRow(filteredResults);
-            $scope.filteredResults = filteredResults;
+            */
+            
 
         })
     }
@@ -168,6 +187,9 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
     $scope.showNfo = showNfo;
     function showNfo(resultItem) {
+        if (!resultItem.has_nfo) {
+            return;
+        }
         var uri = new URI("/internalapi/getnfo");
         uri.addQuery("provider", resultItem.provider);
         uri.addQuery("guid", resultItem.providerguid);

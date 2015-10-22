@@ -81,9 +81,6 @@ function SearchService($http) {
         var total = response.data.total;
         var resultsCount = results.length;
 
-        results = _.groupBy(results, function (element) {
-            return element.hash;
-        });
 
         //Sum up response times of providers from individual api accesses
         //TODO: Move this to search result controller because we need to update it every time we loaded more results

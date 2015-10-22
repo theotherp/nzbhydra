@@ -102,7 +102,7 @@ def search(internal, search_request: SearchRequest):
     search_hash = search_request.search_hash
     if search_hash not in pseudo_cache.keys() or pseudo_cache[search_hash]["last_access"].replace(minutes=+5) < arrow.utcnow():
         print("Didn't find this query in cache")
-        cache_entry = {"results": [], "provider_infos": {}, "total": 0, "last_access": arrow.utcnow()}
+        cache_entry = {"results": [], "provider_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0}
         providers_to_call, with_query_generation = pick_providers(query_supplied=True if search_request.query is not None else False, identifier_key=search_request.identifier_key, internal=internal)
         for p in providers_to_call:
             cache_entry["provider_infos"][p] = {"has_more": True, "search_request": search_request, "total_included": False}
@@ -120,12 +120,11 @@ def search(internal, search_request: SearchRequest):
         print("Found search in cache")
 
     print("Will search at providers as long as we don't have enough results for the current offset+limit and any provider has more results.")
-    internal_offset = divmod(external_offset, len(cache_entry["provider_infos"]) * limit)[0] * limit if external_offset > 0 and len(cache_entry["provider_infos"]) > 0 else 0
-
     while len(cache_entry["results"]) < external_offset + limit and len(providers_to_call) > 0:
         print("We want %d results but have only %d so far" % ((external_offset + limit), len(cache_entry["results"])))
         print("%d providers still have results" % len(providers_to_call))
-        search_request.offset = internal_offset
+        search_request.offset = cache_entry["offset"]
+        print("Searching providers with offset %d" % search_request.offset)
         result = search_and_handle_db(dbsearch, {x: search_request for x in providers_to_call})
         search_results = []
         providers_to_call = []
@@ -148,6 +147,7 @@ def search(internal, search_request: SearchRequest):
 
         search_results = sorted(search_results, key=lambda x: x.epoch, reverse=True)
         cache_entry["results"].extend(search_results)
+        cache_entry["offset"] += limit
 
     nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:(external_offset + limit)])
     cache_entry["last_access"] = arrow.utcnow()

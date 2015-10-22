@@ -6578,7 +6578,6 @@ body {
 }
 .td-embedded {
   background-color: #22262a;
-  font-size: 9px;
 }
 .td-embedded:first-child {
   margin-left: 30px;
@@ -6628,6 +6627,9 @@ textarea.by-id-checkbox {
 }
 .nzb-spinning {
   background-image: url('/static/img/spinner.gif');
+}
+.addable-nzb {
+  display: inline-block;
 }
 .nzb {
   background-image: url('/static/img/nzb.png');
@@ -6681,4 +6683,14 @@ textarea.by-id-checkbox {
 }
 .navbar-inner {
   text-align: center;
+}
+a.disabled {
+  color: #3a3f44;
+  text-decoration: none;
+  cursor: default;
+}
+a.disabled:hover {
+  color: #3a3f44;
+  text-decoration: none;
+  cursor: default;
 }

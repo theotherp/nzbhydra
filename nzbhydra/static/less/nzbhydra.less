@@ -41,7 +41,7 @@ body {
 
 .td-embedded {
   background-color: @table-bg-subrow;
-  font-size: @font-size-smaller;
+  //font-size: @font-size-smaller;
 }
 
 .td-embedded:first-child {
@@ -109,6 +109,10 @@ body {
 
 .nzb-spinning {
   background-image: url('/static/img/spinner.gif');
+}
+
+.addable-nzb {
+  display: inline-block;
 }
 
 .nzb {
@@ -182,4 +186,16 @@ body {
 
 .navbar-inner {
   text-align: center;
+}
+
+a.disabled {
+  color: @gray-dark;
+  text-decoration: none;
+  cursor: default;
+}
+
+a.disabled:hover {
+  color: @gray-dark;
+  text-decoration: none;
+  cursor: default;
 }
