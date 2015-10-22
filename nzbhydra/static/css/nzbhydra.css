@@ -6665,3 +6665,7 @@ textarea.by-id-checkbox {
 .config-select-field > button {
   background-color: #272b30;
 }
+.growl-container > .icon {
+  width: inherit;
+  height: inherit;
+}

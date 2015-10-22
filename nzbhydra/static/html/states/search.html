@@ -56,7 +56,7 @@
                             <a>{{ match.label }}</a>
                         </script>
                         <input type="search" ngtype="search" ng-model="query" placeholder="Search" typeahead-min-length="2" typeahead-wait-ms="typeAheadWait"
-                               typeahead="item as item.label for item in getAutocomplete($viewValue)"
+                               uib-typeahead="item as item.label for item in getAutocomplete($viewValue)"
                                typeahead-template-url="movieAutocompleteEntry"
                                ng-class="{'autocompleteLoading': (loadingItems && autocompleteActive), 'search-border': !seriesSelected}"
                                typeahead-loading="loadingItems" typeahead-on-select="selectAutocompleteItem($item)" ng-enter="goToSearchUrl()" class="form-control col-lg-10"

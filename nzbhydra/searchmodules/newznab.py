@@ -220,15 +220,13 @@ class NewzNab(SearchModule):
         response, papiaccess = self.get_url_with_papi_access(url, "nfo")
         if response is not None:
             nfo = response.text
-            if "<?xml" in nfo:
+            if "<?xml" in nfo and 'total="1"': #Hacky but fast
                 tree = ET.fromstring(nfo)
                 for elem in tree.iter('item'):
                     nfo = elem.find("description").text
                     nfo = re.sub("\\n", nfo, "\n")  # TODO: Not completely correct, looks still a bit werid
-                    pass
+                    return nfo
             # otherwise we just hope it's the nfo...
-
-            return nfo
         return None
 
     def get_nzb_link(self, guid, title):

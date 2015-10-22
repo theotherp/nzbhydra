@@ -4,7 +4,7 @@ angular
 
 
 //SearchResultsController.$inject = ['blockUi'];
-function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService) {
+function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService, $http, $uibModal, $sce, growl) {
 
     $scope.sortPredicate = "epoch";
     $scope.sortReversed = true;
@@ -17,7 +17,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.resultsCount = $stateParams.resultsCount;
     $scope.filteredResults = sortAndFilter($scope.results);
     stopBlocking();
-    
+
     $scope.providersearches = $stateParams.providersearches;
 
     $scope.providerDisplayState = []; //Stores if a provider's results should be displayed or not
@@ -62,20 +62,20 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     //Sorting (and filtering) are really slow (about 2 seconds for 1000 results from 5 providers) but I haven't found any way of making it faster, apart from the tracking 
     $scope.setSorting = setSorting;
     function setSorting(predicate, reversedDefault) {
-        
-            if (predicate == $scope.sortPredicate) {
-                $scope.sortReversed = !$scope.sortReversed;
-            } else {
-                $scope.sortReversed = reversedDefault;
-            }
-            $scope.sortPredicate = predicate;
-            $scope.filteredResults = sortAndFilter($scope.results);
-        
+
+        if (predicate == $scope.sortPredicate) {
+            $scope.sortReversed = !$scope.sortReversed;
+        } else {
+            $scope.sortReversed = reversedDefault;
+        }
+        $scope.sortPredicate = predicate;
+        $scope.filteredResults = sortAndFilter($scope.results);
+
     }
 
     function addDummyRow(filteredResults) {
-        var possibleDummyIndex = _.min([$scope.limitTo-1, filteredResults.length]);
-        console.log("$scope.limitTo:" + $scope.limitTo + ", filteredResults.length:" +  filteredResults.length);
+        var possibleDummyIndex = _.min([$scope.limitTo - 1, filteredResults.length]);
+        console.log("$scope.limitTo:" + $scope.limitTo + ", filteredResults.length:" + filteredResults.length);
         filteredResults.splice(possibleDummyIndex, 0, [{age_days: 99999, title: "DUMMY", category: "", provider: "", size: 0, count: 99999}]);
         console.log("Added dummy row at location " + possibleDummyIndex);
         return filteredResults;
@@ -97,8 +97,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     }
 
     function removeDummyRow() {
-        var possibleDummyIndex = _.min([$scope.limitTo-1, $scope.filteredResults.length-1]); //If the row was added the length of filteredResults is increased by one so we subtract 1 
-        console.log("$scope.limitTo:" + $scope.limitTo + ", filteredResults.length:" +  $scope.filteredResults.length-1);
+        var possibleDummyIndex = _.min([$scope.limitTo - 1, $scope.filteredResults.length - 1]); //If the row was added the length of filteredResults is increased by one so we subtract 1 
+        console.log("$scope.limitTo:" + $scope.limitTo + ", filteredResults.length:" + $scope.filteredResults.length - 1);
         if (!_.isUndefined($scope.filteredResults[possibleDummyIndex]) && $scope.filteredResults[possibleDummyIndex][0].title == "DUMMY") {
             $scope.filteredResults.splice(possibleDummyIndex, 1);
             console.log("Removed dummy row at location " + possibleDummyIndex);
@@ -109,7 +109,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
     //Clear the blocking
     $scope.stopBlocking = stopBlocking;
-    function stopBlocking() {        
+    function stopBlocking() {
         removeDummyRow();
         blockUI.reset();
     }
@@ -118,7 +118,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     function loadMore() {
         $scope.offset += 100;
         console.log("Increasing the offset to " + $scope.offset);
-        
+
         startBlocking("Loading more results...").then(function () {
             SearchService.loadMore($scope.offset).then(function (data) {
                 console.log("Returned more results:");
@@ -129,7 +129,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
                 $scope.filteredResults = sortAndFilter($scope.results);
                 $scope.total = data.total;
                 $scope.resultsCount += data.resultsCount;
-                
+
                 stopBlocking();
             });
         });
@@ -160,10 +160,43 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
         })
     }
-    
+
     $scope.countResults = countResults;
     function countResults() {
         return $scope.results.length;
+    }
+
+    $scope.showNfo = showNfo;
+    function showNfo(resultItem) {
+        var uri = new URI("/internalapi/getnfo");
+        uri.addQuery("provider", resultItem.provider);
+        uri.addQuery("guid", resultItem.providerguid);
+        return $http.get(uri).then(function (response) {
+            if (response.data.has_nfo) {
+                $scope.openModal("lg", response.data.nfo)
+            } else {
+                //todo: show error or info that no nfo is available
+                growl.info("No NFO available");
+            }
+        });
+    }
+
+
+    $scope.openModal = openModal;
+
+    function openModal(size, nfo) {
+        var modalInstance = $uibModal.open({
+            template: '<pre><span ng-bind-html="nfo"></span></pre>',
+            controller: 'ModalInstanceCtrl',
+            size: size,
+            resolve: {
+                nfo: function () {
+                    return $sce.trustAsHtml(nfo);
+                }
+            }
+        });
+
+        modalInstance.result.then();
     }
 
 }

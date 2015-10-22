@@ -3,8 +3,8 @@ angular
     .controller('SearchController', SearchController);
 
 
-SearchController.$inject = ['$scope', '$http', '$stateParams','$uibModal', '$sce', '$state', 'SearchService', 'focus', 'ConfigService', 'blockUI'];
-function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, SearchService, focus, ConfigService, blockUI) {
+SearchController.$inject = ['$scope', '$http', '$stateParams', '$uibModal', '$sce', '$state', 'SearchService', 'focus', 'ConfigService', 'blockUI', 'growl'];
+function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, SearchService, focus, ConfigService, blockUI, growl) {
 
     console.log("Start of search controller");
 
@@ -26,7 +26,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     $scope.selectedProviders = (typeof $stateParams.providers === "undefined") ? "" : $stateParams.providers;
 
     $scope.showProviders = {};
-    
+
     var config;
 
 
@@ -42,13 +42,10 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     $scope.isAskById = false; //If true a check box will be shown asking the user if he wants to search by ID 
     $scope.isById = {value: true}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
-    
+
     $scope.availableProviders = [];
 
 
-    
-    
-    
     $scope.autocompleteClass = "autocompletePosterMovies";
 
     $scope.toggle = function (searchCategory) {
@@ -56,10 +53,10 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
         //Show checkbox to ask if the user wants to search by ID (using autocomplete)
         $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 );
-        
+
         focus('focus-query-box');
         $scope.query = "";
-        
+
         if (config.settings.searching.categorysizes.enable_category_sizes) {
             var min = config.settings.searching.categorysizes[searchCategory + " min"];
             var max = config.settings.searching.categorysizes[searchCategory + " max"];
@@ -123,19 +120,19 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             $scope.tvdbid = "";
         });
     };
-    
-    
+
+
     $scope.goToSearchUrl = function () {
         var state;
         var stateParams = {};
         if ($scope.imdbid != "") {
             stateParams.imdbid = $scope.imdbid;
-            stateParams.title = $scope. title;
-            
+            stateParams.title = $scope.title;
+
 
         } else if ($scope.tvdbid != "") {
             stateParams.tvdbid = $scope.tvdbid;
-            stateParams.title = $scope. title;
+            stateParams.title = $scope.title;
 
             if ($scope.season != "") {
                 stateParams.season = $scope.season;
@@ -154,12 +151,12 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             stateParams.maxsize = $scope.maxsize;
         }
         if ($scope.minage != "") {
-        stateParams.minage = $scope.minage;
+            stateParams.minage = $scope.minage;
         }
         if ($scope.maxage != "") {
             stateParams.maxage = $scope.maxage;
         }
-        
+
         stateParams.category = $scope.category;
 
         console.log("Going to search state with params...");
@@ -182,56 +179,26 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
 
     $scope.autocompleteActive = function () {
-        return false;
         return ($scope.category.indexOf("TV") > -1) || ($scope.category.indexOf("Movies") > -1)
     };
 
     $scope.seriesSelected = function () {
-        return false;
         return ($scope.category.indexOf("TV") > -1);
     };
-
-
-    $scope.showNfo = function (resultItem) {
-        var uri = new URI("/internalapi/getnfo");
-        uri.addQuery("provider", resultItem.provider);
-        uri.addQuery("guid", resultItem.guid);
-        return $http.get(uri).then(function (response) {
-            if (response.data.has_nfo) {
-                $scope.open("lg", response.data.nfo)
-            } else {
-                //todo: show error or info that no nfo is available
-            }
-        });
-    };
-
-    $scope.open = function (size, nfo) {
-
-        $uibModal.open({
-            animation: $scope.animationsEnabled,
-            template: '<pre><span ng-bind-html="nfo"></span></pre>',
-            controller: 'ModalInstanceCtrl',
-            size: size,
-            resolve: {
-                nfo: function () {
-                    return $sce.trustAsHtml(nfo);
-                }
-            }
-        });
-    };
     
-    ConfigService.get().then(function(cfg) {
+    
+    ConfigService.get().then(function (cfg) {
         config = cfg;
-        
-        $scope.availableProviders = _.filter(cfg.settings.providers, function(provider) {
-           return provider.enabled; 
+
+        $scope.availableProviders = _.filter(cfg.settings.providers, function (provider) {
+            return provider.enabled;
         }).map(function (provider) {
             return {name: provider.name, activated: true};
         });
-       console.log($scope.availableProviders); 
+        console.log($scope.availableProviders);
     });
 
-    //Resolve the search request from URL
+//Resolve the search request from URL
     if ($stateParams.mode != "landing") {
         //(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage)
         console.log("Came from search url, will start searching");

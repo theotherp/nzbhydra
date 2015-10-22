@@ -84,6 +84,7 @@ nzbhydraapp.config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {
 
 nzbhydraapp.config(['growlProvider', function (growlProvider) {
     growlProvider.globalTimeToLive(5000);
+    growlProvider.globalPosition('bottom-right');
 }]);
 
 
