@@ -6583,7 +6583,7 @@ body {
   background-color: #000000;
 }
 .td-embedded:first-child {
-  margin-left: 30px;
+  padding-left: 15px;
 }
 .hidden-keep-space {
   visibility: hidden;

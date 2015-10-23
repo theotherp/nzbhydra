@@ -92,7 +92,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         });
         
         results = _.groupBy(results, function (element) {
-            return element[0].title;
+            return element[0].title.toLowerCase();
         });
         
         var filteredResults = _.sortBy(results, function (group) {
