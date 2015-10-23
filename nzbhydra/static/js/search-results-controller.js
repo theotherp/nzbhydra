@@ -18,6 +18,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.providerDisplayState = []; //Stores if a provider's results should be displayed or not
 
     $scope.providerResultsInfo = {}; //Stores information about the provider's results like how many we already retrieved
+    
+    $scope.groupExpanded = {};
 
     //Initially set visibility of all found providers to true, they're needed for initial filtering / sorting
     _.forEach($scope.providersearches, function (ps) {
@@ -78,13 +80,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         });
     }
 
-    function addDummyRow(filteredResults) {
-        var possibleDummyIndex = _.min([$scope.limitTo - 1, filteredResults.length]);
-        console.log("$scope.limitTo:" + $scope.limitTo + ", filteredResults.length:" + filteredResults.length);
-        filteredResults.splice(possibleDummyIndex, 0, [{age_days: 99999, title: "DUMMY", category: "", provider: "", size: 0, count: 99999}]);
-        console.log("Added dummy row at location " + possibleDummyIndex);
-        return filteredResults;
-    }
+
 
     function sortAndFilter(results) {
         results = _.filter(results, function(item) {
@@ -92,7 +88,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         });
         
         results = _.groupBy(results, function (element) {
-            console.log("!!!!!!!!! Grouping by title instead of hash");
             return element.title;
         });
         
@@ -103,28 +98,15 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
             filteredResults.reverse();
         }
 
-        //Hack: We add a dummy group to the very end of the result groups. That way we make sure that the last row of ng-repeat is actually rendered and we know when to stop
-        //blocking. If we don't do that when filtering out a provider to which the last group/row does not belong it will not be re-rendered. Which is usually good but not
-        //when we want to know when angular is done.
-        filteredResults = addDummyRow(filteredResults);
         return filteredResults;
     }
 
-    function removeDummyRow() {
-        var possibleDummyIndex = _.min([$scope.limitTo - 1, $scope.filteredResults.length - 1]); //If the row was added the length of filteredResults is increased by one so we subtract 1 
-        console.log("$scope.limitTo:" + $scope.limitTo + ", filteredResults.length:" + $scope.filteredResults.length - 1);
-        if (!_.isUndefined($scope.filteredResults[possibleDummyIndex]) && $scope.filteredResults[possibleDummyIndex][0].title == "DUMMY") {
-            $scope.filteredResults.splice(possibleDummyIndex, 1);
-            console.log("Removed dummy row at location " + possibleDummyIndex);
-        } else {
-            console.log("Did not find dummy row at position " + possibleDummyIndex);
-        }
-    }
+
 
     //Clear the blocking
     $scope.stopBlocking = stopBlocking;
     function stopBlocking() {
-        removeDummyRow();
+        
         blockUI.reset();
     }
 
@@ -157,26 +139,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     function toggleProviderDisplay() {
         startBlocking("Filtering. Sorry...").then(function () {
             $scope.filteredResults = sortAndFilter($scope.results);
-            /*
-            var filteredResults = [];
-
-            function filterByProviderVisibility(item) {
-                return $scope.providerDisplayState[item.provider];
-            }
-
-            function addFilteredGroups(group) {
-                var filteredGroup = _.filter(group, filterByProviderVisibility);
-                if (filteredGroup.length > 0) {
-                    filteredResults.push(filteredGroup);
-                }
-            }
-
-            _.each($scope.results, addFilteredGroups);
-            
-            filteredResults = addDummyRow(filteredResults);
-            */
-            
-
         })
     }
 
@@ -201,6 +163,11 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
                 growl.info("No NFO available");
             }
         });
+    }
+    
+    $scope.isExpanded = isExpanded;
+    function isExpanded(title) {
+        //return !_.isUndefined($scope.)
     }
 
 

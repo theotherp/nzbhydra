@@ -96,8 +96,8 @@ pseudo_cache = {}
 
 
 def search(internal, search_request: SearchRequest):
-    for k, v in pseudo_cache.items():
-        if v["last_access"].replace(minutes=+5) < arrow.utcnow():
+    for k in list(pseudo_cache.keys()):
+        if pseudo_cache[k]["last_access"].replace(minutes=+5) < arrow.utcnow():
             pseudo_cache.pop(k)
     limit = search_request.limit  # todo use actual configured limit
     external_offset = int(search_request.offset)
