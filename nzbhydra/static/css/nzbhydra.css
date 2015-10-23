@@ -6579,6 +6579,9 @@ body {
 .td-embedded {
   background-color: #22262a;
 }
+.td-embedded2 {
+  background-color: #000000;
+}
 .td-embedded:first-child {
   margin-left: 30px;
 }

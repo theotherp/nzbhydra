@@ -49,7 +49,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     //Returns the unique group identifier which allows angular to keep track of the grouped search results even after filtering, making filtering by providers a lot faster (albeit still somewhat slow...)  
     $scope.groupId = groupId;
     function groupId(item) {
-        return item[0].title;
+        return item[0][0].title;
     }
 
     //Block the UI and return after timeout. This way we make sure that the blocking is done before angular starts updating the model/view. There's probably a better way to achieve that?
@@ -88,16 +88,21 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         });
         
         results = _.groupBy(results, function (element) {
-            return element.title;
+            return element.hash;
+        });
+        
+        results = _.groupBy(results, function (element) {
+            return element[0].title;
         });
         
         var filteredResults = _.sortBy(results, function (group) {
-            return group[0][$scope.sortPredicate];
+            return group[0][0][$scope.sortPredicate];
         });
         if ($scope.sortReversed) {
             filteredResults.reverse();
         }
 
+        console.log(filteredResults);
         return filteredResults;
     }
 
@@ -165,11 +170,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         });
     }
     
-    $scope.isExpanded = isExpanded;
-    function isExpanded(title) {
-        //return !_.isUndefined($scope.)
-    }
-
 
     $scope.openModal = openModal;
 
