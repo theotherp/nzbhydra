@@ -1,3 +1,4 @@
+/nzbhydra/static
 /cache
 /nzbhydra/tests/mock/cache
 /nzbhydra/tests/playground.py

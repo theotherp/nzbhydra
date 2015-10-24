@@ -50,8 +50,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
 });
 
 nzbhydraapp.config(function(paginationTemplateProvider) {
-    paginationTemplateProvider.setPath('/static/lib/angularUtils-pagination/dirPagination.tpl.html');
+    paginationTemplateProvider.setPath('/static/html/dirPagination.tpl.html');
 });
+
 
 
 nzbhydraapp.config(['$httpProvider', function ($httpProvider) {

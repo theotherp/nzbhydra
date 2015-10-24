@@ -1,5 +1,4 @@
 var gulp = require('gulp');
-var mainBowerFiles = require('main-bower-files');
 var print = require('gulp-print');
 var wiredep = require('wiredep');
 var inject = require('gulp-inject');
@@ -8,10 +7,12 @@ var flatten = require('gulp-flatten');
 var angularFilesort = require('gulp-angular-filesort');
 var ngAnnotate = require('gulp-ng-annotate');
 var merge = require('merge-stream');
-var less = require('gulp-less');
+var less = require('gulp-less-sourcemap');
 var livereload = require('gulp-livereload');
 var concat = require('gulp-concat');
-
+var sourcemaps = require('gulp-sourcemaps');
+var uglify = require('gulp-uglify');
+var changed = require('gulp-changed');
 
 
 gulp.task('less', function () {
@@ -21,35 +22,38 @@ gulp.task('less', function () {
 });
 
 
-gulp.task('main-bowerfiles', function () {
-    return gulp.src(mainBowerFiles(/* options */), {base: 'bower_components'})
-        .pipe(flatten())
-        .pipe(gulp.dest("nzbhydra/ui-src/lib")
-    );
-});
-
 gulp.task('vendor-scripts', function () {
+    var dest = 'nzbhydra/static/js';
     return gulp.src(wiredep().js)
         .pipe(flatten())
+        .pipe(sourcemaps.init())
         .pipe(concat('alllibs.js'))
-        .pipe(gulp.dest('nzbhydra/static/js'));
-
+        .pipe(changed(dest))//Important: Put behind concat, otherwise it will always think the sources changed
+        .pipe(uglify())
+        .pipe(sourcemaps.write("."))
+        .pipe(gulp.dest(dest));
 });
 
 gulp.task('vendor-css', function () {
     return gulp.src(wiredep().css)
         .pipe(flatten())
         .pipe(concat('alllibs.css'))
+        
         .pipe(gulp.dest('nzbhydra/static/css'));
 
 });
 
 gulp.task('scripts', function () {
+    var dest = 'nzbhydra/static/js';
     return gulp.src("nzbhydra/ui-src/js/**/*.js")
         .pipe(ngAnnotate())
         .pipe(angularFilesort())
+        .pipe(sourcemaps.init())
         .pipe(concat('nzbhydra.js'))
-        .pipe(gulp.dest('nzbhydra/static/js'));
+        .pipe(changed(dest))
+        .pipe(uglify())
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest(dest));
 
 });
 
@@ -61,11 +65,17 @@ gulp.task('css', function () {
 });
 
 gulp.task('copy-assets', function () {
+    
+    
+    var imgDest = 'nzbhydra/static/img';
     var img = gulp.src("nzbhydra/ui-src/img/**/*")
-        .pipe(gulp.dest('nzbhydra/static/img'));
+        .pipe(changed(imgDest))
+        .pipe(gulp.dest(imgDest));
 
-    var html = gulp.src("nzbhydra/ui-src/html/**/*")
-        .pipe(gulp.dest('nzbhydra/static/html'));
+    var htmlDest = 'nzbhydra/static/html';
+    var html = gulp.src(["nzbhydra/ui-src/html/**/*", "bower_components/angularUtils-pagination/dirPagination.tpl.html"])
+        .pipe(changed(htmlDest))
+        .pipe(gulp.dest(htmlDest));
 
     return merge(img, html);
 
@@ -79,7 +89,7 @@ gulp.task('index', ['scripts', 'css', 'vendor-scripts', 'vendor-css', 'copy-asse
 });
 
 
-gulp.task('watch', function () {
+gulp.task('default', function () {
     livereload.listen();
     gulp.watch(['nzbhydra/ui-src/less/*'], ['less']);
     gulp.watch(['nzbhydra/ui-src/**/*', '!nzbhydra/ui-src/less/**/*'], ['index']);
