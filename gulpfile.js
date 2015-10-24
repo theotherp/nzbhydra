@@ -28,18 +28,19 @@ gulp.task('vendor-scripts', function () {
         .pipe(flatten())
         .pipe(sourcemaps.init())
         .pipe(concat('alllibs.js'))
-        .pipe(changed(dest))//Important: Put behind concat, otherwise it will always think the sources changed
+        .pipe(changed(dest))//Important: Put behind concat, otherwise it will always think the sources changed for some reason
         .pipe(uglify())
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(dest));
 });
 
 gulp.task('vendor-css', function () {
+    var dest = 'nzbhydra/static/css';
     return gulp.src(wiredep().css)
         .pipe(flatten())
         .pipe(concat('alllibs.css'))
-        
-        .pipe(gulp.dest('nzbhydra/static/css'));
+        .pipe(changed(dest))
+        .pipe(gulp.dest(dest));
 
 });
 
@@ -58,14 +59,19 @@ gulp.task('scripts', function () {
 });
 
 gulp.task('css', function () {
-    return gulp.src("nzbhydra/ui-src/css/**/*.css")
-        .pipe(concat('nzbhydra.css'))
-        .pipe(gulp.dest('nzbhydra/static/css'));
+    var dest = 'nzbhydra/static/css';
+    gulp.src('nzbhydra/ui-src/less/nzbhydra.less')
+        .pipe(changed(dest))
+        .pipe(less())
+        .pipe(gulp.dest(dest));
 
 });
 
 gulp.task('copy-assets', function () {
-    
+    var fontDest = 'nzbhydra/static/fonts';
+    var fonts = gulp.src("bower_components/bootstrap/fonts/*")
+        .pipe(changed(fontDest))
+        .pipe(gulp.dest(fontDest));
     
     var imgDest = 'nzbhydra/static/img';
     var img = gulp.src("nzbhydra/ui-src/img/**/*")
@@ -77,7 +83,7 @@ gulp.task('copy-assets', function () {
         .pipe(changed(htmlDest))
         .pipe(gulp.dest(htmlDest));
 
-    return merge(img, html);
+    return merge(img, html, fonts);
 
 });
 
@@ -91,6 +97,5 @@ gulp.task('index', ['scripts', 'css', 'vendor-scripts', 'vendor-css', 'copy-asse
 
 gulp.task('default', function () {
     livereload.listen();
-    gulp.watch(['nzbhydra/ui-src/less/*'], ['less']);
-    gulp.watch(['nzbhydra/ui-src/**/*', '!nzbhydra/ui-src/less/**/*'], ['index']);
+    gulp.watch(['nzbhydra/ui-src/**/*'], ['index']);
 });

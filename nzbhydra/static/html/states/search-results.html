@@ -109,7 +109,7 @@
         <tr ng-repeat="result in hashGroup track by result.guid" ng-if="$parent.$index == 0 && $index == 0">
             
             <td class="col-md-6  text-left">
-                <a href="" class="expand-collapse" ng-click="groupExpanded[titleGroup[0][0].title]=!groupExpanded[titleGroup[0][0].title]" ng-if="titleGroup.length > 1"><span class="glyphicon glyphicon-collapse-down" ng-class="{'glyphicon-collapse-up': groupExpanded[titleGroup[0][0].title], 'glyphicon-collapse-down': !groupExpanded[titleGroup[0][0].title]}"></span> </a>
+                <a href="" class="expand-collapse" ng-click="groupExpanded[titleGroup[0][0].title]=!groupExpanded[titleGroup[0][0].title]" ng-if="titleGroup.length > 1"><span class="glyphicon" ng-class="{'glyphicon-collapse-up': groupExpanded[titleGroup[0][0].title], 'glyphicon-expand': !groupExpanded[titleGroup[0][0].title]}"></span> </a>
                 {{ result.title }}
             </td>
             <td class="col-md-1 text-left">
@@ -135,7 +135,7 @@
         <tr ng-repeat="result in hashGroup track by result.guid" ng-if="$parent.$index > 0 && $index == 0" ng-show="groupExpanded[titleGroup[0][0].title]">
             
             <td class="col-md-6  text-left td-embedded">
-                <a href="" ng-click="groupExpanded[hashGroup[0].hash]=!groupExpanded[hashGroup[0].hash]" ng-if="hashGroup.length > 1"><span class="glyphicon glyphicon-collapse-down" ng-class="{'glyphicon-collapse-up': groupExpanded[hashGroup[0].hash], 'glyphicon-collapse-down': !groupExpanded[hashGroup[0].hash]}"></span></a>
+                <a href="" ng-click="groupExpanded[hashGroup[0].hash]=!groupExpanded[hashGroup[0].hash]" ng-if="hashGroup.length > 1"><span class="glyphicon" ng-class="{'glyphicon-collapse-up': groupExpanded[hashGroup[0].hash], 'glyphicon-expand': !groupExpanded[hashGroup[0].hash]}"></span></a>
                 
             </td>
             <td class="col-md-1 text-left td-embedded">
