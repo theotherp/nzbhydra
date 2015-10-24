@@ -8,7 +8,17 @@ var flatten = require('gulp-flatten');
 var angularFilesort = require('gulp-angular-filesort');
 var ngAnnotate = require('gulp-ng-annotate');
 var merge = require('merge-stream');
+var less = require('gulp-less');
+var livereload = require('gulp-livereload');
+var concat = require('gulp-concat');
 
+
+
+gulp.task('less', function () {
+    gulp.src('nzbhydra/ui-src/less/nzbhydra.less')
+        .pipe(less())
+        .pipe(gulp.dest('nzbhydra/ui-src/css'));
+});
 
 
 gulp.task('main-bowerfiles', function () {
@@ -21,14 +31,16 @@ gulp.task('main-bowerfiles', function () {
 gulp.task('vendor-scripts', function () {
     return gulp.src(wiredep().js)
         .pipe(flatten())
-        .pipe(gulp.dest('nzbhydra/static/lib'));
+        .pipe(concat('alllibs.js'))
+        .pipe(gulp.dest('nzbhydra/static/js'));
 
 });
 
 gulp.task('vendor-css', function () {
     return gulp.src(wiredep().css)
         .pipe(flatten())
-        .pipe(gulp.dest('nzbhydra/static/lib'));
+        .pipe(concat('alllibs.css'))
+        .pipe(gulp.dest('nzbhydra/static/css'));
 
 });
 
@@ -36,23 +48,25 @@ gulp.task('scripts', function () {
     return gulp.src("nzbhydra/ui-src/js/**/*.js")
         .pipe(ngAnnotate())
         .pipe(angularFilesort())
+        .pipe(concat('nzbhydra.js'))
         .pipe(gulp.dest('nzbhydra/static/js'));
 
 });
 
 gulp.task('css', function () {
     return gulp.src("nzbhydra/ui-src/css/**/*.css")
+        .pipe(concat('nzbhydra.css'))
         .pipe(gulp.dest('nzbhydra/static/css'));
 
 });
 
 gulp.task('copy-assets', function () {
-    var img =  gulp.src("nzbhydra/ui-src/img/**/*")
+    var img = gulp.src("nzbhydra/ui-src/img/**/*")
         .pipe(gulp.dest('nzbhydra/static/img'));
-    
-    var html =  gulp.src("nzbhydra/ui-src/html/**/*")
+
+    var html = gulp.src("nzbhydra/ui-src/html/**/*")
         .pipe(gulp.dest('nzbhydra/static/html'));
-    
+
     return merge(img, html);
 
 });
@@ -60,35 +74,13 @@ gulp.task('copy-assets', function () {
 gulp.task('index', ['scripts', 'css', 'vendor-scripts', 'vendor-css', 'copy-assets'], function () {
 
     return gulp.src('nzbhydra/ui-src/index.html')
-        .pipe(wiredep.stream({
-            fileTypes: {
-                html: {
-                    replace: {
-                        js: function (filePath) {
-                            return '<script src="/static/lib/' + filePath.split('/').pop() + '"></script>';
-                        },
-                        css: function (filePath) {
-                            return '<link rel="stylesheet" href="/static/lib/' + filePath.split('/').pop() + '"/>';
-                        }
-                    }
-                }
-            }
-        }))
+        .pipe(gulp.dest('nzbhydra/static'))
+        .pipe(livereload());
+});
 
-        .pipe(inject(
-            gulp.src(['nzbhydra/ui-src/js/*.js'], {read: false}), {
-                addRootSlash: false,
-                transform: function (filePath, file, i, length) {
-                    return '<script src="' + filePath.replace('nzbhydra/ui-src', '/static') + '"></script>';
-                }
-            }))
 
-        .pipe(inject(
-            gulp.src(['nzbhydra/ui-src/css/*.css'], {read: false}), {
-                addRootSlash: false,
-                transform: function (filePath, file, i, length) {
-                    return '<link rel="stylesheet" href="' + filePath.replace('nzbhydra/ui-src', '/static') + '"/>';
-                }
-            }))
-        .pipe(gulp.dest('nzbhydra/static'));
+gulp.task('watch', function () {
+    livereload.listen();
+    gulp.watch(['nzbhydra/ui-src/less/*'], ['less']);
+    gulp.watch(['nzbhydra/ui-src/**/*', '!nzbhydra/ui-src/less/**/*'], ['index']);
 });

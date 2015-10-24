@@ -5,8 +5,9 @@ angular
 function ConfigController($scope, $http, ConfigService, blockUI) {
 
     activate();
-
-
+    
+    
+    
     function activate() {
         $scope.$on('sf-render-finished', function () {
             blockUI.reset();
@@ -19,7 +20,8 @@ function ConfigController($scope, $http, ConfigService, blockUI) {
             $scope.form = settingsAndSchemaAndForm.form;
         });
     }
-
+    
+    
 
     $scope.onSubmit = function (form) {
         // First we broadcast an event so all fields validate themselves
