@@ -28,7 +28,7 @@ logger = None
 
 def run():
     global logger
-    parser = argparse.ArgumentParser(description='Demo')
+    parser = argparse.ArgumentParser(description='NZBHydra')
     parser.add_argument('--config', action='store', help='Settings file to load', default="settings.cfg")
     parser.add_argument('--database', action='store', help='Database file to load', default="nzbhydra.db")
     parser.add_argument('--host', action='store', help='Host to run on')

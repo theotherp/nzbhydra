@@ -40,6 +40,7 @@ class MyTestCase(ProviderTestcase):
             self.assertEqual('Avengers.Assemble.S02E05.Beneath.the.Surface.WEB-DL.x264.AAC', entries[0].title)
             self.assertFalse(entries[0].has_nfo)
             self.assertEqual('bowibow@gmail.com (senior)', entries[0].poster)
+            self.assertEqual('alt.binaries.mom', entries[0].group)
             self.assertEqual("https://nzbindex.com/download/114143855/Avengers.Assemble.S02E05.Beneath.the.Surface.WEB-DL.x264.AAC-Avengers.Assemble.S02E05.Beneath.the.Surface.WEB-DL.x264.AAC.nzb", entries[0].link)
             self.assertEqual(169103851, entries[0].size)
             self.assertEqual("2014-11-04T10:39:00+01:00", entries[0].pubdate_utc)  # would be perfect, that is the exact pubdate 

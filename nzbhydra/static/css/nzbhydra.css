@@ -6593,6 +6593,9 @@ body {
 a.expand-collapse:focus {
   text-decoration: none;
 }
+.expand-collapse-hidden {
+  visibility: hidden;
+}
 .hidden-keep-space {
   visibility: hidden;
 }

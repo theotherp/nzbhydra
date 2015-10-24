@@ -33,7 +33,7 @@ class MyTestCase(ProviderTestcase):
         
     
     @freeze_time("2015-10-12 20:00:00", tz_offset=-4)
-    def testParseJsonToNzbSearchResult(self):
+    def testParseSearchResult(self):
         
         #nzbsorg
         with open("mock/nzbsorg_q_avengers_3results.xml") as f:
@@ -46,6 +46,11 @@ class MyTestCase(ProviderTestcase):
         self.assertEqual(entries[0].age_days, 1)
         self.assertEqual(entries[0].epoch, 1444584857)
         self.assertEqual(entries[0].pubdate_utc, "2015-10-11T17:34:17+00:00")
+        self.assertEqual(entries[0].poster, "chuck@norris.com")
+        self.assertEqual(entries[0].group, "alt.binaries.mom")
+        
+        self.assertEqual(entries[1].group, "alt.binaries.hdtv.x264")
+        
         
         
     

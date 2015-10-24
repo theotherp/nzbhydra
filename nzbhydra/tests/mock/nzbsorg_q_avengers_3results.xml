@@ -30,6 +30,8 @@
             <newznab:attr name="category" value="7010"/>
             <newznab:attr name="size" value="2893890900"/>
             <newznab:attr name="guid" value="eff551fbdb69d6777d5030c209ee5d4b"/>
+            <newznab:attr name="poster" value="chuck@norris.com" />
+            <newznab:attr name="group" value="alt.binaries.mom" />
 
 
         </item>
@@ -40,7 +42,19 @@
             <comments>https://nzbs.org/details/59ca5184e4174a9bd084e9b2ff8d806b#comments</comments>
             <pubDate>Sat, 03 Oct 2015 23:46:31 +0000</pubDate>
             <category>Movies-DVD</category>
-            <description>Avengers.Age.Of.Ultron.2015.NTSC.DVDR-JFKDVD</description>
+            <description><![CDATA[
+							  <div class="row-fluid">
+								  <table cellpadding=0 cellspacing=0>
+									  <tr valign="top">
+										  
+										  <td>
+											  <b>Name:</b> Moonbeam.City.S01E05.1080p.WEB-DL.AAC2.0.H.264-iT00NZ<br /><b>Category:</b> TV > HD<br /><b>Size:</b> 922 MB<br /><b>Post Date:</b> October 22, 2015 9:18 PM<br /><b>Group:</b> alt.binaries.hdtv.x264<br />
+											  <b>Rating:</b> 65<br /> <b>Genre:</b> Comedy<br /> 
+										  </td>
+									  </tr>
+								  </table>
+							  </div>
+							  ]]></description>
             <enclosure url="https://nzbs.org/getnzb/59ca5184e4174a9bd084e9b2ff8d806b.nzb&amp;i=1692&amp;r=db7afb7f52e75435048e7cd66528667a" length="5480922420" type="application/x-nzb"/>
 
             <newznab:attr name="category" value="2000"/>
@@ -64,6 +78,7 @@
             <newznab:attr name="category" value="2010"/>
             <newznab:attr name="size" value="5161012720"/>
             <newznab:attr name="guid" value="41905ed0cdaad65266098558fc158471"/>
+            <newznab:attr name="poster" value="Ramer@marmer.com (Clown_nez)" />
 
 
         </item>

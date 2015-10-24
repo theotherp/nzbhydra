@@ -69,13 +69,16 @@ class NzbIndex(SearchModule):
         soup = BeautifulSoup(html, resultProcessingSettings.htmlParser.get())
         main_table = soup.find(id="results").find('table')
 
+
         if not main_table or not main_table.find("tbody"):
             logger.error("Unable to find main table in NZBIndex page: %s..." % html[:500])
             logger.debug(html)
             raise ProviderResultParsingException("Unable to find main table in NZBIndex page", self)
 
         items = main_table.find("tbody").find_all('tr')
-
+        size_pattern = re.compile(r"(?P<size>[0-9]+(\.[0-9]+)?).(?P<unit>(GB|MB|KB|B))")
+        age_pattern = re.compile(r"(?P<days1>\d+)\.(?P<days2>\d)")
+        title_pattern = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"')
         for row in items:
             tds = list(row.find_all("td"))
             if len(tds) != 5:
@@ -89,8 +92,10 @@ class NzbIndex(SearchModule):
             infotd = tds[1]
 
             title = infotd.find("label").text
-            p = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"')
-            m = p.search(title)
+            title = title.replace("\n","")
+            title = re.sub(" +", "", title)
+            
+            m = title_pattern.search(title)
             if m:
                 entry.title = m.group(1)
             else:
@@ -103,7 +108,9 @@ class NzbIndex(SearchModule):
                 entry.has_nfo = False
             poster = infotd.find("span", class_="poster").find("a")
             if poster is not None:
-                entry.poster = poster.text
+                poster = poster.text.replace("\n", "")
+                poster = re.sub(" +", "", poster)
+                entry.poster = poster.replace("(", " (").replace("<", " <")
 
             link = infotd.findAll('a', text=re.compile('Download'))
             if link is not None and len(link) == 1:
@@ -114,8 +121,8 @@ class NzbIndex(SearchModule):
             entry.category = "N/A"
 
             sizetd = tds[2]
-            p = re.compile(r"(?P<size>[0-9]+(\.[0-9]+)?).(?P<unit>(GB|MB|KB|B))")
-            m = p.search(sizetd.text)
+            
+            m = size_pattern.search(sizetd.text)
             if not m:
                 logger.debug("Unable to find size information in %s" % sizetd.text)
             else:
@@ -129,9 +136,13 @@ class NzbIndex(SearchModule):
                     size = size * 1024 * 1024 * 1024
                 entry.size = int(size)
 
+            grouptd = tds[3]
+            group = grouptd.text.replace("\n", "").replace("a.b.", "alt.binaries.")
+            entry.group = group
+            
             agetd = tds[4]
-            p = re.compile(r"(?P<days1>\d+)\.(?P<days2>\d)")
-            m = p.search(agetd.text)
+            
+            m = age_pattern.search(agetd.text)
             days = None
             hours = None
             if m:

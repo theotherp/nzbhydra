@@ -49,7 +49,8 @@ class MyTestCase(ProviderTestcase):
             self.assertEqual("2015-07-26T00:00:00+00:00", entries[0].pubdate_utc)
             self.assertEqual(66, entries[0].age_days)
             self.assertFalse(entries[0].age_precise)
-            self.assertEqual("Ramer@marmer.com <Clown_nez>", entries[0].poster)
+            self.assertEqual("Ramer@marmer.com (Clown_nez)", entries[0].poster)
+            self.assertEqual("alt.binaries.movies.mkv", entries[0].group)
             self.assertFalse(entries[0].has_nfo)
             self.assertEqual("https://binsearch.com/?b=MARVELS.AVENGERS.AGE.OF.ULTRON.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250", entries[0].details_link)
             

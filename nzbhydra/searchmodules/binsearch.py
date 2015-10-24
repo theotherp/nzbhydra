@@ -86,7 +86,11 @@ class Binsearch(SearchModule):
             raise ProviderResultParsingException("Unable to find main table in binsearch page", self)
 
         items = main_table.find_all('tr')
-
+        title_pattern = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"')
+        size_pattern = re.compile(r"size: (?P<size>[0-9]+(\.[0-9]+)?).(?P<unit>(GB|MB|KB|B))")
+        poster_pattern = re.compile(r"&p=(.*)&")
+        goup_pattern = re.compile(r"&g=([\w\.]*)&")
+        nfo_pattern = re.compile(r"\d nfo file")
         for row in items:
 
             entry = NzbSearchResult()
@@ -98,8 +102,8 @@ class Binsearch(SearchModule):
                 continue
             title = title.text
 
-            p = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"')
-            m = p.search(title)
+            
+            m = title_pattern.search(title)
             if m:
                 entry.title = m.group(1)
             else:
@@ -114,17 +118,18 @@ class Binsearch(SearchModule):
 
             collection_link = info.find("a")["href"]  # '/?b=MARVELS.AVENGERS.AGE.OF.ULTRON.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250'
             entry.details_link = "%s%s" % (self.host, collection_link)
-            m = re.compile(r"&p=(.*)&").search(collection_link)
+            m = goup_pattern.search(collection_link)
+            if m:
+                entry.group = m.group(1)
+            
+            m = poster_pattern.search(collection_link)
             if m:
                 poster = m.group(1)
-                poster = poster.replace("%40", "@")
-                poster = poster.replace("%28", "<")
-                poster = poster.replace("%29", ">")
-                poster = poster.replace("+", " ")
-                entry.poster = poster
+                import urllib.parse
+                entry.poster = urllib.parse.unquote(poster).replace("+", " ")
+            
             # Size
-            p = re.compile(r"size: (?P<size>[0-9]+(\.[0-9]+)?).(?P<unit>(GB|MB|KB|B))")
-            m = p.search(info.text)
+            m = size_pattern.search(info.text)
             if not m:
                 logger.debug("Unable to find size information in %s" % info.text)
             else:
@@ -140,10 +145,11 @@ class Binsearch(SearchModule):
                     size = size * 1024 * 1024 * 1024
                 
                 entry.size = int(size)
-
+            
             entry.category = "N/A"
 
-            if re.compile(r"\d nfo file").search(info.text):  # 1 nfo file is missing if there is no NFO
+            
+            if nfo_pattern.search(info.text):  # 1 nfo file is missing if there is no NFO
                 entry.has_nfo = True
             else:
                 entry.has_nfo = False

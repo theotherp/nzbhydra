@@ -59,6 +59,9 @@ class NzbClub(SearchModule):
             logger.exception("Error parsing XML: %s..." % xml[:500])
             logger.debug(xml)
             raise ProviderResultParsingException("Error while parsing XML from NZBClub", self)
+        
+        group_pattern = re.compile(r"Newsgroup: ?([\w@\. \(\)]+) <br />")
+        poster_pattern = re.compile(r"Poster: ?([\w@\. \(\)]+) <br />")
         for elem in tree.iter('item'):
             title = elem.find("title")
             url = elem.find("enclosure")
@@ -83,10 +86,18 @@ class NzbClub(SearchModule):
             entry.guid = elem.find("guid").text[-8:] #GUID looks like "http://www.nzbclub.com/nzb_view58556415" of which we only want the last part
             
             description = elem.find("description").text
+            import urllib.parse
+            description = urllib.parse.unquote(description).replace("+", " ")
             if re.compile(r"\d NFO Files").search(description): # [x NFO Files] is missing if there is no NFO
                 entry.has_nfo = True
             else:
                 entry.has_nfo = False
+            m = group_pattern.search(description)
+            if m:
+                entry.group = m.group(1)
+            m = poster_pattern.search(description)
+            if m:
+                entry.poster = m.group(1)
 
             entry.pubDate = pubdate.text
             pubdate = arrow.get(pubdate.text, '"ddd, DD MMM YYYY HH:mm:ss Z')

@@ -11,7 +11,7 @@ from marshmallow import Schema, fields
 from requests import RequestException
 
 from nzbhydra import config
-from nzbhydra.config import resultProcessingSettings, downloaderSettings, NzbAccessTypeSelection
+from nzbhydra.config import downloaderSettings, NzbAccessTypeSelection
 from nzbhydra import providers
 from nzbhydra.database import ProviderApiAccess, ProviderNzbDownload, Provider
 
@@ -38,63 +38,29 @@ def find_duplicates(results):
     grouped_by_title = groupby(sorted_results, key=lambda x: x.title.lower())
     grouped_by_sameness = []
     for key, group in grouped_by_title:
+        results_to_sets = {}
         group = list(group)
-        #Elements cannot be duplicates of themselves...
-        if len(group) == 1:
-            grouped_by_sameness.append(group)
-            continue
-        #Sort by epoch
-        group = sorted(group, key=lambda x: x.epoch)
-        subgroups = []
-        subgroup = set()
-        for i in range(len(group) - 1):
-            #Go through the group
-            a = group[i]    
-            b = group[i + 1]
-            subgroup.add(a)
-            if a.provider == b.provider:
-                same = False
-            else:
+        for i in range(0, len(group)):
+            a = group[i]
+            if a not in results_to_sets.keys():
+                results_to_sets[a] = {a}
+            for j in range(i + 1, len(group)):
+                b = group[j]
                 same = test_for_duplicate_age(a, b)
-            #If two elements are duplicates add them to the current set
-            if same:
-                subgroup.add(b)
-            #Otherwise start a new set
-            else:
-                if len(subgroup) > 0:
-                    subgroups.append(list(subgroup))
-                subgroup = set()
-                subgroup.add(b)
-        #Add the last set if it contains elements
-        if len(subgroup) > 0:
-            subgroups.append(list(subgroup))
-        
-        #Do the same with size for the subgroups which contain potential duplicates.  
-        for group in subgroups:
-            if len(group) == 1:
-                grouped_by_sameness.append(group)
-                continue
-            group = sorted(group, key=lambda x: x.size)
-            subgroups = []
-            subgroup = set()
-            for i in range(len(group) - 1):
-                a = group[i]    
-                b = group[i + 1]
-                subgroup.add(a)
-                same_size = test_for_duplicate_size(a, b)
-                if same_size:
-                    subgroup.add(b)
+                same = same and test_for_duplicate_size(a, b)
+                if same:
+                    results_to_sets[a].add(b)
+                    results_to_sets[b] = results_to_sets[a]
                 else:
-                    if len(subgroup) > 0:
-                        subgroups.append(list(subgroup))
-                    subgroup = set()
-                    subgroup.add(b)
-            grouped_by_sameness.extend(subgroups)
-            if len(subgroup) > 0:
-                grouped_by_sameness.append(list(subgroup))
+                    if b not in results_to_sets.keys():
+                        results_to_sets[b] = {b}
+
+        e = []
+        for x in results_to_sets.values():
+            if x not in e:
+                e.append(x)
+        grouped_by_sameness.extend([list(x) for x in e])
     return grouped_by_sameness
-            
-  
 
 
 def test_for_duplicate_age(search_result_1, search_result_2):
@@ -106,9 +72,21 @@ def test_for_duplicate_age(search_result_1, search_result_2):
     age_threshold = config.resultProcessingSettings.duplicateAgeThreshold.get()
     if search_result_1.epoch is None or search_result_2.epoch is None:
         return False
-    same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold  # epoch difference (ms) to minutes
 
+    group_known = search_result_1.group is not None and search_result_2.group is not None
+    same_group = search_result_1.group == search_result_2.group
+    poster_known = search_result_1.poster is not None and search_result_2.poster is not None
+    same_poster = search_result_1.poster == search_result_2.poster
+    if (group_known and not same_group) or (poster_known and not same_poster):
+        return False
+    if (same_group and not poster_known) or (same_poster and not group_known):
+        age_threshold = 12
+    if same_group and same_poster:
+        age_threshold = 24
+
+    same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold  # epoch difference (ms) to minutes    
     return same_age
+
 
 def test_for_duplicate_size(search_result_1, search_result_2):
     """
@@ -123,9 +101,8 @@ def test_for_duplicate_size(search_result_1, search_result_2):
     size_average = (search_result_1.size + search_result_2.size) / 2
     size_difference_percent = abs(size_difference / size_average) * 100
     same_size = size_difference_percent <= size_threshold
-    
+
     return same_size
-        
 
 
 class ProviderSchema(Schema):
@@ -182,51 +159,52 @@ def transform_results(results, dbsearch):
     for i in results:
         f = furl(get_root_url())
         f.path.add("internalapi/getnzb")
-        data_getnzb = {"provider": i.provider, "guid": i.guid, "searchid": dbsearch, "title": i.title} #All the data we would like to have when an NZB is downloaded
-        f.add(data_getnzb)  #Here we insert it directly into the link as parameters
+        data_getnzb = {"provider": i.provider, "guid": i.guid, "searchid": dbsearch, "title": i.title}  # All the data we would like to have when an NZB is downloaded
+        f.add(data_getnzb)  # Here we insert it directly into the link as parameters
         i.link = f.url
-        i.providerguid = i.guid #Save the provider's original GUID so that we can send it later from the GUI to identify the result
-        i.guid = f.url #For now it's the same as the link to the NZB, later we might link to a details page that at the least redirects to the original provider's page
-        
-        #Add our pseudo-guid (not the one above, with the link, just an identifier) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
+        i.providerguid = i.guid  # Save the provider's original GUID so that we can send it later from the GUI to identify the result
+        i.guid = f.url  # For now it's the same as the link to the NZB, later we might link to a details page that at the least redirects to the original provider's page
+
+        # Add our pseudo-guid (not the one above, with the link, just an identifier) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
         has_guid = False
         has_size = False
         for a in i.attributes:
             if a["name"] == "guid":
-                a["value"] = urllib.parse.quote(json.dumps(data_getnzb)) 
+                a["value"] = urllib.parse.quote(json.dumps(data_getnzb))
                 has_guid = True
             if a["name"] == "size":
                 has_size = True
         if not has_guid:
-            i.attributes.append({"name": "guid", "value": urllib.parse.quote(json.dumps(data_getnzb))}) #If it wasn't set before now it is (for results from newznab-indexers)
+            i.attributes.append({"name": "guid", "value": urllib.parse.quote(json.dumps(data_getnzb))})  # If it wasn't set before now it is (for results from newznab-indexers)
         if not has_size:
-            i.attributes.append({"name": "size", "value": i.size}) #If it wasn't set before now it is (for results from newznab-indexers)
+            i.attributes.append({"name": "size", "value": i.size})  # If it wasn't set before now it is (for results from newznab-indexers)
         transformed.append(i)
-        
+
     return transformed
 
+
 def sizeof_fmt(num, suffix='B'):
-    for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
         if abs(num) < 1024.0:
             return "%3.1f%s%s" % (num, unit, suffix)
         num /= 1024.0
     return "%.1f%s%s" % (num, 'Yi', suffix)
 
+
 def process_for_external_api(results):
-    results = transform_results(results["results"], results["dbsearch"]) #todo dbsearchid
-    
+    results = transform_results(results["results"], results["dbsearch"])  # todo dbsearchid
+
     return results
 
 
 def process_for_internal_api(search_result):
-    
     nzbsearchresults = search_result["results"]
     logger.debug("Processing %d results" % len(nzbsearchresults))
     providersearchdbentries = []
     for provider, provider_info in search_result["provider_infos"].items():
         provider_search_info = ProviderSearchSchema().dump(provider_info["provider_search"]).data
         provider_search_info["total"] = provider_info["total"]
-        provider_search_info["offset"] = search_result["provider_infos"][provider]["search_request"].offset 
+        provider_search_info["offset"] = search_result["provider_infos"][provider]["search_request"].offset
         provider_search_info["total_known"] = provider_info["total_known"]
         provider_search_info["has_more"] = provider_info["has_more"]
         providersearchdbentries.append(provider_search_info)
@@ -300,9 +278,6 @@ def get_nzb_link(provider_name, guid, title, searchid):
 ProviderNzbDownloadResult = namedtuple("ProviderNzbDownload", "content headers")
 
 
-
-
-
 def download_nzb_and_log(provider_name, guid, title, searchid) -> ProviderNzbDownloadResult:
     """
     Gets the NZB link from the provider using the guid, downloads it and logs the download
@@ -354,7 +329,3 @@ def get_nzb_response(provider_name, guid, title, searchid):
         return response
     else:
         return "Unable to download NZB", 500
-        
-    
-        
-    
