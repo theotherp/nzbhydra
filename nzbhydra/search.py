@@ -150,10 +150,14 @@ def search(internal, search_request: SearchRequest):
         search_results = sorted(search_results, key=lambda x: x.epoch, reverse=True)
         cache_entry["results"].extend(search_results)
         cache_entry["offset"] += limit
+        #todo: perhaps move duplicate handling here. WOuld allow to recognize duplicates that were added, for example 100 were already loaded and then we get 101-200 und 100 and 101 are duplicates
+        #todo: then make configurable if we want to delete duplicates for api, internal, both, none. would also mean that we return 100 actually different results, otherwise in the worst case we could for example return 50 originals and 50 duplicates
+    
 
     nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:(external_offset + limit)])
     cache_entry["last_access"] = arrow.utcnow()
     print("We have %d cached results and return %d-%d of %d total available" % (len(cache_entry["results"]), external_offset, external_offset + limit, cache_entry["total"]))
+    
     return {"results": nzb_search_results, "provider_infos": cache_entry["provider_infos"], "dbsearch": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset}
 
 

@@ -1,7 +1,7 @@
 var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'schemaForm', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination']);
 
 
-angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$locationProvider", "blockUIConfig", function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig) {
+angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig) {
 
     blockUIConfig.autoBlock = false;
     //$urlRouterProvider.otherwise("/search/");
@@ -47,11 +47,11 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
 
     $locationProvider.html5Mode(true);
 
-}]);
+});
 
-nzbhydraapp.config(["paginationTemplateProvider", function(paginationTemplateProvider) {
+nzbhydraapp.config(function(paginationTemplateProvider) {
     paginationTemplateProvider.setPath('/static/lib/angularUtils-pagination/dirPagination.tpl.html');
-}]);
+});
 
 
 nzbhydraapp.config(['$httpProvider', function ($httpProvider) {
@@ -102,7 +102,7 @@ nzbhydraapp.directive('ngEnter', function () {
     };
 });
 
-nzbhydraapp.controller('ModalInstanceCtrl', ["$scope", "$modalInstance", "nfo", function ($scope, $modalInstance, nfo) {
+nzbhydraapp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, nfo) {
 
     $scope.nfo = nfo;
 
@@ -114,7 +114,7 @@ nzbhydraapp.controller('ModalInstanceCtrl', ["$scope", "$modalInstance", "nfo", 
     $scope.cancel = function () {
         $modalInstance.dismiss();
     };
-}]);
+});
 
 
 nzbhydraapp.filter('nzblink', function () {
@@ -129,13 +129,13 @@ nzbhydraapp.filter('nzblink', function () {
 });
 
 
-nzbhydraapp.factory('focus', ["$rootScope", "$timeout", function ($rootScope, $timeout) {
+nzbhydraapp.factory('focus', function ($rootScope, $timeout) {
     return function (name) {
         $timeout(function () {
             $rootScope.$broadcast('focusOn', name);
         });
     }
-}]);
+});
 
 
 _.mixin({

@@ -54,4 +54,3 @@ function ConfigService($http, $q) {
 
     }
 }
-ConfigService.$inject = ["$http", "$q"];

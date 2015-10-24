@@ -31,6 +31,5 @@ function ConfigController($scope, $http, ConfigService, blockUI) {
         }
     }
 }
-ConfigController.$inject = ["$scope", "$http", "ConfigService", "blockUI"];
 
 

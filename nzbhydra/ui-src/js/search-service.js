@@ -95,7 +95,6 @@ function SearchService($http) {
         return {"results": results, "providersearches": providersearches, "total": total, "resultsCount": resultsCount}
     }
 }
-SearchService.$inject = ["$http"];
 
 _.mixin({
     isNullOrEmpty: function (string) {

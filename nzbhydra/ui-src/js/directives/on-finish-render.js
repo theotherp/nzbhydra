@@ -20,4 +20,3 @@ function onFinishRender($timeout) {
         link: linkFunction
     }
 }
-onFinishRender.$inject = ["$timeout"];

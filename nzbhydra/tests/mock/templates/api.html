@@ -11,7 +11,7 @@
 
         {% for item in items -%}
             <item>
-                <title>{{ provider }} {{ item.count }}</title>
+                <title>atitle</title>
                 <guid isPermaLink="true">{{ item.count  }}</guid>
                 <link>link</link>
                 <comments></comments>
@@ -23,7 +23,7 @@
 {#                {% for attribute in row.attributes %}#}
 {#                    <newznab:attr name="{{ attribute.name }}" value="{{ attribute.value }}"/>#}
 {#                {%- endfor %}#}
-            <newznab:attr name="size" value="1000"/>
+            <newznab:attr name="size" value="{{ item.size }}"/>
             <newznab:attr name="guid" value="{{ item.count }}"/>
 
 

@@ -199,4 +199,3 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     }
 
 }
-SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "SearchService", "$http", "$uibModal", "$sce", "growl"];

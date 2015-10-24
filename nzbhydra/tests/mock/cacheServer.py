@@ -23,6 +23,9 @@ def apinzbsorg():
         end = start + 100
         print("Returning elements %d-%d from nzbsorg" % (start, end))
         return render_template("api.html", items=[{"count": x, "date": arrow.get(100000000-x*100000).format('ddd, DD MMM YYYY HH:mm:ss Z'), "guid":x} for x in range(start, end)], offset=request.args.get("offset"), total=500, provider="a title")
+    if "q" in request.args.keys() and request.args.get("q") == "sortingtest":
+        return render_template("api.html", items=[{"count": 1, "date": arrow.get(100000000-200000).format('ddd, DD MMM YYYY HH:mm:ss Z'), "guid":1, "size":100000}], offset=request.args.get("offset"), total=1, provider="a title")
+    
     return handle_request(request.args.items(), "https://nzbs.org/api")
 
 
@@ -34,6 +37,8 @@ def apidog():
         end = start + 100
         print("Returning elements %d-%d from dognzb" % (start, end))
         return render_template("api.html", items=[{"count": x, "date": arrow.get(100000000-x*100000).format('ddd, DD MMM YYYY HH:mm:ss Z'), "guid":x} for x in range(start, end)], offset=request.args.get("offset"), total=375, provider="a title")
+    if "q" in request.args.keys() and request.args.get("q") == "sortingtest":
+        return render_template("api.html", items=[{"count": 1, "date": arrow.get(100000000-100000).format('ddd, DD MMM YYYY HH:mm:ss Z'), "guid":1, "size":10000000}], offset=request.args.get("offset"), total=1, provider="a title")
     return handle_request(request.args.items(), "https://api.dognzb.cr/api")
 
 
