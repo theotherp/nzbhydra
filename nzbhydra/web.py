@@ -1,21 +1,29 @@
 from functools import wraps
 import json
 import logging
+import os
 from pprint import pprint
 import ssl
+import threading
+from time import sleep
 import urllib
+import sys
 
-from flask import send_file, redirect, session, make_response
+from flask import send_file, redirect, make_response
 from flask import Flask, render_template, request, jsonify, Response
+
 from flask.ext.cache import Cache
+
 from webargs import fields
+
 from webargs.flaskparser import use_args
+
 from werkzeug.exceptions import Unauthorized
 
 from flask.ext.session import Session
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log
 from nzbhydra import config, search, infos, database
-from nzbhydra.config import NzbAccessTypeSelection, NzbAddingTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection, DownloaderSelection
+from nzbhydra.config import NzbAccessTypeSelection, NzbAddingTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.search import SearchRequest
 
@@ -161,7 +169,7 @@ def api(args):
                 search_request.identifier_value = identifier_value
             search_request.season = int(args["season"]) if args["season"] else None
             search_request.episode = int(args["episode"]) if args["episode"] else None
-            
+
         elif args["t"] == "movie":
             search_request.identifier_key = "imdbid" if args["imdbid"] is not None else None
             search_request.identifier_value = args["imdbid"] if args["imdbid"] is not None else None
@@ -406,6 +414,40 @@ def internalapi_getconfig():
     form = config.get_settings_form()
 
     return jsonify({"schema": schema, "settings": settings, "form": form})
+
+
+def restart():
+    python = sys.executable
+    print("Restarting with executable %s and args %s" % (python, sys.argv))
+    os.execl(python, python, *sys.argv)
+    print("Exiting")
+    # sys.exit(0)
+
+
+@app.route("/internalapi/restart")
+@requires_auth
+def internalapi_restart():
+    # DOES NOT WORK CORRECTLY YET
+    # Only works the first time, the second time it just hangs somewhere. Right now we don't need a restart function anyway (I hope)
+    logger.info("Restarting due to external request")
+    threading.Timer(1, restart).start()
+    return send_file("static/restart.html")
+
+
+def shutdown():
+    sleep(1)
+    print("Exiting")
+    os._exit(0)
+
+
+@app.route("/internalapi/shutdown")
+@requires_auth
+def internalapi_shutdown():
+    logger.info("Shutting down due to external request")
+    thread = threading.Thread(target=shutdown)
+    thread.daemon = True
+    thread.start()
+    return "Shutting down..."
 
 
 # Allows us to easily load a static class with results without having to load them

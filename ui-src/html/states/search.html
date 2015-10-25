@@ -1,0 +1,138 @@
+<div class="row">
+    <div class="col-md-2"></div>
+
+    <div class="">
+        <form class="form-horizontal">
+            <div class="form-group">
+
+                <label for="inputEmail3" class="col-sm-1 control-label">Search</label>
+
+                <div class="col-sm-6">
+                    <div class="input-group">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle search-category-button" data-toggle="dropdown" aria-expanded="false" id="searchCategoryDropdownButton" ng-cloak>
+                        {{ category }} <span class="caret"/>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right" role="menu" style="right: auto; top:initial; margin:0px;">
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="all" ng-click="toggle('All')">All</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="Movies" ng-click="toggle('Movies')">Movies</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="Movies HD" ng-click="toggle('Movies HD')">Movies HD</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="Movies SD" ng-click="toggle('Movies SD')">Movies SD</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="TV" ng-click="toggle('TV')">TV</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="TV HD" ng-click="toggle('TV HD')">TV HD </a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="TV SD" ng-click="toggle('TV SD')">TV SD</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="Audio" ng-click="toggle('Audio')">Audio</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="Audio FLAC" ng-click="toggle('Audio FLAC')">Audio FLAC</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="Audio MP3" ng-click="toggle('Audio MP3')">Audio MP3</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="Console" ng-click="toggle('Console')">Console</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="PC" ng-click="toggle('PC')">PC</a></li>
+                        <li><a href="" class="searchCategoryButton" data-searchcategory="XXX" ng-click="toggle('XXX')">XXX</a></li>
+                    </ul>
+                </span>
+                <span class="input-group-btn" ng-if="seriesSelected()">
+                <input type="input" class="form-control noBorderRadius season-input" placeholder="S" name="season" id="seriesSearchS" style="width:40px;" ng-model="searchSeason"
+                       ng-enter="submitSearch(selectedItem)"
+                       tooltip="Enter a season to search for."
+                       tooltip-placement="top"
+                       tooltip-trigger="mouseenter"
+                        >
+                    </span>
+                <span class="input-group-btn" ng-if="seriesSelected()">
+                <input type="input" class="form-control noLeftBorderRadius episode-input" placeholder="E" name="episode" id="seriesSearchE" style="width:40px;" ng-model="searchEpisode"
+                       ng-enter="submitSearch(selectedItem)"
+                       tooltip="Enter an episode to search for."
+                       tooltip-placement="top"
+                       tooltip-trigger="mouseenter"
+                        >
+                </span>
+                <span class="input-group-btn by-id-checkbox" ng-if="isAskById"
+                      tooltip="If enabled the search is done using an ID from TheTVDB or IMDB. The ID is retrieved using autocomplete."
+                      tooltip-placement="top"
+                      tooltip-trigger="mouseenter">
+                <input type="checkbox" name="by-id" id="by-id" style="width:40px;" ng-model="isById.value">
+                    </span>
+
+                        <script type="text/ng-template" id="movieAutocompleteEntry">
+                            <a>{{ match.label }}</a>
+                        </script>
+                        <input type="search" ngtype="search" ng-model="query" placeholder="Search" typeahead-min-length="2" typeahead-wait-ms="typeAheadWait"
+                               uib-typeahead="item as item.label for item in getAutocomplete($viewValue)"
+                               typeahead-template-url="movieAutocompleteEntry"
+                               ng-class="{'autocompleteLoading': (loadingItems && autocompleteActive), 'search-border': !seriesSelected}"
+                               typeahead-loading="loadingItems" typeahead-on-select="selectAutocompleteItem($item)" ng-enter="goToSearchUrl()" class="form-control col-lg-10"
+                               focus-on="focus-query-box"
+                                >
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" ng-click="goToSearchUrl()">Go!</button>
+                        </span>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+        <div class="col-md-2"></div>
+        <form class="form-horizontal">
+            <div class="form-group">
+
+                <label for="inputEmail3" class="col-sm-1 control-label">Age</label>
+
+                <div class="col-sm-2" style="width: 11%">
+                    <div class="input-group">
+                        <span class="input-group-addon">Min</span>
+                        <input type="text" class="form-control" id="minage" ng-model="minage" style="width: 70px" ng-enter="startSearch()">
+                    </div>
+                </div>
+                <div class="col-sm-2" style="width: 11%">
+                    <div class="input-group">
+                        <span class="input-group-addon">Max</span>
+                        <input type="text" class="form-control" id="maxage" ng-model="maxage" style="width: 70px" ng-enter="startSearch()">
+                    </div>
+                </div>
+                <label for="inputEmail3" class="col-sm-1 control-label" style="width:3%">Size</label>
+
+                <div class="col-sm-2" style="width: 11%">
+                    <div class="input-group">
+                        <span class="input-group-addon">Min</span>
+                        <input type="text" class="form-control" id="minsize" ng-model="minsize" style="width: 70px" ng-enter="startSearch()">
+                    </div>
+                </div>
+                <div class="col-sm-2" style="width: 11%">
+                    <div class="input-group">
+                        <span class="input-group-addon">Max</span>
+                        <input type="text" class="form-control" id="maxsize" ng-model="maxsize" style="width: 70px" ng-enter="startSearch()">
+                    </div>
+                </div>
+            </div>
+
+            
+        </form>
+
+        <!--
+        <div class="col-md-2">
+        </div>
+        <form class="form-horizontal">
+            <div class="form-group">
+
+                <label for="inputEmail3" class="col-sm-1 control-label">Providers</label>
+                <table style="background-color: transparent; border-spacing: 35px; border-collapse: inherit;">
+                    <tr>
+                        <td ng-repeat="provider in availableProviders">
+                            <input type="checkbox" class="form-control" ng-model="provider.activated"/>{{ provider.name  }}
+                        </td>
+                    </tr>
+                </table>
+                
+
+
+            </div>
+        </form>
+        -->
+    </div>
+
+
+</div>
+
+<!-- Search results go here -->
+<div ui-view></div> 
