@@ -78,8 +78,6 @@ class NewzNab(SearchModule):
         self.module = "newznab"
         self.category_search = True
 
-    def __repr__(self):
-        return "Provider: %s" % self.name
 
     def build_base_url(self, action, category, offset=0):
         f = furl(self.settings.host.get())
@@ -155,7 +153,7 @@ class NewzNab(SearchModule):
             logger.info("Query at %s returned no results" % self)
             return ProviderProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False)
         for item in tree.find("channel").findall("item"):
-            entry = NzbSearchResult()
+            entry = self.create_nzb_search_result()
             entry.title = item.find("title").text
             entry.link = item.find("link").text
             entry.pubDate = item.find("pubDate").text
@@ -164,7 +162,6 @@ class NewzNab(SearchModule):
             entry.pubdate_utc = str(pubdate)
             entry.age_days = (arrow.utcnow() - pubdate).days
             entry.precise_date = True
-            entry.provider = self.name
             entry.attributes = []
             entry.details_link = item.find("comments").text
             if entry.details_link is not None and "#comments" in entry.details_link:

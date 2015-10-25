@@ -84,8 +84,7 @@ class NzbIndex(SearchModule):
             if len(tds) != 5:
                 # advertisement
                 continue
-            entry = NzbSearchResult()
-            entry.provider = self.name
+            entry = self.create_nzb_search_result()
 
             entry.guid = row.find("input")["value"]
 

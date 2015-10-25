@@ -47,7 +47,7 @@ gulp.task('scripts', function () {
         .pipe(sourcemaps.init())
         .pipe(concat('nzbhydra.js'))
         .pipe(changed(dest))
-        .pipe(uglify())
+        //.pipe(uglify()) //Deactive when developing, even if source maps not nice to handle
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(dest));
 

@@ -46,7 +46,8 @@ def find_duplicates(results):
                 results_to_sets[a] = {a}
             for j in range(i + 1, len(group)):
                 b = group[j]
-                same = test_for_duplicate_age(a, b)
+                same = a.provider != b.provider 
+                same = same and test_for_duplicate_age(a, b)
                 same = same and test_for_duplicate_size(a, b)
                 if same:
                     results_to_sets[a].add(b)
@@ -55,23 +56,18 @@ def find_duplicates(results):
                     if b not in results_to_sets.keys():
                         results_to_sets[b] = {b}
 
-        e = []
+        duplicate_groups = []
         for x in results_to_sets.values():
-            if x not in e:
-                e.append(x)
-        grouped_by_sameness.extend([list(x) for x in e])
+            if x not in duplicate_groups:
+                duplicate_groups.append(x)
+        grouped_by_sameness.extend([list(x) for x in duplicate_groups])
     return grouped_by_sameness
 
 
 def test_for_duplicate_age(search_result_1, search_result_2):
-    """
-
-    :type search_result_1: NzbSearchResult
-    :type search_result_2: NzbSearchResult
-    """
-    age_threshold = config.resultProcessingSettings.duplicateAgeThreshold.get()
     if search_result_1.epoch is None or search_result_2.epoch is None:
         return False
+    age_threshold = config.resultProcessingSettings.duplicateAgeThreshold.get()
 
     group_known = search_result_1.group is not None and search_result_2.group is not None
     same_group = search_result_1.group == search_result_2.group
@@ -89,11 +85,6 @@ def test_for_duplicate_age(search_result_1, search_result_2):
 
 
 def test_for_duplicate_size(search_result_1, search_result_2):
-    """
-
-    :type search_result_1: NzbSearchResult
-    :type search_result_2: NzbSearchResult
-    """
     if not search_result_1.size or not search_result_2.size:
         return False
     size_threshold = config.resultProcessingSettings.duplicateSizeThresholdInPercent.get()
@@ -120,12 +111,14 @@ class NzbSearchResultSchema(Schema):
     age_days = fields.Integer()
     age_precise = fields.Boolean()
     provider = fields.String()
+    providerscore = fields.String()
     guid = fields.String()
     providerguid = fields.String()
     size = fields.Integer()
     category = fields.String()
     has_nfo = fields.Boolean()
     details_link = fields.String()
+    hash = fields.Integer()
 
 
 class ProviderApiAccessSchema(Schema):
@@ -215,16 +208,17 @@ def process_for_internal_api(search_result):
     logger.debug("Duplicate check left %d groups of separate results" % len(grouped_by_sameness))
     # Will be sorted by GUI later anyway but makes debugging easier
     results = sorted(grouped_by_sameness, key=lambda x: x[0].epoch, reverse=True)
-    serialized = []
-    for g in results:
-        serialized.append(serialize_nzb_search_result(g).data)
-
+    
     allresults = []
-    # We give each group of results a unique value by which they can be identified later even if they're "taken apart"
-    for group in serialized:
+    for group in results:
+        #Sort duplicates by age and then provider's score
+        #group = sorted(group, key=lambda x: x.epoch, reverse=True)
+        #group = sorted(group, key=lambda x: x.providerscore)
         for i in group:
-            i["hash"] = hash(group[0]["guid"])
-            allresults.append(i)
+            # We give each group of results a unique value by which they can be identified later
+            i.hash = hash(group[0].guid)
+            allresults.append(NzbSearchResultSchema().dump(i).data) 
+    
     return {"results": allresults, "providersearches": providersearchdbentries, "searchentryid": search_result["dbsearch"], "total": search_result["total"]}
 
 

@@ -9,6 +9,7 @@ from requests import RequestException
 from nzbhydra.config import ProviderSettings, searchingSettings
 from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus, Provider
 from nzbhydra.exceptions import ProviderResultParsingException, ProviderAuthException, ProviderAccessException
+from nzbhydra.nzb_search_result import NzbSearchResult
 
 QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "results dbentry total loaded_results total_known has_more")
 ProviderProcessingResult = collections.namedtuple("ProviderProcessingResult", "entries queries total total_known has_more")
@@ -27,6 +28,9 @@ class SearchModule(object):
         self.needs_queries = False
         self.category_search = True  # If true the provider supports searching in a given category (possibly without any query or id)
         self.limit = 100
+        
+    def __repr__(self):
+        return self.name
 
     @property
     def provider(self):
@@ -39,6 +43,10 @@ class SearchModule(object):
     @property
     def name(self):
         return self.settings.name.get()
+    
+    @property
+    def score(self):
+        return self.settings.score.get()
 
     @property
     def search_ids(self):
@@ -113,6 +121,9 @@ class SearchModule(object):
         # to extend
         # if module doesnt support it possibly use (configurable) size restrictions when searching
         return []
+
+    def create_nzb_search_result(self):
+        return NzbSearchResult(provider=self.name, providerscore=self.score)
 
     def process_query_result(self, result: str, query: str) -> ProviderProcessingResult:
         return []

@@ -181,6 +181,16 @@ class MultiSelectionSetting(Setting):
 
     def get(self):
         return super().get()
+    
+
+class OrderedMultiSelectionSetting(Setting):
+    def __init__(self, parent: Category, name: str, default: List[SelectOption], valuetype: type, options: List[SelectOption], title: str = None, description: str = None, setting_type: SettingType = SettingType.select):  # Warning is a mistake by PyCharm
+        super().__init__(parent, name, default, valuetype, title, description, setting_type)
+        self.options = options
+        self.parent.get()[self.settingname] = [x.name for x in self.default]
+
+    def get(self):
+        return super().get()
 
 
 def update(d, u):
@@ -308,7 +318,11 @@ def create_form_item(setting: Setting):
     item = {"key": setting.path, "title": setting.title, "htmlClass": "config-field-container", "fieldHtmlClass": "config-field", "labelHtmlCLass": "config-field-label"}
     if setting.setting_type == SettingType.password:
         item["type"] = "password"
-
+    elif isinstance(setting, OrderedMultiSelectionSetting):
+        item["type"] = "uiselectmulti"
+        item["htmlClass"] = "config-select"
+        item["labelHtmlClass"] = "config-select-label"
+        item["fieldHtmlClass"] = "config-select-field"
     elif isinstance(setting, SelectionSetting) or isinstance(setting, MultiSelectionSetting):
         item["type"] = "strapselect"
         item["titleMap"] = []
@@ -403,7 +417,7 @@ class ResultProcessingSettings(Category):
                                                        description="If the size difference between two search entries with the same title is higher than this they won't be considered dplicates.")
         self.duplicateAgeThreshold = Setting(self, name="duplicateAgeThreshold", default=3600, valuetype=int, title="Duplicate age threshold", description="If the age difference in seconds between two search entries with the same title is higher than this they won't be considered dplicates.")
         self.htmlParser = SelectionSetting(self, name="htmlParser", default=HtmlParserSelection.html, valuetype=str, options=HtmlParserSelection.options, title="HTML Parser", description="Used to parse HTML from providers like binsearch. If possible use LXML")
-        # html.parser
+
 
 
 resultProcessingSettings = ResultProcessingSettings()
@@ -550,6 +564,7 @@ class ProviderSettingsAbstract(Category):
         self.search_ids = MultiSelectionSetting(self, name="search_ids", default=[], valuetype=list, title="Search IDs", description="By which IDs the indexer can search releases",
                                                 options=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid],
                                                 setting_type=SettingType.multiselect)
+        self.score = Setting(self, name="score", default=0, valuetype=str, title="Score", description="Used to decide how results are picked when duplicates are found. Higher is \"better\".")
         # self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[GenerateQueriesSelection.internal], options=GenerateQueriesSelection.options, valuetype=str, title="Query generation",
         #                                          description="Decide if you want to generate queries for providers in case of ID based searches. The results will probably contain a lot of crap.",
         #                                          setting_type=SettingType.multiselect)

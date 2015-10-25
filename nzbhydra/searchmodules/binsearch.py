@@ -93,8 +93,7 @@ class Binsearch(SearchModule):
         nfo_pattern = re.compile(r"\d nfo file")
         for row in items:
 
-            entry = NzbSearchResult()
-            entry.provider = self.name
+            entry = self.create_nzb_search_result()
             title = row.find('span', attrs={'class': 's'})
 
             if title is None:

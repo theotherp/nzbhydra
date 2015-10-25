@@ -69,7 +69,7 @@ class NzbClub(SearchModule):
             if title is None or url is None or pubdate is None:
                 continue
 
-            entry = NzbSearchResult()
+            entry = self.create_nzb_search_result()
             p = re.compile(r'"(.*)"')
             m = p.search(title.text)
             if m:

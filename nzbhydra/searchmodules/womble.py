@@ -66,7 +66,7 @@ class Womble(SearchModule):
             if title is None or url is None or pubdate is None:
                 continue
             
-            entry = NzbSearchResult()
+            entry = self.create_nzb_search_result()
             entry.title = title.text
             entry.link = url.attrib["url"]
             
