@@ -145,6 +145,77 @@ _.mixin({
     }
 });
 
+angular
+    .module('nzbhydraApp')
+    .directive('searchResult', searchResult);
+
+function searchResult() {
+    return {
+        templateUrl: '/static/html/directives/search-result.html',
+        require: '^titleGroup',
+        scope: {
+            titleGroup: "="
+        },
+        controller: ['$scope', '$element', '$attrs', controller],
+        multiElement: true
+    };
+
+    function controller($scope, $element, $attrs) {
+        $scope.titleGroupExpanded = false;
+        $scope.hashGroupExpanded = {};
+        
+        $scope.toggleTitleGroup = function() {
+            $scope.titleGroupExpanded = !$scope.titleGroupExpanded;
+            if (!$scope.titleGroupExpanded) {
+                $scope.hashGroupExpanded[$scope.titleGroup[0][0].hash] = false; //Also collapse the first title's duplicates
+            }
+        };
+        
+        $scope.groupingRowDuplicatesToShow = groupingRowDuplicatesToShow;
+        function groupingRowDuplicatesToShow() {
+            if ($scope.titleGroup[0].length > 1 && $scope.hashGroupExpanded[$scope.titleGroup[0][0].hash]) {
+                return $scope.titleGroup[0].slice(1);
+            }
+        }
+        
+        //<div ng-repeat="hashGroup in titleGroup" ng-if="titleGroup.length > 0 && titleGroupExpanded"  class="search-results-row">
+        $scope.otherTitleRowsToShow = otherTitleRowsToShow;
+        function otherTitleRowsToShow() {
+            if ($scope.titleGroup.length > 1 && $scope.titleGroupExpanded) {
+                return $scope.titleGroup.slice(1);
+            }
+        }
+        
+        //<div ng-repeat="result in hashGroup" ng-if="$index > 0 && hashGroupExpanded[hashGroup[0].hash]" class="duplicate search-results-row">
+        $scope.hashGroupDuplicatesToShow = hashGroupDuplicatesToShow;
+        function hashGroupDuplicatesToShow(hashGroup) {
+            if ($scope.hashGroupExpanded[hashGroup[0].hash]) {
+                    return hashGroup.slice(1);
+            }
+        }
+    }
+}
+angular
+    .module('nzbhydraApp')
+    .directive('otherColumns', otherColumns);
+
+function otherColumns($http, $templateCache, $compile) {
+    return {
+        scope: {
+            result: "="
+        },
+        multiElement: true,
+
+        link: function (scope, element, attrs) {
+            $http.get('/static/html/directives/search-result-non-title-columns.html', {cache: $templateCache}).success(function (templateContent) {
+                element.replaceWith($compile(templateContent)(scope));
+            });
+
+        }
+    };
+
+}
+otherColumns.$inject = ["$http", "$templateCache", "$compile"];
 //Can be used in an ng-repeat directive to call a function when the last element was rendered
 //We use it to mark the end of sorting / filtering so we can stop blocking the UI
 
@@ -194,7 +265,7 @@ function addableNzb() {
             item: "="
         },
         controller: ['$scope', '$http', controller]
-    }
+    };
 
     function controller($scope, $http) {
         $scope.classname = "nzb";

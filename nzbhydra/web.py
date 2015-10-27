@@ -96,7 +96,8 @@ def requires_auth(f):
 @requires_auth
 def base(path):
     logger.debug("Sending index.html")
-    return send_file("static/index.html")
+    #return send_file("static/index.html")
+    return render_template("index.html", host_url=request.host_url)
 
 
 def render_search_results_for_api(search_results, total, offset):

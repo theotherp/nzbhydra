@@ -1,6 +1,8 @@
 @import "../../bower_components/bootstrap-less/less/bootstrap.less";
 @import "slate-variables.less";
 
+@grid-columns:              20;
+
 html,
 body {
   height: 100%;
@@ -15,7 +17,6 @@ body {
   vertical-align: middle;
   color: #fff;
 }
-
 
 .featurette-inner {
   display: table-cell;
@@ -47,13 +48,11 @@ body {
 
 .td-embedded2 {
   background-color: darken(@table-bg-subrow, 20%);
-  //font-size: @font-size-smaller;
 }
 
 .td-embedded:first-child {
   padding-left: 15px;
 }
-
 
 a.expand-collapse:focus {
   text-decoration: none;
@@ -210,3 +209,49 @@ a.disabled:hover {
   text-decoration: none;
   cursor: default;
 }
+
+.visibility-hidden {
+  visibility: hidden;
+}
+
+.search-results-table {
+  display: table;
+  width: 100%;
+  background-color: @table-bg;
+}
+
+.search-results-header {
+  //display: table-header-group;
+  text-align: center;
+}
+
+.search-results-body {
+  //display: table-row-group;
+}
+
+.search-results-row {
+  //display: table-row;
+  
+}
+
+.duplicate {
+    background-color: darken(@table-bg-subrow, 20%);
+  }
+
+.other {
+  background-color: @table-bg-subrow;
+}
+
+.other-duplicate-toggle {
+  margin-left: 18px;
+}
+
+.toggle-placeholder {
+  margin-left: 36px
+}
+
+.search-results-cell {
+  //display: table-cell;
+  text-align: left;
+}
+

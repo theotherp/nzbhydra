@@ -16,7 +16,6 @@ var changed = require('gulp-changed');
 var newer = require('gulp-newer');
 
 
-
 gulp.task('vendor-scripts', function () {
     var dest = 'nzbhydra/static/js';
     return gulp.src(wiredep().js)
@@ -68,7 +67,7 @@ gulp.task('copy-assets', function () {
     var fonts = gulp.src("bower_components/bootstrap/fonts/*")
         .pipe(changed(fontDest))
         .pipe(gulp.dest(fontDest));
-    
+
     var imgDest = 'nzbhydra/static/img';
     var img = gulp.src("ui-src/img/**/*")
         .pipe(changed(imgDest))
@@ -86,12 +85,16 @@ gulp.task('copy-assets', function () {
 gulp.task('index', ['scripts', 'less', 'vendor-scripts', 'vendor-css', 'copy-assets'], function () {
 
     return gulp.src('ui-src/index.html')
-        .pipe(gulp.dest('nzbhydra/static'))
+        .pipe(gulp.dest('nzbhydra/templates'))
         .pipe(livereload());
 });
 
+function swallowError(error) {
+    console.log(error.toString());
+    this.emit('end');
+}
 
 gulp.task('default', function () {
     livereload.listen();
-    gulp.watch(['ui-src/**/*'], ['index']);
+    gulp.on('error', swallowError).watch(['ui-src/**/*'], ['index']);
 });

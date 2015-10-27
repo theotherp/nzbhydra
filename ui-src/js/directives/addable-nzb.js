@@ -10,7 +10,7 @@ function addableNzb() {
             item: "="
         },
         controller: ['$scope', '$http', controller]
-    }
+    };
 
     function controller($scope, $http) {
         $scope.classname = "nzb";
