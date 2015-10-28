@@ -1,4 +1,4 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'schemaForm', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'schemaForm', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3']);
 
 
 angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig) {
@@ -43,6 +43,11 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             url: "/config",
             templateUrl: "static/html/states/config.html",
             controller: "ConfigController"
+        })
+    .state("stats", {
+            url: "/stats",
+            templateUrl: "static/html/states/stats.html",
+            controller: "StatsController"
         })
     ;
 

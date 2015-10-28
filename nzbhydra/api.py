@@ -13,7 +13,7 @@ from requests import RequestException
 from nzbhydra import config
 from nzbhydra.config import downloaderSettings, NzbAccessTypeSelection
 from nzbhydra import providers
-from nzbhydra.database import ProviderApiAccess, ProviderNzbDownload, Provider
+from nzbhydra.database import ProviderApiAccess, ProviderNzbDownload, Provider, ProviderSearch
 
 logger = logging.getLogger('root')
 
@@ -287,8 +287,10 @@ def download_nzb_and_log(provider_name, guid, title, searchid) -> ProviderNzbDow
 
             link = p.get_nzb_link(guid, title)
             provider = Provider.get(Provider.name == provider_name)
-            papiaccess = ProviderApiAccess(provider=p.provider, type="nzb", url=link, provider_search=provider)
+            psearch = ProviderSearch.get((ProviderSearch.provider == provider) & (ProviderSearch.search == searchid))
+            papiaccess = ProviderApiAccess(provider=p.provider, type="nzb", url=link, provider_search=psearch)
             papiaccess.save()
+            
             pnzbdl = ProviderNzbDownload(provider=provider, provider_search=searchid, api_access=papiaccess, mode="serve")
             pnzbdl.save()
             try:

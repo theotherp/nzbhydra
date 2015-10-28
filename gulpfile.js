@@ -22,7 +22,7 @@ gulp.task('vendor-scripts', function () {
         .pipe(sourcemaps.init())
         .pipe(concat('alllibs.js'))
         .pipe(changed(dest))//Important: Put behind concat, otherwise it will always think the sources changed
-        .pipe(uglify())
+        //.pipe(uglify())
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(dest));
 });
@@ -42,9 +42,12 @@ gulp.task('scripts', function () {
     var dest = 'nzbhydra/static/js';
     return gulp.src("ui-src/js/**/*.js")
         .pipe(ngAnnotate())
+        .on('error', swallowError)
         .pipe(angularFilesort())
+        .on('error', swallowError)
         .pipe(sourcemaps.init())
         .pipe(concat('nzbhydra.js'))
+        .on('error', swallowError)
         .pipe(changed(dest))
         //.pipe(uglify()) //Deactive when developing, even if source maps not nice to handle
         .pipe(sourcemaps.write('./'))
