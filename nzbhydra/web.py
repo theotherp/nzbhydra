@@ -51,6 +51,7 @@ internal_cache = Cache(app, config={'CACHE_TYPE': "simple",  # Cache for interna
 
 @app.before_request
 def _db_connect():
+    
     if not request.endpoint.endswith("static"):  # No point in opening a db connection if we only serve a static file
         database.db.connect()
 
@@ -366,45 +367,41 @@ def extract_nzb_infos_and_return_response(provider, guid, title, searchid):
 
 
 internalapi__addnzb_args = {
-    "title": fields.String(missing=None),
-    "providerguid": fields.String(missing=None),
-    "provider": fields.String(missing=None),
-    "searchid": fields.String(missing=None),
-    "category": fields.String(missing=None)
+    "guids": fields.String(missing=[])
 }
 
 
-@app.route('/internalapi/addnzb')
+@app.route('/internalapi/addnzbs', methods=['GET', 'PUT'])
 @requires_auth
-@use_args(internalapi__addnzb_args, locations=['querystring'])
+@use_args(internalapi__addnzb_args)
 def internalapi_addnzb(args):
     logger.debug("Add NZB request with args %s" % args)
+    print(args["guids"])
+    guids = json.loads(args["guids"])
     if downloaderSettings.downloader.isSetting(config.DownloaderSelection.nzbget):
         downloader = Nzbget()
     else:
         downloader = Sabnzbd()
-
-    if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
-        link = get_nzb_link(args["provider"], args["providerguid"], args["title"], args["searchid"])
-        added = downloader.add_link(link, args["title"], args["category"])
-        if added:
-            return "Success"
-        else:
-            logger.error("Downloaded returned error while trying to add NZB for %s" % args["title"])
-            return "Error", 500
-    elif downloaderSettings.nzbAddingType.isSetting(NzbAddingTypeSelection.nzb):  # We download an NZB send it to the downloader
-        nzbdownloadresult = download_nzb_and_log(args["provider"], args["providerguid"], args["title"], args["searchid"])
-        if nzbdownloadresult is None:
-            return "Error while downloading NZB"
-        added = downloader.add_nzb(nzbdownloadresult.content, args["title"], args["category"])
-        if added:
-            return "Success"
-        else:
-            logger.error("Downloader returned error while trying to add NZB for %s" % args["title"])
-            return "Error"
+    added = 0
+    for guid in guids:
+        guid = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(guid).query))
+        print(guid)
+        if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
+            add_success = downloader.add_link(guid, guid["title"], None)
+            
+        else:  # We download an NZB send it to the downloader
+            nzbdownloadresult = download_nzb_and_log(guid["provider"], guid["guid"], guid["title"], guid["searchid"])
+            if nzbdownloadresult is not None:
+                add_success = downloader.add_nzb(nzbdownloadresult.content, guid["title"], None)
+            else:
+                add_success = False
+        if add_success:
+            added += 1
+        
+    if added:
+        return jsonify({"success": "true", "added": added, "of": len(guids)})
     else:
-        logger.error("Invalid value of %s" % downloaderSettings.nzbAddingType)
-        return "downloader.add_type has wrong value", 500  # "direct" would never end up here, so it must be a wrong value
+        return jsonify({"success": "false"})
 
 
 @app.route('/internalapi/setsettings', methods=["PUT"])

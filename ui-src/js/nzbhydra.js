@@ -27,6 +27,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         .state("search.results", {
             templateUrl: "static/html/states/search-results.html",
             controller: "SearchResultsController",
+            controllerAs: "srController",
             options: {
                 inherit: false
             },

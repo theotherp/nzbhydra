@@ -1,10 +1,10 @@
 
 <tr class="search-results-row">
     <td class="col-md-12 search-results-cell" ng-init="result = titleGroup[0][0]">
-        
+        <input type="checkbox" ng-model="selected[result.guid]"/>
         <a href="" ng-click="toggleTitleGroup()" ng-class="{'visibility-hidden': titleGroup.length == 1}"><span class="glyphicon"
                                                                                                                 ng-class="{'glyphicon-collapse-up': titleGroupExpanded, 'glyphicon-expand': !titleGroupExpanded}"></span></a>
-        <a href="" ng-click="hashGroupExpanded[titleGroup[0][0].hash]=!hashGroupExpanded[titleGroup[0][0].hash]" ng-class="{'visibility-hidden': titleGroup[0].length == 1}"><span class="glyphicon"
+        <a href="" ng-if="showDuplicates" ng-click="hashGroupExpanded[titleGroup[0][0].hash]=!hashGroupExpanded[titleGroup[0][0].hash]" ng-class="{'visibility-hidden': titleGroup[0].length == 1}"><span class="glyphicon"
                                                                                                                                                                                    ng-class="{'glyphicon-collapse-up': hashGroupExpanded[titleGroup[0][0].hash], 'glyphicon-expand': !hashGroupExpanded[titleGroup[0][0].hash]}"></span></a>
         {{ ::result.title }}
     </td>
@@ -12,22 +12,25 @@
 </tr>
 
 
-<tr ng-repeat="result in groupingRowDuplicatesToShow()" class="search-results-row duplicate">
-    <td class="col-md-11 search-results-cell">
+<tr ng-repeat="result in groupingRowDuplicatesToShow() track by result.guid" class="search-results-row duplicate">
+    <td class="col-md-12 search-results-cell">
+        <input type="checkbox" ng-model="selected[result.guid]"/>
     </td>
     <td other-columns result="result"></td>
 </tr>
 
-<tr ng-repeat-start="hashGroup in otherTitleRowsToShow()" ng-show="0"></tr>
+<tr ng-repeat-start="hashGroup in otherTitleRowsToShow() track by hashGroup[0].hash" ng-show="0"></tr>
 <tr class="other search-results-row" ng-init="result = hashGroup[0]">
-    <td class="col-md-11 search-results-cell">
+    <td class="col-md-12 search-results-cell">
+        <input type="checkbox" ng-model="selected[result.guid]"/>
         <a href="" ng-click="hashGroupExpanded[result.hash]=!hashGroupExpanded[result.hash]" ng-if="hashGroup.length > 1" class="other-duplicate-toggle"><span class="glyphicon"
                                                                                                                                                                ng-class="{'glyphicon-collapse-up': hashGroupExpanded[result.hash], 'glyphicon-expand': !hashGroupExpanded[result.hash]}"></span></a>
     </td>
     <td other-columns result="result"></td>
 </tr>
-<tr ng-repeat="result in hashGroupDuplicatesToShow(hashGroup)" class="duplicate search-results-row">
-    <td class="col-md-11 search-results-cell">
+<tr ng-repeat="result in hashGroupDuplicatesToShow(hashGroup) track by result.guid" class="duplicate search-results-row">
+    <td class="col-md-12 search-results-cell">
+        <input type="checkbox" ng-model="selected[result.guid]"/>
     </td>
     <td other-columns result="result"></td>
 </tr>

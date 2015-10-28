@@ -255,8 +255,8 @@ th {
 }
 @font-face {
   font-family: 'Glyphicons Halflings';
-  src: url('/static/fonts/glyphicons-halflings-regular.eot');
-  src: url('/static/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('/static/fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('/static/fonts/glyphicons-halflings-regular.woff') format('woff'), url('/static/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('/static/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+  src: url('../fonts/glyphicons-halflings-regular.eot');
+  src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 }
 .glyphicon {
   position: relative;
@@ -7024,19 +7024,19 @@ textarea.by-id-checkbox {
   cursor: pointer;
 }
 .nzb-spinning {
-  background-image: url('/static/img/spinner.gif');
+  background-image: url('../img/spinner.gif');
 }
 .addable-nzb {
   display: inline-block;
 }
 .nzb {
-  background-image: url('/static/img/nzb.png');
+  background-image: url('../img/nzb.png');
 }
 .nzb-success {
-  background-image: url('/static/img/nzbsuccess.png');
+  background-image: url('../img/nzbsuccess.png');
 }
 .nzb-error {
-  background-image: url('/static/img/nzberror.png');
+  background-image: url('../img/nzberror.png');
 }
 .icon {
   width: 16px;

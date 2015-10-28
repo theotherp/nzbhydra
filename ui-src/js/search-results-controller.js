@@ -21,6 +21,10 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
     $scope.groupExpanded = {};
 
+    $scope.doShowDuplicates = false;
+
+    $scope.selected = {};
+
     //Initially set visibility of all found providers to true, they're needed for initial filtering / sorting
     _.forEach($scope.providersearches, function (ps) {
         $scope.providerDisplayState[ps.provider] = true;
@@ -47,7 +51,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     //Returns the unique group identifier which allows angular to keep track of the grouped search results even after filtering, making filtering by providers a lot faster (albeit still somewhat slow...)  
     $scope.groupId = groupId;
     function groupId(item) {
-        return item[0][0].title;
+        return item[0][0].title.toLowerCase();
     }
 
     //Block the UI and return after timeout. This way we make sure that the blocking is done before angular starts updating the model/view. There's probably a better way to achieve that?
@@ -156,7 +160,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
                 console.log(data.results);
                 console.log($scope.results);
                 console.log("Total: " + data.total);
-                //angular.extend($scope.results, data.results);
                 $scope.results = $scope.results.concat(data.results);
                 $scope.filteredResults = sortAndFilter($scope.results);
                 $scope.total = data.total;
@@ -185,40 +188,23 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         return $scope.results.length;
     }
 
-    $scope.showNfo = showNfo;
-    function showNfo(resultItem) {
-        if (!resultItem.has_nfo) {
-            return;
-        }
-        var uri = new URI("internalapi/getnfo");
-        uri.addQuery("provider", resultItem.provider);
-        uri.addQuery("guid", resultItem.providerguid);
-        return $http.get(uri).then(function (response) {
-            if (response.data.has_nfo) {
-                $scope.openModal("lg", response.data.nfo)
+    $scope.downloadSelected = downloadSelected;
+    function downloadSelected() {
+        
+        var guids = Object.keys($scope.selected);
+
+        console.log(guids);
+        $http.put("internalapi/addnzbs", {guids: angular.toJson(guids)}).success(function (response) {
+            if (response.success) {
+                console.log("success");
+                growl.info("Successfully added " + response.added + " of " + response.of + " NZBs");
             } else {
-                //todo: show error or info that no nfo is available
-                growl.info("No NFO available");
+                growl.error("Error while adding NZBs");
             }
+        }).error(function () {
+            growl.error("Error while adding NZBs"); 
         });
     }
 
-
-    $scope.openModal = openModal;
-
-    function openModal(size, nfo) {
-        var modalInstance = $uibModal.open({
-            template: '<pre><span ng-bind-html="nfo"></span></pre>',
-            controller: 'ModalInstanceCtrl',
-            size: size,
-            resolve: {
-                nfo: function () {
-                    return $sce.trustAsHtml(nfo);
-                }
-            }
-        });
-
-        modalInstance.result.then();
-    }
 
 }

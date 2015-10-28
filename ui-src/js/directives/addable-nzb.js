@@ -17,12 +17,8 @@ function addableNzb() {
 
         $scope.add = function () {
             $scope.classname = "nzb-spinning";
-            var uri = new URI("internalapi/addnzb");
-            uri.addQuery("title", $scope.item.title);
-            uri.addQuery("providerguid", $scope.item.providerguid);
-            uri.addQuery("provider", $scope.item.provider);
-            $http.get(uri).success(function (response) {
-                if (response == "Success") {
+            $http.put("internalapi/addnzbs", {guids: angular.toJson([$scope.item.guid])}).success(function (response) {
+                if (response.success) {
                     $scope.classname = "nzb-success";
                 } else {
                     $scope.classname = "nzb-error";

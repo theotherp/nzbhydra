@@ -7,15 +7,18 @@ function searchResult() {
         templateUrl: 'static/html/directives/search-result.html',
         require: '^titleGroup',
         scope: {
-            titleGroup: "="
+            titleGroup: "=",
+            showDuplicates: "=",
+            selected: "="
         },
         controller: ['$scope', '$element', '$attrs', controller],
         multiElement: true
     };
-
+    
     function controller($scope, $element, $attrs) {
         $scope.titleGroupExpanded = false;
         $scope.hashGroupExpanded = {};
+        console.log($scope.srController);
         
         $scope.toggleTitleGroup = function() {
             $scope.titleGroupExpanded = !$scope.titleGroupExpanded;
