@@ -89,7 +89,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         }
 
         if ($scope.category.indexOf("Movies") > -1) {
-            return $http.get('/internalapi/autocomplete?type=movie', {
+            return $http.get('internalapi/autocomplete?type=movie', {
                 params: {
                     input: val
                 }
@@ -99,7 +99,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             });
         } else if ($scope.category.indexOf("TV") > -1) {
 
-            return $http.get('/internalapi/autocomplete?type=tv', {
+            return $http.get('internalapi/autocomplete?type=tv', {
                 params: {
                     input: val
                 }

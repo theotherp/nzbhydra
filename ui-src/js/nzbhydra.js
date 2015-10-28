@@ -9,7 +9,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
     $stateProvider
         .state("home", {
             url: "/",
-            templateUrl: "/static/html/states/search.html",
+            templateUrl: "static/html/states/search.html",
             controller: "SearchController",
             params: {
                 mode: "landing"
@@ -17,7 +17,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         })
         .state("search", {
             url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets",
-            templateUrl: "/static/html/states/search.html",
+            templateUrl: "static/html/states/search.html",
             controller: "SearchController",
             params: {
                 "category": "All",
@@ -25,7 +25,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             }
         })
         .state("search.results", {
-            templateUrl: "/static/html/states/search-results.html",
+            templateUrl: "static/html/states/search-results.html",
             controller: "SearchResultsController",
             options: {
                 inherit: false
@@ -40,7 +40,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         })
         .state("config", {
             url: "/config",
-            templateUrl: "/static/html/states/config.html",
+            templateUrl: "static/html/states/config.html",
             controller: "ConfigController"
         })
     ;
@@ -50,7 +50,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
 });
 
 nzbhydraapp.config(function(paginationTemplateProvider) {
-    paginationTemplateProvider.setPath('/static/html/dirPagination.tpl.html');
+    paginationTemplateProvider.setPath('static/html/dirPagination.tpl.html');
 });
 
 
@@ -120,7 +120,7 @@ nzbhydraapp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, nf
 
 nzbhydraapp.filter('nzblink', function () {
     return function (resultItem) {
-        var uri = new URI("/internalapi/getnzb");
+        var uri = new URI("internalapi/getnzb");
         uri.addQuery("guid", resultItem.guid);
         uri.addQuery("title", resultItem.title);
         uri.addQuery("provider", resultItem.provider);

@@ -18,7 +18,7 @@ function ConfigService($http, $q) {
     function setConfig(settings) {
         console.log("Starting setConfig");
 
-        $http.put('/internalapi/setsettings', settings)
+        $http.put('internalapi/setsettings', settings)
             .then(function (successresponse) {
                 console.log("Settings saved. Updating cache");
                 config.settings = settings;
@@ -38,7 +38,7 @@ function ConfigService($http, $q) {
                 return deferred.promise;
             }
 
-            return $http.get('/internalapi/getconfig')
+            return $http.get('internalapi/getconfig')
                 .then(function (configResponse) {
                     console.log("Updating config cache");
                     config = configResponse.data;

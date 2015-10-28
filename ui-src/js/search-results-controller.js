@@ -190,7 +190,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         if (!resultItem.has_nfo) {
             return;
         }
-        var uri = new URI("/internalapi/getnfo");
+        var uri = new URI("internalapi/getnfo");
         uri.addQuery("provider", resultItem.provider);
         uri.addQuery("guid", resultItem.providerguid);
         return $http.get(uri).then(function (response) {

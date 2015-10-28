@@ -4,7 +4,7 @@ angular
 
 function addableNzb() {
     return {
-        templateUrl: '/static/html/directives/addable-nzb.html',
+        templateUrl: 'static/html/directives/addable-nzb.html',
         require: '^item',
         scope: {
             item: "="
@@ -17,7 +17,7 @@ function addableNzb() {
 
         $scope.add = function () {
             $scope.classname = "nzb-spinning";
-            var uri = new URI("/internalapi/addnzb");
+            var uri = new URI("internalapi/addnzb");
             uri.addQuery("title", $scope.item.title);
             uri.addQuery("providerguid", $scope.item.providerguid);
             uri.addQuery("provider", $scope.item.provider);

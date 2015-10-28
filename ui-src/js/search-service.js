@@ -15,7 +15,7 @@ function SearchService($http) {
         var uri;
         if (category.indexOf("Movies") > -1) {
             console.log("Search for movies");
-            uri = new URI("/internalapi/moviesearch");
+            uri = new URI("internalapi/moviesearch");
             if (imdbid) {
                 console.log("moviesearch per imdbid");
                 uri.addQuery("imdbid", imdbid);
@@ -27,7 +27,7 @@ function SearchService($http) {
 
         } else if (category.indexOf("TV") > -1) {
             console.log("Search for shows");
-            uri = new URI("/internalapi/tvsearch");
+            uri = new URI("internalapi/tvsearch");
             if (tvdbid) {
                 uri.addQuery("tvdbid", tvdbid);
                 uri.addQuery("title", title);
@@ -41,7 +41,7 @@ function SearchService($http) {
             }
         } else {
             console.log("Search for all");
-            uri = new URI("/internalapi/search");
+            uri = new URI("internalapi/search");
             uri.addQuery("query", query);
         }
 

@@ -11,13 +11,9 @@ import sys
 
 from flask import send_file, redirect, make_response
 from flask import Flask, render_template, request, jsonify, Response
-
 from flask.ext.cache import Cache
-
 from webargs import fields
-
 from webargs.flaskparser import use_args
-
 from werkzeug.exceptions import Unauthorized
 
 from flask.ext.session import Session
@@ -27,9 +23,25 @@ from nzbhydra.config import NzbAccessTypeSelection, NzbAddingTypeSelection, main
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.search import SearchRequest
 
+
+class ReverseProxied(object):
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        script_name = "/nzbhydra"
+        path_info = environ['PATH_INFO']
+        environ['URL_BASE'] = environ['PATH_INFO'] 
+        if path_info.startswith(script_name):
+            environ['PATH_INFO'] = path_info[len(script_name):]
+            pass
+        
+        return self.app(environ, start_response)
+
 logger = logging.getLogger('root')
 
 app = Flask(__name__)
+app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 search_cache = Cache()
@@ -91,13 +103,16 @@ def requires_auth(f):
     return decorated
 
 
+
+
 @app.route('/<path:path>')
 @app.route('/', defaults={"path": None})
 @requires_auth
 def base(path):
     logger.debug("Sending index.html")
-    #return send_file("static/index.html")
-    return render_template("index.html", host_url=request.host_url)
+    host_url = (request.host_url + request.environ['URL_BASE'][1:])
+    return render_template("index.html", host_url=host_url)
+    #return render_template("index.html", host_url=request.host_url)
 
 
 def render_search_results_for_api(search_results, total, offset):
