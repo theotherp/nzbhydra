@@ -83,56 +83,53 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
 
     function sortAndFilter(results) {
-        //Remove elements of which the provider is currently hidden
-        results = _.filter(results, function (item) {
+
+        function getItemProviderDisplayState(item) {
             return $scope.providerDisplayState[item.provider];
-        });
+        }
 
-
-        //Make groups of results with the same title
-        var groupedByTitle = _.groupBy(results, function (element) {
+        function getTitleLowerCase(element) {
             return element.title.toLowerCase();
-        });
+        }
 
-        //For every title group make subgroups of duplicates and sort the group 
-        var groupedByTitleAndHash = _.map(groupedByTitle, function (titleGroup) {
-            var titleGroupGroupedByHash = _.groupBy(titleGroup, "hash");
-
-            titleGroupGroupedByHash = _.map(titleGroupGroupedByHash, function (hashGroup) {
+        function createSortedHashgroups(titleGroup) {
+            
+            function createHashGroup(hashGroup) {
+                //Sorting hash group's contents should not matter for size and age and title but might for category (we might remove this, it's probably mostly unnecessary)
                 var sortedHashGroup = _.sortBy(hashGroup, function (item) {
-                    return item[$scope.sortPredicate];
+                    var sortPredicateValue = item[$scope.sortPredicate];
+                    return $scope.sortReversed ?  -sortPredicateValue : sortPredicateValue;
                 });
-                if ($scope.sortReversed) {
-                    sortedHashGroup.reverse();
-                }
                 //Now sort the hash group by provider score (inverted) so that the result with the highest provider score is shown on top (or as the only one of a hash group if it's collapsed)
-                //
-                sortedHashGroup = _.sortBy(hashGroup, function(item) {
+                sortedHashGroup = _.sortBy(sortedHashGroup, function (item) {
                     return item.providerscore * -1;
                 });
                 return sortedHashGroup;
-            });
-
-            titleGroupGroupedByHash = _.sortBy(titleGroupGroupedByHash, function (hashGroup) {
-                return hashGroup[0][$scope.sortPredicate];
-            });
-
-            if ($scope.sortReversed) {
-                titleGroupGroupedByHash.reverse();
             }
-            return titleGroupGroupedByHash;
-
-        });
-
-        //And then sort the title group using its first hashgroup's first item (the group itself is already sorted and so are the hash groups) 
-        var sortedTitleGroups = _.sortBy(groupedByTitleAndHash, function (titleGroup) {
-            return titleGroup[0][0][$scope.sortPredicate];
-        });
-        if ($scope.sortReversed) {
-            sortedTitleGroups.reverse();
+            
+            function getHashGroupFirstElementSortPredicate(hashGroup) {
+                var sortPredicateValue = hashGroup[0][$scope.sortPredicate];
+                return $scope.sortReversed ?  -sortPredicateValue : sortPredicateValue;
+            }
+            
+            return _.chain(titleGroup).groupBy("hash").map(createHashGroup).sortBy(getHashGroupFirstElementSortPredicate).value();
         }
-        return sortedTitleGroups;
 
+        function getTitleGroupFirstElementsSortPredicate(titleGroup) {
+            var sortPredicateValue = titleGroup[0][0][$scope.sortPredicate];
+            return $scope.sortReversed ?  -sortPredicateValue : sortPredicateValue;
+        }
+
+        return _.chain(results)
+            //Remove elements of which the provider is currently hidden    
+            .filter(getItemProviderDisplayState)
+            //Make groups of results with the same title    
+            .groupBy(getTitleLowerCase)
+            //For every title group make subgroups of duplicates and sort the group    
+            .map(createSortedHashgroups)
+            //And then sort the title group using its first hashgroup's first item (the group itself is already sorted and so are the hash groups)    
+            .sortBy(getTitleGroupFirstElementsSortPredicate)
+            .value();
 
     }
 
@@ -145,7 +142,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 //Clear the blocking
     $scope.stopBlocking = stopBlocking;
     function stopBlocking() {
-
         blockUI.reset();
     }
 
@@ -180,7 +176,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         }).then(function () {
             stopBlocking();
         });
-
     }
 
     $scope.countResults = countResults;
