@@ -173,9 +173,8 @@ def api(args):
         raise Unauthorized("API key not provided or invalid")
 
     elif args["t"] in ("search", "tvsearch", "movies"):
-        search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], )
+        search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], query=args["q"])
         if args["t"] == "search":
-            search_request.query = args["query"]
             search_request.type = "general"
         elif args["t"] == "tvsearch":
             search_request.type = "tv"

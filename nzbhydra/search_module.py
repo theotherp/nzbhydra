@@ -76,7 +76,7 @@ class SearchModule(object):
                 # Simple case, just a regular raw search but in movie category
                 urls = self.get_showsearch_urls(search_request)
             else:
-                # Just show all the latest movie releases
+                # Just show all the latest tv releases
                 urls = self.get_showsearch_urls(search_request)
         elif search_request.type == "movie":
             if search_request.query is None and search_request.title is None and search_request.identifier_key is None and self.needs_queries:

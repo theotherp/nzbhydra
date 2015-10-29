@@ -167,39 +167,45 @@ function searchResult() {
         controller: ['$scope', '$element', '$attrs', controller],
         multiElement: true
     };
-    
+
     function controller($scope, $element, $attrs) {
         $scope.titleGroupExpanded = false;
         $scope.hashGroupExpanded = {};
-        console.log($scope.srController);
-        
-        $scope.toggleTitleGroup = function() {
+
+        $scope.toggleTitleGroup = function () {
             $scope.titleGroupExpanded = !$scope.titleGroupExpanded;
             if (!$scope.titleGroupExpanded) {
                 $scope.hashGroupExpanded[$scope.titleGroup[0][0].hash] = false; //Also collapse the first title's duplicates
             }
         };
-        
+
         $scope.groupingRowDuplicatesToShow = groupingRowDuplicatesToShow;
         function groupingRowDuplicatesToShow() {
-            if ($scope.titleGroup[0].length > 1 && $scope.hashGroupExpanded[$scope.titleGroup[0][0].hash]) {
+            if ($scope.showDuplicates &&  $scope.titleGroup[0].length > 1 && $scope.hashGroupExpanded[$scope.titleGroup[0][0].hash]) {
                 return $scope.titleGroup[0].slice(1);
+            } else {
+                return [];
             }
         }
-        
+
         //<div ng-repeat="hashGroup in titleGroup" ng-if="titleGroup.length > 0 && titleGroupExpanded"  class="search-results-row">
         $scope.otherTitleRowsToShow = otherTitleRowsToShow;
         function otherTitleRowsToShow() {
             if ($scope.titleGroup.length > 1 && $scope.titleGroupExpanded) {
+                console.log("Other titles to show:");
+                console.log($scope.titleGroup.slice(1));
                 return $scope.titleGroup.slice(1);
+            } else {
+                return [];
             }
         }
         
-        //<div ng-repeat="result in hashGroup" ng-if="$index > 0 && hashGroupExpanded[hashGroup[0].hash]" class="duplicate search-results-row">
         $scope.hashGroupDuplicatesToShow = hashGroupDuplicatesToShow;
         function hashGroupDuplicatesToShow(hashGroup) {
-            if ($scope.hashGroupExpanded[hashGroup[0].hash]) {
-                    return hashGroup.slice(1);
+            if ($scope.showDuplicates && $scope.hashGroupExpanded[hashGroup[0].hash]) {
+                return hashGroup.slice(1);
+            } else {
+                return [];
             }
         }
     }
@@ -2088,12 +2094,11 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     //Returns the unique group identifier which allows angular to keep track of the grouped search results even after filtering, making filtering by providers a lot faster (albeit still somewhat slow...)  
     $scope.groupId = groupId;
     function groupId(item) {
-        return item[0][0].title.toLowerCase();
+        return item[0][0].guid;
     }
 
     //Block the UI and return after timeout. This way we make sure that the blocking is done before angular starts updating the model/view. There's probably a better way to achieve that?
     function startBlocking(message) {
-        console.log("Blocking");
         var deferred = $q.defer();
         blockUI.start(message);
         $timeout(function () {
@@ -2127,50 +2132,51 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         });
 
 
-        //Group by sameness
-        results = _.groupBy(results, function (element) {
-            return element.hash;
+        //Make groups of results with the same title
+        var groupedByTitle = _.groupBy(results, function (element) {
+            return element.title.toLowerCase();
         });
 
-        //Sort duplicate group by provider score
-        results = _.map(results, function (hashGroup) {
-            var sortedByScore = _.sortBy(hashGroup, "providerscore");
-            sortedByScore.reverse();
-            return sortedByScore;
-        });
+        //For every title group make subgroups of duplicates and sort the group 
+        var groupedByTitleAndHash = _.map(groupedByTitle, function (titleGroup) {
+            var titleGroupGroupedByHash = _.groupBy(titleGroup, "hash");
 
-        results = _.groupBy(results, function (element) {
-            return element[0].title.toLowerCase();
-        });
-
-        results = _.map(results, function (titleGroup) {
-            ////Sort title group by provider score first
-            //var sortedTitleGroup = _.sortBy(titleGroup, function (hashGroup) {
-            //    return hashGroup[0]["providerscore"];
-            //});
-            //sortedTitleGroup.reverse();
-
-            //And then by the first result's values (which is the one shown if no rows are expanded)
-            var sortedTitleGroup = _.sortBy(titleGroup, function (hashGroup) {
-                return hashGroup[0]["providerscore"] + "_" + hashGroup[0][$scope.sortPredicate];
-                //return hashGroup[0][$scope.sortPredicate];
+            titleGroupGroupedByHash = _.map(titleGroupGroupedByHash, function (hashGroup) {
+                var sortedHashGroup = _.sortBy(hashGroup, function (item) {
+                    return item[$scope.sortPredicate];
+                });
+                if ($scope.sortReversed) {
+                    sortedHashGroup.reverse();
+                }
+                //Now sort the hash group by provider score (inverted) so that the result with the highest provider score is shown on top (or as the only one of a hash group if it's collapsed)
+                //
+                sortedHashGroup = _.sortBy(hashGroup, function(item) {
+                    return item.providerscore * -1;
+                });
+                return sortedHashGroup;
             });
+
+            titleGroupGroupedByHash = _.sortBy(titleGroupGroupedByHash, function (hashGroup) {
+                return hashGroup[0][$scope.sortPredicate];
+            });
+
             if ($scope.sortReversed) {
-                sortedTitleGroup.reverse();
+                titleGroupGroupedByHash.reverse();
             }
-            return sortedTitleGroup;
+            return titleGroupGroupedByHash;
+
         });
 
-        var filteredResults = _.sortBy(results, function (group) {
-            return group[0][0][$scope.sortPredicate];
+        //And then sort the title group using its first hashgroup's first item (the group itself is already sorted and so are the hash groups) 
+        var sortedTitleGroups = _.sortBy(groupedByTitleAndHash, function (titleGroup) {
+            return titleGroup[0][0][$scope.sortPredicate];
         });
-
         if ($scope.sortReversed) {
-            filteredResults.reverse();
+            sortedTitleGroups.reverse();
         }
+        return sortedTitleGroups;
 
-        console.log(filteredResults);
-        return filteredResults;
+
     }
 
     $scope.toggleTitlegroupExpand = function toggleTitlegroupExpand(titleGroup) {
@@ -2179,7 +2185,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     };
 
 
-    //Clear the blocking
+//Clear the blocking
     $scope.stopBlocking = stopBlocking;
     function stopBlocking() {
 
@@ -2209,7 +2215,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     }
 
 
-    //Filters the results according to new visibility settings.
+//Filters the results according to new visibility settings.
     $scope.toggleProviderDisplay = toggleProviderDisplay;
     function toggleProviderDisplay() {
         startBlocking("Filtering. Sorry...").then(function () {
@@ -2227,7 +2233,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
     $scope.downloadSelected = downloadSelected;
     function downloadSelected() {
-        
+
         var guids = Object.keys($scope.selected);
 
         console.log(guids);
@@ -2239,7 +2245,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
                 growl.error("Error while adding NZBs");
             }
         }).error(function () {
-            growl.error("Error while adding NZBs"); 
+            growl.error("Error while adding NZBs");
         });
     }
 
