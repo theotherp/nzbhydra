@@ -49,7 +49,7 @@ gulp.task('scripts', function () {
         .pipe(concat('nzbhydra.js'))
         .on('error', swallowError)
         .pipe(changed(dest))
-        //.pipe(uglify()) //Deactive when developing, even if source maps not nice to handle
+        //.pipe(uglify()) //Deactive when developing, even with source maps not nice to handle
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(dest));
 

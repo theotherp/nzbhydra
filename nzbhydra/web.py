@@ -19,9 +19,10 @@ from werkzeug.exceptions import Unauthorized
 from flask.ext.session import Session
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log
 from nzbhydra import config, search, infos, database
-from nzbhydra.config import NzbAccessTypeSelection, NzbAddingTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
+from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.search import SearchRequest
+from nzbhydra.stats import get_avg_provider_response_times, get_avg_provider_search_results_share, get_avg_provider_access_success
 
 
 class ReverseProxied(object):
@@ -31,12 +32,13 @@ class ReverseProxied(object):
     def __call__(self, environ, start_response):
         script_name = "/nzbhydra"
         path_info = environ['PATH_INFO']
-        environ['URL_BASE'] = environ['PATH_INFO'] 
+        environ['URL_BASE'] = environ['PATH_INFO']
         if path_info.startswith(script_name):
             environ['PATH_INFO'] = path_info[len(script_name):]
             pass
-        
+
         return self.app(environ, start_response)
+
 
 logger = logging.getLogger('root')
 
@@ -51,7 +53,6 @@ internal_cache = Cache(app, config={'CACHE_TYPE': "simple",  # Cache for interna
 
 @app.before_request
 def _db_connect():
-    
     if not request.endpoint.endswith("static"):  # No point in opening a db connection if we only serve a static file
         database.db.connect()
 
@@ -104,8 +105,6 @@ def requires_auth(f):
     return decorated
 
 
-
-
 @app.route('/<path:path>')
 @app.route('/', defaults={"path": None})
 @requires_auth
@@ -113,7 +112,7 @@ def base(path):
     logger.debug("Sending index.html")
     host_url = (request.host_url + request.environ['URL_BASE'][1:])
     return render_template("index.html", host_url=host_url)
-    #return render_template("index.html", host_url=request.host_url)
+    # return render_template("index.html", host_url=request.host_url)
 
 
 def render_search_results_for_api(search_results, total, offset):
@@ -387,7 +386,7 @@ def internalapi_addnzb(args):
         print(guid)
         if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
             add_success = downloader.add_link(guid, guid["title"], None)
-            
+
         else:  # We download an NZB send it to the downloader
             nzbdownloadresult = download_nzb_and_log(guid["provider"], guid["guid"], guid["title"], guid["searchid"])
             if nzbdownloadresult is not None:
@@ -396,11 +395,19 @@ def internalapi_addnzb(args):
                 add_success = False
         if add_success:
             added += 1
-        
+
     if added:
         return jsonify({"success": "true", "added": added, "of": len(guids)})
     else:
         return jsonify({"success": "false"})
+
+
+@app.route('/internalapi/getstats')
+@requires_auth
+@internal_cache.memoize()
+def internalapi_getstats():
+    logger.debug("Get stats")
+    return jsonify({"avgResponseTimes": get_avg_provider_response_times(), "avgProviderSearchResultsShares": get_avg_provider_search_results_share(), "avgProviderAccessSuccesses": get_avg_provider_access_success()})
 
 
 @app.route('/internalapi/setsettings', methods=["PUT"])
