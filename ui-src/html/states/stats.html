@@ -1,67 +1,99 @@
-<div class="row">
-    <div class="col-md-9">
-        <table class="table">
-            <caption>Avg. response times</caption>
-            <thead>
-            <tr>
-                <th>Provider</th>
-                <th>Avg. response time</th>
-                <th>Delta</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="avgResponseTime in avgResponseTimes">
-                <td>{{ avgResponseTime.name }}</td>
-                <td>{{ avgResponseTime.avgResponseTime }}</td>
-                <td>{{ avgResponseTime.delta }}</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="col-md-2"></div>
-    
-    <div class="col-md-9">
-        <table class="table">
-            <caption>Avg. results shares</caption>
-            <thead>
-            <tr>
-                <th>Provider</th>
-                <th>Avg. results share</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="avgProviderSearchResultsShare in avgProviderSearchResultsShares">
-                <td>{{ avgProviderSearchResultsShare.name }}</td>
-                <td>{{ avgProviderSearchResultsShare.avgResultsShare }}</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+<uib-tabset style="text-align: center">
+    <uib-tab heading="Stats">
+        <div class="row">
+            <div class="col-md-9">
+                <table class="table">
+                    <caption>Avg. response times</caption>
+                    <thead>
+                    <tr>
+                        <th>Provider</th>
+                        <th>Avg. response time</th>
+                        <th>Delta</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="avgResponseTime in avgResponseTimes">
+                        <td>{{ avgResponseTime.name }}</td>
+                        <td>{{ avgResponseTime.avgResponseTime }}</td>
+                        <td>{{ avgResponseTime.delta }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-2"></div>
 
-<div class="row">
-    <div class="col-md-9">
-        <table class="table">
-            <caption>Avg. provider access success</caption>
-            <thead>
-            <tr>
-                <th>Provider</th>
-                <th>% successful</th>
-                <th>% failed</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="avgProviderAccessSuccess in avgProviderAccessSuccesses">
-                <td>{{ avgProviderAccessSuccess.name }}</td>
-                <td>{{ avgProviderAccessSuccess.successPercent }}</td>
-                <td>{{ avgProviderAccessSuccess.failedPercent }}</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="col-md-2"></div>
-    
-    <div class="col-md-9">
+            <div class="col-md-9">
+                <table class="table">
+                    <caption>Avg. results shares</caption>
+                    <thead>
+                    <tr>
+                        <th>Provider</th>
+                        <th>Avg. results share</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="avgProviderSearchResultsShare in avgProviderSearchResultsShares">
+                        <td>{{ avgProviderSearchResultsShare.name }}</td>
+                        <td>{{ avgProviderSearchResultsShare.avgResultsShare }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-9">
+                <table class="table">
+                    <caption>Avg. provider access success</caption>
+                    <thead>
+                    <tr>
+                        <th>Provider</th>
+                        <th>% successful</th>
+                        <th>% failed</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="avgProviderAccessSuccess in avgProviderAccessSuccesses">
+                        <td>{{ avgProviderAccessSuccess.name }}</td>
+                        <td>{{ avgProviderAccessSuccess.successPercent }}</td>
+                        <td>{{ avgProviderAccessSuccess.failedPercent }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-2"></div>
+
+            <div class="col-md-9">
+
+            </div>
+        </div>
+
+    </uib-tab>
+    <uib-tab heading="Searches">
         
-    </div>
-</div>
+    </uib-tab>
+    
+    <uib-tab heading="NZB Downloads" select="nzbDownloadsSelected()">
+        <table class="table">
+                    
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Provider</th>
+                        <th>Title</th>
+                        <th>Access</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="nzbDownload in nzbDownloads">
+                        <td>{{ nzbDownload.time }}</td>
+                        <td>{{ nzbDownload.name }}</td>
+                        <td>{{ nzbDownload.title }}</td>
+                        <td>{{ nzbDownload.internal ? "Internal" : "API"}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+    </uib-tab>
+
+</uib-tabset>
+

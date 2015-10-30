@@ -94,6 +94,7 @@ class ProviderNzbDownload(Model):
     provider = ForeignKeyField(Provider, related_name="downloads")
     provider_search = ForeignKeyField(ProviderSearch, related_name="downloads", null=True)
     api_access = ForeignKeyField(ProviderApiAccess)
+    title = CharField()
     time = DateTimeField()
     mode = CharField() #"serve" or "redirect"
     

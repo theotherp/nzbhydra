@@ -22,7 +22,7 @@ from nzbhydra import config, search, infos, database
 from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.search import SearchRequest
-from nzbhydra.stats import get_avg_provider_response_times, get_avg_provider_search_results_share, get_avg_provider_access_success
+from nzbhydra.stats import get_avg_provider_response_times, get_avg_provider_search_results_share, get_avg_provider_access_success, get_nzb_downloads
 
 
 class ReverseProxied(object):
@@ -407,7 +407,17 @@ def internalapi_addnzb(args):
 @internal_cache.memoize()
 def internalapi_getstats():
     logger.debug("Get stats")
-    return jsonify({"avgResponseTimes": get_avg_provider_response_times(), "avgProviderSearchResultsShares": get_avg_provider_search_results_share(), "avgProviderAccessSuccesses": get_avg_provider_access_success()})
+    return jsonify({"avgResponseTimes": get_avg_provider_response_times(), 
+                    "avgProviderSearchResultsShares": get_avg_provider_search_results_share(), 
+                    "avgProviderAccessSuccesses": get_avg_provider_access_success()})
+
+
+@app.route('/internalapi/getnzbdownloads')
+@requires_auth
+@internal_cache.memoize()
+def internalapi_getnzb_downloads():
+    logger.debug("Get NZB downloads")
+    return jsonify({"nzbDownloads": get_nzb_downloads()})
 
 
 @app.route('/internalapi/setsettings', methods=["PUT"])

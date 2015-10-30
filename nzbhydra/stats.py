@@ -1,6 +1,6 @@
 from peewee import fn
 
-from nzbhydra.database import Provider, ProviderApiAccess
+from nzbhydra.database import Provider, ProviderApiAccess, ProviderNzbDownload, ProviderSearch, Search
 from nzbhydra import database
 
 count = 0
@@ -74,3 +74,7 @@ def get_avg_provider_access_success():
         result.append({"name": name, "failed": failed, "success": success, "failedPercent": failed_percent, "successPercent": success_percent})
 
     return result
+
+
+def get_nzb_downloads(page=0, limit=100):
+    return list(ProviderNzbDownload().select(Provider.name, ProviderNzbDownload.title, ProviderNzbDownload.time, Search.internal).join(Provider).join(ProviderSearch).join(Search).where(ProviderNzbDownload.provider == Provider.id).order_by(ProviderNzbDownload.time.desc()).group_by(ProviderNzbDownload.id).paginate(page, limit).dicts())

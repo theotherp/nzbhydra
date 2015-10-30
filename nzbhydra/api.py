@@ -291,7 +291,7 @@ def download_nzb_and_log(provider_name, guid, title, searchid) -> ProviderNzbDow
             papiaccess = ProviderApiAccess(provider=p.provider, type="nzb", url=link, provider_search=psearch)
             papiaccess.save()
             
-            pnzbdl = ProviderNzbDownload(provider=provider, provider_search=searchid, api_access=papiaccess, mode="serve")
+            pnzbdl = ProviderNzbDownload(provider=provider, provider_search=searchid, api_access=papiaccess, mode="serve", title=title)
             pnzbdl.save()
             try:
                 r = p.get(link)

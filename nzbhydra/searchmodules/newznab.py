@@ -137,6 +137,7 @@ class NewzNab(SearchModule):
         entries = []
         queries = []
         groupPattern = re.compile(r"Group:</b> ?([\w\.]+)<br ?/>")
+        guidPattern = re.compile(r"(.*/)?([a-zA-Z0-9]+)")
 
         try:
             tree = ET.fromstring(xml_response)
@@ -161,6 +162,11 @@ class NewzNab(SearchModule):
             entry.precise_date = True
             entry.attributes = []
             entry.details_link = item.find("comments").text
+            entry.guid = item.find("guid").text
+            m = guidPattern.search(entry.guid)
+            if m:
+                entry.guid = m.group(2)
+            
             if entry.details_link is not None and "#comments" in entry.details_link:
                 entry.details_link = entry.details_link[:-9]
             description = item.find("description").text
@@ -197,15 +203,7 @@ class NewzNab(SearchModule):
                             break
 
             entries.append(entry)
-        # offset += self.limit
-        # if offset < total and offset < 400:
-        #     f = furl(query)
-        #     query = f.remove("offset").add({"offset": offset})
-        #     queries.append(query.url)
-        # 
-        #     logger.debug("%s started processing results" % self.name)
-        #     return ProviderProcessingResult(entries=entries, queries=queries)
-        # logger.debug("%s finished processing results" % self.name)
+
         return ProviderProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total)
 
     def check_auth(self, body: str):
