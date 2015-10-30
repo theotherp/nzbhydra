@@ -74,25 +74,7 @@
     </uib-tab>
     
     <uib-tab heading="NZB Downloads" select="nzbDownloadsSelected()">
-        <table class="table">
-                    
-                    <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Provider</th>
-                        <th>Title</th>
-                        <th>Access</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ng-repeat="nzbDownload in nzbDownloads">
-                        <td>{{ nzbDownload.time }}</td>
-                        <td>{{ nzbDownload.name }}</td>
-                        <td>{{ nzbDownload.title }}</td>
-                        <td>{{ nzbDownload.internal ? "Internal" : "API"}}</td>
-                    </tr>
-                    </tbody>
-                </table>
+        <div download-history></div>
     </uib-tab>
 
 </uib-tabset>

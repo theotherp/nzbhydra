@@ -13,14 +13,6 @@ function StatsController($scope, $http) {
         $scope.avgProviderAccessSuccesses = response.avgProviderAccessSuccesses;
     });
 
-    $scope.nzbDownloadsSelected = function () {
-        if (!$scope.nzbDownloads) {
-            $http.get("internalapi/getnzbdownloads").success(function (response) {
-                $scope.nzbDownloads = response.nzbDownloads;
-                console.log($scope.nzbDownloads);
-            });
-        }
-    }
 
 
 }

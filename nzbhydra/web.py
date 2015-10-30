@@ -404,7 +404,6 @@ def internalapi_addnzb(args):
 
 @app.route('/internalapi/getstats')
 @requires_auth
-@internal_cache.memoize()
 def internalapi_getstats():
     logger.debug("Get stats")
     return jsonify({"avgResponseTimes": get_avg_provider_response_times(), 
@@ -412,12 +411,17 @@ def internalapi_getstats():
                     "avgProviderAccessSuccesses": get_avg_provider_access_success()})
 
 
+internalapi__getnzbdownloads_args = {
+    "page": fields.Integer(missing=0),
+    "limit": fields.Integer(missing=100)
+}
+
 @app.route('/internalapi/getnzbdownloads')
 @requires_auth
-@internal_cache.memoize()
-def internalapi_getnzb_downloads():
+@use_args(internalapi__getnzbdownloads_args)
+def internalapi_getnzb_downloads(args):
     logger.debug("Get NZB downloads")
-    return jsonify({"nzbDownloads": get_nzb_downloads()})
+    return jsonify(get_nzb_downloads(page=args["page"], limit=args["limit"]))
 
 
 @app.route('/internalapi/setsettings', methods=["PUT"])

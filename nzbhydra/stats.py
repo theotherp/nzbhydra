@@ -3,14 +3,6 @@ from peewee import fn
 from nzbhydra.database import Provider, ProviderApiAccess, ProviderNzbDownload, ProviderSearch, Search
 from nzbhydra import database
 
-count = 0
-
-
-def get_count():
-    global count
-    count += 1
-    return count
-
 
 def get_provider_response_times():
     result = []
@@ -27,10 +19,6 @@ def get_provider_response_times():
 
 def get_avg_provider_response_times():
     result = []
-
-    # //$scope.data = [{
-    # //    key: "v", values: [{x: 1, y: 102}
-    # //    ]
     response_times = []
     for p in Provider.select().order_by(Provider.name):
 
@@ -77,4 +65,5 @@ def get_avg_provider_access_success():
 
 
 def get_nzb_downloads(page=0, limit=100):
-    return list(ProviderNzbDownload().select(Provider.name, ProviderNzbDownload.title, ProviderNzbDownload.time, Search.internal).join(Provider).join(ProviderSearch).join(Search).where(ProviderNzbDownload.provider == Provider.id).order_by(ProviderNzbDownload.time.desc()).group_by(ProviderNzbDownload.id).paginate(page, limit).dicts())
+    total_downloads = ProviderNzbDownload().select().count()
+    return {"totalDownloads": total_downloads, "nzbDownloads": list(ProviderNzbDownload().select(Provider.name, ProviderNzbDownload.title, ProviderNzbDownload.time, Search.internal).join(Provider).join(ProviderSearch).join(Search).where(ProviderNzbDownload.provider == Provider.id).order_by(ProviderNzbDownload.time.desc()).group_by(ProviderNzbDownload.id).paginate(page, limit).dicts())}
