@@ -97,6 +97,7 @@ class IndexerNzbDownload(Model):
     title = CharField()
     time = DateTimeField()
     mode = CharField() #"serve" or "redirect"
+    guid = CharField()
     
     
     class Meta:

@@ -15,5 +15,5 @@
     <a href ng-click="showNfo(result)" ng-class="{disabled: !result.has_nfo}">NFO</a>
     <a target="_blank" href="{{ result.link }}">NZB</a>
     <a target="_blank" href="{{ result.details_link }}" ng-class="{disabled: !result.details_link}">Details</a>
-    <addable-nzb item="result"></addable-nzb>
+    <addable-nzb guid="result.guid"></addable-nzb>
 </td>

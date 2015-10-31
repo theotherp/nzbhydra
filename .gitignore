@@ -1,3 +1,4 @@
+/flask_session
 /nzbhydra/static
 /cache
 /nzbhydra/tests/mock/cache

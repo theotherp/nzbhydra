@@ -350,9 +350,9 @@ angular
 function addableNzb() {
     return {
         templateUrl: 'static/html/directives/addable-nzb.html',
-        require: '^item',
+        require: '^guid',
         scope: {
-            item: "="
+            guid: "="
         },
         controller: ['$scope', '$http', controller]
     };
@@ -362,7 +362,7 @@ function addableNzb() {
 
         $scope.add = function () {
             $scope.classname = "nzb-spinning";
-            $http.put("internalapi/addnzbs", {guids: angular.toJson([$scope.item.guid])}).success(function (response) {
+            $http.put("internalapi/addnzbs", {guids: angular.toJson([$scope.guid])}).success(function (response) {
                 if (response.success) {
                     $scope.classname = "nzb-success";
                 } else {

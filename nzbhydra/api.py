@@ -46,7 +46,7 @@ def find_duplicates(results):
                 results_to_sets[a] = {a}
             for j in range(i + 1, len(group)):
                 b = group[j]
-                same = a.indexer != b.indexer 
+                same = a.indexer != b.indexer
                 same = same and test_for_duplicate_age(a, b)
                 same = same and test_for_duplicate_size(a, b)
                 if same:
@@ -140,9 +140,16 @@ class IndexerSearchSchema(Schema):
     api_accesses = fields.Nested(IndexerApiAccessSchema, many=True)
 
 
-# todo: thsi needs to be expanded when we support reverse proxies / global urls / whatever
 def get_root_url():
     return request.url_root
+
+
+def get_nzb_link_and_guid(indexer, guid, searchid, title):
+    data_getnzb = {"indexer": indexer, "guid": guid, "searchid": searchid, "title": title}
+    f = furl(get_root_url())
+    f.path.add("internalapi/getnzb")
+    f.add(data_getnzb)
+    return f.url, data_getnzb
 
 
 def transform_results(results, dbsearch):
@@ -150,25 +157,23 @@ def transform_results(results, dbsearch):
         return results
     transformed = []
     for i in results:
-        f = furl(get_root_url())
-        f.path.add("internalapi/getnzb")
-        data_getnzb = {"indexer": i.indexer, "guid": i.guid, "searchid": dbsearch, "title": i.title}  # All the data we would like to have when an NZB is downloaded
-        f.add(data_getnzb)  # Here we insert it directly into the link as parameters
-        i.link = f.url
+        nzb_link, guid = get_nzb_link_and_guid(i.indexer, i.guid, dbsearch, i.title)
+        i.link = nzb_link
         i.indexerguid = i.guid  # Save the indexer's original GUID so that we can send it later from the GUI to identify the result
-        i.guid = f.url  # For now it's the same as the link to the NZB, later we might link to a details page that at the least redirects to the original indexer's page
+        i.guid = nzb_link  # For now it's the same as the link to the NZB, later we might link to a details page that at the least redirects to the original indexer's page
 
-        # Add our pseudo-guid (not the one above, with the link, just an identifier) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
+        # Add our internal guid (like the link above but only the identifying part) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
         has_guid = False
         has_size = False
+        guid_json = urllib.parse.quote(json.dumps(guid))
         for a in i.attributes:
             if a["name"] == "guid":
-                a["value"] = urllib.parse.quote(json.dumps(data_getnzb))
+                a["value"] = guid_json
                 has_guid = True
             if a["name"] == "size":
                 has_size = True
         if not has_guid:
-            i.attributes.append({"name": "guid", "value": urllib.parse.quote(json.dumps(data_getnzb))})  # If it wasn't set before now it is (for results from newznab-indexers)
+            i.attributes.append({"name": "guid", "value": guid_json})  # If it wasn't set before now it is (for results from newznab-indexers)
         if not has_size:
             i.attributes.append({"name": "size", "value": i.size})  # If it wasn't set before now it is (for results from newznab-indexers)
         transformed.append(i)
@@ -208,17 +213,17 @@ def process_for_internal_api(search_result):
     logger.debug("Duplicate check left %d groups of separate results" % len(grouped_by_sameness))
     # Will be sorted by GUI later anyway but makes debugging easier
     results = sorted(grouped_by_sameness, key=lambda x: x[0].epoch, reverse=True)
-    
+
     allresults = []
     for group in results:
-        #Sort duplicates by age and then indexer's score
-        #group = sorted(group, key=lambda x: x.epoch, reverse=True)
-        #group = sorted(group, key=lambda x: x.indexerscore)
+        # Sort duplicates by age and then indexer's score
+        # group = sorted(group, key=lambda x: x.epoch, reverse=True)
+        # group = sorted(group, key=lambda x: x.indexerscore)
         for i in group:
             # We give each group of results a unique value by which they can be identified later
             i.hash = hash(group[0].guid)
-            allresults.append(NzbSearchResultSchema().dump(i).data) 
-    
+            allresults.append(NzbSearchResultSchema().dump(i).data)
+
     return {"results": allresults, "indexersearches": indexersearchdbentries, "searchentryid": search_result["dbsearch"], "total": search_result["total"]}
 
 
@@ -272,12 +277,12 @@ def get_nzb_link(indexer_name, guid, title, searchid):
 IndexerNzbDownloadResult = namedtuple("IndexerNzbDownload", "content headers")
 
 
-def download_nzb_and_log(indexer_name, guid, title, searchid) -> IndexerNzbDownloadResult:
+def download_nzb_and_log(indexer_name, provider_guid, title, searchid) -> IndexerNzbDownloadResult:
     """
     Gets the NZB link from the indexer using the guid, downloads it and logs the download
 
     :param indexer_name: name of the indexer
-    :param guid: guid to build link
+    :param provider_guid: guid to build link
     :param title: the title to build the link
     :param searchid: the id of the IndexerSearch entry so we can link the download to a search
     :return: IndexerNzbDownloadResult
@@ -285,16 +290,17 @@ def download_nzb_and_log(indexer_name, guid, title, searchid) -> IndexerNzbDownl
     for p in indexers.configured_indexers:
         if p.name == indexer_name:
 
-            link = p.get_nzb_link(guid, title)
+            link = p.get_nzb_link(provider_guid, title)
             indexer = Indexer.get(Indexer.name == indexer_name)
             psearch = IndexerSearch.get((IndexerSearch.indexer == indexer) & (IndexerSearch.search == searchid))
             papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, indexer_search=psearch)
             papiaccess.save()
-            
-            pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode="serve", title=title)
+
+            internallink, guid = get_nzb_link_and_guid(indexer_name, provider_guid, searchid, title)
+            pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode="serve", title=title, guid=internallink)
             pnzbdl.save()
             try:
-                r = p.get(link)
+                r = p.get(link, timeout=10)
                 r.raise_for_status()
 
                 papiaccess.response_successful = True

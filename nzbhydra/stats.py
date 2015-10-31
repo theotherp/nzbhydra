@@ -1,6 +1,8 @@
+import json
+import urllib
 from peewee import fn
-
 from nzbhydra.database import Indexer, IndexerApiAccess, IndexerNzbDownload, IndexerSearch, Search
+from nzbhydra.api import get_nzb_link_and_guid
 from nzbhydra import database
 
 
@@ -40,7 +42,7 @@ def get_avg_indexer_search_results_share():
         result = database.db.execute_sql(
             "select (100 * (select cast(sum(ps.results) as float) from indexersearch ps where ps.search_id in (select ps.search_id from indexersearch ps where ps.indexer_id == %d) and ps.indexer_id == %d)) / (select sum(ps.results) from indexersearch ps where ps.search_id in (select ps.search_id from indexersearch ps where ps.indexer_id == %d)) as sumAllResults" % (
                 p.id, p.id, p.id)).fetchone()
-        results.append({"name": p.name, "avgResultsShare": result[0]})
+        results.append({"name": p.name, "avgResultsShare": result[0] if result[0] is not None else "N/A"})
     return results
 
 
@@ -84,6 +86,10 @@ def get_avg_indexer_access_success():
 
 def get_nzb_downloads(page=0, limit=100):
     total_downloads = IndexerNzbDownload().select().count()
-    return {"totalDownloads": total_downloads, "nzbDownloads": list(
-        IndexerNzbDownload().select(Indexer.name, IndexerNzbDownload.title, IndexerNzbDownload.time, Search.internal).join(Indexer).join(IndexerSearch).join(Search).where(IndexerNzbDownload.indexer == Indexer.id).order_by(IndexerNzbDownload.time.desc()).group_by(IndexerNzbDownload.id).paginate(page,
-                                                                                                                                                                                                                                                                                                       limit).dicts())}
+    nzb_downloads = list(IndexerNzbDownload().select(Indexer.name, IndexerNzbDownload.title, IndexerNzbDownload.time, IndexerNzbDownload.guid, Search.internal, IndexerApiAccess.response_successful).join(IndexerApiAccess).join(Indexer).join(IndexerSearch).join(Search).where(IndexerNzbDownload.indexer == Indexer.id).order_by(IndexerNzbDownload.time.desc()).group_by(
+        IndexerNzbDownload.id).paginate(page, limit).dicts())
+    # for i in nzb_downloads:
+    #     guid = json.loads(i["guid"])
+    #     i["guid"] = get_nzb_link_and_guid(guid["indexer"],guid["guid"],guid["searchid"],guid["title"]) 
+    downloads = {"totalDownloads": total_downloads, "nzbDownloads": nzb_downloads}
+    return downloads

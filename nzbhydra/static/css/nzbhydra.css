@@ -7131,5 +7131,11 @@ a.disabled:hover {
 .nav-pills {
   text-align: center;
 }
+.table > tbody > tr > td {
+  text-align: left;
+}
+.table > thead > tr > th {
+  text-align: left;
+}
 
 /*# sourceMappingURL=nzbhydra.css.map */
