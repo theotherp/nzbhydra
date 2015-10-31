@@ -5,6 +5,7 @@ from typing import Dict, List
 import arrow
 import requests
 from requests import RequestException
+from nzbhydra import config
 
 from nzbhydra.config import IndexerSettings, searchingSettings
 from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, Indexer
@@ -168,7 +169,7 @@ class SearchModule(object):
 
         indexer_status.save()
 
-    def get(self, url, timeout=None, cookies=None):
+    def get(self, url, timeout=config.searchingSettings.timeout.get(), cookies=None):
         # overwrite for special handling, e.g. cookies
         return requests.get(url, timeout=timeout, verify=False, cookies=cookies)
 

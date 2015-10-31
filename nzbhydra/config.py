@@ -304,13 +304,6 @@ def get_form_items(category: Category, grouptype="section"):
     else:
         main_element = {"type": "tab", "title": category.title, "items": [{"type": "section", "htmlClass": "config-tab-content", "items": items}]}
 
-    if category in (indexerSettings.newznab1, indexerSettings.newznab2, indexerSettings.newznab3, indexerSettings.newznab4, indexerSettings.newznab5, indexerSettings.newznab6):
-        # TODO has no effect yet, dunno why
-        if category == indexerSettings.newznab2:
-            main_element["condition"] = "indexers.newznab1.name"
-        if category == indexerSettings.newznab3:
-            main_element["condition"] = "indexers.newznab2.name"
-
     return main_element
 
 

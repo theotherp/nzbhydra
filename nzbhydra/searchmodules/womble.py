@@ -18,7 +18,7 @@ class Womble(SearchModule):
         super(Womble, self).__init__(indexer)
         self.module = "womble"
         
-        self.settings.generate_queries = InternalExternalSelection.never #Doesn't matter because supports_queries is False
+        self.settings.generate_queries = False
         self.needs_queries = False
         self.category_search = True
         self.supports_queries = False  # Only as support for general tv search

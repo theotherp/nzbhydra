@@ -36,20 +36,16 @@ def read_indexers_from_config():
         configured_indexers.append(instance)
         logger.info("Loaded indexer %s" % instance.name)
         
-    for i in range(1, 6):
+    for i in range(1, 7):
         newznabsetting = config.get_newznab_setting_by_id(i)
         if newznabsetting.enabled.get():
             instance = newznab.get_instance(newznabsetting)
+            configured_indexers.append(instance)
             try:
                 instance.indexer.name
-                configured_indexers.append(instance)
                 logger.info("Loaded indexer %s" % instance.name)
             except Indexer.DoesNotExist as e:
-                logger.error("Unable to find indexer with name %s in database" % instance.name)
-                
-                
-            
-
-
-
+                logger.error("Unable to find indexer with name %s in database. Will add it" % instance.name)
+                Indexer().create(name=instance.name)
+                              
     return configured_indexers

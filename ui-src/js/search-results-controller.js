@@ -147,11 +147,10 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
     $scope.loadMore = loadMore;
     function loadMore() {
-        $scope.offset += 100;
-        console.log("Increasing the offset to " + $scope.offset);
+        console.log("Loading more result withs offset " + $scope.resultsCount);
 
         startBlocking("Loading more results...").then(function () {
-            SearchService.loadMore($scope.offset).then(function (data) {
+            SearchService.loadMore($scope.resultsCount).then(function (data) {
                 console.log("Returned more results:");
                 console.log(data.results);
                 console.log($scope.results);
@@ -160,6 +159,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
                 $scope.filteredResults = sortAndFilter($scope.results);
                 $scope.total = data.total;
                 $scope.resultsCount += data.resultsCount;
+                console.log("Results count: " + $scope.resultsCount);
                 console.log("Total results in $scope.results: " + $scope.results.length);
 
                 stopBlocking();
