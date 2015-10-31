@@ -17,7 +17,7 @@ from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
 
 from flask.ext.session import Session
-from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log
+from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link
 from nzbhydra import config, search, infos, database
 from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
 from nzbhydra.downloader import Nzbget, Sabnzbd
@@ -205,6 +205,17 @@ def api(args):
         return "hello api"
 
 
+@app.route("/details/<path:guid>")
+@requires_auth
+def get_details(guid):
+    #GUID is not the GUID-item from the RSS but the newznab GUID which in our case is just a json string 
+    d = json.loads(urllib.parse.unquote(guid))
+    details_link = get_details_link(d["indexer"], d["guid"])
+    if details_link:
+        return redirect(details_link)
+    return "Unable to find details", 500
+
+
 def process_and_jsonify_for_internalapi(results):
     if results is not None:
         results = process_for_internal_api(results)
@@ -383,7 +394,6 @@ def internalapi_addnzb(args):
     added = 0
     for guid in guids:
         guid = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(guid).query))
-        print(guid)
         if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
             add_success = downloader.add_link(guid, guid["title"], None)
 
@@ -397,17 +407,17 @@ def internalapi_addnzb(args):
             added += 1
 
     if added:
-        return jsonify({"success": "true", "added": added, "of": len(guids)})
+        return jsonify({"success": True, "added": added, "of": len(guids)})
     else:
-        return jsonify({"success": "false"})
+        return jsonify({"success": False})
 
 
 @app.route('/internalapi/getstats')
 @requires_auth
 def internalapi_getstats():
     logger.debug("Get stats")
-    return jsonify({"avgResponseTimes": get_avg_indexer_response_times(), 
-                    "avgIndexerSearchResultsShares": get_avg_indexer_search_results_share(), 
+    return jsonify({"avgResponseTimes": get_avg_indexer_response_times(),
+                    "avgIndexerSearchResultsShares": get_avg_indexer_search_results_share(),
                     "avgIndexerAccessSuccesses": get_avg_indexer_access_success()})
 
 
@@ -415,6 +425,7 @@ internalapi__getnzbdownloads_args = {
     "page": fields.Integer(missing=0),
     "limit": fields.Integer(missing=100)
 }
+
 
 @app.route('/internalapi/getnzbdownloads')
 @requires_auth

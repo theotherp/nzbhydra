@@ -50,6 +50,10 @@ class Womble(SearchModule):
     def get_moviesearch_urls(self, search_request):
         logger.error("This indexer does not support movie search")
         return []
+    
+    def get_details_link(self, guid):
+        logger.info("Womble does not provide details on releases")
+        return None
 
     def process_query_result(self, xml, query) -> IndexerProcessingResult:
         entries = []

@@ -128,8 +128,13 @@ class NewzNab(SearchModule):
             url.add({"q": search_request.query})
 
         return [url.url]
+    
+    def get_details_link(self, guid):
+        f = furl(self.settings.host.get())
+        f.path.add("details")
+        f.path.add(guid)
+        return f.url
 
-    test = 0
 
     def process_query_result(self, xml_response, query) -> IndexerProcessingResult:
         logger.debug("%s started processing results" % self.name)
@@ -161,7 +166,6 @@ class NewzNab(SearchModule):
             entry.age_days = (arrow.utcnow() - pubdate).days
             entry.precise_date = True
             entry.attributes = []
-            entry.details_link = item.find("comments").text
             entry.guid = item.find("guid").text
             m = guidPattern.search(entry.guid)
             if m:
@@ -193,6 +197,7 @@ class NewzNab(SearchModule):
                     entry.group = attribute_value
                 # Store all the extra attributes, we will return them later for external apis
                 entry.attributes.append({"name": attribute_name, "value": attribute_value})
+            entry.details_link = self.get_details_link(entry.guid)
             # Map category. Try to find the most specific category (like 2040), then the more general one (like 2000)
             categories = sorted(categories, reverse=True)  # Sort to make the most specific category appear first
             if len(categories) > 0:

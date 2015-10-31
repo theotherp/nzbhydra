@@ -1,12 +1,12 @@
 import logging
 import collections
 
-from typing import Dict, List
+from typing import List
 import arrow
 import requests
 from requests import RequestException
-from nzbhydra import config
 
+from nzbhydra import config
 from nzbhydra.config import IndexerSettings, searchingSettings
 from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, Indexer
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAuthException, IndexerAccessException
@@ -29,7 +29,7 @@ class SearchModule(object):
         self.needs_queries = False
         self.category_search = True  # If true the indexer supports searching in a given category (possibly without any query or id)
         self.limit = 100
-        
+
     def __repr__(self):
         return self.name
 
@@ -44,7 +44,7 @@ class SearchModule(object):
     @property
     def name(self):
         return self.settings.name.get()
-    
+
     @property
     def score(self):
         return self.settings.score.get()
@@ -57,7 +57,6 @@ class SearchModule(object):
     def generate_queries(self):
         return True  # TODO pass when used check for internal vs external
         # return self.indexer.settings.get("generate_queries", True)  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for indexers which don't support id-based searches
-
 
     def search(self, search_request):
         if search_request.type == "tv":
@@ -104,7 +103,6 @@ class SearchModule(object):
         queries_execution_result = self.execute_queries(urls)
         return queries_execution_result
 
-
     # Access to most basic functions
     def get_search_urls(self, search_request) -> List[str]:
         # return url(s) to search. Url is then retrieved and result is returned if OK
@@ -123,6 +121,9 @@ class SearchModule(object):
         # if module doesnt support it possibly use (configurable) size restrictions when searching
         return []
 
+    def get_details_link(self, guid):
+        return ""
+
     def create_nzb_search_result(self):
         return NzbSearchResult(indexer=self.name, indexerscore=self.score)
 
@@ -132,8 +133,6 @@ class SearchModule(object):
     def check_auth(self, body: str):
         # check the response body to see if request was authenticated. If yes, do nothing, if no, raise exception 
         return []
-
-    
 
     disable_periods = [0, 15, 30, 60, 3 * 60, 6 * 60, 12 * 60, 24 * 60]
 

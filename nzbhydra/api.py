@@ -8,6 +8,7 @@ import urllib
 from flask import request, send_file
 from furl import furl
 from marshmallow import Schema, fields
+
 from requests import RequestException
 
 from nzbhydra import config
@@ -249,6 +250,15 @@ def get_nfo(indexer_name, guid):
         result["nfo"] = nfo
     return result
 
+
+def get_details_link(indexer_name, guid):
+    for p in indexers.configured_indexers:
+        if p.name == indexer_name:
+            return p.get_details_link(guid)
+    else:
+        logger.error("Did not find indexer with name %s" % indexer_name)
+        return None
+    
 
 def get_nzb_link(indexer_name, guid, title, searchid):
     """

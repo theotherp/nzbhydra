@@ -49,6 +49,12 @@ class NzbClub(SearchModule):
 
     def get_moviesearch_urls(self, search_request):
         return self.get_search_urls(search_request)
+    
+    def get_details_link(self, guid):
+        f = furl(self.host)
+        f.path.add("nzb_view")
+        f.path.add(guid)
+        return f.url
 
     def process_query_result(self, xml, query):
         logger.debug("%s started processing results" % self.name)

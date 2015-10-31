@@ -70,6 +70,11 @@ class Binsearch(SearchModule):
 
     def get_moviesearch_urls(self, args):
         return self.get_search_urls(args)
+    
+    def get_details_link(self, guid):
+        logger.info("Details for binsearch not yet implemented")
+        #Unfortunately binsearch uses different GUIDs for downloading and detail links. We store the one for NZBs
+        return None
 
     def process_query_result(self, html, query) -> IndexerProcessingResult:
         logger.debug("Binsearch started processing results")

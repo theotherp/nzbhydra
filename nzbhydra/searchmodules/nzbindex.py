@@ -56,6 +56,12 @@ class NzbIndex(SearchModule):
 
     def get_moviesearch_urls(self, search_request):
         return self.get_search_urls(search_request)
+    
+    def get_details_link(self, guid):
+        f = furl(self.host)
+        f.path.add("release")
+        f.path.add(guid)
+        return f.url
 
     def get(self, query, timeout=None, cookies=None):
         # overwrite for special handling, e.g. cookies
