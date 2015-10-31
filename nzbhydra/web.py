@@ -22,7 +22,7 @@ from nzbhydra import config, search, infos, database
 from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.search import SearchRequest
-from nzbhydra.stats import get_avg_provider_response_times, get_avg_provider_search_results_share, get_avg_provider_access_success, get_nzb_downloads
+from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads
 
 
 class ReverseProxied(object):
@@ -150,8 +150,8 @@ externalapi_args = {
     "minage": fields.Integer(missing=None),
     "maxage": fields.Integer(missing=None),
     "dbsearchid": fields.String(missing=None),
-    "providers": fields.String(missing=None),
-    "provider": fields.String(missing=None),
+    "indexers": fields.String(missing=None),
+    "indexer": fields.String(missing=None),
     "offsets": fields.String(missing=None),
 
 }
@@ -197,7 +197,7 @@ def api(args):
 
     elif args["t"] == "get":
         args = json.loads(urllib.parse.unquote(args["id"]))
-        return extract_nzb_infos_and_return_response(args["provider"], args["guid"], args["title"], args["searchid"])
+        return extract_nzb_infos_and_return_response(args["indexer"], args["guid"], args["title"], args["searchid"])
     elif args["t"] == "caps":
         return render_template("caps.html")
     else:
@@ -318,7 +318,7 @@ def internalapi_autocomplete(args):
 
 internalapi__getnfo_args = {
     "guid": fields.String(missing=None),
-    "provider": fields.String(missing=None),
+    "indexer": fields.String(missing=None),
 }
 
 
@@ -328,14 +328,14 @@ internalapi__getnfo_args = {
 @search_cache.memoize()
 def internalapi_getnfo(args):
     logger.debug("Get NFO  request with args %s" % args)
-    nfo = get_nfo(args["provider"], args["guid"])
+    nfo = get_nfo(args["indexer"], args["guid"])
     return jsonify(nfo)
 
 
 internalapi__getnzb_args = {
     "input": fields.String(missing=None),
     "guid": fields.String(missing=None),
-    "provider": fields.String(missing=None),
+    "indexer": fields.String(missing=None),
     "searchid": fields.String(missing=None),
     "title": fields.String(missing=None)
 }
@@ -347,18 +347,18 @@ internalapi__getnzb_args = {
 @search_cache.memoize()
 def internalapi_getnzb(args):
     logger.debug("Get NZB request with args %s" % args)
-    return extract_nzb_infos_and_return_response(args["provider"], args["guid"], args["title"], args["searchid"])
+    return extract_nzb_infos_and_return_response(args["indexer"], args["guid"], args["title"], args["searchid"])
 
 
-def extract_nzb_infos_and_return_response(provider, guid, title, searchid):
+def extract_nzb_infos_and_return_response(indexer, guid, title, searchid):
     if downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.redirect:  # I'd like to have this in api but don't want to have to use redirect() there...
-        link = get_nzb_link(provider, guid, title, searchid)
+        link = get_nzb_link(indexer, guid, title, searchid)
         if link is not None:
             return redirect(link)
         else:
             return "Unable to build link to NZB", 404
     elif downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.serve.name:
-        return get_nzb_response(provider, guid, title, searchid)
+        return get_nzb_response(indexer, guid, title, searchid)
     else:
         logger.error("Invalid value of %s" % downloaderSettings.nzbaccesstype)
         return "downloader.add_type has wrong value", 500  # "direct" would never end up here, so it must be a wrong value
@@ -384,11 +384,11 @@ def internalapi_addnzb(args):
     for guid in guids:
         guid = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(guid).query))
         print(guid)
-        if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the provider
+        if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
             add_success = downloader.add_link(guid, guid["title"], None)
 
         else:  # We download an NZB send it to the downloader
-            nzbdownloadresult = download_nzb_and_log(guid["provider"], guid["guid"], guid["title"], guid["searchid"])
+            nzbdownloadresult = download_nzb_and_log(guid["indexer"], guid["guid"], guid["title"], guid["searchid"])
             if nzbdownloadresult is not None:
                 add_success = downloader.add_nzb(nzbdownloadresult.content, guid["title"], None)
             else:
@@ -406,9 +406,9 @@ def internalapi_addnzb(args):
 @requires_auth
 def internalapi_getstats():
     logger.debug("Get stats")
-    return jsonify({"avgResponseTimes": get_avg_provider_response_times(), 
-                    "avgProviderSearchResultsShares": get_avg_provider_search_results_share(), 
-                    "avgProviderAccessSuccesses": get_avg_provider_access_success()})
+    return jsonify({"avgResponseTimes": get_avg_indexer_response_times(), 
+                    "avgIndexerSearchResultsShares": get_avg_indexer_search_results_share(), 
+                    "avgIndexerAccessSuccesses": get_avg_indexer_access_success()})
 
 
 internalapi__getnzbdownloads_args = {

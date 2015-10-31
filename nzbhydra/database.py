@@ -28,8 +28,8 @@ class DateTimeUTCField(DateTimeField):
         return arrow.get(value, tzinfo=tzutc())
 
 
-class Provider(Model):
-    name = CharField(unique=True) #The name of the provider. So if the user changes the name all references get lost (except we handle that if he does it in the GUI).
+class Indexer(Model):
+    name = CharField(unique=True) #The name of the indexer. So if the user changes the name all references get lost (except we handle that if he does it in the GUI).
 
     class Meta:
         database = db
@@ -54,9 +54,9 @@ class Search(Model):
         super(Search, self).save(*args, **kwargs)
 
 
-class ProviderSearch(Model):
-    provider = ForeignKeyField(Provider, related_name="searches")
-    search = ForeignKeyField(Search, related_name="provider_searches", null=True)
+class IndexerSearch(Model):
+    indexer = ForeignKeyField(Indexer, related_name="searches")
+    search = ForeignKeyField(Search, related_name="indexer_searches", null=True)
     time = DateTimeField()
 
     successful = BooleanField(default=False)
@@ -68,12 +68,12 @@ class ProviderSearch(Model):
     def save(self, *args, **kwargs):
         if self.time is None:
             self.time = datetime.datetime.utcnow()  # Otherwise the time of the first run of this code is taken
-        super(ProviderSearch, self).save(*args, **kwargs)
+        super(IndexerSearch, self).save(*args, **kwargs)
 
 
-class ProviderApiAccess(Model):
-    provider = ForeignKeyField(Provider)
-    provider_search = ForeignKeyField(ProviderSearch, related_name="api_accesses", null=True)
+class IndexerApiAccess(Model):
+    indexer = ForeignKeyField(Indexer)
+    indexer_search = ForeignKeyField(IndexerSearch, related_name="api_accesses", null=True)
     time = DateTimeUTCField()
     type = CharField()  # search, nzb, comments, nfo?
     url = CharField()
@@ -87,13 +87,13 @@ class ProviderApiAccess(Model):
     def save(self, *args, **kwargs):
         if self.time is None:  # Otherwise the time of the first run of this code is taken
             self.time = datetime.datetime.utcnow()
-        super(ProviderApiAccess, self).save(*args, **kwargs)
+        super(IndexerApiAccess, self).save(*args, **kwargs)
 
 
-class ProviderNzbDownload(Model):
-    provider = ForeignKeyField(Provider, related_name="downloads")
-    provider_search = ForeignKeyField(ProviderSearch, related_name="downloads", null=True)
-    api_access = ForeignKeyField(ProviderApiAccess)
+class IndexerNzbDownload(Model):
+    indexer = ForeignKeyField(Indexer, related_name="downloads")
+    indexer_search = ForeignKeyField(IndexerSearch, related_name="downloads", null=True)
+    api_access = ForeignKeyField(IndexerApiAccess)
     title = CharField()
     time = DateTimeField()
     mode = CharField() #"serve" or "redirect"
@@ -105,18 +105,18 @@ class ProviderNzbDownload(Model):
     def save(self, *args, **kwargs):
         if self.time is None:
             self.time = datetime.datetime.utcnow()  # Otherwise the time at the first run of this code is taken
-        super(ProviderNzbDownload, self).save(*args, **kwargs)
+        super(IndexerNzbDownload, self).save(*args, **kwargs)
 
-# class ProviderSearchApiAccess(Model):
-#     search = ForeignKeyField(ProviderSearch, related_name="api_accesses")
-#     api_access = ForeignKeyField(ProviderApiAccess, related_name="api_accesses")
+# class IndexerSearchApiAccess(Model):
+#     search = ForeignKeyField(IndexerSearch, related_name="api_accesses")
+#     api_access = ForeignKeyField(IndexerApiAccess, related_name="api_accesses")
 # 
 #     class Meta:
 #         database = db
 
 
-class ProviderStatus(Model):
-    provider = ForeignKeyField(Provider, related_name="status")
+class IndexerStatus(Model):
+    indexer = ForeignKeyField(Indexer, related_name="status")
     first_failure = DateTimeUTCField(default=datetime.datetime.utcnow(), null=True)
     latest_failure = DateTimeUTCField(default=datetime.datetime.utcnow(), null=True)
     disabled_until = DateTimeUTCField(default=datetime.datetime.utcnow(), null=True)
@@ -125,7 +125,7 @@ class ProviderStatus(Model):
     disabled_permanently = BooleanField(default=False)  # Set to true if an error occurred that probably won't fix itself (e.g. when the apikey is wrong) 
 
     def __repr__(self):
-        return "%s in status %d. First failure: %s. Latest Failure: %s. Reason: %s. Disabled until: %s" % (self.provider, self.level, self.first_failure, self.latest_failure, self.reason, self.disabled_until)
+        return "%s in status %d. First failure: %s. Latest Failure: %s. Reason: %s. Disabled until: %s" % (self.indexer, self.level, self.first_failure, self.latest_failure, self.reason, self.disabled_until)
 
     class Meta:
         database = db

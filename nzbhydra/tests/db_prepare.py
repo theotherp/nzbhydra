@@ -1,9 +1,11 @@
 from peewee import OperationalError
-from nzbhydra.database import Provider, ProviderApiAccess, ProviderSearch, ProviderStatus, Search
+from nzbhydra.database import Indexer, IndexerApiAccess, IndexerSearch, IndexerStatus, Search, IndexerNzbDownload
 from nzbhydra import database
 
 
-def set_and_drop(dbfile="tests.db", tables=[Provider, ProviderApiAccess, ProviderSearch, ProviderStatus, Search]):
+def set_and_drop(dbfile="tests.db", tables=None):
+    if tables is None:
+        tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, ]
     database.db.init(dbfile)
     database.db.connect()
 

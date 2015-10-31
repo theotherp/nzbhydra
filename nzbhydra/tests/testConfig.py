@@ -2,7 +2,7 @@ import os
 from pprint import pprint
 import shutil
 from nzbhydra import config
-from nzbhydra.config import mainSettings, providerSettings, SettingType, ProviderNewznabSettings
+from nzbhydra.config import mainSettings, indexerSettings, SettingType, IndexerNewznabSettings
 
 print("Loading config from testsettings.cfg")
 
@@ -27,7 +27,7 @@ def testThatGetAndSetWork():
     # Setting with a SettingType  
     assert mainSettings.password.setting_type == SettingType.password
 
-    assert providerSettings.binsearch.name.get() == "binsearch"
+    assert indexerSettings.binsearch.name.get() == "binsearch"
 
 
 def testThatWritingSettingsWorks():
@@ -38,12 +38,12 @@ def testThatWritingSettingsWorks():
     assert mainSettings.port.get() == 5053
 
 
-def testNewznabProviders():
-    providerSettings.newznab1.host.set("http://127.0.0.1")
+def testNewznabIndexers():
+    indexerSettings.newznab1.host.set("http://127.0.0.1")
     config.save("testsettings.cfg")
-    providerSettings.newznab1.host.set("http://192.168.0.1")
+    indexerSettings.newznab1.host.set("http://192.168.0.1")
     config.load("testsettings.cfg")
-    assert providerSettings.newznab1.host.get() == "http://127.0.0.1" 
+    assert indexerSettings.newznab1.host.get() == "http://127.0.0.1" 
 
 
 def testSchema():

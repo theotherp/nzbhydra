@@ -8,7 +8,7 @@ import requests
 
 import nzbhydra.config as config
 from nzbhydra import log
-from nzbhydra import providers
+from nzbhydra import indexers
 from nzbhydra import database
 from nzbhydra import web
 
@@ -48,7 +48,7 @@ def run():
     logger.info("Loading database file %s" % database_file)
     database.db.init(database_file)
     database.db.connect()
-    providers.read_providers_from_config()
+    indexers.read_indexers_from_config()
 
     host = config.mainSettings.host.get() if args.host is None else args.host
     port = config.mainSettings.port.get() if args.port is None else args.port

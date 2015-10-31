@@ -5,31 +5,31 @@ import unittest
 from freezegun import freeze_time
 import responses
 from nzbhydra import config
-from nzbhydra.database import Provider
+from nzbhydra.database import Indexer
 from nzbhydra.search import SearchRequest
 
 from nzbhydra.searchmodules.newznab import NewzNab
 from nzbhydra.tests import mockbuilder
 from nzbhydra.tests.db_prepare import set_and_drop
-from nzbhydra.tests.providerTest import ProviderTestcase
+from nzbhydra.tests.indexerTest import IndexerTestcase
 
 
-class MyTestCase(ProviderTestcase):
+class MyTestCase(IndexerTestcase):
 
     def setUp(self):    
         set_and_drop()
         config.load("testsettings.cfg")
-        self.nzbsorgdb = Provider(name="NZBs.org")
+        self.nzbsorgdb = Indexer(name="NZBs.org")
         self.nzbsorgdb.save()
-        self.dognzbdb = Provider(name="DOGNzb")
+        self.dognzbdb = Indexer(name="DOGNzb")
         self.dognzbdb.save()
         
         
-        config.providerSettings.newznab1.enabled = True
-        config.providerSettings.newznab1.host.set("http://127.0.0.1:5001/nzbsorg")
-        config.providerSettings.newznab1.apikey.set("apikeynzbsorg")
-        self.n1 = NewzNab(config.providerSettings.newznab1)
-        self.n2 = NewzNab(config.providerSettings.newznab2)
+        config.indexerSettings.newznab1.enabled = True
+        config.indexerSettings.newznab1.host.set("http://127.0.0.1:5001/nzbsorg")
+        config.indexerSettings.newznab1.apikey.set("apikeynzbsorg")
+        self.n1 = NewzNab(config.indexerSettings.newznab1)
+        self.n2 = NewzNab(config.indexerSettings.newznab2)
         
     
     @freeze_time("2015-10-12 20:00:00", tz_offset=-4)

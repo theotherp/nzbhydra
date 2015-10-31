@@ -304,12 +304,12 @@ def get_form_items(category: Category, grouptype="section"):
     else:
         main_element = {"type": "tab", "title": category.title, "items": [{"type": "section", "htmlClass": "config-tab-content", "items": items}]}
 
-    if category in (providerSettings.newznab1, providerSettings.newznab2, providerSettings.newznab3, providerSettings.newznab4, providerSettings.newznab5, providerSettings.newznab6):
+    if category in (indexerSettings.newznab1, indexerSettings.newznab2, indexerSettings.newznab3, indexerSettings.newznab4, indexerSettings.newznab5, indexerSettings.newznab6):
         # TODO has no effect yet, dunno why
-        if category == providerSettings.newznab2:
-            main_element["condition"] = "providers.newznab1.name"
-        if category == providerSettings.newznab3:
-            main_element["condition"] = "providers.newznab2.name"
+        if category == indexerSettings.newznab2:
+            main_element["condition"] = "indexers.newznab1.name"
+        if category == indexerSettings.newznab3:
+            main_element["condition"] = "indexers.newznab2.name"
 
     return main_element
 
@@ -416,7 +416,7 @@ class ResultProcessingSettings(Category):
         self.duplicateSizeThresholdInPercent = Setting(self, name="duplicateSizeThresholdInPercent", default=0.1, valuetype=float, title="Duplicate size threshold",
                                                        description="If the size difference between two search entries with the same title is higher than this they won't be considered dplicates.")
         self.duplicateAgeThreshold = Setting(self, name="duplicateAgeThreshold", default=3600, valuetype=int, title="Duplicate age threshold", description="If the age difference in seconds between two search entries with the same title is higher than this they won't be considered dplicates.")
-        self.htmlParser = SelectionSetting(self, name="htmlParser", default=HtmlParserSelection.html, valuetype=str, options=HtmlParserSelection.options, title="HTML Parser", description="Used to parse HTML from providers like binsearch. If possible use LXML")
+        self.htmlParser = SelectionSetting(self, name="htmlParser", default=HtmlParserSelection.html, valuetype=str, options=HtmlParserSelection.options, title="HTML Parser", description="Used to parse HTML from indexers like binsearch. If possible use LXML")
 
 
 
@@ -479,10 +479,10 @@ class SearchingSettings(Category):
 
     def __init__(self):
         super().__init__(config_root, "searching", "Searching")
-        self.timeout = Setting(self, name="timeout", default=5, valuetype=int, title="Timeout", description="Timeout when accessing providers.")
+        self.timeout = Setting(self, name="timeout", default=5, valuetype=int, title="Timeout", description="Timeout when accessing indexers.")
         self.temporarilyDisableProblemIndexers = Setting(self, name="ignoreTemporarilyDisabled", default=False, valuetype=bool, title="Pause indexers after problems", description="Enable if you want to pause access to indexers for a time after there was a problem.")
         self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[InternalExternalSelection.internal], options=InternalExternalSelection.options, valuetype=str, title="Query generation",
-                                                      description="Decide if you want to generate queries for providers in case of ID based searches. The results will probably contain a lot of crap.",
+                                                      description="Decide if you want to generate queries for indexers in case of ID based searches. The results will probably contain a lot of crap.",
                                                       setting_type=SettingType.multiselect)
 
         self.category_sizes = CategorySizeSettings(self)
@@ -492,9 +492,9 @@ searchingSettings = SearchingSettings()
 
 
 class NzbAccessTypeSelection(object):
-    serve = SelectOption("serve", "Proxy the NZBs from the provider")
-    redirect = SelectOption("redirect", "Redirect to the provider")
-    direct = SelectOption("direct", "Use direct links to the provider")
+    serve = SelectOption("serve", "Proxy the NZBs from the indexer")
+    redirect = SelectOption("redirect", "Redirect to the indexer")
+    direct = SelectOption("direct", "Use direct links to the indexer")
 
 
 class NzbAddingTypeSelection(object):
@@ -512,7 +512,7 @@ class DownloaderSettings(Category):
         super().__init__(config_root, "downloader", "Downloader")
         self.nzbaccesstype = SelectionSetting(self, name="nzbaccesstype", default=NzbAccessTypeSelection.serve, valuetype=str, options=[NzbAccessTypeSelection.direct, NzbAccessTypeSelection.redirect, NzbAccessTypeSelection.serve], setting_type=SettingType.select,
                                               title="NZB access type",
-                                              description="Determines how we provide access to NZBs  ""Serve"": Provide a link to NZBHydra via which the NZB is downloaded and returned. ""Redirect"": Provide a link to NZBHydra which redirects to the provider. ""Direct"": Create direct links (as returned by the provider). Not recommended.")
+                                              description="Determines how we provide access to NZBs  ""Serve"": Provide a link to NZBHydra via which the NZB is downloaded and returned. ""Redirect"": Provide a link to NZBHydra which redirects to the indexer. ""Direct"": Create direct links (as returned by the indexer). Not recommended.")
         self.nzbAddingType = SelectionSetting(self, name="nzbAddingType", default=NzbAddingTypeSelection.nzb, valuetype=str, options=[NzbAddingTypeSelection.link, NzbAddingTypeSelection.nzb], setting_type=SettingType.select,
                                               title="NZB adding type", description="Determines how NZBs are added to downloaders. Either by sending a link to the downloader or by sending the actual NZB.")
         self.downloader = SelectionSetting(self, name="downloader", default=DownloaderSelection.nzbget, valuetype=str, title="Downloader", description="Choose the downloader you want to use when adding NZBs via the GUI.", options=[DownloaderSelection.nzbget, DownloaderSelection.sabnzbd],
@@ -555,10 +555,10 @@ class SearchIdSelection(object):
     imdbid = SelectOption("imdbid", "IMDB ID")
 
 
-class ProviderSettingsAbstract(Category):
+class IndexerSettingsAbstract(Category):
     def __init__(self, parent, name, title):
         super().__init__(parent, name, title)
-        self.name = Setting(self, name="name", default=None, valuetype=str, title="Name", description="Name of the provider. Used when displayed. If changed all references, history and stats get lost!")
+        self.name = Setting(self, name="name", default=None, valuetype=str, title="Name", description="Name of the indexer. Used when displayed. If changed all references, history and stats get lost!")
         self.host = Setting(self, name="host", default=None, valuetype=str, title="Host name", description="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
         self.enabled = Setting(self, name="enabled", default=True, valuetype=bool, title="Enabled", description="")
         self.search_ids = MultiSelectionSetting(self, name="search_ids", default=[], valuetype=list, title="Search IDs", description="By which IDs the indexer can search releases",
@@ -566,20 +566,20 @@ class ProviderSettingsAbstract(Category):
                                                 setting_type=SettingType.multiselect)
         self.score = Setting(self, name="score", default=0, valuetype=str, title="Score", description="Used to decide how results are picked when duplicates are found. Higher is \"better\".")
         # self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[GenerateQueriesSelection.internal], options=GenerateQueriesSelection.options, valuetype=str, title="Query generation",
-        #                                          description="Decide if you want to generate queries for providers in case of ID based searches. The results will probably contain a lot of crap.",
+        #                                          description="Decide if you want to generate queries for indexers in case of ID based searches. The results will probably contain a lot of crap.",
         #                                          setting_type=SettingType.multiselect)
 
 
-class ProviderBinsearchSettings(ProviderSettingsAbstract):
+class IndexerBinsearchSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
-        super(ProviderBinsearchSettings, self).__init__(parent, "binsearch", "Binsearch")
+        super(IndexerBinsearchSettings, self).__init__(parent, "binsearch", "Binsearch")
         self.host = Setting(self, name="host", default="https://binsearch.com", valuetype=str, title="Host name", description="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
-        self.name = Setting(self, name="name", default="binsearch", valuetype=str, title="Name", description="Name of the provider. Used when displayed. If changed all references, history and stats get lost!")
+        self.name = Setting(self, name="name", default="binsearch", valuetype=str, title="Name", description="Name of the indexer. Used when displayed. If changed all references, history and stats get lost!")
 
 
-class ProviderNewznabSettings(ProviderSettingsAbstract):
+class IndexerNewznabSettings(IndexerSettingsAbstract):
     def __init__(self, parent, name, title):
-        super(ProviderNewznabSettings, self).__init__(parent, name, title)
+        super(IndexerNewznabSettings, self).__init__(parent, name, title)
         self.apikey = Setting(self, name="apikey", default=None, valuetype=str, title="API key", description=None)
         self.search_ids = MultiSelectionSetting(self, name="search_ids", default=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid], valuetype=list, title="Search IDs", description="By which IDs the indexer can search releases",
                                                 options=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid],
@@ -587,57 +587,57 @@ class ProviderNewznabSettings(ProviderSettingsAbstract):
         self.enabled = Setting(self, name="enabled", default=False, valuetype=bool, title="Enabled", description="")  # Disable by default because we have no meaningful initial data
 
 
-class ProviderNzbclubSettings(ProviderSettingsAbstract):
+class IndexerNzbclubSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
-        super(ProviderNzbclubSettings, self).__init__(parent, "nzbclub", "NZBClub")
+        super(IndexerNzbclubSettings, self).__init__(parent, "nzbclub", "NZBClub")
         self.host = Setting(self, name="host", default="http://nzbclub.com", valuetype=str, title="Host name", description="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
-        self.name = Setting(self, name="name", default="nzbclub", valuetype=str, title="", description="Name of the provider. Used when displayed. If changed all references, history and stats get lost!")
+        self.name = Setting(self, name="name", default="nzbclub", valuetype=str, title="", description="Name of the indexer. Used when displayed. If changed all references, history and stats get lost!")
 
 
-class ProviderNzbindexSettings(ProviderSettingsAbstract):
+class IndexerNzbindexSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
-        super(ProviderNzbindexSettings, self).__init__(parent, "nzbindex", "NZBIndex")
+        super(IndexerNzbindexSettings, self).__init__(parent, "nzbindex", "NZBIndex")
         self.host = Setting(self, name="host", default="https://nzbindex.com", valuetype=str, title="Host name", description="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
-        self.name = Setting(self, name="name", default="nzbindex", valuetype=str, title="NZBIndex", description="Name of the provider. Used when displayed. If changed all references, history and stats get lost!")
+        self.name = Setting(self, name="name", default="nzbindex", valuetype=str, title="NZBIndex", description="Name of the indexer. Used when displayed. If changed all references, history and stats get lost!")
 
 
-class ProviderWombleSettings(ProviderSettingsAbstract):
+class IndexerWombleSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
-        super(ProviderWombleSettings, self).__init__(parent, "womble", "Womble")
+        super(IndexerWombleSettings, self).__init__(parent, "womble", "Womble")
         self.host = Setting(self, name="host", default="https://newshost.co.za", valuetype=str, title="Host name", description="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
-        self.name = Setting(self, name="name", default="womble", valuetype=str, title="Name ", description="Name of the provider. Used when displayed. If changed all references, history and stats get lost!")
+        self.name = Setting(self, name="name", default="womble", valuetype=str, title="Name ", description="Name of the indexer. Used when displayed. If changed all references, history and stats get lost!")
 
 
-class ProviderSettings(Category):
+class IndexerSettings(Category):
     def __init__(self):
-        super().__init__(config_root, "providers", "Provider")
-        self.binsearch = ProviderBinsearchSettings(self)
-        self.nzbclub = ProviderNzbclubSettings(self)
-        self.nzbindex = ProviderNzbindexSettings(self)
-        self.womble = ProviderWombleSettings(self)
-        self.newznab1 = ProviderNewznabSettings(self, "newznab1", "Newznab 1")
-        self.newznab2 = ProviderNewznabSettings(self, "newznab2", "Newznab 2")
-        self.newznab3 = ProviderNewznabSettings(self, "newznab3", "Newznab 3")
-        self.newznab4 = ProviderNewznabSettings(self, "newznab4", "Newznab 4")
-        self.newznab5 = ProviderNewznabSettings(self, "newznab5", "Newznab 5")
-        self.newznab6 = ProviderNewznabSettings(self, "newznab6", "Newznab 6")
+        super().__init__(config_root, "indexers", "Indexer")
+        self.binsearch = IndexerBinsearchSettings(self)
+        self.nzbclub = IndexerNzbclubSettings(self)
+        self.nzbindex = IndexerNzbindexSettings(self)
+        self.womble = IndexerWombleSettings(self)
+        self.newznab1 = IndexerNewznabSettings(self, "newznab1", "Newznab 1")
+        self.newznab2 = IndexerNewznabSettings(self, "newznab2", "Newznab 2")
+        self.newznab3 = IndexerNewznabSettings(self, "newznab3", "Newznab 3")
+        self.newznab4 = IndexerNewznabSettings(self, "newznab4", "Newznab 4")
+        self.newznab5 = IndexerNewznabSettings(self, "newznab5", "Newznab 5")
+        self.newznab6 = IndexerNewznabSettings(self, "newznab6", "Newznab 6")
 
 
-providerSettings = ProviderSettings()
+indexerSettings = IndexerSettings()
 
 
-class ProviderNewznab1Settings(ProviderNewznabSettings):
+class IndexerNewznab1Settings(IndexerNewznabSettings):
     def __init__(self):
-        self._path = "providers.newznab1"
+        self._path = "indexers.newznab1"
         super().__init__("Newznab 1", "", "")
 
 
 def get_newznab_setting_by_id(id):
     id = str(id)
     return {
-        "1": providerSettings.newznab1,
-        "2": providerSettings.newznab2,
-        "3": providerSettings.newznab3,
-        "4": providerSettings.newznab4,
-        "5": providerSettings.newznab5,
-        "6": providerSettings.newznab6}[id]
+        "1": indexerSettings.newznab1,
+        "2": indexerSettings.newznab2,
+        "3": indexerSettings.newznab3,
+        "4": indexerSettings.newznab4,
+        "5": indexerSettings.newznab5,
+        "6": indexerSettings.newznab6}[id]

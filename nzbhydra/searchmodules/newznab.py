@@ -9,11 +9,11 @@ import xml.etree.ElementTree as ET
 import arrow
 from furl import furl
 
-from nzbhydra.config import ProviderNewznabSettings
+from nzbhydra.config import IndexerNewznabSettings
 from nzbhydra.datestuff import now
-from nzbhydra.exceptions import ProviderAuthException, ProviderAccessException, ProviderResultParsingException
+from nzbhydra.exceptions import IndexerAuthException, IndexerAccessException, IndexerResultParsingException
 from nzbhydra.nzb_search_result import NzbSearchResult
-from nzbhydra.search_module import SearchModule, ProviderProcessingResult
+from nzbhydra.search_module import SearchModule, IndexerProcessingResult
 
 logger = logging.getLogger('root')
 
@@ -72,7 +72,7 @@ def map_category(category):
 
 class NewzNab(SearchModule):
     # todo feature: read caps from server on first run and store them in the config/database
-    def __init__(self, settings: ProviderNewznabSettings):
+    def __init__(self, settings: IndexerNewznabSettings):
         super(NewzNab, self).__init__(settings)
         self.settings = settings  # Already done by super.__init__ but this way PyCharm knows the correct type
         self.module = "newznab"
@@ -131,7 +131,7 @@ class NewzNab(SearchModule):
 
     test = 0
 
-    def process_query_result(self, xml_response, query) -> ProviderProcessingResult:
+    def process_query_result(self, xml_response, query) -> IndexerProcessingResult:
         logger.debug("%s started processing results" % self.name)
 
         entries = []
@@ -144,12 +144,12 @@ class NewzNab(SearchModule):
         except Exception:
             logger.exception("Error parsing XML: %s..." % xml_response[:500])
             logger.debug(xml_response)
-            raise ProviderResultParsingException("Error parsing XML", self)
+            raise IndexerResultParsingException("Error parsing XML", self)
         total = int(tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}).attrib["total"])
         offset = int(tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}).attrib["offset"])
         if total == 0:
             logger.info("Query at %s returned no results" % self)
-            return ProviderProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False)
+            return IndexerProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False)
         for item in tree.find("channel").findall("item"):
             entry = self.create_nzb_search_result()
             entry.title = item.find("title").text
@@ -204,22 +204,22 @@ class NewzNab(SearchModule):
 
             entries.append(entry)
 
-        return ProviderProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total)
+        return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total)
 
     def check_auth(self, body: str):
         if '<error code="100"' in body:
-            raise ProviderAuthException("The API key seems to be incorrect.", self)
+            raise IndexerAuthException("The API key seems to be incorrect.", self)
         if '<error code="101"' in body:
-            raise ProviderAuthException("The account seems to be suspended.", self)
+            raise IndexerAuthException("The account seems to be suspended.", self)
         if '<error code="102"' in body:
-            raise ProviderAuthException("You're not allowed to use the API.", self)
+            raise IndexerAuthException("You're not allowed to use the API.", self)
         if '<error code="910"' in body:
-            raise ProviderAccessException("The API seems to be disabled for the moment.", self)
+            raise IndexerAccessException("The API seems to be disabled for the moment.", self)
         if '<error code=' in body:
-            raise ProviderAccessException("Unknown error while trying to access the provider.", self)
+            raise IndexerAccessException("Unknown error while trying to access the indexer.", self)
 
     def get_nfo(self, guid):
-        # try to get raw nfo. if it is xml the provider doesn't actually return raw nfos (I'm looking at you, DOGNzb)
+        # try to get raw nfo. if it is xml the indexer doesn't actually return raw nfos (I'm looking at you, DOGNzb)
         url = furl(self.settings.host.get()).add({"apikey": self.settings.apikey.get(), "t": "getnfo", "o": "xml", "id": guid})  # todo: should use build_base_url but that adds search specific stuff
 
         response, papiaccess = self.get_url_with_papi_access(url, "nfo")
@@ -241,5 +241,5 @@ class NewzNab(SearchModule):
         return f.tostr()
 
 
-def get_instance(provider):
-    return NewzNab(provider)
+def get_instance(indexer):
+    return NewzNab(indexer)

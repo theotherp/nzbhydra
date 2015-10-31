@@ -10,7 +10,7 @@ class SensitiveDataFilter(logging.Filter):
          
         sensitive_strings = []
         #todo:
-        # for section in config.cfg.section("search_providers").sections():
+        # for section in config.cfg.section("search_indexers").sections():
         #     sensitive_strings.append(section.get("apikey"))
         #     sensitive_strings.append(section.get("username"))
         #     sensitive_strings.append(section.get("password"))

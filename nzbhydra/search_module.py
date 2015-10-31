@@ -6,35 +6,35 @@ import arrow
 import requests
 from requests import RequestException
 
-from nzbhydra.config import ProviderSettings, searchingSettings
-from nzbhydra.database import ProviderSearch, ProviderApiAccess, ProviderStatus, Provider
-from nzbhydra.exceptions import ProviderResultParsingException, ProviderAuthException, ProviderAccessException
+from nzbhydra.config import IndexerSettings, searchingSettings
+from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, Indexer
+from nzbhydra.exceptions import IndexerResultParsingException, IndexerAuthException, IndexerAccessException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
 QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "results dbentry total loaded_results total_known has_more")
-ProviderProcessingResult = collections.namedtuple("ProviderProcessingResult", "entries queries total total_known has_more")
+IndexerProcessingResult = collections.namedtuple("IndexerProcessingResult", "entries queries total total_known has_more")
 
 
 class SearchModule(object):
     logger = logging.getLogger('root')
     # regarding quality:
-    # possibly use newznab qualities as base, map for other providers (nzbclub etc)
+    # possibly use newznab qualities as base, map for other indexers (nzbclub etc)
 
 
-    def __init__(self, settings: ProviderSettings):
+    def __init__(self, settings: IndexerSettings):
         self.settings = settings
         self.module = "Abstract search module"
         self.supports_queries = True
         self.needs_queries = False
-        self.category_search = True  # If true the provider supports searching in a given category (possibly without any query or id)
+        self.category_search = True  # If true the indexer supports searching in a given category (possibly without any query or id)
         self.limit = 100
         
     def __repr__(self):
         return self.name
 
     @property
-    def provider(self):
-        return Provider.get(Provider.name == self.settings.name.get())
+    def indexer(self):
+        return Indexer.get(Indexer.name == self.settings.name.get())
 
     @property
     def host(self):
@@ -55,13 +55,13 @@ class SearchModule(object):
     @property
     def generate_queries(self):
         return True  # TODO pass when used check for internal vs external
-        # return self.provider.settings.get("generate_queries", True)  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for providers which don't support id-based searches
+        # return self.indexer.settings.get("generate_queries", True)  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for indexers which don't support id-based searches
 
 
     def search(self, search_request):
         if search_request.type == "tv":
             if search_request.query is None and search_request.identifier_key is None and self.needs_queries:
-                self.logger.error("TV search without query or id or title is not possible with this provider")
+                self.logger.error("TV search without query or id or title is not possible with this indexer")
                 return []
             if search_request.query is None and not self.generate_queries:
                 self.logger.error("TV search is not possible with this provideer because query generation is disabled")
@@ -80,7 +80,7 @@ class SearchModule(object):
                 urls = self.get_showsearch_urls(search_request)
         elif search_request.type == "movie":
             if search_request.query is None and search_request.title is None and search_request.identifier_key is None and self.needs_queries:
-                self.logger.error("Movie search without query or IMDB id or title is not possible with this provider")
+                self.logger.error("Movie search without query or IMDB id or title is not possible with this indexer")
                 return []
             if search_request.query is None and not self.generate_queries:
                 self.logger.error("Movie search is not possible with this provideer because query generation is disabled")
@@ -123,9 +123,9 @@ class SearchModule(object):
         return []
 
     def create_nzb_search_result(self):
-        return NzbSearchResult(provider=self.name, providerscore=self.score)
+        return NzbSearchResult(indexer=self.name, indexerscore=self.score)
 
-    def process_query_result(self, result: str, query: str) -> ProviderProcessingResult:
+    def process_query_result(self, result: str, query: str) -> IndexerProcessingResult:
         return []
 
     def check_auth(self, body: str):
@@ -136,56 +136,56 @@ class SearchModule(object):
 
     disable_periods = [0, 15, 30, 60, 3 * 60, 6 * 60, 12 * 60, 24 * 60]
 
-    def handle_provider_success(self):
+    def handle_indexer_success(self):
         # Deescalate level by 1 (or stay at 0) and reset reason and disable-time
         try:
-            provider_status = self.provider.status.get()
-        except ProviderStatus.DoesNotExist:
-            provider_status = ProviderStatus(provider=self.provider)
-        if provider_status.level > 0:
-            provider_status.level -= 1
-        provider_status.reason = None
-        provider_status.disabled_until = arrow.get(0)  # Because I'm too dumb to set it to None/null
-        provider_status.save()
+            indexer_status = self.indexer.status.get()
+        except IndexerStatus.DoesNotExist:
+            indexer_status = IndexerStatus(indexer=self.indexer)
+        if indexer_status.level > 0:
+            indexer_status.level -= 1
+        indexer_status.reason = None
+        indexer_status.disabled_until = arrow.get(0)  # Because I'm too dumb to set it to None/null
+        indexer_status.save()
 
-    def handle_provider_failure(self, reason=None, disable_permanently=False):
+    def handle_indexer_failure(self, reason=None, disable_permanently=False):
         # Escalate level by 1. Set disabled-time according to level so that with increased level the time is further in the future
         try:
-            provider_status = self.provider.status.get()
-        except ProviderStatus.DoesNotExist:
-            provider_status = ProviderStatus(provider=self.provider)
+            indexer_status = self.indexer.status.get()
+        except IndexerStatus.DoesNotExist:
+            indexer_status = IndexerStatus(indexer=self.indexer)
 
-        if provider_status.level == 0:
-            provider_status.first_failure = arrow.utcnow()
+        if indexer_status.level == 0:
+            indexer_status.first_failure = arrow.utcnow()
 
-        provider_status.latest_failure = arrow.utcnow()
-        provider_status.reason = reason  # Overwrite the last reason if one is set, should've been logged anyway
+        indexer_status.latest_failure = arrow.utcnow()
+        indexer_status.reason = reason  # Overwrite the last reason if one is set, should've been logged anyway
         if disable_permanently:
-            provider_status.disabled_permanently = True
+            indexer_status.disabled_permanently = True
         else:
-            provider_status.level = min(len(self.disable_periods) - 1, provider_status.level + 1)
-            provider_status.disabled_until = arrow.utcnow().replace(minutes=self.disable_periods[provider_status.level])
+            indexer_status.level = min(len(self.disable_periods) - 1, indexer_status.level + 1)
+            indexer_status.disabled_until = arrow.utcnow().replace(minutes=self.disable_periods[indexer_status.level])
 
-        provider_status.save()
+        indexer_status.save()
 
     def get(self, url, timeout=None, cookies=None):
         # overwrite for special handling, e.g. cookies
         return requests.get(url, timeout=timeout, verify=False, cookies=cookies)
 
     def get_url_with_papi_access(self, url, type, cookies=None, timeout=None):
-        papiaccess = ProviderApiAccess(provider=self.provider, type=type, url=url, time=arrow.utcnow().datetime)
+        papiaccess = IndexerApiAccess(indexer=self.indexer, type=type, url=url, time=arrow.utcnow().datetime)
 
         try:
             response = self.get(url, cookies=cookies, timeout=timeout)
             response.raise_for_status()
             papiaccess.response_time = response.elapsed.microseconds / 1000
             papiaccess.response_successful = True
-            self.handle_provider_success()
+            self.handle_indexer_success()
         except RequestException as e:
             self.logger.error("Error while connecting to URL %s: %s" % (url, str(e)))
             papiaccess.error = "Connection failed: %s" % str(e)
             response = None
-            self.handle_provider_failure("Connection failed: %s" % str(e))
+            self.handle_indexer_failure("Connection failed: %s" % str(e))
         finally:
             papiaccess.save()
         return response, papiaccess
@@ -200,11 +200,11 @@ class SearchModule(object):
         # todo call all queries, check if further should be called, return all results when done or timeout or whatever
         """
 
-        :rtype : ResultsAndProviderSearchDbEntry
+        :rtype : ResultsAndIndexerSearchDbEntry
         """
         results = []
         executed_queries = set()
-        psearch = ProviderSearch(provider=self.provider)
+        psearch = IndexerSearch(indexer=self.indexer)
         psearch.save()
         total_results = 0
         offset = 0
@@ -219,7 +219,7 @@ class SearchModule(object):
             try:
                 self.logger.debug("Requesting URL %s with timeout %d" % (query, searchingSettings.timeout.get()))
                 request, papiaccess = self.get_url_with_papi_access(query, "search")
-                papiaccess.provider_search = psearch
+                papiaccess.indexer_search = psearch
 
                 executed_queries.add(query)
                 papiaccess.save()
@@ -237,23 +237,23 @@ class SearchModule(object):
                         has_more = parsed_results.has_more
 
                         papiaccess.response_successful = True
-                        self.handle_provider_success()
+                        self.handle_indexer_success()
                     except Exception as e:
-                        self.logger.exception("Error while processing search results from provider %s" % self)
-                        raise ProviderResultParsingException("Error while parsing the results from provider", self)
-            except ProviderAuthException as e:
+                        self.logger.exception("Error while processing search results from indexer %s" % self)
+                        raise IndexerResultParsingException("Error while parsing the results from indexer", self)
+            except IndexerAuthException as e:
                 self.logger.error("Unable to authorize with %s: %s" % (e.search_module, e.message))
                 papiaccess.error = "Authorization error :%s" % e.message
-                self.handle_provider_failure(reason="Authentication failed", disable_permanently=True)
+                self.handle_indexer_failure(reason="Authentication failed", disable_permanently=True)
                 papiaccess.response_successful = False
-            except ProviderAccessException as e:
+            except IndexerAccessException as e:
                 self.logger.error("Unable to access %s: %s" % (e.search_module, e.message))
                 papiaccess.error = "Access error: %s" % e.message
-                self.handle_provider_failure(reason="Access failed")
+                self.handle_indexer_failure(reason="Access failed")
                 papiaccess.response_successful = False
-            except ProviderResultParsingException as e:
+            except IndexerResultParsingException as e:
                 papiaccess.error = "Access error: %s" % e.message
-                self.handle_provider_failure(reason="Parsing results failed")
+                self.handle_indexer_failure(reason="Parsing results failed")
                 papiaccess.response_successful = False
             except Exception as e:
                 self.logger.exception("An error error occurred while searching: %s", e)
@@ -267,5 +267,5 @@ class SearchModule(object):
         return QueriesExecutionResult(results=results, dbentry=psearch, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)
 
 
-def get_instance(provider):
-    return SearchModule(provider)
+def get_instance(indexer):
+    return SearchModule(indexer)

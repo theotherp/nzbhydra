@@ -3,20 +3,20 @@ from freezegun import freeze_time
 from furl import furl
 from nzbhydra import config
 
-from nzbhydra.database import Provider
+from nzbhydra.database import Indexer
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.nzbclub import NzbClub
 from nzbhydra.tests.db_prepare import set_and_drop
-from nzbhydra.tests.providerTest import ProviderTestcase
+from nzbhydra.tests.indexerTest import IndexerTestcase
 
 
-class MyTestCase(ProviderTestcase):
+class MyTestCase(IndexerTestcase):
     def setUp(self):
         set_and_drop()
         config.load("testsettings.cfg")
 
     def testUrlGeneration(self):
-        w = NzbClub(config.providerSettings.nzbclub)
+        w = NzbClub(config.indexerSettings.nzbclub)
         self.args = SearchRequest(query="a showtitle", season=1, episode=2)
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
@@ -30,7 +30,7 @@ class MyTestCase(ProviderTestcase):
 
     @freeze_time("2015-09-24 14:00:00", tz_offset=-4)
     def testProcess_results(self):
-        w = NzbClub(config.providerSettings.nzbclub)
+        w = NzbClub(config.indexerSettings.nzbclub)
         with open("mock/nzbclub--q-avengers.xml", encoding="latin-1") as f:
             entries = w.process_query_result(f.read(), "aquery").entries
             self.assertEqual('Avengers.Age.of.Ultron.2015.720p.BluRay.x264.YIFY', entries[0].title)
@@ -46,7 +46,7 @@ class MyTestCase(ProviderTestcase):
 
     
     def testGetNzbLink(self):
-        n = NzbClub(config.providerSettings.nzbclub)
+        n = NzbClub(config.indexerSettings.nzbclub)
         link = n.get_nzb_link("guid", "title")
         self.assertEqual("http://127.0.0.1:5001/nzbclub/nzb_get/guid/title.nzb", link)
     

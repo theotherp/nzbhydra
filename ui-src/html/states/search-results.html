@@ -1,4 +1,4 @@
-<div class="row" ng-if="providersearches" style="margin-top: 50px">
+<div class="row" ng-if="indexersearches" style="margin-top: 50px">
 
     <div class="col-md-3"></div>
     <!-- TODO: Make box smaller if no error messages exist-->
@@ -7,7 +7,7 @@
             <thead>
             <tr>
                 <th class="col-md-6 text-left">
-                    Provider
+                    Indexer
                 </th>
                 <th class="col-md-2 text-left">
                     Results
@@ -23,15 +23,15 @@
             </thead>
             <tbody>
 
-            <tr ng-repeat-start="ps in providersearches " ng-if="0"></tr>
+            <tr ng-repeat-start="ps in indexersearches " ng-if="0"></tr>
             <!-- First result in the list, show regularly -->
             <tr>
                 <td class="text-left">
-                    <input ng-disabled="!ps.successful" type="checkbox" ng-model="providerDisplayState[ps.provider]" ng-click="toggleProviderDisplay(ps.provider)"
-                           tooltip="Uncheck to hide results from this provider"
+                    <input ng-disabled="!ps.successful" type="checkbox" ng-model="indexerDisplayState[ps.indexer]" ng-click="toggleIndexerDisplay(ps.indexer)"
+                           tooltip="Uncheck to hide results from this indexer"
                            tooltip-placement="top"
                            tooltip-trigger="mouseenter"
-                            />{{ ps.provider }}
+                            />{{ ps.indexer }}
                 </td>
                 <td class="text-left">
                     {{ ps.total }}
@@ -57,7 +57,7 @@
 
 </div>
 
-<div class="row" ng-if="providersearches" style="margin-top: 30px">
+<div class="row" ng-if="indexersearches" style="margin-top: 30px">
     <div class="col-md-6" style="text-align: left;">
         <input style="margin-top:20px; margin-bottom:20px;" type="checkbox" ng-model="doShowDuplicates" class="btn btn-default">Include duplicates</input>
         <button style="margin-top:20px; margin-bottom:20px;" type="button" ng-click="downloadSelected()" class="btn btn-default">Download selected</button>
@@ -77,8 +77,8 @@
             <th class="col-md-12 cursor-default search-results-cell" ng-click="setSorting('title', false)" style="vertical-align: top">
                 Title <span ng-show="predicate=='title'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
             </th>
-            <th class="col-md-1 cursor-default search-results-cell" ng-click="setSorting('provider', false)">
-                Provider <span ng-show="predicate=='provider'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+            <th class="col-md-1 cursor-default search-results-cell" ng-click="setSorting('indexer', false)">
+                Indexer <span ng-show="predicate=='indexer'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
             </th>
             <th class="col-md-2 cursor-default search-results-cell" ng-click="setSorting('category', false)" style="vertical-align: top">
                 Category <span ng-show="predicate=='category'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>

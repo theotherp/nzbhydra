@@ -33,7 +33,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
             },
             params: {
                 results: [],
-                providersearches: [],
+                indexersearches: [],
                 total : 0,
                 resultsCount: 0,
                 mode: "results"
@@ -239,8 +239,8 @@ function otherColumns($http, $templateCache, $compile) {
                 return;
             }
             var uri = new URI("internalapi/getnfo");
-            uri.addQuery("provider", resultItem.provider);
-            uri.addQuery("guid", resultItem.providerguid);
+            uri.addQuery("indexer", resultItem.indexer);
+            uri.addQuery("guid", resultItem.indexerguid);
             return $http.get(uri).then(function (response) {
                 if (response.data.has_nfo) {
                     $scope.openModal("lg", response.data.nfo)
@@ -387,8 +387,8 @@ function StatsController($scope, $http) {
 
     $http.get("internalapi/getstats").success(function (response) {
         $scope.avgResponseTimes = response.avgResponseTimes;
-        $scope.avgProviderSearchResultsShares = response.avgProviderSearchResultsShares;
-        $scope.avgProviderAccessSuccesses = response.avgProviderAccessSuccesses;
+        $scope.avgIndexerSearchResultsShares = response.avgIndexerSearchResultsShares;
+        $scope.avgIndexerAccessSuccesses = response.avgIndexerAccessSuccesses;
     });
 
 
@@ -408,7 +408,7 @@ function SearchService($http) {
     var service = {search: search, loadMore: loadMore};
     return service;
 
-    function search(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, selectedProviders) {
+    function search(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, selectedIndexers) {
         console.log("Category: " + category);
         var uri;
         if (category.indexOf("Movies") > -1) {
@@ -475,14 +475,14 @@ function SearchService($http) {
 
     function processData(response) {
         var results = response.data.results;
-        var providersearches = response.data.providersearches;
+        var indexersearches = response.data.indexersearches;
         var total = response.data.total;
         var resultsCount = results.length;
 
 
-        //Sum up response times of providers from individual api accesses
+        //Sum up response times of indexers from individual api accesses
         //TODO: Move this to search result controller because we need to update it every time we loaded more results
-        _.each(providersearches, function (ps) {
+        _.each(indexersearches, function (ps) {
             ps.averageResponseTime = _.reduce(ps.api_accesses, function (memo, rp) {
                 return memo + rp.response_time;
             }, 0);
@@ -490,7 +490,7 @@ function SearchService($http) {
         });
         
 
-        return {"results": results, "providersearches": providersearches, "total": total, "resultsCount": resultsCount}
+        return {"results": results, "indexersearches": indexersearches, "total": total, "resultsCount": resultsCount}
     }
 }
 SearchService.$inject = ["$http"];
@@ -515,11 +515,11 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.offset = 0;
 
     //Handle incoming data
-    $scope.providersearches = $stateParams.providersearches;
+    $scope.indexersearches = $stateParams.indexersearches;
 
-    $scope.providerDisplayState = []; //Stores if a provider's results should be displayed or not
+    $scope.indexerDisplayState = []; //Stores if a indexer's results should be displayed or not
 
-    $scope.providerResultsInfo = {}; //Stores information about the provider's results like how many we already retrieved
+    $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
 
     $scope.groupExpanded = {};
 
@@ -527,13 +527,13 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
     $scope.selected = {};
 
-    //Initially set visibility of all found providers to true, they're needed for initial filtering / sorting
-    _.forEach($scope.providersearches, function (ps) {
-        $scope.providerDisplayState[ps.provider] = true;
+    //Initially set visibility of all found indexers to true, they're needed for initial filtering / sorting
+    _.forEach($scope.indexersearches, function (ps) {
+        $scope.indexerDisplayState[ps.indexer] = true;
     });
 
-    _.forEach($scope.providersearches, function (ps) {
-        $scope.providerResultsInfo[ps.provider] = {loadedResults: ps.loaded_results};
+    _.forEach($scope.indexersearches, function (ps) {
+        $scope.indexerResultsInfo[ps.indexer] = {loadedResults: ps.loaded_results};
     });
 
     //Process results
@@ -550,7 +550,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         return item[0][$scope.sortPredicate];
     }
 
-    //Returns the unique group identifier which allows angular to keep track of the grouped search results even after filtering, making filtering by providers a lot faster (albeit still somewhat slow...)  
+    //Returns the unique group identifier which allows angular to keep track of the grouped search results even after filtering, making filtering by indexers a lot faster (albeit still somewhat slow...)  
     $scope.groupId = groupId;
     function groupId(item) {
         return item[0][0].guid;
@@ -567,7 +567,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     }
 
     //Set sorting according to the predicate. If it's the same as the old one, reverse, if not sort by the given default (so that age is descending, name ascending, etc.)
-    //Sorting (and filtering) are really slow (about 2 seconds for 1000 results from 5 providers) but I haven't found any way of making it faster, apart from the tracking 
+    //Sorting (and filtering) are really slow (about 2 seconds for 1000 results from 5 indexers) but I haven't found any way of making it faster, apart from the tracking 
     $scope.setSorting = setSorting;
     function setSorting(predicate, reversedDefault) {
         startBlocking("Sorting / filtering...").then(function () {
@@ -586,8 +586,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
     function sortAndFilter(results) {
 
-        function getItemProviderDisplayState(item) {
-            return $scope.providerDisplayState[item.provider];
+        function getItemIndexerDisplayState(item) {
+            return $scope.indexerDisplayState[item.indexer];
         }
 
         function getTitleLowerCase(element) {
@@ -602,9 +602,9 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
                     var sortPredicateValue = item[$scope.sortPredicate];
                     return $scope.sortReversed ?  -sortPredicateValue : sortPredicateValue;
                 });
-                //Now sort the hash group by provider score (inverted) so that the result with the highest provider score is shown on top (or as the only one of a hash group if it's collapsed)
+                //Now sort the hash group by indexer score (inverted) so that the result with the highest indexer score is shown on top (or as the only one of a hash group if it's collapsed)
                 sortedHashGroup = _.sortBy(sortedHashGroup, function (item) {
-                    return item.providerscore * -1;
+                    return item.indexerscore * -1;
                 });
                 return sortedHashGroup;
             }
@@ -623,8 +623,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         }
 
         return _.chain(results)
-            //Remove elements of which the provider is currently hidden    
-            .filter(getItemProviderDisplayState)
+            //Remove elements of which the indexer is currently hidden    
+            .filter(getItemIndexerDisplayState)
             //Make groups of results with the same title    
             .groupBy(getTitleLowerCase)
             //For every title group make subgroups of duplicates and sort the group    
@@ -671,8 +671,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
 
 //Filters the results according to new visibility settings.
-    $scope.toggleProviderDisplay = toggleProviderDisplay;
-    function toggleProviderDisplay() {
+    $scope.toggleIndexerDisplay = toggleIndexerDisplay;
+    function toggleIndexerDisplay() {
         startBlocking("Filtering. Sorry...").then(function () {
             $scope.filteredResults = sortAndFilter($scope.results);
         }).then(function () {
@@ -731,9 +731,9 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     $scope.maxsize = (typeof $stateParams.maxsize === "undefined") ? "" : $stateParams.maxsize;
     $scope.minage = (typeof $stateParams.minage === "undefined") ? "" : $stateParams.minage;
     $scope.maxage = (typeof $stateParams.maxage === "undefined") ? "" : $stateParams.maxage;
-    $scope.selectedProviders = (typeof $stateParams.providers === "undefined") ? "" : $stateParams.providers;
+    $scope.selectedIndexers = (typeof $stateParams.indexers === "undefined") ? "" : $stateParams.indexers;
 
-    $scope.showProviders = {};
+    $scope.showIndexers = {};
 
     var config;
 
@@ -751,7 +751,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     $scope.isAskById = false; //If true a check box will be shown asking the user if he wants to search by ID 
     $scope.isById = {value: true}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
 
-    $scope.availableProviders = [];
+    $scope.availableIndexers = [];
 
 
     $scope.autocompleteClass = "autocompletePosterMovies";
@@ -822,8 +822,8 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     $scope.startSearch = function () {
         blockUI.start("Searching...");
-        SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, $scope.selectedProviders).then(function (searchResult) {
-            $state.go("search.results", {"results": searchResult.results, "providersearches": searchResult.providersearches, total: searchResult.total, resultsCount: searchResult.resultsCount});
+        SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, $scope.selectedIndexers).then(function (searchResult) {
+            $state.go("search.results", {"results": searchResult.results, "indexersearches": searchResult.indexersearches, total: searchResult.total, resultsCount: searchResult.resultsCount});
             $scope.imdbid = "";
             $scope.tvdbid = "";
         });
@@ -898,12 +898,12 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     ConfigService.get().then(function (cfg) {
         config = cfg;
 
-        $scope.availableProviders = _.filter(cfg.settings.providers, function (provider) {
-            return provider.enabled;
-        }).map(function (provider) {
-            return {name: provider.name, activated: true};
+        $scope.availableIndexers = _.filter(cfg.settings.indexers, function (indexer) {
+            return indexer.enabled;
+        }).map(function (indexer) {
+            return {name: indexer.name, activated: true};
         });
-        console.log($scope.availableProviders);
+        console.log($scope.availableIndexers);
     });
 
 //Resolve the search request from URL

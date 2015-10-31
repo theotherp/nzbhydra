@@ -4,17 +4,17 @@ import re
 import arrow
 from bs4 import BeautifulSoup
 from furl import furl
-from nzbhydra.config import ProviderBinsearchSettings, resultProcessingSettings
-from nzbhydra.exceptions import ProviderResultParsingException, ProviderAccessException
+from nzbhydra.config import IndexerBinsearchSettings, resultProcessingSettings
+from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
-from nzbhydra.search_module import SearchModule, ProviderProcessingResult
+from nzbhydra.search_module import SearchModule, IndexerProcessingResult
 
 logger = logging.getLogger('root')
 
 
 class Binsearch(SearchModule):
-    def __init__(self, settings: ProviderBinsearchSettings):
+    def __init__(self, settings: IndexerBinsearchSettings):
         super(Binsearch, self).__init__(settings)
         self.module = "binsearch"
 
@@ -71,7 +71,7 @@ class Binsearch(SearchModule):
     def get_moviesearch_urls(self, args):
         return self.get_search_urls(args)
 
-    def process_query_result(self, html, query) -> ProviderProcessingResult:
+    def process_query_result(self, html, query) -> IndexerProcessingResult:
         logger.debug("Binsearch started processing results")
         logger.info("Last results count %d" % self.last_results_count)
         entries = []
@@ -83,7 +83,7 @@ class Binsearch(SearchModule):
         if not main_table:
             logger.error("Unable to find main table in binsearch page: %s..." % html)
             logger.debug(html)
-            raise ProviderResultParsingException("Unable to find main table in binsearch page", self)
+            raise IndexerResultParsingException("Unable to find main table in binsearch page", self)
 
         items = main_table.find_all('tr')
         title_pattern = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"')
@@ -181,7 +181,7 @@ class Binsearch(SearchModule):
                 
         
         logger.warn("Hasmore and total not yet implemented")
-        return ProviderProcessingResult(entries=entries, queries=[], total_known=False, has_more=has_more, total=total) 
+        return IndexerProcessingResult(entries=entries, queries=[], total_known=False, has_more=has_more, total=total) 
 
     def get_nfo(self, guid):
         f = furl(self.base_url)
@@ -203,7 +203,7 @@ class Binsearch(SearchModule):
     
     def check_auth(self, body: str):
         if "The search service is temporarily unavailable" in body:
-            raise ProviderAccessException("The search service is temporarily unavailable.", self)
+            raise IndexerAccessException("The search service is temporarily unavailable.", self)
 
 
     

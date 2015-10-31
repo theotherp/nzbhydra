@@ -13,11 +13,11 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.offset = 0;
 
     //Handle incoming data
-    $scope.providersearches = $stateParams.providersearches;
+    $scope.indexersearches = $stateParams.indexersearches;
 
-    $scope.providerDisplayState = []; //Stores if a provider's results should be displayed or not
+    $scope.indexerDisplayState = []; //Stores if a indexer's results should be displayed or not
 
-    $scope.providerResultsInfo = {}; //Stores information about the provider's results like how many we already retrieved
+    $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
 
     $scope.groupExpanded = {};
 
@@ -25,13 +25,13 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
     $scope.selected = {};
 
-    //Initially set visibility of all found providers to true, they're needed for initial filtering / sorting
-    _.forEach($scope.providersearches, function (ps) {
-        $scope.providerDisplayState[ps.provider] = true;
+    //Initially set visibility of all found indexers to true, they're needed for initial filtering / sorting
+    _.forEach($scope.indexersearches, function (ps) {
+        $scope.indexerDisplayState[ps.indexer] = true;
     });
 
-    _.forEach($scope.providersearches, function (ps) {
-        $scope.providerResultsInfo[ps.provider] = {loadedResults: ps.loaded_results};
+    _.forEach($scope.indexersearches, function (ps) {
+        $scope.indexerResultsInfo[ps.indexer] = {loadedResults: ps.loaded_results};
     });
 
     //Process results
@@ -48,7 +48,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         return item[0][$scope.sortPredicate];
     }
 
-    //Returns the unique group identifier which allows angular to keep track of the grouped search results even after filtering, making filtering by providers a lot faster (albeit still somewhat slow...)  
+    //Returns the unique group identifier which allows angular to keep track of the grouped search results even after filtering, making filtering by indexers a lot faster (albeit still somewhat slow...)  
     $scope.groupId = groupId;
     function groupId(item) {
         return item[0][0].guid;
@@ -65,7 +65,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     }
 
     //Set sorting according to the predicate. If it's the same as the old one, reverse, if not sort by the given default (so that age is descending, name ascending, etc.)
-    //Sorting (and filtering) are really slow (about 2 seconds for 1000 results from 5 providers) but I haven't found any way of making it faster, apart from the tracking 
+    //Sorting (and filtering) are really slow (about 2 seconds for 1000 results from 5 indexers) but I haven't found any way of making it faster, apart from the tracking 
     $scope.setSorting = setSorting;
     function setSorting(predicate, reversedDefault) {
         startBlocking("Sorting / filtering...").then(function () {
@@ -84,8 +84,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
     function sortAndFilter(results) {
 
-        function getItemProviderDisplayState(item) {
-            return $scope.providerDisplayState[item.provider];
+        function getItemIndexerDisplayState(item) {
+            return $scope.indexerDisplayState[item.indexer];
         }
 
         function getTitleLowerCase(element) {
@@ -100,9 +100,9 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
                     var sortPredicateValue = item[$scope.sortPredicate];
                     return $scope.sortReversed ?  -sortPredicateValue : sortPredicateValue;
                 });
-                //Now sort the hash group by provider score (inverted) so that the result with the highest provider score is shown on top (or as the only one of a hash group if it's collapsed)
+                //Now sort the hash group by indexer score (inverted) so that the result with the highest indexer score is shown on top (or as the only one of a hash group if it's collapsed)
                 sortedHashGroup = _.sortBy(sortedHashGroup, function (item) {
-                    return item.providerscore * -1;
+                    return item.indexerscore * -1;
                 });
                 return sortedHashGroup;
             }
@@ -121,8 +121,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         }
 
         return _.chain(results)
-            //Remove elements of which the provider is currently hidden    
-            .filter(getItemProviderDisplayState)
+            //Remove elements of which the indexer is currently hidden    
+            .filter(getItemIndexerDisplayState)
             //Make groups of results with the same title    
             .groupBy(getTitleLowerCase)
             //For every title group make subgroups of duplicates and sort the group    
@@ -169,8 +169,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
 
 //Filters the results according to new visibility settings.
-    $scope.toggleProviderDisplay = toggleProviderDisplay;
-    function toggleProviderDisplay() {
+    $scope.toggleIndexerDisplay = toggleIndexerDisplay;
+    function toggleIndexerDisplay() {
         startBlocking("Filtering. Sorry...").then(function () {
             $scope.filteredResults = sortAndFilter($scope.results);
         }).then(function () {

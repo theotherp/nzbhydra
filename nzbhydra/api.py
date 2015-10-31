@@ -12,8 +12,8 @@ from requests import RequestException
 
 from nzbhydra import config
 from nzbhydra.config import downloaderSettings, NzbAccessTypeSelection
-from nzbhydra import providers
-from nzbhydra.database import ProviderApiAccess, ProviderNzbDownload, Provider, ProviderSearch
+from nzbhydra import indexers
+from nzbhydra.database import IndexerApiAccess, IndexerNzbDownload, Indexer, IndexerSearch
 
 logger = logging.getLogger('root')
 
@@ -46,7 +46,7 @@ def find_duplicates(results):
                 results_to_sets[a] = {a}
             for j in range(i + 1, len(group)):
                 b = group[j]
-                same = a.provider != b.provider 
+                same = a.indexer != b.indexer 
                 same = same and test_for_duplicate_age(a, b)
                 same = same and test_for_duplicate_size(a, b)
                 if same:
@@ -96,7 +96,7 @@ def test_for_duplicate_size(search_result_1, search_result_2):
     return same_size
 
 
-class ProviderSchema(Schema):
+class IndexerSchema(Schema):
     name = fields.String()
     module = fields.String()
     enabled = fields.Boolean()
@@ -110,10 +110,10 @@ class NzbSearchResultSchema(Schema):
     pubdate_utc = fields.String()
     age_days = fields.Integer()
     age_precise = fields.Boolean()
-    provider = fields.String()
-    providerscore = fields.String()
+    indexer = fields.String()
+    indexerscore = fields.String()
     guid = fields.String()
-    providerguid = fields.String()
+    indexerguid = fields.String()
     size = fields.Integer()
     category = fields.String()
     has_nfo = fields.Boolean()
@@ -121,8 +121,8 @@ class NzbSearchResultSchema(Schema):
     hash = fields.Integer()
 
 
-class ProviderApiAccessSchema(Schema):
-    provider = fields.Nested(ProviderSchema, only="name")
+class IndexerApiAccessSchema(Schema):
+    indexer = fields.Nested(IndexerSchema, only="name")
     time = fields.DateTime()
     type = fields.String()
     url = fields.String()
@@ -131,13 +131,13 @@ class ProviderApiAccessSchema(Schema):
     error = fields.String()
 
 
-class ProviderSearchSchema(Schema):
-    provider = fields.Nested(ProviderSchema, only="name")
+class IndexerSearchSchema(Schema):
+    indexer = fields.Nested(IndexerSchema, only="name")
     time = fields.DateTime()
     successful = fields.Boolean()
     results = fields.Integer()
 
-    api_accesses = fields.Nested(ProviderApiAccessSchema, many=True)
+    api_accesses = fields.Nested(IndexerApiAccessSchema, many=True)
 
 
 # todo: thsi needs to be expanded when we support reverse proxies / global urls / whatever
@@ -152,11 +152,11 @@ def transform_results(results, dbsearch):
     for i in results:
         f = furl(get_root_url())
         f.path.add("internalapi/getnzb")
-        data_getnzb = {"provider": i.provider, "guid": i.guid, "searchid": dbsearch, "title": i.title}  # All the data we would like to have when an NZB is downloaded
+        data_getnzb = {"indexer": i.indexer, "guid": i.guid, "searchid": dbsearch, "title": i.title}  # All the data we would like to have when an NZB is downloaded
         f.add(data_getnzb)  # Here we insert it directly into the link as parameters
         i.link = f.url
-        i.providerguid = i.guid  # Save the provider's original GUID so that we can send it later from the GUI to identify the result
-        i.guid = f.url  # For now it's the same as the link to the NZB, later we might link to a details page that at the least redirects to the original provider's page
+        i.indexerguid = i.guid  # Save the indexer's original GUID so that we can send it later from the GUI to identify the result
+        i.guid = f.url  # For now it's the same as the link to the NZB, later we might link to a details page that at the least redirects to the original indexer's page
 
         # Add our pseudo-guid (not the one above, with the link, just an identifier) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
         has_guid = False
@@ -193,14 +193,14 @@ def process_for_external_api(results):
 def process_for_internal_api(search_result):
     nzbsearchresults = search_result["results"]
     logger.debug("Processing %d results" % len(nzbsearchresults))
-    providersearchdbentries = []
-    for provider, provider_info in search_result["provider_infos"].items():
-        provider_search_info = ProviderSearchSchema().dump(provider_info["provider_search"]).data
-        provider_search_info["total"] = provider_info["total"]
-        provider_search_info["offset"] = search_result["provider_infos"][provider]["search_request"].offset
-        provider_search_info["total_known"] = provider_info["total_known"]
-        provider_search_info["has_more"] = provider_info["has_more"]
-        providersearchdbentries.append(provider_search_info)
+    indexersearchdbentries = []
+    for indexer, indexer_info in search_result["indexer_infos"].items():
+        indexer_search_info = IndexerSearchSchema().dump(indexer_info["indexer_search"]).data
+        indexer_search_info["total"] = indexer_info["total"]
+        indexer_search_info["offset"] = search_result["indexer_infos"][indexer]["search_request"].offset
+        indexer_search_info["total_known"] = indexer_info["total_known"]
+        indexer_search_info["has_more"] = indexer_info["has_more"]
+        indexersearchdbentries.append(indexer_search_info)
 
     nzbsearchresults = transform_results(nzbsearchresults, search_result["dbsearch"])
 
@@ -211,33 +211,33 @@ def process_for_internal_api(search_result):
     
     allresults = []
     for group in results:
-        #Sort duplicates by age and then provider's score
+        #Sort duplicates by age and then indexer's score
         #group = sorted(group, key=lambda x: x.epoch, reverse=True)
-        #group = sorted(group, key=lambda x: x.providerscore)
+        #group = sorted(group, key=lambda x: x.indexerscore)
         for i in group:
             # We give each group of results a unique value by which they can be identified later
             i.hash = hash(group[0].guid)
             allresults.append(NzbSearchResultSchema().dump(i).data) 
     
-    return {"results": allresults, "providersearches": providersearchdbentries, "searchentryid": search_result["dbsearch"], "total": search_result["total"]}
+    return {"results": allresults, "indexersearches": indexersearchdbentries, "searchentryid": search_result["dbsearch"], "total": search_result["total"]}
 
 
 def serialize_nzb_search_result(result):
     return NzbSearchResultSchema(many=True).dump(result)
 
 
-def get_nfo(provider_name, guid):
+def get_nfo(indexer_name, guid):
     nfo = None
     result = {}
-    for p in providers.configured_providers:
-        if p.name == provider_name:
+    for p in indexers.configured_indexers:
+        if p.name == indexer_name:
             nfo = p.get_nfo(guid)
             break
     else:
-        logger.error("Did not find provider with name %s" % provider_name)
-        result["error"] = "Unable to find provider"
+        logger.error("Did not find indexer with name %s" % indexer_name)
+        result["error"] = "Unable to find indexer"
     if nfo is None:
-        logger.info("Unable to find NFO for provider %s and guid %s" % (provider_name, guid))
+        logger.info("Unable to find NFO for indexer %s and guid %s" % (indexer_name, guid))
         result["has_nfo"] = False
     else:
         result["has_nfo"] = True
@@ -245,53 +245,53 @@ def get_nfo(provider_name, guid):
     return result
 
 
-def get_nzb_link(provider_name, guid, title, searchid):
+def get_nzb_link(indexer_name, guid, title, searchid):
     """
-    Build a link that leads to the actual NZB of the provider using the given informations. We log this as provider API access and NZB download because this is only called
+    Build a link that leads to the actual NZB of the indexer using the given informations. We log this as indexer API access and NZB download because this is only called
     when the NZB will be actually downloaded later (by us or a downloader) 
     :return: str
     """
-    for p in providers.configured_providers:
-        if p.name == provider_name:
+    for p in indexers.configured_indexers:
+        if p.name == indexer_name:
             link = p.get_nzb_link(guid, title)
 
             # Log to database
-            provider = Provider.get(Provider.name == provider_name)
-            papiaccess = ProviderApiAccess(provider=p.provider, type="nzb", url=link, response_successful=None, provider_search=provider)
+            indexer = Indexer.get(Indexer.name == indexer_name)
+            papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, response_successful=None, indexer_search=indexer)
             papiaccess.save()
-            pnzbdl = ProviderNzbDownload(provider=provider, provider_search=searchid, api_access=papiaccess, mode="redirect")
+            pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode="redirect")
             pnzbdl.save()
 
             return link
 
     else:
-        logger.error("Did not find provider with name %s" % provider_name)
+        logger.error("Did not find indexer with name %s" % indexer_name)
         return None
 
 
-ProviderNzbDownloadResult = namedtuple("ProviderNzbDownload", "content headers")
+IndexerNzbDownloadResult = namedtuple("IndexerNzbDownload", "content headers")
 
 
-def download_nzb_and_log(provider_name, guid, title, searchid) -> ProviderNzbDownloadResult:
+def download_nzb_and_log(indexer_name, guid, title, searchid) -> IndexerNzbDownloadResult:
     """
-    Gets the NZB link from the provider using the guid, downloads it and logs the download
+    Gets the NZB link from the indexer using the guid, downloads it and logs the download
 
-    :param provider_name: name of the provider
+    :param indexer_name: name of the indexer
     :param guid: guid to build link
     :param title: the title to build the link
-    :param searchid: the id of the ProviderSearch entry so we can link the download to a search
-    :return: ProviderNzbDownloadResult
+    :param searchid: the id of the IndexerSearch entry so we can link the download to a search
+    :return: IndexerNzbDownloadResult
     """
-    for p in providers.configured_providers:
-        if p.name == provider_name:
+    for p in indexers.configured_indexers:
+        if p.name == indexer_name:
 
             link = p.get_nzb_link(guid, title)
-            provider = Provider.get(Provider.name == provider_name)
-            psearch = ProviderSearch.get((ProviderSearch.provider == provider) & (ProviderSearch.search == searchid))
-            papiaccess = ProviderApiAccess(provider=p.provider, type="nzb", url=link, provider_search=psearch)
+            indexer = Indexer.get(Indexer.name == indexer_name)
+            psearch = IndexerSearch.get((IndexerSearch.indexer == indexer) & (IndexerSearch.search == searchid))
+            papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, indexer_search=psearch)
             papiaccess.save()
             
-            pnzbdl = ProviderNzbDownload(provider=provider, provider_search=searchid, api_access=papiaccess, mode="serve", title=title)
+            pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode="serve", title=title)
             pnzbdl.save()
             try:
                 r = p.get(link)
@@ -300,7 +300,7 @@ def download_nzb_and_log(provider_name, guid, title, searchid) -> ProviderNzbDow
                 papiaccess.response_successful = True
                 papiaccess.response_time = r.elapsed.microseconds / 1000
 
-                return ProviderNzbDownloadResult(content=r.content, headers=r.headers)
+                return IndexerNzbDownloadResult(content=r.content, headers=r.headers)
             except RequestException as e:
                 logger.error("Error while connecting to URL %s: %s" % (link, str(e)))
                 papiaccess.error = str(e)
@@ -311,8 +311,8 @@ def download_nzb_and_log(provider_name, guid, title, searchid) -> ProviderNzbDow
         return "Unable to find NZB link"
 
 
-def get_nzb_response(provider_name, guid, title, searchid):
-    nzbdownloadresult = download_nzb_and_log(provider_name, guid, title, searchid)
+def get_nzb_response(indexer_name, guid, title, searchid):
+    nzbdownloadresult = download_nzb_and_log(indexer_name, guid, title, searchid)
     if nzbdownloadresult is not None:
         bio = BytesIO(nzbdownloadresult.content)
         filename = title + ".nzb" if title is not None else "nzbhydra.nzb"

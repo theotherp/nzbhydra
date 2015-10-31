@@ -10,7 +10,7 @@ function SearchService($http) {
     var service = {search: search, loadMore: loadMore};
     return service;
 
-    function search(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, selectedProviders) {
+    function search(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, selectedIndexers) {
         console.log("Category: " + category);
         var uri;
         if (category.indexOf("Movies") > -1) {
@@ -77,14 +77,14 @@ function SearchService($http) {
 
     function processData(response) {
         var results = response.data.results;
-        var providersearches = response.data.providersearches;
+        var indexersearches = response.data.indexersearches;
         var total = response.data.total;
         var resultsCount = results.length;
 
 
-        //Sum up response times of providers from individual api accesses
+        //Sum up response times of indexers from individual api accesses
         //TODO: Move this to search result controller because we need to update it every time we loaded more results
-        _.each(providersearches, function (ps) {
+        _.each(indexersearches, function (ps) {
             ps.averageResponseTime = _.reduce(ps.api_accesses, function (memo, rp) {
                 return memo + rp.response_time;
             }, 0);
@@ -92,7 +92,7 @@ function SearchService($http) {
         });
         
 
-        return {"results": results, "providersearches": providersearches, "total": total, "resultsCount": resultsCount}
+        return {"results": results, "indexersearches": indexersearches, "total": total, "resultsCount": resultsCount}
     }
 }
 

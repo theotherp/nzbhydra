@@ -5,14 +5,14 @@ from furl import furl
 import pytest
 from nzbhydra import config
 
-from nzbhydra.database import Provider
+from nzbhydra.database import Indexer
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.binsearch import Binsearch
 from nzbhydra.tests.db_prepare import set_and_drop
-from nzbhydra.tests.providerTest import ProviderTestcase
+from nzbhydra.tests.indexerTest import IndexerTestcase
 
 
-class MyTestCase(ProviderTestcase):
+class MyTestCase(IndexerTestcase):
     
     @pytest.fixture
     def setUp(self):
@@ -21,7 +21,7 @@ class MyTestCase(ProviderTestcase):
         
 
     def testUrlGeneration(self):
-        w = Binsearch(config.providerSettings.binsearch)
+        w = Binsearch(config.indexerSettings.binsearch)
         self.args = SearchRequest(query="a showtitle", season=1, episode=2)
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(2, len(urls))
@@ -36,7 +36,7 @@ class MyTestCase(ProviderTestcase):
 
     @freeze_time("2015-09-30 14:00:00", tz_offset=-4)
     def testProcess_results(self):
-        w = Binsearch(config.providerSettings.binsearch)
+        w = Binsearch(config.indexerSettings.binsearch)
         with open("mock/binsearch--q-avengers.html", encoding="latin-1") as f:
             body = f.read()
             result = w.process_query_result(body, "aquery")
@@ -62,7 +62,7 @@ class MyTestCase(ProviderTestcase):
     
     
     def testProcess_results_totalknown(self):
-        w = Binsearch(config.providerSettings.binsearch)
+        w = Binsearch(config.indexerSettings.binsearch)
         with open("mock/binsearch--q-avengers3results.html", encoding="latin-1") as f:
             body = f.read()
             result = w.process_query_result(body, "aquery")
@@ -76,7 +76,7 @@ class MyTestCase(ProviderTestcase):
             
                 
     def testGetNzbLink(self):
-        n = Binsearch(config.providerSettings.binsearch)
+        n = Binsearch(config.indexerSettings.binsearch)
         link = n.get_nzb_link("guid", "title")
         assert "action=nzb" in link
         assert "guid=1" in link

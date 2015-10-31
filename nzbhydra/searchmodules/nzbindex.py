@@ -8,17 +8,17 @@ from furl import furl
 import requests
 
 from nzbhydra.config import resultProcessingSettings
-from nzbhydra.exceptions import ProviderResultParsingException, ProviderAccessException
+from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException
 from nzbhydra.nzb_search_result import NzbSearchResult
-from nzbhydra.search_module import SearchModule, ProviderProcessingResult
+from nzbhydra.search_module import SearchModule, IndexerProcessingResult
 
 logger = logging.getLogger('root')
 
 
 # Probably only as RSS supply, not for searching. Will need to do a (config) setting defining that. When searches without specifier are done we can include indexers like that
 class NzbIndex(SearchModule):
-    def __init__(self, provider):
-        super(NzbIndex, self).__init__(provider)
+    def __init__(self, indexer):
+        super(NzbIndex, self).__init__(indexer)
         self.module = "nzbindex"
 
         self.supports_queries = True  # We can only search using queries
@@ -61,7 +61,7 @@ class NzbIndex(SearchModule):
         # overwrite for special handling, e.g. cookies
         return requests.get(query, timeout=timeout, verify=False, cookies={"agreed": "true", "lang": "2"})
 
-    def process_query_result(self, html, query) -> ProviderProcessingResult:
+    def process_query_result(self, html, query) -> IndexerProcessingResult:
         logger.debug("%s started processing results" % self.name)
 
         entries = []
@@ -73,7 +73,7 @@ class NzbIndex(SearchModule):
         if not main_table or not main_table.find("tbody"):
             logger.error("Unable to find main table in NZBIndex page: %s..." % html[:500])
             logger.debug(html)
-            raise ProviderResultParsingException("Unable to find main table in NZBIndex page", self)
+            raise IndexerResultParsingException("Unable to find main table in NZBIndex page", self)
 
         items = main_table.find("tbody").find_all('tr')
         size_pattern = re.compile(r"(?P<size>[0-9]+(\.[0-9]+)?).(?P<unit>(GB|MB|KB|B))")
@@ -181,7 +181,7 @@ class NzbIndex(SearchModule):
             has_more = False
             
         logger.debug("%s finished processing results" % self.name)
-        return ProviderProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=has_more)
+        return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=has_more)
 
     def get_nfo(self, guid):
         f = furl(self.host)
@@ -206,8 +206,8 @@ class NzbIndex(SearchModule):
 
     def check_auth(self, body: str):
         if "503 Service Temporarily Unavailable" in body or "The search service is temporarily unavailable" in body:
-            raise ProviderAccessException("The search service is temporarily unavailable.", self)  # The server should return code 503 instead of 200...
+            raise IndexerAccessException("The search service is temporarily unavailable.", self)  # The server should return code 503 instead of 200...
 
 
-def get_instance(provider):
-    return NzbIndex(provider)
+def get_instance(indexer):
+    return NzbIndex(indexer)

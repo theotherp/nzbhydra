@@ -4,7 +4,7 @@ import string
 import arrow
 
 
-def buildNewznabItem(id=None, title=None, guid=None, link=None, pubdate=None, description=None, size=None, provider_name=None, categories=[]):
+def buildNewznabItem(id=None, title=None, guid=None, link=None, pubdate=None, description=None, size=None, indexer_name=None, categories=[]):
     if title is None:
         ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
     if id is None:
@@ -12,7 +12,7 @@ def buildNewznabItem(id=None, title=None, guid=None, link=None, pubdate=None, de
     if guid is None:
         guid = title + ".guid"
     if link is None:
-        link = "http://www.%s.info/%s" % (provider_name if provider_name is not None else "aprovider", title)
+        link = "http://www.%s.info/%s" % (indexer_name if indexer_name is not None else "aindexer", title)
     if description is None:
         description = title + ".description"
     if pubdate is None:

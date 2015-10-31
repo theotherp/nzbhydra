@@ -6,7 +6,7 @@
                     <caption>Avg. response times</caption>
                     <thead>
                     <tr>
-                        <th>Provider</th>
+                        <th>Indexer</th>
                         <th>Avg. response time</th>
                         <th>Delta</th>
                     </tr>
@@ -27,14 +27,14 @@
                     <caption>Avg. results shares</caption>
                     <thead>
                     <tr>
-                        <th>Provider</th>
+                        <th>Indexer</th>
                         <th>Avg. results share</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="avgProviderSearchResultsShare in avgProviderSearchResultsShares">
-                        <td>{{ avgProviderSearchResultsShare.name }}</td>
-                        <td>{{ avgProviderSearchResultsShare.avgResultsShare }}</td>
+                    <tr ng-repeat="avgIndexerSearchResultsShare in avgIndexerSearchResultsShares">
+                        <td>{{ avgIndexerSearchResultsShare.name }}</td>
+                        <td>{{ avgIndexerSearchResultsShare.avgResultsShare }}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -44,19 +44,19 @@
         <div class="row">
             <div class="col-md-9">
                 <table class="table">
-                    <caption>Avg. provider access success</caption>
+                    <caption>Avg. indexer access success</caption>
                     <thead>
                     <tr>
-                        <th>Provider</th>
+                        <th>Indexer</th>
                         <th>% successful</th>
                         <th>% failed</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="avgProviderAccessSuccess in avgProviderAccessSuccesses">
-                        <td>{{ avgProviderAccessSuccess.name }}</td>
-                        <td>{{ avgProviderAccessSuccess.successPercent }}</td>
-                        <td>{{ avgProviderAccessSuccess.failedPercent }}</td>
+                    <tr ng-repeat="avgIndexerAccessSuccess in avgIndexerAccessSuccesses">
+                        <td>{{ avgIndexerAccessSuccess.name }}</td>
+                        <td>{{ avgIndexerAccessSuccess.successPercent }}</td>
+                        <td>{{ avgIndexerAccessSuccess.failedPercent }}</td>
                     </tr>
                     </tbody>
                 </table>

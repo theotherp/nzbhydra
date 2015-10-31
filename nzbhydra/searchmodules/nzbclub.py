@@ -6,10 +6,10 @@ import arrow
 
 from furl import furl
 import requests
-from nzbhydra.exceptions import ProviderResultParsingException
+from nzbhydra.exceptions import IndexerResultParsingException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
-from nzbhydra.search_module import SearchModule, ProviderProcessingResult
+from nzbhydra.search_module import SearchModule, IndexerProcessingResult
 
 logger = logging.getLogger('root')
 
@@ -17,8 +17,8 @@ logger = logging.getLogger('root')
 class NzbClub(SearchModule):
     
 
-    def __init__(self, provider):
-        super(NzbClub, self).__init__(provider)
+    def __init__(self, indexer):
+        super(NzbClub, self).__init__(indexer)
         self.module = "nzbclub"
 
         self.supports_queries = True  # We can only search using queries
@@ -38,7 +38,7 @@ class NzbClub(SearchModule):
         f = self.build_base_url().add({"q": search_request.query})
         return [f.tostr()]
 
-    def get_showsearch_urls(self, search_request) -> ProviderProcessingResult:
+    def get_showsearch_urls(self, search_request) -> IndexerProcessingResult:
         if search_request.season is not None:
             # Restrict query if season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
             if search_request.episode is not None:
@@ -58,7 +58,7 @@ class NzbClub(SearchModule):
         except Exception:
             logger.exception("Error parsing XML: %s..." % xml[:500])
             logger.debug(xml)
-            raise ProviderResultParsingException("Error while parsing XML from NZBClub", self)
+            raise IndexerResultParsingException("Error while parsing XML from NZBClub", self)
         
         group_pattern = re.compile(r"Newsgroup: ?([\w@\. \(\)]+) <br />")
         poster_pattern = re.compile(r"Poster: ?([\w@\. \(\)]+) <br />")
@@ -79,7 +79,7 @@ class NzbClub(SearchModule):
 
             entry.link = url.attrib["url"]
             entry.size = int(url.attrib["length"])
-            entry.provider = self.name
+            entry.indexer = self.name
             entry.category = "N/A"
             entry.details_link = elem.find("link").text
 
@@ -108,7 +108,7 @@ class NzbClub(SearchModule):
             entries.append(entry)
             
         logger.debug("%s finished processing results" % self.name)
-        return ProviderProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False) #No paging with RSS. Might need/want to change to HTML and BS
+        return IndexerProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False) #No paging with RSS. Might need/want to change to HTML and BS
     
     def get_nfo(self, guid):
         f = furl(self.settings.host.get())
@@ -129,5 +129,5 @@ class NzbClub(SearchModule):
         return f.tostr()
         
 
-def get_instance(provider):
-    return NzbClub(provider)
+def get_instance(indexer):
+    return NzbClub(indexer)

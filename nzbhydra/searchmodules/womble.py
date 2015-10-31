@@ -4,18 +4,18 @@ import arrow
 from furl import furl
 import xml.etree.ElementTree as ET
 from nzbhydra.config import InternalExternalSelection
-from nzbhydra.exceptions import ProviderResultParsingException
+from nzbhydra.exceptions import IndexerResultParsingException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
-from nzbhydra.search_module import SearchModule, ProviderProcessingResult
+from nzbhydra.search_module import SearchModule, IndexerProcessingResult
 
 logger = logging.getLogger('root')
 
 class Womble(SearchModule):
     # TODO init of config which is dynmic with its path
 
-    def __init__(self, provider):
-        super(Womble, self).__init__(provider)
+    def __init__(self, indexer):
+        super(Womble, self).__init__(indexer)
         self.module = "womble"
         
         self.settings.generate_queries = InternalExternalSelection.never #Doesn't matter because supports_queries is False
@@ -24,17 +24,17 @@ class Womble(SearchModule):
         self.supports_queries = False  # Only as support for general tv search
 
     def build_base_url(self):
-        url = furl(self.provider.settings.get("query_url")).add({"fr": "false"})
+        url = furl(self.indexer.settings.get("query_url")).add({"fr": "false"})
         return url
 
     def get_search_urls(self, search_request):
-        logger.error("This provider does not support queries")
+        logger.error("This indexer does not support queries")
         return []
 
     def get_showsearch_urls(self, search_request):
         urls = []
         if search_request.query or search_request.imdbid or search_request.rid or search_request.tvdbid or search_request.season or search_request.episode:
-            logger.error("This provider does not support specific searches")
+            logger.error("This indexer does not support specific searches")
             return []
         if search_request.category:
             if search_request.category == "TV SD" or search_request.category == "TV":
@@ -48,17 +48,17 @@ class Womble(SearchModule):
         return urls
 
     def get_moviesearch_urls(self, search_request):
-        logger.error("This provider does not support movie search")
+        logger.error("This indexer does not support movie search")
         return []
 
-    def process_query_result(self, xml, query) -> ProviderProcessingResult:
+    def process_query_result(self, xml, query) -> IndexerProcessingResult:
         entries = []
         try:
             tree = ET.fromstring(xml)
         except Exception:
             logger.exception("Error parsing XML: %s..." % xml[:500])
             logger.debug(xml)
-            raise ProviderResultParsingException("Error parsing XML", self)
+            raise IndexerResultParsingException("Error parsing XML", self)
         for elem in tree.iter('item'):
             title = elem.find("title")
             url = elem.find("enclosure")
@@ -93,7 +93,7 @@ class Womble(SearchModule):
              
             entries.append(entry)
             
-        return ProviderProcessingResult(entries=entries, queries=[])
+        return IndexerProcessingResult(entries=entries, queries=[])
     
     def get_nzb_link(self, guid, title):
         f = furl(self.base_url)
@@ -102,5 +102,5 @@ class Womble(SearchModule):
         return f.tostr()
 
 
-def get_instance(provider):
-    return Womble(provider)
+def get_instance(indexer):
+    return Womble(indexer)

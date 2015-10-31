@@ -1,7 +1,7 @@
 import unittest
 
 
-class ProviderTestcase(unittest.TestCase):
+class IndexerTestcase(unittest.TestCase):
     args = {
         "apikey": "",
         "t": "",

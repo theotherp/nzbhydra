@@ -26,8 +26,8 @@ function otherColumns($http, $templateCache, $compile) {
                 return;
             }
             var uri = new URI("internalapi/getnfo");
-            uri.addQuery("provider", resultItem.provider);
-            uri.addQuery("guid", resultItem.providerguid);
+            uri.addQuery("indexer", resultItem.indexer);
+            uri.addQuery("guid", resultItem.indexerguid);
             return $http.get(uri).then(function (response) {
                 if (response.data.has_nfo) {
                     $scope.openModal("lg", response.data.nfo)

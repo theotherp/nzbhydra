@@ -33,7 +33,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             },
             params: {
                 results: [],
-                providersearches: [],
+                indexersearches: [],
                 total : 0,
                 resultsCount: 0,
                 mode: "results"

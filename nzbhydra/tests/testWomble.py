@@ -2,16 +2,16 @@ import unittest
 
 from freezegun import freeze_time
 
-from nzbhydra.database import Provider
+from nzbhydra.database import Indexer
 from nzbhydra.searchmodules.womble import Womble
 from nzbhydra.tests.db_prepare import set_and_drop
-from nzbhydra.tests.providerTest import ProviderTestcase
+from nzbhydra.tests.indexerTest import IndexerTestcase
 
 
-class MyTestCase(ProviderTestcase):
+class MyTestCase(IndexerTestcase):
     def setUp(self):
         set_and_drop()
-        womble = Provider(module="womble", name="Womble", settings={"query_url": "http://127.0.0.1:5001/womble", "base_url": "http://127.0.0.1:5001/womble"}, search_types=["general"], search_ids=[])
+        womble = Indexer(module="womble", name="Womble", settings={"query_url": "http://127.0.0.1:5001/womble", "base_url": "http://127.0.0.1:5001/womble"}, search_types=["general"], search_ids=[])
         womble.save()
         self.womble = Womble(womble)
 

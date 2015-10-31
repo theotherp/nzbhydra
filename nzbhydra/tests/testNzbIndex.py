@@ -7,17 +7,17 @@ from nzbhydra import config
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.nzbindex import NzbIndex
 from nzbhydra.tests.db_prepare import set_and_drop
-from nzbhydra.tests.providerTest import ProviderTestcase
+from nzbhydra.tests.indexerTest import IndexerTestcase
 
 
-class MyTestCase(ProviderTestcase):
+class MyTestCase(IndexerTestcase):
     @pytest.fixture
     def setUp(self):
         set_and_drop()
         config.load("testsettings.cfg")
 
     def testUrlGeneration(self):
-        w = NzbIndex(config.providerSettings.nzbindex)
+        w = NzbIndex(config.indexerSettings.nzbindex)
         self.args = SearchRequest(query="a showtitle", season=1, episode=2)
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
@@ -32,7 +32,7 @@ class MyTestCase(ProviderTestcase):
         
     @ freeze_time("2015-10-03 20:15:00", tz_offset=+2)
     def testProcess_results(self):
-        w = NzbIndex(config.providerSettings.nzbindex)
+        w = NzbIndex(config.indexerSettings.nzbindex)
         with open("mock/nzbindex--q-avengers.html") as f:
             processing_result = w.process_query_result(f.read(), "aquery")
             entries = processing_result.entries
@@ -62,6 +62,6 @@ class MyTestCase(ProviderTestcase):
         assert "I agree" not in text
 
     def testGetNzbLink(self):
-        n = NzbIndex(config.providerSettings.nzbindex)
+        n = NzbIndex(config.indexerSettings.nzbindex)
         link = n.get_nzb_link("guid", "title")
         self.assertEqual("http://127.0.0.1:5001/nzbindex/download/guid/title.nzb", link)

@@ -23,9 +23,9 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     $scope.maxsize = (typeof $stateParams.maxsize === "undefined") ? "" : $stateParams.maxsize;
     $scope.minage = (typeof $stateParams.minage === "undefined") ? "" : $stateParams.minage;
     $scope.maxage = (typeof $stateParams.maxage === "undefined") ? "" : $stateParams.maxage;
-    $scope.selectedProviders = (typeof $stateParams.providers === "undefined") ? "" : $stateParams.providers;
+    $scope.selectedIndexers = (typeof $stateParams.indexers === "undefined") ? "" : $stateParams.indexers;
 
-    $scope.showProviders = {};
+    $scope.showIndexers = {};
 
     var config;
 
@@ -43,7 +43,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     $scope.isAskById = false; //If true a check box will be shown asking the user if he wants to search by ID 
     $scope.isById = {value: true}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
 
-    $scope.availableProviders = [];
+    $scope.availableIndexers = [];
 
 
     $scope.autocompleteClass = "autocompletePosterMovies";
@@ -114,8 +114,8 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     $scope.startSearch = function () {
         blockUI.start("Searching...");
-        SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, $scope.selectedProviders).then(function (searchResult) {
-            $state.go("search.results", {"results": searchResult.results, "providersearches": searchResult.providersearches, total: searchResult.total, resultsCount: searchResult.resultsCount});
+        SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, $scope.selectedIndexers).then(function (searchResult) {
+            $state.go("search.results", {"results": searchResult.results, "indexersearches": searchResult.indexersearches, total: searchResult.total, resultsCount: searchResult.resultsCount});
             $scope.imdbid = "";
             $scope.tvdbid = "";
         });
@@ -190,12 +190,12 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     ConfigService.get().then(function (cfg) {
         config = cfg;
 
-        $scope.availableProviders = _.filter(cfg.settings.providers, function (provider) {
-            return provider.enabled;
-        }).map(function (provider) {
-            return {name: provider.name, activated: true};
+        $scope.availableIndexers = _.filter(cfg.settings.indexers, function (indexer) {
+            return indexer.enabled;
+        }).map(function (indexer) {
+            return {name: indexer.name, activated: true};
         });
-        console.log($scope.availableProviders);
+        console.log($scope.availableIndexers);
     });
 
 //Resolve the search request from URL
