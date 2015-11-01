@@ -1,4 +1,4 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'schemaForm', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch']);
 
 
 angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$locationProvider", "blockUIConfig", function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig) {
@@ -34,7 +34,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
             params: {
                 results: [],
                 indexersearches: [],
-                total : 0,
+                total: 0,
                 resultsCount: 0,
                 mode: "results"
             }
@@ -42,9 +42,15 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
         .state("config", {
             url: "/config",
             templateUrl: "static/html/states/config.html",
-            controller: "ConfigController"
+            controller: "ConfigController",
+            resolve: {
+                configPromise: ['ConfigService', function (ConfigService) {
+                    return ConfigService.get();
+                    //return "";
+                }]
+            }
         })
-    .state("stats", {
+        .state("stats", {
             url: "/stats",
             templateUrl: "static/html/states/stats.html",
             controller: "StatsController"
@@ -55,11 +61,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
 
 }]);
 
-nzbhydraapp.config(["paginationTemplateProvider", function(paginationTemplateProvider) {
+nzbhydraapp.config(["paginationTemplateProvider", function (paginationTemplateProvider) {
     paginationTemplateProvider.setPath('static/html/dirPagination.tpl.html');
 }]);
-
-
 
 nzbhydraapp.config(['$httpProvider', function ($httpProvider) {
     var interceptor = ['$location', '$q', '$injector', function ($location, $q, $injector) {
@@ -342,6 +346,29 @@ function downloadHistory() {
 
 
     }
+}
+angular
+    .module('nzbhydraApp')
+    .directive('cfgFormEntry', cfgFormEntry);
+
+function cfgFormEntry() {
+    return {
+        templateUrl: 'static/html/directives/cfg-form-entry.html',
+        require: ["^title", "^cfg"],
+        scope: {
+            title: "@",
+            cfg: "=",
+            help: "@",
+            type: "@?",
+            options: "=?"
+        },
+        controller: ["$scope", "$element", "$attrs", function ($scope, $element, $attrs) {
+            $scope.type = angular.isDefined($scope.type) ? $scope.type : 'text';
+            $scope.options = angular.isDefined($scope.type) ? $scope.$eval($attrs.options) : [];
+            console.log($scope.options);
+
+        }]
+    };
 }
 angular
     .module('nzbhydraApp')
@@ -1088,7 +1115,7 @@ function ConfigService($http, $q) {
 
 
         return loadAll().then(function (config) {
-            return {schema: config.schema, settings: config.settings, form: config.form}
+            return {settings: config}
         });
 
     }
@@ -1098,24 +1125,239 @@ angular
     .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
 
-function ConfigController($scope, $http, ConfigService, blockUI) {
+angular
+    .module('nzbhydraApp')
+    .config(["formlyConfigProvider", function config(formlyConfigProvider) {
+        // set templates here
+        formlyConfigProvider.setWrapper({
+            name: 'horizontalBootstrapLabel',
+            template: [
+                '<div class="row form-group form-horizontal">',
+                '<div style="text-align:right;">',
+                '<label for="{{::id}}" class="col-md-6 control-label">',
+                '{{to.label}} {{to.required ? "*" : ""}}',
+                '</label>',
+                '</div>',
+                '<div class="col-md-8">',
+                '<formly-transclude></formly-transclude>',
+                '</div>',
+                '<span class="help-block">{{to.help}}</div>',
+                '</div>'
+            ].join(' ')
+        });
 
-    activate();
-    
-    
-    function activate() {
-        $scope.$on('sf-render-finished', function () {
-            blockUI.reset();
-            console.log("Render of form finished");
+
+        formlyConfigProvider.setWrapper({
+            name: 'fieldset',
+            template: [
+                '<fieldset>',
+                '<legend>{{options.templateOptions.label}}</legend>',
+                '<formly-transclude></formly-transclude>',
+                '</fieldset>'
+            ].join(' ')
         });
-        blockUI.start("Loading config...");
-        return ConfigService.get().then(function set(settingsAndSchemaAndForm) {
-            $scope.model = settingsAndSchemaAndForm.settings;
-            $scope.schema = settingsAndSchemaAndForm.schema;
-            $scope.form = settingsAndSchemaAndForm.form;
+
+        formlyConfigProvider.setType({
+            name: 'horizontalInput',
+            extends: 'input',
+            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
         });
-    }
+
+
+        formlyConfigProvider.setType({
+            name: 'switch',
+            template: [
+                '<div style="text-align:left"><input bs-switch type="checkbox" ng-model="model[options.key]"/></div>'
+            ].join(' ')
+
+        });
+
+        formlyConfigProvider.setType({
+            name: 'horizontalSwitch',
+            extends: 'switch',
+            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+        });
+
+        formlyConfigProvider.setType({
+            name: 'horizontalSelect',
+            extends: 'select',
+            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+        });
+
+    }]);
+
+
+function ConfigController($scope, ConfigService, configPromise) {
+
+    console.log(configPromise);
+    $scope.config = configPromise.settings;
+
+    $scope.fields = {
+        main: [
+            {
+                wrapper: 'fieldset',
+                templateOptions: {label: 'Hosting'},
+                fieldGroup: [
+                    {
+                        key: 'host',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Host',
+                            placeholder: 'IPv4 address to bind to'
+                        }
+                    },
+                    {
+                        key: 'port',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Port',
+                            placeholder: '5050'
+                        }
+                    },
+                    {
+                        key: 'ssl',
+                        type: 'horizontalSwitch',
+                        templateOptions: {
+                            type: 'switch',
+                            label: 'Use SSL'
+                        }
+                    },
+                    {
+                        key: 'sslcert',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'SSL certificate file'
+                        }
+                    },
+                    {
+                        key: 'sslkey',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'SSL key file'
+                        }
+                    }
+
+
+                ]
+            },
+            {
+                wrapper: 'fieldset',
+                templateOptions: {label: 'Security'},
+                fieldGroup: [
+                    {
+                        key: 'enableAuth',
+                        type: 'horizontalSwitch',
+                        templateOptions: {
+                            type: 'switch',
+                            label: 'Enable authentication'
+                        }
+                    },
+                    {
+                        key: 'username',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Username',
+                            help: 'Only applies if authentication is enabled'
+                        }
+                    },
+                    {
+                        key: 'password',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Password',
+                            help: 'Only applies if authentication is enabled'
+                        }
+                    },
+                    {
+                        key: 'apikey',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'API key'
+                        }
+                    }
+
+                ]
+            },
+            {
+                wrapper: 'fieldset',
+                templateOptions: {label: 'Caching'},
+                fieldGroup: [
+                    {
+                        key: 'enableCache',
+                        type: 'horizontalSwitch',
+                        templateOptions: {
+                            type: 'switch',
+                            label: 'Enable caching'
+                        }
+                    },
+                    {
+                        key: 'cacheType',
+                        type: 'horizontalSelect',
+                        templateOptions: {
+                            type: 'select',
+                            label: 'Type',
+                            options: [
+                                {name: 'Memory only', value: 'memory'},
+                                {name: 'File sytem', value: 'file'}
+                            ]
+                        }
+                    },
+                    {
+                        key: 'cacheTimeout',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Cache timeout',
+                            help: 'Only applies if authentication is enabled'
+                        }
+                    },
+                    {
+                        key: 'cachethreshold',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Cache threshold'
+                        }
+                    },
+                    {
+                        key: 'cacheFolder',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Cache folder'
+                        }
+                    }
+
+                ]
+            },
+
+            {
+                wrapper: 'fieldset',
+                templateOptions: {label: 'Other'},
+                fieldGroup: [
+                    {
+                        key: 'debug',
+                        type: 'horizontalSwitch',
+                        templateOptions: {
+                            type: 'switch',
+                            label: 'Enable debugging',
+                            help: "Only do this if you know what and why you're doing it"
+                        }
+                    }
+                ]
+            }]
+    };
     
+    
+    
+
 
     $scope.onSubmit = function (form) {
         // First we broadcast an event so all fields validate themselves
@@ -1123,11 +1365,11 @@ function ConfigController($scope, $http, ConfigService, blockUI) {
 
         // Then we check if the form is valid
         if (form.$valid) {
-            ConfigService.set($scope.model);
+            ConfigService.set($scope.config);
         }
     }
 }
-ConfigController.$inject = ["$scope", "$http", "ConfigService", "blockUI"];
+ConfigController.$inject = ["$scope", "ConfigService", "configPromise"];
 
 
 

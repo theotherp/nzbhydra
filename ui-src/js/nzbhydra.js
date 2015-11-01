@@ -1,4 +1,4 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'schemaForm', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch']);
 
 
 angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig) {
@@ -34,7 +34,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             params: {
                 results: [],
                 indexersearches: [],
-                total : 0,
+                total: 0,
                 resultsCount: 0,
                 mode: "results"
             }
@@ -42,9 +42,15 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         .state("config", {
             url: "/config",
             templateUrl: "static/html/states/config.html",
-            controller: "ConfigController"
+            controller: "ConfigController",
+            resolve: {
+                configPromise: ['ConfigService', function (ConfigService) {
+                    return ConfigService.get();
+                    //return "";
+                }]
+            }
         })
-    .state("stats", {
+        .state("stats", {
             url: "/stats",
             templateUrl: "static/html/states/stats.html",
             controller: "StatsController"
@@ -55,11 +61,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
 
 });
 
-nzbhydraapp.config(function(paginationTemplateProvider) {
+nzbhydraapp.config(function (paginationTemplateProvider) {
     paginationTemplateProvider.setPath('static/html/dirPagination.tpl.html');
 });
-
-
 
 nzbhydraapp.config(['$httpProvider', function ($httpProvider) {
     var interceptor = ['$location', '$q', '$injector', function ($location, $q, $injector) {

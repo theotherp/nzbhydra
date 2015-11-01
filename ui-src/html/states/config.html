@@ -1,6 +1,16 @@
 <div class="row">
     <div class="col-md-2"></div>
-    <div class="col-md-8">
-        <form name="configform" sf-schema="schema" sf-form="form" sf-model="model" ng-submit="onSubmit(configform)"></form>
+    <div class="col-md-16">
+        <uib-tabset>
+             <uib-tab heading="Main">
+                 
+                <formly-form model="config.main" fields="fields.main">
+                    
+            
+                </formly-form>
+            </uib-tab>
+        </uib-tabset>
+
+
     </div>
 </div>

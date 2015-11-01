@@ -61,6 +61,7 @@ gulp.task('less', function () {
         .pipe(sourcemaps.init())
         .pipe(newer(dest))
         .pipe(less())
+        .on('error', swallowError)
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(dest));
 });
@@ -99,5 +100,5 @@ function swallowError(error) {
 
 gulp.task('default', function () {
     livereload.listen();
-    gulp.on('error', swallowError).watch(['ui-src/**/*'], ['index']);
+    gulp.watch(['ui-src/**/*'], ['index']);
 });

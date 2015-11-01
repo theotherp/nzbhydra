@@ -457,7 +457,7 @@ def internalapi_getconfig():
     settings = config.cfg
     form = config.get_settings_form()
 
-    return jsonify({"schema": schema, "settings": settings, "form": form})
+    return jsonify(settings)
 
 
 def restart():
