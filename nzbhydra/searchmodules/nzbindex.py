@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from furl import furl
 import requests
 
-from nzbhydra.config import resultProcessingSettings
+from nzbhydra.config import searchingSettings
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule, IndexerProcessingResult
@@ -71,8 +71,8 @@ class NzbIndex(SearchModule):
         logger.debug("%s started processing results" % self.name)
 
         entries = []
-        logger.debug("Using HTML parser %s" % resultProcessingSettings.htmlParser.get())
-        soup = BeautifulSoup(html, resultProcessingSettings.htmlParser.get())
+        logger.debug("Using HTML parser %s" % searchingSettings.htmlParser.get())
+        soup = BeautifulSoup(html, searchingSettings.htmlParser.get())
         main_table = soup.find(id="results").find('table')
 
 

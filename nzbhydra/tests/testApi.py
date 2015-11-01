@@ -8,9 +8,9 @@ from nzbhydra.nzb_search_result import NzbSearchResult
 
 class MyTestCase(unittest.TestCase):
     def testTestForDuplicate(self):
-        config.resultProcessingSettings.duplicateAgeThreshold.set(120)
-        age_threshold = config.resultProcessingSettings.duplicateAgeThreshold.get()
-        config.resultProcessingSettings.duplicateSizeThresholdInPercent.set(1)
+        config.searchingSettings.duplicateAgeThreshold.set(120)
+        age_threshold = config.searchingSettings.duplicateAgeThreshold.get()
+        config.searchingSettings.duplicateSizeThresholdInPercent.set(1)
 
         # same title, age and size
         result1 = NzbSearchResult(title="A title", epoch=0, size=1, indexer="a")
@@ -51,8 +51,8 @@ class MyTestCase(unittest.TestCase):
         assert not api.test_for_duplicate_age(result1, result2)
 
     def testFindDuplicates(self):
-        config.resultProcessingSettings.duplicateAgeThreshold.set(1)
-        config.resultProcessingSettings.duplicateSizeThresholdInPercent.set(0.1)
+        config.searchingSettings.duplicateAgeThreshold.set(1)
+        config.searchingSettings.duplicateSizeThresholdInPercent.set(0.1)
 
         result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1")
         result2 = NzbSearchResult(title="Title2", epoch=0, size=1, indexer="2", guid="2")

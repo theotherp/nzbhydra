@@ -68,7 +68,7 @@ def find_duplicates(results):
 def test_for_duplicate_age(search_result_1, search_result_2):
     if search_result_1.epoch is None or search_result_2.epoch is None:
         return False
-    age_threshold = config.resultProcessingSettings.duplicateAgeThreshold.get()
+    age_threshold = config.searchingSettings.duplicateAgeThreshold.get()
 
     group_known = search_result_1.group is not None and search_result_2.group is not None
     same_group = search_result_1.group == search_result_2.group
@@ -88,7 +88,7 @@ def test_for_duplicate_age(search_result_1, search_result_2):
 def test_for_duplicate_size(search_result_1, search_result_2):
     if not search_result_1.size or not search_result_2.size:
         return False
-    size_threshold = config.resultProcessingSettings.duplicateSizeThresholdInPercent.get()
+    size_threshold = config.searchingSettings.duplicateSizeThresholdInPercent.get()
     size_difference = search_result_1.size - search_result_2.size
     size_average = (search_result_1.size + search_result_2.size) / 2
     size_difference_percent = abs(size_difference / size_average) * 100

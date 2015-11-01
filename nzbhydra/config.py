@@ -399,23 +399,6 @@ class HtmlParserSelection(object):
     options = [html, lxml]
 
 
-class ResultProcessingSettings(Category):
-    """
-    Settings which control how search results are processed.
-    """
-
-    def __init__(self):
-        super().__init__(config_root, "resultProcessing", "Result processing")
-        self.duplicateSizeThresholdInPercent = Setting(self, name="duplicateSizeThresholdInPercent", default=0.1, valuetype=float, title="Duplicate size threshold",
-                                                       description="If the size difference between two search entries with the same title is higher than this they won't be considered dplicates.")
-        self.duplicateAgeThreshold = Setting(self, name="duplicateAgeThreshold", default=3600, valuetype=int, title="Duplicate age threshold", description="If the age difference in seconds between two search entries with the same title is higher than this they won't be considered dplicates.")
-        self.htmlParser = SelectionSetting(self, name="htmlParser", default=HtmlParserSelection.html, valuetype=str, options=HtmlParserSelection.options, title="HTML Parser", description="Used to parse HTML from indexers like binsearch. If possible use LXML")
-
-
-
-resultProcessingSettings = ResultProcessingSettings()
-
-
 class InternalExternalSelection(object):
     internal = SelectOption("internal", "Internal searches")
     external = SelectOption("external", "API searches")
@@ -428,41 +411,41 @@ class CategorySizeSettings(Category):
         self.enable_category_sizes = Setting(self, name="enable_category_sizes", default=True, valuetype=bool, title="Category sizes",
                                              description="If enabled when selecting a category size the limit inputs will be prefilled with the category limits.")
 
-        self.movieMin = Setting(self, name="Movies min", default=500, valuetype=int, title="Movies min size", description="")
-        self.movieMax = Setting(self, name="Movies max", default=20000, valuetype=int, title="Movies max size", description="")
+        self.movieMin = Setting(self, name="moviesmin", default=500, valuetype=int, title="Movies min size", description="")
+        self.movieMax = Setting(self, name="moviesmax", default=20000, valuetype=int, title="Movies max size", description="")
 
-        self.moviehdMin = Setting(self, name="Movies HD min", default=2000, valuetype=int, title="Movies HD min size", description="")
-        self.moviehdMax = Setting(self, name="Movies HD max", default=20000, valuetype=int, title="Movies HD max size", description="")
+        self.moviehdMin = Setting(self, name="movieshdmin", default=2000, valuetype=int, title="Movies HD min size", description="")
+        self.moviehdMax = Setting(self, name="movieshdmax", default=20000, valuetype=int, title="Movies HD max size", description="")
 
-        self.moviesdMin = Setting(self, name="Movies SD min", default=500, valuetype=int, title="Movies SD min size", description="")
-        self.moviesdMax = Setting(self, name="Movies SD max", default=3000, valuetype=int, title="Movies SD max size", description="")
+        self.moviesdMin = Setting(self, name="moviessdmin", default=500, valuetype=int, title="Movies SD min size", description="")
+        self.moviesdMax = Setting(self, name="movieshdmin", default=3000, valuetype=int, title="Movies SD max size", description="")
 
-        self.tvMin = Setting(self, name="TV min", default=50, valuetype=int, title="TV min size", description="")
-        self.tvMax = Setting(self, name="TV max", default=5000, valuetype=int, title="TV max size", description="")
+        self.tvMin = Setting(self, name="tvmin", default=50, valuetype=int, title="TV min size", description="")
+        self.tvMax = Setting(self, name="tvmax", default=5000, valuetype=int, title="TV max size", description="")
 
-        self.tvhdMin = Setting(self, name="TV HD min", default=300, valuetype=int, title="TV HD min size", description="")
-        self.tvhdMax = Setting(self, name="TV HD max", default=3000, valuetype=int, title="TV HD max size", description="")
+        self.tvhdMin = Setting(self, name="tvhdmin", default=300, valuetype=int, title="TV HD min size", description="")
+        self.tvhdMax = Setting(self, name="tvhdmax", default=3000, valuetype=int, title="TV HD max size", description="")
 
-        self.tvsdMin = Setting(self, name="TV SD min", default=50, valuetype=int, title="TV SD min size", description="")
-        self.tvsdMax = Setting(self, name="TV SD max", default=1000, valuetype=int, title="TV SD max size", description="")
+        self.tvsdMin = Setting(self, name="tvsdmin", default=50, valuetype=int, title="TV SD min size", description="")
+        self.tvsdMax = Setting(self, name="tvsdmax", default=1000, valuetype=int, title="TV SD max size", description="")
 
-        self.audioMin = Setting(self, name="Audio min", default=1, valuetype=int, title="Audio min size", description="")
-        self.audioMax = Setting(self, name="Audio max", default=2000, valuetype=int, title="Audio max size", description="")
+        self.audioMin = Setting(self, name="audiomin", default=1, valuetype=int, title="Audio min size", description="")
+        self.audioMax = Setting(self, name="audiomax", default=2000, valuetype=int, title="Audio max size", description="")
 
-        self.audioflacmin = Setting(self, name="Audio FLAC min", default=10, valuetype=int, title="Audio FLAC min size", description="")
-        self.audioflacmax = Setting(self, name="Audio FLAC max", default=2000, valuetype=int, title="Audio FLAC max size", description="")
+        self.audioflacmin = Setting(self, name="flacmin", default=10, valuetype=int, title="Audio FLAC min size", description="")
+        self.audioflacmax = Setting(self, name="flacmax", default=2000, valuetype=int, title="Audio FLAC max size", description="")
 
-        self.audiomp3min = Setting(self, name="Audio MP3 min", default=1, valuetype=int, title="Audio MP3 min size", description="")
-        self.audiomp3max = Setting(self, name="Audio MP3 max", default=500, valuetype=int, title="Audio MP3 max size", description="")
+        self.audiomp3min = Setting(self, name="mp3min", default=1, valuetype=int, title="Audio MP3 min size", description="")
+        self.audiomp3max = Setting(self, name="mp3max", default=500, valuetype=int, title="Audio MP3 max size", description="")
 
-        self.consolemin = Setting(self, name="Console min", default=100, valuetype=int, title="Console min size", description="")
-        self.consolemax = Setting(self, name="Console max", default=40000, valuetype=int, title="Console max size", description="")
+        self.consolemin = Setting(self, name="consolemin", default=100, valuetype=int, title="Console min size", description="")
+        self.consolemax = Setting(self, name="consolemax", default=40000, valuetype=int, title="Console max size", description="")
 
-        self.pcmin = Setting(self, name="PC min", default=100, valuetype=int, title="PC min size", description="")
-        self.pcmax = Setting(self, name="PC max", default=50000, valuetype=int, title="PC max size", description="")
+        self.pcmin = Setting(self, name="pcmin", default=100, valuetype=int, title="PC min size", description="")
+        self.pcmax = Setting(self, name="pcmax", default=50000, valuetype=int, title="PC max size", description="")
 
-        self.xxxmin = Setting(self, name="XXX min", default=100, valuetype=int, title="XXX min size", description="")
-        self.xxxmax = Setting(self, name="XXX max", default=10000, valuetype=int, title="XXX max size", description="")
+        self.xxxmin = Setting(self, name="xxxmin", default=100, valuetype=int, title="XXX min size", description="")
+        self.xxxmax = Setting(self, name="xxxmax", default=10000, valuetype=int, title="XXX max size", description="")
 
 
 class SearchingSettings(Category):
@@ -477,6 +460,12 @@ class SearchingSettings(Category):
         self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[InternalExternalSelection.internal], options=InternalExternalSelection.options, valuetype=str, title="Query generation",
                                                       description="Decide if you want to generate queries for indexers in case of ID based searches. The results will probably contain a lot of crap.",
                                                       setting_type=SettingType.multiselect)
+        
+        self.duplicateSizeThresholdInPercent = Setting(self, name="duplicateSizeThresholdInPercent", default=0.1, valuetype=float, title="Duplicate size threshold",
+                                                       description="If the size difference between two search entries with the same title is higher than this they won't be considered dplicates.")
+        self.duplicateAgeThreshold = Setting(self, name="duplicateAgeThreshold", default=3600, valuetype=int, title="Duplicate age threshold", description="If the age difference in seconds between two search entries with the same title is higher than this they won't be considered dplicates.")
+        self.htmlParser = SelectionSetting(self, name="htmlParser", default=HtmlParserSelection.html, valuetype=str, options=HtmlParserSelection.options, title="HTML Parser", description="Used to parse HTML from indexers like binsearch. If possible use LXML")
+
 
         self.category_sizes = CategorySizeSettings(self)
 

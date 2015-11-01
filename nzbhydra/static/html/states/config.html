@@ -1,16 +1,35 @@
 <div class="row">
-    <div class="col-md-2"></div>
-    <div class="col-md-16">
-        <uib-tabset>
-             <uib-tab heading="Main">
-                 
-                <formly-form model="config.main" fields="fields.main">
-                    
-            
-                </formly-form>
-            </uib-tab>
-        </uib-tabset>
+<form ng-submit="vm.onSubmit()" name="form" novalidate>
+    <uib-tabset>
+        <uib-tab heading="Main">
+            <formly-form model="config.main" fields="fields.main" >
+            </formly-form>
+        </uib-tab>
+        <uib-tab heading="Searching">
+            <formly-form model="config.searching" fields="fields.searching">
+            </formly-form>
+        </uib-tab>
+        <uib-tab heading="Downloader">
+            <formly-form model="config.downloader" fields="fields.downloader">
+            </formly-form>
+        </uib-tab>
+        <uib-tab heading="Indexers" active="true">
+            <formly-form model="config.indexers" fields="fields.indexers">
+            </formly-form>
+        </uib-tab>
+        <li style="position: absolute; right:0px; ">
+            <button ng-click="submit()" ng-disabled="form.$invalid" type="button" class="btn btn-info" style="background-color: #5bc0de; border: 1px solid #1c1e22; border-bottom-color: transparent; border-radius: 4px 4px 0 0; margin-top: 3px">Submit</button>
+        </li>
+    </uib-tabset>
 
-
-    </div>
+</form>
 </div>
+
+<script type="text/ng-template" id="ui-select-multiple.html">
+    <ui-select multiple data-ng-model="model[options.key]" data-required="{{ to.required }}" data-disabled="{{ to.disabled }}" theme="bootstrap">
+        <ui-select-match placeholder="{{ to.placeholder }}">{{$item[to.labelProp]}}</ui-select-match>
+        <ui-select-choices data-repeat="{{ to.ngOptions }}">
+            <div ng-bind-html="option[to.labelProp] | highlight: $select.search"></div>
+        </ui-select-choices>
+    </ui-select>
+</script>
