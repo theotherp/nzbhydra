@@ -456,7 +456,7 @@ class SearchingSettings(Category):
     def __init__(self):
         super().__init__(config_root, "searching", "Searching")
         self.timeout = Setting(self, name="timeout", default=5, valuetype=int, title="Timeout", description="Timeout when accessing indexers.")
-        self.temporarilyDisableProblemIndexers = Setting(self, name="ignoreTemporarilyDisabled", default=False, valuetype=bool, title="Pause indexers after problems", description="Enable if you want to pause access to indexers for a time after there was a problem.")
+        self.ignore_disabled = Setting(self, name="ignoreTemporarilyDisabled", default=False, valuetype=bool, title="Ignore", description="Enable if you want to pause access to indexers for a time after there was a problem.")
         self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[InternalExternalSelection.internal], options=InternalExternalSelection.options, valuetype=str, title="Query generation",
                                                       description="Decide if you want to generate queries for indexers in case of ID based searches. The results will probably contain a lot of crap.",
                                                       setting_type=SettingType.multiselect)

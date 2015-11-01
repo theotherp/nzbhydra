@@ -15,6 +15,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     $scope.imdbid = (typeof $stateParams.imdbid === "undefined") ? "" : $stateParams.imdbid;
     $scope.tvdbid = (typeof $stateParams.tvdbid === "undefined") ? "" : $stateParams.tvdbid;
+    $scope.rid = (typeof $stateParams.rid === "undefined") ? "" : $stateParams.rid;
     $scope.title = (typeof $stateParams.title === "undefined") ? "" : $stateParams.title;
     $scope.season = (typeof $stateParams.season === "undefined") ? "" : $stateParams.season;
     $scope.episode = (typeof $stateParams.episode === "undefined") ? "" : $stateParams.episode;
@@ -114,7 +115,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     $scope.startSearch = function () {
         blockUI.start("Searching...");
-        SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, $scope.selectedIndexers).then(function (searchResult) {
+        SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.rid, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, $scope.selectedIndexers).then(function (searchResult) {
             $state.go("search.results", {"results": searchResult.results, "indexersearches": searchResult.indexersearches, total: searchResult.total, resultsCount: searchResult.resultsCount});
             $scope.imdbid = "";
             $scope.tvdbid = "";
@@ -130,8 +131,13 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             stateParams.title = $scope.title;
 
 
-        } else if ($scope.tvdbid != "") {
-            stateParams.tvdbid = $scope.tvdbid;
+        } else if ($scope.tvdbid != "" || $scope.rid != "") {
+            if ($scope.tvdbid != "") {
+                stateParams.tvdbid = $scope.tvdbid;
+            }
+            else {
+                stateParams.rid = $scope.rid;
+            }
             stateParams.title = $scope.title;
 
             if ($scope.season != "") {
@@ -185,8 +191,8 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     $scope.seriesSelected = function () {
         return ($scope.category.indexOf("TV") > -1);
     };
-    
-    
+
+
     ConfigService.get().then(function (cfg) {
         config = cfg;
 

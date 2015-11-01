@@ -49,3 +49,5 @@ def read_indexers_from_config():
                 Indexer().create(name=instance.name)
                               
     return configured_indexers
+
+

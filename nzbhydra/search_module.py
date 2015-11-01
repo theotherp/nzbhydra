@@ -196,6 +196,9 @@ class SearchModule(object):
     def get_nzb_link(self, guid, title):
         return None
 
+    def get_search_ids_from_indexer(self):
+        return []
+
     def execute_queries(self, queries) -> QueriesExecutionResult:
         # todo call all queries, check if further should be called, return all results when done or timeout or whatever
         """

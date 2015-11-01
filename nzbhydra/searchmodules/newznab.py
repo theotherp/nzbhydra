@@ -93,12 +93,8 @@ class NewzNab(SearchModule):
         f = self.build_base_url("search", search_request.category, offset=search_request.offset)
         if search_request.query:
             f = f.add({"q": search_request.query})
-        # if args["minsize"]:
-        #     f = f.add({"minsize": args["minsize"]})
-        # if args["maxsize"]:
-        #     f = f.add({"maxsize": args["maxsize"]})
-        # if args["maxage"]:
-        #     f = f.add({"age": args["maxage"]})
+        if search_request.maxage:
+            f = f.add({"maxage": search_request.maxage})
         return [f.url]
 
     def get_showsearch_urls(self, search_request):
@@ -141,8 +137,8 @@ class NewzNab(SearchModule):
 
         entries = []
         queries = []
-        groupPattern = re.compile(r"Group:</b> ?([\w\.]+)<br ?/>")
-        guidPattern = re.compile(r"(.*/)?([a-zA-Z0-9]+)")
+        grouppattern = re.compile(r"Group:</b> ?([\w\.]+)<br ?/>")
+        guidpattern = re.compile(r"(.*/)?([a-zA-Z0-9]+)")
 
         try:
             tree = ET.fromstring(xml_response)
@@ -167,7 +163,7 @@ class NewzNab(SearchModule):
             entry.precise_date = True
             entry.attributes = []
             entry.guid = item.find("guid").text
-            m = guidPattern.search(entry.guid)
+            m = guidpattern.search(entry.guid)
             if m:
                 entry.guid = m.group(2)
             
@@ -175,7 +171,7 @@ class NewzNab(SearchModule):
                 entry.details_link = entry.details_link[:-9]
             description = item.find("description").text
             if "Group:" in description: #DogNZB has the group in its description
-                m = groupPattern.search(description)
+                m = grouppattern.search(description)
                 if m:
                     entry.group = m.group(1)
 
@@ -225,7 +221,7 @@ class NewzNab(SearchModule):
 
     def get_nfo(self, guid):
         # try to get raw nfo. if it is xml the indexer doesn't actually return raw nfos (I'm looking at you, DOGNzb)
-        url = furl(self.settings.host.get()).add({"apikey": self.settings.apikey.get(), "t": "getnfo", "o": "xml", "id": guid})  # todo: should use build_base_url but that adds search specific stuff
+        url = furl(self.settings.host.get()).add({"apikey": self.settings.apikey.get(), "t": "getnfo", "o": "xml", "id": guid})  
 
         response, papiaccess = self.get_url_with_papi_access(url, "nfo")
         if response is not None:
@@ -244,6 +240,8 @@ class NewzNab(SearchModule):
         f.path.add("api")
         f.add({"t": "get", "apikey": self.settings.apikey.get(), "id": guid})
         return f.tostr()
+    
+
 
 
 def get_instance(indexer):

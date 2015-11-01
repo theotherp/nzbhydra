@@ -65,7 +65,7 @@ def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selec
             continue
         try:
             status = p.indexer.status.get()
-            if status.disabled_until > arrow.utcnow() and searchingSettings.temporarilyDisableProblemIndexers.get_with_default(True):
+            if status.disabled_until > arrow.utcnow() and not searchingSettings.ignore_disabled.get_with_default(False):
                 logger.info("Did not pick %s because it is disabled temporarily due to an error: %s" % (p, status.reason))
                 continue
         except IndexerStatus.DoesNotExist:
@@ -108,7 +108,7 @@ def search(internal, search_request: SearchRequest):
         indexers_to_call, with_query_generation = pick_indexers(query_supplied=True if search_request.query is not None else False, identifier_key=search_request.identifier_key, internal=internal)
         for p in indexers_to_call:
             cache_entry["indexer_infos"][p] = {"has_more": True, "search_request": search_request, "total_included": False}
-        dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode)
+        dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode, type=search_request.type)
         dbsearch.save()
         cache_entry["dbsearch"] = dbsearch
 

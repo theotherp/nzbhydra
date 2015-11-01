@@ -22,7 +22,7 @@ from nzbhydra import config, search, infos, database
 from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.search import SearchRequest
-from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads
+from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests
 
 
 class ReverseProxied(object):
@@ -208,7 +208,7 @@ def api(args):
 @app.route("/details/<path:guid>")
 @requires_auth
 def get_details(guid):
-    #GUID is not the GUID-item from the RSS but the newznab GUID which in our case is just a json string 
+    # GUID is not the GUID-item from the RSS but the newznab GUID which in our case is just a json string 
     d = json.loads(urllib.parse.unquote(guid))
     details_link = get_details_link(d["indexer"], d["guid"])
     if details_link:
@@ -279,6 +279,7 @@ internalapi_tvsearch_args = {
     "query": fields.String(missing=None),
     "category": fields.String(missing=None),
     "title": fields.String(missing=None),
+    "rid": fields.String(missing=None),
     "tvdbid": fields.String(missing=None),
     "season": fields.String(missing=None),
     "episode": fields.String(missing=None),
@@ -301,6 +302,9 @@ def internalapi_tvsearch(args):
     if args["tvdbid"]:
         search_request.identifier_key = "tvdbid"
         search_request.identifier_value = args["tvdbid"]
+    elif args["rid"]:
+        search_request.identifier_key = "rid"
+        search_request.identifier_value = args["rid"]
     results = search.search(True, search_request)
     return process_and_jsonify_for_internalapi(results)
 
@@ -421,7 +425,7 @@ def internalapi_getstats():
                     "avgIndexerAccessSuccesses": get_avg_indexer_access_success()})
 
 
-internalapi__getnzbdownloads_args = {
+internalapi__getpagination_args = {
     "page": fields.Integer(missing=0),
     "limit": fields.Integer(missing=100)
 }
@@ -429,10 +433,18 @@ internalapi__getnzbdownloads_args = {
 
 @app.route('/internalapi/getnzbdownloads')
 @requires_auth
-@use_args(internalapi__getnzbdownloads_args)
+@use_args(internalapi__getpagination_args)
 def internalapi_getnzb_downloads(args):
     logger.debug("Get NZB downloads")
     return jsonify(get_nzb_downloads(page=args["page"], limit=args["limit"]))
+
+
+@app.route('/internalapi/getsearchrequests')
+@requires_auth
+@use_args(internalapi__getpagination_args)
+def internalapi_search_requests(args):
+    logger.debug("Get search requests")
+    return jsonify(get_search_requests(page=args["page"], limit=args["limit"]))
 
 
 @app.route('/internalapi/setsettings', methods=["PUT"])

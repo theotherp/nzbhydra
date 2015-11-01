@@ -10,10 +10,10 @@ function SearchService($http) {
     var service = {search: search, loadMore: loadMore};
     return service;
 
-    function search(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, selectedIndexers) {
+    function search(category, query, imdbid, title, rid, tvdbid, season, episode, minsize, maxsize, minage, maxage, selectedIndexers) {
         console.log("Category: " + category);
         var uri;
-        if (category.indexOf("Movies") > -1) {
+        if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
             console.log("Search for movies");
             uri = new URI("internalapi/moviesearch");
             if (imdbid) {
@@ -25,11 +25,15 @@ function SearchService($http) {
                 uri.addQuery("query", query);
             }
 
-        } else if (category.indexOf("TV") > -1) {
+        } else if (category.indexOf("TV") > -1 || (category.indexOf("50") == 0)) {
             console.log("Search for shows");
             uri = new URI("internalapi/tvsearch");
             if (tvdbid) {
                 uri.addQuery("tvdbid", tvdbid);
+                uri.addQuery("title", title);
+            }
+            if (rid) {
+                uri.addQuery("rid", rid);
                 uri.addQuery("title", title);
             }
 

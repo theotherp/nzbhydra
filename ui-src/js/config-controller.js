@@ -291,6 +291,53 @@ function ConfigController($scope, ConfigService, configPromise) {
 
             {
                 wrapper: 'fieldset',
+                key: 'logging',
+                templateOptions: {label: 'Logging'},
+                fieldGroup: [
+                    {
+                        key: 'logfile-level',
+                        type: 'horizontalSelect',
+                        templateOptions: {
+                            type: 'select',
+                            label: 'Logfile level',
+                            options: [
+                                {name: 'Critical', value: 'CRITICAL'},
+                                {name: 'Error', value: 'ERROR'},
+                                {name: 'Warning', value: 'WARNING'},
+                                {name: 'Debug', value: 'DEBUG'},
+                                {name: 'Info', value: 'INFO'}
+                            ]
+                        }
+                    },
+                    {
+                        key: 'logfile-filename',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Log file'
+                        }
+                    },
+                    {
+                        key: 'consolelevel',
+                        type: 'horizontalSelect',
+                        templateOptions: {
+                            type: 'select',
+                            label: 'Console log level',
+                            options: [
+                                {name: 'Critical', value: 'CRITICAL'},
+                                {name: 'Error', value: 'ERROR'},
+                                {name: 'Warning', value: 'WARNING'},
+                                {name: 'Debug', value: 'DEBUG'},
+                                {name: 'Info', value: 'INFO'}
+                            ]
+                        }
+                    }
+                    
+                    
+                ]
+            },
+            {
+                wrapper: 'fieldset',
                 templateOptions: {label: 'Other'},
                 fieldGroup: [
                     {

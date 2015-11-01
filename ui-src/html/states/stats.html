@@ -28,13 +28,13 @@
                     <thead>
                     <tr>
                         <th>Indexer</th>
-                        <th>Avg. results share</th>
+                        <th>Avg. results share (%)</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr ng-repeat="avgIndexerSearchResultsShare in avgIndexerSearchResultsShares">
                         <td>{{ avgIndexerSearchResultsShare.name }}</td>
-                        <td>{{ avgIndexerSearchResultsShare.avgResultsShare }}</td>
+                        <td>{{ avgIndexerSearchResultsShare.avgResultsShare | number: 0 }}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -55,8 +55,8 @@
                     <tbody>
                     <tr ng-repeat="avgIndexerAccessSuccess in avgIndexerAccessSuccesses">
                         <td>{{ avgIndexerAccessSuccess.name }}</td>
-                        <td>{{ avgIndexerAccessSuccess.successPercent }}</td>
-                        <td>{{ avgIndexerAccessSuccess.failedPercent }}</td>
+                        <td>{{ avgIndexerAccessSuccess.successPercent | number: 0}}</td>
+                        <td>{{ avgIndexerAccessSuccess.failedPercent | number: 0 }}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -69,11 +69,11 @@
         </div>
 
     </uib-tab>
-    <uib-tab heading="Searches">
-        
+    <uib-tab heading="Searches" active="true">
+        <div search-history></div>
     </uib-tab>
     
-    <uib-tab heading="NZB Downloads" select="nzbDownloadsSelected()">
+    <uib-tab heading="NZB Downloads">
         <div download-history></div>
     </uib-tab>
 

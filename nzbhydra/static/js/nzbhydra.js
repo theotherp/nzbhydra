@@ -16,7 +16,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
             }
         })
         .state("search", {
-            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets",
+            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid",
             templateUrl: "static/html/states/search.html",
             controller: "SearchController",
             params: {
@@ -277,6 +277,71 @@ function otherColumns($http, $templateCache, $compile) {
 
 }
 otherColumns.$inject = ["$http", "$templateCache", "$compile"];
+angular
+    .module('nzbhydraApp')
+    .directive('searchHistory', searchHistory);
+
+
+function searchHistory() {
+    return {
+        templateUrl: 'static/html/directives/search-history.html',
+        controller: ['$scope', '$http','$state', controller]
+    };
+    
+    function controller($scope, $http, $state) {
+        $scope.limit = 100;
+        $scope.pagination = {
+            current: 1
+        };
+
+        getSearchRequestsPage(1);
+
+        $scope.pageChanged = function (newPage) {
+            getSearchRequestsPage(newPage);
+        };
+
+        function getSearchRequestsPage(pageNumber) {
+            $http.get("internalapi/getsearchrequests", {params: {page: pageNumber, limit: $scope.limit}}).success(function (response) {
+                $scope.searchRequests = response.searchRequests;
+                $scope.totalRequests = response.totalRequests;
+                console.log($scope.searchRequests);
+            });
+        }
+
+        $scope.openSearch = function (request) {
+            var state;
+            var stateParams = {};
+            if (request.identifier_key == "imdbid") {
+                stateParams.imdbid = request.identifier_value;
+            } else if (request.identifier_key == "tvdbid" || request.identifier_key == "rid") {
+                if (request.identifier_key == "rid" ) {
+                    stateParams.rid = request.identifier_value;
+                } else {
+                    stateParams.tvdbid = request.identifier_value;
+                } 
+                
+                if (request.season != "") {
+                    stateParams.season = request.season;
+                }
+                if (request.episode != "") {
+                    stateParams.episode = request.episode;
+                }
+            }
+            if (request.query != "") {
+                stateParams.query = request.query;
+            }
+            
+            stateParams.category = request.category;
+
+            console.log("Going to search state with params...");
+            console.log(stateParams);
+            console.log($state);
+            $state.go("search", stateParams, {inherit: false});
+        };
+
+
+    }
+}
 //Can be used in an ng-repeat directive to call a function when the last element was rendered
 //We use it to mark the end of sorting / filtering so we can stop blocking the UI
 
@@ -435,10 +500,10 @@ function SearchService($http) {
     var service = {search: search, loadMore: loadMore};
     return service;
 
-    function search(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, selectedIndexers) {
+    function search(category, query, imdbid, title, rid, tvdbid, season, episode, minsize, maxsize, minage, maxage, selectedIndexers) {
         console.log("Category: " + category);
         var uri;
-        if (category.indexOf("Movies") > -1) {
+        if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
             console.log("Search for movies");
             uri = new URI("internalapi/moviesearch");
             if (imdbid) {
@@ -450,11 +515,15 @@ function SearchService($http) {
                 uri.addQuery("query", query);
             }
 
-        } else if (category.indexOf("TV") > -1) {
+        } else if (category.indexOf("TV") > -1 || (category.indexOf("50") == 0)) {
             console.log("Search for shows");
             uri = new URI("internalapi/tvsearch");
             if (tvdbid) {
                 uri.addQuery("tvdbid", tvdbid);
+                uri.addQuery("title", title);
+            }
+            if (rid) {
+                uri.addQuery("rid", rid);
                 uri.addQuery("title", title);
             }
 
@@ -750,6 +819,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     $scope.imdbid = (typeof $stateParams.imdbid === "undefined") ? "" : $stateParams.imdbid;
     $scope.tvdbid = (typeof $stateParams.tvdbid === "undefined") ? "" : $stateParams.tvdbid;
+    $scope.rid = (typeof $stateParams.rid === "undefined") ? "" : $stateParams.rid;
     $scope.title = (typeof $stateParams.title === "undefined") ? "" : $stateParams.title;
     $scope.season = (typeof $stateParams.season === "undefined") ? "" : $stateParams.season;
     $scope.episode = (typeof $stateParams.episode === "undefined") ? "" : $stateParams.episode;
@@ -849,7 +919,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     $scope.startSearch = function () {
         blockUI.start("Searching...");
-        SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, $scope.selectedIndexers).then(function (searchResult) {
+        SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.rid, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, $scope.selectedIndexers).then(function (searchResult) {
             $state.go("search.results", {"results": searchResult.results, "indexersearches": searchResult.indexersearches, total: searchResult.total, resultsCount: searchResult.resultsCount});
             $scope.imdbid = "";
             $scope.tvdbid = "";
@@ -865,8 +935,13 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             stateParams.title = $scope.title;
 
 
-        } else if ($scope.tvdbid != "") {
-            stateParams.tvdbid = $scope.tvdbid;
+        } else if ($scope.tvdbid != "" || $scope.rid != "") {
+            if ($scope.tvdbid != "") {
+                stateParams.tvdbid = $scope.tvdbid;
+            }
+            else {
+                stateParams.rid = $scope.rid;
+            }
             stateParams.title = $scope.title;
 
             if ($scope.season != "") {
@@ -920,8 +995,8 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     $scope.seriesSelected = function () {
         return ($scope.category.indexOf("TV") > -1);
     };
-    
-    
+
+
     ConfigService.get().then(function (cfg) {
         config = cfg;
 
@@ -1412,6 +1487,53 @@ function ConfigController($scope, ConfigService, configPromise) {
                 ]
             },
 
+            {
+                wrapper: 'fieldset',
+                key: 'logging',
+                templateOptions: {label: 'Logging'},
+                fieldGroup: [
+                    {
+                        key: 'logfile-level',
+                        type: 'horizontalSelect',
+                        templateOptions: {
+                            type: 'select',
+                            label: 'Logfile level',
+                            options: [
+                                {name: 'Critical', value: 'CRITICAL'},
+                                {name: 'Error', value: 'ERROR'},
+                                {name: 'Warning', value: 'WARNING'},
+                                {name: 'Debug', value: 'DEBUG'},
+                                {name: 'Info', value: 'INFO'}
+                            ]
+                        }
+                    },
+                    {
+                        key: 'logfile-filename',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Log file'
+                        }
+                    },
+                    {
+                        key: 'consolelevel',
+                        type: 'horizontalSelect',
+                        templateOptions: {
+                            type: 'select',
+                            label: 'Console log level',
+                            options: [
+                                {name: 'Critical', value: 'CRITICAL'},
+                                {name: 'Error', value: 'ERROR'},
+                                {name: 'Warning', value: 'WARNING'},
+                                {name: 'Debug', value: 'DEBUG'},
+                                {name: 'Info', value: 'INFO'}
+                            ]
+                        }
+                    }
+                    
+                    
+                ]
+            },
             {
                 wrapper: 'fieldset',
                 templateOptions: {label: 'Other'},

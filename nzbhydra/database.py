@@ -44,6 +44,7 @@ class Search(Model):
     category = TextField(null=True)
     season = IntegerField(null=True)
     episode = IntegerField(null=True)
+    type = CharField(default="general")
 
     class Meta:
         database = db

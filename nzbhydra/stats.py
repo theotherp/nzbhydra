@@ -87,9 +87,13 @@ def get_avg_indexer_access_success():
 def get_nzb_downloads(page=0, limit=100):
     total_downloads = IndexerNzbDownload().select().count()
     nzb_downloads = list(IndexerNzbDownload().select(Indexer.name, IndexerNzbDownload.title, IndexerNzbDownload.time, IndexerNzbDownload.guid, Search.internal, IndexerApiAccess.response_successful).join(IndexerApiAccess).join(Indexer).join(IndexerSearch).join(Search).where(IndexerNzbDownload.indexer == Indexer.id).order_by(IndexerNzbDownload.time.desc()).group_by(
-        IndexerNzbDownload.id).paginate(page, limit).dicts())
-    # for i in nzb_downloads:
-    #     guid = json.loads(i["guid"])
-    #     i["guid"] = get_nzb_link_and_guid(guid["indexer"],guid["guid"],guid["searchid"],guid["title"]) 
+        IndexerNzbDownload.id).paginate(page, limit).dicts()) 
     downloads = {"totalDownloads": total_downloads, "nzbDownloads": nzb_downloads}
     return downloads
+
+def get_search_requests(page=0, limit=100):
+    total_requests = Search().select().count()
+    requests = list(Search().select(Search.time, Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type).order_by(Search.time.desc()).paginate(page, limit).dicts())
+     
+    search_requests = {"totalRequests": total_requests, "searchRequests": requests}
+    return search_requests
