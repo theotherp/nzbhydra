@@ -1,8 +1,7 @@
-
 var HEADER_NAME = 'MyApp-Handle-Errors-Generically';
 var specificallyHandleInProgress = false;
 
-nzbhydraapp.factory('RequestsErrorHandler', ['$q', 'growl', function ($q, growl) {
+nzbhydraapp.factory('RequestsErrorHandler',  function ($q, growl, blockUI, modalService) {
     return {
         // --- The user's API for claiming responsiblity for requests ---
         specificallyHandled: function (specificallyHandledBlock) {
@@ -16,22 +15,23 @@ nzbhydraapp.factory('RequestsErrorHandler', ['$q', 'growl', function ($q, growl)
 
         // --- Response interceptor for handling errors generically ---
         responseError: function (rejection) {
+            blockUI.reset();
             var shouldHandle = (rejection && rejection.config && rejection.config.headers && rejection.config.headers[HEADER_NAME]);
-
+            
             if (shouldHandle) {
-                var message = "An error occured:<br>" + rejection.status + ": " + rejection.statusText;
+                var message = "An error occured :<br>" + rejection.status + ": " + rejection.statusText;
 
                 if (rejection.data) {
                     message += "<br><br>" + rejection.data;
                 }
-                //growl.error(message);
-                alert(message);
+                modalService.open(message);
+
             }
 
             return $q.reject(rejection);
         }
     };
-}]);
+});
 
 
 nzbhydraapp.config(['$provide', '$httpProvider', function ($provide, $httpProvider) {

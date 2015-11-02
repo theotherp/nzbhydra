@@ -46,7 +46,6 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             resolve: {
                 configPromise: ['ConfigService', function (ConfigService) {
                     return ConfigService.get();
-                    //return "";
                 }]
             }
         })
@@ -64,29 +63,6 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
 nzbhydraapp.config(function (paginationTemplateProvider) {
     paginationTemplateProvider.setPath('static/html/dirPagination.tpl.html');
 });
-
-nzbhydraapp.config(['$httpProvider', function ($httpProvider) {
-    var interceptor = ['$location', '$q', '$injector', function ($location, $q, $injector) {
-        function success(response) {
-            return response;
-        }
-
-        function error(response) {
-            if (response.status === 401) {
-                $injector.get('$state').transitionTo('public.login');
-
-                return $q.reject(response);
-            } else {
-                return $q.reject(response);
-            }
-        }
-
-        return function (promise) {
-            return promise.then(success, error);
-        }
-    }];
-    $httpProvider.interceptors.push(interceptor);
-}]);
 
 
 nzbhydraapp.config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {

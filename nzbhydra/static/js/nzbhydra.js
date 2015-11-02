@@ -46,7 +46,6 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
             resolve: {
                 configPromise: ['ConfigService', function (ConfigService) {
                     return ConfigService.get();
-                    //return "";
                 }]
             }
         })
@@ -63,29 +62,6 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
 
 nzbhydraapp.config(["paginationTemplateProvider", function (paginationTemplateProvider) {
     paginationTemplateProvider.setPath('static/html/dirPagination.tpl.html');
-}]);
-
-nzbhydraapp.config(['$httpProvider', function ($httpProvider) {
-    var interceptor = ['$location', '$q', '$injector', function ($location, $q, $injector) {
-        function success(response) {
-            return response;
-        }
-
-        function error(response) {
-            if (response.status === 401) {
-                $injector.get('$state').transitionTo('public.login');
-
-                return $q.reject(response);
-            } else {
-                return $q.reject(response);
-            }
-        }
-
-        return function (promise) {
-            return promise.then(success, error);
-        }
-    }];
-    $httpProvider.interceptors.push(interceptor);
 }]);
 
 
@@ -1018,11 +994,32 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
 }
 
+angular
+    .module('nzbhydraApp')
+    .service('modalService', modalService);
 
+function modalService() {
+    this.open = function (msg) {
+        
+        //Prevent cirtcular dependency
+        var myInjector = angular.injector(["ng", "ui.bootstrap"]);
+        var $uibModal = myInjector.get("$uibModal");
+
+        
+
+        var modalInstance = $uibModal.open({
+            template: '<pre>' + msg + '</pre>',
+            size: "lg"
+        });
+
+        modalInstance.result.then();
+
+    };
+}
 var HEADER_NAME = 'MyApp-Handle-Errors-Generically';
 var specificallyHandleInProgress = false;
 
-nzbhydraapp.factory('RequestsErrorHandler', ['$q', 'growl', function ($q, growl) {
+nzbhydraapp.factory('RequestsErrorHandler',  ["$q", "growl", "blockUI", "modalService", function ($q, growl, blockUI, modalService) {
     return {
         // --- The user's API for claiming responsiblity for requests ---
         specificallyHandled: function (specificallyHandledBlock) {
@@ -1036,16 +1033,17 @@ nzbhydraapp.factory('RequestsErrorHandler', ['$q', 'growl', function ($q, growl)
 
         // --- Response interceptor for handling errors generically ---
         responseError: function (rejection) {
+            blockUI.reset();
             var shouldHandle = (rejection && rejection.config && rejection.config.headers && rejection.config.headers[HEADER_NAME]);
-
+            
             if (shouldHandle) {
-                var message = "An error occured:<br>" + rejection.status + ": " + rejection.statusText;
+                var message = "An error occured :<br>" + rejection.status + ": " + rejection.statusText;
 
                 if (rejection.data) {
                     message += "<br><br>" + rejection.data;
                 }
-                //growl.error(message);
-                alert(message);
+                modalService.open(message);
+
             }
 
             return $q.reject(rejection);
