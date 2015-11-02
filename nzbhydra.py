@@ -1,30 +1,19 @@
-import ssl
+from os.path import dirname, join, abspath
+from sys import path
+base_path = dirname(abspath(__file__))
+path.insert(0, join(base_path, 'nzbhydra'))
+path.insert(0, join(base_path, 'libs'))
+
 import argparse
-import os
-import sys
-from os.path import dirname
-
 import requests
-
 import nzbhydra.config as config
 from nzbhydra import log
 from nzbhydra import indexers
 from nzbhydra import database
 from nzbhydra import web
 
-
-
-
-# Root path
-base_path = dirname(os.path.abspath(__file__))
-
-# Insert local directories into path
-sys.path.insert(0, os.path.join(base_path, 'nzbhydra'))
-
 requests.packages.urllib3.disable_warnings()
-
 logger = None
-
 
 def run():
     global logger
@@ -38,8 +27,6 @@ def run():
     settings_file = args.config
     database_file = args.database
     
-
-
     print("Loading settings from %s" % settings_file)
     config.load(settings_file)
     config.save(settings_file) #Write any new settings back to the file

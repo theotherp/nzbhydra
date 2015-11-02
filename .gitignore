@@ -13,4 +13,7 @@ realsettingsmockproviders.cfg
 /tests/mock/*.xml
 /tests/mock/*.json
 /tests/mock/*.html
+/nzbhydra_virtualenv
+/libs/**/*.pyc
+/libs/**/__pycache__
 *.log
