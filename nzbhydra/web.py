@@ -23,6 +23,7 @@ from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSett
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests
+from nzbhydra.indexers import read_indexers_from_config
 
 
 class ReverseProxied(object):
@@ -454,6 +455,7 @@ def internalapi_setsettings():
     try:
         config.import_config_data(request.get_json(force=True))
         internal_cache.delete_memoized(internalapi_getconfig)
+        read_indexers_from_config()
         return "OK"
     except Exception as e:
         logger.exception("Error saving settings")
@@ -465,10 +467,7 @@ def internalapi_setsettings():
 @internal_cache.memoize()
 def internalapi_getconfig():
     logger.debug("Get config request")
-    schema = config.get_settings_schema()
     settings = config.cfg
-    form = config.get_settings_form()
-
     return jsonify(settings)
 
 

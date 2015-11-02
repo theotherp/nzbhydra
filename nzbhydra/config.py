@@ -241,101 +241,6 @@ def set(setting: Setting, value: object):
     setting.set(value)
 
 
-def get_schema_infos(d):
-    current_level_schema_infos = {}
-    for child in d.children:
-        if isinstance(child, Category):
-            schema_entry = {"type": "object", "title": child.title, "properties": get_schema_infos(child)}
-            current_level_schema_infos[child.categoryname] = schema_entry
-        if isinstance(child, Setting):
-            # todo category arrays
-            schema_entry = {"title": child.title}
-            if child.description:
-                schema_entry["description"] = child.description
-            if child.setting_type == SettingType.multiselect:
-                schema_entry["type"] = "array"
-                schema_entry["items"] = {"type": "string"}
-            else:
-                if child.valuetype == float:
-                    schematype = "number"
-                elif child.valuetype == int:
-                    schematype = "integer"
-                elif child.valuetype == str:
-                    schematype = "string"
-                elif child.valuetype == bool:
-                    schematype = "boolean"
-                else:
-                    schematype = "text"
-                schema_entry["type"] = schematype
-            current_level_schema_infos[child.settingname] = schema_entry
-    return current_level_schema_infos
-
-
-def get_settings_schema():
-    global config_root
-    schema = {"$schema": "http://json-schema.org/draft-04/schema#", "id": "NZBHydra", "type": "object", "properties": get_schema_infos(config_root)}
-    return schema
-
-
-def get_settings_form():
-    # return ["*"]
-    # Create a tab for every category
-    tabs = []
-    for category in config_root.children:
-        tabs.append(get_form_items(category, "tab"))
-    return ["tabs", {"type": "tabs", "tabs": tabs}, {"type": "submit", "style": "btn-info", "title": "Save"}]
-
-
-def get_form_items(category: Category, grouptype="section"):
-    items = []
-    for child in category.children:
-        if isinstance(child, Category):
-            items.append(get_form_items(child))
-        if isinstance(child, Setting):
-            items.append(create_form_item(child))
-
-    if grouptype == "section":
-        main_element = {"type": "section", "htmlClass": "panel panel-default",
-                        "items": [
-                            {"type": "help", "helpvalue": '<div class="panel-title>' + category.title + '</div>'},
-                            {"type": "section", "htmlClass": "panel-body",
-                             "items": items}]
-                        }
-    else:
-        main_element = {"type": "tab", "title": category.title, "items": [{"type": "section", "htmlClass": "config-tab-content", "items": items}]}
-
-    return main_element
-
-
-def create_form_item(setting: Setting):
-    item = {"key": setting.path, "title": setting.title, "htmlClass": "config-field-container", "fieldHtmlClass": "config-field", "labelHtmlCLass": "config-field-label"}
-    if setting.setting_type == SettingType.password:
-        item["type"] = "password"
-    elif isinstance(setting, OrderedMultiSelectionSetting):
-        item["type"] = "uiselectmulti"
-        item["htmlClass"] = "config-select"
-        item["labelHtmlClass"] = "config-select-label"
-        item["fieldHtmlClass"] = "config-select-field"
-    elif isinstance(setting, SelectionSetting) or isinstance(setting, MultiSelectionSetting):
-        item["type"] = "strapselect"
-        item["titleMap"] = []
-        item["add"] = None
-        item["remove"] = None
-        item["htmlClass"] = "config-select"
-        item["labelHtmlClass"] = "config-select-label"
-        item["fieldHtmlClass"] = "config-select-field"
-        item["placeholder"] = "None"
-        for option in setting.options:
-            item["titleMap"].append({"value": option.name, "name": option.title})
-        if setting.setting_type == SettingType.multiselect:
-            item["options"] = {"multiple": "true"}
-    if setting.valuetype in (str, int, float):
-        item["feedback"] = False
-    elif setting.valuetype == bool:
-        item["fieldHtmlClass"] += " checkbox-field"
-
-    return item
-
 
 class LoglevelSelection(object):
     critical = SelectOption("CRITICAL", "Critical")
@@ -350,9 +255,9 @@ class LoglevelSelection(object):
 class LoggingSettings(Category):
     def __init__(self, parent):
         super().__init__(parent, "logging", "Logging")
-        self.logfilename = Setting(self, name="logfile-filename", default="nzbhydra.log", valuetype=str, title="Log file name", description="File name (relative or absolute) of the log file.")
-        self.logfilelevel = SelectionSetting(self, name="logfile-level", default=LoglevelSelection.info, valuetype=str, options=LoglevelSelection.options, title="Log file level", description="Log level of the log file")
-        self.consolelevel = SelectionSetting(self, name="consolelevel", default=LoglevelSelection.error, valuetype=str, options=LoglevelSelection.options, title="Console log level", description="Log level of the console. Only applies if run in console, obviously.")  # TODO change to SelectionSetting
+        self.logfilename = Setting(self, name="logfile-filename", default="nzbhydra.log", valuetype=str)
+        self.logfilelevel = SelectionSetting(self, name="logfile-level", default=LoglevelSelection.info, valuetype=str, options=LoglevelSelection.options)
+        self.consolelevel = SelectionSetting(self, name="consolelevel", default=LoglevelSelection.error, valuetype=str, options=LoglevelSelection.options)
 
 
 class CacheTypeSelection(object):
@@ -367,24 +272,24 @@ class MainSettings(Category):
 
     def __init__(self):
         super().__init__(config_root, "main", "Main")
-        self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str, title="Host", description="Set to 0.0.0.0 to listen on all public IPs. If you do this you should enable SSL.")
-        self.port = Setting(self, name="port", default=5050, valuetype=int, title="Port", description="Port to listen on.")
+        self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str)
+        self.port = Setting(self, name="port", default=5050, valuetype=int)
 
-        self.username = Setting(self, name="username", default="", valuetype=str, title="Username", description=None)
-        self.password = Setting(self, name="password", default="", valuetype=str, title="Password", description=None, setting_type=SettingType.password)
-        self.apikey = Setting(self, name="apikey", default="hailhydra", valuetype=str, title="API key", description="API key for external tools to authenticate (newznab API)")
-        self.enable_auth = Setting(self, name="enableAuth", default=True, valuetype=bool, title="HTTP Auth", description="Select if you want to enable autorization via username / password.")
+        self.username = Setting(self, name="username", default="", valuetype=str)
+        self.password = Setting(self, name="password", default="", valuetype=str)
+        self.apikey = Setting(self, name="apikey", default="hailhydra", valuetype=str)
+        self.enable_auth = Setting(self, name="enableAuth", default=True, valuetype=bool)
 
-        self.ssl = Setting(self, name="ssl", default=True, valuetype=bool, title="SSL", description="Use SSL. Strongly recommended if you access via a public network!")
-        self.sslcert = Setting(self, name="sslcert", default="nzbhydra.crt", valuetype=str, title="SSL cert file name", description="File name of the certificate to use for SSL.")
-        self.sslkey = Setting(self, name="sslkey", default="nzbhydra.key", valuetype=str, title="SSL key file name", description="File name of the key to use for SSL.")
+        self.ssl = Setting(self, name="ssl", default=True, valuetype=bool)
+        self.sslcert = Setting(self, name="sslcert", default="nzbhydra.crt", valuetype=str)
+        self.sslkey = Setting(self, name="sslkey", default="nzbhydra.key", valuetype=str)
 
-        self.debug = Setting(self, name="debug", default=False, valuetype=bool, title="Debug", description="Enable debugging functions. Don't do this until you know why you're doing it.")
-        self.cache_enabled = Setting(self, name="enableCache", default=True, valuetype=bool, title="Caching", description="Select if you want to cache results.")
-        self.cache_type = SelectionSetting(self, name="cacheType", default=CacheTypeSelection.memory, valuetype=str, title="Cache type", description="Select the of cache you want to use.", options=[CacheTypeSelection.memory, CacheTypeSelection.file], setting_type=SettingType.select)
-        self.cache_timeout = Setting(self, name="cacheTimeout", default=30, valuetype=int, title="Cache timeout", description="Cache timeout in minutes.")
-        self.cache_threshold = Setting(self, name="cachethreshold", default=25, valuetype=int, title="Cache threshold", description="Maximum amount of cached items.")
-        self.cache_folder = Setting(self, name="cacheFolder", default="cache", valuetype=str, title="Cache folder", description="Name of the folder where cache items should be stored. Only applies for file cache.")
+        self.debug = Setting(self, name="debug", default=False, valuetype=bool)
+        self.cache_enabled = Setting(self, name="enableCache", default=True, valuetype=bool)
+        self.cache_type = SelectionSetting(self, name="cacheType", default=CacheTypeSelection.memory, valuetype=str, options=[CacheTypeSelection.memory, CacheTypeSelection.file])
+        self.cache_timeout = Setting(self, name="cacheTimeout", default=30, valuetype=int)
+        self.cache_threshold = Setting(self, name="cachethreshold", default=25, valuetype=int)
+        self.cache_folder = Setting(self, name="cacheFolder", default="cache", valuetype=str)
 
         self.logging = LoggingSettings(self)
 
@@ -408,44 +313,43 @@ class InternalExternalSelection(object):
 class CategorySizeSettings(Category):
     def __init__(self, parent):
         super().__init__(parent, "categorysizes", "Category sizes")
-        self.enable_category_sizes = Setting(self, name="enable_category_sizes", default=True, valuetype=bool, title="Category sizes",
-                                             description="If enabled when selecting a category size the limit inputs will be prefilled with the category limits.")
+        self.enable_category_sizes = Setting(self, name="enable_category_sizes", default=True, valuetype=bool)
 
-        self.movieMin = Setting(self, name="moviesmin", default=500, valuetype=int, title="Movies min size", description="")
-        self.movieMax = Setting(self, name="moviesmax", default=20000, valuetype=int, title="Movies max size", description="")
+        self.movieMin = Setting(self, name="moviesmin", default=500, valuetype=int)
+        self.movieMax = Setting(self, name="moviesmax", default=20000, valuetype=int)
 
-        self.moviehdMin = Setting(self, name="movieshdmin", default=2000, valuetype=int, title="Movies HD min size", description="")
-        self.moviehdMax = Setting(self, name="movieshdmax", default=20000, valuetype=int, title="Movies HD max size", description="")
+        self.moviehdMin = Setting(self, name="movieshdmin", default=2000, valuetype=int)
+        self.moviehdMax = Setting(self, name="movieshdmax", default=20000, valuetype=int)
 
-        self.moviesdMin = Setting(self, name="moviessdmin", default=500, valuetype=int, title="Movies SD min size", description="")
-        self.moviesdMax = Setting(self, name="movieshdmin", default=3000, valuetype=int, title="Movies SD max size", description="")
+        self.moviesdMin = Setting(self, name="moviessdmin", default=500, valuetype=int)
+        self.moviesdMax = Setting(self, name="movieshdmin", default=3000, valuetype=int)
 
-        self.tvMin = Setting(self, name="tvmin", default=50, valuetype=int, title="TV min size", description="")
-        self.tvMax = Setting(self, name="tvmax", default=5000, valuetype=int, title="TV max size", description="")
+        self.tvMin = Setting(self, name="tvmin", default=50, valuetype=int)
+        self.tvMax = Setting(self, name="tvmax", default=5000, valuetype=int)
 
-        self.tvhdMin = Setting(self, name="tvhdmin", default=300, valuetype=int, title="TV HD min size", description="")
-        self.tvhdMax = Setting(self, name="tvhdmax", default=3000, valuetype=int, title="TV HD max size", description="")
+        self.tvhdMin = Setting(self, name="tvhdmin", default=300, valuetype=int)
+        self.tvhdMax = Setting(self, name="tvhdmax", default=3000, valuetype=int)
 
-        self.tvsdMin = Setting(self, name="tvsdmin", default=50, valuetype=int, title="TV SD min size", description="")
-        self.tvsdMax = Setting(self, name="tvsdmax", default=1000, valuetype=int, title="TV SD max size", description="")
+        self.tvsdMin = Setting(self, name="tvsdmin", default=50, valuetype=int)
+        self.tvsdMax = Setting(self, name="tvsdmax", default=1000, valuetype=int)
 
-        self.audioMin = Setting(self, name="audiomin", default=1, valuetype=int, title="Audio min size", description="")
-        self.audioMax = Setting(self, name="audiomax", default=2000, valuetype=int, title="Audio max size", description="")
+        self.audioMin = Setting(self, name="audiomin", default=1, valuetype=int)
+        self.audioMax = Setting(self, name="audiomax", default=2000, valuetype=int)
 
-        self.audioflacmin = Setting(self, name="flacmin", default=10, valuetype=int, title="Audio FLAC min size", description="")
-        self.audioflacmax = Setting(self, name="flacmax", default=2000, valuetype=int, title="Audio FLAC max size", description="")
+        self.audioflacmin = Setting(self, name="flacmin", default=10, valuetype=int)
+        self.audioflacmax = Setting(self, name="flacmax", default=2000, valuetype=int)
 
-        self.audiomp3min = Setting(self, name="mp3min", default=1, valuetype=int, title="Audio MP3 min size", description="")
-        self.audiomp3max = Setting(self, name="mp3max", default=500, valuetype=int, title="Audio MP3 max size", description="")
+        self.audiomp3min = Setting(self, name="mp3min", default=1, valuetype=int)
+        self.audiomp3max = Setting(self, name="mp3max", default=500, valuetype=int)
 
-        self.consolemin = Setting(self, name="consolemin", default=100, valuetype=int, title="Console min size", description="")
-        self.consolemax = Setting(self, name="consolemax", default=40000, valuetype=int, title="Console max size", description="")
+        self.consolemin = Setting(self, name="consolemin", default=100, valuetype=int)
+        self.consolemax = Setting(self, name="consolemax", default=40000, valuetype=int)
 
-        self.pcmin = Setting(self, name="pcmin", default=100, valuetype=int, title="PC min size", description="")
-        self.pcmax = Setting(self, name="pcmax", default=50000, valuetype=int, title="PC max size", description="")
+        self.pcmin = Setting(self, name="pcmin", default=100, valuetype=int)
+        self.pcmax = Setting(self, name="pcmax", default=50000, valuetype=int)
 
-        self.xxxmin = Setting(self, name="xxxmin", default=100, valuetype=int, title="XXX min size", description="")
-        self.xxxmax = Setting(self, name="xxxmax", default=10000, valuetype=int, title="XXX max size", description="")
+        self.xxxmin = Setting(self, name="xxxmin", default=100, valuetype=int)
+        self.xxxmax = Setting(self, name="xxxmax", default=10000, valuetype=int)
 
 
 class SearchingSettings(Category):
@@ -455,16 +359,13 @@ class SearchingSettings(Category):
 
     def __init__(self):
         super().__init__(config_root, "searching", "Searching")
-        self.timeout = Setting(self, name="timeout", default=5, valuetype=int, title="Timeout", description="Timeout when accessing indexers.")
-        self.ignore_disabled = Setting(self, name="ignoreTemporarilyDisabled", default=False, valuetype=bool, title="Ignore", description="Enable if you want to pause access to indexers for a time after there was a problem.")
-        self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[InternalExternalSelection.internal], options=InternalExternalSelection.options, valuetype=str, title="Query generation",
-                                                      description="Decide if you want to generate queries for indexers in case of ID based searches. The results will probably contain a lot of crap.",
-                                                      setting_type=SettingType.multiselect)
+        self.timeout = Setting(self, name="timeout", default=5, valuetype=int)
+        self.ignore_disabled = Setting(self, name="ignoreTemporarilyDisabled", default=False, valuetype=bool)
+        self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[InternalExternalSelection.internal], options=InternalExternalSelection.options, valuetype=str, setting_type=SettingType.multiselect)
         
-        self.duplicateSizeThresholdInPercent = Setting(self, name="duplicateSizeThresholdInPercent", default=0.1, valuetype=float, title="Duplicate size threshold",
-                                                       description="If the size difference between two search entries with the same title is higher than this they won't be considered dplicates.")
-        self.duplicateAgeThreshold = Setting(self, name="duplicateAgeThreshold", default=3600, valuetype=int, title="Duplicate age threshold", description="If the age difference in seconds between two search entries with the same title is higher than this they won't be considered dplicates.")
-        self.htmlParser = SelectionSetting(self, name="htmlParser", default=HtmlParserSelection.html, valuetype=str, options=HtmlParserSelection.options, title="HTML Parser", description="Used to parse HTML from indexers like binsearch. If possible use LXML")
+        self.duplicateSizeThresholdInPercent = Setting(self, name="duplicateSizeThresholdInPercent", default=0.1, valuetype=float)
+        self.duplicateAgeThreshold = Setting(self, name="duplicateAgeThreshold", default=3600, valuetype=int)
+        self.htmlParser = SelectionSetting(self, name="htmlParser", default=HtmlParserSelection.html, valuetype=str, options=HtmlParserSelection.options)
 
 
         self.category_sizes = CategorySizeSettings(self)
@@ -492,13 +393,9 @@ class DownloaderSelection(object):
 class DownloaderSettings(Category):
     def __init__(self):
         super().__init__(config_root, "downloader", "Downloader")
-        self.nzbaccesstype = SelectionSetting(self, name="nzbaccesstype", default=NzbAccessTypeSelection.serve, valuetype=str, options=[NzbAccessTypeSelection.direct, NzbAccessTypeSelection.redirect, NzbAccessTypeSelection.serve], setting_type=SettingType.select,
-                                              title="NZB access type",
-                                              description="Determines how we provide access to NZBs  ""Serve"": Provide a link to NZBHydra via which the NZB is downloaded and returned. ""Redirect"": Provide a link to NZBHydra which redirects to the indexer. ""Direct"": Create direct links (as returned by the indexer). Not recommended.")
-        self.nzbAddingType = SelectionSetting(self, name="nzbAddingType", default=NzbAddingTypeSelection.nzb, valuetype=str, options=[NzbAddingTypeSelection.link, NzbAddingTypeSelection.nzb], setting_type=SettingType.select,
-                                              title="NZB adding type", description="Determines how NZBs are added to downloaders. Either by sending a link to the downloader or by sending the actual NZB.")
-        self.downloader = SelectionSetting(self, name="downloader", default=DownloaderSelection.nzbget, valuetype=str, title="Downloader", description="Choose the downloader you want to use when adding NZBs via the GUI.", options=[DownloaderSelection.nzbget, DownloaderSelection.sabnzbd],
-                                           setting_type=SettingType.select)
+        self.nzbaccesstype = SelectionSetting(self, name="nzbaccesstype", default=NzbAccessTypeSelection.serve, valuetype=str, options=[NzbAccessTypeSelection.direct, NzbAccessTypeSelection.redirect, NzbAccessTypeSelection.serve])
+        self.nzbAddingType = SelectionSetting(self, name="nzbAddingType", default=NzbAddingTypeSelection.nzb, valuetype=str, options=[NzbAddingTypeSelection.link, NzbAddingTypeSelection.nzb])
+        self.downloader = SelectionSetting(self, name="downloader", default=DownloaderSelection.nzbget, valuetype=str, options=[DownloaderSelection.nzbget, DownloaderSelection.sabnzbd])
 
 
 downloaderSettings = DownloaderSettings()
@@ -507,12 +404,12 @@ downloaderSettings = DownloaderSettings()
 class SabnzbdSettings(Category):
     def __init__(self):
         super().__init__(downloaderSettings, "sabnzbd", "SabNZBD")
-        self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str, title="Host name", description=None)
-        self.port = Setting(self, name="port", default=8086, valuetype=int, title="Port", description=None)
-        self.ssl = Setting(self, name="ssl", default=False, valuetype=bool, title="SSL", description=None)
-        self.apikey = Setting(self, name="apikey", default=None, valuetype=str, title="API key", description=None)
-        self.username = Setting(self, name="username", default=None, valuetype=str, title="Username", description=None)
-        self.password = Setting(self, name="password", default=None, valuetype=str, title="password", description=None, setting_type=SettingType.password)
+        self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str)
+        self.port = Setting(self, name="port", default=8086, valuetype=int)
+        self.ssl = Setting(self, name="ssl", default=False, valuetype=bool)
+        self.apikey = Setting(self, name="apikey", default=None, valuetype=str)
+        self.username = Setting(self, name="username", default=None, valuetype=str)
+        self.password = Setting(self, name="password", default=None, valuetype=str)
 
 
 sabnzbdSettings = SabnzbdSettings()
@@ -521,11 +418,11 @@ sabnzbdSettings = SabnzbdSettings()
 class NzbgetSettings(Category):
     def __init__(self):
         super().__init__(downloaderSettings, "nzbget", "NZBGet")
-        self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str, title="Host name", description=None)
-        self.port = Setting(self, name="port", default=6789, valuetype=int, title="Port", description=None)
-        self.ssl = Setting(self, name="ssl", default=False, valuetype=bool, title="SSL", description=None)
-        self.username = Setting(self, name="username", default="nzbget", valuetype=str, title="Username", description=None)
-        self.password = Setting(self, name="password", default="tegbzn6789", valuetype=str, title="Password", description=None, setting_type=SettingType.password)
+        self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str)
+        self.port = Setting(self, name="port", default=6789, valuetype=int)
+        self.ssl = Setting(self, name="ssl", default=False, valuetype=bool)
+        self.username = Setting(self, name="username", default="nzbget", valuetype=str)
+        self.password = Setting(self, name="password", default="tegbzn6789", valuetype=str)
 
 
 nzbgetSettings = NzbgetSettings()
@@ -540,54 +437,51 @@ class SearchIdSelection(object):
 class IndexerSettingsAbstract(Category):
     def __init__(self, parent, name, title):
         super().__init__(parent, name, title)
-        self.name = Setting(self, name="name", default=None, valuetype=str, title="Name", description="Name of the indexer. Used when displayed. If changed all references, history and stats get lost!")
-        self.host = Setting(self, name="host", default=None, valuetype=str, title="Host name", description="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
-        self.enabled = Setting(self, name="enabled", default=True, valuetype=bool, title="Enabled", description="")
-        self.search_ids = MultiSelectionSetting(self, name="search_ids", default=[], valuetype=list, title="Search IDs", description="By which IDs the indexer can search releases",
+        self.name = Setting(self, name="name", default=None, valuetype=str)
+        self.host = Setting(self, name="host", default=None, valuetype=str)
+        self.enabled = Setting(self, name="enabled", default=True, valuetype=bool)
+        self.search_ids = MultiSelectionSetting(self, name="search_ids", default=[], valuetype=list,
                                                 options=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid],
                                                 setting_type=SettingType.multiselect)
-        self.score = Setting(self, name="score", default=0, valuetype=str, title="Score", description="Used to decide how results are picked when duplicates are found. Higher is \"better\".")
-        # self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[GenerateQueriesSelection.internal], options=GenerateQueriesSelection.options, valuetype=str, title="Query generation",
-        #                                          description="Decide if you want to generate queries for indexers in case of ID based searches. The results will probably contain a lot of crap.",
-        #                                          setting_type=SettingType.multiselect)
+        self.score = Setting(self, name="score", default=0, valuetype=str)
 
 
 class IndexerBinsearchSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
         super(IndexerBinsearchSettings, self).__init__(parent, "binsearch", "Binsearch")
-        self.host = Setting(self, name="host", default="https://binsearch.com", valuetype=str, title="Host name", description="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
-        self.name = Setting(self, name="name", default="binsearch", valuetype=str, title="Name", description="Name of the indexer. Used when displayed. If changed all references, history and stats get lost!")
+        self.host = Setting(self, name="host", default="https://binsearch.com", valuetype=str)
+        self.name = Setting(self, name="name", default="binsearch", valuetype=str)
 
 
 class IndexerNewznabSettings(IndexerSettingsAbstract):
     def __init__(self, parent, name, title):
         super(IndexerNewznabSettings, self).__init__(parent, name, title)
-        self.apikey = Setting(self, name="apikey", default=None, valuetype=str, title="API key", description=None)
-        self.search_ids = MultiSelectionSetting(self, name="search_ids", default=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid], valuetype=list, title="Search IDs", description="By which IDs the indexer can search releases",
+        self.apikey = Setting(self, name="apikey", default=None, valuetype=str)
+        self.search_ids = MultiSelectionSetting(self, name="search_ids", default=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid], valuetype=list,
                                                 options=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid],
                                                 setting_type=SettingType.multiselect)
-        self.enabled = Setting(self, name="enabled", default=False, valuetype=bool, title="Enabled", description="")  # Disable by default because we have no meaningful initial data
+        self.enabled = Setting(self, name="enabled", default=False, valuetype=bool)  # Disable by default because we have no meaningful initial data
 
 
 class IndexerNzbclubSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
         super(IndexerNzbclubSettings, self).__init__(parent, "nzbclub", "NZBClub")
-        self.host = Setting(self, name="host", default="http://nzbclub.com", valuetype=str, title="Host name", description="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
-        self.name = Setting(self, name="name", default="nzbclub", valuetype=str, title="", description="Name of the indexer. Used when displayed. If changed all references, history and stats get lost!")
+        self.host = Setting(self, name="host", default="http://nzbclub.com", valuetype=str)
+        self.name = Setting(self, name="name", default="nzbclub", valuetype=str)
 
 
 class IndexerNzbindexSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
         super(IndexerNzbindexSettings, self).__init__(parent, "nzbindex", "NZBIndex")
-        self.host = Setting(self, name="host", default="https://nzbindex.com", valuetype=str, title="Host name", description="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
-        self.name = Setting(self, name="name", default="nzbindex", valuetype=str, title="NZBIndex", description="Name of the indexer. Used when displayed. If changed all references, history and stats get lost!")
+        self.host = Setting(self, name="host", default="https://nzbindex.com", valuetype=str)
+        self.name = Setting(self, name="name", default="nzbindex", valuetype=str)
 
 
 class IndexerWombleSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
         super(IndexerWombleSettings, self).__init__(parent, "womble", "Womble")
-        self.host = Setting(self, name="host", default="https://newshost.co.za", valuetype=str, title="Host name", description="Base host like ""https://api.someindexer.com"". In case of newznab without ""/api"".")
-        self.name = Setting(self, name="name", default="womble", valuetype=str, title="Name ", description="Name of the indexer. Used when displayed. If changed all references, history and stats get lost!")
+        self.host = Setting(self, name="host", default="https://newshost.co.za", valuetype=str)
+        self.name = Setting(self, name="name", default="womble", valuetype=str)
 
 
 class IndexerSettings(Category):
