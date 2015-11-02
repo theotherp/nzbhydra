@@ -1,3 +1,4 @@
+import os
 from os.path import dirname, join, abspath
 from sys import path
 base_path = dirname(abspath(__file__))
@@ -33,8 +34,9 @@ def run():
     logger = log.setup_custom_logger('root')
     logger.info("Started")
     logger.info("Loading database file %s" % database_file)
+    if not os.path.exists(database_file):
+        database.init_db(database_file)
     database.db.init(database_file)
-    database.db.connect()
     indexers.read_indexers_from_config()
 
     host = config.mainSettings.host.get() if args.host is None else args.host

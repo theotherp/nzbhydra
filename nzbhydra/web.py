@@ -111,9 +111,10 @@ def requires_auth(f):
 @requires_auth
 def base(path):
     logger.debug("Sending index.html")
-    host_url = (request.host_url + request.environ['URL_BASE'][1:])
+    #We build a protocol agnostic base href using the host and url base. This way we should be able to access the site directly and from behind a proxy without having to do any
+    #further configuration or setting any extra headers
+    host_url = "//" + request.host + request.environ['URL_BASE']
     return render_template("index.html", host_url=host_url)
-    # return render_template("index.html", host_url=request.host_url)
 
 
 def render_search_results_for_api(search_results, total, offset):

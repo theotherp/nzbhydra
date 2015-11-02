@@ -16,4 +16,7 @@ realsettingsmockproviders.cfg
 /nzbhydra_virtualenv
 /libs/**/*.pyc
 /libs/**/__pycache__
+/libs/**/tests/**
+/libs/**/test/**
+/libs/**/testsuite/**
 *.log

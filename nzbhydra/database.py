@@ -1,12 +1,13 @@
 import json
 import datetime
-
+import logging
 import arrow
 from dateutil.tz import tzutc
 from peewee import *
 
-db = SqliteDatabase(None)
+logger = logging.getLogger('root')
 
+db = SqliteDatabase(None)
 
 class JSONField(TextField):
     db_field = "text"
@@ -29,7 +30,7 @@ class DateTimeUTCField(DateTimeField):
 
 
 class Indexer(Model):
-    name = CharField(unique=True) #The name of the indexer. So if the user changes the name all references get lost (except we handle that if he does it in the GUI).
+    name = CharField(unique=True)  # The name of the indexer. So if the user changes the name all references get lost (except we handle that if he does it in the GUI).
 
     class Meta:
         database = db
@@ -64,7 +65,7 @@ class IndexerSearch(Model):
     results = IntegerField(null=True)  # number of results returned
 
     class Meta:
-        database = db  
+        database = db
 
     def save(self, *args, **kwargs):
         if self.time is None:
@@ -97,10 +98,9 @@ class IndexerNzbDownload(Model):
     api_access = ForeignKeyField(IndexerApiAccess)
     title = CharField()
     time = DateTimeField()
-    mode = CharField() #"serve" or "redirect"
+    mode = CharField()  # "serve" or "redirect"
     guid = CharField()
-    
-    
+
     class Meta:
         database = db
 
@@ -108,6 +108,7 @@ class IndexerNzbDownload(Model):
         if self.time is None:
             self.time = datetime.datetime.utcnow()  # Otherwise the time at the first run of this code is taken
         super(IndexerNzbDownload, self).save(*args, **kwargs)
+
 
 # class IndexerSearchApiAccess(Model):
 #     search = ForeignKeyField(IndexerSearch, related_name="api_accesses")
@@ -131,3 +132,19 @@ class IndexerStatus(Model):
 
     class Meta:
         database = db
+
+
+def init_db(dbfile):
+    tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, ]
+    db.init(dbfile)
+    db.connect()
+
+    logger.info("Initializing database and creating tables")
+    for t in tables:
+        try:
+            db.create_table(t)
+        except OperationalError as e:
+            logger.exception("Error while creating table %s" % t)
+
+    db.close()
+
