@@ -25,12 +25,13 @@ class Nzbget(Downloader):
     logger = logging.getLogger('root')
 
     def get_rpc(self):
-        f = furl(nzbgetSettings.host.get())
+        f = furl()
+        f.host = nzbgetSettings.host.get()
         f.username = nzbgetSettings.username.get()
         f.password = nzbgetSettings.password.get()
         f.scheme = "https" if nzbgetSettings.ssl.get() else "http"
         f.port = nzbgetSettings.port.get()
-        f.path = "xmlrpc"
+        f.path.add("xmlrpc")
 
         return xmlrpc.client.ServerProxy(f.tostr())
 

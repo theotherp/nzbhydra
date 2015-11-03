@@ -1,5 +1,5 @@
 /flask_session
-/.idea/*
+/.idea/**
 /nzbhydra/static
 /cache
 /nzbhydra/tests/mock/cache
