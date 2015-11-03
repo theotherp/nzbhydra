@@ -9,8 +9,6 @@ function modalService() {
         var myInjector = angular.injector(["ng", "ui.bootstrap"]);
         var $uibModal = myInjector.get("$uibModal");
 
-        
-
         var modalInstance = $uibModal.open({
             template: '<pre>' + msg + '</pre>',
             size: "lg"

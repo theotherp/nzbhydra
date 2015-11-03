@@ -243,7 +243,6 @@ internalapi_search_args = {
 @use_args(internalapi_search_args, locations=['querystring'])
 @search_cache.memoize()
 def internalapi_search(args):
-    raise UnboundLocalError()
     logger.debug("Search request with args %s" % args)
     search_request = SearchRequest(type="general", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"])
     results = search.search(True, search_request)

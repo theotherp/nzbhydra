@@ -102,7 +102,7 @@ def search(internal, search_request: SearchRequest):
     limit = search_request.limit  # todo use actual configured limit
     external_offset = int(search_request.offset)
     search_hash = search_request.search_hash
-    if search_hash not in pseudo_cache.keys():
+    if search_hash not in pseudo_cache.keys() or search_request.offset == 0: #If it's a new search (which starts with offset 0) do it again instead of using the cached results
         print("Didn't find this query in cache")
         cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0}
         indexers_to_call, with_query_generation = pick_indexers(query_supplied=True if search_request.query is not None else False, identifier_key=search_request.identifier_key, internal=internal)
