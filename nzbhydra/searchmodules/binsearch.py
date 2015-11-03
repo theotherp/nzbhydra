@@ -38,12 +38,12 @@ class Binsearch(SearchModule):
 
     def get_search_urls(self, search_request):
         f = self.build_base_url(offset=search_request.offset).add({"q": search_request.query})
-        # if args["minsize"]:
-        #     f = f.add({"minsize": args["minsize"]})
-        # if args["maxsize"]:
-        #     f = f.add({"maxsize": args["maxsize"]})
-        # if args["maxage"]:
-        #     f = f.add({"adv_age": args["maxage"]})
+        if search_request.minsize:
+            f = f.add({"xminsize": search_request.minsize})
+        if search_request.maxsize:
+            f = f.add({"xmaxsize": search_request.maxsize})
+        if search_request.maxage:
+            f = f.add({"adv_age": search_request.maxage})
 
         return [f.tostr()]
 
@@ -97,7 +97,6 @@ class Binsearch(SearchModule):
         goup_pattern = re.compile(r"&g=([\w\.]*)&")
         nfo_pattern = re.compile(r"\d nfo file")
         for row in items:
-
             entry = self.create_nzb_search_result()
             title = row.find('span', attrs={'class': 's'})
 
@@ -178,18 +177,18 @@ class Binsearch(SearchModule):
         
         page_links = soup.find_all('table', attrs={'class': 'xMenuT'})[1].find_all("a")
         has_more = len(page_links) > 0 and page_links[-1].text == ">"
-        total = 0
+        total_known = False
+        total = 100
         if len(page_links) == 0:
-            m = re.compile(r".*(\d+) records.*").search(soup.find_all('table', attrs={'class': 'xMenuT'})[1].text)
+            m = re.compile(r".* (\d+)\+? records.*").search(soup.find_all('table', attrs={'class': 'xMenuT'})[1].text)
             if m:
                 total = int(m.group(1))
-                
+                total_known = True
         
-        logger.warn("Hasmore and total not yet implemented")
-        return IndexerProcessingResult(entries=entries, queries=[], total_known=False, has_more=has_more, total=total) 
+        return IndexerProcessingResult(entries=entries, queries=[], total_known=total_known, has_more=has_more, total=total) 
 
     def get_nfo(self, guid):
-        f = furl(self.base_url)
+        f = furl(self.host)
         f.path.add("viewNFO.php")
         f.add({"oid": guid})
         r, papiaccess = self.get_url_with_papi_access(f.tostr(), "nfo")

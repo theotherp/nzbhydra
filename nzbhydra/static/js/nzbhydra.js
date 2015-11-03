@@ -195,7 +195,7 @@ angular
     .directive('otherColumns', otherColumns);
 
 function otherColumns($http, $templateCache, $compile) {
-    controller.$inject = ["$scope", "$http", "$uibModal", "$sce"];
+    controller.$inject = ["$scope", "$http", "$uibModal", "growl"];
     return {
         scope: {
             result: "="
@@ -211,7 +211,7 @@ function otherColumns($http, $templateCache, $compile) {
         controller: controller
     };
 
-    function controller($scope, $http, $uibModal, $sce) {
+    function controller($scope, $http, $uibModal, growl) {
 
         $scope.showNfo = showNfo;
         function showNfo(resultItem) {
@@ -231,17 +231,16 @@ function otherColumns($http, $templateCache, $compile) {
             });
         }
 
-
         $scope.openModal = openModal;
 
         function openModal(size, nfo) {
             var modalInstance = $uibModal.open({
-                template: '<pre><span ng-bind-html="nfo"></span></pre>',
+                template: '<pre style="text-align:left"><span ng-bind-html="nfo"></span></pre>',
                 controller: 'ModalInstanceCtrl',
                 size: size,
                 resolve: {
                     nfo: function () {
-                        return $sce.trustAsHtml(nfo);
+                        return nfo;
                     }
                 }
             });
@@ -583,7 +582,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.sortPredicate = "epoch";
     $scope.sortReversed = true;
 
-    $scope.limitTo = 101;
+    $scope.limitTo = 100;
     $scope.offset = 0;
 
     //Handle incoming data

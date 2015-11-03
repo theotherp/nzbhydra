@@ -81,7 +81,7 @@ class NzbIndex(SearchModule):
 
         if not main_table or not main_table.find("tbody"):
             logger.error("Unable to find main table in NZBIndex page: %s..." % html[:500])
-            logger.debug(html)
+            logger.debug(html[:1000])
             raise IndexerResultParsingException("Unable to find main table in NZBIndex page", self)
 
         items = main_table.find("tbody").find_all('tr')

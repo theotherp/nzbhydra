@@ -18,7 +18,7 @@ function otherColumns($http, $templateCache, $compile) {
         controller: controller
     };
 
-    function controller($scope, $http, $uibModal, $sce) {
+    function controller($scope, $http, $uibModal, growl) {
 
         $scope.showNfo = showNfo;
         function showNfo(resultItem) {
@@ -38,17 +38,16 @@ function otherColumns($http, $templateCache, $compile) {
             });
         }
 
-
         $scope.openModal = openModal;
 
         function openModal(size, nfo) {
             var modalInstance = $uibModal.open({
-                template: '<pre><span ng-bind-html="nfo"></span></pre>',
+                template: '<pre style="text-align:left"><span ng-bind-html="nfo"></span></pre>',
                 controller: 'ModalInstanceCtrl',
                 size: size,
                 resolve: {
                     nfo: function () {
-                        return $sce.trustAsHtml(nfo);
+                        return nfo;
                     }
                 }
             });

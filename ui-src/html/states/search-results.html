@@ -34,7 +34,7 @@
                             />{{ ps.indexer }}
                 </td>
                 <td class="text-left">
-                    {{ ps.total }}
+                    <span ng-if="!ps.total_known">&gt;</span>{{ ps.total }}
                 </td>
                 <td class="text-left">
                     {{ ps.averageResponseTime }}ms

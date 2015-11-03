@@ -9,7 +9,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.sortPredicate = "epoch";
     $scope.sortReversed = true;
 
-    $scope.limitTo = 101;
+    $scope.limitTo = 100;
     $scope.offset = 0;
 
     //Handle incoming data

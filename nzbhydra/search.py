@@ -103,7 +103,7 @@ def search(internal, search_request: SearchRequest):
     external_offset = int(search_request.offset)
     search_hash = search_request.search_hash
     if search_hash not in pseudo_cache.keys() or search_request.offset == 0: #If it's a new search (which starts with offset 0) do it again instead of using the cached results
-        print("Didn't find this query in cache")
+        print("Didn't find this query in cache or want to do a new search")
         cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0}
         indexers_to_call, with_query_generation = pick_indexers(query_supplied=True if search_request.query is not None else False, identifier_key=search_request.identifier_key, internal=internal)
         for p in indexers_to_call:

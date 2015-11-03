@@ -219,6 +219,7 @@ class NewzNab(SearchModule):
         if '<error code=' in body:
             raise IndexerAccessException("Unknown error while trying to access the indexer.", self)
 
+
     def get_nfo(self, guid):
         # try to get raw nfo. if it is xml the indexer doesn't actually return raw nfos (I'm looking at you, DOGNzb)
         url = furl(self.settings.host.get()).add({"apikey": self.settings.apikey.get(), "t": "getnfo", "o": "xml", "id": guid})  
@@ -230,7 +231,7 @@ class NewzNab(SearchModule):
                 tree = ET.fromstring(nfo)
                 for elem in tree.iter('item'):
                     nfo = elem.find("description").text
-                    nfo = re.sub("\\n", nfo, "\n")  # TODO: Not completely correct, looks still a bit werid
+                    nfo = nfo.replace("\\n", "\r\n").replace("\/", "/")  # TODO: Not completely correct, looks still a bit werid
                     return nfo
             # otherwise we just hope it's the nfo...
         return None
