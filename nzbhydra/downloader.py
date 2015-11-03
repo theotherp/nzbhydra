@@ -102,7 +102,8 @@ class Nzbget(Downloader):
             else:
                 self.logger.error("NZBGet returned an error while adding NZB for %s" % title)
                 return False
-        except socket.error:
+        except socket.error as e:
+            self.logger.debug(str(e))
             self.logger.error('NZBGet is not responding. Please ensure that NZBGet is running and host setting is correct.')
             return False
         except xmlrpc.client.ProtocolError as e:

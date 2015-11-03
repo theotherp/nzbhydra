@@ -1247,7 +1247,28 @@ angular
             template: [
                 '<input type="number" class="form-control" placeholder="Percent" ng-model="model[options.key]" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" required />'
             ].join(' ')
+        });
 
+        formlyConfigProvider.setType({
+            name: 'apiKeyInput',
+            template: [
+                '<div class="input-group">',
+                '<input type="text" class="form-control" ng-model="model[options.key]"/>',
+                '<span class="input-group-btn">',
+                '<button class="btn btn-default" type="button" ng-click="generate()"><span class="glyphicon glyphicon-refresh"></span></button>',
+                '</div>'
+            ].join(' '),
+            controller: function($scope) {
+                $scope.generate = function() {
+                    $scope.model[$scope.options.key] = Array(31).join((Math.random().toString(36) + '00000000000000000').slice(2, 18)).slice(0, 30);
+                }
+            }
+        });
+
+        formlyConfigProvider.setType({
+            name: 'horizontalApiKeyInput',
+            extends: 'apiKeyInput',
+            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
         });
 
         formlyConfigProvider.setType({
@@ -1380,18 +1401,22 @@ function ConfigController($scope, ConfigService, configPromise) {
                     },
                     {
                         key: 'sslcert',
+                        hideExpression: '!model.ssl',
                         type: 'horizontalInput',
                         templateOptions: {
                             type: 'text',
-                            label: 'SSL certificate file'
+                            label: 'SSL certificate file',
+                            required: true
                         }
                     },
                     {
                         key: 'sslkey',
+                        hideExpression: '!model.ssl',
                         type: 'horizontalInput',
                         templateOptions: {
                             type: 'text',
-                            label: 'SSL key file'
+                            label: 'SSL key file',
+                            required: true
                         }
                     }
 
@@ -1413,26 +1438,27 @@ function ConfigController($scope, ConfigService, configPromise) {
                     {
                         key: 'username',
                         type: 'horizontalInput',
+                        hideExpression: '!model.enableAuth',
                         templateOptions: {
                             type: 'text',
                             label: 'Username',
-                            help: 'Only applies if authentication is enabled'
+                            required: true
                         }
                     },
                     {
                         key: 'password',
+                        hideExpression: '!model.enableAuth',
                         type: 'horizontalInput',
                         templateOptions: {
                             type: 'password',
                             label: 'Password',
-                            help: 'Only applies if authentication is enabled'
+                            required: true
                         }
                     },
                     {
                         key: 'apikey',
-                        type: 'horizontalInput',
+                        type: 'horizontalApiKeyInput',
                         templateOptions: {
-                            type: 'text',
                             label: 'API key'
                         }
                     }
@@ -1453,6 +1479,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                     },
                     {
                         key: 'cacheType',
+                        hideExpression: '!model.enableCache',
                         type: 'horizontalSelect',
                         templateOptions: {
                             type: 'select',
@@ -1465,11 +1492,12 @@ function ConfigController($scope, ConfigService, configPromise) {
                     },
                     {
                         key: 'cacheTimeout',
+                        hideExpression: '!model.enableCache',
                         type: 'horizontalInput',
                         templateOptions: {
                             type: 'number',
                             label: 'Cache timeout',
-                            help: 'Only applies if caching is enabled',
+                            help: 'Time after which cache entries will be discarded',
                             addonRight: {
                                 text: 'seconds'
                             }
@@ -1477,10 +1505,12 @@ function ConfigController($scope, ConfigService, configPromise) {
                     },
                     {
                         key: 'cachethreshold',
+                        hideExpression: '!model.enableCache',
                         type: 'horizontalInput',
                         templateOptions: {
                             type: 'number',
                             label: 'Cache threshold',
+                            help: 'Max amount of items held in cache',
                             addonRight: {
                                 text: 'items'
                             }
@@ -1488,6 +1518,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                     },
                     {
                         key: 'cacheFolder',
+                        hideExpression: '!model.enableCache || model.cacheType == "memory"',
                         type: 'horizontalInput',
                         templateOptions: {
                             type: 'text',
@@ -1591,13 +1622,12 @@ function ConfigController($scope, ConfigService, configPromise) {
                     },
                     {
                         key: 'generate_queries',
-                        type: 'horizontalSelect',
+                        type: 'horizontalMultiselect',
                         templateOptions: {
-                            type: 'multiselect',
                             label: 'Generate queries',
                             options: [
-                                {name: 'Internal searches', value: 'internal'},
-                                {name: 'API searches', value: 'external'}
+                                {label: 'Internal searches', id: 'internal'},
+                                {label: 'API searches', id: 'external'}
                             ],
                             help: "Generate queries for indexers which do not support ID based searches"
                         }
