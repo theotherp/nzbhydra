@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 
 from furl import furl
 import requests
+from nzbhydra import config
 
 from nzbhydra.config import searchingSettings
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException
@@ -35,6 +36,8 @@ class NzbIndex(SearchModule):
         f = self.build_base_url().add({"q": search_request.query})
         if search_request.minsize:
             f = f.add({"minsize": search_request.minsize})
+        elif config.indexerSettings.nzbindex.general_min_size.get():
+            f = f.add({"minsize": config.indexerSettings.nzbindex.general_min_size.get()})
         if search_request.maxsize:
             f = f.add({"maxsize": search_request.maxsize})
         if search_request.minage:

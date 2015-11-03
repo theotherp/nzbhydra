@@ -468,8 +468,7 @@ def internalapi_setsettings():
 @internal_cache.memoize()
 def internalapi_getconfig():
     logger.debug("Get config request")
-    settings = config.cfg
-    return jsonify(settings)
+    return jsonify(config.cfg)
 
 
 def restart():

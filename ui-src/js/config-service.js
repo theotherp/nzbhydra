@@ -15,13 +15,13 @@ function ConfigService($http, $q) {
     
     
 
-    function setConfig(settings) {
+    function setConfig(newConfig) {
         console.log("Starting setConfig");
 
-        $http.put('internalapi/setsettings', settings)
+        $http.put('internalapi/setsettings', newConfig)
             .then(function (successresponse) {
                 console.log("Settings saved. Updating cache");
-                config.settings = settings;
+                config = newConfig;
             }, function (errorresponse) {
                 console.log("Error saving settings: " + errorresponse);
             });

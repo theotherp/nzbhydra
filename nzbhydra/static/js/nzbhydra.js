@@ -1005,8 +1005,6 @@ function modalService() {
         var myInjector = angular.injector(["ng", "ui.bootstrap"]);
         var $uibModal = myInjector.get("$uibModal");
 
-        
-
         var modalInstance = $uibModal.open({
             template: '<pre>' + msg + '</pre>',
             size: "lg"
@@ -1154,13 +1152,13 @@ function ConfigService($http, $q) {
     
     
 
-    function setConfig(settings) {
+    function setConfig(newConfig) {
         console.log("Starting setConfig");
 
-        $http.put('internalapi/setsettings', settings)
+        $http.put('internalapi/setsettings', newConfig)
             .then(function (successresponse) {
                 console.log("Settings saved. Updating cache");
-                config.settings = settings;
+                config = newConfig;
             }, function (errorresponse) {
                 console.log("Error saving settings: " + errorresponse);
             });
@@ -1245,6 +1243,20 @@ angular
             wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
         });
 
+        formlyConfigProvider.setType({
+            name: 'percentInput',
+            template: [
+                '<input type="number" class="form-control" placeholder="Percent" ng-model="model[options.key]" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" required />'
+            ].join(' ')
+
+        });
+
+        formlyConfigProvider.setType({
+            name: 'horizontalPercentInput',
+            extends: 'percentInput',
+            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+        });
+
 
         formlyConfigProvider.setType({
             name: 'switch',
@@ -1254,13 +1266,14 @@ angular
 
         });
 
+
         formlyConfigProvider.setType({
             name: 'duoSetting',
             extends: 'input',
             defaultOptions: {
                 className: 'col-md-9',
                 templateOptions: {
-                    type: 'text',
+                    type: 'number',
                     noRow: true,
                     label: ''
                 }
@@ -1326,13 +1339,14 @@ function ConfigController($scope, ConfigService, configPromise) {
     $scope.config = configPromise.settings;
 
     $scope.submit = submit;
-    
+
     function submit() {
-        console.log("Submit:")
+        console.log("Submit:");
         console.log($scope.config);
         ConfigService.set($scope.config);
     }
-    
+
+
     $scope.fields = {
         main: [
             {
@@ -1454,7 +1468,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'cacheTimeout',
                         type: 'horizontalInput',
                         templateOptions: {
-                            type: 'text',
+                            type: 'number',
                             label: 'Cache timeout',
                             help: 'Only applies if caching is enabled',
                             addonRight: {
@@ -1466,7 +1480,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'cachethreshold',
                         type: 'horizontalInput',
                         templateOptions: {
-                            type: 'text',
+                            type: 'number',
                             label: 'Cache threshold',
                             addonRight: {
                                 text: 'items'
@@ -1528,8 +1542,8 @@ function ConfigController($scope, ConfigService, configPromise) {
                             ]
                         }
                     }
-                    
-                    
+
+
                 ]
             },
             {
@@ -1546,7 +1560,8 @@ function ConfigController($scope, ConfigService, configPromise) {
                         }
                     }
                 ]
-            }],
+            }
+        ],
 
         searching: [
             {
@@ -1559,7 +1574,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'timeout',
                         type: 'horizontalInput',
                         templateOptions: {
-                            type: 'text',
+                            type: 'number',
                             label: 'Timeout when accessing indexers',
                             addonRight: {
                                 text: 'seconds'
@@ -1610,7 +1625,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                     },
                     {
                         key: 'duplicateSizeThresholdInPercent',
-                        type: 'horizontalInput',
+                        type: 'horizontalPercentInput',
                         templateOptions: {
                             type: 'text',
                             label: 'Duplicate size threshold',
@@ -1624,10 +1639,10 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'duplicateAgeThreshold',
                         type: 'horizontalInput',
                         templateOptions: {
-                            type: 'text',
+                            type: 'number',
                             label: 'Duplicate age threshold',
                             addonRight: {
-                                text: 'minutes'
+                                text: 'seconds'
                             }
                         }
                     }
@@ -1661,14 +1676,19 @@ function ConfigController($scope, ConfigService, configPromise) {
                                 fieldGroup: [
                                     {
                                         key: 'moviesmin',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting',
+                                        templateOptions: {
+                                            addonRight: {
+                                                text: 'MB'
+                                            }
+                                        }
                                     },
                                     {
                                         type: 'duolabel'
                                     },
                                     {
                                         key: 'moviesmax',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     }
                                 ]
                             },
@@ -1680,14 +1700,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                                 fieldGroup: [
                                     {
                                         key: 'movieshdmin',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     },
                                     {
                                         type: 'duolabel'
                                     },
                                     {
                                         key: 'movieshdmax',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     }
                                 ]
                             },
@@ -1699,14 +1719,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                                 fieldGroup: [
                                     {
                                         key: 'moviessdmin',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     },
                                     {
                                         type: 'duolabel'
                                     },
                                     {
                                         key: 'movieshdmin',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     }
                                 ]
                             },
@@ -1719,14 +1739,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                                 fieldGroup: [
                                     {
                                         key: 'tvmin',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     },
                                     {
                                         type: 'duolabel'
                                     },
                                     {
                                         key: 'tvmax',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     }
                                 ]
                             },
@@ -1739,14 +1759,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                                 fieldGroup: [
                                     {
                                         key: 'tvhdmin',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     },
                                     {
                                         type: 'duolabel'
                                     },
                                     {
                                         key: 'tvhdmax',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     }
                                 ]
                             },
@@ -1759,14 +1779,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                                 fieldGroup: [
                                     {
                                         key: 'tvsdmin',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     },
                                     {
                                         type: 'duolabel'
                                     },
                                     {
                                         key: 'tvsdmax',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     }
                                 ]
                             },
@@ -1779,14 +1799,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                                 fieldGroup: [
                                     {
                                         key: 'audiomin',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     },
                                     {
                                         type: 'duolabel'
                                     },
                                     {
                                         key: 'audiomax',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     }
                                 ]
                             },
@@ -1799,14 +1819,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                                 fieldGroup: [
                                     {
                                         key: 'flacmin',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     },
                                     {
                                         type: 'duolabel'
                                     },
                                     {
                                         key: 'flacmax',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     }
                                 ]
                             },
@@ -1819,14 +1839,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                                 fieldGroup: [
                                     {
                                         key: 'mp3min',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     },
                                     {
                                         type: 'duolabel'
                                     },
                                     {
                                         key: 'mp3max',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     }
                                 ]
                             },
@@ -1839,14 +1859,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                                 fieldGroup: [
                                     {
                                         key: 'consolemin',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     },
                                     {
                                         type: 'duolabel'
                                     },
                                     {
                                         key: 'consolemax',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     }
                                 ]
                             },
@@ -1859,14 +1879,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                                 fieldGroup: [
                                     {
                                         key: 'pcmin',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     },
                                     {
                                         type: 'duolabel'
                                     },
                                     {
                                         key: 'pcmax',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     }
                                 ]
                             },
@@ -1879,14 +1899,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                                 fieldGroup: [
                                     {
                                         key: 'xxxmin',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     },
                                     {
                                         type: 'duolabel'
                                     },
                                     {
                                         key: 'xxxmax',
-                                        type: 'duoSetting'
+                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                     }
                                 ]
                             }
@@ -2063,6 +2083,15 @@ function ConfigController($scope, ConfigService, configPromise) {
                             type: 'switch',
                             label: 'Enabled'
                         }
+                    },
+                    {
+                        key: 'score',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'number',
+                            label: 'Score',
+                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
+                        }
                     }
                 ]
             },
@@ -2078,8 +2107,17 @@ function ConfigController($scope, ConfigService, configPromise) {
                             type: 'switch',
                             label: 'Enabled'
                         }
+                    },
+                    {
+                        key: 'score',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'number',
+                            label: 'Score',
+                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
+                        }
                     }
-                    
+
                 ]
             },
             {
@@ -2093,6 +2131,24 @@ function ConfigController($scope, ConfigService, configPromise) {
                         templateOptions: {
                             type: 'switch',
                             label: 'Enabled'
+                        }
+                    },
+                    {
+                        key: 'generalMinSize',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'number',
+                            label: 'Min size',
+                            help: 'NZBIndex returns a lot of crap with small file sizes. Set this value and all smaller results will be filtered out no matter the category'
+                        }
+                    },
+                    {
+                        key: 'score',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'number',
+                            label: 'Score',
+                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
                         }
                     }
                 ]
@@ -2109,10 +2165,19 @@ function ConfigController($scope, ConfigService, configPromise) {
                             type: 'switch',
                             label: 'Enabled'
                         }
+                    },
+                    {
+                        key: 'score',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'number',
+                            label: 'Score',
+                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
+                        }
                     }
                 ]
             },
-            
+
             {
                 wrapper: 'fieldset',
                 key: 'newznab1',
@@ -2155,12 +2220,21 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'search_ids',
                         type: 'horizontalMultiselect',
                         templateOptions: {
-                        label: 'Search types',
+                            label: 'Search types',
                             options: [
                                 {label: 'TVDB', id: 'tvdbid'},
                                 {label: 'TVRage', id: 'rid'},
                                 {label: 'IMDB', id: 'imdbid'}
                             ]
+                        }
+                    },
+                    {
+                        key: 'score',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'number',
+                            label: 'Score',
+                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
                         }
                     }
                 ]
@@ -2208,12 +2282,21 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'search_ids',
                         type: 'horizontalMultiselect',
                         templateOptions: {
-                        label: 'Search types',
+                            label: 'Search types',
                             options: [
                                 {label: 'TVDB', id: 'tvdbid'},
                                 {label: 'TVRage', id: 'rid'},
                                 {label: 'IMDB', id: 'imdbid'}
                             ]
+                        }
+                    },
+                    {
+                        key: 'score',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'number',
+                            label: 'Score',
+                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
                         }
                     }
                 ]
@@ -2261,12 +2344,21 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'search_ids',
                         type: 'horizontalMultiselect',
                         templateOptions: {
-                        label: 'Search types',
+                            label: 'Search types',
                             options: [
                                 {label: 'TVDB', id: 'tvdbid'},
                                 {label: 'TVRage', id: 'rid'},
                                 {label: 'IMDB', id: 'imdbid'}
                             ]
+                        }
+                    },
+                    {
+                        key: 'score',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'number',
+                            label: 'Score',
+                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
                         }
                     }
                 ]
@@ -2314,12 +2406,21 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'search_ids',
                         type: 'horizontalMultiselect',
                         templateOptions: {
-                        label: 'Search types',
+                            label: 'Search types',
                             options: [
                                 {label: 'TVDB', id: 'tvdbid'},
                                 {label: 'TVRage', id: 'rid'},
                                 {label: 'IMDB', id: 'imdbid'}
                             ]
+                        }
+                    },
+                    {
+                        key: 'score',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'number',
+                            label: 'Score',
+                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
                         }
                     }
                 ]
@@ -2367,12 +2468,21 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'search_ids',
                         type: 'horizontalMultiselect',
                         templateOptions: {
-                        label: 'Search types',
+                            label: 'Search types',
                             options: [
                                 {label: 'TVDB', id: 'tvdbid'},
                                 {label: 'TVRage', id: 'rid'},
                                 {label: 'IMDB', id: 'imdbid'}
                             ]
+                        }
+                    },
+                    {
+                        key: 'score',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'number',
+                            label: 'Score',
+                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
                         }
                     }
                 ]
@@ -2420,19 +2530,54 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'search_ids',
                         type: 'horizontalMultiselect',
                         templateOptions: {
-                        label: 'Search types',
+                            label: 'Search types',
                             options: [
                                 {label: 'TVDB', id: 'tvdbid'},
                                 {label: 'TVRage', id: 'rid'},
                                 {label: 'IMDB', id: 'imdbid'}
                             ]
                         }
+                    },
+                    {
+                        key: 'score',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'number',
+                            label: 'Score',
+                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
+                        }
                     }
                 ]
             }
-            
         ]
     };
+
+    $scope.tabs = [
+        {
+            name: 'Main',
+            model: $scope.config.main,
+            fields: $scope.fields.main,
+            active: true
+        },
+        {
+            name: 'Searching',
+            model: $scope.config.searching,
+            fields: $scope.fields.searching,
+            active: false
+        },
+        {
+            name: 'Downloader',
+            model: $scope.config.downloader,
+            fields: $scope.fields.downloader,
+            active: false
+        },
+        {
+            name: 'Indexers',
+            model: $scope.config.indexers,
+            fields: $scope.fields.indexers,
+            active: false
+        }
+    ];
 
 
     $scope.onSubmit = function (form) {

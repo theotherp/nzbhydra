@@ -475,6 +475,7 @@ class IndexerNzbindexSettings(IndexerSettingsAbstract):
         super(IndexerNzbindexSettings, self).__init__(parent, "nzbindex", "NZBIndex")
         self.host = Setting(self, name="host", default="https://nzbindex.com", valuetype=str)
         self.name = Setting(self, name="name", default="nzbindex", valuetype=str)
+        self.general_min_size = Setting(self, name="generalMinSize", default=1, valuetype=int)
 
 
 class IndexerWombleSettings(IndexerSettingsAbstract):

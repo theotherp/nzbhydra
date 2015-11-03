@@ -1,20 +1,8 @@
 <div class="row">
 <form ng-submit="vm.onSubmit()" name="form" novalidate>
     <uib-tabset>
-        <uib-tab heading="Main">
-            <formly-form model="config.main" fields="fields.main" >
-            </formly-form>
-        </uib-tab>
-        <uib-tab heading="Searching">
-            <formly-form model="config.searching" fields="fields.searching">
-            </formly-form>
-        </uib-tab>
-        <uib-tab heading="Downloader">
-            <formly-form model="config.downloader" fields="fields.downloader">
-            </formly-form>
-        </uib-tab>
-        <uib-tab heading="Indexers">
-            <formly-form model="config.indexers" fields="fields.indexers">
+        <uib-tab ng-repeat="tab in tabs" heading="{{ tab.name}}" select="tabs[$index].active = true">
+            <formly-form model="tab.model" fields="tab.fields" ng-if="tabs[$index].active == true">
             </formly-form>
         </uib-tab>
         <li style="position: absolute; right:0px; ">
