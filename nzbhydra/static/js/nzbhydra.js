@@ -1272,21 +1272,23 @@ angular
             controller: function ($scope) {   
                 
                 $scope.message = "";
+                console.log($scope);
 
+                var testButton = "#button-test-connection-" + $scope.formId;
                 function showSuccess() {
-                    angular.element("#button-test-connection").removeClass("btn-default");
-                    angular.element("#button-test-connection").removeClass("btn-danger");
-                    angular.element("#button-test-connection").addClass("btn-success");
+                    angular.element(testButton).removeClass("btn-default");
+                    angular.element(testButton).removeClass("btn-danger");
+                    angular.element(testButton).addClass("btn-success");
                 }
 
                 function showError() {
-                    angular.element("#button-test-connection").removeClass("btn-default");
-                    angular.element("#button-test-connection").removeClass("btn-success");
-                    angular.element("#button-test-connection").addClass("btn-danger");
+                    angular.element(testButton).removeClass("btn-default");
+                    angular.element(testButton).removeClass("btn-success");
+                    angular.element(testButton).addClass("btn-danger");
                 }
 
                 $scope.testConnection = function () {
-                    angular.element("#button-test-connection").addClass("glyphicon-refresh-animate");
+                    angular.element(testButton).addClass("glyphicon-refresh-animate");
                     var myInjector = angular.injector(["ng"]);
                     var $http = myInjector.get("$http");
                     var url;
@@ -1315,7 +1317,7 @@ angular
                         angular.element("#message-test-connection").text(result.message);
                         showError();
                     }).finally(function() {
-                        angular.element("#button-test-connection").removeClass("glyphicon-refresh-animate");
+                        angular.element(testButton).removeClass("glyphicon-refresh-animate");
                     })
                 }
             }
@@ -2413,6 +2415,13 @@ function ConfigController($scope, ConfigService, configPromise) {
                             label: 'Score',
                             help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
                         }
+                    },
+                    {
+                        type: 'horizontalTestConnection',
+                        templateOptions: {
+                            label: 'Test connection',
+                            testType: 'newznab'
+                        }
                     }
                 ]
             },
@@ -2474,6 +2483,13 @@ function ConfigController($scope, ConfigService, configPromise) {
                             type: 'number',
                             label: 'Score',
                             help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
+                        }
+                    },
+                    {
+                        type: 'horizontalTestConnection',
+                        templateOptions: {
+                            label: 'Test connection',
+                            testType: 'newznab'
                         }
                     }
                 ]
@@ -2537,6 +2553,13 @@ function ConfigController($scope, ConfigService, configPromise) {
                             label: 'Score',
                             help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
                         }
+                    },
+                    {
+                        type: 'horizontalTestConnection',
+                        templateOptions: {
+                            label: 'Test connection',
+                            testType: 'newznab'
+                        }
                     }
                 ]
             },
@@ -2599,6 +2622,13 @@ function ConfigController($scope, ConfigService, configPromise) {
                             label: 'Score',
                             help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
                         }
+                    },
+                    {
+                        type: 'horizontalTestConnection',
+                        templateOptions: {
+                            label: 'Test connection',
+                            testType: 'newznab'
+                        }
                     }
                 ]
             },
@@ -2660,6 +2690,13 @@ function ConfigController($scope, ConfigService, configPromise) {
                             type: 'number',
                             label: 'Score',
                             help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
+                        }
+                    },
+                    {
+                        type: 'horizontalTestConnection',
+                        templateOptions: {
+                            label: 'Test connection',
+                            testType: 'newznab'
                         }
                     }
                 ]
