@@ -1,29 +1,29 @@
-from functools import wraps
 import json
 import logging
 import os
-from pprint import pprint
 import ssl
-import threading
-from time import sleep
-import urllib
 import sys
+import threading
+import urllib
+from functools import wraps
+from pprint import pprint
+from time import sleep
 
-from flask import send_file, redirect, make_response
 from flask import Flask, render_template, request, jsonify, Response
+from flask import send_file, redirect, make_response
 from flask.ext.cache import Cache
 from webargs import fields
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
 
 from flask.ext.session import Session
-from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link
 from nzbhydra import config, search, infos, database
+from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link
 from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
 from nzbhydra.downloader import Nzbget, Sabnzbd
+from nzbhydra.indexers import read_indexers_from_config
 from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests
-from nzbhydra.indexers import read_indexers_from_config
 
 
 class ReverseProxied(object):
@@ -111,8 +111,8 @@ def requires_auth(f):
 @requires_auth
 def base(path):
     logger.debug("Sending index.html")
-    #We build a protocol agnostic base href using the host and url base. This way we should be able to access the site directly and from behind a proxy without having to do any
-    #further configuration or setting any extra headers
+    # We build a protocol agnostic base href using the host and url base. This way we should be able to access the site directly and from behind a proxy without having to do any
+    # further configuration or setting any extra headers
     host_url = "//" + request.host + request.environ['URL_BASE']
     return render_template("index.html", host_url=host_url)
 
@@ -416,6 +416,50 @@ def internalapi_addnzb(args):
         return jsonify({"success": True, "added": added, "of": len(guids)})
     else:
         return jsonify({"success": False})
+
+
+internalapi__testdownloader_args = {
+    "name": fields.String(missing=None),
+    "ssl": fields.Boolean(missing=False),
+    "host": fields.String(missing=None),
+    "port": fields.String(missing=None),
+    "username": fields.String(missing=None),
+    "password": fields.String(missing=None),
+    "apikey": fields.String(missing=None),
+}
+
+
+@app.route('/internalapi/test_downloader')
+@use_args(internalapi__testdownloader_args)
+@requires_auth
+def internalapi_testdownloader(args):
+    logger.debug("Testing connection to downloader %s" % args["name"])
+    if args["name"] == "nzbget":
+        if "ssl" not in args.keys():
+            logger.error("Incomplete test downloader request")
+            return "Incomplete test downloader request", 500
+        success, message = Nzbget().test(args["host"], args["ssl"], args["port"], args["username"], args["password"])
+        return jsonify({"result": success, "message": message})
+    if args["name"] == "sabnzbd":
+        success, message = Sabnzbd().test(args["host"], args["ssl"], args["port"], args["username"], args["password"], args["apikey"])
+        return jsonify({"result": success, "message": message})
+    logger.error("Test downloader request with unknown downloader %s" % args["name"])
+    return jsonify({"result": False, "message": "Internal error. Sorry..."})
+
+
+internalapi__testnewznab_args = {
+    "host": fields.String(missing=None),
+    "apikey": fields.String(missing=None),
+}
+
+
+@app.route('/internalapi/test_newznab')
+@use_args(internalapi__testnewznab_args)
+@requires_auth
+def internalapi_testnewznab(args):
+    from nzbhydra.searchmodules.newznab import test_connection
+    success, message = test_connection(args["host"], args["apikey"])
+    return jsonify({"result": success, "message": message})
 
 
 @app.route('/internalapi/getstats')

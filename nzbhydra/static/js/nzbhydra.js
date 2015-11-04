@@ -1255,7 +1255,7 @@ angular
                 '<div class="input-group">',
                 '<input type="text" class="form-control" ng-model="model[options.key]"/>',
                 '<span class="input-group-btn">',
-                '<button class="btn btn-default" type="button" ng-click="generate()"><span class="glyphicon glyphicon-refresh"></span></button>',
+                '<button class="btn " type="button" ng-click="generate()"><span class="glyphicon glyphicon-refresh"></span></button>',
                 '</div>'
             ].join(' '),
             controller: function($scope) {
@@ -1264,6 +1264,69 @@ angular
                 }
             }
         });
+        
+
+        formlyConfigProvider.setType({
+            name: 'testConnection',
+            templateUrl: 'button-test-connection.html',
+            controller: function ($scope) {   
+                
+                $scope.message = "";
+
+                function showSuccess() {
+                    angular.element("#button-test-connection").removeClass("btn-default");
+                    angular.element("#button-test-connection").removeClass("btn-danger");
+                    angular.element("#button-test-connection").addClass("btn-success");
+                }
+
+                function showError() {
+                    angular.element("#button-test-connection").removeClass("btn-default");
+                    angular.element("#button-test-connection").removeClass("btn-success");
+                    angular.element("#button-test-connection").addClass("btn-danger");
+                }
+
+                $scope.testConnection = function () {
+                    angular.element("#button-test-connection").addClass("glyphicon-refresh-animate");
+                    var myInjector = angular.injector(["ng"]);
+                    var $http = myInjector.get("$http");
+                    var url;
+                    var params;
+                    if ($scope.to.testType == "downloader") {
+                        url = "internalapi/test_downloader";
+                        params = {name: $scope.to.downloader, host: $scope.model.host, port: $scope.model.port, ssl: $scope.model.ssl, username: $scope.model.username, password: $scope.model.password};
+                        if ($scope.to.downloader == "sabnzbd") {
+                            params.apikey = $scope.model.apikey;
+                        }
+                    } else if ($scope.to.testType == "newznab") {
+                        url = "internalapi/test_newznab";
+                        params = {host: $scope.model.host, apikey: $scope.model.apikey};
+                    }
+                    $http.get(url, {params: params}).success(function(result){
+                        //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
+                        if (result.result) {
+                            angular.element("#message-test-connection").text("");
+                            showSuccess();
+                        } else {
+                            angular.element("#message-test-connection").text(result.message);
+                            showError();
+                        }
+                        
+                    }).error(function() {
+                        angular.element("#message-test-connection").text(result.message);
+                        showError();
+                    }).finally(function() {
+                        angular.element("#button-test-connection").removeClass("glyphicon-refresh-animate");
+                    })
+                }
+            }
+        });
+
+        formlyConfigProvider.setType({
+            name: 'horizontalTestConnection',
+            extends: 'testConnection',
+            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+        });
+        
 
         formlyConfigProvider.setType({
             name: 'horizontalApiKeyInput',
@@ -1956,7 +2019,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                     label: 'Downloader',
                     options: [
                         {name: 'NZBGet', value: 'nzbget'},
-                        {name: 'SabNZBd', value: 'sabnzbd'}
+                        {name: 'SABnzbd', value: 'sabnzbd'}
                     ]
                 }
             },
@@ -2033,6 +2096,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                             type: 'password',
                             label: 'Password'
                         }
+                    },
+                    {
+                        type: 'horizontalTestConnection',
+                        templateOptions: {
+                            label: 'Test connection',
+                            testType: 'downloader',
+                            downloader: 'nzbget'
+                        }
                     }
 
 
@@ -2042,7 +2113,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                 wrapper: 'fieldset',
                 key: 'sabnzbd',
                 hideExpression: 'model.downloader!="sabnzbd"',
-                templateOptions: {label: 'SabNZBd'},
+                templateOptions: {label: 'SABnzbd'},
                 fieldGroup: [
                     {
                         key: 'host',
@@ -2091,6 +2162,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                         templateOptions: {
                             type: 'text',
                             label: 'API Key'
+                        }
+                    },
+                    {
+                        type: 'horizontalTestConnection',
+                        templateOptions: {
+                            label: 'Test connection',
+                            testType: 'downloader',
+                            downloader: 'sabnzbd'
                         }
                     }
 
@@ -2264,6 +2343,13 @@ function ConfigController($scope, ConfigService, configPromise) {
                             type: 'number',
                             label: 'Score',
                             help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
+                        }
+                    },
+                    {
+                        type: 'horizontalTestConnection',
+                        templateOptions: {
+                            label: 'Test connection',
+                            testType: 'newznab'
                         }
                     }
                 ]
