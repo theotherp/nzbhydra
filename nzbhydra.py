@@ -1,7 +1,9 @@
 import os
+import webbrowser
 from os.path import dirname, join, abspath
 from sys import path
 
+from furl import furl
 
 base_path = dirname(abspath(__file__))
 path.insert(0, join(base_path, 'nzbhydra'))
@@ -27,6 +29,8 @@ def run():
     parser.add_argument('--database', action='store', help='Database file to load', default="nzbhydra.db")
     parser.add_argument('--host', action='store', help='Host to run on')
     parser.add_argument('--port', action='store', help='Port to run on', type=int)
+    parser.add_argument('--nobrowser', action='store_true', help='Don\'t open URL on startup', default=False)
+    
     args = parser.parse_args()
     parser.print_help()
 
@@ -44,12 +48,22 @@ def run():
     database.db.init(database_file)
     indexers.read_indexers_from_config()
 
+    if config.mainSettings.debug.get():
+        logger.info("Debug mode enabled")
+        
     host = config.mainSettings.host.get() if args.host is None else args.host
     port = config.mainSettings.port.get() if args.port is None else args.port
 
-    if config.mainSettings.debug.get():
-        logger.info("Debug mode enabled")
-    logger.info("Starting web app on %s:%d%s" % (host, port, " using SSL" if config.mainSettings.ssl.get() else ""))
+    logger.info("Starting web app on %s:%d" % (host, port))
+    f = furl()
+    f.host = host
+    f.port = port
+    f.scheme = "https" if config.mainSettings.ssl.get() else "http"
+    if not args.nobrowser and config.mainSettings.startup_browser.get():
+        logger.info("Opening browser to %s" % f.url)
+        webbrowser.open_new(f.url)
+    else:
+        logger.info("Go to %s for the frontend" % f.url)
     
     check_for_new_version()
     web.run(host, port)

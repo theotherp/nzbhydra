@@ -276,6 +276,7 @@ class MainSettings(Category):
         super().__init__(config_root, "main", "Main")
         self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str)
         self.port = Setting(self, name="port", default=5050, valuetype=int)
+        self.startup_browser = Setting(self, name="startupBrowser", default=True, valuetype=bool)
 
         self.username = Setting(self, name="username", default="", valuetype=str)
         self.password = Setting(self, name="password", default="", valuetype=str)

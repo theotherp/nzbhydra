@@ -1707,6 +1707,14 @@ function ConfigController($scope, ConfigService, configPromise) {
                             label: 'Enable debugging',
                             help: "Only do this if you know what and why you're doing it"
                         }
+                    },
+                    {
+                        key: 'startupBrowser',
+                        type: 'horizontalSwitch',
+                        templateOptions: {
+                            type: 'switch',
+                            label: 'Open browser on startup'
+                        }
                     }
                 ]
             }
