@@ -79,7 +79,6 @@ angular
             controller: function ($scope) {   
                 
                 $scope.message = "";
-                console.log($scope);
 
                 var testButton = "#button-test-connection-" + $scope.formId;
                 function showSuccess() {
@@ -233,8 +232,6 @@ function ConfigController($scope, ConfigService, configPromise) {
     $scope.submit = submit;
 
     function submit() {
-        console.log("Submit:");
-        console.log($scope.config);
         ConfigService.set($scope.config);
     }
 
@@ -1122,7 +1119,8 @@ function ConfigController($scope, ConfigService, configPromise) {
                         type: 'horizontalInput',
                         templateOptions: {
                             type: 'text',
-                            label: 'Host'
+                            label: 'Host',
+                            placeholder: 'http://www.someindexer.com'
                         }
                     },
                     {

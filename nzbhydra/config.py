@@ -280,9 +280,9 @@ class MainSettings(Category):
         self.username = Setting(self, name="username", default="", valuetype=str)
         self.password = Setting(self, name="password", default="", valuetype=str)
         self.apikey = Setting(self, name="apikey", default=''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(30)), valuetype=str)
-        self.enable_auth = Setting(self, name="enableAuth", default=True, valuetype=bool)
+        self.enable_auth = Setting(self, name="enableAuth", default=False, valuetype=bool)
 
-        self.ssl = Setting(self, name="ssl", default=True, valuetype=bool)
+        self.ssl = Setting(self, name="ssl", default=False, valuetype=bool)
         self.sslcert = Setting(self, name="sslcert", default="nzbhydra.crt", valuetype=str)
         self.sslkey = Setting(self, name="sslkey", default="nzbhydra.key", valuetype=str)
 
