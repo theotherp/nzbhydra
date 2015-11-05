@@ -54,6 +54,16 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             templateUrl: "static/html/states/stats.html",
             controller: "StatsController"
         })
+        .state("about", {
+            url: "/about",
+            templateUrl: "static/html/states/about.html",
+            controller: "AboutController",
+            resolve: {
+                versionsPromise: ['$http', function ($http) {
+                    return $http.get("internalapi/get_versions");
+                }]
+            }
+        })
     ;
 
     $locationProvider.html5Mode(true);

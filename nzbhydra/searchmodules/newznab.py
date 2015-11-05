@@ -9,8 +9,8 @@ import xml.etree.ElementTree as ET
 import arrow
 from furl import furl
 
-from libs import requests
-from libs.requests.exceptions import RequestException
+import requests
+from requests.exceptions import RequestException
 from nzbhydra.config import IndexerNewznabSettings
 from nzbhydra.datestuff import now
 from nzbhydra.exceptions import IndexerAuthException, IndexerAccessException, IndexerResultParsingException

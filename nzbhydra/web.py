@@ -24,6 +24,7 @@ from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.indexers import read_indexers_from_config
 from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests
+from nzbhydra.versioning import get_rep_version, get_current_version
 
 
 class ReverseProxied(object):
@@ -513,6 +514,15 @@ def internalapi_setsettings():
 def internalapi_getconfig():
     logger.debug("Get config request")
     return jsonify(config.cfg)
+
+
+@app.route('/internalapi/get_versions')
+@requires_auth
+def internalapi_getversions():
+    logger.debug("Get versions request")
+    current_version = get_current_version()
+    rep_version = get_rep_version()
+    return jsonify({"currentVersion": str(current_version), "repVersion": str(rep_version), "updateAvailable": rep_version > current_version})
 
 
 def restart():

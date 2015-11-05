@@ -54,6 +54,16 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
             templateUrl: "static/html/states/stats.html",
             controller: "StatsController"
         })
+        .state("about", {
+            url: "/about",
+            templateUrl: "static/html/states/about.html",
+            controller: "AboutController",
+            resolve: {
+                versionsPromise: ['$http', function ($http) {
+                    return $http.get("internalapi/get_versions");
+                }]
+            }
+        })
     ;
 
     $locationProvider.html5Mode(true);
@@ -2743,5 +2753,18 @@ function ConfigController($scope, ConfigService, configPromise) {
 ConfigController.$inject = ["$scope", "ConfigService", "configPromise"];
 
 
+
+angular
+    .module('nzbhydraApp')
+    .controller('AboutController', AboutController);
+
+function AboutController($scope, $http, versionsPromise) {
+
+    $scope.currentVersion = versionsPromise.data.currentVersion;
+    $scope.repVersion = versionsPromise.data.repVersion;
+    $scope.updateAvailable = versionsPromise.data.updateAvailable;
+
+}
+AboutController.$inject = ["$scope", "$http", "versionsPromise"];
 
 //# sourceMappingURL=nzbhydra.js.map
