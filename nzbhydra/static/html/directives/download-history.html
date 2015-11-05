@@ -1,0 +1,22 @@
+<dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Indexer</th>
+        <th>Title</th>
+        <th>Successful</th>
+        <th>Access</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr dir-paginate="nzbDownload in nzbDownloads | itemsPerPage: limit" total-items="totalDownloads" current-page="pagination.current">
+        <td>{{ nzbDownload.time }}</td>
+        <td>{{ nzbDownload.name }}</td>
+        <td><addable-nzb guid="nzbDownload.guid"></addable-nzb> {{ nzbDownload.title }}</td>
+        <td><span class="glyphicon" ng-class="{'glyphicon-ok': nzbDownload.response_successful, 'glyphicon-remove': !nzbDownload.response_successful }"</td>
+        <td>{{ nzbDownload.internal ? "Internal" : "API"}}</td>
+    </tr>
+    </tbody>
+</table>
+<dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>

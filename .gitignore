@@ -1,6 +1,5 @@
 /flask_session
 /.idea/**
-/nzbhydra/static
 /cache
 /nzbhydra/tests/mock/cache
 /nzbhydra/tests/playground.py

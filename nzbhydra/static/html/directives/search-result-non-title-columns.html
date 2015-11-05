@@ -1,0 +1,19 @@
+
+<td class="col-md-1 search-results-cell">
+    {{ ::result.indexer }}
+</td>
+<td class="col-md-2 search-results-cell">
+    {{ ::result.category }}
+</td>
+<td class="col-md-1 search-results-cell">
+    {{ ::result.size | bytes}}
+</td>
+<td class="col-md-1 search-results-cell">
+    {{ ::result.age_days }}d
+</td>
+<td class="col-md-3 search-results-cell">
+    <a href ng-click="showNfo(result)" ng-class="{disabled: !result.has_nfo}">NFO</a>
+    <a target="_blank" href="{{ result.link }}">NZB</a>
+    <a target="_blank" href="{{ result.details_link }}" ng-class="{disabled: !result.details_link}">Details</a>
+    <addable-nzb guid="result.guid"></addable-nzb>
+</td>
