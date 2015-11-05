@@ -259,7 +259,7 @@ class LoggingSettings(Category):
         super().__init__(parent, "logging", "Logging")
         self.logfilename = Setting(self, name="logfile-filename", default="nzbhydra.log", valuetype=str)
         self.logfilelevel = SelectionSetting(self, name="logfile-level", default=LoglevelSelection.info, valuetype=str, options=LoglevelSelection.options)
-        self.consolelevel = SelectionSetting(self, name="consolelevel", default=LoglevelSelection.error, valuetype=str, options=LoglevelSelection.options)
+        self.consolelevel = SelectionSetting(self, name="consolelevel", default=LoglevelSelection.info, valuetype=str, options=LoglevelSelection.options)
 
 
 class CacheTypeSelection(object):

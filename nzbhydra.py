@@ -28,6 +28,7 @@ def run():
     parser.add_argument('--host', action='store', help='Host to run on')
     parser.add_argument('--port', action='store', help='Port to run on', type=int)
     args = parser.parse_args()
+    parser.print_help()
 
     settings_file = args.config
     database_file = args.database
@@ -48,14 +49,10 @@ def run():
 
     if config.mainSettings.debug.get():
         logger.info("Debug mode enabled")
-    logger.info("Starting web app on %s:%d" % (host, port))
-
+    logger.info("Starting web app on %s:%d%s" % (host, port, " using SSL" if config.mainSettings.ssl.get() else ""))
+    
     check_for_new_version()
     web.run(host, port)
-
-
-
-
 
 if __name__ == '__main__':
     run()
