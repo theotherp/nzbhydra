@@ -25,6 +25,9 @@ Python 3.4 needed. No plans to backport to any lesser version.
 * Selection of downloader category when adding via GUI
 * More indexers? I will try to include them if they're not newznab compatible but would need an account
 * Auto update (will need help with that one) or at least check of new versions
+* A logo. Nothing too fancy.
+* Authentication via form for mobile users
+
 
 ##To note
 As I said query generation is very basic. When selecting a category and doing a search the category will only be used for newznab indexers, for all the raw indexers we will just search using the query. Generating "proper" queries from a category is very hard so you will need to do the filtering visually. Especially with raw indexers that don't support "OR" queries we would need to send a lot of requests to get all the different combinations
@@ -39,7 +42,7 @@ The program is currently in very early alpha. Upgrading to an new version might 
 Generally testing and any bug reports are very welcome.
 
 Any pull requests are also welcome, but I feel I and the program would mostly profit from:
-* A web designer. I use Angular 1.4 and would like to keep it because that's what I (barely) know
+* A web designer / better web design. I'm not going to spend a lot of work to make the frontend look slightly better. 
 * Advice regarding stability, error handling, net code (I program Java by day and it shows)
 * More indexers (see above)
 * Auto update (see above)
