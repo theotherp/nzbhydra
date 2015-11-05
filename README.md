@@ -33,7 +33,7 @@ Newznab providers don't send information on NFO availablity. If the search resul
 
 Currently the config GUI does not provide any validation apart from the connection tests.
 
-The program is currently in very early alpha. Upgrading to an new version might cause loss of the configuration, stats or history.
+The program is currently in very early alpha. Upgrading to an new version might cause loss of the configuration, stats or history. The console will contain debug information. It will crash. It is definitely not ready for general use.
 
 ##Development and how you can help
 Generally testing and any bug reports are very welcome.
