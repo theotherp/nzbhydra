@@ -16,7 +16,7 @@ def init_indexer_table_entry(indexer_name):
         Indexer.get(Indexer.name == indexer_name)
         logger.info("Loaded indexer %s" % indexer_name)
     except Indexer.DoesNotExist as e:
-        logger.error("Unable to find indexer with name %s in database. Will add it" % indexer_name)
+        logger.info("Unable to find indexer with name %s in database. Will add it" % indexer_name)
         Indexer().create(name=indexer_name)
 
 # Load from config and initialize all configured indexers using the loaded modules
