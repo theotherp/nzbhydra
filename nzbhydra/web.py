@@ -9,9 +9,11 @@ from functools import wraps
 from pprint import pprint
 from time import sleep
 
+from arrow import Arrow
 from flask import Flask, render_template, request, jsonify, Response
 from flask import send_file, redirect, make_response
 from flask.ext.cache import Cache
+from flask.json import JSONEncoder
 from webargs import fields
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
@@ -20,10 +22,11 @@ from flask.ext.session import Session
 from nzbhydra import config, search, infos, database
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link
 from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
+from nzbhydra.database import IndexerStatus, Indexer
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.indexers import read_indexers_from_config
 from nzbhydra.search import SearchRequest
-from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests
+from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses
 from nzbhydra.versioning import get_rep_version, get_current_version
 
 
@@ -51,6 +54,22 @@ Session(app)
 search_cache = Cache()
 internal_cache = Cache(app, config={'CACHE_TYPE': "simple",  # Cache for internal data like settings, form, schema, etc. which will be invalidated on request
                                     "CACHE_DEFAULT_TIMEOUT": 60 * 30})
+
+
+class CustomJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        try:
+            if isinstance(obj, Arrow):
+                return obj.timestamp
+            iterable = iter(obj)
+        except TypeError:
+            pass
+        else:
+            return list(iterable)
+        return JSONEncoder.default(self, obj)
+
+
+app.json_encoder = CustomJSONEncoder
 
 
 @app.before_request
@@ -472,6 +491,13 @@ def internalapi_getstats():
                     "avgIndexerAccessSuccesses": get_avg_indexer_access_success()})
 
 
+@app.route('/internalapi/getindexerstatuses')
+@requires_auth
+def internalapi_getindexerstatuses():
+    logger.debug("Get indexer statuses")
+    return jsonify({"indexerStatuses": get_indexer_statuses()})
+
+
 internalapi__getpagination_args = {
     "page": fields.Integer(missing=0),
     "limit": fields.Integer(missing=100)
@@ -492,6 +518,23 @@ def internalapi_getnzb_downloads(args):
 def internalapi_search_requests(args):
     logger.debug("Get search requests")
     return jsonify(get_search_requests(page=args["page"], limit=args["limit"]))
+
+
+internalapi__enableindexer_args = {
+    "name": fields.String(required=True)
+}
+
+
+@app.route('/internalapi/enableindexer')
+@requires_auth
+@use_args(internalapi__enableindexer_args)
+def internalapi_enable_indexer(args):
+    logger.debug("Enabling indexer %s" % args["name"])
+    #IndexerStatus().get(IndexerStatus.)
+    indexer_status = IndexerStatus().select().join(Indexer).where(Indexer.name == args["name"]).get()
+    indexer_status.disabled_until = None
+    indexer_status.save()
+    return jsonify({"indexerStatuses": get_indexer_statuses()})
 
 
 @app.route('/internalapi/setsettings', methods=["PUT"])

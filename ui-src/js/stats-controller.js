@@ -12,7 +12,5 @@ function StatsController($scope, $http) {
         $scope.avgIndexerSearchResultsShares = response.avgIndexerSearchResultsShares;
         $scope.avgIndexerAccessSuccesses = response.avgIndexerAccessSuccesses;
     });
-
-
-
+    
 }

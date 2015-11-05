@@ -289,7 +289,6 @@ function searchHistory() {
             $http.get("internalapi/getsearchrequests", {params: {page: pageNumber, limit: $scope.limit}}).success(function (response) {
                 $scope.searchRequests = response.searchRequests;
                 $scope.totalRequests = response.totalRequests;
-                console.log($scope.searchRequests);
             });
         }
 
@@ -317,10 +316,7 @@ function searchHistory() {
             }
             
             stateParams.category = request.category;
-
-            console.log("Going to search state with params...");
-            console.log(stateParams);
-            console.log($state);
+            
             $state.go("search", stateParams, {inherit: false});
         };
 
@@ -350,6 +346,59 @@ function onFinishRender($timeout) {
     }
 }
 onFinishRender.$inject = ["$timeout"];
+angular
+    .module('nzbhydraApp')
+    .directive('indexerStatuses', indexerStatuses);
+
+function indexerStatuses() {
+    return {
+        templateUrl: 'static/html/directives/indexer-statuses.html',
+        controller: ['$scope', '$http', controller]
+    };
+
+    function controller($scope, $http) {
+        
+        getIndexerStatuses();
+        
+        function getIndexerStatuses() {
+            $http.get("internalapi/getindexerstatuses").success(function (response) {
+                $scope.indexerStatuses = response.indexerStatuses;
+            });
+        }
+        
+        $scope.isInPast = function (timestamp) {
+            return timestamp * 1000 < (new Date).getTime();
+        };
+        
+        $scope.enable = function(indexerName) {
+            $http.get("internalapi/enableindexer", {params: {name: indexerName}}).then(function(response){
+                $scope.indexerStatuses = response.data.indexerStatuses;
+            });
+        }
+
+    }
+}
+
+angular
+    .module('nzbhydraApp')
+    .filter('formatDate', formatDate);
+
+function formatDate(dateFilter) {
+    return function(timestamp, hidePast) {
+        if (timestamp) {
+            if (timestamp * 1000 < (new Date).getTime() && hidePast) {
+                return ""; //
+            }
+            
+            var t = timestamp * 1000;
+            t = dateFilter(t, 'yyyy-MM-dd HH:mm:ss Z');
+            return t;
+        } else {
+            return "";
+        }
+    }
+}
+formatDate.$inject = ["dateFilter"];
 angular
     .module('nzbhydraApp').directive('focusOn', focusOn);
 
@@ -467,9 +516,7 @@ function StatsController($scope, $http) {
         $scope.avgIndexerSearchResultsShares = response.avgIndexerSearchResultsShares;
         $scope.avgIndexerAccessSuccesses = response.avgIndexerAccessSuccesses;
     });
-
-
-
+    
 }
 StatsController.$inject = ["$scope", "$http"];
 

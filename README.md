@@ -9,7 +9,7 @@ NZBHydra is meta search for NZB indexers and the "spiritual successor" to [NZBme
 * Grouping of results with the same title and of duplicate results, accounting for result posting time, size, group and poster. By default only one of the duplicates is shown. You can provide an indexer score to influence which one that might be.
 * Mostly compatible with newznab search API (tested with Sonarr, CP and NZB 360)
 * Included options to add results (single or a bunch) to SABnzbd or NZBGet and show NFOs where available
-* Statistics on indexers (average  response time, share of results, access errors), NZB download history  and search history (both via internal GUI and API)
+* Statistics on indexers (average response time, share of results, access errors), NZB download history  and search history (both via internal GUI and API)
 * Reverse proxy compatible without further configuration (tested with Apache)
 * A GUI that looks like ass
 
@@ -24,7 +24,7 @@ Python 3.4 needed. No plans to backport to any lesser version.
 * More stats
 * Selection of downloader category when adding via GUI
 * More indexers? I will try to include them if they're not newznab compatible but would need an account
-* Auto update (will need help with that one) or at least check of new versions
+* Auto update (will need help with that one)
 * A logo. Nothing too fancy.
 * Authentication via form for mobile users
 

@@ -25,7 +25,6 @@ function searchHistory() {
             $http.get("internalapi/getsearchrequests", {params: {page: pageNumber, limit: $scope.limit}}).success(function (response) {
                 $scope.searchRequests = response.searchRequests;
                 $scope.totalRequests = response.totalRequests;
-                console.log($scope.searchRequests);
             });
         }
 
@@ -53,10 +52,7 @@ function searchHistory() {
             }
             
             stateParams.category = request.category;
-
-            console.log("Going to search state with params...");
-            console.log(stateParams);
-            console.log($state);
+            
             $state.go("search", stateParams, {inherit: false});
         };
 
