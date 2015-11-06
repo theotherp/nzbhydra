@@ -56,14 +56,14 @@ def run():
 
     logger.info("Starting web app on %s:%d" % (host, port))
     f = furl()
-    f.host = host
+    f.host = "127.0.0.1"
     f.port = port
     f.scheme = "https" if config.mainSettings.ssl.get() else "http"
     if not args.nobrowser and config.mainSettings.startup_browser.get():
         logger.info("Opening browser to %s" % f.url)
         webbrowser.open_new(f.url)
     else:
-        logger.info("Go to %s for the frontend" % f.url)
+        logger.info("Go to %s for the frontend (or whatever your public IP is)" % f.url)
     
     check_for_new_version()
     web.run(host, port)

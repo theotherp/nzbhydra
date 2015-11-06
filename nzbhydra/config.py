@@ -274,7 +274,7 @@ class MainSettings(Category):
 
     def __init__(self):
         super().__init__(config_root, "main", "Main")
-        self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str)
+        self.host = Setting(self, name="host", default="0.0.0.0", valuetype=str)
         self.port = Setting(self, name="port", default=5050, valuetype=int)
         self.startup_browser = Setting(self, name="startupBrowser", default=True, valuetype=bool)
 
