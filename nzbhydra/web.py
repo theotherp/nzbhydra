@@ -61,6 +61,7 @@ app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["PRESERVE_CONTEXT_ON_EXCEPTION"] = True
+app.config["PROPAGATE_EXCEPTIONS"] = True
 Session(app)
 search_cache = Cache()
 internal_cache = Cache(app, config={'CACHE_TYPE': "simple",  # Cache for internal data like settings, form, schema, etc. which will be invalidated on request

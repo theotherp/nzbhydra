@@ -249,19 +249,26 @@ class NewzNab(SearchModule):
 
     def get_nfo(self, guid):
         # try to get raw nfo. if it is xml the indexer doesn't actually return raw nfos (I'm looking at you, DOGNzb)
-        url = furl(self.settings.host.get()).add({"apikey": self.settings.apikey.get(), "t": "getnfo", "o": "xml", "id": guid})
+        url = furl(self.settings.host.get())
+        url.path.add("api")
+        url.add({"apikey": self.settings.apikey.get(), "t": "getnfo", "o": "xml", "id": guid, "raw": "1"})
 
         response, papiaccess = self.get_url_with_papi_access(url, "nfo")
-        if response is not None:
-            nfo = response.text
-            if "<?xml" in nfo and 'total="1"':  # Hacky but fast
+        if response is None:
+            return None
+      
+        nfo = response.content
+        if "<?xml" in nfo.decode("utf-8"):  # Hacky but fast
+            if 'total="1"' in nfo.decode("utf-8"):
                 tree = ET.fromstring(nfo)
                 for elem in tree.iter('item'):
                     nfo = elem.find("description").text
                     nfo = nfo.replace("\\n", "\r\n").replace("\/", "/")  # TODO: Not completely correct, looks still a bit werid
                     return nfo
-                    # otherwise we just hope it's the nfo...
-        return None
+            else:
+                return None
+        return nfo.decode("utf-8") #No XML, we just hope it's the NFO
+    
 
     def get_nzb_link(self, guid, title):
         f = furl(self.settings.host.get())

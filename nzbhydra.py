@@ -1,4 +1,4 @@
-import os
+import os, sys
 from os.path import dirname, join, abspath
 from sys import path
 base_path = dirname(abspath(__file__))

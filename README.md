@@ -37,7 +37,11 @@ As I said query generation is very basic. When selecting a category and doing a 
 
 Newznab providers don't send information on NFO availablity. If the search results show an NFO link for such an indexer you will need to just try if you can get one.
 
+Filters for age and size only work very incompletely. Newznab only supports max age and so far I don't filter the results manually after retrieving them from the indexers.
+
 Currently the config GUI does not provide any validation apart from the connection tests.
+
+The perfomance could / needs to be improved. Searches can easily take 20 seconds although they're executed in parallel. This is mainly due to the parsing of search results from indexers like NZBIndex being slow, but also due to some problems in the code which I don't really understand so far.
 
 The program is currently in very early alpha. Upgrading to an new version might cause loss of the configuration, stats or history. The console will contain debug information. It will crash. It is definitely not ready for general use.
 
@@ -46,7 +50,7 @@ Generally testing and any bug reports are very welcome.
 
 Any pull requests are also welcome, but I feel I and the program would mostly profit from:
 * A web designer / better web design. I'm not going to spend a lot of work to make the frontend look slightly better. 
-* Advice regarding stability, error handling, net code (I program Java by day and it shows)
+* Advice regarding stability, error handling, net code (I program Java by day and it shows) and performance (see above)
 * More indexers (see above)
 * Auto update (see above)
 * Any features you know and would expect like restart via GUI, daemonization in linux
