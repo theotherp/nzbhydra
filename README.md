@@ -7,14 +7,15 @@ NZBHydra is meta search for NZB indexers and the "spiritual successor" to [NZBme
 * Search by IMDB, TVDB and TVRage ID (including season and episode) and filter by age and size
 * Rudimentary (for now) query generation, meaning when you search for a movie using e.g. an IMDB ID a query will be generated for raw indexers. Searching for a series season 1 episode 2 will also generate queries for raw indexers, like s01e02 and 1x02
 * Grouping of results with the same title and of duplicate results, accounting for result posting time, size, group and poster. By default only one of the duplicates is shown. You can provide an indexer score to influence which one that might be.
-* Mostly compatible with newznab search API (tested with Sonarr, CP and NZB 360)
-* Included options to add results (single or a bunch) to SABnzbd or NZBGet and show NFOs where available
-* Statistics on indexers (average response time, share of results, access errors), NZB download history  and search history (both via internal GUI and API)
-* Reverse proxy compatible without further configuration (tested with Apache)
+* Mostly compatible with newznab search API (tested with Sonarr, CP and NZB 360).
+* Either proxy the NZBs from the indexers (keeping all X-NZB headers), redirect or use direct links in search results
+* Included options to add results (single or a bunch) to SABnzbd or NZBGet and show NFOs where available. Option to decide if links are added as links or the NZBs are uploaded)
+* Statistics on indexers (average response time, share of results, access errors), NZB download history and search history (both via internal GUI and API). Indexers with problems are paused for an increasing time span (like in sonarr)
+* Reverse proxy compatible without further configuration (tested with Apache) as long as the host is preserved
 * A GUI that looks like ass
 
 ##How to run
-Run with Python 2.7 needed. Runs on http://127.0.0.1:5050 by default. See the console output on how to choose the port and host using command line parameters.
+Run with Python 2.7. Runs on http://0.0.0.0:5050 by default. See the console output on how to choose the port and host using command line parameters.
 
 ##TODO
 * A lot of bug fixing and improvements regarding performance and stability
@@ -27,6 +28,8 @@ Run with Python 2.7 needed. Runs on http://127.0.0.1:5050 by default. See the co
 * Auto update (will need help with that one)
 * A logo. Nothing too fancy.
 * Authentication via form for mobile users
+* Include comments, rating, etc or link to them 
+* Clean up code base
 
 
 ##To note
