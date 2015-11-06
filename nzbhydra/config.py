@@ -1,3 +1,16 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import str
+from builtins import open
+from builtins import super
+from builtins import range
+from future import standard_library
+
+standard_library.install_aliases()
+from builtins import *
+
 from enum import Enum
 import json
 import logging
@@ -5,8 +18,6 @@ import os
 import collections
 import random
 import string
-
-from typing import List
 
 logger = logging.getLogger('root')
 
@@ -51,7 +62,7 @@ class Category(object):
             # Allow setting a setting's value directly instead of using set(value)
             self.get()[key] = value
         else:
-            return super().__setattr__(key, value)
+            return super(Category, self).__setattr__(key, value)
 
     def __getattribute__(self, *args, **kwargs):
         key = args[0]
@@ -59,7 +70,7 @@ class Category(object):
         # if key != "children" and hasattr(self, "children") and key in [x.settingname for x in self.children if isinstance(x, Setting)]:
         #    return self.get()[key]
 
-        return super().__getattribute__(*args, **kwargs)
+        return super(Category, self).__getattribute__(*args, **kwargs)
 
 
 cfg = {}
@@ -107,7 +118,7 @@ class Setting(object):
     It also allows us to collect all settings and create a dict with all settings which can be serialized and sent to the GUI.
     """
 
-    def __init__(self, parent: Category, name: str, default: object, valuetype: type, title=None, description: str = None, setting_type: SettingType = SettingType.free):
+    def __init__(self, parent, name, default, valuetype, title=None, description = None, setting_type = SettingType.free):
         self.parent = parent
         self.settingname = name
         self.default = default
@@ -145,7 +156,7 @@ class Setting(object):
 
 class SelectOption(object):
     def __init__(self, name, title):
-        super().__init__()
+        super(SelectOption, self).__init__()
         self.name = name
         self.title = title
 
@@ -166,33 +177,33 @@ class SelectOption(object):
 
 
 class SelectionSetting(Setting):
-    def __init__(self, parent: Category, name: str, default: SelectOption, valuetype: type, options: List[SelectOption], title: str = None, description: str = None, setting_type: SettingType = SettingType.select):  # Warning is a mistake by PyCharm
-        super().__init__(parent, name, default, valuetype, title, description, setting_type)
+    def __init__(self, parent, name, default, valuetype, options, title = None, description = None, setting_type = SettingType.select):  # Warning is a mistake by PyCharm
+        super(SelectionSetting, self).__init__(parent, name, default, valuetype, title, description, setting_type)
         self.options = options
         self.parent.get()[self.settingname] = self.default.name
 
     def get(self):
-        return super().get()
+        return super(SelectionSetting, self).get()
 
 
 class MultiSelectionSetting(Setting):
-    def __init__(self, parent: Category, name: str, default: List[SelectOption], valuetype: type, options: List[SelectOption], title: str = None, description: str = None, setting_type: SettingType = SettingType.select):  # Warning is a mistake by PyCharm
-        super().__init__(parent, name, default, valuetype, title, description, setting_type)
+    def __init__(self, parent, name, default, valuetype, options, title = None, description = None, setting_type = SettingType.select):  # Warning is a mistake by PyCharm
+        super(MultiSelectionSetting, self).__init__(parent, name, default, valuetype, title, description, setting_type)
         self.options = options
         self.parent.get()[self.settingname] = [x.name for x in self.default]
 
     def get(self):
-        return super().get()
+        return super(MultiSelectionSetting, self).get()
     
 
 class OrderedMultiSelectionSetting(Setting):
-    def __init__(self, parent: Category, name: str, default: List[SelectOption], valuetype: type, options: List[SelectOption], title: str = None, description: str = None, setting_type: SettingType = SettingType.select):  # Warning is a mistake by PyCharm
-        super().__init__(parent, name, default, valuetype, title, description, setting_type)
+    def __init__(self, parent, name, default, valuetype, options, title = None, description = None, setting_type = SettingType.select):  # Warning is a mistake by PyCharm
+        super(OrderedMultiSelectionSetting, self).__init__(parent, name, default, valuetype, title, description, setting_type)
         self.options = options
         self.parent.get()[self.settingname] = [x.name for x in self.default]
 
     def get(self):
-        return super().get()
+        return super(OrderedMultiSelectionSetting, self).get()
 
 
 def update(d, u):
@@ -210,7 +221,7 @@ def load(filename):
     global config_file
     config_file = filename
     if os.path.exists(filename):
-        with open(filename, "r") as f:
+        with open(filename) as f:
             loaded_config = json.load(f)
             cfg = update(cfg, loaded_config)
             pass
@@ -225,18 +236,19 @@ def import_config_data(data):
 
 def save(filename):
     global cfg
-    with open(filename, "w") as f:
-        json.dump(cfg, f, indent=4)
+    with open(filename, "w", encoding="utf-8") as f:
+        #json.dump(cfg, f, indent=4)
+        f.write(unicode(json.dumps(cfg, ensure_ascii=False, indent=4)))
 
 
-def get(setting: Setting) -> object:
+def get(setting):
     """
     Just a legacy way to access the setting 
     """
     return setting.get()
 
 
-def set(setting: Setting, value: object):
+def set(setting, value):
     """
     Just a legacy way to set the setting 
     """
@@ -256,7 +268,7 @@ class LoglevelSelection(object):
 
 class LoggingSettings(Category):
     def __init__(self, parent):
-        super().__init__(parent, "logging", "Logging")
+        super(LoggingSettings, self).__init__(parent, "logging", "Logging")
         self.logfilename = Setting(self, name="logfile-filename", default="nzbhydra.log", valuetype=str)
         self.logfilelevel = SelectionSetting(self, name="logfile-level", default=LoglevelSelection.info, valuetype=str, options=LoglevelSelection.options)
         self.consolelevel = SelectionSetting(self, name="consolelevel", default=LoglevelSelection.info, valuetype=str, options=LoglevelSelection.options)
@@ -273,7 +285,7 @@ class MainSettings(Category):
     """
 
     def __init__(self):
-        super().__init__(config_root, "main", "Main")
+        super(MainSettings, self).__init__(config_root, "main", "Main")
         self.host = Setting(self, name="host", default="0.0.0.0", valuetype=str)
         self.port = Setting(self, name="port", default=5050, valuetype=int)
         self.startup_browser = Setting(self, name="startupBrowser", default=True, valuetype=bool)
@@ -315,7 +327,7 @@ class InternalExternalSelection(object):
 
 class CategorySizeSettings(Category):
     def __init__(self, parent):
-        super().__init__(parent, "categorysizes", "Category sizes")
+        super(CategorySizeSettings, self).__init__(parent, "categorysizes", "Category sizes")
         self.enable_category_sizes = Setting(self, name="enable_category_sizes", default=True, valuetype=bool)
 
         self.movieMin = Setting(self, name="moviesmin", default=500, valuetype=int)
@@ -361,7 +373,7 @@ class SearchingSettings(Category):
     """
 
     def __init__(self):
-        super().__init__(config_root, "searching", "Searching")
+        super(SearchingSettings, self).__init__(config_root, "searching", "Searching")
         self.timeout = Setting(self, name="timeout", default=5, valuetype=int)
         self.ignore_disabled = Setting(self, name="ignoreTemporarilyDisabled", default=False, valuetype=bool)
         self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[InternalExternalSelection.internal], options=InternalExternalSelection.options, valuetype=str, setting_type=SettingType.multiselect)
@@ -395,7 +407,7 @@ class DownloaderSelection(object):
 
 class DownloaderSettings(Category):
     def __init__(self):
-        super().__init__(config_root, "downloader", "Downloader")
+        super(DownloaderSettings, self).__init__(config_root, "downloader", "Downloader")
         self.nzbaccesstype = SelectionSetting(self, name="nzbaccesstype", default=NzbAccessTypeSelection.serve, valuetype=str, options=[NzbAccessTypeSelection.direct, NzbAccessTypeSelection.redirect, NzbAccessTypeSelection.serve])
         self.nzbAddingType = SelectionSetting(self, name="nzbAddingType", default=NzbAddingTypeSelection.nzb, valuetype=str, options=[NzbAddingTypeSelection.link, NzbAddingTypeSelection.nzb])
         self.downloader = SelectionSetting(self, name="downloader", default=DownloaderSelection.nzbget, valuetype=str, options=[DownloaderSelection.nzbget, DownloaderSelection.sabnzbd])
@@ -406,7 +418,7 @@ downloaderSettings = DownloaderSettings()
 
 class SabnzbdSettings(Category):
     def __init__(self):
-        super().__init__(downloaderSettings, "sabnzbd", "SabNZBD")
+        super(SabnzbdSettings, self).__init__(downloaderSettings, "sabnzbd", "SabNZBD")
         self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str)
         self.port = Setting(self, name="port", default=8086, valuetype=int)
         self.ssl = Setting(self, name="ssl", default=False, valuetype=bool)
@@ -420,7 +432,7 @@ sabnzbdSettings = SabnzbdSettings()
 
 class NzbgetSettings(Category):
     def __init__(self):
-        super().__init__(downloaderSettings, "nzbget", "NZBGet")
+        super(NzbgetSettings, self).__init__(downloaderSettings, "nzbget", "NZBGet")
         self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str)
         self.port = Setting(self, name="port", default=6789, valuetype=int)
         self.ssl = Setting(self, name="ssl", default=False, valuetype=bool)
@@ -439,7 +451,7 @@ class SearchIdSelection(object):
 
 class IndexerSettingsAbstract(Category):
     def __init__(self, parent, name, title):
-        super().__init__(parent, name, title)
+        super(IndexerSettingsAbstract, self).__init__(parent, name, title)
         self.name = Setting(self, name="name", default=None, valuetype=str)
         self.host = Setting(self, name="host", default=None, valuetype=str)
         self.enabled = Setting(self, name="enabled", default=True, valuetype=bool)
@@ -451,8 +463,8 @@ class IndexerSettingsAbstract(Category):
 
 class IndexerBinsearchSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
-        super(IndexerBinsearchSettings, self).__init__(parent, "binsearch", "Binsearch")
-        self.host = Setting(self, name="host", default="https://binsearch.com", valuetype=str)
+        super(IndexerBinsearchSettings, self).__init__(parent, "Binsearch", "Binsearch")
+        self.host = Setting(self, name="host", default="https://binsearch.info", valuetype=str)
         self.name = Setting(self, name="name", default="binsearch", valuetype=str)
 
 
@@ -468,14 +480,14 @@ class IndexerNewznabSettings(IndexerSettingsAbstract):
 
 class IndexerNzbclubSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
-        super(IndexerNzbclubSettings, self).__init__(parent, "nzbclub", "NZBClub")
+        super(IndexerNzbclubSettings, self).__init__(parent, "NZBClub", "NZBClub")
         self.host = Setting(self, name="host", default="http://nzbclub.com", valuetype=str)
         self.name = Setting(self, name="name", default="nzbclub", valuetype=str)
 
 
 class IndexerNzbindexSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
-        super(IndexerNzbindexSettings, self).__init__(parent, "nzbindex", "NZBIndex")
+        super(IndexerNzbindexSettings, self).__init__(parent, "NZBIndex", "NZBIndex")
         self.host = Setting(self, name="host", default="https://nzbindex.com", valuetype=str)
         self.name = Setting(self, name="name", default="nzbindex", valuetype=str)
         self.general_min_size = Setting(self, name="generalMinSize", default=1, valuetype=int)
@@ -483,14 +495,14 @@ class IndexerNzbindexSettings(IndexerSettingsAbstract):
 
 class IndexerWombleSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
-        super(IndexerWombleSettings, self).__init__(parent, "womble", "Womble")
+        super(IndexerWombleSettings, self).__init__(parent, "Womble", "Womble")
         self.host = Setting(self, name="host", default="https://newshost.co.za", valuetype=str)
         self.name = Setting(self, name="name", default="womble", valuetype=str)
 
 
 class IndexerSettings(Category):
     def __init__(self):
-        super().__init__(config_root, "indexers", "Indexer")
+        super(IndexerSettings, self).__init__(config_root, "indexers", "Indexer")
         self.binsearch = IndexerBinsearchSettings(self)
         self.nzbclub = IndexerNzbclubSettings(self)
         self.nzbindex = IndexerNzbindexSettings(self)
@@ -509,7 +521,7 @@ indexerSettings = IndexerSettings()
 class IndexerNewznab1Settings(IndexerNewznabSettings):
     def __init__(self):
         self._path = "indexers.newznab1"
-        super().__init__("Newznab 1", "", "")
+        super(IndexerNewznab1Settings, self).__init__("Newznab 1", "", "")
 
 
 def get_newznab_setting_by_id(id):

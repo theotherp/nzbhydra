@@ -1,7 +1,14 @@
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import str
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 import logging
 import collections
 
-from typing import List
 import arrow
 import requests
 from requests import RequestException
@@ -22,7 +29,7 @@ class SearchModule(object):
     # possibly use newznab qualities as base, map for other indexers (nzbclub etc)
 
 
-    def __init__(self, settings: IndexerSettings):
+    def __init__(self, settings):
         self.settings = settings
         self.module = "Abstract search module"
         self.supports_queries = True
@@ -104,7 +111,7 @@ class SearchModule(object):
         return queries_execution_result
 
     # Access to most basic functions
-    def get_search_urls(self, search_request) -> List[str]:
+    def get_search_urls(self, search_request):
         # return url(s) to search. Url is then retrieved and result is returned if OK
         # we can return multiple urls in case a module needs to make multiple requests (e.g. when searching for a show
         # using general queries
@@ -127,10 +134,10 @@ class SearchModule(object):
     def create_nzb_search_result(self):
         return NzbSearchResult(indexer=self.name, indexerscore=self.score)
 
-    def process_query_result(self, result: str, query: str) -> IndexerProcessingResult:
+    def process_query_result(self, result, query):
         return []
 
-    def check_auth(self, body: str):
+    def check_auth(self, body):
         # check the response body to see if request was authenticated. If yes, do nothing, if no, raise exception 
         return []
 
@@ -199,7 +206,7 @@ class SearchModule(object):
     def get_search_ids_from_indexer(self):
         return []
 
-    def execute_queries(self, queries) -> QueriesExecutionResult:
+    def execute_queries(self, queries):
         # todo call all queries, check if further should be called, return all results when done or timeout or whatever
         """
 
@@ -232,7 +239,7 @@ class SearchModule(object):
                     self.logger.debug("Successfully loaded URL %s" % request.url)
                     try:
 
-                        parsed_results = self.process_query_result(request.text, query)
+                        parsed_results = self.process_query_result(request.content, query)
                         results.extend(parsed_results.entries)  # Retrieve the processed results
                         queries.extend(parsed_results.queries)  # Add queries that were added as a result of the parsing, e.g. when the next result page should also be loaded
                         total_results += parsed_results.total

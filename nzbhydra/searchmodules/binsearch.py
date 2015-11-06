@@ -1,3 +1,13 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import super
+from builtins import str
+from builtins import int
+from builtins import *
+from future import standard_library
+standard_library.install_aliases()
 import logging
 import re
 
@@ -14,9 +24,9 @@ logger = logging.getLogger('root')
 
 
 class Binsearch(SearchModule):
-    def __init__(self, settings: IndexerBinsearchSettings):
+    def __init__(self, settings):
         super(Binsearch, self).__init__(settings)
-        self.module = "binsearch"
+        self.module = "Binsearch"
 
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = True
@@ -76,7 +86,7 @@ class Binsearch(SearchModule):
         #Unfortunately binsearch uses different GUIDs for downloading and detail links. We store the one for NZBs
         return None
 
-    def process_query_result(self, html, query) -> IndexerProcessingResult:
+    def process_query_result(self, html, query):
         logger.debug("Binsearch started processing results")
         logger.info("Last results count %d" % self.last_results_count)
         entries = []
@@ -205,7 +215,7 @@ class Binsearch(SearchModule):
         f.add({"action": "nzb", guid: "1"})
         return f.tostr()
     
-    def check_auth(self, body: str):
+    def check_auth(self, body):
         if "The search service is temporarily unavailable" in body:
             raise IndexerAccessException("The search service is temporarily unavailable.", self)
 

@@ -1682,8 +1682,8 @@ function ConfigController($scope, ConfigService, configPromise) {
                                 {name: 'Critical', value: 'CRITICAL'},
                                 {name: 'Error', value: 'ERROR'},
                                 {name: 'Warning', value: 'WARNING'},
-                                {name: 'Debug', value: 'DEBUG'},
-                                {name: 'Info', value: 'INFO'}
+                                {name: 'Info', value: 'INFO'},
+                                {name: 'Debug', value: 'DEBUG'}
                             ]
                         }
                     }
@@ -2241,7 +2241,7 @@ function ConfigController($scope, ConfigService, configPromise) {
         indexers: [
             {
                 wrapper: 'fieldset',
-                key: 'binsearch',
+                key: 'Binsearch',
                 templateOptions: {label: 'Binsearch'},
                 fieldGroup: [
                     {
@@ -2265,7 +2265,7 @@ function ConfigController($scope, ConfigService, configPromise) {
             },
             {
                 wrapper: 'fieldset',
-                key: 'nzbclub',
+                key: 'NZBClub',
                 templateOptions: {label: 'NZBClub'},
                 fieldGroup: [
                     {
@@ -2290,7 +2290,7 @@ function ConfigController($scope, ConfigService, configPromise) {
             },
             {
                 wrapper: 'fieldset',
-                key: 'nzbindex',
+                key: 'NZBIndex',
                 templateOptions: {label: 'NZBIndex'},
                 fieldGroup: [
                     {
@@ -2323,7 +2323,7 @@ function ConfigController($scope, ConfigService, configPromise) {
             },
             {
                 wrapper: 'fieldset',
-                key: 'womble',
+                key: 'Womble',
                 templateOptions: {label: 'Womble'},
                 fieldGroup: [
                     {

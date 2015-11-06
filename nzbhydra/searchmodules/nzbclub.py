@@ -1,3 +1,13 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import super
+from builtins import str
+from builtins import int
+from builtins import *
+from future import standard_library
+standard_library.install_aliases()
 import logging
 import re
 import xml.etree.ElementTree as ET
@@ -19,7 +29,7 @@ class NzbClub(SearchModule):
 
     def __init__(self, indexer):
         super(NzbClub, self).__init__(indexer)
-        self.module = "nzbclub"
+        self.module = "NZBClub"
 
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = True
@@ -38,7 +48,7 @@ class NzbClub(SearchModule):
         f = self.build_base_url().add({"q": search_request.query})
         return [f.tostr()]
 
-    def get_showsearch_urls(self, search_request) -> IndexerProcessingResult:
+    def get_showsearch_urls(self, search_request):
         if search_request.season is not None:
             # Restrict query if season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
             if search_request.episode is not None:
@@ -130,7 +140,7 @@ class NzbClub(SearchModule):
     def get_nzb_link(self, guid, title):
         f = furl(self.settings.host.get())
         f.path.add("nzb_get")
-        f.path.add("guid")
+        f.path.add(guid)
         f.path.add("title" + ".nzb")
         return f.tostr()
         

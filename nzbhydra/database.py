@@ -1,3 +1,12 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import super
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
+from builtins import object
 import json
 import datetime
 import logging
@@ -32,7 +41,7 @@ class DateTimeUTCField(DateTimeField):
 class Indexer(Model):
     name = CharField(unique=True)  # The name of the indexer. So if the user changes the name all references get lost (except we handle that if he does it in the GUI).
 
-    class Meta:
+    class Meta(object):
         database = db
 
 
@@ -47,7 +56,7 @@ class Search(Model):
     episode = IntegerField(null=True)
     type = CharField(default="general")
 
-    class Meta:
+    class Meta(object):
         database = db
 
     def save(self, *args, **kwargs):
@@ -64,7 +73,7 @@ class IndexerSearch(Model):
     successful = BooleanField(default=False)
     results = IntegerField(null=True)  # number of results returned
 
-    class Meta:
+    class Meta(object):
         database = db
 
     def save(self, *args, **kwargs):
@@ -83,7 +92,7 @@ class IndexerApiAccess(Model):
     response_time = IntegerField(null=True)
     error = CharField(null=True)
 
-    class Meta:
+    class Meta(object):
         database = db
 
     def save(self, *args, **kwargs):
@@ -101,7 +110,7 @@ class IndexerNzbDownload(Model):
     mode = CharField()  # "serve" or "redirect"
     guid = CharField()
 
-    class Meta:
+    class Meta(object):
         database = db
 
     def save(self, *args, **kwargs):
@@ -130,7 +139,7 @@ class IndexerStatus(Model):
     def __repr__(self):
         return "%s in status %d. First failure: %s. Latest Failure: %s. Reason: %s. Disabled until: %s" % (self.indexer, self.level, self.first_failure, self.latest_failure, self.reason, self.disabled_until)
 
-    class Meta:
+    class Meta(object):
         database = db
 
 

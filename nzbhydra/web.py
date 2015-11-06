@@ -1,3 +1,13 @@
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+from __future__ import absolute_import
+from builtins import dict
+from builtins import str
+from builtins import int
+from builtins import *
+from future import standard_library
+standard_library.install_aliases()
 import json
 import logging
 import os
@@ -268,7 +278,6 @@ internalapi_search_args = {
 @app.route('/internalapi/search')
 @requires_auth
 @use_args(internalapi_search_args, locations=['querystring'])
-@search_cache.memoize()
 def internalapi_search(args):
     logger.debug("Search request with args %s" % args)
     search_request = SearchRequest(type="general", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"])
@@ -293,7 +302,6 @@ internalapi_moviesearch_args = {
 @app.route('/internalapi/moviesearch')
 @requires_auth
 @use_args(internalapi_moviesearch_args, locations=['querystring'])
-@search_cache.memoize()
 def internalapi_moviesearch(args):
     logger.debug("Movie search request with args %s" % args)
     search_request = SearchRequest(type="movie", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"])
@@ -324,7 +332,6 @@ internalapi_tvsearch_args = {
 @app.route('/internalapi/tvsearch')
 @requires_auth
 @use_args(internalapi_tvsearch_args, locations=['querystring'])
-@search_cache.memoize()
 def internalapi_tvsearch(args):
     logger.debug("TV search request with args %s" % args)
     search_request = SearchRequest(type="tv", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], episode=args["episode"], season=args["season"], title=args["title"])

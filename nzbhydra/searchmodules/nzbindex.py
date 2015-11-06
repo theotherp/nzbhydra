@@ -1,3 +1,13 @@
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import super
+from builtins import str
+from builtins import int
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 import logging
 import re
 
@@ -20,7 +30,7 @@ logger = logging.getLogger('root')
 class NzbIndex(SearchModule):
     def __init__(self, indexer):
         super(NzbIndex, self).__init__(indexer)
-        self.module = "nzbindex"
+        self.module = "NZBIndex"
 
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = True
@@ -70,7 +80,7 @@ class NzbIndex(SearchModule):
         # overwrite for special handling, e.g. cookies
         return requests.get(query, timeout=timeout, verify=False, cookies={"agreed": "true", "lang": "2"})
 
-    def process_query_result(self, html, query) -> IndexerProcessingResult:
+    def process_query_result(self, html, query):
         logger.debug("%s started processing results" % self.name)
 
         entries = []
@@ -206,14 +216,13 @@ class NzbIndex(SearchModule):
         return None
 
     def get_nzb_link(self, guid, title):
-        # https://nzbindex.com/download/126435066/ATG-Avengers-02-Lre-dUltron-2015-TF-720p.zip.nzb
         f = furl(self.host)
         f.path.add("download")
-        f.path.add("guid")
+        f.path.add(guid)
         f.path.add(title + ".nzb")
         return f.tostr()
 
-    def check_auth(self, body: str):
+    def check_auth(self, body):
         if "503 Service Temporarily Unavailable" in body or "The search service is temporarily unavailable" in body:
             raise IndexerAccessException("The search service is temporarily unavailable.", self)  # The server should return code 503 instead of 200...
 

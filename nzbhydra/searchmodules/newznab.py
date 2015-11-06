@@ -1,3 +1,13 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import super
+from builtins import int
+from builtins import str
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 import calendar
 import datetime
 import email
@@ -102,7 +112,7 @@ def test_connection(host, apikey):
 
 class NewzNab(SearchModule):
     # todo feature: read caps from server on first run and store them in the config/database
-    def __init__(self, settings: IndexerNewznabSettings):
+    def __init__(self, settings):
         super(NewzNab, self).__init__(settings)
         self.settings = settings  # Already done by super.__init__ but this way PyCharm knows the correct type
         self.module = "newznab"
@@ -160,7 +170,7 @@ class NewzNab(SearchModule):
         f.path.add(guid)
         return f.url
 
-    def process_query_result(self, xml_response, query) -> IndexerProcessingResult:
+    def process_query_result(self, xml_response, query):
         logger.debug("%s started processing results" % self.name)
 
         entries = []
@@ -172,7 +182,6 @@ class NewzNab(SearchModule):
             tree = ET.fromstring(xml_response)
         except Exception:
             logger.exception("Error parsing XML: %s..." % xml_response[:500])
-            logger.debug(xml_response)
             raise IndexerResultParsingException("Error parsing XML", self)
         total = int(tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}).attrib["total"])
         offset = int(tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}).attrib["offset"])
@@ -235,7 +244,7 @@ class NewzNab(SearchModule):
 
         return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total)
 
-    def check_auth(self, body: str):
+    def check_auth(self, body):
         return check_auth(body)
 
     def get_nfo(self, guid):

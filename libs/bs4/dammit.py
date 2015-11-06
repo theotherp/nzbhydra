@@ -10,7 +10,7 @@ __license__ = "MIT"
 
 from pdb import set_trace
 import codecs
-from html.entities import codepoint2name
+from htmlentitydefs import codepoint2name
 import re
 import logging
 import string
@@ -58,7 +58,7 @@ class EntitySubstitution(object):
         reverse_lookup = {}
         characters_for_re = []
         for codepoint, name in list(codepoint2name.items()):
-            character = chr(codepoint)
+            character = unichr(codepoint)
             if codepoint != 34:
                 # There's no point in turning the quotation mark into
                 # &quot;, unless it happens within an attribute value, which
@@ -273,7 +273,7 @@ class EncodingDetector:
     def strip_byte_order_mark(cls, data):
         """If a byte-order mark is present, strip it and return the encoding it implies."""
         encoding = None
-        if isinstance(data, str):
+        if isinstance(data, unicode):
             # Unicode data cannot have a byte-order mark.
             return data, encoding
         if (len(data) >= 4) and (data[:2] == b'\xfe\xff') \
@@ -351,9 +351,9 @@ class UnicodeDammit:
             markup, override_encodings, is_html, exclude_encodings)
 
         # Short-circuit if the data is in Unicode to begin with.
-        if isinstance(markup, str) or markup == '':
+        if isinstance(markup, unicode) or markup == '':
             self.markup = markup
-            self.unicode_markup = str(markup)
+            self.unicode_markup = unicode(markup)
             self.original_encoding = None
             return
 
@@ -436,7 +436,7 @@ class UnicodeDammit:
     def _to_unicode(self, data, encoding, errors="strict"):
         '''Given a string and its encoding, decodes the string into Unicode.
         %encoding is a string recognized by encodings.aliases'''
-        return str(data, encoding, errors)
+        return unicode(data, encoding, errors)
 
     @property
     def declared_html_encoding(self):

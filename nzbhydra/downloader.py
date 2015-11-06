@@ -1,3 +1,11 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import str
+from builtins import *
+from future import standard_library
+standard_library.install_aliases()
 import base64
 import json
 import logging
@@ -11,13 +19,13 @@ from nzbhydra.config import sabnzbdSettings, nzbgetSettings
 
 
 class Downloader(object):
-    def test(self, host, ssl=False, port=None, username=None, password=None, apikey=None) -> bool:
+    def test(self, host, ssl=False, port=None, username=None, password=None, apikey=None):
         return True
 
-    def add_link(self, link: str, title: str, category: str) -> bool:
+    def add_link(self, link, title, category):
         return True
 
-    def add_nzb(self, content: str, title: str, category: str) -> bool:
+    def add_nzb(self, content, title, category):
         return True
     
     
@@ -37,7 +45,7 @@ class Nzbget(Downloader):
 
         return xmlrpc.client.ServerProxy(f.tostr())
 
-    def test(self, host, ssl=False, port=None, username=None, password=None, apikey=None) -> bool:
+    def test(self, host, ssl=False, port=None, username=None, password=None, apikey=None):
         rpc = self.get_rpc(host, ssl, port, username, password)
 
         try:
@@ -60,7 +68,7 @@ class Nzbget(Downloader):
 
         return True, ""
 
-    def add_link(self, link: str, title: str, category: str) -> bool:
+    def add_link(self, link, title, category):
         if title is None:
             title = ""
         else:
@@ -87,7 +95,7 @@ class Nzbget(Downloader):
                 self.logger.error('Protocol error: %s', e)
             return False
 
-    def add_nzb(self, content: str, title: str, category: str) -> bool:
+    def add_nzb(self, content, title, category):
         if title is None:
             title = ""
         else:
@@ -140,7 +148,7 @@ class Sabnzbd(Downloader):
 
         return f
 
-    def test(self, host, ssl=False, port=None, username=None, password=None, apikey=None) -> bool:
+    def test(self, host, ssl=False, port=None, username=None, password=None, apikey=None):
         f = self.get_sab(host, ssl, port, username, password, apikey)
         f.add({"mode": "qstatus"})
         try:
@@ -155,7 +163,7 @@ class Sabnzbd(Downloader):
             self.logger.exception("Error while trying to connect to sabnzbd")
             return False, "SABnzbd is not responding under this address, scheme and port"
 
-    def add_link(self, link: str, title: str, category: str) -> bool:
+    def add_link(self, link, title, category):
         if title is None:
             title = ""
         else:
@@ -174,7 +182,7 @@ class Sabnzbd(Downloader):
             self.logger.exception("Error while trying to connect to sabnzbd")
             return False
 
-    def add_nzb(self, content: str, title: str, category: str) -> bool:
+    def add_nzb(self, content, title, category):
         if title is None:
             title = ""
         else:

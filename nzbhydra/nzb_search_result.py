@@ -1,4 +1,12 @@
-class NzbSearchResult:
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
+from builtins import object
+class NzbSearchResult(object):
     def __init__(self, title=None, link=None, indexer=None, guid=None, size=None, category="N/A", attributes=[], epoch=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=True, indexerguid=None, details_link=None, group=None, indexerscore=0):
         self.title = title
         self.link = link

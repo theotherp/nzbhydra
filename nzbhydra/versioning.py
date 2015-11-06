@@ -1,3 +1,11 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import open
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 import logging
 from distutils.version import StrictVersion
 
@@ -27,7 +35,7 @@ def get_rep_version():
 def get_current_version():
     with open("version.txt", "r") as f:
         version = f.read()
-    return version
+    return StrictVersion(version)
 
 
 def is_new_version_available():

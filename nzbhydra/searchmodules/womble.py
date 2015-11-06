@@ -1,3 +1,13 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from builtins import super
+from builtins import str
+from builtins import int
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 import logging
 import re
 import arrow
@@ -16,7 +26,7 @@ class Womble(SearchModule):
 
     def __init__(self, indexer):
         super(Womble, self).__init__(indexer)
-        self.module = "womble"
+        self.module = "Womble"
         
         self.settings.generate_queries = False
         self.needs_queries = False
@@ -55,7 +65,7 @@ class Womble(SearchModule):
         logger.info("Womble does not provide details on releases")
         return None
 
-    def process_query_result(self, xml, query) -> IndexerProcessingResult:
+    def process_query_result(self, xml, query):
         entries = []
         try:
             tree = ET.fromstring(xml)

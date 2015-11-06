@@ -1,3 +1,11 @@
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+from __future__ import absolute_import
+from builtins import int
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 import concurrent
 from concurrent.futures import ThreadPoolExecutor
 import copy
@@ -95,7 +103,7 @@ def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selec
 pseudo_cache = {}
 
 
-def search(internal, search_request: SearchRequest):
+def search(internal, search_request):
     for k in list(pseudo_cache.keys()):
         if pseudo_cache[k]["last_access"].replace(minutes=+5) < arrow.utcnow():
             pseudo_cache.pop(k)

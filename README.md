@@ -14,7 +14,7 @@ NZBHydra is meta search for NZB indexers and the "spiritual successor" to [NZBme
 * A GUI that looks like ass
 
 ##How to run
-Python 3.4 needed. No plans to backport to any lesser version. Runs on http://127.0.0.1:5050 by default. See the console output on how to choose the port and host using command line parameters.
+Run with Python 2.7 needed. Runs on http://127.0.0.1:5050 by default. See the console output on how to choose the port and host using command line parameters.
 
 ##TODO
 * A lot of bug fixing and improvements regarding performance and stability
