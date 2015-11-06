@@ -50,6 +50,7 @@ logger = logging.getLogger('root')
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.config["SESSION_TYPE"] = "filesystem"
+app.config["PRESERVE_CONTEXT_ON_EXCEPTION"] = True
 Session(app)
 search_cache = Cache()
 internal_cache = Cache(app, config={'CACHE_TYPE': "simple",  # Cache for internal data like settings, form, schema, etc. which will be invalidated on request
@@ -93,6 +94,12 @@ def disable_caching(response):
         response.headers['Pragma'] = 'no-cache'
         response.headers['Epires'] = '0'
         return response
+
+
+@app.errorhandler(Exception)
+def all_exception_handler(error):
+    logger.error(str(error))
+    return str(error), 500
 
 
 def check_auth(username, password):
@@ -530,7 +537,6 @@ internalapi__enableindexer_args = {
 @use_args(internalapi__enableindexer_args)
 def internalapi_enable_indexer(args):
     logger.debug("Enabling indexer %s" % args["name"])
-    #IndexerStatus().get(IndexerStatus.)
     indexer_status = IndexerStatus().select().join(Indexer).where(Indexer.name == args["name"]).get()
     indexer_status.disabled_until = None
     indexer_status.save()
