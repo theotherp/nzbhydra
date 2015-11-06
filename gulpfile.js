@@ -14,6 +14,9 @@ var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
 var changed = require('gulp-changed');
 var newer = require('gulp-newer');
+var git = require('gulp-git');
+var runSequence = require('run-sequence');
+var print = require('gulp-print');
 
 
 gulp.task('vendor-scripts', function () {
@@ -86,11 +89,20 @@ gulp.task('copy-assets', function () {
 
 });
 
-gulp.task('index', ['scripts', 'less', 'vendor-scripts', 'vendor-css', 'copy-assets'], function () {
+gulp.task('add', function () {
+    return gulp.src('nzbhydra/static/**')
+        .pipe(git.add());
+});
 
+gulp.task('index', ['scripts', 'less', 'vendor-scripts', 'vendor-css', 'copy-assets'], function () {
     return gulp.src('ui-src/index.html')
         .pipe(gulp.dest('nzbhydra/templates'))
-        .pipe(livereload());
+        .pipe(livereload())
+        .add;
+});
+
+gulp.task('updateAdd', function() {
+    runSequence('index', 'add'); 
 });
 
 function swallowError(error) {
@@ -98,7 +110,9 @@ function swallowError(error) {
     this.emit('end');
 }
 
+
+
 gulp.task('default', function () {
     livereload.listen();
-    gulp.watch(['ui-src/**/*'], ['index']);
+    gulp.watch(['ui-src/**/*'], ['updateAdd']);
 });
