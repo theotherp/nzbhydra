@@ -231,8 +231,82 @@ function ConfigController($scope, ConfigService, configPromise) {
 
     $scope.submit = submit;
 
-    function submit() {
+    function submit(form) {
         ConfigService.set($scope.config);
+        form.$setPristine();
+    }
+    
+    
+    function getNewznabFieldset(index) {
+        return {
+            wrapper: 'fieldset',
+            key: 'newznab' + index,
+            templateOptions: {label: 'Newznab ' + index},
+            fieldGroup: [
+                {
+                    key: 'enabled',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Enabled'
+                    }
+                },
+                {
+                    key: 'name',
+                    type: 'horizontalInput',
+                    templateOptions: {
+                        type: 'text',
+                        label: 'Name',
+                        help: 'Used for identification. Changing the name will lose all history and stats!'
+                    }
+                },
+                {
+                    key: 'host',
+                    type: 'horizontalInput',
+                    templateOptions: {
+                        type: 'text',
+                        label: 'Host',
+                        placeholder: 'http://www.someindexer.com'
+                    }
+                },
+                {
+                    key: 'apikey',
+                    type: 'horizontalInput',
+                    templateOptions: {
+                        type: 'text',
+                        label: 'API Key'
+                    }
+                },
+                {
+                    key: 'search_ids',
+                    type: 'horizontalMultiselect',
+                    templateOptions: {
+                        label: 'Search types',
+                        options: [
+                            {label: 'TVDB', id: 'tvdbid'},
+                            {label: 'TVRage', id: 'rid'},
+                            {label: 'IMDB', id: 'imdbid'}
+                        ]
+                    }
+                },
+                {
+                    key: 'score',
+                    type: 'horizontalInput',
+                    templateOptions: {
+                        type: 'number',
+                        label: 'Score',
+                        help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
+                    }
+                },
+                {
+                    type: 'horizontalTestConnection',
+                    templateOptions: {
+                        label: 'Test connection',
+                        testType: 'newznab'
+                    }
+                }
+            ]
+        };
     }
 
 
@@ -1100,420 +1174,13 @@ function ConfigController($scope, ConfigService, configPromise) {
                 ]
             },
 
-            {
-                wrapper: 'fieldset',
-                key: 'newznab1',
-                templateOptions: {label: 'Newznab 1'},
-                fieldGroup: [
-                    {
-                        key: 'enabled',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enabled'
-                        }
-                    },
-                    {
-                        key: 'name',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Name',
-                            help: 'Used for identification. Changing the name will lose all history and stats!'
-                        }
-                    },
-                    {
-                        key: 'host',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Host',
-                            placeholder: 'http://www.someindexer.com'
-                        }
-                    },
-                    {
-                        key: 'apikey',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'API Key'
-                        }
-                    },
-                    {
-                        key: 'search_ids',
-                        type: 'horizontalMultiselect',
-                        templateOptions: {
-                            label: 'Search types',
-                            options: [
-                                {label: 'TVDB', id: 'tvdbid'},
-                                {label: 'TVRage', id: 'rid'},
-                                {label: 'IMDB', id: 'imdbid'}
-                            ]
-                        }
-                    },
-                    {
-                        key: 'score',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Score',
-                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
-                        }
-                    },
-                    {
-                        type: 'horizontalTestConnection',
-                        templateOptions: {
-                            label: 'Test connection',
-                            testType: 'newznab'
-                        }
-                    }
-                ]
-            },
-            {
-                wrapper: 'fieldset',
-                hideExpression: '!model.newznab1.name',
-                key: 'newznab2',
-                templateOptions: {label: 'Newznab 2'},
-                fieldGroup: [
-                    {
-                        key: 'enabled',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enabled'
-                        }
-                    },
-                    {
-                        key: 'name',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Name',
-                            help: 'Used for identification. Changing the name will lose all history and stats!'
-                        }
-                    },
-                    {
-                        key: 'host',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Host'
-                        }
-                    },
-                    {
-                        key: 'apikey',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'API Key'
-                        }
-                    },
-                    {
-                        key: 'search_ids',
-                        type: 'horizontalMultiselect',
-                        templateOptions: {
-                            label: 'Search types',
-                            options: [
-                                {label: 'TVDB', id: 'tvdbid'},
-                                {label: 'TVRage', id: 'rid'},
-                                {label: 'IMDB', id: 'imdbid'}
-                            ]
-                        }
-                    },
-                    {
-                        key: 'score',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Score',
-                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
-                        }
-                    },
-                    {
-                        type: 'horizontalTestConnection',
-                        templateOptions: {
-                            label: 'Test connection',
-                            testType: 'newznab'
-                        }
-                    }
-                ]
-            },
-            {
-                wrapper: 'fieldset',
-                hideExpression: '!model.newznab2.name',
-                key: 'newznab3',
-                templateOptions: {label: 'Newznab 3'},
-                fieldGroup: [
-                    {
-                        key: 'enabled',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enabled'
-                        }
-                    },
-                    {
-                        key: 'name',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Name',
-                            help: 'Used for identification. Changing the name will lose all history and stats!'
-                        }
-                    },
-                    {
-                        key: 'host',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Host'
-                        }
-                    },
-                    {
-                        key: 'apikey',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'API Key'
-                        }
-                    },
-                    {
-                        key: 'search_ids',
-                        type: 'horizontalMultiselect',
-                        templateOptions: {
-                            label: 'Search types',
-                            options: [
-                                {label: 'TVDB', id: 'tvdbid'},
-                                {label: 'TVRage', id: 'rid'},
-                                {label: 'IMDB', id: 'imdbid'}
-                            ]
-                        }
-                    },
-                    {
-                        key: 'score',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Score',
-                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
-                        }
-                    },
-                    {
-                        type: 'horizontalTestConnection',
-                        templateOptions: {
-                            label: 'Test connection',
-                            testType: 'newznab'
-                        }
-                    }
-                ]
-            },
-            {
-                wrapper: 'fieldset',
-                hideExpression: '!model.newznab3.name',
-                key: 'newznab4',
-                templateOptions: {label: 'Newznab 4'},
-                fieldGroup: [
-                    {
-                        key: 'enabled',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enabled'
-                        }
-                    },
-                    {
-                        key: 'name',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Name',
-                            help: 'Used for identification. Changing the name will lose all history and stats!'
-                        }
-                    },
-                    {
-                        key: 'host',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Host'
-                        }
-                    },
-                    {
-                        key: 'apikey',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'API Key'
-                        }
-                    },
-                    {
-                        key: 'search_ids',
-                        type: 'horizontalMultiselect',
-                        templateOptions: {
-                            label: 'Search types',
-                            options: [
-                                {label: 'TVDB', id: 'tvdbid'},
-                                {label: 'TVRage', id: 'rid'},
-                                {label: 'IMDB', id: 'imdbid'}
-                            ]
-                        }
-                    },
-                    {
-                        key: 'score',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Score',
-                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
-                        }
-                    },
-                    {
-                        type: 'horizontalTestConnection',
-                        templateOptions: {
-                            label: 'Test connection',
-                            testType: 'newznab'
-                        }
-                    }
-                ]
-            },
-            {
-                wrapper: 'fieldset',
-                key: 'newznab5',
-                hideExpression: '!model.newznab4.name',
-                templateOptions: {label: 'Newznab 5'},
-                fieldGroup: [
-                    {
-                        key: 'enabled',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enabled'
-                        }
-                    },
-                    {
-                        key: 'name',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Name',
-                            help: 'Used for identification. Changing the name will lose all history and stats!'
-                        }
-                    },
-                    {
-                        key: 'host',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Host'
-                        }
-                    },
-                    {
-                        key: 'apikey',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'API Key'
-                        }
-                    },
-                    {
-                        key: 'search_ids',
-                        type: 'horizontalMultiselect',
-                        templateOptions: {
-                            label: 'Search types',
-                            options: [
-                                {label: 'TVDB', id: 'tvdbid'},
-                                {label: 'TVRage', id: 'rid'},
-                                {label: 'IMDB', id: 'imdbid'}
-                            ]
-                        }
-                    },
-                    {
-                        key: 'score',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Score',
-                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
-                        }
-                    },
-                    {
-                        type: 'horizontalTestConnection',
-                        templateOptions: {
-                            label: 'Test connection',
-                            testType: 'newznab'
-                        }
-                    }
-                ]
-            },
-            {
-                wrapper: 'fieldset',
-                hideExpression: '!model.newznab5.name',
-                key: 'newznab6',
-                templateOptions: {label: 'Newznab 6'},
-                fieldGroup: [
-                    {
-                        key: 'enabled',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enabled'
-                        }
-                    },
-                    {
-                        key: 'name',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Name',
-                            help: 'Used for identification. Changing the name will lose all history and stats!'
-                        }
-                    },
-                    {
-                        key: 'host',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Host'
-                        }
-                    },
-                    {
-                        key: 'apikey',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'API Key'
-                        }
-                    },
-                    {
-                        key: 'search_ids',
-                        type: 'horizontalMultiselect',
-                        templateOptions: {
-                            label: 'Search types',
-                            options: [
-                                {label: 'TVDB', id: 'tvdbid'},
-                                {label: 'TVRage', id: 'rid'},
-                                {label: 'IMDB', id: 'imdbid'}
-                            ]
-                        }
-                    },
-                    {
-                        key: 'score',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Score',
-                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
-                        }
-                    },
-                    {
-                        type: 'horizontalTestConnection',
-                        templateOptions: {
-                            label: 'Test connection',
-                            testType: 'newznab'
-                        }
-                    }
-                ]
-            }
+            getNewznabFieldset(1),
+            getNewznabFieldset(2),
+            getNewznabFieldset(3),
+            getNewznabFieldset(4),
+            getNewznabFieldset(5),
+            getNewznabFieldset(6)
+            
         ]
     };
 
@@ -1544,15 +1211,9 @@ function ConfigController($scope, ConfigService, configPromise) {
         }
     ];
 
-
-    $scope.onSubmit = function (form) {
-        // First we broadcast an event so all fields validate themselves
-        $scope.$broadcast('schemaFormValidate');
-
-        // Then we check if the form is valid
-        if (form.$valid) {
-            ConfigService.set($scope.config);
-        }
+    
+    $scope.isSavingNeeded = function(form) {
+        return form.$dirty && !form.$submitted;
     }
 }
 

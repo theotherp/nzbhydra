@@ -1,12 +1,12 @@
 <div class="row">
-    <form ng-submit="vm.onSubmit()" name="form" novalidate>
+    <form ng-submit="submit(form)" name="form" novalidate>
         <uib-tabset>
             <uib-tab ng-repeat="tab in tabs" heading="{{ tab.name }}" select="tabs[$index].active = true">
                 <formly-form model="tab.model" fields="tab.fields" ng-if="tabs[$index].active == true">
                 </formly-form>
             </uib-tab>
             <li style="position: absolute; right:0px; ">
-                <button ng-click="submit()" ng-disabled="form.$invalid" type="button" class="btn btn-info" style="background-color: #5bc0de; border: 1px solid #1c1e22; border-bottom-color: transparent; border-radius: 4px 4px 0 0; margin-top: 3px">Submit</button>
+                <button ng-disabled="form.$invalid" type="submit" class="btn config-submit" ng-class="{'btn-info': isSavingNeeded(form), 'pulse2': isSavingNeeded(form), 'btn-success': !isSavingNeeded(form)}">Save</button>
             </li>
         </uib-tabset>
 
