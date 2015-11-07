@@ -190,11 +190,16 @@ class NzbIndex(SearchModule):
                 entry.details_link = collection_links[0].attrs["href"]
             entries.append(entry)
         try:
-            pagecount = int(main_table.find("tfoot").find_all("tr")[1].find_all('a')[-2].text)
-            currentpage = int(main_table.find("tfoot").find_all("tr")[1].find("b").text) #Don't count "next"
-            has_more = pagecount > currentpage
-            total = self.limit * pagecount #Good enough
-        except Exception as e:
+            page_links = main_table.find("tfoot").find_all("tr")[1].find_all('a')
+            if len(page_links) == 0:
+                total = len(entries)
+                has_more = False
+            else:
+                pagecount = int(page_links[-2].text)
+                currentpage = int(main_table.find("tfoot").find_all("tr")[1].find("b").text) #Don't count "next"
+                has_more = pagecount > currentpage
+                total = self.limit * pagecount #Good enough
+        except Exception:
             logger.exception("Error while trying to find page count")
             total = len(entries)
             has_more = False

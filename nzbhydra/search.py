@@ -111,7 +111,7 @@ def search(internal, search_request):
     external_offset = int(search_request.offset)
     search_hash = search_request.search_hash
     if search_hash not in pseudo_cache.keys() or search_request.offset == 0: #If it's a new search (which starts with offset 0) do it again instead of using the cached results
-        print("Didn't find this query in cache or want to do a new search")
+        logger.debug("Didn't find this query in cache or want to do a new search")
         cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0}
         indexers_to_call, with_query_generation = pick_indexers(query_supplied=True if search_request.query is not None else False, identifier_key=search_request.identifier_key, internal=internal)
         for p in indexers_to_call:
@@ -127,32 +127,32 @@ def search(internal, search_request):
         cache_entry = pseudo_cache[search_hash]
         indexers_to_call = [indexer for indexer, info in cache_entry["indexer_infos"].items() if info["has_more"]]
         dbsearch = cache_entry["dbsearch"]
-        print("Found search in cache")
+        logger.debug("Found search in cache")
 
-    print("Will search at indexers as long as we don't have enough results for the current offset+limit and any indexer has more results.")
+        logger.debug("Will search at indexers as long as we don't have enough results for the current offset+limit and any indexer has more results.")
     while len(cache_entry["results"]) < external_offset + limit and len(indexers_to_call) > 0:
-        print("We want %d results but have only %d so far" % ((external_offset + limit), len(cache_entry["results"])))
-        print("%d indexers still have results" % len(indexers_to_call))
+        logger.debug("We want %d results but have only %d so far" % ((external_offset + limit), len(cache_entry["results"])))
+        logger.debug("%d indexers still have results" % len(indexers_to_call))
         search_request.offset = cache_entry["offset"]
-        print("Searching indexers with offset %d" % search_request.offset)
+        logger.debug("Searching indexers with offset %d" % search_request.offset)
         result = search_and_handle_db(dbsearch, {x: search_request for x in indexers_to_call})
         search_results = []
         indexers_to_call = []
         for indexer, queries_execution_result in result["results"].items():
             search_results.extend(queries_execution_result.results)
-            print("%s returned %d results" % (indexer, len(queries_execution_result.results)))
+            logger.debug("%s returned %d results" % (indexer, len(queries_execution_result.results)))
             cache_entry["indexer_infos"][indexer].update({"search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known, "indexer_search": queries_execution_result.dbentry})
             if queries_execution_result.has_more:
                 indexers_to_call.append(indexer)
-                print("%s still has more results so we could use it the next round" % indexer)
+                logger.debug("%s still has more results so we could use it the next round" % indexer)
 
             if queries_execution_result.total_known:
                 if not cache_entry["indexer_infos"][indexer]["total_included"]:
                     cache_entry["total"] += queries_execution_result.total
-                    print("%s reports %d total results. We'll include in the total this time only" % (indexer, queries_execution_result.total))
+                    logger.debug("%s reports %d total results. We'll include in the total this time only" % (indexer, queries_execution_result.total))
                     cache_entry["indexer_infos"][indexer]["total_included"] = True
             elif queries_execution_result.has_more:
-                print("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
+                logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
                 cache_entry["total"] += 100
 
         search_results = sorted(search_results, key=lambda x: x.epoch, reverse=True)
@@ -163,10 +163,10 @@ def search(internal, search_request):
     
     
     if internal:
-        print("We have %d cached results and them all because we search internally" % len(cache_entry["results"]))
+        logger.debug("We have %d cached results and them all because we search internally" % len(cache_entry["results"]))
         nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:])
     else:
-        print("We have %d cached results and return %d-%d of %d total available accounting for the limit set for the API search" % (len(cache_entry["results"]), external_offset, external_offset + limit, cache_entry["total"]))
+        logger.debug("We have %d cached results and return %d-%d of %d total available accounting for the limit set for the API search" % (len(cache_entry["results"]), external_offset, external_offset + limit, cache_entry["total"]))
         nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:(external_offset + limit)])
     cache_entry["last_access"] = arrow.utcnow()
     
