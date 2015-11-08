@@ -183,8 +183,12 @@ class NewzNab(SearchModule):
         except Exception:
             logger.exception("Error parsing XML: %s..." % xml_response[:500])
             raise IndexerResultParsingException("Error parsing XML", self)
-        total = int(tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}).attrib["total"])
-        offset = int(tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}).attrib["offset"])
+        response_total_offset = tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"})
+        if response_total_offset is None:
+            logger.warn("Indexer returned a result page without total and offset. We'll ignore this for know but it might be an error")
+            return IndexerProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False)
+        total = int(response_total_offset.attrib["total"])
+        offset = int(response_total_offset.attrib["offset"])
         if total == 0:
             logger.info("Query at %s returned no results" % self)
             return IndexerProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False)

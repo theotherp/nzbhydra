@@ -162,7 +162,7 @@ class Sabnzbd(Downloader):
         if title is None:
             title = ""
         else:
-            if not title.endswith(".nzb"):  # NZBGet skips entries of which the filename does not end with NZB
+            if not title.endswith(".nzb"):  # sabnzbd skips entries of which the filename does not end with NZB
                 title += ".nzb"
 
         f = self.get_sab()
@@ -181,7 +181,7 @@ class Sabnzbd(Downloader):
         if title is None:
             title = ""
         else:
-            if not title.endswith(".nzb"):  # NZBGet skips entries of which the filename does not end with NZB
+            if not title.endswith(".nzb"):  # sabnzbd skips entries of which the filename does not end with NZB
                 title += ".nzb"
 
         f = self.get_sab()
