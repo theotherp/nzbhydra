@@ -242,21 +242,14 @@ def serialize_nzb_search_result(result):
 
 
 def get_nfo(indexer_name, guid):
-    nfo = None
-    result = {}
     for p in indexers.configured_indexers:
         if p.name == indexer_name:
-            nfo = p.get_nfo(guid)
+            has_nfo, nfo, message = p.get_nfo(guid)
             break
     else:
         logger.error("Did not find indexer with name %s" % indexer_name)
-        result["error"] = "Unable to find indexer"
-    if nfo is None:
-        logger.info("Unable to find NFO for indexer %s and guid %s" % (indexer_name, guid))
-        result["has_nfo"] = False
-    else:
-        result["has_nfo"] = True
-        result["nfo"] = nfo
+        return {"has_nfo": False, "error": "Unable to find indexer"}
+    return {"has_nfo": has_nfo, "nfo": nfo, "message": message}
     return result
 
 

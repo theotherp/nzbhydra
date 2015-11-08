@@ -255,19 +255,23 @@ class NewzNab(SearchModule):
 
         response, papiaccess = self.get_url_with_papi_access(url, "nfo")
         if response is None:
-            return None
+            return False, None, "Unable to access indexer"
       
         nfo = response.content
         if "<?xml" in nfo.decode("utf-8"):  # Hacky but fast
             if 'total="1"' in nfo.decode("utf-8"):
-                tree = ET.fromstring(nfo)
-                for elem in tree.iter('item'):
-                    nfo = elem.find("description").text
-                    nfo = nfo.replace("\\n", "\r\n").replace("\/", "/")  # TODO: Not completely correct, looks still a bit werid
-                    return nfo
+                try:
+                    tree = ET.fromstring(nfo)
+                    for elem in tree.iter('item'):
+                        nfo = elem.find("description").text
+                        nfo = nfo.replace("\\n", "\r\n").replace("\/", "/")  # TODO: Not completely correct, looks still a bit werid
+                        return True, nfo, None
+                except ET.ParseError:
+                    logger.error("Error parsing NFO response for indexer %s and GUID %s" % (self.name, guid))
+                    return False, None, "Unable to parse response"
             else:
-                return None
-        return nfo.decode("utf-8") #No XML, we just hope it's the NFO
+                return False, None, "No NFO available"
+        return True, nfo.decode("utf-8"), None #No XML, we just hope it's the NFO
     
 
     def get_nzb_link(self, guid, title):

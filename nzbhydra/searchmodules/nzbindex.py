@@ -217,8 +217,8 @@ class NzbIndex(SearchModule):
             p = re.compile(r'<pre id="nfo0">(?P<nfo>.*)<\/pre>', re.DOTALL)
             m = p.search(html)
             if m:
-                return m.group("nfo")
-        return None
+                return True, m.group("nfo"), None
+        return False, None, None
 
     def get_nzb_link(self, guid, title):
         f = furl(self.host)

@@ -134,8 +134,8 @@ class NzbClub(SearchModule):
         if r is not None:
             r.raise_for_status()
             if r.json()["Count"] == 0:
-                return None
-            return r.json()["Data"][0]["NFOContentData"]
+                return False, None, None
+            return True, r.json()["Data"][0]["NFOContentData"], None
         
     def get_nzb_link(self, guid, title):
         f = furl(self.settings.host.get())

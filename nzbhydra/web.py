@@ -430,8 +430,11 @@ def internalapi_addnzb(args):
     guids = json.loads(args["guids"])
     if downloaderSettings.downloader.isSetting(config.DownloaderSelection.nzbget):
         downloader = Nzbget()
-    else:
+    elif downloaderSettings.downloader.isSetting(config.DownloaderSelection.sabnzbd):
         downloader = Sabnzbd()
+    else:
+        logger.error("Adding an NZB without set downloader should not be possible")
+        return jsonify({"success": False})
     added = 0
     for guid in guids:
         guid = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(guid).query))
