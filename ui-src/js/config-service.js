@@ -49,7 +49,7 @@ function ConfigService($http, $q) {
 
 
         return loadAll().then(function (config) {
-            return {settings: config}
+            return config;
         });
 
     }

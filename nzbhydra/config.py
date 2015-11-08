@@ -401,6 +401,7 @@ class NzbAddingTypeSelection(object):
 
 
 class DownloaderSelection(object):
+    none = SelectOption("none", "None")
     sabnzbd = SelectOption("sabnzbd", "SabNZBd")
     nzbget = SelectOption("nzbget", "NZBGet")
 
@@ -410,7 +411,7 @@ class DownloaderSettings(Category):
         super(DownloaderSettings, self).__init__(config_root, "downloader", "Downloader")
         self.nzbaccesstype = SelectionSetting(self, name="nzbaccesstype", default=NzbAccessTypeSelection.serve, valuetype=str, options=[NzbAccessTypeSelection.direct, NzbAccessTypeSelection.redirect, NzbAccessTypeSelection.serve])
         self.nzbAddingType = SelectionSetting(self, name="nzbAddingType", default=NzbAddingTypeSelection.nzb, valuetype=str, options=[NzbAddingTypeSelection.link, NzbAddingTypeSelection.nzb])
-        self.downloader = SelectionSetting(self, name="downloader", default=DownloaderSelection.nzbget, valuetype=str, options=[DownloaderSelection.nzbget, DownloaderSelection.sabnzbd])
+        self.downloader = SelectionSetting(self, name="downloader", default=DownloaderSelection.none, valuetype=str, options=[DownloaderSelection.nzbget, DownloaderSelection.sabnzbd])
 
 
 downloaderSettings = DownloaderSettings()

@@ -9,11 +9,14 @@ function addableNzb() {
         scope: {
             guid: "="
         },
-        controller: ['$scope', '$http', controller]
+        controller: ['$scope', '$http', 'ConfigService', controller]
     };
 
-    function controller($scope, $http) {
+    function controller($scope, $http, ConfigService) {
         $scope.classname = "nzb";
+        ConfigService.get().then(function(settings) {
+            $scope.enabled = settings.downloader.downloader != null;
+        });
 
         $scope.add = function () {
             $scope.classname = "nzb-spinning";

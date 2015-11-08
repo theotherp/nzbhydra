@@ -32,8 +32,11 @@ function otherColumns($http, $templateCache, $compile) {
                 if (response.data.has_nfo) {
                     $scope.openModal("lg", response.data.nfo)
                 } else {
-                    //todo: show error or info that no nfo is available
-                    growl.info("No NFO available");
+                    if (!angular.isUndefined(resultItem.message)) {
+                        growl.error(resultItem.message);
+                    } else {
+                        growl.info("No NFO available");
+                    }
                 }
             });
         }

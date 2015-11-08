@@ -226,8 +226,8 @@ angular
     });
 
 
-function ConfigController($scope, ConfigService, configPromise) {
-    $scope.config = configPromise.settings;
+function ConfigController($scope, ConfigService, config) {
+    $scope.config = config;
 
     $scope.submit = submit;
 
@@ -329,7 +329,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'port',
                         type: 'horizontalInput',
                         templateOptions: {
-                            type: 'text',
+                            type: 'number',
                             label: 'Port',
                             placeholder: '5050'
                         }
@@ -906,6 +906,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                     type: 'select',
                     label: 'Downloader',
                     options: [
+                        {name: 'None', value: 'none'},
                         {name: 'NZBGet', value: 'nzbget'},
                         {name: 'SABnzbd', value: 'sabnzbd'}
                     ]
@@ -956,7 +957,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'port',
                         type: 'horizontalInput',
                         templateOptions: {
-                            type: 'text',
+                            type: 'number',
                             label: 'Port',
                             placeholder: '5050'
                         }
@@ -1015,7 +1016,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'port',
                         type: 'horizontalInput',
                         templateOptions: {
-                            type: 'text',
+                            type: 'number',
                             label: 'Port',
                             placeholder: '5050'
                         }

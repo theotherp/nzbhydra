@@ -44,7 +44,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             templateUrl: "static/html/states/config.html",
             controller: "ConfigController",
             resolve: {
-                configPromise: ['ConfigService', function (ConfigService) {
+                config: ['ConfigService', function (ConfigService) {
                     return ConfigService.get();
                 }]
             }

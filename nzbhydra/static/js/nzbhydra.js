@@ -44,7 +44,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
             templateUrl: "static/html/states/config.html",
             controller: "ConfigController",
             resolve: {
-                configPromise: ['ConfigService', function (ConfigService) {
+                config: ['ConfigService', function (ConfigService) {
                     return ConfigService.get();
                 }]
             }
@@ -235,8 +235,11 @@ function otherColumns($http, $templateCache, $compile) {
                 if (response.data.has_nfo) {
                     $scope.openModal("lg", response.data.nfo)
                 } else {
-                    //todo: show error or info that no nfo is available
-                    growl.info("No NFO available");
+                    if (!angular.isUndefined(resultItem.message)) {
+                        growl.error(resultItem.message);
+                    } else {
+                        growl.info("No NFO available");
+                    }
                 }
             });
         }
@@ -480,11 +483,14 @@ function addableNzb() {
         scope: {
             guid: "="
         },
-        controller: ['$scope', '$http', controller]
+        controller: ['$scope', '$http', 'ConfigService', controller]
     };
 
-    function controller($scope, $http) {
+    function controller($scope, $http, ConfigService) {
         $scope.classname = "nzb";
+        ConfigService.get().then(function(settings) {
+            $scope.enabled = settings.downloader.downloader != null;
+        });
 
         $scope.add = function () {
             $scope.classname = "nzb-spinning";
@@ -894,9 +900,9 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         focus('focus-query-box');
         $scope.query = "";
 
-        if (config.settings.searching.categorysizes.enable_category_sizes) {
-            var min = config.settings.searching.categorysizes[searchCategory + " min"];
-            var max = config.settings.searching.categorysizes[searchCategory + " max"];
+        if (config.searching.categorysizes.enable_category_sizes) {
+            var min = config.searching.categorysizes[searchCategory + " min"];
+            var max = config.searching.categorysizes[searchCategory + " max"];
             if (_.isNumber(min)) {
                 $scope.minsize = min;
             } else {
@@ -1032,7 +1038,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     ConfigService.get().then(function (cfg) {
         config = cfg;
 
-        $scope.availableIndexers = _.filter(cfg.settings.indexers, function (indexer) {
+        $scope.availableIndexers = _.filter(cfg.indexers, function (indexer) {
             return indexer.enabled;
         }).map(function (indexer) {
             return {name: indexer.name, activated: true};
@@ -1238,7 +1244,7 @@ function ConfigService($http, $q) {
 
 
         return loadAll().then(function (config) {
-            return {settings: config}
+            return config;
         });
 
     }
@@ -1472,8 +1478,8 @@ angular
     }]);
 
 
-function ConfigController($scope, ConfigService, configPromise) {
-    $scope.config = configPromise.settings;
+function ConfigController($scope, ConfigService, config) {
+    $scope.config = config;
 
     $scope.submit = submit;
 
@@ -1575,7 +1581,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'port',
                         type: 'horizontalInput',
                         templateOptions: {
-                            type: 'text',
+                            type: 'number',
                             label: 'Port',
                             placeholder: '5050'
                         }
@@ -2152,6 +2158,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                     type: 'select',
                     label: 'Downloader',
                     options: [
+                        {name: 'None', value: 'none'},
                         {name: 'NZBGet', value: 'nzbget'},
                         {name: 'SABnzbd', value: 'sabnzbd'}
                     ]
@@ -2202,7 +2209,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'port',
                         type: 'horizontalInput',
                         templateOptions: {
-                            type: 'text',
+                            type: 'number',
                             label: 'Port',
                             placeholder: '5050'
                         }
@@ -2261,7 +2268,7 @@ function ConfigController($scope, ConfigService, configPromise) {
                         key: 'port',
                         type: 'horizontalInput',
                         templateOptions: {
-                            type: 'text',
+                            type: 'number',
                             label: 'Port',
                             placeholder: '5050'
                         }
@@ -2462,7 +2469,7 @@ function ConfigController($scope, ConfigService, configPromise) {
         return form.$dirty && !form.$submitted;
     }
 }
-ConfigController.$inject = ["$scope", "ConfigService", "configPromise"];
+ConfigController.$inject = ["$scope", "ConfigService", "config"];
 
 
 
