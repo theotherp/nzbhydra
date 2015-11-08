@@ -131,18 +131,13 @@ class Nzbget(Downloader):
 class Sabnzbd(Downloader):
     logger = logging.getLogger('root')
 
-    def get_sab(self, host=sabnzbdSettings.host.get(), ssl=sabnzbdSettings.ssl.get(), port=sabnzbdSettings.port.get(), username=sabnzbdSettings.username.get(), password=sabnzbdSettings.password.get(), apikey=sabnzbdSettings.apikey.get()):
+    def get_sab(self):
         f = furl()
-        # if username is not None:
-        if username:
-            f.add({"ma_username": username})
-        if password:
-            f.add({"ma_password": password})
-        if apikey:
-            f.add({"apikey": apikey})
-        f.scheme = "https" if ssl else "http"
-        f.host = host
-        f.port = port
+        if sabnzbdSettings.apikey.get():
+            f.add({"apikey": sabnzbdSettings.apikey.get()})
+        f.scheme = "https" if sabnzbdSettings.ssl.get() else "http"
+        f.host = sabnzbdSettings.host.get()
+        f.port = sabnzbdSettings.port.get()
         f.path.add("api")
         f.add({"output": "json"})
 
