@@ -1,5 +1,5 @@
 # nzbhydra
-NZBHydra is meta search for NZB indexers and the "spiritual successor" to [NZBmegasearcH](https://github.com/pillone/usntssearch). It provides easy access to a number of raw and newznab based indexers.
+NZBHydra is a meta search for NZB indexers and the "spiritual successor" to [NZBmegasearcH](https://github.com/pillone/usntssearch). It provides easy access to a number of raw and newznab based indexers.
 
 
 ##Features
@@ -36,8 +36,6 @@ Run with Python 2.7. Runs on http://0.0.0.0:5075 by default. See the console out
 As I said query generation is very basic. When selecting a category and doing a search the category will only be used for newznab indexers, for all the raw indexers we will just search using the query. Generating "proper" queries from a category is very hard so you will need to do the filtering visually. Especially with raw indexers that don't support "OR" queries we would need to send a lot of requests to get all the different combinations
 
 Newznab providers don't send information on NFO availablity. If the search results show an NFO link for such an indexer you will need to just try if you can get one.
-
-Filters for age and size only work very incompletely. Newznab only supports max age and so far I don't filter the results manually after retrieving them from the indexers.
 
 Currently the config GUI does not provide any validation apart from the connection tests.
 

@@ -413,7 +413,6 @@ class DownloaderSettings(Category):
         self.nzbAddingType = SelectionSetting(self, name="nzbAddingType", default=NzbAddingTypeSelection.nzb, valuetype=str, options=[NzbAddingTypeSelection.link, NzbAddingTypeSelection.nzb])
         self.downloader = SelectionSetting(self, name="downloader", default=DownloaderSelection.none, valuetype=str, options=[DownloaderSelection.nzbget, DownloaderSelection.sabnzbd])
 
-
 downloaderSettings = DownloaderSettings()
 
 
@@ -426,6 +425,7 @@ class SabnzbdSettings(Category):
         self.apikey = Setting(self, name="apikey", default=None, valuetype=str)
         self.username = Setting(self, name="username", default=None, valuetype=str)
         self.password = Setting(self, name="password", default=None, valuetype=str)
+        self.default_category = Setting(self, name="defaultCategory", default=None, valuetype=str)
 
 
 sabnzbdSettings = SabnzbdSettings()
@@ -439,7 +439,7 @@ class NzbgetSettings(Category):
         self.ssl = Setting(self, name="ssl", default=False, valuetype=bool)
         self.username = Setting(self, name="username", default="nzbget", valuetype=str)
         self.password = Setting(self, name="password", default="tegbzn6789", valuetype=str)
-
+        self.default_category = Setting(self, name="defaultCategory", default=None, valuetype=str)
 
 nzbgetSettings = NzbgetSettings()
 

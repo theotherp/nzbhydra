@@ -226,7 +226,7 @@ angular
     });
 
 
-function ConfigController($scope, ConfigService, config) {
+function ConfigController($scope, ConfigService, config, CategoriesService) {
     $scope.config = config;
 
     $scope.submit = submit;
@@ -234,8 +234,8 @@ function ConfigController($scope, ConfigService, config) {
     function submit(form) {
         ConfigService.set($scope.config);
         form.$setPristine();
+        CategoriesService.invalidate();
     }
-    
     
     function getNewznabFieldset(index) {
         return {
@@ -987,6 +987,15 @@ function ConfigController($scope, ConfigService, config) {
                         }
                     },
                     {
+                        key: 'defaultCategory',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Default category',
+                            help: 'When adding NZBs this category will be used instead of asking for the category'
+                        }
+                    },
+                    {
                         type: 'horizontalTestConnection',
                         templateOptions: {
                             label: 'Test connection',
@@ -1051,6 +1060,15 @@ function ConfigController($scope, ConfigService, config) {
                         templateOptions: {
                             type: 'text',
                             label: 'API Key'
+                        }
+                    },
+                    {
+                        key: 'defaultCategory',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Default category',
+                            help: 'When adding NZBs this category will be used instead of asking for the category'
                         }
                     },
                     {

@@ -3,7 +3,7 @@ angular
     .controller('SearchResultsController', SearchResultsController);
 
 //SearchResultsController.$inject = ['blockUi'];
-function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService, $http, $uibModal, $sce, growl) {
+function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService, $http, $uibModal, $sce, growl, NzbDownloadService) {
 
     $scope.sortPredicate = "epoch";
     $scope.sortReversed = true;
@@ -76,15 +76,15 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     }
 
 
-    $scope.countFilteredOut = 0;
+    
     function sortAndFilter(results) {
-        
+        $scope.countFilteredOut = 0;
         function filterByAgeAndSize(item) {
             var filterOut = !(_.isNumber($stateParams.minsize) && item.size / 1024 / 1024 < $stateParams.minsize)
                 && !(_.isNumber($stateParams.maxsize) && item.size / 1024 / 1024 > $stateParams.maxsize)
                 && !(_.isNumber($stateParams.minage) && item.age_days < $stateParams.minage)
                 && !(_.isNumber($stateParams.maxage) && item.age_days > $stateParams.maxage);
-            if (filterOut) {
+            if (!filterOut) {
                 $scope.countFilteredOut++;
             }
             return filterOut;
@@ -202,16 +202,16 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         var guids = Object.keys($scope.selected);
 
         console.log(guids);
-        $http.put("internalapi/addnzbs", {guids: angular.toJson(guids)}).success(function (response) {
-            if (response.success) {
-                console.log("success");
-                growl.info("Successfully added " + response.added + " of " + response.of + " NZBs");
+        NzbDownloadService.download(guids).then(function (response) {
+            if (response.data.success) {
+                growl.info("Successfully added " + response.data.added + " of " + response.data.of + " NZBs");
             } else {
                 growl.error("Error while adding NZBs");
             }
-        }).error(function () {
+        }, function () {
             growl.error("Error while adding NZBs");
         });
+
     }
 
 

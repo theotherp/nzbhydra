@@ -1,17 +1,18 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from builtins import str
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from builtins import *
+from builtins import str
 from future import standard_library
+
 standard_library.install_aliases()
 import base64
 import json
 import logging
 import socket
 import xmlrpc.client
-
 from furl import furl
 import requests
 from requests.exceptions import HTTPError, SSLError, ConnectionError
@@ -27,8 +28,9 @@ class Downloader(object):
 
     def add_nzb(self, content, title, category):
         return True
-    
-    
+
+    def get_categories(self):
+        return []
 
 
 class Nzbget(Downloader):
@@ -49,7 +51,7 @@ class Nzbget(Downloader):
         rpc = self.get_rpc(host, ssl, port, username, password)
 
         try:
-            if rpc.writelog('INFO', 'NZB Hydra connected to test connection'):                    
+            if rpc.writelog('INFO', 'NZB Hydra connected to test connection'):
                 # version = rpc.version()
                 # todo: show error if version older than 13
                 self.logger.debug('Successfully connected to NZBGet')
@@ -125,8 +127,14 @@ class Nzbget(Downloader):
                 self.logger.error('Protocol error: %s', e)
             return False
         
-    
-
+    def get_categories(self):
+        rpc = self.get_rpc()
+        config = rpc.config()
+        categories = []
+        for i in config:
+            if "Category" in i["Name"] and "Name" in i["Name"]:
+                categories.append(i["Value"])
+        return categories
 
 class Sabnzbd(Downloader):
     logger = logging.getLogger('root')
@@ -153,7 +161,7 @@ class Sabnzbd(Downloader):
                 return True, ""
             else:
                 return False, "Credentials wrong?"
-        
+
         except (SSLError, HTTPError, ConnectionError) as e:
             self.logger.exception("Error while trying to connect to sabnzbd")
             return False, "SABnzbd is not responding under this address, scheme and port"
@@ -196,3 +204,14 @@ class Sabnzbd(Downloader):
         except (SSLError, HTTPError, ConnectionError):
             self.logger.exception("Error while trying to connect to sabnzbd")
             return False
+
+    def get_categories(self):
+        f = self.get_sab()
+        f.add({"mode": "get_cats", "output": "json"})
+        try:
+            r = requests.get(f.tostr(), verify=False)
+            r.raise_for_status()
+            return r.json()["categories"]
+        except (SSLError, HTTPError, ConnectionError):
+            self.logger.exception("Error while trying to connect to sabnzbd")
+            return None

@@ -417,7 +417,8 @@ def extract_nzb_infos_and_return_response(indexer, guid, title, searchid):
 
 
 internalapi__addnzb_args = {
-    "guids": fields.String(missing=[])
+    "guids": fields.String(missing=[]),
+    "category": fields.String(missing=None)
 }
 
 
@@ -439,12 +440,12 @@ def internalapi_addnzb(args):
     for guid in guids:
         guid = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(guid).query))
         if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
-            add_success = downloader.add_link(guid, guid["title"], None)
+            add_success = downloader.add_link(guid, guid["title"], args["category"])
 
         else:  # We download an NZB send it to the downloader
             nzbdownloadresult = download_nzb_and_log(guid["indexer"], guid["guid"], guid["title"], guid["searchid"])
             if nzbdownloadresult is not None:
-                add_success = downloader.add_nzb(nzbdownloadresult.content, guid["title"], None)
+                add_success = downloader.add_nzb(nzbdownloadresult.content, guid["title"], args["category"])
             else:
                 add_success = False
         if add_success:
@@ -583,6 +584,19 @@ def internalapi_getversions():
     current_version = get_current_version()
     rep_version = get_rep_version()
     return jsonify({"currentVersion": str(current_version), "repVersion": str(rep_version), "updateAvailable": rep_version > current_version})
+
+
+@app.route('/internalapi/getcategories')
+@requires_auth
+def internalapi_getcategories():
+    logger.debug("Get categories request")
+    categories = []
+    if downloaderSettings.downloader.isSetting(config.DownloaderSelection.nzbget):
+        categories = Nzbget().get_categories()
+    elif downloaderSettings.downloader.isSetting(config.DownloaderSelection.sabnzbd):
+        categories = Sabnzbd().get_categories()
+    return jsonify({"categories": categories})
+
 
 
 def restart():

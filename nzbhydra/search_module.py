@@ -1,20 +1,20 @@
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from builtins import str
 from future import standard_library
+
 standard_library.install_aliases()
 from builtins import *
 import logging
 import collections
-
 import arrow
 import requests
 from requests import RequestException
-
 from nzbhydra import config
-from nzbhydra.config import IndexerSettings, searchingSettings
+from nzbhydra.config import searchingSettings
 from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, Indexer
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAuthException, IndexerAccessException
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -25,6 +25,7 @@ IndexerProcessingResult = collections.namedtuple("IndexerProcessingResult", "ent
 
 class SearchModule(object):
     logger = logging.getLogger('root')
+
     # regarding quality:
     # possibly use newznab qualities as base, map for other indexers (nzbclub etc)
 
@@ -207,17 +208,11 @@ class SearchModule(object):
         return []
 
     def execute_queries(self, queries):
-        # todo call all queries, check if further should be called, return all results when done or timeout or whatever
-        """
-
-        :rtype : ResultsAndIndexerSearchDbEntry
-        """
         results = []
         executed_queries = set()
         psearch = IndexerSearch(indexer=self.indexer)
         psearch.save()
         total_results = 0
-        offset = 0
         total_known = False
         has_more = False
         while len(queries) > 0:

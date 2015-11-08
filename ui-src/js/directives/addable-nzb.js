@@ -9,28 +9,28 @@ function addableNzb() {
         scope: {
             guid: "="
         },
-        controller: ['$scope', '$http', 'ConfigService', controller]
+        controller: ['$scope', 'ConfigService', 'NzbDownloadService', controller]
     };
 
-    function controller($scope, $http, ConfigService) {
+    function controller($scope, ConfigService, NzbDownloadService) {
         $scope.classname = "nzb";
-        ConfigService.get().then(function(settings) {
+        ConfigService.get().then(function (settings) {
             $scope.enabled = settings.downloader.downloader != "none";
         });
-
-        $scope.add = function () {
+        
+        $scope.add = function() {
             $scope.classname = "nzb-spinning";
-            $http.put("internalapi/addnzbs", {guids: angular.toJson([$scope.guid])}).success(function (response) {
-                if (response.success) {
+            NzbDownloadService.download([$scope.guid]).then(function (response) {
+                if (response.data.success) {
                     $scope.classname = "nzb-success";
                 } else {
                     $scope.classname = "nzb-error";
                 }
-                
-            }).error(function () {
-                
-            });
-        }
-        
+            }, function() {
+                $scope.classname = "nzb-error";
+            })
+        };
+
     }
 }
+

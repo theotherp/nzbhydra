@@ -479,31 +479,32 @@ function addableNzb() {
         scope: {
             guid: "="
         },
-        controller: ['$scope', '$http', 'ConfigService', controller]
+        controller: ['$scope', 'ConfigService', 'NzbDownloadService', controller]
     };
 
-    function controller($scope, $http, ConfigService) {
+    function controller($scope, ConfigService, NzbDownloadService) {
         $scope.classname = "nzb";
-        ConfigService.get().then(function(settings) {
+        ConfigService.get().then(function (settings) {
             $scope.enabled = settings.downloader.downloader != "none";
         });
-
-        $scope.add = function () {
+        
+        $scope.add = function() {
             $scope.classname = "nzb-spinning";
-            $http.put("internalapi/addnzbs", {guids: angular.toJson([$scope.guid])}).success(function (response) {
-                if (response.success) {
+            NzbDownloadService.download([$scope.guid]).then(function (response) {
+                if (response.data.success) {
                     $scope.classname = "nzb-success";
                 } else {
                     $scope.classname = "nzb-error";
                 }
-                
-            }).error(function () {
-                
-            });
-        }
-        
+            }, function() {
+                $scope.classname = "nzb-error";
+            })
+        };
+
     }
 }
+
+
 angular
     .module('nzbhydraApp')
     .controller('StatsController', StatsController);
@@ -629,7 +630,7 @@ angular
     .controller('SearchResultsController', SearchResultsController);
 
 //SearchResultsController.$inject = ['blockUi'];
-function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService, $http, $uibModal, $sce, growl) {
+function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService, $http, $uibModal, $sce, growl, NzbDownloadService) {
 
     $scope.sortPredicate = "epoch";
     $scope.sortReversed = true;
@@ -702,15 +703,15 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     }
 
 
-    $scope.countFilteredOut = 0;
+    
     function sortAndFilter(results) {
-        
+        $scope.countFilteredOut = 0;
         function filterByAgeAndSize(item) {
             var filterOut = !(_.isNumber($stateParams.minsize) && item.size / 1024 / 1024 < $stateParams.minsize)
                 && !(_.isNumber($stateParams.maxsize) && item.size / 1024 / 1024 > $stateParams.maxsize)
                 && !(_.isNumber($stateParams.minage) && item.age_days < $stateParams.minage)
                 && !(_.isNumber($stateParams.maxage) && item.age_days > $stateParams.maxage);
-            if (filterOut) {
+            if (!filterOut) {
                 $scope.countFilteredOut++;
             }
             return filterOut;
@@ -828,21 +829,21 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         var guids = Object.keys($scope.selected);
 
         console.log(guids);
-        $http.put("internalapi/addnzbs", {guids: angular.toJson(guids)}).success(function (response) {
-            if (response.success) {
-                console.log("success");
-                growl.info("Successfully added " + response.added + " of " + response.of + " NZBs");
+        NzbDownloadService.download(guids).then(function (response) {
+            if (response.data.success) {
+                growl.info("Successfully added " + response.data.added + " of " + response.data.of + " NZBs");
             } else {
                 growl.error("Error while adding NZBs");
             }
-        }).error(function () {
+        }, function () {
             growl.error("Error while adding NZBs");
         });
+
     }
 
 
 }
-SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "SearchService", "$http", "$uibModal", "$sce", "growl"];
+SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "SearchService", "$http", "$uibModal", "$sce", "growl", "NzbDownloadService"];
 angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
@@ -1063,6 +1064,53 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
 
 }
+
+angular
+    .module('nzbhydraApp')
+    .factory('NzbDownloadService', NzbDownloadService);
+
+function NzbDownloadService($http, ConfigService, CategoriesService) {
+    
+    var service = {
+        download: download 
+    };
+    
+    return service;
+    
+
+
+    function sendNzbAddCommand(guids, category) {
+        console.log("Now add nzb with category " + category);        
+        return $http.put("internalapi/addnzbs", {guids: angular.toJson(guids), category: category});
+    }
+
+    function download (guids) {
+        return ConfigService.get().then(function (settings) {
+
+            var category;
+            if (settings.downloader.downloader == "nzbget") {
+                category = settings.downloader.nzbget.defaultCategory
+            } else {
+                category = settings.downloader.sabnzbd.defaultCategory
+            }
+
+            if (_.isUndefined(category) || category == "" || category == null) {
+                return CategoriesService.openCategorySelection().then(function (category) {
+                    return sendNzbAddCommand(guids, category)
+                });
+            } else {
+                return sendNzbAddCommand(guids, category)
+            }
+
+        });
+
+
+    }
+
+    
+}
+NzbDownloadService.$inject = ["$http", "ConfigService", "CategoriesService"];
+
 
 angular
     .module('nzbhydraApp')
@@ -1483,7 +1531,7 @@ angular
     }]);
 
 
-function ConfigController($scope, ConfigService, config) {
+function ConfigController($scope, ConfigService, config, CategoriesService) {
     $scope.config = config;
 
     $scope.submit = submit;
@@ -1491,8 +1539,8 @@ function ConfigController($scope, ConfigService, config) {
     function submit(form) {
         ConfigService.set($scope.config);
         form.$setPristine();
+        CategoriesService.invalidate();
     }
-    
     
     function getNewznabFieldset(index) {
         return {
@@ -2244,6 +2292,15 @@ function ConfigController($scope, ConfigService, config) {
                         }
                     },
                     {
+                        key: 'defaultCategory',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Default category',
+                            help: 'When adding NZBs this category will be used instead of asking for the category'
+                        }
+                    },
+                    {
                         type: 'horizontalTestConnection',
                         templateOptions: {
                             label: 'Test connection',
@@ -2308,6 +2365,15 @@ function ConfigController($scope, ConfigService, config) {
                         templateOptions: {
                             type: 'text',
                             label: 'API Key'
+                        }
+                    },
+                    {
+                        key: 'defaultCategory',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Default category',
+                            help: 'When adding NZBs this category will be used instead of asking for the category'
                         }
                     },
                     {
@@ -2474,10 +2540,88 @@ function ConfigController($scope, ConfigService, config) {
         return form.$dirty && !form.$submitted;
     }
 }
-ConfigController.$inject = ["$scope", "ConfigService", "config"];
+ConfigController.$inject = ["$scope", "ConfigService", "config", "CategoriesService"];
 
 
 
+angular
+    .module('nzbhydraApp')
+    .factory('CategoriesService', CategoriesService);
+
+function CategoriesService($http, $q, $uibModal) {
+
+    var categories;
+    var selectedCategory;
+    
+    var service = {
+        get: getCategories,
+        invalidate: invalidate,
+        select : select,
+        openCategorySelection: openCategorySelection 
+    };
+    
+    return service;
+    
+
+    function getCategories() {
+
+        function loadAll() {
+            if (!angular.isUndefined(categories)) {
+                var deferred = $q.defer();
+                deferred.resolve(categories);
+                return deferred.promise;
+            }
+
+            return $http.get('internalapi/getcategories')
+                .then(function (categoriesResponse) {
+                    console.log("Updating downloader categories cache");
+                    categories = categoriesResponse.data;
+                    return categoriesResponse.data;
+                });
+        }
+
+        return loadAll().then(function (categories) {
+            return categories.categories;
+        });
+    }
+
+    var deferred;
+    
+    function openCategorySelection() {
+        $uibModal.open({
+            templateUrl: 'static/html/directives/addable-nzb-modal.html',
+            controller: 'CategorySelectionController',
+            size: "sm",
+            resolve: {
+                categories: getCategories
+            }
+        });
+        deferred = $q.defer();
+        return deferred.promise;
+    }
+    
+    function select(category) {
+        selectedCategory = category;
+        console.log("Selected category " + category);
+        deferred.resolve(category);
+    }
+    
+    function invalidate() {
+        console.log("Invalidating categories");
+        categories = undefined;
+    }
+}
+CategoriesService.$inject = ["$http", "$q", "$uibModal"];
+
+angular
+    .module('nzbhydraApp').controller('CategorySelectionController', ["$scope", "$uibModalInstance", "CategoriesService", "categories", function ($scope, $uibModalInstance, CategoriesService, categories) {
+    console.log(categories);
+    $scope.categories = categories;
+    $scope.select = function (category) {
+        CategoriesService.select(category);
+        $uibModalInstance.close($scope);
+    }
+}]);
 angular
     .module('nzbhydraApp')
     .controller('AboutController', AboutController);
