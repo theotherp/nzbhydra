@@ -6,47 +6,49 @@ angular
 SearchController.$inject = ['$scope', '$http', '$stateParams', '$uibModal', '$sce', '$state', 'SearchService', 'focus', 'ConfigService', 'blockUI', 'growl'];
 function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, SearchService, focus, ConfigService, blockUI, growl) {
 
+    function getNumberOrUndefined(number) {
+        if (_.isUndefined(number) || _.isNaN(number) || number == "") {
+            return undefined;
+        }
+        number = parseInt(number);
+        if (_.isNumber(number)) {
+            return number;
+        } else {
+            return undefined;
+        }
+    }
+
     console.log("Start of search controller");
 
-
-    $scope.category = (typeof $stateParams.category === "undefined" || $stateParams.category == "") ? "All" : $stateParams.category;
-
-    $scope.query = (typeof $stateParams.query === "undefined") ? "" : $stateParams.query;
-
-    $scope.imdbid = (typeof $stateParams.imdbid === "undefined") ? "" : $stateParams.imdbid;
-    $scope.tvdbid = (typeof $stateParams.tvdbid === "undefined") ? "" : $stateParams.tvdbid;
-    $scope.rid = (typeof $stateParams.rid === "undefined") ? "" : $stateParams.rid;
-    $scope.title = (typeof $stateParams.title === "undefined") ? "" : $stateParams.title;
-    $scope.season = (typeof $stateParams.season === "undefined") ? "" : $stateParams.season;
-    $scope.episode = (typeof $stateParams.episode === "undefined") ? "" : $stateParams.episode;
-
-    $scope.minsize = (typeof $stateParams.minsize === "undefined") ? "" : $stateParams.minsize;
-    $scope.maxsize = (typeof $stateParams.maxsize === "undefined") ? "" : $stateParams.maxsize;
-    $scope.minage = (typeof $stateParams.minage === "undefined") ? "" : $stateParams.minage;
-    $scope.maxage = (typeof $stateParams.maxage === "undefined") ? "" : $stateParams.maxage;
-    $scope.selectedIndexers = (typeof $stateParams.indexers === "undefined") ? "" : $stateParams.indexers;
-
-    $scope.showIndexers = {};
-
-    var config;
-
-
+    //Fill the form with the search values we got from the state params (so that their values are the same as in the current url)
+    $scope.mode = $stateParams.mode;
+    $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? "All" : $stateParams.category;
+    $scope.imdbid = $stateParams.imdbid;
+    $scope.tvdbid = $stateParams.tvdbid;
+    $scope.rid = $stateParams.rid;
+    $scope.title = $stateParams.title;
+    $scope.season = $stateParams.season;
+    $scope.episode = $stateParams.episode;
+    $scope.query = $stateParams.query;
+    $scope.minsize = getNumberOrUndefined($stateParams.minsize);
+    $scope.maxsize = getNumberOrUndefined($stateParams.maxsize);
+    $scope.minage = getNumberOrUndefined($stateParams.minage);
+    $scope.maxage = getNumberOrUndefined($stateParams.maxage);
     if ($scope.title != "" && $scope.query == "") {
         $scope.query = $scope.title;
     }
 
+    $scope.showIndexers = {};
 
+    var config;
+    
+    
     $scope.typeAheadWait = 300;
     $scope.selectedItem = "";
     $scope.autocompleteLoading = false;
-
-
     $scope.isAskById = false; //If true a check box will be shown asking the user if he wants to search by ID 
     $scope.isById = {value: true}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
-
     $scope.availableIndexers = [];
-
-
     $scope.autocompleteClass = "autocompletePosterMovies";
 
     $scope.toggle = function (searchCategory) {
@@ -115,59 +117,61 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     $scope.startSearch = function () {
         blockUI.start("Searching...");
-        SearchService.search($scope.category, $scope.query, $scope.imdbid, $scope.title, $scope.rid, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, $scope.selectedIndexers).then(function (searchResult) {
-            $state.go("search.results", {"results": searchResult.results, "indexersearches": searchResult.indexersearches, total: searchResult.total, resultsCount: searchResult.resultsCount});
-            $scope.imdbid = "";
-            $scope.tvdbid = "";
+        SearchService.search($scope.category, $scope.query, $stateParams.imdbid, $scope.title, $stateParams.rid, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage).then(function (searchResult) {
+            $state.go("search.results", {
+                results: searchResult.results,
+                indexersearches: searchResult.indexersearches,
+                total: searchResult.total,
+                resultsCount: searchResult.resultsCount,
+                minsize: $scope.minsize,
+                maxsize: $scope.maxsize,
+                minage: $scope.minage,
+                maxage: $scope.maxage
+            }, {
+                inherit: true
+            });
+            $scope.imdbid = undefined;
+            $scope.tvdbid = undefined;
         });
     };
 
 
     $scope.goToSearchUrl = function () {
-        var state;
         var stateParams = {};
-        if ($scope.imdbid != "") {
+        if ($scope.category.indexOf("Movies") > -1) {
+            stateParams.mode = "moviesearch";
             stateParams.imdbid = $scope.imdbid;
             stateParams.title = $scope.title;
-
-
-        } else if ($scope.tvdbid != "" || $scope.rid != "") {
-            if ($scope.tvdbid != "") {
-                stateParams.tvdbid = $scope.tvdbid;
+            stateParams.mode = $scope.mode;
+        } else if ($scope.category.indexOf("TV") > -1) {
+            stateParams.mode = "tvsearch";
+            if (!_.isUndefined($scope.tvdbid)) {
+                $stateParams.tvdbid = $scope.tvdbid;
             }
             else {
                 stateParams.rid = $scope.rid;
             }
             stateParams.title = $scope.title;
 
-            if ($scope.season != "") {
+            if (!_.isUndefined($scope.season)) {
                 stateParams.season = $scope.season;
             }
-            if ($scope.episode != "") {
+            if (!_.isUndefined($scope.episode)) {
                 stateParams.episode = $scope.episode;
             }
         } else {
+            stateParams.mode = "search";
             stateParams.query = $scope.query;
         }
 
-        if ($scope.minsize != "") {
-            stateParams.minsize = $scope.minsize;
-        }
-        if ($scope.maxsize != "") {
-            stateParams.maxsize = $scope.maxsize;
-        }
-        if ($scope.minage != "") {
-            stateParams.minage = $scope.minage;
-        }
-        if ($scope.maxage != "") {
-            stateParams.maxage = $scope.maxage;
-        }
-
+        
+        stateParams.minsize = $scope.minsize;
+        stateParams.maxsize = $scope.maxsize;
+        stateParams.minage = $scope.minage;
+        stateParams.maxage = $scope.maxage;
         stateParams.category = $scope.category;
 
-        console.log("Going to search state with params...");
-        console.log(stateParams);
-        $state.go("search", stateParams, {inherit: false});
+        $state.go("search", stateParams, {inherit: false, notify: true});
     };
 
 
@@ -176,8 +180,10 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         $scope.title = $item.label;
         if ($scope.category.indexOf("Movies") > -1) {
             $scope.imdbid = $item.value;
+            $scope.mode = "moviesearch";
         } else if ($scope.category.indexOf("TV") > -1) {
             $scope.tvdbid = $item.value;
+            $scope.mode = "tvsearch";
         }
         $scope.query = "";
         $scope.goToSearchUrl();
@@ -195,7 +201,6 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     ConfigService.get().then(function (cfg) {
         config = cfg;
-
         $scope.availableIndexers = _.filter(cfg.indexers, function (indexer) {
             return indexer.enabled;
         }).map(function (indexer) {
@@ -204,12 +209,12 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         console.log($scope.availableIndexers);
     });
 
-//Resolve the search request from URL
-    if ($stateParams.mode != "landing") {
-        //(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage)
-        console.log("Came from search url, will start searching");
+
+    if ($scope.mode) {
+        console.log("Starting search in newly loaded search controller");
         $scope.startSearch();
     }
+    
 
 
 }

@@ -10,7 +10,7 @@ function SearchService($http) {
     var service = {search: search, loadMore: loadMore};
     return service;
 
-    function search(category, query, imdbid, title, rid, tvdbid, season, episode, minsize, maxsize, minage, maxage, selectedIndexers) {
+    function search(category, query, imdbid, title, rid, tvdbid, season, episode, minsize, maxsize, minage, maxage) {
         console.log("Category: " + category);
         var uri;
         if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
@@ -37,10 +37,10 @@ function SearchService($http) {
                 uri.addQuery("title", title);
             }
 
-            if (season != "") {
+            if (season) {
                 uri.addQuery("season", season);
             }
-            if (episode != "") {
+            if (episode) {
                 uri.addQuery("episode", episode);
             }
         } else {
@@ -49,16 +49,16 @@ function SearchService($http) {
             uri.addQuery("query", query);
         }
 
-        if (!_.isNullOrEmpty(minsize)) {
+        if (_.isNumber(minsize)) {
             uri.addQuery("minsize", minsize);
         }
-        if (!_.isNullOrEmpty(maxsize)) {
+        if (_.isNumber(maxsize)) {
             uri.addQuery("maxsize", maxsize);
         }
-        if (!_.isNullOrEmpty(minage)) {
+        if (_.isNumber(minage)) {
             uri.addQuery("minage", minage);
         }
-        if (!_.isNullOrEmpty(maxage)) {
+        if (_.isNumber(maxage)) {
             uri.addQuery("maxage", maxage);
         }
         
@@ -99,9 +99,3 @@ function SearchService($http) {
         return {"results": results, "indexersearches": indexersearches, "total": total, "resultsCount": resultsCount}
     }
 }
-
-_.mixin({
-    isNullOrEmpty: function (string) {
-        return (_.isUndefined(string) || _.isNull(string) || string.trim().length === 0)
-    }
-});

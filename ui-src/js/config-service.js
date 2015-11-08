@@ -34,7 +34,6 @@ function ConfigService($http, $q) {
             if (!angular.isUndefined(config)) {
                 var deferred = $q.defer();
                 deferred.resolve(config);
-                console.log("Returning config from cache");
                 return deferred.promise;
             }
 
@@ -44,9 +43,7 @@ function ConfigService($http, $q) {
                     config = configResponse.data;
                     return configResponse.data;
                 });
-
         }
-
 
         return loadAll().then(function (config) {
             return config;

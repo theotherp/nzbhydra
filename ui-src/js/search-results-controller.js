@@ -2,28 +2,22 @@ angular
     .module('nzbhydraApp')
     .controller('SearchResultsController', SearchResultsController);
 
-
 //SearchResultsController.$inject = ['blockUi'];
 function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService, $http, $uibModal, $sce, growl) {
 
     $scope.sortPredicate = "epoch";
     $scope.sortReversed = true;
-
     $scope.limitTo = 100;
     $scope.offset = 0;
-
     //Handle incoming data
     $scope.indexersearches = $stateParams.indexersearches;
-
     $scope.indexerDisplayState = []; //Stores if a indexer's results should be displayed or not
-
     $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
-
     $scope.groupExpanded = {};
-
     $scope.doShowDuplicates = false;
-
     $scope.selected = {};
+    
+    $scope.countFilteredOut = 0;
 
     //Initially set visibility of all found indexers to true, they're needed for initial filtering / sorting
     _.forEach($scope.indexersearches, function (ps) {
@@ -82,8 +76,21 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     }
 
 
+    $scope.countFilteredOut = 0;
     function sortAndFilter(results) {
-
+        
+        function filterByAgeAndSize(item) {
+            var filterOut = !(_.isNumber($stateParams.minsize) && item.size / 1024 / 1024 < $stateParams.minsize)
+                && !(_.isNumber($stateParams.maxsize) && item.size / 1024 / 1024 > $stateParams.maxsize)
+                && !(_.isNumber($stateParams.minage) && item.age_days < $stateParams.minage)
+                && !(_.isNumber($stateParams.maxage) && item.age_days > $stateParams.maxage);
+            if (filterOut) {
+                $scope.countFilteredOut++;
+            }
+            return filterOut;
+        }
+        
+        
         function getItemIndexerDisplayState(item) {
             return $scope.indexerDisplayState[item.indexer];
         }
@@ -93,12 +100,12 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         }
 
         function createSortedHashgroups(titleGroup) {
-            
+
             function createHashGroup(hashGroup) {
                 //Sorting hash group's contents should not matter for size and age and title but might for category (we might remove this, it's probably mostly unnecessary)
                 var sortedHashGroup = _.sortBy(hashGroup, function (item) {
                     var sortPredicateValue = item[$scope.sortPredicate];
-                    return $scope.sortReversed ?  -sortPredicateValue : sortPredicateValue;
+                    return $scope.sortReversed ? -sortPredicateValue : sortPredicateValue;
                 });
                 //Now sort the hash group by indexer score (inverted) so that the result with the highest indexer score is shown on top (or as the only one of a hash group if it's collapsed)
                 sortedHashGroup = _.sortBy(sortedHashGroup, function (item) {
@@ -106,23 +113,25 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
                 });
                 return sortedHashGroup;
             }
-            
+
             function getHashGroupFirstElementSortPredicate(hashGroup) {
                 var sortPredicateValue = hashGroup[0][$scope.sortPredicate];
-                return $scope.sortReversed ?  -sortPredicateValue : sortPredicateValue;
+                return $scope.sortReversed ? -sortPredicateValue : sortPredicateValue;
             }
-            
+
             return _.chain(titleGroup).groupBy("hash").map(createHashGroup).sortBy(getHashGroupFirstElementSortPredicate).value();
         }
 
         function getTitleGroupFirstElementsSortPredicate(titleGroup) {
             var sortPredicateValue = titleGroup[0][0][$scope.sortPredicate];
-            return $scope.sortReversed ?  -sortPredicateValue : sortPredicateValue;
+            return $scope.sortReversed ? -sortPredicateValue : sortPredicateValue;
         }
 
-        return _.chain(results)
+        var filtered = _.chain(results)
             //Remove elements of which the indexer is currently hidden    
             .filter(getItemIndexerDisplayState)
+            //and which were not filtered by the indexers (because they don't support queries with min/max size/age)
+            .filter(filterByAgeAndSize)
             //Make groups of results with the same title    
             .groupBy(getTitleLowerCase)
             //For every title group make subgroups of duplicates and sort the group    
@@ -130,6 +139,10 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
             //And then sort the title group using its first hashgroup's first item (the group itself is already sorted and so are the hash groups)    
             .sortBy(getTitleGroupFirstElementsSortPredicate)
             .value();
+        if ($scope.countFilteredOut > 0) {
+            growl.info("Filtered " + $scope.countFilteredOut + " of the retrieved results");
+        }
+        return filtered;
 
     }
 

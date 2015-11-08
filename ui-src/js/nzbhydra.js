@@ -10,19 +10,12 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         .state("home", {
             url: "/",
             templateUrl: "static/html/states/search.html",
-            controller: "SearchController",
-            params: {
-                mode: "landing"
-            }
+            controller: "SearchController"
         })
         .state("search", {
-            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid",
+            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode",
             templateUrl: "static/html/states/search.html",
-            controller: "SearchController",
-            params: {
-                "category": "All",
-                mode: "search"
-            }
+            controller: "SearchController"
         })
         .state("search.results", {
             templateUrl: "static/html/states/search-results.html",
@@ -36,7 +29,10 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                 indexersearches: [],
                 total: 0,
                 resultsCount: 0,
-                mode: "results"
+                minsize: undefined,
+                maxsize: undefined,
+                minage: undefined,
+                maxage: undefined
             }
         })
         .state("config", {
@@ -137,6 +133,6 @@ nzbhydraapp.factory('focus', function ($rootScope, $timeout) {
 
 _.mixin({
     isNullOrEmpty: function (string) {
-        return (_.isUndefined(string) || _.isNull(string) || string.trim().length === 0)
+        return (_.isUndefined(string) || _.isNull(string) || (_.isString(string) && string.length === 0))
     }
 });
