@@ -28,7 +28,7 @@ class SensitiveDataFilter(logging.Filter):
         
         msg = record.msg
         for sensitive_string in sensitive_strings:
-            if sensitive_string is not None and sensitive_string != "":
+            if sensitive_string is not None and sensitive_string != "" and isinstance(msg, str):
                 msg = msg.replace(sensitive_string, "<XXX>")
         
         record.msg = msg

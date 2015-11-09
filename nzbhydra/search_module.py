@@ -6,12 +6,14 @@ from __future__ import unicode_literals
 from builtins import str
 from future import standard_library
 
+
 standard_library.install_aliases()
 from builtins import *
 import logging
 import collections
 import arrow
 import requests
+from peewee import fn
 from requests import RequestException
 from nzbhydra import config
 from nzbhydra.config import searchingSettings
@@ -43,7 +45,7 @@ class SearchModule(object):
 
     @property
     def indexer(self):
-        return Indexer.get(Indexer.name == self.settings.name.get())
+        return Indexer.get(fn.lower(Indexer.name) == self.settings.name.get().lower())
 
     @property
     def host(self):

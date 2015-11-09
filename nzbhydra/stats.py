@@ -13,10 +13,6 @@ from nzbhydra.database import Indexer, IndexerApiAccess, IndexerNzbDownload, Ind
 
 def get_indexer_response_times():
     result = []
-
-    # //$scope.data = [{
-    # //    key: "v", values: [{x: 1, y: 102}
-    # //    ]
     for p in Indexer.select():
         print("Limiting stats to 100 for testing only!")
         result.append({"key": p.name,

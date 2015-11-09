@@ -6,6 +6,8 @@ from builtins import range
 from builtins import str
 from builtins import *
 from future import standard_library
+from peewee import fn
+
 standard_library.install_aliases()
 from collections import namedtuple
 from itertools import groupby
@@ -273,7 +275,7 @@ def get_nzb_link(indexer_name, guid, title, searchid):
             link = p.get_nzb_link(guid, title)
 
             # Log to database
-            indexer = Indexer.get(Indexer.name == indexer_name)
+            indexer = Indexer.get(fn.lower(Indexer.name) == indexer_name.lower())
             papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, response_successful=None, indexer_search=indexer)
             papiaccess.save()
             pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode="redirect")
@@ -303,7 +305,7 @@ def download_nzb_and_log(indexer_name, provider_guid, title, searchid):
         if p.name == indexer_name:
 
             link = p.get_nzb_link(provider_guid, title)
-            indexer = Indexer.get(Indexer.name == indexer_name)
+            indexer = Indexer.get(fn.lower(Indexer.name) == indexer_name.lower())
             psearch = IndexerSearch.get((IndexerSearch.indexer == indexer) & (IndexerSearch.search == searchid))
             papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, indexer_search=psearch)
             papiaccess.save()

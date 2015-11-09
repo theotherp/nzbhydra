@@ -466,7 +466,7 @@ class IndexerBinsearchSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
         super(IndexerBinsearchSettings, self).__init__(parent, "Binsearch", "Binsearch")
         self.host = Setting(self, name="host", default="https://binsearch.info", valuetype=str)
-        self.name = Setting(self, name="name", default="binsearch", valuetype=str)
+        self.name = Setting(self, name="name", default="Binsearch", valuetype=str)
 
 
 class IndexerNewznabSettings(IndexerSettingsAbstract):
@@ -483,14 +483,14 @@ class IndexerNzbclubSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
         super(IndexerNzbclubSettings, self).__init__(parent, "NZBClub", "NZBClub")
         self.host = Setting(self, name="host", default="http://nzbclub.com", valuetype=str)
-        self.name = Setting(self, name="name", default="nzbclub", valuetype=str)
+        self.name = Setting(self, name="name", default="NZBClub", valuetype=str)
 
 
 class IndexerNzbindexSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
         super(IndexerNzbindexSettings, self).__init__(parent, "NZBIndex", "NZBIndex")
         self.host = Setting(self, name="host", default="https://nzbindex.com", valuetype=str)
-        self.name = Setting(self, name="name", default="nzbindex", valuetype=str)
+        self.name = Setting(self, name="name", default="NZBIndex", valuetype=str)
         self.general_min_size = Setting(self, name="generalMinSize", default=1, valuetype=int)
 
 
@@ -498,7 +498,7 @@ class IndexerWombleSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
         super(IndexerWombleSettings, self).__init__(parent, "Womble", "Womble")
         self.host = Setting(self, name="host", default="https://newshost.co.za", valuetype=str)
-        self.name = Setting(self, name="name", default="womble", valuetype=str)
+        self.name = Setting(self, name="name", default="Womble", valuetype=str)
 
 
 class IndexerSettings(Category):
@@ -517,12 +517,6 @@ class IndexerSettings(Category):
 
 
 indexerSettings = IndexerSettings()
-
-
-class IndexerNewznab1Settings(IndexerNewznabSettings):
-    def __init__(self):
-        self._path = "indexers.newznab1"
-        super(IndexerNewznab1Settings, self).__init__("Newznab 1", "", "")
 
 
 def get_newznab_setting_by_id(id):

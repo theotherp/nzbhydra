@@ -9,7 +9,7 @@ NZBHydra is a meta search for NZB indexers and the "spiritual successor" to [NZB
 * Grouping of results with the same title and of duplicate results, accounting for result posting time, size, group and poster. By default only one of the duplicates is shown. You can provide an indexer score to influence which one that might be.
 * Mostly compatible with newznab search API (tested with Sonarr, CP and NZB 360).
 * Either proxy the NZBs from the indexers (keeping all X-NZB headers), redirect or use direct links in search results
-* Included options to add results (single or a bunch) to SABnzbd or NZBGet and show NFOs where available. Option to decide if links are added as links or the NZBs are uploaded)
+* Included function to add results (single or a bunch) to SABnzbd or NZBGet(v13+) and show NFOs where available. Option to decide if links are added as links or the NZBs are uploaded. Select category in GUI or define a default.
 * Statistics on indexers (average response time, share of results, access errors), NZB download history and search history (both via internal GUI and API). Indexers with problems are paused for an increasing time span (like in sonarr)
 * Reverse proxy compatible without further configuration (tested with Apache) as long as the host is preserved
 * A GUI that looks like ass

@@ -10,13 +10,13 @@ function SearchService($http) {
     var service = {search: search, loadMore: loadMore};
     return service;
 
-    function search(category, query, imdbid, title, rid, tvdbid, season, episode, minsize, maxsize, minage, maxage) {
+    function search(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage) {
         console.log("Category: " + category);
         var uri;
         if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
             console.log("Search for movies");
             uri = new URI("internalapi/moviesearch");
-            if (imdbid) {
+            if (!_.isUndefined(imdbid)) {
                 console.log("moviesearch per imdbid");
                 uri.addQuery("imdbid", imdbid);
                 uri.addQuery("title", title);
@@ -28,19 +28,18 @@ function SearchService($http) {
         } else if (category.indexOf("TV") > -1 || (category.indexOf("50") == 0)) {
             console.log("Search for shows");
             uri = new URI("internalapi/tvsearch");
-            if (tvdbid) {
+            if (!_.isUndefined(tvdbid)) {
                 uri.addQuery("tvdbid", tvdbid);
                 uri.addQuery("title", title);
-            }
-            if (rid) {
-                uri.addQuery("rid", rid);
-                uri.addQuery("title", title);
+            } else {
+                console.log("tvsearch per query");
+                uri.addQuery("query", query);
             }
 
-            if (season) {
+            if (!_.isUndefined(season)) {
                 uri.addQuery("season", season);
             }
-            if (episode) {
+            if (!_.isUndefined(episode)) {
                 uri.addQuery("episode", episode);
             }
         } else {

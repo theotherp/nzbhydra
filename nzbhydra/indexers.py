@@ -4,6 +4,9 @@ from __future__ import division
 from __future__ import absolute_import
 from builtins import range
 from future import standard_library
+
+from peewee import fn
+
 standard_library.install_aliases()
 from builtins import *
 import logging
@@ -11,17 +14,15 @@ from nzbhydra import config, database
 from nzbhydra.database import Indexer
 from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch
 
+logger = logging.getLogger('root')
 
-# TODO: I would like to use plugins for this but couldn't get this to work with pluginbase. Realistically there won't be any plugins anyway... At least none written by me which need code change
-search_modules = {"newznab": newznab, "womble": womble, "nzbclub": nzbclub, "nzbindex": nzbindex, "binsearch": binsearch}
 configured_indexers = []
 
-logger = logging.getLogger('root')
 
 
 def init_indexer_table_entry(indexer_name):
     try:
-        Indexer.get(Indexer.name == indexer_name)
+        Indexer.get(fn.lower(Indexer.name) == indexer_name.lower())
     except Indexer.DoesNotExist as e:
         logger.info("Unable to find indexer with name %s in database. Will add it" % indexer_name)
         Indexer().create(name=indexer_name)

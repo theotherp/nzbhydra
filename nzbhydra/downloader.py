@@ -52,8 +52,10 @@ class Nzbget(Downloader):
 
         try:
             if rpc.writelog('INFO', 'NZB Hydra connected to test connection'):
-                # version = rpc.version()
-                # todo: show error if version older than 13
+                version = rpc.version()
+                #todo: show error if version older than 13
+                if int(version[:2]) < 13:
+                    return False, "NZBGet needs to be version 13 or higher"
                 self.logger.debug('Successfully connected to NZBGet')
             else:
                 self.logger.info('Successfully connected to NZBGet, but unable to send a message')

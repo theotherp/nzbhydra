@@ -2,12 +2,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
-from builtins import dict
-from builtins import str
-from builtins import int
-from builtins import *
-from future import standard_library
-standard_library.install_aliases()
 import json
 import logging
 import os
@@ -15,6 +9,15 @@ import ssl
 import sys
 import threading
 import urllib
+from builtins import dict
+from builtins import str
+from builtins import int
+from builtins import *
+from future import standard_library
+
+from peewee import fn
+
+standard_library.install_aliases()
 from functools import wraps
 from pprint import pprint
 from time import sleep
@@ -108,9 +111,12 @@ def disable_caching(response):
 
 
 @app.errorhandler(Exception)
-def all_exception_handler(error):
-    logger.error(str(error))
-    return str(error), 500
+def all_exception_handler(exception):
+    logger.exception(exception)
+    try:
+        return exception.message, 500
+    except:
+        return "Unknwon error", 500
 
 
 @app.errorhandler(422)
@@ -128,14 +134,10 @@ def handle_bad_request(err):
 
 
 def check_auth(username, password):
-    """This function is called to check if a username /
-    password combination is valid.
-    """
     return username == config.get(mainSettings.username) and password == config.get(mainSettings.password)
 
 
 def authenticate():
-    """Sends a 401 response that enables basic auth"""
     return Response(
         'Could not verify your access level for that URL. You have to login with proper credentials', 401,
         {'WWW-Authenticate': 'Basic realm="Login Required"'})
@@ -563,7 +565,7 @@ internalapi__enableindexer_args = {
 @use_args(internalapi__enableindexer_args)
 def internalapi_enable_indexer(args):
     logger.debug("Enabling indexer %s" % args["name"])
-    indexer_status = IndexerStatus().select().join(Indexer).where(Indexer.name == args["name"]).get()
+    indexer_status = IndexerStatus().select().join(Indexer).where(fn.lower(Indexer.name) == args["name"].lower()).get()
     indexer_status.disabled_until = None
     indexer_status.save()
     return jsonify({"indexerStatuses": get_indexer_statuses()})
@@ -656,6 +658,8 @@ def development_staticindex():
 def run(host, port):
     context = create_context()
     configure_cache()
+    for handler in logger.handlers:
+        app.logger.addHandler(handler)
     app.run(host=host, port=port, debug=config.mainSettings.debug.get(), ssl_context=context)
 
 

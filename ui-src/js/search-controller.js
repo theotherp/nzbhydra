@@ -34,19 +34,19 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     $scope.maxsize = getNumberOrUndefined($stateParams.maxsize);
     $scope.minage = getNumberOrUndefined($stateParams.minage);
     $scope.maxage = getNumberOrUndefined($stateParams.maxage);
-    if ($scope.title != "" && $scope.query == "") {
+    if (!_.isUndefined($scope.title) && _.isUndefined($scope.query)) {
         $scope.query = $scope.title;
     }
 
     $scope.showIndexers = {};
 
     var config;
-    
-    
+
+
     $scope.typeAheadWait = 300;
     $scope.selectedItem = "";
     $scope.autocompleteLoading = false;
-    $scope.isAskById = false; //If true a check box will be shown asking the user if he wants to search by ID 
+    $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 ); //If true a check box will be shown asking the user if he wants to search by ID 
     $scope.isById = {value: true}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
     $scope.availableIndexers = [];
     $scope.autocompleteClass = "autocompletePosterMovies";
@@ -117,7 +117,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     $scope.startSearch = function () {
         blockUI.start("Searching...");
-        SearchService.search($scope.category, $scope.query, $stateParams.imdbid, $scope.title, $stateParams.rid, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage).then(function (searchResult) {
+        SearchService.search($scope.category, $scope.query, $stateParams.imdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage).then(function (searchResult) {
             $state.go("search.results", {
                 results: searchResult.results,
                 indexersearches: searchResult.indexersearches,
@@ -140,31 +140,27 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         var stateParams = {};
         if ($scope.category.indexOf("Movies") > -1) {
             stateParams.mode = "moviesearch";
-            stateParams.imdbid = $scope.imdbid;
             stateParams.title = $scope.title;
-            stateParams.mode = $scope.mode;
+            stateParams.mode = "moviesearch";
         } else if ($scope.category.indexOf("TV") > -1) {
             stateParams.mode = "tvsearch";
             if (!_.isUndefined($scope.tvdbid)) {
-                stateParams.tvdbid = $scope.tvdbid;
             }
-            else {
-                stateParams.rid = $scope.rid;
-            }
-            stateParams.title = $scope.title;
 
             if (!_.isUndefined($scope.season)) {
-                stateParams.season = $scope.season;
             }
             if (!_.isUndefined($scope.episode)) {
-                stateParams.episode = $scope.episode;
             }
         } else {
             stateParams.mode = "search";
-            stateParams.query = $scope.query;
         }
-
         
+        stateParams.imdbid = $scope.imdbid;
+        stateParams.tvdbid = $scope.tvdbid;
+        stateParams.title = $scope.title;
+        stateParams.season = $scope.season;
+        stateParams.episode = $scope.episode;
+        stateParams.query = $scope.query;
         stateParams.minsize = $scope.minsize;
         stateParams.maxsize = $scope.maxsize;
         stateParams.minage = $scope.minage;
@@ -180,12 +176,18 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         $scope.title = $item.label;
         if ($scope.category.indexOf("Movies") > -1) {
             $scope.imdbid = $item.value;
-            $scope.mode = "moviesearch";
         } else if ($scope.category.indexOf("TV") > -1) {
             $scope.tvdbid = $item.value;
-            $scope.mode = "tvsearch";
         }
         $scope.query = "";
+        $scope.goToSearchUrl();
+    };
+    
+    $scope.startQuerySearch = function() {
+        //Reset values because they might've been set from the last search
+        $scope.title = undefined;
+        $scope.imdbid = undefined;
+        $scope.tvdbid = undefined;
         $scope.goToSearchUrl();
     };
 
@@ -214,7 +216,6 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         console.log("Starting search in newly loaded search controller");
         $scope.startSearch();
     }
-    
 
 
 }
