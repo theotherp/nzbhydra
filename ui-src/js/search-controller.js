@@ -146,7 +146,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         } else if ($scope.category.indexOf("TV") > -1) {
             stateParams.mode = "tvsearch";
             if (!_.isUndefined($scope.tvdbid)) {
-                $stateParams.tvdbid = $scope.tvdbid;
+                stateParams.tvdbid = $scope.tvdbid;
             }
             else {
                 stateParams.rid = $scope.rid;
