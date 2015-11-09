@@ -113,6 +113,20 @@ def all_exception_handler(error):
     return str(error), 500
 
 
+@app.errorhandler(422)
+def handle_bad_request(err):
+    # webargs attaches additional metadata to the `data` attribute
+    data = getattr(err, 'data')
+    if data:
+        # Get validations from the ValidationError object
+        messages = data['exc'].messages
+    else:
+        messages = ['Invalid request']
+    return jsonify({
+        'messages': messages,
+    }), 422
+
+
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
