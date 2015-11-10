@@ -420,7 +420,7 @@ class SabnzbdSettings(Category):
     def __init__(self):
         super(SabnzbdSettings, self).__init__(downloaderSettings, "sabnzbd", "SabNZBD")
         self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str)
-        self.port = Setting(self, name="port", default=8086, valuetype=int)
+        self.port = Setting(self, name="port", default=8080, valuetype=int)
         self.ssl = Setting(self, name="ssl", default=False, valuetype=bool)
         self.apikey = Setting(self, name="apikey", default=None, valuetype=str)
         self.username = Setting(self, name="username", default=None, valuetype=str)

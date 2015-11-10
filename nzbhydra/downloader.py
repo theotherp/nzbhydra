@@ -7,6 +7,8 @@ from builtins import *
 from builtins import str
 from future import standard_library
 
+from nzbhydra.exceptions import DownloaderException
+
 standard_library.install_aliases()
 import base64
 import json
@@ -141,20 +143,24 @@ class Nzbget(Downloader):
 class Sabnzbd(Downloader):
     logger = logging.getLogger('root')
 
-    def get_sab(self):
+    def get_sab(self, host=sabnzbdSettings.host.get(), port=sabnzbdSettings.port.get(), scheme=sabnzbdSettings.ssl.get(), apikey=sabnzbdSettings.apikey.get(), username=sabnzbdSettings.username.get(), password=sabnzbdSettings.password.get()):
         f = furl()
-        if sabnzbdSettings.apikey.get():
-            f.add({"apikey": sabnzbdSettings.apikey.get()})
-        f.scheme = "https" if sabnzbdSettings.ssl.get() else "http"
-        f.host = sabnzbdSettings.host.get()
-        f.port = sabnzbdSettings.port.get()
+        if apikey:
+            f.add({"apikey": apikey})
+        elif username and password:
+            pass
+        else:
+            raise DownloaderException("Neither API key nor username/password provided")
+        f.scheme = "https" if scheme else "http"
+        f.host = host
+        f.port = port
         f.path.add("api")
         f.add({"output": "json"})
 
         return f
 
     def test(self, host, ssl=False, port=None, username=None, password=None, apikey=None):
-        f = self.get_sab(host, ssl, port, username, password, apikey)
+        f = self.get_sab(host, port, ssl, apikey, username, password)
         f.add({"mode": "qstatus"})
         try:
             r = requests.get(f.tostr(), verify=False)

@@ -1,23 +1,25 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from builtins import super
 from future import standard_library
+
 standard_library.install_aliases()
 from builtins import *
+
+
 class NzbHydraException(Exception):
     def __init__(self, message=None, exception=None):
         super(NzbHydraException, self).__init__(message)
-        
+
 
 class ExternalApiInfoException(NzbHydraException):
-    
     # An error occurred while contacting an external info API (tvdaze, omdbapi, etc) or parsing its returned data
     def __init__(self, message):
         super(NzbHydraException, self).__init__(message)
         self.message = message
-        
 
 
 class IndexerIllegalSearchException(NzbHydraException):
@@ -58,4 +60,9 @@ class IndexerResultParsingException(NzbHydraException):
         super(NzbHydraException, self).__init__(message)
         self.message = message
         self.search_module = search_module
-        
+
+
+class DownloaderException(NzbHydraException):
+    def __init__(self, message):
+        super(NzbHydraException, self).__init__(message)
+        self.message = message
