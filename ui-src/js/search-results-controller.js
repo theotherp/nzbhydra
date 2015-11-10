@@ -27,6 +27,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     _.forEach($scope.indexersearches, function (ps) {
         $scope.indexerResultsInfo[ps.indexer] = {loadedResults: ps.loaded_results};
     });
+    
 
     //Process results
     $scope.results = $stateParams.results;

@@ -122,9 +122,7 @@ _import_symbols('SSL_ERROR_')
 _import_symbols('PROTOCOL_')
 _import_symbols('VERIFY_')
 
-from _ssl import HAS_SNI, HAS_ECDH, HAS_NPN, HAS_ALPN
 
-from _ssl import _OPENSSL_API_VERSION
 
 _PROTOCOL_NAMES = {value: name for name, value in globals().items() if name.startswith('PROTOCOL_')}
 

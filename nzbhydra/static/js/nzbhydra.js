@@ -653,6 +653,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     _.forEach($scope.indexersearches, function (ps) {
         $scope.indexerResultsInfo[ps.indexer] = {loadedResults: ps.loaded_results};
     });
+    
 
     //Process results
     $scope.results = $stateParams.results;
@@ -2348,7 +2349,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         type: 'horizontalInput',
                         templateOptions: {
                             type: 'text',
-                            label: 'Username'
+                            label: 'Username',
+                            help: 'Usually not needed when an API key is used'
                         }
                     },
                     {
@@ -2356,7 +2358,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         type: 'horizontalInput',
                         templateOptions: {
                             type: 'password',
-                            label: 'Password'
+                            label: 'Password',
+                            help: 'Usually not needed when an API key is used'
                         }
                     },
                     {
