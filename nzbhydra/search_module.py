@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import time
 from builtins import str
 from future import standard_library
 
@@ -186,9 +187,11 @@ class SearchModule(object):
         papiaccess = IndexerApiAccess(indexer=self.indexer, type=type, url=url, time=arrow.utcnow().datetime)
 
         try:
+            time_before = arrow.utcnow()
             response = self.get(url, cookies=cookies, timeout=timeout)
             response.raise_for_status()
-            papiaccess.response_time = response.elapsed.microseconds / 1000
+            time_after = arrow.utcnow()
+            papiaccess.response_time = (time_after - time_before).seconds * 1000 + ((time_after - time_before).microseconds / 1000)
             papiaccess.response_successful = True
             self.handle_indexer_success()
         except RequestException as e:

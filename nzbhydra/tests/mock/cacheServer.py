@@ -115,4 +115,4 @@ def handle_request(argsitems, baseurl, cookies=None, doredirect=False):
 
 
 if __name__ == '__main__':
-    app.run(port=5001, debug=True, host="192.168.1.103")
+    app.run(port=5001, debug=True, host="0.0.0.0")

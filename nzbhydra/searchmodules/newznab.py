@@ -183,15 +183,6 @@ class NewzNab(SearchModule):
         except Exception:
             logger.exception("Error parsing XML: %s..." % xml_response[:500])
             raise IndexerResultParsingException("Error parsing XML", self)
-        response_total_offset = tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"})
-        if response_total_offset is None:
-            logger.warn("Indexer returned a result page without total and offset. We'll ignore this for know but it might be an error")
-            return IndexerProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False)
-        total = int(response_total_offset.attrib["total"])
-        offset = int(response_total_offset.attrib["offset"])
-        if total == 0:
-            logger.info("Query at %s returned no results" % self)
-            return IndexerProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False)
         for item in tree.find("channel").findall("item"):
             entry = self.create_nzb_search_result()
             entry.title = item.find("title").text
@@ -211,7 +202,7 @@ class NewzNab(SearchModule):
             if entry.details_link is not None and "#comments" in entry.details_link:
                 entry.details_link = entry.details_link[:-9]
             description = item.find("description").text
-            if "Group:" in description:  # DogNZB has the group in its description
+            if description is not None and "Group:" in description:  # DogNZB has the group in its description
                 m = grouppattern.search(description)
                 if m:
                     entry.group = m.group(1)
@@ -245,6 +236,18 @@ class NewzNab(SearchModule):
                             break
 
             entries.append(entry)
+
+        response_total_offset = tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"})
+        if response_total_offset is None:
+            logger.warn("Indexer returned a result page without total results and offset. Shame! *rings bell*")
+            offset = 0
+            total = len(entries)
+        else:
+            total = int(response_total_offset.attrib["total"])
+            offset = int(response_total_offset.attrib["offset"])
+        if total == 0 or len(entries) == 0:
+            logger.info("Query at %s returned no results" % self)
+            return IndexerProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False)
 
         return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total)
 
