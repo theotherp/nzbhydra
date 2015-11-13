@@ -10,15 +10,15 @@ function SearchService($http) {
     var service = {search: search, loadMore: loadMore};
     return service;
 
-    function search(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage) {
+    function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage) {
         console.log("Category: " + category);
         var uri;
         if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
             console.log("Search for movies");
             uri = new URI("internalapi/moviesearch");
-            if (!_.isUndefined(imdbid)) {
-                console.log("moviesearch per imdbid");
-                uri.addQuery("imdbid", imdbid);
+            if (!_.isUndefined(tmdbid)) {
+                console.log("moviesearch per tmdbid");
+                uri.addQuery("tmdbid", tmdbid);
                 uri.addQuery("title", title);
             } else {
                 console.log("moviesearch per query");

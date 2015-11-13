@@ -307,6 +307,7 @@ internalapi_moviesearch_args = {
     "category": fields.String(missing=None),
     "title": fields.String(missing=None),
     "imdbid": fields.String(missing=None),
+    "tmdbid": fields.String(missing=None),
     "offset": fields.Integer(missing=0),
 
     "minsize": fields.Integer(missing=None),
@@ -325,6 +326,12 @@ def internalapi_moviesearch(args):
     if args["imdbid"]:
         search_request.identifier_key = "imdbid"
         search_request.identifier_value = args["imdbid"]
+    elif args["tmdbid"]:
+        logger.debug("Need to get IMDB id from TMDB id %s" % args["tmdbid"])
+        imdbid = infos.get_imdbid_from_tmdbid(args["tmdbid"])
+        search_request.identifier_key = "imdbid"
+        search_request.identifier_value = imdbid
+
     results = search.search(True, search_request)
     return process_and_jsonify_for_internalapi(results)
 
@@ -665,11 +672,11 @@ def run(host, port):
 
 def configure_cache():
     if mainSettings.cache_enabled.get():
-        if mainSettings.cache_type == CacheTypeSelection.memory:
+        if mainSettings.cache_type.get() == CacheTypeSelection.memory.name:
             logger.info("Using memory based cache")
             cache_type = "simple"
         else:
-            logger.info("Using file based cache with folder %s" % mainSettings.cache_folder)
+            logger.info("Using file based cache with folder %s" % mainSettings.cache_folder.get())
             cache_type = "filesystem"
     else:
         logger.info("Not using any caching")

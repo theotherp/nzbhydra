@@ -13,7 +13,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
             controller: "SearchController"
         })
         .state("search", {
-            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode",
+            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid",
             templateUrl: "static/html/states/search.html",
             controller: "SearchController"
         })
@@ -535,15 +535,15 @@ function SearchService($http) {
     var service = {search: search, loadMore: loadMore};
     return service;
 
-    function search(category, query, imdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage) {
+    function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage) {
         console.log("Category: " + category);
         var uri;
         if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
             console.log("Search for movies");
             uri = new URI("internalapi/moviesearch");
-            if (!_.isUndefined(imdbid)) {
-                console.log("moviesearch per imdbid");
-                uri.addQuery("imdbid", imdbid);
+            if (!_.isUndefined(tmdbid)) {
+                console.log("moviesearch per tmdbid");
+                uri.addQuery("tmdbid", tmdbid);
                 uri.addQuery("title", title);
             } else {
                 console.log("moviesearch per query");
@@ -869,7 +869,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     //Fill the form with the search values we got from the state params (so that their values are the same as in the current url)
     $scope.mode = $stateParams.mode;
     $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? "All" : $stateParams.category;
-    $scope.imdbid = $stateParams.imdbid;
+    $scope.tmdbid = $stateParams.tmdbid;
     $scope.tvdbid = $stateParams.tvdbid;
     $scope.rid = $stateParams.rid;
     $scope.title = $stateParams.title;
@@ -961,9 +961,10 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         }
     };
 
+
     $scope.startSearch = function () {
         blockUI.start("Searching...");
-        SearchService.search($scope.category, $scope.query, $stateParams.imdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage).then(function (searchResult) {
+        SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage).then(function (searchResult) {
             $state.go("search.results", {
                 results: searchResult.results,
                 indexersearches: searchResult.indexersearches,
@@ -976,7 +977,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             }, {
                 inherit: true
             });
-            $scope.imdbid = undefined;
+            $scope.tmdbid = undefined;
             $scope.tvdbid = undefined;
         });
     };
@@ -1001,7 +1002,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             stateParams.mode = "search";
         }
         
-        stateParams.imdbid = $scope.imdbid;
+        stateParams.tmdbid = $scope.tmdbid;
         stateParams.tvdbid = $scope.tvdbid;
         stateParams.title = $scope.title;
         stateParams.season = $scope.season;
@@ -1021,7 +1022,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         $scope.selectedItem = $item;
         $scope.title = $item.label;
         if ($scope.category.indexOf("Movies") > -1) {
-            $scope.imdbid = $item.value;
+            $scope.tmdbid = $item.value;
         } else if ($scope.category.indexOf("TV") > -1) {
             $scope.tvdbid = $item.value;
         }
@@ -1032,7 +1033,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     $scope.startQuerySearch = function() {
         //Reset values because they might've been set from the last search
         $scope.title = undefined;
-        $scope.imdbid = undefined;
+        $scope.tmdbid = undefined;
         $scope.tvdbid = undefined;
         $scope.goToSearchUrl();
     };

@@ -174,7 +174,6 @@ class NewzNab(SearchModule):
         logger.debug("%s started processing results" % self.name)
 
         entries = []
-        queries = []
         grouppattern = re.compile(r"Group:</b> ?([\w\.]+)<br ?/>")
         guidpattern = re.compile(r"(.*/)?([a-zA-Z0-9]+)")
 
@@ -185,6 +184,7 @@ class NewzNab(SearchModule):
             raise IndexerResultParsingException("Error parsing XML", self)
         for item in tree.find("channel").findall("item"):
             entry = self.create_nzb_search_result()
+            #These are the values that absolutely must be contained in the response
             entry.title = item.find("title").text
             entry.link = item.find("link").text
             entry.pubDate = item.find("pubDate").text

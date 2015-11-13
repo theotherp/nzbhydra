@@ -1,31 +1,47 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from future import standard_library
+
 standard_library.install_aliases()
 from builtins import *
-import json
 import logging
-from furl import furl
 import requests
+import tmdbsimple as tmdb
+from furl import furl
 from nzbhydra.exceptions import ExternalApiInfoException
 
 logger = logging.getLogger('root')
 
+tmdb.API_KEY = '4df99d58875c2d01fc04936759fea56f'
+tmdb_img_config = None
+
 
 def find_movie_ids(input):
-    info = requests.get("http://www.omdbapi.com/?s=%s" % input)
-    info.raise_for_status()
-    results = []
-    if "Search" not in info.json():
-        return []
-    for result in info.json()["Search"]:
-        if result["Type"] == "Series":
-            continue
-        results.append({"label": result["Title"], "year": result["Year"], "value": result["imdbID"][2:]})
-    return results
-        
+    global tmdb_img_config
+    if tmdb_img_config is None:
+        tmdb_img_config = tmdb.Configuration().info()["images"]
+    base_url = tmdb_img_config["secure_base_url"]
+    poster_size = "w92" if "w92" in tmdb_img_config["poster_sizes"] else tmdb_img_config["poster_sizes"][0]
+
+    search = tmdb.Search()
+    search.movie(query=input)
+    infos = []
+    for s in search.results:
+        result = {"label": s["title"], "value": s["id"]}
+        if "poster_path" in s and s["poster_path"]:
+            result["poster"] = base_url + poster_size + s["poster_path"]
+            infos.append(result)
+    return infos
+
+
+def get_imdbid_from_tmdbid(tmdbid):
+    movie = tmdb.Movies(tmdbid)
+    response = movie.info()
+    return response["imdb_id"][2:]
+
 
 def find_series_ids(input):
     info = requests.get("http://api.tvmaze.com/search/shows?q=%s" % input)
@@ -33,10 +49,15 @@ def find_series_ids(input):
     results = []
     for result in info.json():
         result = result["show"]
-        results.append({"label": result["name"], "value": result["externals"]["thetvdb"]})
+        if result["externals"]["thetvdb"] is None:
+            continue
+        info = {"label": result["name"], "value": result["externals"]["thetvdb"]}
+        if result["image"]["medium"]:
+            info["poster"] = result["image"]["medium"]
+        results.append(info)
     return results
-        
-    
+
+
 def title_from_id(identifier_key, identifier_value):
     if identifier_key is None or identifier_value is None:
         raise AttributeError("Neither identifier key nor value were supplied")
@@ -58,4 +79,3 @@ def title_from_id(identifier_key, identifier_value):
     except Exception as e:
         logger.exception("Unable to retrieve title by id %s and value %s" % (identifier_key, identifier_value))
         raise ExternalApiInfoException(e)
-

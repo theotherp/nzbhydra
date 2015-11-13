@@ -1,3 +1,12 @@
+<script type="text/ng-template" id="autocompleteTemplate.html">
+    <a>
+        <img src="{{ match.model.poster }}" ng-if="match.model.poster" style="width: 50px">
+        {{ match.label }} <span ng-if="match.model.year">( {{ match.model.year }} )</span>
+    </a>
+</script>
+
+
+
 <div class="row">
     <div class="col-md-3"></div>
 
@@ -57,7 +66,7 @@
                         </script>
                         <input type="search" ngtype="search" ng-model="query" placeholder="Search" typeahead-min-length="2" typeahead-wait-ms="typeAheadWait"
                                uib-typeahead="item as item.label for item in getAutocomplete($viewValue)"
-                               typeahead-template-url="movieAutocompleteEntry"
+                               typeahead-template-url="autocompleteTemplate.html"
                                ng-class="{'autocompleteLoading': (loadingItems && autocompleteActive), 'search-border': !seriesSelected}"
                                typeahead-loading="loadingItems" typeahead-on-select="selectAutocompleteItem($item)" ng-enter="startQuerySearch()" class="form-control col-lg-10"
                                focus-on="focus-query-box"
