@@ -11,7 +11,7 @@
     {{ ::result.age_days }}d
 </td>
 <td class="col-md-3 search-results-cell">
-    <a href ng-click="showNfo(result)" ng-class="{'disabled': result.has_nfo == 0, 'fuzzy-nfo': result.has_nfo == 2}"
+    <a href ng-click="showNfo(result)" ng-class="{'no-nfo': result.has_nfo == 0, 'fuzzy-nfo': result.has_nfo == 2}"
        uib-tooltip="May have an NFO. Click to find out..."
        tooltip-placement="top"
        tooltip-trigger="mouseenter"

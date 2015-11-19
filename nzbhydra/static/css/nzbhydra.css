@@ -7213,5 +7213,8 @@ a.disabled:hover {
 .fuzzy-nfo {
   color: #52575C;
 }
+.no-nfo {
+  visibility: hidden;
+}
 
 /*# sourceMappingURL=nzbhydra.css.map */

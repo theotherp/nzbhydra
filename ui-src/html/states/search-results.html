@@ -27,7 +27,7 @@
             <!-- First result in the list, show regularly -->
             <tr>
                 <td class="text-left">
-                    <input ng-disabled="!ps.successful" type="checkbox" ng-model="indexerDisplayState[ps.indexer]" ng-click="toggleIndexerDisplay(ps.indexer)"
+                    <input ng-disabled="!ps.successful" type="checkbox" ng-model="indexerDisplayState[ps.indexer.toLowerCase()]" ng-click="toggleIndexerDisplay(ps.indexer)"
                            tooltip="Uncheck to hide results from this indexer"
                            tooltip-placement="top"
                            tooltip-trigger="mouseenter"

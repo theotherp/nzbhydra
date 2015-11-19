@@ -647,11 +647,11 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
     //Initially set visibility of all found indexers to true, they're needed for initial filtering / sorting
     _.forEach($scope.indexersearches, function (ps) {
-        $scope.indexerDisplayState[ps.indexer] = true;
+        $scope.indexerDisplayState[ps.indexer.toLowerCase()] = true;
     });
 
     _.forEach($scope.indexersearches, function (ps) {
-        $scope.indexerResultsInfo[ps.indexer] = {loadedResults: ps.loaded_results};
+        $scope.indexerResultsInfo[ps.indexer.toLowerCase()] = {loadedResults: ps.loaded_results};
     });
     
 
@@ -719,7 +719,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         
         
         function getItemIndexerDisplayState(item) {
-            return $scope.indexerDisplayState[item.indexer];
+            return $scope.indexerDisplayState[item.indexer.toLowerCase()];
         }
 
         function getTitleLowerCase(element) {
@@ -810,7 +810,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
 
 //Filters the results according to new visibility settings.
     $scope.toggleIndexerDisplay = toggleIndexerDisplay;
-    function toggleIndexerDisplay() {
+    function toggleIndexerDisplay(indexer) {
+        $scope.indexerDisplayState[indexer.toLowerCase()] = $scope.indexerDisplayState[indexer.toLowerCase()]; 
         startBlocking("Filtering. Sorry...").then(function () {
             $scope.filteredResults = sortAndFilter($scope.results);
         }).then(function () {
