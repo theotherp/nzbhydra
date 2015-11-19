@@ -23,7 +23,6 @@ Run with Python 2.7. Runs on http://0.0.0.0:5075 by default. See the console out
 * Better query generation
 * Restart via GUI
 * More stats
-* Selection of downloader category when adding via GUI
 * More indexers? I will try to include them if they're not newznab compatible but would need an account
 * Auto update (will need help with that one)
 * A logo. Nothing too fancy.
