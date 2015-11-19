@@ -1383,11 +1383,11 @@ angular
         formlyConfigProvider.setType({
             name: 'testConnection',
             templateUrl: 'button-test-connection.html',
-            controller: function ($scope) {   
-                
+            controller: function ($scope) {
                 $scope.message = "";
 
                 var testButton = "#button-test-connection-" + $scope.formId;
+                var testMessage = "#message-test-connection-" + $scope.formId;
                 function showSuccess() {
                     angular.element(testButton).removeClass("btn-default");
                     angular.element(testButton).removeClass("btn-danger");
@@ -1419,15 +1419,15 @@ angular
                     $http.get(url, {params: params}).success(function(result){
                         //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
                         if (result.result) {
-                            angular.element("#message-test-connection").text("");
+                            angular.element(testMessage).text("");
                             showSuccess();
                         } else {
-                            angular.element("#message-test-connection").text(result.message);
+                            angular.element(testMessage).text(result.message);
                             showError();
                         }
                         
                     }).error(function() {
-                        angular.element("#message-test-connection").text(result.message);
+                        angular.element(testMessage).text(result.message);
                         showError();
                     }).finally(function() {
                         angular.element(testButton).removeClass("glyphicon-refresh-animate");
