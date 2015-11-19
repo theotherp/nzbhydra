@@ -1,4 +1,3 @@
-
 <td class="col-md-1 search-results-cell">
     {{ ::result.indexer }}
 </td>
@@ -12,7 +11,12 @@
     {{ ::result.age_days }}d
 </td>
 <td class="col-md-3 search-results-cell">
-    <a href ng-click="showNfo(result)" ng-class="{disabled: !result.has_nfo}">NFO</a>
+    <a href ng-click="showNfo(result)" ng-class="{'disabled': result.has_nfo == 0, 'fuzzy-nfo': result.has_nfo == 2}"
+       uib-tooltip="May have an NFO. Click to find out..."
+       tooltip-placement="top"
+       tooltip-trigger="mouseenter"
+       tooltip-enable="result.has_nfo == 2"
+    >NFO</a>
     <a target="_blank" href="{{ result.details_link }}" ng-class="{disabled: !result.details_link}">Details</a>
     <a target="_blank" href="{{ result.link }}">NZB</a>
     <addable-nzb guid="result.guid"></addable-nzb>

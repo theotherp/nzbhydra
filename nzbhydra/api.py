@@ -128,7 +128,7 @@ class NzbSearchResultSchema(Schema):
     indexerguid = fields.String()
     size = fields.Integer()
     category = fields.String()
-    has_nfo = fields.Boolean()
+    has_nfo = fields.Integer()
     details_link = fields.String()
     hash = fields.Integer()
 

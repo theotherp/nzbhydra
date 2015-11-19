@@ -83,6 +83,7 @@ class Womble(SearchModule):
             entry = self.create_nzb_search_result()
             entry.title = title.text
             entry.link = url.attrib["url"]
+            entry.has_nfo = NzbSearchResult.HAS_NFO_NO
             
             p = re.compile("(.*)\(Size:(\d*)")
             m = p.search(elem.find("description").text)

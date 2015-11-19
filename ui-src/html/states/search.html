@@ -41,7 +41,7 @@
                 <span class="input-group-btn" ng-if="seriesSelected()">
                 <input type="input" class="form-control noBorderRadius season-input" placeholder="S" name="season" id="seriesSearchS" style="width:40px;" ng-model="searchSeason"
                        ng-enter="submitSearch(selectedItem)"
-                       tooltip="Enter a season to search for."
+                       uib-tooltip="Enter a season to search for."
                        tooltip-placement="top"
                        tooltip-trigger="mouseenter"
                         >
@@ -49,13 +49,13 @@
                 <span class="input-group-btn" ng-if="seriesSelected()">
                 <input type="input" class="form-control noLeftBorderRadius episode-input" placeholder="E" name="episode" id="seriesSearchE" style="width:40px;" ng-model="searchEpisode"
                        ng-enter="submitSearch(selectedItem)"
-                       tooltip="Enter an episode to search for."
+                       uib-tooltip="Enter an episode to search for."
                        tooltip-placement="top"
                        tooltip-trigger="mouseenter"
                         >
                 </span>
                 <span class="input-group-btn by-id-checkbox" ng-if="isAskById"
-                      tooltip="If enabled the search is done using an ID from TheTVDB or IMDB. The ID is retrieved using autocomplete."
+                      uib-tooltip="If enabled the search is done using an ID from TheTVDB or IMDB. The ID is retrieved using autocomplete."
                       tooltip-placement="top"
                       tooltip-trigger="mouseenter">
                 <input type="checkbox" name="by-id" id="by-id" style="width:40px;" ng-model="isById.value">

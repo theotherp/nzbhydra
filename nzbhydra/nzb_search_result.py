@@ -6,8 +6,16 @@ from future import standard_library
 standard_library.install_aliases()
 from builtins import *
 from builtins import object
+
+
 class NzbSearchResult(object):
-    def __init__(self, title=None, link=None, indexer=None, guid=None, size=None, category="N/A", attributes=[], epoch=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=True, indexerguid=None, details_link=None, group=None, indexerscore=0):
+    HAS_NFO_NO = 0
+    HAS_NFO_YES = 1
+    HAS_NFO_MAYBE = 2
+
+
+    def __init__(self, title=None, link=None, indexer=None, guid=None, size=None, category="N/A", attributes=None, epoch=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=HAS_NFO_YES, indexerguid=None, details_link=None, group=None, indexerscore=0):
+    
         self.title = title
         self.link = link
         self.epoch = epoch
@@ -21,12 +29,12 @@ class NzbSearchResult(object):
         self.category = category
         self.description = None
         self.comments = None
-        self.attributes = attributes #Attributes like newznab:attribute. Only needed for external API
+        self.attributes = attributes if attributes is not None else []
         self.search_types = [] #"general", "tv", "movie"
         self.supports_queries = True #Indexers might only provide a feed of the latest releases, e.g. womble
         self.search_ids = [] #"tvdbid", "rid", "imdbid"
         self.poster = poster
-        self.has_nfo = has_nfo #False if we know there isn't one, True if there might be one!
+        self.has_nfo = has_nfo 
         self.details_link = details_link
         self.group = group
         self.indexerscore = indexerscore

@@ -7210,5 +7210,8 @@ a.disabled:hover {
     transform: scale(1.2);
   }
 }
+.fuzzy-nfo {
+  color: #52575C;
+}
 
 /*# sourceMappingURL=nzbhydra.css.map */

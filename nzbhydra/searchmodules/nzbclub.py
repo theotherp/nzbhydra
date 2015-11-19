@@ -105,9 +105,9 @@ class NzbClub(SearchModule):
             import urllib.parse
             description = urllib.parse.unquote(description).replace("+", " ")
             if re.compile(r"\d NFO Files").search(description): # [x NFO Files] is missing if there is no NFO
-                entry.has_nfo = True
+                entry.has_nfo = NzbSearchResult.HAS_NFO_YES
             else:
-                entry.has_nfo = False
+                entry.has_nfo = NzbSearchResult.HAS_NFO_NO
             m = group_pattern.search(description)
             if m:
                 entry.group = m.group(1)

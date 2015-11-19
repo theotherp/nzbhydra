@@ -6,6 +6,8 @@ from builtins import super
 from builtins import int
 from builtins import str
 from future import standard_library
+
+
 standard_library.install_aliases()
 from builtins import *
 import calendar
@@ -21,7 +23,7 @@ from furl import furl
 
 import requests
 from requests.exceptions import RequestException
-from nzbhydra.config import IndexerNewznabSettings
+from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.datestuff import now
 from nzbhydra.exceptions import IndexerAuthException, IndexerAccessException, IndexerResultParsingException
 from nzbhydra.search_module import SearchModule, IndexerProcessingResult
@@ -195,6 +197,7 @@ class NewzNab(SearchModule):
             entry.precise_date = True
             entry.attributes = []
             entry.guid = item.find("guid").text
+            entry.has_nfo = NzbSearchResult.HAS_NFO_MAYBE
             m = guidpattern.search(entry.guid)
             if m:
                 entry.guid = m.group(2)

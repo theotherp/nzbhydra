@@ -22,7 +22,7 @@ function otherColumns($http, $templateCache, $compile) {
 
         $scope.showNfo = showNfo;
         function showNfo(resultItem) {
-            if (!resultItem.has_nfo) {
+            if (resultItem.has_nfo) {
                 return;
             }
             var uri = new URI("internalapi/getnfo");

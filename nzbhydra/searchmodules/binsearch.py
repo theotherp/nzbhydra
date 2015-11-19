@@ -163,9 +163,9 @@ class Binsearch(SearchModule):
 
             
             if nfo_pattern.search(info.text):  # 1 nfo file is missing if there is no NFO
-                entry.has_nfo = True
+                entry.has_nfo = NzbSearchResult.HAS_NFO_YES
             else:
-                entry.has_nfo = False
+                entry.has_nfo = NzbSearchResult.HAS_NFO_NO
 
             # Age
             try:
