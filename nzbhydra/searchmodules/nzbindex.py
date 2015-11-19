@@ -123,7 +123,7 @@ class NzbIndex(SearchModule):
             if info is not None and re.compile(r"\d NFO").search(info.text):  # 1 nfo file is missing if there is no NFO
                 entry.has_nfo = NzbSearchResult.HAS_NFO_YES
             else:
-                entry.has_nfo = NzbSearchResult.HAS_NFO_FALSE
+                entry.has_nfo = NzbSearchResult.HAS_NFO_NO
             poster = infotd.find("span", class_="poster").find("a")
             if poster is not None:
                 poster = poster.text.replace("\n", "")
