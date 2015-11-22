@@ -13,7 +13,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             controller: "SearchController"
         })
         .state("search", {
-            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid",
+            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid&indexers",
             templateUrl: "static/html/states/search.html",
             controller: "SearchController"
         })

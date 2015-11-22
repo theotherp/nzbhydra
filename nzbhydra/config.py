@@ -374,7 +374,7 @@ class SearchingSettings(Category):
 
     def __init__(self):
         super(SearchingSettings, self).__init__(config_root, "searching", "Searching")
-        self.timeout = Setting(self, name="timeout", default=5, valuetype=int)
+        self.timeout = Setting(self, name="timeout", default=20, valuetype=int)
         self.ignore_disabled = Setting(self, name="ignoreTemporarilyDisabled", default=False, valuetype=bool)
         self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[InternalExternalSelection.internal], options=InternalExternalSelection.options, valuetype=str, setting_type=SettingType.multiselect)
         self.user_agent = Setting(self, name="userAgent", default="NZBHydra", valuetype=str)
@@ -461,6 +461,9 @@ class IndexerSettingsAbstract(Category):
                                                 options=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid],
                                                 setting_type=SettingType.multiselect)
         self.score = Setting(self, name="score", default=0, valuetype=str)
+        self.timeout = Setting(self, name="timeout", default=None, valuetype=int)
+        self.show_on_search = Setting(self, name="showOnSearch", default=True, valuetype=bool)
+        self.preselect = Setting(self, name="preselect", default=True, valuetype=bool)
 
 
 class IndexerBinsearchSettings(IndexerSettingsAbstract):
@@ -500,6 +503,7 @@ class IndexerWombleSettings(IndexerSettingsAbstract):
         super(IndexerWombleSettings, self).__init__(parent, "Womble", "Womble")
         self.host = Setting(self, name="host", default="https://newshost.co.za", valuetype=str)
         self.name = Setting(self, name="name", default="Womble", valuetype=str)
+        self.show_on_search = Setting(self, name="showOnSearch", default=False, valuetype=bool)
 
 
 class IndexerSettings(Category):

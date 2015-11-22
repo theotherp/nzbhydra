@@ -10,7 +10,7 @@ function SearchService($http) {
     var service = {search: search, loadMore: loadMore};
     return service;
 
-    function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage) {
+    function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, indexers) {
         console.log("Category: " + category);
         var uri;
         if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
@@ -59,6 +59,9 @@ function SearchService($http) {
         }
         if (_.isNumber(maxage)) {
             uri.addQuery("maxage", maxage);
+        }
+        if (!angular.isUndefined(indexers)) {
+            uri.addQuery("indexers", indexers);
         }
         
 

@@ -179,11 +179,16 @@ class SearchModule(object):
 
         indexer_status.save()
 
-    def get(self, url, timeout=config.searchingSettings.timeout.get(), cookies=None):
+    def get(self, url, timeout=None, cookies=None):
         # overwrite for special handling, e.g. cookies
         headers = {
             'User-Agent': config.searchingSettings.user_agent.get()
         }
+        if timeout is None:
+            timeout = self.settings.timeout.get()
+        if timeout is None:
+            timeout = config.searchingSettings.timeout.get()
+        self.logger.debug("Requesting %s with timeout %d" % (url, timeout))
         return requests.get(url, timeout=timeout, verify=False, cookies=cookies, headers=headers)
 
     def get_url_with_papi_access(self, url, type, cookies=None, timeout=None):
@@ -230,7 +235,6 @@ class SearchModule(object):
                 continue
 
             try:
-                self.logger.debug("Requesting URL %s with timeout %d" % (query, searchingSettings.timeout.get()))
                 request, papiaccess = self.get_url_with_papi_access(query, "search")
                 papiaccess.indexer_search = psearch
 

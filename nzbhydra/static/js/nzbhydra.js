@@ -13,7 +13,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
             controller: "SearchController"
         })
         .state("search", {
-            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid",
+            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid&indexers",
             templateUrl: "static/html/states/search.html",
             controller: "SearchController"
         })
@@ -535,7 +535,7 @@ function SearchService($http) {
     var service = {search: search, loadMore: loadMore};
     return service;
 
-    function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage) {
+    function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, indexers) {
         console.log("Category: " + category);
         var uri;
         if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
@@ -584,6 +584,9 @@ function SearchService($http) {
         }
         if (_.isNumber(maxage)) {
             uri.addQuery("maxage", maxage);
+        }
+        if (!angular.isUndefined(indexers)) {
+            uri.addQuery("indexers", indexers);
         }
         
 
@@ -869,6 +872,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     //Fill the form with the search values we got from the state params (so that their values are the same as in the current url)
     $scope.mode = $stateParams.mode;
+    
     $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? "All" : $stateParams.category;
     $scope.tmdbid = $stateParams.tmdbid;
     $scope.tvdbid = $stateParams.tvdbid;
@@ -883,6 +887,9 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     $scope.maxage = getNumberOrUndefined($stateParams.maxage);
     if (!_.isUndefined($scope.title) && _.isUndefined($scope.query)) {
         $scope.query = $scope.title;
+    }
+    if (!angular.isUndefined($stateParams.indexers)) {
+        $scope.indexers = $stateParams.indexers.split(",");
     }
 
     $scope.showIndexers = {};
@@ -961,11 +968,12 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             return {};
         }
     };
-
+    
 
     $scope.startSearch = function () {
         blockUI.start("Searching...");
-        SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage).then(function (searchResult) {
+        var indexers = angular.isUndefined($scope.indexers) ? undefined : $scope.indexers.join(",");
+        SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers).then(function (searchResult) {
             $state.go("search.results", {
                 results: searchResult.results,
                 indexersearches: searchResult.indexersearches,
@@ -982,6 +990,13 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             $scope.tvdbid = undefined;
         });
     };
+    
+    function getSelectedIndexers() {
+        var activatedIndexers = _.filter($scope.availableIndexers).filter(function (indexer) {
+            return indexer.activated ;
+        });
+            return _.pluck(activatedIndexers, "name").join(",");
+    }
 
 
     $scope.goToSearchUrl = function () {
@@ -1014,8 +1029,9 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         stateParams.minage = $scope.minage;
         stateParams.maxage = $scope.maxage;
         stateParams.category = $scope.category;
-
-        $state.go("search", stateParams, {inherit: false, notify: true});
+        stateParams.indexers = getSelectedIndexers();
+        
+        $state.go("search", stateParams, {inherit: false, notify: true, reload: true});
     };
 
 
@@ -1047,23 +1063,38 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     $scope.seriesSelected = function () {
         return ($scope.category.indexOf("TV") > -1);
     };
+    
+    $scope.toggleIndexer = function(indexer) {
+        $scope.indexers[indexer] = !$scope.indexers[indexer]
+    };
+    
 
-
+    function isIndexerPreselected(indexer) {
+        if (angular.isUndefined($scope.indexers)) {
+            return indexer.preselect;
+        } else {
+            return _.contains($scope.indexers, indexer.name);
+        }
+        
+    }
+    
     ConfigService.get().then(function (cfg) {
         config = cfg;
         $scope.availableIndexers = _.filter(cfg.indexers, function (indexer) {
-            return indexer.enabled;
+            return indexer.enabled && indexer.showOnSearch;
         }).map(function (indexer) {
-            return {name: indexer.name, activated: true};
+            return {name: indexer.name, activated: isIndexerPreselected(indexer)};
         });
-        console.log($scope.availableIndexers);
+        
     });
-
 
     if ($scope.mode) {
         console.log("Starting search in newly loaded search controller");
         $scope.startSearch();
     }
+
+
+    
 
 
 }
@@ -1373,13 +1404,13 @@ angular
                 '<button class="btn " type="button" ng-click="generate()"><span class="glyphicon glyphicon-refresh"></span></button>',
                 '</div>'
             ].join(' '),
-            controller: function($scope) {
-                $scope.generate = function() {
+            controller: function ($scope) {
+                $scope.generate = function () {
                     $scope.model[$scope.options.key] = Array(31).join((Math.random().toString(36) + '00000000000000000').slice(2, 18)).slice(0, 30);
                 }
             }
         });
-        
+
 
         formlyConfigProvider.setType({
             name: 'testConnection',
@@ -1389,6 +1420,7 @@ angular
 
                 var testButton = "#button-test-connection-" + $scope.formId;
                 var testMessage = "#message-test-connection-" + $scope.formId;
+
                 function showSuccess() {
                     angular.element(testButton).removeClass("btn-default");
                     angular.element(testButton).removeClass("btn-danger");
@@ -1417,7 +1449,7 @@ angular
                         url = "internalapi/test_newznab";
                         params = {host: $scope.model.host, apikey: $scope.model.apikey};
                     }
-                    $http.get(url, {params: params}).success(function(result){
+                    $http.get(url, {params: params}).success(function (result) {
                         //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
                         if (result.result) {
                             angular.element(testMessage).text("");
@@ -1426,11 +1458,11 @@ angular
                             angular.element(testMessage).text(result.message);
                             showError();
                         }
-                        
-                    }).error(function() {
+
+                    }).error(function () {
                         angular.element(testMessage).text(result.message);
                         showError();
-                    }).finally(function() {
+                    }).finally(function () {
                         angular.element(testButton).removeClass("glyphicon-refresh-animate");
                     })
                 }
@@ -1442,7 +1474,7 @@ angular
             extends: 'testConnection',
             wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
         });
-        
+
 
         formlyConfigProvider.setType({
             name: 'horizontalApiKeyInput',
@@ -1544,50 +1576,99 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
         form.$setPristine();
         CategoriesService.invalidate();
     }
-    
-    function getNewznabFieldset(index) {
-        return {
-            wrapper: 'fieldset',
-            key: 'newznab' + index,
-            templateOptions: {label: 'Newznab ' + index},
-            fieldGroup: [
-                {
-                    key: 'enabled',
-                    type: 'horizontalSwitch',
-                    templateOptions: {
-                        type: 'switch',
-                        label: 'Enabled'
-                    }
-                },
+
+    function getBasicIndexerFieldset(showName, host, apikey, searchIds, testConnection) {
+        var fieldset = [];
+
+        fieldset.push({
+            key: 'enabled',
+            type: 'horizontalSwitch',
+            templateOptions: {
+                type: 'switch',
+                label: 'Enabled'
+            }
+        });
+
+        if (showName) {
+            fieldset.push(
                 {
                     key: 'name',
                     type: 'horizontalInput',
+                    hideExpression: '!model.enabled',
                     templateOptions: {
                         type: 'text',
                         label: 'Name',
                         help: 'Used for identification. Changing the name will lose all history and stats!'
                     }
-                },
+                })
+        }
+        if (host) {
+            fieldset.push(
                 {
                     key: 'host',
                     type: 'horizontalInput',
+                    hideExpression: '!model.enabled',
                     templateOptions: {
                         type: 'text',
                         label: 'Host',
                         placeholder: 'http://www.someindexer.com'
                     }
-                },
+                }
+            )
+        }
+
+        if (apikey) {
+            fieldset.push(
                 {
                     key: 'apikey',
                     type: 'horizontalInput',
+                    hideExpression: '!model.enabled',
                     templateOptions: {
                         type: 'text',
                         label: 'API Key'
                     }
-                },
+                }
+            )
+        }
+
+        fieldset = fieldset.concat([
+            {
+                key: 'score',
+                type: 'horizontalInput',
+                hideExpression: '!model.enabled',
+                templateOptions: {
+                    type: 'number',
+                    label: 'Score',
+                    help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
+                }
+            },
+            {
+                key: 'timeout',
+                type: 'horizontalInput',
+                hideExpression: '!model.enabled',
+                templateOptions: {
+                    type: 'number',
+                    label: 'Timeout',
+                    help: 'Supercedes the general timeout in "Searching"'
+                }
+            },
+            {
+                key: 'preselect',
+                type: 'horizontalSwitch',
+                hideExpression: '!model.enabled',
+                templateOptions: {
+                    type: 'switch',
+                    label: 'Preselect',
+                    help: 'Preselect this indexer on the search page'
+                }
+            }]);
+
+        if (searchIds) {
+            fieldset.push(
                 {
                     key: 'search_ids',
                     type: 'horizontalMultiselect',
+                    hideExpression: '!model.enabled',
                     templateOptions: {
                         label: 'Search types',
                         options: [
@@ -1596,26 +1677,35 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                             {label: 'IMDB', id: 'imdbid'}
                         ]
                     }
-                },
-                {
-                    key: 'score',
-                    type: 'horizontalInput',
-                    templateOptions: {
-                        type: 'number',
-                        label: 'Score',
-                        help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
-                    }
-                },
+                }
+            )
+        }
+
+        if (testConnection) {
+            fieldset.push(
                 {
                     type: 'horizontalTestConnection',
+                    hideExpression: '!model.enabled',
                     templateOptions: {
                         label: 'Test connection',
                         testType: 'newznab'
                     }
                 }
-            ]
+            )
+        }
+
+        return fieldset;
+    }
+
+    function getNewznabFieldset(index) {
+        return {
+            wrapper: 'fieldset',
+            key: 'newznab' + index,
+            templateOptions: {label: 'Newznab ' + index},
+            fieldGroup: getBasicIndexerFieldset(true, true, true, true, true)
         };
     }
+
 
     $scope.fields = {
         main: [
@@ -2407,107 +2497,35 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 wrapper: 'fieldset',
                 key: 'Binsearch',
                 templateOptions: {label: 'Binsearch'},
-                fieldGroup: [
-                    {
-                        key: 'enabled',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enabled'
-                        }
-                    },
-                    {
-                        key: 'score',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Score',
-                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
-                        }
-                    }
-                ]
+                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false)
             },
             {
                 wrapper: 'fieldset',
                 key: 'NZBClub',
                 templateOptions: {label: 'NZBClub'},
-                fieldGroup: [
-                    {
-                        key: 'enabled',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enabled'
-                        }
-                    },
-                    {
-                        key: 'score',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Score',
-                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
-                        }
-                    }
-
-                ]
+                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false)
             },
             {
                 wrapper: 'fieldset',
                 key: 'NZBIndex',
                 templateOptions: {label: 'NZBIndex'},
-                fieldGroup: [
-                    {
-                        key: 'enabled',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enabled'
-                        }
-                    },
-                    {
-                        key: 'generalMinSize',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Min size',
-                            help: 'NZBIndex returns a lot of crap with small file sizes. Set this value and all smaller results will be filtered out no matter the category'
-                        }
-                    },
-                    {
-                        key: 'score',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Score',
-                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
-                        }
+                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false).concat([{
+                    key: 'generalMinSize',
+                    type: 'horizontalInput',
+                    hideExpression: '!model.enabled',
+                    templateOptions: {
+                        type: 'number',
+                        label: 'Min size',
+                        help: 'NZBIndex returns a lot of crap with small file sizes. Set this value and all smaller results will be filtered out no matter the category'
                     }
-                ]
+                }])
+
             },
             {
                 wrapper: 'fieldset',
                 key: 'Womble',
                 templateOptions: {label: 'Womble'},
-                fieldGroup: [
-                    {
-                        key: 'enabled',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enabled'
-                        }
-                    },
-                    {
-                        key: 'score',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Score',
-                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
-                        }
-                    }
-                ]
+                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false)
             },
 
             getNewznabFieldset(1),
@@ -2516,7 +2534,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             getNewznabFieldset(4),
             getNewznabFieldset(5),
             getNewznabFieldset(6)
-            
+
         ]
     };
 
@@ -2547,8 +2565,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
         }
     ];
 
-    
-    $scope.isSavingNeeded = function(form) {
+
+    $scope.isSavingNeeded = function (form) {
         return form.$dirty && !form.$submitted;
     }
 }

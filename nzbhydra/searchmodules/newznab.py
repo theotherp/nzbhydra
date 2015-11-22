@@ -1,10 +1,8 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from builtins import super
-from builtins import int
-from builtins import str
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from future import standard_library
 
 from nzbhydra import config
@@ -18,10 +16,8 @@ import logging
 import re
 import time
 import xml.etree.ElementTree as ET
-
 import arrow
 from furl import furl
-
 import requests
 from requests.exceptions import RequestException
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -108,13 +104,15 @@ def test_connection(host, apikey):
         r = requests.get(f.url, verify=False, headers=headers, timeout=config.searchingSettings.timeout.get())
         r.raise_for_status()
         check_auth(r.text)
-    except RequestException:
+    except RequestException as e:
+        logger.info("Unable to connect to indexer using URL %s: %s" % (f.url, str(e)))
         return False, "Unable to connect to host"
     except IndexerAuthException:
         return False, "Wrong credentials"
     except IndexerAccessException:
         return False, "Host reachable but unknown error returned"
     return True, ""
+
 
 class NewzNab(SearchModule):
     # todo feature: read caps from server on first run and store them in the config/database
@@ -190,7 +188,7 @@ class NewzNab(SearchModule):
             raise IndexerResultParsingException("Error parsing XML", self)
         for item in tree.find("channel").findall("item"):
             entry = self.create_nzb_search_result()
-            #These are the values that absolutely must be contained in the response
+            # These are the values that absolutely must be contained in the response
             entry.title = item.find("title").text
             entry.link = item.find("link").text
             entry.pubDate = item.find("pubDate").text
@@ -270,7 +268,7 @@ class NewzNab(SearchModule):
         response, papiaccess = self.get_url_with_papi_access(url, "nfo")
         if response is None:
             return False, None, "Unable to access indexer"
-      
+
         nfo = response.content
         if "<?xml" in nfo.decode("utf-8"):  # Hacky but fast
             if 'total="1"' in nfo.decode("utf-8"):
@@ -285,8 +283,7 @@ class NewzNab(SearchModule):
                     return False, None, "Unable to parse response"
             else:
                 return False, None, "No NFO available"
-        return True, nfo.decode("utf-8"), None #No XML, we just hope it's the NFO
-    
+        return True, nfo.decode("utf-8"), None  # No XML, we just hope it's the NFO
 
     def get_nzb_link(self, guid, title):
         f = furl(self.settings.host.get())

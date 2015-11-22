@@ -22,6 +22,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     //Fill the form with the search values we got from the state params (so that their values are the same as in the current url)
     $scope.mode = $stateParams.mode;
+    
     $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? "All" : $stateParams.category;
     $scope.tmdbid = $stateParams.tmdbid;
     $scope.tvdbid = $stateParams.tvdbid;
@@ -36,6 +37,9 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     $scope.maxage = getNumberOrUndefined($stateParams.maxage);
     if (!_.isUndefined($scope.title) && _.isUndefined($scope.query)) {
         $scope.query = $scope.title;
+    }
+    if (!angular.isUndefined($stateParams.indexers)) {
+        $scope.indexers = $stateParams.indexers.split(",");
     }
 
     $scope.showIndexers = {};
@@ -114,11 +118,12 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             return {};
         }
     };
-
+    
 
     $scope.startSearch = function () {
         blockUI.start("Searching...");
-        SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage).then(function (searchResult) {
+        var indexers = angular.isUndefined($scope.indexers) ? undefined : $scope.indexers.join(",");
+        SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers).then(function (searchResult) {
             $state.go("search.results", {
                 results: searchResult.results,
                 indexersearches: searchResult.indexersearches,
@@ -135,6 +140,13 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             $scope.tvdbid = undefined;
         });
     };
+    
+    function getSelectedIndexers() {
+        var activatedIndexers = _.filter($scope.availableIndexers).filter(function (indexer) {
+            return indexer.activated ;
+        });
+            return _.pluck(activatedIndexers, "name").join(",");
+    }
 
 
     $scope.goToSearchUrl = function () {
@@ -167,8 +179,9 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         stateParams.minage = $scope.minage;
         stateParams.maxage = $scope.maxage;
         stateParams.category = $scope.category;
-
-        $state.go("search", stateParams, {inherit: false, notify: true});
+        stateParams.indexers = getSelectedIndexers();
+        
+        $state.go("search", stateParams, {inherit: false, notify: true, reload: true});
     };
 
 
@@ -200,23 +213,38 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
     $scope.seriesSelected = function () {
         return ($scope.category.indexOf("TV") > -1);
     };
+    
+    $scope.toggleIndexer = function(indexer) {
+        $scope.indexers[indexer] = !$scope.indexers[indexer]
+    };
+    
 
-
+    function isIndexerPreselected(indexer) {
+        if (angular.isUndefined($scope.indexers)) {
+            return indexer.preselect;
+        } else {
+            return _.contains($scope.indexers, indexer.name);
+        }
+        
+    }
+    
     ConfigService.get().then(function (cfg) {
         config = cfg;
         $scope.availableIndexers = _.filter(cfg.indexers, function (indexer) {
-            return indexer.enabled;
+            return indexer.enabled && indexer.showOnSearch;
         }).map(function (indexer) {
-            return {name: indexer.name, activated: true};
+            return {name: indexer.name, activated: isIndexerPreselected(indexer)};
         });
-        console.log($scope.availableIndexers);
+        
     });
-
 
     if ($scope.mode) {
         console.log("Starting search in newly loaded search controller");
         $scope.startSearch();
     }
+
+
+    
 
 
 }

@@ -285,6 +285,7 @@ internalapi_search_args = {
     "query": fields.String(missing=None),
     "category": fields.String(missing=None),
     "offset": fields.Integer(missing=0),
+    "indexers": fields.String(missing=None),
 
     "minsize": fields.Integer(missing=None),
     "maxsize": fields.Integer(missing=None),
@@ -298,7 +299,7 @@ internalapi_search_args = {
 @use_args(internalapi_search_args, locations=['querystring'])
 def internalapi_search(args):
     logger.debug("Search request with args %s" % args)
-    search_request = SearchRequest(type="general", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"])
+    search_request = SearchRequest(type="general", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=args["indexers"])
     results = search.search(True, search_request)
     return process_and_jsonify_for_internalapi(results)
 
@@ -310,6 +311,7 @@ internalapi_moviesearch_args = {
     "imdbid": fields.String(missing=None),
     "tmdbid": fields.String(missing=None),
     "offset": fields.Integer(missing=0),
+    "indexers": fields.String(missing=None),
 
     "minsize": fields.Integer(missing=None),
     "maxsize": fields.Integer(missing=None),
@@ -323,7 +325,7 @@ internalapi_moviesearch_args = {
 @use_args(internalapi_moviesearch_args, locations=['querystring'])
 def internalapi_moviesearch(args):
     logger.debug("Movie search request with args %s" % args)
-    search_request = SearchRequest(type="movie", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"])
+    search_request = SearchRequest(type="movie", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=args["indexers"])
     if args["imdbid"]:
         search_request.identifier_key = "imdbid"
         search_request.identifier_value = args["imdbid"]
@@ -346,6 +348,7 @@ internalapi_tvsearch_args = {
     "season": fields.String(missing=None),
     "episode": fields.String(missing=None),
     "offset": fields.Integer(missing=0),
+    "indexers": fields.String(missing=None),
 
     "minsize": fields.Integer(missing=None),
     "maxsize": fields.Integer(missing=None),
@@ -359,7 +362,8 @@ internalapi_tvsearch_args = {
 @use_args(internalapi_tvsearch_args, locations=['querystring'])
 def internalapi_tvsearch(args):
     logger.debug("TV search request with args %s" % args)
-    search_request = SearchRequest(type="tv", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], episode=args["episode"], season=args["season"], title=args["title"])
+    search_request = SearchRequest(type="tv", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], episode=args["episode"], season=args["season"], title=args["title"],
+                                   indexers=args["indexers"])
     if args["tvdbid"]:
         search_request.identifier_key = "tvdbid"
         search_request.identifier_value = args["tvdbid"]
