@@ -7,6 +7,7 @@ from builtins import int
 from builtins import str
 from future import standard_library
 
+from nzbhydra import config
 
 standard_library.install_aliases()
 from builtins import *
@@ -101,7 +102,10 @@ def test_connection(host, apikey):
     f.path.add("api")
     f.query.add({"apikey": apikey, "t": "tvsearch"})
     try:
-        r = requests.get(f.url, verify=False)
+        headers = {
+            'User-Agent': config.searchingSettings.user_agent.get()
+        }
+        r = requests.get(f.url, verify=False, headers=headers, timeout=config.searchingSettings.timeout.get())
         r.raise_for_status()
         check_auth(r.text)
     except RequestException:

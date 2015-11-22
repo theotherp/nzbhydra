@@ -41,6 +41,7 @@ from nzbhydra.indexers import read_indexers_from_config
 from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses
 from nzbhydra.versioning import get_rep_version, get_current_version
+from nzbhydra.searchmodules.newznab import test_connection
 
 
 class ReverseProxied(object):
@@ -519,7 +520,6 @@ internalapi__testnewznab_args = {
 @use_args(internalapi__testnewznab_args)
 @requires_auth
 def internalapi_testnewznab(args):
-    from nzbhydra.searchmodules.newznab import test_connection
     success, message = test_connection(args["host"], args["apikey"])
     return jsonify({"result": success, "message": message})
 

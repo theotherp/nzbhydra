@@ -181,7 +181,10 @@ class SearchModule(object):
 
     def get(self, url, timeout=config.searchingSettings.timeout.get(), cookies=None):
         # overwrite for special handling, e.g. cookies
-        return requests.get(url, timeout=timeout, verify=False, cookies=cookies)
+        headers = {
+            'User-Agent': config.searchingSettings.user_agent.get()
+        }
+        return requests.get(url, timeout=timeout, verify=False, cookies=cookies, headers=headers)
 
     def get_url_with_papi_access(self, url, type, cookies=None, timeout=None):
         papiaccess = IndexerApiAccess(indexer=self.indexer, type=type, url=url, time=arrow.utcnow().datetime)

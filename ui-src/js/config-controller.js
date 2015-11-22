@@ -309,7 +309,6 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
         };
     }
 
-
     $scope.fields = {
         main: [
             {
@@ -581,6 +580,14 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                                 {label: 'API searches', id: 'external'}
                             ],
                             help: "Generate queries for indexers which do not support ID based searches"
+                        }
+                    },
+                    {
+                        key: 'userAgent',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'User agent'
                         }
                     }
                 ]
