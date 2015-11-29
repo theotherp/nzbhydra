@@ -43,7 +43,7 @@ class Womble(SearchModule):
 
     def get_showsearch_urls(self, search_request):
         urls = []
-        if search_request.query or search_request.imdbid or search_request.rid or search_request.tvdbid or search_request.season or search_request.episode:
+        if search_request.query or search_request.identifier_key or search_request.identifier_value or search_request.season or search_request.episode:
             logger.error("This indexer does not support specific searches")
             return []
         if search_request.category:
