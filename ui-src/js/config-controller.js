@@ -380,7 +380,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         templateOptions: {
                             type: 'text',
                             label: 'Host',
-                            placeholder: 'IPv4 address to bind to'
+                            placeholder: 'IPv4 address to bind to',
+                            help: 'Requires restart'
                         }
                     },
                     {
@@ -389,7 +390,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         templateOptions: {
                             type: 'number',
                             label: 'Port',
-                            placeholder: '5050'
+                            placeholder: '5050',
+                            help: 'Requires restart'
                         }
                     },
                     {
@@ -397,7 +399,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         type: 'horizontalSwitch',
                         templateOptions: {
                             type: 'switch',
-                            label: 'Use SSL'
+                            label: 'Use SSL',
+                            help: 'Requires restart'
                         }
                     },
                     {
@@ -407,7 +410,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         templateOptions: {
                             type: 'text',
                             label: 'SSL certificate file',
-                            required: true
+                            required: true,
+                            help: 'Requires restart'
                         }
                     },
                     {
@@ -417,7 +421,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         templateOptions: {
                             type: 'text',
                             label: 'SSL key file',
-                            required: true
+                            required: true,
+                            help: 'Requires restart'
                         }
                     }
 
