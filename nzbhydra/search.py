@@ -114,7 +114,7 @@ def search(internal, search_request):
     if search_hash not in pseudo_cache.keys() or search_request.offset == 0: #If it's a new search (which starts with offset 0) do it again instead of using the cached results
         logger.debug("Didn't find this query in cache or want to do a new search")
         cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0}
-        indexers_to_call, with_query_generation = pick_indexers(query_supplied=True if search_request.query is not None else False, identifier_key=search_request.identifier_key, internal=internal, selected_indexers=search_request.indexers)
+        indexers_to_call, with_query_generation = pick_indexers(query_supplied=True if search_request.query is not None and search_request.query != "" else False, identifier_key=search_request.identifier_key, internal=internal, selected_indexers=search_request.indexers)
         for p in indexers_to_call:
             cache_entry["indexer_infos"][p] = {"has_more": True, "search_request": search_request, "total_included": False}
         dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode, type=search_request.type)
