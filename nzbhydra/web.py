@@ -424,7 +424,6 @@ internalapi__getnzb_args = {
 @app.route('/internalapi/getnzb')
 @requires_auth
 @use_args(internalapi__getnzb_args, locations=['querystring'])
-@search_cache.memoize()
 def internalapi_getnzb(args):
     logger.debug("Get NZB request with args %s" % args)
     return extract_nzb_infos_and_return_response(args["indexer"], args["guid"], args["title"], args["searchid"])
@@ -466,7 +465,8 @@ def internalapi_addnzb(args):
         return jsonify({"success": False})
     added = 0
     for guid in guids:
-        guid = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(guid).query))
+        guid = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(guid).query))["id"]
+        guid = json.loads(guid)
         if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
             add_success = downloader.add_link(guid, guid["title"], args["category"])
 

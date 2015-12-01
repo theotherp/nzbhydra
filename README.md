@@ -11,7 +11,7 @@ NZBHydra is a meta search for NZB indexers and the "spiritual successor" to [NZB
 * Either proxy the NZBs from the indexers (keeping all X-NZB headers), redirect or use direct links in search results
 * Included function to add results (single or a bunch) to SABnzbd or NZBGet(v13+) and show NFOs where available. Option to decide if links are added as links or the NZBs are uploaded. Select category in GUI or define a default.
 * Statistics on indexers (average response time, share of results, access errors), NZB download history and search history (both via internal GUI and API). Indexers with problems are paused for an increasing time span (like in sonarr)
-* Reverse proxy compatible without further configuration (tested with Apache) as long as the host is preserved
+* Reverse proxy compatible without further configuration (tested with Apache) as long as the host is preserved. If you want to access the API from outside you may need to set the "Base URL" setting.
 * A GUI that looks like ass
 
 ##How to run

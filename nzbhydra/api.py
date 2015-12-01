@@ -158,10 +158,20 @@ def get_root_url():
 
 def get_nzb_link_and_guid(indexer, guid, searchid, title):
     data_getnzb = {"indexer": indexer, "guid": guid, "searchid": searchid, "title": title}
-    f = furl(get_root_url())
-    f.path.add("internalapi/getnzb")
-    f.add(data_getnzb)
-    return f.url, data_getnzb
+    baseUrl = config.mainSettings.baseUrl.get_with_default(None)
+    if baseUrl is not None:
+        f = furl(baseUrl)
+    else:
+        f = furl(get_root_url())
+    f.path.add("api")
+    f = f.url
+    guid_json = urllib.parse.quote(json.dumps(data_getnzb))
+    f += "?t=get&id=" + guid_json
+    apikey = config.mainSettings.apikey.get_with_default(None)
+    if apikey is not None:
+        f += "&apikey=" + apikey
+    
+    return f, guid_json
 
 
 def transform_results(results, dbsearch):
@@ -169,7 +179,7 @@ def transform_results(results, dbsearch):
         return results
     transformed = []
     for i in results:
-        nzb_link, guid = get_nzb_link_and_guid(i.indexer, i.guid, dbsearch, i.title)
+        nzb_link, guid_json = get_nzb_link_and_guid(i.indexer, i.guid, dbsearch, i.title)
         i.link = nzb_link
         i.indexerguid = i.guid  # Save the indexer's original GUID so that we can send it later from the GUI to identify the result
         i.guid = nzb_link  # For now it's the same as the link to the NZB, later we might link to a details page that at the least redirects to the original indexer's page
@@ -177,7 +187,7 @@ def transform_results(results, dbsearch):
         # Add our internal guid (like the link above but only the identifying part) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
         has_guid = False
         has_size = False
-        guid_json = urllib.parse.quote(json.dumps(guid))
+        
         for a in i.attributes:
             if a["name"] == "guid":
                 a["value"] = guid_json

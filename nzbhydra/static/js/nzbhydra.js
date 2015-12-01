@@ -1412,6 +1412,7 @@ angular
         });
 
 
+
         formlyConfigProvider.setType({
             name: 'testConnection',
             templateUrl: 'button-test-connection.html',
@@ -1705,6 +1706,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             fieldGroup: getBasicIndexerFieldset(true, true, true, true, true)
         };
     }
+    
+    
 
 
     $scope.fields = {
@@ -1731,6 +1734,16 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                             label: 'Port',
                             placeholder: '5050',
                             help: 'Requires restart'
+                        }
+                    },
+                    {
+                        key: 'baseUrl',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Base URL',
+                            placeholder: 'http://127.0.0.1:5075',
+                            help: 'Set if the external URL is different from the local URL'
                         }
                     },
                     {
