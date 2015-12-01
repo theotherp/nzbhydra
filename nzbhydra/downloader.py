@@ -132,13 +132,26 @@ class Nzbget(Downloader):
             return False
         
     def get_categories(self):
-        rpc = self.get_rpc()
-        config = rpc.config()
-        categories = []
-        for i in config:
-            if "Category" in i["Name"] and "Name" in i["Name"]:
-                categories.append(i["Value"])
-        return categories
+        try:
+            rpc = self.get_rpc()
+            config = rpc.config()
+            categories = []
+            for i in config:
+                if "Category" in i["Name"] and "Name" in i["Name"]:
+                    categories.append(i["Value"])
+            return categories
+
+        except socket.error as e:
+            self.logger.debug(str(e))
+            self.logger.error('NZBGet is not responding. Please ensure that NZBGet is running and host setting is correct.')
+            raise DownloaderException("Unable to contact NZBGet")
+        
+        except xmlrpc.client.ProtocolError as e:
+            if e.errcode == 401:
+                self.logger.error('Wrong credentials')
+            else:
+                self.logger.error('Protocol error: %s', e)
+            raise DownloaderException("Unable to contact NZBGet")
 
 class Sabnzbd(Downloader):
     logger = logging.getLogger('root')
@@ -222,4 +235,4 @@ class Sabnzbd(Downloader):
             return r.json()["categories"]
         except (SSLError, HTTPError, ConnectionError):
             self.logger.exception("Error while trying to connect to sabnzbd")
-            return None
+            raise DownloaderException("Unable to contact SabNZBd")

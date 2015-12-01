@@ -313,7 +313,18 @@ function searchHistory() {
             if (request.query != "") {
                 stateParams.query = request.query;
             }
+            if (request.type == "tv") {
+                stateParams.mode = "tvsearch"
+            } else if (request.type == "tv") {
+                stateParams.mode = "moviesearch"
+            } else {
+                stateParams.mode = "search"
+            }
             
+            if (request.category != "") {
+                stateParams.category = request.category;
+            }
+
             stateParams.category = request.category;
             
             $state.go("search", stateParams, {inherit: false});
@@ -1131,6 +1142,8 @@ function NzbDownloadService($http, ConfigService, CategoriesService) {
             if (_.isUndefined(category) || category == "" || category == null) {
                 return CategoriesService.openCategorySelection().then(function (category) {
                     return sendNzbAddCommand(guids, category)
+                }, function(error) {
+                    throw error;
                 });
             } else {
                 return sendNzbAddCommand(guids, category)
@@ -2625,6 +2638,8 @@ function CategoriesService($http, $q, $uibModal) {
                     console.log("Updating downloader categories cache");
                     categories = categoriesResponse.data;
                     return categoriesResponse.data;
+                }, function(error) {
+                    throw error;
                 });
         }
 

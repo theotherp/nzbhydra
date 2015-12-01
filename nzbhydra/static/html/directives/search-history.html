@@ -16,7 +16,7 @@
     <tr dir-paginate="request in searchRequests | itemsPerPage: limit" total-items="totalRequests" current-page="pagination.current">
         <td>{{ request.time }}</td>
         <td>
-            <a ng-href ng-click="openSearch(request)"><span class="glyphicon glyphicon-search"></span></a> 
+            <a href="" ng-click="openSearch(request)"><span class="glyphicon glyphicon-search"></span></a> 
             {{ request.query }}
         </td>
         <td>{{ request.category }}</td>

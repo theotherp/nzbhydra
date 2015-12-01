@@ -30,6 +30,8 @@ function NzbDownloadService($http, ConfigService, CategoriesService) {
             if (_.isUndefined(category) || category == "" || category == null) {
                 return CategoriesService.openCategorySelection().then(function (category) {
                     return sendNzbAddCommand(guids, category)
+                }, function(error) {
+                    throw error;
                 });
             } else {
                 return sendNzbAddCommand(guids, category)

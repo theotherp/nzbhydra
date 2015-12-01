@@ -50,7 +50,18 @@ function searchHistory() {
             if (request.query != "") {
                 stateParams.query = request.query;
             }
+            if (request.type == "tv") {
+                stateParams.mode = "tvsearch"
+            } else if (request.type == "tv") {
+                stateParams.mode = "moviesearch"
+            } else {
+                stateParams.mode = "search"
+            }
             
+            if (request.category != "") {
+                stateParams.category = request.category;
+            }
+
             stateParams.category = request.category;
             
             $state.go("search", stateParams, {inherit: false});

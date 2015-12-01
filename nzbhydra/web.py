@@ -17,6 +17,8 @@ from future import standard_library
 
 from peewee import fn
 
+from nzbhydra.exceptions import DownloaderException
+
 standard_library.install_aliases()
 from functools import wraps
 from pprint import pprint
@@ -618,11 +620,14 @@ def internalapi_getversions():
 def internalapi_getcategories():
     logger.debug("Get categories request")
     categories = []
-    if downloaderSettings.downloader.isSetting(config.DownloaderSelection.nzbget):
-        categories = Nzbget().get_categories()
-    elif downloaderSettings.downloader.isSetting(config.DownloaderSelection.sabnzbd):
-        categories = Sabnzbd().get_categories()
-    return jsonify({"categories": categories})
+    try:
+        if downloaderSettings.downloader.isSetting(config.DownloaderSelection.nzbget):
+            categories = Nzbget().get_categories()
+        elif downloaderSettings.downloader.isSetting(config.DownloaderSelection.sabnzbd):
+            categories = Sabnzbd().get_categories()
+        return jsonify({"categories": categories})
+    except DownloaderException as e:
+        return e.message, 500
 
 
 

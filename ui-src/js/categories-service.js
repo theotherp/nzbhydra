@@ -31,6 +31,8 @@ function CategoriesService($http, $q, $uibModal) {
                     console.log("Updating downloader categories cache");
                     categories = categoriesResponse.data;
                     return categoriesResponse.data;
+                }, function(error) {
+                    throw error;
                 });
         }
 
