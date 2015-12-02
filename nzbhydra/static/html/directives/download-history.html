@@ -1,4 +1,4 @@
-<dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+<dir-pagination-controls on-page-change="pageChanged(newPageNumber)" pagination-id="downloads"></dir-pagination-controls>
 <table class="table">
     <thead>
     <tr>
@@ -10,7 +10,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr dir-paginate="nzbDownload in nzbDownloads | itemsPerPage: limit" total-items="totalDownloads" current-page="pagination.current">
+    <tr dir-paginate="nzbDownload in nzbDownloads | itemsPerPage: limit" total-items="totalDownloads" current-page="pagination.current" pagination-id="downloads">
         <td>{{ nzbDownload.time }}</td>
         <td>{{ nzbDownload.name }}</td>
         <td><addable-nzb guid="nzbDownload.guid"></addable-nzb> {{ nzbDownload.title }}</td>

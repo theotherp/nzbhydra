@@ -5,7 +5,8 @@ angular
 function downloadHistory() {
     return {
         templateUrl: 'static/html/directives/download-history.html',
-        controller: ['$scope', '$http', controller]
+        controller: ['$scope', '$http', controller],
+        scope: {}
     };
 
     function controller($scope, $http) {

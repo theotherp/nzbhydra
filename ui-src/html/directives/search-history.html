@@ -1,4 +1,4 @@
-<dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+<dir-pagination-controls on-page-change="pageChanged(newPageNumber)" pagination-id="searches"></dir-pagination-controls>
 <table class="table">
     <thead>
     <tr>
@@ -13,7 +13,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr dir-paginate="request in searchRequests | itemsPerPage: limit" total-items="totalRequests" current-page="pagination.current">
+    <tr dir-paginate="request in searchRequests | itemsPerPage: limit" total-items="totalRequests" current-page="pagination.current" pagination-id="searches">
         <td>{{ request.time }}</td>
         <td>
             <a href="" ng-click="openSearch(request)"><span class="glyphicon glyphicon-search"></span></a> 

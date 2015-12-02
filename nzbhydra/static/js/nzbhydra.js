@@ -269,7 +269,8 @@ angular
 function searchHistory() {
     return {
         templateUrl: 'static/html/directives/search-history.html',
-        controller: ['$scope', '$http','$state', controller]
+        controller: ['$scope', '$http','$state', controller],
+        scope: {}
     };
     
     function controller($scope, $http, $state) {
@@ -292,7 +293,6 @@ function searchHistory() {
         }
 
         $scope.openSearch = function (request) {
-            var state;
             var stateParams = {};
             if (request.identifier_key == "imdbid") {
                 stateParams.imdbid = request.identifier_value;
@@ -430,7 +430,8 @@ angular
 function downloadHistory() {
     return {
         templateUrl: 'static/html/directives/download-history.html',
-        controller: ['$scope', '$http', controller]
+        controller: ['$scope', '$http', controller],
+        scope: {}
     };
 
     function controller($scope, $http) {
