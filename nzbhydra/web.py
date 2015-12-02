@@ -546,26 +546,33 @@ def internalapi_getindexerstatuses():
     return jsonify({"indexerStatuses": get_indexer_statuses()})
 
 
-internalapi__getpagination_args = {
+internalapi__getnzbdownloads_args = {
     "page": fields.Integer(missing=0),
-    "limit": fields.Integer(missing=100)
+    "limit": fields.Integer(missing=100),
+    "type": fields.String(missing=None)
 }
 
 
 @app.route('/internalapi/getnzbdownloads')
 @requires_auth
-@use_args(internalapi__getpagination_args)
+@use_args(internalapi__getnzbdownloads_args)
 def internalapi_getnzb_downloads(args):
     logger.debug("Get NZB downloads")
-    return jsonify(get_nzb_downloads(page=args["page"], limit=args["limit"]))
+    return jsonify(get_nzb_downloads(page=args["page"], limit=args["limit"], type=args["type"]))
 
+
+internalapi__getsearchrequests_args = {
+    "page": fields.Integer(missing=0),
+    "limit": fields.Integer(missing=100),
+    "type": fields.String(missing=None)
+}
 
 @app.route('/internalapi/getsearchrequests')
 @requires_auth
-@use_args(internalapi__getpagination_args)
+@use_args(internalapi__getsearchrequests_args)
 def internalapi_search_requests(args):
     logger.debug("Get search requests")
-    return jsonify(get_search_requests(page=args["page"], limit=args["limit"]))
+    return jsonify(get_search_requests(page=args["page"], limit=args["limit"], type=args["type"]))
 
 
 internalapi__enableindexer_args = {

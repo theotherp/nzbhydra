@@ -7216,5 +7216,8 @@ a.disabled:hover {
 .no-nfo {
   visibility: hidden;
 }
+.pagination {
+  margin: 0;
+}
 
 /*# sourceMappingURL=nzbhydra.css.map */

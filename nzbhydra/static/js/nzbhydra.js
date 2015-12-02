@@ -274,6 +274,7 @@ function searchHistory() {
     };
     
     function controller($scope, $http, $state) {
+        $scope.type = "All";
         $scope.limit = 100;
         $scope.pagination = {
             current: 1
@@ -284,14 +285,19 @@ function searchHistory() {
         $scope.pageChanged = function (newPage) {
             getSearchRequestsPage(newPage);
         };
+        
+        $scope.changeType = function(type) {
+            $scope.type = type;
+            getSearchRequestsPage($scope.pagination.current);
+        };
 
         function getSearchRequestsPage(pageNumber) {
-            $http.get("internalapi/getsearchrequests", {params: {page: pageNumber, limit: $scope.limit}}).success(function (response) {
+            $http.get("internalapi/getsearchrequests", {params: {page: pageNumber, limit: $scope.limit, type: $scope.type}}).success(function (response) {
                 $scope.searchRequests = response.searchRequests;
                 $scope.totalRequests = response.totalRequests;
             });
         }
-
+        
         $scope.openSearch = function (request) {
             var stateParams = {};
             if (request.identifier_key == "imdbid") {
@@ -435,9 +441,15 @@ function downloadHistory() {
     };
 
     function controller($scope, $http) {
+        $scope.type = "All";
         $scope.limit = 100;
         $scope.pagination = {
             current: 1
+        };
+
+        $scope.changeType = function (type) {
+            $scope.type = type;
+            getDownloadsPage($scope.pagination.current);
         };
 
         getDownloadsPage(1);
@@ -447,7 +459,7 @@ function downloadHistory() {
         };
         
         function getDownloadsPage(pageNumber) {
-            $http.get("internalapi/getnzbdownloads", {params:{page: pageNumber, limit: $scope.limit}}).success(function (response) {
+            $http.get("internalapi/getnzbdownloads", {params:{page: pageNumber, limit: $scope.limit, type: $scope.type}}).success(function (response) {
                 $scope.nzbDownloads = response.nzbDownloads;
                 $scope.totalDownloads = response.totalDownloads;
                 console.log($scope.nzbDownloads);

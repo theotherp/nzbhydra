@@ -10,9 +10,15 @@ function downloadHistory() {
     };
 
     function controller($scope, $http) {
+        $scope.type = "All";
         $scope.limit = 100;
         $scope.pagination = {
             current: 1
+        };
+
+        $scope.changeType = function (type) {
+            $scope.type = type;
+            getDownloadsPage($scope.pagination.current);
         };
 
         getDownloadsPage(1);
@@ -22,7 +28,7 @@ function downloadHistory() {
         };
         
         function getDownloadsPage(pageNumber) {
-            $http.get("internalapi/getnzbdownloads", {params:{page: pageNumber, limit: $scope.limit}}).success(function (response) {
+            $http.get("internalapi/getnzbdownloads", {params:{page: pageNumber, limit: $scope.limit, type: $scope.type}}).success(function (response) {
                 $scope.nzbDownloads = response.nzbDownloads;
                 $scope.totalDownloads = response.totalDownloads;
                 console.log($scope.nzbDownloads);

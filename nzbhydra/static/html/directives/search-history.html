@@ -1,4 +1,21 @@
-<dir-pagination-controls on-page-change="pageChanged(newPageNumber)" pagination-id="searches"></dir-pagination-controls>
+<div class="row">
+    <div class="col-md-5"></div>
+    <div class="col-md-10" style="text-align: center">
+        <dir-pagination-controls on-page-change="pageChanged(newPageNumber)" pagination-id="searches"></dir-pagination-controls>
+    </div>
+    <div class="col-md-5" style="text-align: right">
+        <div class="btn-group" style="margin-bottom: 5px">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Show... <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a href="#" ng-click="changeType('All')">All</a></li>
+                <li><a href="#" ng-click="changeType('Internal')">Internal only</a></li>
+                <li><a href="#" ng-click="changeType('API')">API only</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
 <table class="table">
     <thead>
     <tr>
@@ -16,7 +33,7 @@
     <tr dir-paginate="request in searchRequests | itemsPerPage: limit" total-items="totalRequests" current-page="pagination.current" pagination-id="searches">
         <td>{{ request.time }}</td>
         <td>
-            <a href="" ng-click="openSearch(request)"><span class="glyphicon glyphicon-search"></span></a> 
+            <a href="" ng-click="openSearch(request)"><span class="glyphicon glyphicon-search"></span></a>
             {{ request.query }}
         </td>
         <td>{{ request.category }}</td>
@@ -31,4 +48,4 @@
     </tr>
     </tbody>
 </table>
-<dir-pagination-controls on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+<dir-pagination-controls on-page-change="pageChanged(newPageNumber)" pagination-id="searches"></dir-pagination-controls>
