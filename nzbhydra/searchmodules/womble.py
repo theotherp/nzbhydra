@@ -34,7 +34,9 @@ class Womble(SearchModule):
         self.supports_queries = False  # Only as support for general tv search
 
     def build_base_url(self):
-        url = furl(self.indexer.settings.get("query_url")).add({"fr": "false"})
+        f = furl(self.host)
+        f.path.add("rss")
+        url = f.add(args={"fr": "false"})
         return url
 
     def get_search_urls(self, search_request):
@@ -107,8 +109,8 @@ class Womble(SearchModule):
             entry.age_days = (arrow.utcnow() - pubdate).days
              
             entries.append(entry)
-            
-        return IndexerProcessingResult(entries=entries, queries=[])
+        
+        return IndexerProcessingResult(entries=entries, queries=[], total_known=True, has_more=False, total=len(entries))
     
     def get_nzb_link(self, guid, title):
         f = furl(self.base_url)

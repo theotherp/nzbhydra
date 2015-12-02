@@ -261,7 +261,7 @@ def api(args):
         return render_template("caps.html")
     else:
         pprint(request)
-        return "hello api"
+        return "Unknown API request", 500
 
 
 @app.route("/details/<path:guid>")

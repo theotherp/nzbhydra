@@ -212,8 +212,8 @@ def sizeof_fmt(num, suffix='B'):
 
 
 def process_for_external_api(results):
-    results = transform_results(results["results"], results["dbsearch"])  # todo dbsearchid
-
+    results = transform_results(results["results"], results["dbsearch"])
+    results = sorted(results, key=lambda x: x.epoch)
     return results
 
 
