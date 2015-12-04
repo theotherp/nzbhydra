@@ -8,10 +8,12 @@ from builtins import *
 from future import standard_library
 from peewee import fn
 
+
+
 standard_library.install_aliases()
 from collections import namedtuple
 from itertools import groupby
-import json
+import rison
 import logging
 from io import BytesIO
 import urllib
@@ -159,19 +161,19 @@ def get_root_url():
 def get_nzb_link_and_guid(indexer, guid, searchid, title):
     data_getnzb = {"indexer": indexer, "guid": guid, "searchid": searchid, "title": title}
     baseUrl = config.mainSettings.baseUrl.get_with_default(None)
-    if baseUrl is not None:
+    if baseUrl is not None and baseUrl != "":
         f = furl(baseUrl)
     else:
         f = furl(get_root_url())
     f.path.add("api")
     f = f.url
-    guid_json = urllib.parse.quote(json.dumps(data_getnzb))
-    f += "?t=get&id=" + guid_json
+    guid_rison = urllib.parse.quote(rison.dumps(data_getnzb))
+    f += "?t=get&id=" + guid_rison
     apikey = config.mainSettings.apikey.get_with_default(None)
     if apikey is not None:
         f += "&apikey=" + apikey
     
-    return f, guid_json
+    return f, guid_rison
 
 
 def transform_results(results, dbsearch):

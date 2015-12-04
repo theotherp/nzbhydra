@@ -12,9 +12,9 @@
         {% for row in items -%}
             <item>
                 <title>{{ row['title'] }}</title>
-                <guid isPermaLink="true">{{ row['link']  }}</guid>
-                <link>{{ row['link']  }}</link>
-                <comments>{{ row['providerurl'] }}</comments>
+                <guid isPermaLink="true">{{ row['link'] }}</guid>
+                <link>{{ row['link'] }}</link>
+                <comments>{{ row['details_link'] }}</comments>
                 <pubDate>{{ row['pubDate'] }}</pubDate>
                 <description>{{ row['title'] }} - {{ row['providertitle'] }}</description>
                 <enclosure url="{{ row['link'] }}" length="{{ row['size'] }}" type="application/x-nzb"/>

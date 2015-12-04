@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
 import json
+import rison
 import logging
 import os
 import ssl
@@ -230,7 +231,7 @@ def api(args):
     if mainSettings.apikey.get_with_default(None) and ("apikey" not in args or args["apikey"] != mainSettings.apikey.get()):
         raise Unauthorized("API key not provided or invalid")
 
-    elif args["t"] in ("search", "tvsearch", "movies"):
+    elif args["t"] in ("search", "tvsearch", "movie"):
         search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], query=args["q"])
         if args["t"] == "search":
             search_request.type = "general"
@@ -245,6 +246,7 @@ def api(args):
             search_request.episode = int(args["episode"]) if args["episode"] else None
 
         elif args["t"] == "movie":
+            search_request.type = "movie"
             search_request.identifier_key = "imdbid" if args["imdbid"] is not None else None
             search_request.identifier_value = args["imdbid"] if args["imdbid"] is not None else None
         result = search.search(False, search_request)
@@ -255,7 +257,7 @@ def api(args):
         return content
 
     elif args["t"] == "get":
-        args = json.loads(urllib.parse.unquote(args["id"]))
+        args = rison.loads(urllib.parse.unquote(args["id"]))
         return extract_nzb_infos_and_return_response(args["indexer"], args["guid"], args["title"], args["searchid"])
     elif args["t"] == "caps":
         return render_template("caps.html")
@@ -268,7 +270,7 @@ def api(args):
 @requires_auth
 def get_details(guid):
     # GUID is not the GUID-item from the RSS but the newznab GUID which in our case is just a json string 
-    d = json.loads(urllib.parse.unquote(guid))
+    d = rison.loads(urllib.parse.unquote(guid))
     details_link = get_details_link(d["indexer"], d["guid"])
     if details_link:
         return redirect(details_link)
