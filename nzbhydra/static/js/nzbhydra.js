@@ -1854,7 +1854,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         key: 'apikey',
                         type: 'horizontalApiKeyInput',
                         templateOptions: {
-                            label: 'API key'
+                            label: 'API key',
+                            help: 'Remove to disable. Alphanumeric only'
                         }
                     }
 

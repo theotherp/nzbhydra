@@ -8,29 +8,17 @@ from builtins import *
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import sys
+import re
 from nzbhydra import config
 from nzbhydra.config import MainSettings, mainSettings
 
 
 class SensitiveDataFilter(logging.Filter):
+    regex = re.compile(r"apikey=[\w]+", re.I)
+    
     def filter(self, record):
-         
-        sensitive_strings = []
-        #todo:
-        # for section in config.cfg.section("search_indexers").sections():
-        #     sensitive_strings.append(section.get("apikey"))
-        #     sensitive_strings.append(section.get("username"))
-        #     sensitive_strings.append(section.get("password"))
-            
-        sensitive_strings.append(mainSettings.username.get())
-        sensitive_strings.append(mainSettings.password.get())
-        sensitive_strings.append(mainSettings.apikey.get())
-        
         msg = record.msg
-        for sensitive_string in sensitive_strings:
-            if sensitive_string is not None and sensitive_string != "" and isinstance(msg, str):
-                msg = msg.replace(sensitive_string, "<XXX>")
-        
+        msg = self.regex.sub("apikey=<APIKEY>", msg)
         record.msg = msg
         return True
         
