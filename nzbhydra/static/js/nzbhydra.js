@@ -1436,6 +1436,17 @@ angular
                 }
             }
         });
+        
+
+        formlyConfigProvider.setType({
+            name: 'shutdown',
+            template: [
+                '<a href="/internalapi/shutdown" target="_top">',
+                '<button class="btn btn-default" type="button">Shutdown</button>',
+                '</a>'
+            ].join(' '),
+            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+        });
 
 
 
@@ -2579,7 +2590,29 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             getNewznabFieldset(5),
             getNewznabFieldset(6)
 
+        ],
+        
+        system: [
+            {
+                key: 'restart',
+                type: 'restart',
+                templateOptions: {
+                    type: 'button',
+                    label: 'Restart'
+                }
+            },
+
+            {
+                key: 'shutdown',
+                type: 'shutdown',
+                templateOptions: {
+                    type: 'button',
+                    label: 'Shutdown'
+                }
+            }
         ]
+    
+        
     };
 
     $scope.tabs = [
@@ -2605,6 +2638,12 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             name: 'Indexers',
             model: $scope.config.indexers,
             fields: $scope.fields.indexers,
+            active: false
+        },
+        {
+            name: 'System',
+            model: $scope.config.system,
+            fields: $scope.fields.system,
             active: false
         }
     ];
