@@ -38,7 +38,17 @@ class Downloader(object):
 class Nzbget(Downloader):
     logger = logging.getLogger('root')
 
-    def get_rpc(self, host=nzbgetSettings.host.get(), ssl=nzbgetSettings.ssl.get(), port=nzbgetSettings.port.get(), username=nzbgetSettings.username.get(), password=nzbgetSettings.password.get()):
+    def get_rpc(self, host=None, ssl=None, port=None, username=None, password=None):
+        if host is None:
+            host = nzbgetSettings.host.get()
+        if ssl is None:
+            ssl = nzbgetSettings.ssl.get()
+        if port is None:
+            port = nzbgetSettings.port.get()
+        if username is None:
+            username = nzbgetSettings.username.get()
+        if password is None:
+            password = nzbgetSettings.password.get()
         f = furl()
         f.host = host
         f.username = username
@@ -153,10 +163,21 @@ class Nzbget(Downloader):
                 self.logger.error('Protocol error: %s', e)
             raise DownloaderException("Unable to contact NZBGet")
 
+
 class Sabnzbd(Downloader):
     logger = logging.getLogger('root')
 
-    def get_sab(self, host=sabnzbdSettings.host.get(), port=sabnzbdSettings.port.get(), scheme=sabnzbdSettings.ssl.get(), apikey=sabnzbdSettings.apikey.get(), username=sabnzbdSettings.username.get(), password=sabnzbdSettings.password.get()):
+    def get_sab(self, host=None, port=None, scheme=None, apikey=None, username=None, password=None):
+        if host is None:
+            host = sabnzbdSettings.host.get()
+        if port is None:
+            port = sabnzbdSettings.port.get()
+        if apikey is None:
+            apikey = sabnzbdSettings.apikey.get()
+        if username is None:
+            username = sabnzbdSettings.username.get()
+        if password is None:
+            password = sabnzbdSettings.password.get()
         f = furl()
         if apikey:
             f.add({"apikey": apikey})

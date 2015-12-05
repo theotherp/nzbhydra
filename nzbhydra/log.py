@@ -18,7 +18,8 @@ class SensitiveDataFilter(logging.Filter):
     
     def filter(self, record):
         msg = record.msg
-        msg = self.regex.sub("apikey=<APIKEY>", msg)
+        if isinstance(msg, str):
+            msg = self.regex.sub("apikey=<APIKEY>", msg)
         record.msg = msg
         return True
         

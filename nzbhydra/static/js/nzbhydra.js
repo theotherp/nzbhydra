@@ -497,16 +497,17 @@ angular
     .directive('addableNzb', addableNzb);
 
 function addableNzb() {
+    controller.$inject = ["$scope", "ConfigService", "NzbDownloadService", "growl"];
     return {
         templateUrl: 'static/html/directives/addable-nzb.html',
         require: '^guid',
         scope: {
             guid: "="
         },
-        controller: ['$scope', 'ConfigService', 'NzbDownloadService', controller]
+        controller: controller
     };
 
-    function controller($scope, ConfigService, NzbDownloadService) {
+    function controller($scope, ConfigService, NzbDownloadService, growl) {
         $scope.classname = "nzb";
         ConfigService.get().then(function (settings) {
             $scope.enabled = settings.downloader.downloader != "none";
@@ -519,9 +520,11 @@ function addableNzb() {
                     $scope.classname = "nzb-success";
                 } else {
                     $scope.classname = "nzb-error";
+                    growl.error("Unable to add NZB. Make sure the downloader is running and properly configured.");
                 }
             }, function() {
                 $scope.classname = "nzb-error";
+                growl.error("An unexpected error occurred while trying to contact NZB Hydra or add the NZB.");
             })
         };
 
@@ -2686,9 +2689,11 @@ function CategoriesService($http, $q, $uibModal) {
 
             return $http.get('internalapi/getcategories')
                 .then(function (categoriesResponse) {
-                    console.log("Updating downloader categories cache");
-                    categories = categoriesResponse.data;
-                    return categoriesResponse.data;
+                    
+                        console.log("Updating downloader categories cache");
+                        categories = categoriesResponse.data;
+                        return categoriesResponse.data;
+                    
                 }, function(error) {
                     throw error;
                 });
@@ -2699,6 +2704,7 @@ function CategoriesService($http, $q, $uibModal) {
         });
     }
 
+    
     var deferred;
     
     function openCategorySelection() {

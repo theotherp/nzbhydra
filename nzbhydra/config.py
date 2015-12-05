@@ -434,8 +434,8 @@ sabnzbdSettings = SabnzbdSettings()
 
 
 class NzbgetSettings(Category):
-    def __init__(self):
-        super(NzbgetSettings, self).__init__(downloaderSettings, "nzbget", "NZBGet")
+    def __init__(self, parent):
+        super(NzbgetSettings, self).__init__(parent, "nzbget", "NZBGet")
         self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str)
         self.port = Setting(self, name="port", default=6789, valuetype=int)
         self.ssl = Setting(self, name="ssl", default=False, valuetype=bool)
@@ -443,7 +443,7 @@ class NzbgetSettings(Category):
         self.password = Setting(self, name="password", default="tegbzn6789", valuetype=str)
         self.default_category = Setting(self, name="defaultCategory", default=None, valuetype=str)
 
-nzbgetSettings = NzbgetSettings()
+nzbgetSettings = NzbgetSettings(downloaderSettings)
 
 
 class SearchIdSelection(object):

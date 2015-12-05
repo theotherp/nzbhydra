@@ -28,9 +28,11 @@ function CategoriesService($http, $q, $uibModal) {
 
             return $http.get('internalapi/getcategories')
                 .then(function (categoriesResponse) {
-                    console.log("Updating downloader categories cache");
-                    categories = categoriesResponse.data;
-                    return categoriesResponse.data;
+                    
+                        console.log("Updating downloader categories cache");
+                        categories = categoriesResponse.data;
+                        return categoriesResponse.data;
+                    
                 }, function(error) {
                     throw error;
                 });
@@ -41,6 +43,7 @@ function CategoriesService($http, $q, $uibModal) {
         });
     }
 
+    
     var deferred;
     
     function openCategorySelection() {

@@ -457,7 +457,6 @@ internalapi__addnzb_args = {
 @use_args(internalapi__addnzb_args)
 def internalapi_addnzb(args):
     logger.debug("Add NZB request with args %s" % args)
-    print(args["guids"])
     guids = json.loads(args["guids"])
     if downloaderSettings.downloader.isSetting(config.DownloaderSelection.nzbget):
         downloader = Nzbget()
@@ -469,7 +468,7 @@ def internalapi_addnzb(args):
     added = 0
     for guid in guids:
         guid = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(guid).query))["id"]
-        guid = json.loads(guid)
+        guid = rison.loads(guid)
         if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
             add_success = downloader.add_link(guid, guid["title"], args["category"])
 
@@ -637,9 +636,9 @@ def internalapi_getcategories():
             categories = Nzbget().get_categories()
         elif downloaderSettings.downloader.isSetting(config.DownloaderSelection.sabnzbd):
             categories = Sabnzbd().get_categories()
-        return jsonify({"categories": categories})
+        return jsonify({"success": True, "categories": categories})
     except DownloaderException as e:
-        return e.message, 500
+        return jsonify({"success": False, "message": e.message})
 
 
 

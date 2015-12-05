@@ -356,4 +356,5 @@ def get_nzb_response(indexer_name, guid, title, searchid):
                 response.headers[header] = nzbdownloadresult.headers[header]
         return response
     else:
+        logger.error("Error while trying to download NZB %s from %s" % (title, indexer_name))
         return "Unable to download NZB", 500
