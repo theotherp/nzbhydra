@@ -1,12 +1,13 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from future import standard_library
+
 standard_library.install_aliases()
 from builtins import *
 from peewee import fn
-
 from nzbhydra import database
 from nzbhydra.database import Indexer, IndexerApiAccess, IndexerNzbDownload, IndexerSearch, Search, IndexerStatus
 
@@ -47,11 +48,7 @@ def get_avg_indexer_search_results_share():
     return results
 
 
-# IndexerSearch().select(fn.SUM(IndexerSearch.results)).where(IndexerSearch.successful).group_by(IndexerSearch.search).order_by(IndexerSearch.time)
-
-
 def get_avg_indexer_access_success():
-    # select p.name, failed.failed, success.success from indexer p, (select count(1) as failed, p.indexer_id as pid1 from indexerapiaccess p where not p.response_successful group by p.indexer_id) as failed, (select count(1) as success, p.indexer_id as pid2 from indexerapiaccess p where p.response_successful group by p.indexer_id) as success  where p.id = pid1 and p.id = pid2 group by pid1
     results = database.db.execute_sql(
         """ 
         SELECT
@@ -86,14 +83,13 @@ def get_avg_indexer_access_success():
 
 
 def get_nzb_downloads(page=0, limit=100, type=None):
-    
     where = (IndexerNzbDownload.indexer == Indexer.id) & (Search.id == IndexerSearch.search) & (IndexerApiAccess.indexer_search == IndexerSearch.id)
     if type == "Internal":
         where = where & Search.internal
     elif type == "API":
         where = where & (~Search.internal)
     query = IndexerNzbDownload().select(Indexer.name, IndexerNzbDownload.title, IndexerNzbDownload.time, IndexerNzbDownload.guid, Search.internal, IndexerApiAccess.response_successful).join(IndexerApiAccess).join(Indexer).join(IndexerSearch).join(Search).where(where)
-    
+
     total_downloads = query.count()
     nzb_downloads = list(query.order_by(IndexerNzbDownload.time.desc()).group_by(
         IndexerNzbDownload.id).paginate(page, limit).dicts())
@@ -104,7 +100,7 @@ def get_nzb_downloads(page=0, limit=100, type=None):
 def get_search_requests(page=0, limit=100, type=None):
     query = Search().select(Search.time, Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type)
     if type is not None and type != "All":
-        query = query.where(Search.internal) if type == "Internal" else query.where(~Search.internal) 
+        query = query.where(Search.internal) if type == "Internal" else query.where(~Search.internal)
     total_requests = query.count()
     requests = list(query.order_by(Search.time.desc()).paginate(page, limit).dicts())
 
@@ -114,5 +110,3 @@ def get_search_requests(page=0, limit=100, type=None):
 
 def get_indexer_statuses():
     return list(IndexerStatus().select(Indexer.name, IndexerStatus.first_failure, IndexerStatus.latest_failure, IndexerStatus.disabled_until, IndexerStatus.level, IndexerStatus.reason).join(Indexer).dicts())
-    
-    

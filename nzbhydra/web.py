@@ -588,7 +588,9 @@ internalapi__enableindexer_args = {
 def internalapi_enable_indexer(args):
     logger.debug("Enabling indexer %s" % args["name"])
     indexer_status = IndexerStatus().select().join(Indexer).where(fn.lower(Indexer.name) == args["name"].lower()).get()
-    indexer_status.disabled_until = None
+    indexer_status.disabled_until = 0
+    indexer_status.reason = None
+    indexer_status.level = 0
     indexer_status.save()
     return jsonify({"indexerStatuses": get_indexer_statuses()})
 
