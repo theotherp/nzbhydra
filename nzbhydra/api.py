@@ -256,7 +256,7 @@ def serialize_nzb_search_result(result):
 
 
 def get_nfo(indexer_name, guid):
-    for p in indexers.configured_indexers:
+    for p in indexers.enabled_indexers:
         if p.name == indexer_name:
             has_nfo, nfo, message = p.get_nfo(guid)
             break
@@ -268,7 +268,7 @@ def get_nfo(indexer_name, guid):
 
 
 def get_details_link(indexer_name, guid):
-    for p in indexers.configured_indexers:
+    for p in indexers.enabled_indexers:
         if p.name == indexer_name:
             return p.get_details_link(guid)
     else:
@@ -282,7 +282,7 @@ def get_nzb_link(indexer_name, guid, title, searchid):
     when the NZB will be actually downloaded later (by us or a downloader) 
     :return: str
     """
-    for p in indexers.configured_indexers:
+    for p in indexers.enabled_indexers:
         if p.name == indexer_name:
             link = p.get_nzb_link(guid, title)
 
@@ -313,7 +313,7 @@ def download_nzb_and_log(indexer_name, provider_guid, title, searchid):
     :param searchid: the id of the IndexerSearch entry so we can link the download to a search
     :return: IndexerNzbDownloadResult
     """
-    for p in indexers.configured_indexers:
+    for p in indexers.enabled_indexers:
         if p.name == indexer_name:
 
             link = p.get_nzb_link(provider_guid, title)

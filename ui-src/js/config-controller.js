@@ -267,7 +267,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 {
                     key: 'name',
                     type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
+                    hideExpression: '!model.enabled && model.name == ""',  //Show if name is given to better identify the entries visually
                     templateOptions: {
                         type: 'text',
                         label: 'Name',

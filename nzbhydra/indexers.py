@@ -15,8 +15,11 @@ from nzbhydra.database import Indexer
 from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch
 
 logger = logging.getLogger('root')
-
 configured_indexers = []
+enabled_indexers = []
+
+
+
 
 
 
@@ -27,45 +30,62 @@ def init_indexer_table_entry(indexer_name):
         logger.info("Unable to find indexer with name %s in database. Will add it" % indexer_name)
         Indexer().create(name=indexer_name)
 
+
 # Load from config and initialize all configured indexers using the loaded modules
 def read_indexers_from_config():
     database.db.connect()
-    global configured_indexers
-    configured_indexers = []
+    global enabled_indexers, configured_indexers
+    enabled_indexers = []
 
+    instance = binsearch.get_instance(config.indexerSettings.binsearch)
     if config.indexerSettings.binsearch.enabled.get():
-        instance = binsearch.get_instance(config.indexerSettings.binsearch)
-        configured_indexers.append(instance)
-        init_indexer_table_entry(instance.name)
-        logger.info("Loaded indexer %s" % instance.name)
-        
+        enabled_indexers.append(instance)
+        logger.info("Loading indexer %s" % instance.name)
+    init_indexer_table_entry(instance.name)
+    configured_indexers.append(instance)
+    
+    instance = nzbindex.get_instance(config.indexerSettings.nzbindex)
     if config.indexerSettings.nzbindex.enabled.get():
-        instance = nzbindex.get_instance(config.indexerSettings.nzbindex)
-        configured_indexers.append(instance)
-        init_indexer_table_entry(instance.name)
+        enabled_indexers.append(instance)
         logger.info("Loaded indexer %s" % instance.name)
+    init_indexer_table_entry(instance.name)
+    configured_indexers.append(instance)
         
+    instance = nzbclub.get_instance(config.indexerSettings.nzbclub)
     if config.indexerSettings.nzbclub.enabled.get():
-        instance = nzbclub.get_instance(config.indexerSettings.nzbclub)
-        configured_indexers.append(instance)
-        init_indexer_table_entry(instance.name)
+        enabled_indexers.append(instance)
         logger.info("Loaded indexer %s" % instance.name)
+    init_indexer_table_entry(instance.name)
+    configured_indexers.append(instance)
         
+    instance = womble.get_instance(config.indexerSettings.womble)
     if config.indexerSettings.womble.enabled.get():
-        instance = womble.get_instance(config.indexerSettings.womble)
-        configured_indexers.append(instance)
-        init_indexer_table_entry(instance.name)
+        enabled_indexers.append(instance)
         logger.info("Loaded indexer %s" % instance.name)
+    init_indexer_table_entry(instance.name)
+    configured_indexers.append(instance)
         
     for i in range(1, 7):
         newznabsetting = config.get_newznab_setting_by_id(i)
-        if newznabsetting.enabled.get():
+        if newznabsetting.name.get() is not None and newznabsetting.name.get() != "": 
             instance = newznab.get_instance(newznabsetting)
-            configured_indexers.append(instance)
+            if newznabsetting.enabled.get():
+                enabled_indexers.append(instance)
+                logger.info("Loaded indexer %s" % instance.name)
             init_indexer_table_entry(instance.name)
-            logger.info("Loaded indexer %s" % instance.name)
+            configured_indexers.append(instance)
+        else:
+            logger.info("Skipping newznab indexer #%d because it has no name" % i)
+        
                   
     database.db.close()            
-    return configured_indexers
+    return enabled_indexers
 
 
+def clean_up_database():
+    configured_indexer_names = set([x.name for x in configured_indexers])
+    for indexer in database.Indexer.select():
+        if indexer.name not in configured_indexer_names:
+            logger.info("Removing old indexer entry %s from database" % indexer.name)
+            indexer.delete_instance()
+        

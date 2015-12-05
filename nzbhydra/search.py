@@ -65,7 +65,7 @@ def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selec
     picked_indexers = []
     selected_indexers = selected_indexers.split(",") if selected_indexers is not None else None
     with_query_generation = False
-    for p in indexers.configured_indexers:
+    for p in indexers.enabled_indexers:
         if not p.settings.enabled.get():
             logger.debug("Did not pick %s because it is disabled" % p)
             continue

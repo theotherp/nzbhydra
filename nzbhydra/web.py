@@ -40,7 +40,7 @@ from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external
 from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
 from nzbhydra.database import IndexerStatus, Indexer
 from nzbhydra.downloader import Nzbget, Sabnzbd
-from nzbhydra.indexers import read_indexers_from_config
+from nzbhydra.indexers import read_indexers_from_config, clean_up_database
 from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses
 from nzbhydra.versioning import get_rep_version, get_current_version
@@ -226,11 +226,10 @@ def api(args):
     args["category"] = args["cat"]
     args["episode"] = args["ep"]
 
-    if args["q"] is not None:
+    if args["q"] is not None and args["q"] != "":
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
     if mainSettings.apikey.get_with_default(None) and ("apikey" not in args or args["apikey"] != mainSettings.apikey.get()):
         raise Unauthorized("API key not provided or invalid")
-
     elif args["t"] in ("search", "tvsearch", "movie"):
         search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], query=args["q"])
         if args["t"] == "search":
@@ -244,7 +243,6 @@ def api(args):
                 search_request.identifier_value = identifier_value
             search_request.season = int(args["season"]) if args["season"] else None
             search_request.episode = int(args["episode"]) if args["episode"] else None
-
         elif args["t"] == "movie":
             search_request.type = "movie"
             search_request.identifier_key = "imdbid" if args["imdbid"] is not None else None
@@ -255,7 +253,6 @@ def api(args):
         response = make_response(content)
         response.headers["Content-Type"] = "application/xml"
         return content
-
     elif args["t"] == "get":
         args = rison.loads(urllib.parse.unquote(args["id"]))
         return extract_nzb_infos_and_return_response(args["indexer"], args["guid"], args["title"], args["searchid"])
@@ -263,13 +260,13 @@ def api(args):
         return render_template("caps.html")
     else:
         pprint(request)
-        return "Unknown API request", 500
+        return "Unknown API request. Supported functions: search, tvsearch, movie, get, caps", 500
 
 
 @app.route("/details/<path:guid>")
 @requires_auth
 def get_details(guid):
-    # GUID is not the GUID-item from the RSS but the newznab GUID which in our case is just a json string 
+    # GUID is not the GUID-item from the RSS but the newznab GUID which in our case is just a rison string 
     d = rison.loads(urllib.parse.unquote(guid))
     details_link = get_details_link(d["indexer"], d["guid"])
     if details_link:
@@ -569,6 +566,7 @@ internalapi__getsearchrequests_args = {
     "type": fields.String(missing=None)
 }
 
+
 @app.route('/internalapi/getsearchrequests')
 @requires_auth
 @use_args(internalapi__getsearchrequests_args)
@@ -601,6 +599,7 @@ def internalapi_setsettings():
         config.import_config_data(request.get_json(force=True))
         internal_cache.delete_memoized(internalapi_getconfig)
         read_indexers_from_config()
+        clean_up_database()
         return "OK"
     except Exception as e:
         logger.exception("Error saving settings")
