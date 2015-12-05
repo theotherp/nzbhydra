@@ -1313,35 +1313,32 @@ angular
     .module('nzbhydraApp')
     .factory('ConfigService', ConfigService);
 
-function ConfigService($http, $q) {
+function ConfigService($http, $q, $cacheFactory) {
 
-    var config;
+    var cache = $cacheFactory('nzbhydra');
     
-    var service = {
+    return {
         set: setConfig,
         get: getConfig
     };
     
-    return service;
     
-    
-
     function setConfig(newConfig) {
         console.log("Starting setConfig");
 
         $http.put('internalapi/setsettings', newConfig)
             .then(function (successresponse) {
                 console.log("Settings saved. Updating cache");
-                config = newConfig;
+                cache.put("config", newConfig);
             }, function (errorresponse) {
                 console.log("Error saving settings: " + errorresponse);
             });
-
     }
 
     function getConfig() {
 
         function loadAll() {
+            var config = cache.get("config");
             if (!angular.isUndefined(config)) {
                 var deferred = $q.defer();
                 deferred.resolve(config);
@@ -1351,7 +1348,8 @@ function ConfigService($http, $q) {
             return $http.get('internalapi/getconfig')
                 .then(function (configResponse) {
                     console.log("Updating config cache");
-                    config = configResponse.data;
+                    var config = configResponse.data;
+                    cache.put("config", config);
                     return configResponse.data;
                 });
         }
@@ -1362,7 +1360,7 @@ function ConfigService($http, $q) {
 
     }
 }
-ConfigService.$inject = ["$http", "$q"];
+ConfigService.$inject = ["$http", "$q", "$cacheFactory"];
 angular
     .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
