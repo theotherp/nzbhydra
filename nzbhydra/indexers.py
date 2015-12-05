@@ -18,11 +18,6 @@ logger = logging.getLogger('root')
 configured_indexers = []
 enabled_indexers = []
 
-
-
-
-
-
 def init_indexer_table_entry(indexer_name):
     try:
         Indexer.get(fn.lower(Indexer.name) == indexer_name.lower())
