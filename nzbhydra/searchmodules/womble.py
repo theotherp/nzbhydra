@@ -48,13 +48,12 @@ class Womble(SearchModule):
         if search_request.query or search_request.identifier_key or search_request.identifier_value or search_request.season or search_request.episode:
             logger.error("This indexer does not support specific searches")
             return []
-        if search_request.category:
-            if search_request.category == "TV SD" or search_request.category == "TV":
-                urls.append(self.build_base_url().add({"sec": "tv-dvd"}).tostr())
-                urls.append(self.build_base_url().add({"sec": "tv-sd"}).tostr())
-            if search_request.category == "TV HD" or search_request.category == "TV":
-                urls.append(self.build_base_url().add({"sec": "tv-x264"}).tostr())
-                urls.append(self.build_base_url().add({"sec": "tv-hd"}).tostr())
+        if search_request.category in("TV SD", "TV") or "5030" in search_request.category or "5000" in search_request.category:
+            urls.append(self.build_base_url().add({"sec": "tv-dvd"}).tostr())
+            urls.append(self.build_base_url().add({"sec": "tv-sd"}).tostr())
+        if search_request.category in ("TV HD", "TV") or "5040" in search_request.category or "5000" in search_request.category:
+            urls.append(self.build_base_url().add({"sec": "tv-x264"}).tostr())
+            urls.append(self.build_base_url().add({"sec": "tv-hd"}).tostr())
         else:
             urls.append(self.build_base_url().tostr())
         return urls
