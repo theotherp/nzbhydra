@@ -176,7 +176,8 @@ def base(path):
 
 
 def render_search_results_for_api(search_results, total, offset):
-    return render_template("api.html", channel={}, items=search_results, total=total, offset=offset)
+    xml = render_template("api.html", channel={}, items=search_results, total=total, offset=offset)
+    return Response(xml, mimetype="text/xml")
 
 
 externalapi_args = {
@@ -257,7 +258,8 @@ def api(args):
         args = rison.loads(urllib.parse.unquote(args["id"]))
         return extract_nzb_infos_and_return_response(args["indexer"], args["guid"], args["title"], args["searchid"])
     elif args["t"] == "caps":
-        return render_template("caps.html")
+        xml = render_template("caps.html")
+        return Response(xml, mimetype="text/xml")
     else:
         pprint(request)
         return "Unknown API request. Supported functions: search, tvsearch, movie, get, caps", 500
