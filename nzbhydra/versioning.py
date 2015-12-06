@@ -39,4 +39,8 @@ def get_current_version():
 
 
 def is_new_version_available():
-    return get_rep_version() > get_current_version()
+    
+    rep_version = get_rep_version()
+    current_version = get_current_version()
+    if rep_version is not None and current_version is not None:
+        return rep_version > current_version

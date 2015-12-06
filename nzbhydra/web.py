@@ -6,7 +6,12 @@ import json
 import rison
 import logging
 import os
-import ssl
+sslImported = True
+try:
+    import ssl
+except:
+    sslImported = False
+    print("Unable to import SSL")
 import sys
 import threading
 import urllib
@@ -687,7 +692,10 @@ def run(host, port):
     configure_cache()
     for handler in logger.handlers:
         app.logger.addHandler(handler)
-    app.run(host=host, port=port, debug=config.mainSettings.debug.get(), ssl_context=context)
+    if context is None:
+        app.run(host=host, port=port, debug=config.mainSettings.debug.get())
+    else:
+        app.run(host=host, port=port, debug=config.mainSettings.debug.get(), ssl_context=context)
 
 
 def configure_cache():
@@ -711,6 +719,9 @@ def configure_cache():
 def create_context():
     context = None
     if config.mainSettings.ssl.get():
-        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-        context.load_cert_chain(config.mainSettings.sslcert.get(), config.mainSettings.sslkey.get())
+        if not sslImported:
+            logger.error("SSL could not be imported, sorry. Falling back to standard HTTP")
+        else:
+            context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+            context.load_cert_chain(config.mainSettings.sslcert.get(), config.mainSettings.sslkey.get())
     return context
