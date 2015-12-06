@@ -141,10 +141,15 @@ class IndexerStatus(Model):
 
     class Meta(object):
         database = db
+        
+class VersionInfo(Model):
+    version = IntegerField(default=1)
 
+    class Meta(object):
+        database = db
 
 def init_db(dbfile):
-    tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, ]
+    tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, VersionInfo]
     db.init(dbfile)
     db.connect()
 
@@ -152,8 +157,25 @@ def init_db(dbfile):
     for t in tables:
         try:
             db.create_table(t)
-        except OperationalError as e:
+        except OperationalError:
             logger.exception("Error while creating table %s" % t)
+    
+    logger.info("Created new version info entry with database version 1")
+    VersionInfo(version=1).create()
+    
+    db.close()
 
+def update_db(dbfile):
+    db.init(dbfile)
+    db.connect()
+    
+    #Add version info if none exists
+    try:
+        db.create_table(VersionInfo)
+        logger.info("Added new version info entry with database version 1 to existing database")
+        VersionInfo(version=1).create()
+    except OperationalError:
+        logger.debug("Skipping creation of table VersionInfo because it already exists")
+        pass
     db.close()
 

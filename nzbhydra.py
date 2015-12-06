@@ -42,6 +42,8 @@ def run():
     logger.info("Loading database file %s" % database_file)
     if not os.path.exists(database_file):
         database.init_db(database_file)
+    else:
+        database.update_db(database_file)
     database.db.init(database_file)
     indexers.read_indexers_from_config()
 

@@ -309,6 +309,10 @@ class MainSettings(Category):
 
         self.logging = LoggingSettings(self)
 
+        # Not a config setting but the version of the config file. Useful when we may need to migrate the config later and want
+        # to find out which version is used.
+        self.configVersion = Setting(self, name="configVersion", default=1, valuetype=int)  
+
 
 mainSettings = MainSettings()
 
