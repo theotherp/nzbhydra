@@ -15,6 +15,7 @@ from nzbhydra import database
 from nzbhydra import web
 from nzbhydra.versioning import check_for_new_version
 
+os.chdir(base_path)
 requests.packages.urllib3.disable_warnings()
 logger = None
 
