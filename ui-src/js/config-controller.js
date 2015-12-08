@@ -267,7 +267,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 {
                     key: 'name',
                     type: 'horizontalInput',
-                    hideExpression: '!model.enabled && model.name == ""',  //Show if name is given to better identify the entries visually
+                    hideExpression: '!model.enabled && (model.name == "" || model.name == null)',  //Show if name is given to better identify the entries visually
                     templateOptions: {
                         type: 'text',
                         label: 'Name',
@@ -1224,7 +1224,12 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             getNewznabFieldset(3),
             getNewznabFieldset(4),
             getNewznabFieldset(5),
-            getNewznabFieldset(6)
+            getNewznabFieldset(6),
+            getNewznabFieldset(7),
+            getNewznabFieldset(8),
+            getNewznabFieldset(9),
+            getNewznabFieldset(10)
+            
 
         ],
         

@@ -60,7 +60,7 @@ def read_indexers_from_config():
     init_indexer_table_entry(instance.name)
     configured_indexers.append(instance)
         
-    for i in range(1, 7):
+    for i in range(1, 11):
         newznabsetting = config.get_newznab_setting_by_id(i)
         if newznabsetting.name.get() is not None and newznabsetting.name.get() != "": 
             instance = newznab.get_instance(newznabsetting)

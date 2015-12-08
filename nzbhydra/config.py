@@ -524,6 +524,10 @@ class IndexerSettings(Category):
         self.newznab4 = IndexerNewznabSettings(self, "newznab4", "Newznab 4")
         self.newznab5 = IndexerNewznabSettings(self, "newznab5", "Newznab 5")
         self.newznab6 = IndexerNewznabSettings(self, "newznab6", "Newznab 6")
+        self.newznab7 = IndexerNewznabSettings(self, "newznab7", "Newznab 7")
+        self.newznab8 = IndexerNewznabSettings(self, "newznab8", "Newznab 8")
+        self.newznab9 = IndexerNewznabSettings(self, "newznab9", "Newznab 9")
+        self.newznab10 = IndexerNewznabSettings(self, "newznab10", "Newznab 10")
 
 
 indexerSettings = IndexerSettings()
@@ -537,4 +541,10 @@ def get_newznab_setting_by_id(id):
         "3": indexerSettings.newznab3,
         "4": indexerSettings.newznab4,
         "5": indexerSettings.newznab5,
-        "6": indexerSettings.newznab6}[id]
+        "6": indexerSettings.newznab6,
+        "7": indexerSettings.newznab7,
+        "8": indexerSettings.newznab8,
+        "9": indexerSettings.newznab9, 
+        "10": indexerSettings.newznab10
+        
+    }[id]
