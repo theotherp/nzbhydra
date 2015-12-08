@@ -94,6 +94,7 @@ def check_auth(body):
 
 
 def test_connection(host, apikey):
+    logger.info("Testing connection for host %s" % host)
     f = furl(host)
     f.path.add("api")
     f.query.add({"apikey": apikey, "t": "tvsearch"})
@@ -108,8 +109,10 @@ def test_connection(host, apikey):
         logger.info("Unable to connect to indexer using URL %s: %s" % (f.url, str(e)))
         return False, "Unable to connect to host"
     except IndexerAuthException:
+        logger.info("Unable to log in to indexer %s due to wrong credentials" % host)
         return False, "Wrong credentials"
-    except IndexerAccessException:
+    except IndexerAccessException as e:
+        logger.info("Unable to log in to indexer %s. Unknown error %s." % (host, str(e)))
         return False, "Host reachable but unknown error returned"
     return True, ""
 

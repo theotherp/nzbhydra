@@ -235,6 +235,7 @@ def api(args):
     if args["q"] is not None and args["q"] != "":
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
     if mainSettings.apikey.get_with_default(None) and ("apikey" not in args or args["apikey"] != mainSettings.apikey.get()):
+        logger.error("Tried API access with invalid or missing API key")
         raise Unauthorized("API key not provided or invalid")
     elif args["t"] in ("search", "tvsearch", "movie"):
         search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], query=args["q"])
