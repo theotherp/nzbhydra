@@ -44,7 +44,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     $scope.showIndexers = {};
 
-    var config;
+    var safeConfig;
 
 
     $scope.typeAheadWait = 300;
@@ -64,9 +64,9 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         focus('focus-query-box');
         $scope.query = "";
 
-        if (config.searching.categorysizes.enable_category_sizes) {
-            var min = config.searching.categorysizes[searchCategory + " min"];
-            var max = config.searching.categorysizes[searchCategory + " max"];
+        if (safeConfig.searching.categorysizes.enable_category_sizes) {
+            var min = safeConfig.searching.categorysizes[searchCategory + " min"];
+            var max = safeConfig.searching.categorysizes[searchCategory + " max"];
             if (_.isNumber(min)) {
                 $scope.minsize = min;
             } else {
@@ -227,9 +227,9 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         }
         
     }
-    
-    ConfigService.get().then(function (cfg) {
-        config = cfg;
+
+    ConfigService.getSafe().then(function (cfg) {
+        safeConfig = cfg;
         $scope.availableIndexers = _.filter(cfg.indexers, function (indexer) {
             return indexer.enabled && indexer.showOnSearch;
         }).map(function (indexer) {

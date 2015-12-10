@@ -921,7 +921,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     $scope.showIndexers = {};
 
-    var config;
+    var safeConfig;
 
 
     $scope.typeAheadWait = 300;
@@ -941,9 +941,9 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         focus('focus-query-box');
         $scope.query = "";
 
-        if (config.searching.categorysizes.enable_category_sizes) {
-            var min = config.searching.categorysizes[searchCategory + " min"];
-            var max = config.searching.categorysizes[searchCategory + " max"];
+        if (safeConfig.searching.categorysizes.enable_category_sizes) {
+            var min = safeConfig.searching.categorysizes[searchCategory + " min"];
+            var max = safeConfig.searching.categorysizes[searchCategory + " max"];
             if (_.isNumber(min)) {
                 $scope.minsize = min;
             } else {
@@ -1104,9 +1104,9 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         }
         
     }
-    
-    ConfigService.get().then(function (cfg) {
-        config = cfg;
+
+    ConfigService.getSafe().then(function (cfg) {
+        safeConfig = cfg;
         $scope.availableIndexers = _.filter(cfg.indexers, function (indexer) {
             return indexer.enabled && indexer.showOnSearch;
         }).map(function (indexer) {
@@ -1322,7 +1322,9 @@ function ConfigService($http, $q, $cacheFactory) {
     
     return {
         set: setConfig,
-        get: getConfig
+        get: getConfig,
+        getSafe: getSafe,
+        maySeeAdminArea: maySeeAdminArea
     };
     
     
@@ -1339,7 +1341,6 @@ function ConfigService($http, $q, $cacheFactory) {
     }
 
     function getConfig() {
-
         function loadAll() {
             var config = cache.get("config");
             if (!angular.isUndefined(config)) {
@@ -1360,7 +1361,52 @@ function ConfigService($http, $q, $cacheFactory) {
         return loadAll().then(function (config) {
             return config;
         });
+    }
 
+    function getSafe() {
+        function loadAll() {
+            var safeconfig = cache.get("safeconfig");
+            if (!angular.isUndefined(safeconfig)) {
+                var deferred = $q.defer();
+                deferred.resolve(safeconfig);
+                return deferred.promise;
+            }
+
+            return $http.get('internalapi/getsafeconfig')
+                .then(function (configResponse) {
+                    console.log("Updating safe config cache");
+                    var config = configResponse.data;
+                    cache.put("safeconfig", config);
+                    return configResponse.data;
+                });
+        }
+
+        return loadAll().then(function (config) {
+            return config;
+        });
+    }
+
+    function maySeeAdminArea() {
+        function loadAll() {
+            var maySeeAdminArea = cache.get("maySeeAdminArea");
+            if (!angular.isUndefined(maySeeAdminArea)) {
+                var deferred = $q.defer();
+                deferred.resolve(maySeeAdminArea);
+                return deferred.promise;
+            }
+
+            return $http.get('internalapi/mayseeadminarea')
+                .then(function (configResponse) {
+                    console.log("Updating maySeeAdminArea cache");
+                    var config = configResponse.data;
+                    cache.put("maySeeAdminArea", config);
+                    return configResponse.data;
+                });
+        }
+
+        return loadAll().then(function (maySeeAdminArea) {
+            return maySeeAdminArea;
+        });
     }
 }
 ConfigService.$inject = ["$http", "$q", "$cacheFactory"];
@@ -1816,7 +1862,6 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         }
                     }
 
-
                 ]
             },
             {
@@ -1848,6 +1893,35 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         templateOptions: {
                             type: 'password',
                             label: 'Password',
+                            required: true
+                        }
+                    },
+                    {
+                        key: 'enableAdminAuth',
+                        type: 'horizontalSwitch',
+                        templateOptions: {
+                            type: 'switch',
+                            label: 'Enable admin user',
+                            help: 'Enable to protect the config with a separate admin user'
+                        }
+                    },
+                    {
+                        key: 'adminUsername',
+                        type: 'horizontalInput',
+                        hideExpression: '!model.enableAdminAuth',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Admin username',
+                            required: true
+                        }
+                    },
+                    {
+                        key: 'adminPassword',
+                        hideExpression: '!model.enableAdminAuth',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'password',
+                            label: 'Admin password',
                             required: true
                         }
                     },

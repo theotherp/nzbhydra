@@ -1,11 +1,14 @@
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
+
 import json
-import rison
 import logging
 import os
+
+import rison
+
 sslImported = True
 try:
     import ssl
@@ -20,16 +23,13 @@ from builtins import str
 from builtins import int
 from builtins import *
 from future import standard_library
-
 from peewee import fn
-
 from nzbhydra.exceptions import DownloaderException
 
 standard_library.install_aliases()
 from functools import wraps
 from pprint import pprint
 from time import sleep
-
 from arrow import Arrow
 from flask import Flask, render_template, request, jsonify, Response
 from flask import send_file, redirect, make_response
@@ -38,7 +38,6 @@ from flask.json import JSONEncoder
 from webargs import fields
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
-
 from flask.ext.session import Session
 from nzbhydra import config, search, infos, database
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link
@@ -142,10 +141,6 @@ def handle_bad_request(err):
     }), 422
 
 
-def check_auth(username, password):
-    return username == config.get(mainSettings.username) and password == config.get(mainSettings.password)
-
-
 def authenticate():
     return Response(
         'Could not verify your access level for that URL. You have to login with proper credentials', 401,
@@ -157,14 +152,51 @@ def create_json_response(success=True, data=None, error_message=None):
     return jsonify({"success": success, "data": data, "error_message": error_message})
 
 
+def isAdminLoggedIn():
+    auth = request.authorization
+    return auth and (auth.username == config.get(mainSettings.adminUsername) and auth.password == config.get(mainSettings.adminPassword))
+
+
+def maySeeAdminArea():
+    return (config.mainSettings.enableAdminAuth.get() and isAdminLoggedIn()) or (not config.mainSettings.enableAdminAuth.get())
+
+
+def isLoggedIn():
+    auth = request.authorization
+    return auth and (auth.username == config.get(mainSettings.username) and auth.password == config.get(mainSettings.password))
+
+
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if mainSettings.enable_auth.get():
-            auth = request.authorization
-            if not auth or not check_auth(auth.username, auth.password):
+        if not mainSettings.enableAuth.get():
+            return f(*args, **kwargs)
+        if isLoggedIn() or (config.mainSettings.enableAdminAuth.get() and isAdminLoggedIn()):
+            return f(*args, **kwargs)
+        return authenticate()
+
+    return decorated
+
+
+def requires_admin_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        # This could probably be simplified but I feel too dumb right now
+        # If admin is enabled we need an admin logged in
+        # If admin is not enabled but normal auth is enabled we need a normal user
+        # In all other cases we don't care about the user
+        if config.mainSettings.enableAdminAuth.get():
+            if not isAdminLoggedIn():
                 return authenticate()
-        return f(*args, **kwargs)
+            else:
+                return f(*args, **kwargs)
+        if mainSettings.enableAuth.get():
+            if isLoggedIn():
+                return f(*args, **kwargs)
+            else:
+                return authenticate()
+        else:
+            return f(*args, **kwargs)
 
     return decorated
 
@@ -177,7 +209,7 @@ def base(path):
     # We build a protocol agnostic base href using the host and url base. This way we should be able to access the site directly and from behind a proxy without having to do any
     # further configuration or setting any extra headers
     host_url = "//" + request.host + request.environ['URL_BASE']
-    return render_template("index.html", host_url=host_url)
+    return render_template("index.html", host_url=host_url, isAdmin=maySeeAdminArea())
 
 
 def render_search_results_for_api(search_results, total, offset):
@@ -601,12 +633,13 @@ def internalapi_enable_indexer(args):
 
 
 @app.route('/internalapi/setsettings', methods=["PUT"])
-@requires_auth
+@requires_admin_auth
 def internalapi_setsettings():
     logger.debug("Set settings request")
     try:
         config.import_config_data(request.get_json(force=True))
         internal_cache.delete_memoized(internalapi_getconfig)
+        internal_cache.delete_memoized(internalapi_getsafeconfig)
         read_indexers_from_config()
         clean_up_database()
         return "OK"
@@ -616,11 +649,26 @@ def internalapi_setsettings():
 
 
 @app.route('/internalapi/getconfig')
-@requires_auth
+@requires_admin_auth
 @internal_cache.memoize()
 def internalapi_getconfig():
     logger.debug("Get config request")
     return jsonify(config.cfg)
+
+
+@app.route('/internalapi/getsafeconfig')
+@requires_auth
+@internal_cache.memoize()
+def internalapi_getsafeconfig():
+    logger.debug("Get safe config request")
+    return jsonify(config.getSafeConfig())
+
+
+@app.route('/internalapi/mayseeadminarea')
+@requires_auth
+def internalapi_maySeeAdminArea():
+    logger.debug("Get isAdminLoggedIn request")
+    return jsonify({"maySeeAdminArea": maySeeAdminArea()})
 
 
 @app.route('/internalapi/get_versions')
@@ -645,7 +693,6 @@ def internalapi_getcategories():
         return jsonify({"success": True, "categories": categories})
     except DownloaderException as e:
         return jsonify({"success": False, "message": e.message})
-
 
 
 def restart():

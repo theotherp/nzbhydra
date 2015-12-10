@@ -1,16 +1,16 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from builtins import str
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from builtins import open
-from builtins import super
 from builtins import range
+from builtins import str
+from builtins import super
 from future import standard_library
 
 standard_library.install_aliases()
 from builtins import *
-
 from enum import Enum
 import json
 import logging
@@ -118,7 +118,7 @@ class Setting(object):
     It also allows us to collect all settings and create a dict with all settings which can be serialized and sent to the GUI.
     """
 
-    def __init__(self, parent, name, default, valuetype, title=None, description = None, setting_type = SettingType.free):
+    def __init__(self, parent, name, default, valuetype, title=None, description=None, setting_type=SettingType.free):
         self.parent = parent
         self.settingname = name
         self.default = default
@@ -141,7 +141,7 @@ class Setting(object):
 
     def set(self, value):
         self.parent.set_setting(self, value)
-        
+
     def isSetting(self, value):
         return self.get() == value or self.get() == getattr(value, "name")
 
@@ -177,7 +177,7 @@ class SelectOption(object):
 
 
 class SelectionSetting(Setting):
-    def __init__(self, parent, name, default, valuetype, options, title = None, description = None, setting_type = SettingType.select):  # Warning is a mistake by PyCharm
+    def __init__(self, parent, name, default, valuetype, options, title=None, description=None, setting_type=SettingType.select):  # Warning is a mistake by PyCharm
         super(SelectionSetting, self).__init__(parent, name, default, valuetype, title, description, setting_type)
         self.options = options
         self.parent.get()[self.settingname] = self.default.name
@@ -187,17 +187,17 @@ class SelectionSetting(Setting):
 
 
 class MultiSelectionSetting(Setting):
-    def __init__(self, parent, name, default, valuetype, options, title = None, description = None, setting_type = SettingType.select):  # Warning is a mistake by PyCharm
+    def __init__(self, parent, name, default, valuetype, options, title=None, description=None, setting_type=SettingType.select):  # Warning is a mistake by PyCharm
         super(MultiSelectionSetting, self).__init__(parent, name, default, valuetype, title, description, setting_type)
         self.options = options
         self.parent.get()[self.settingname] = [x.name for x in self.default]
 
     def get(self):
         return super(MultiSelectionSetting, self).get()
-    
+
 
 class OrderedMultiSelectionSetting(Setting):
-    def __init__(self, parent, name, default, valuetype, options, title = None, description = None, setting_type = SettingType.select):  # Warning is a mistake by PyCharm
+    def __init__(self, parent, name, default, valuetype, options, title=None, description=None, setting_type=SettingType.select):  # Warning is a mistake by PyCharm
         super(OrderedMultiSelectionSetting, self).__init__(parent, name, default, valuetype, title, description, setting_type)
         self.options = options
         self.parent.get()[self.settingname] = [x.name for x in self.default]
@@ -237,7 +237,7 @@ def import_config_data(data):
 def save(filename):
     global cfg
     with open(filename, "w", encoding="utf-8") as f:
-        #json.dump(cfg, f, indent=4)
+        # json.dump(cfg, f, indent=4)
         f.write(unicode(json.dumps(cfg, ensure_ascii=False, indent=4)))
 
 
@@ -253,7 +253,6 @@ def set(setting, value):
     Just a legacy way to set the setting 
     """
     setting.set(value)
-
 
 
 class LoglevelSelection(object):
@@ -291,10 +290,13 @@ class MainSettings(Category):
         self.baseUrl = Setting(self, name="baseUrl", default=None, valuetype=str)
         self.startup_browser = Setting(self, name="startupBrowser", default=True, valuetype=bool)
 
+        self.enableAuth = Setting(self, name="enableAuth", default=False, valuetype=bool)
         self.username = Setting(self, name="username", default="", valuetype=str)
         self.password = Setting(self, name="password", default="", valuetype=str)
+        self.enableAdminAuth = Setting(self, name="enableAdminAuth", default=False, valuetype=bool)
+        self.adminUsername = Setting(self, name="adminUsername", default="", valuetype=str)
+        self.adminPassword = Setting(self, name="adminPassword", default="", valuetype=str)
         self.apikey = Setting(self, name="apikey", default=''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(30)), valuetype=str)
-        self.enable_auth = Setting(self, name="enableAuth", default=False, valuetype=bool)
 
         self.ssl = Setting(self, name="ssl", default=False, valuetype=bool)
         self.sslcert = Setting(self, name="sslcert", default="nzbhydra.crt", valuetype=str)
@@ -311,7 +313,7 @@ class MainSettings(Category):
 
         # Not a config setting but the version of the config file. Useful when we may need to migrate the config later and want
         # to find out which version is used.
-        self.configVersion = Setting(self, name="configVersion", default=1, valuetype=int)  
+        self.configVersion = Setting(self, name="configVersion", default=1, valuetype=int)
 
 
 mainSettings = MainSettings()
@@ -383,11 +385,10 @@ class SearchingSettings(Category):
         self.ignore_disabled = Setting(self, name="ignoreTemporarilyDisabled", default=False, valuetype=bool)
         self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[InternalExternalSelection.internal], options=InternalExternalSelection.options, valuetype=str, setting_type=SettingType.multiselect)
         self.user_agent = Setting(self, name="userAgent", default="NZBHydra", valuetype=str)
-        
+
         self.duplicateSizeThresholdInPercent = Setting(self, name="duplicateSizeThresholdInPercent", default=0.1, valuetype=float)
         self.duplicateAgeThreshold = Setting(self, name="duplicateAgeThreshold", default=3600, valuetype=int)
         self.htmlParser = SelectionSetting(self, name="htmlParser", default=HtmlParserSelection.html, valuetype=str, options=HtmlParserSelection.options)
-
 
         self.category_sizes = CategorySizeSettings(self)
 
@@ -419,6 +420,7 @@ class DownloaderSettings(Category):
         self.nzbAddingType = SelectionSetting(self, name="nzbAddingType", default=NzbAddingTypeSelection.nzb, valuetype=str, options=[NzbAddingTypeSelection.link, NzbAddingTypeSelection.nzb])
         self.downloader = SelectionSetting(self, name="downloader", default=DownloaderSelection.none, valuetype=str, options=[DownloaderSelection.nzbget, DownloaderSelection.sabnzbd])
 
+
 downloaderSettings = DownloaderSettings()
 
 
@@ -446,6 +448,7 @@ class NzbgetSettings(Category):
         self.username = Setting(self, name="username", default="nzbget", valuetype=str)
         self.password = Setting(self, name="password", default="tegbzn6789", valuetype=str)
         self.default_category = Setting(self, name="defaultCategory", default=None, valuetype=str)
+
 
 nzbgetSettings = NzbgetSettings(downloaderSettings)
 
@@ -544,7 +547,15 @@ def get_newznab_setting_by_id(id):
         "6": indexerSettings.newznab6,
         "7": indexerSettings.newznab7,
         "8": indexerSettings.newznab8,
-        "9": indexerSettings.newznab9, 
+        "9": indexerSettings.newznab9,
         "10": indexerSettings.newznab10
-        
+
     }[id]
+
+
+def getSafeConfig():
+    return {
+        "indexers": [{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "showOnSearch": x["showOnSearch"]} for x in cfg["indexers"].values()],
+        "searching": {"categorysizes": cfg["searching"]["categorysizes"]},
+        "downloader": {"downloader": cfg["downloader"]["downloader"], "askForCategory": cfg["downloader"]["askForCategory"]}
+    }

@@ -450,7 +450,6 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         }
                     }
 
-
                 ]
             },
             {
@@ -482,6 +481,35 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         templateOptions: {
                             type: 'password',
                             label: 'Password',
+                            required: true
+                        }
+                    },
+                    {
+                        key: 'enableAdminAuth',
+                        type: 'horizontalSwitch',
+                        templateOptions: {
+                            type: 'switch',
+                            label: 'Enable admin user',
+                            help: 'Enable to protect the config with a separate admin user'
+                        }
+                    },
+                    {
+                        key: 'adminUsername',
+                        type: 'horizontalInput',
+                        hideExpression: '!model.enableAdminAuth',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Admin username',
+                            required: true
+                        }
+                    },
+                    {
+                        key: 'adminPassword',
+                        hideExpression: '!model.enableAdminAuth',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'password',
+                            label: 'Admin password',
                             required: true
                         }
                     },
