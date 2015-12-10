@@ -232,11 +232,12 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     ConfigService.getSafe().then(function (cfg) {
         safeConfig = cfg;
-        $scope.availableIndexers = _.filter(cfg.indexers, function (indexer) {
+        $scope.availableIndexers = _.chain(cfg.indexers).filter(function (indexer) {
             return indexer.enabled && indexer.showOnSearch;
-        }).map(function (indexer) {
+        }).sortBy("name")
+            .map(function (indexer) {
             return {name: indexer.name, activated: isIndexerPreselected(indexer)};
-        });
+        }).value();
         
     });
 
