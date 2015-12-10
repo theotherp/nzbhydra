@@ -13,6 +13,7 @@ NZBHydra is a meta search for NZB indexers and the "spiritual successor" to [NZB
 * Statistics on indexers (average response time, share of results, access errors), NZB download history and search history (both via internal GUI and API). Indexers with problems are paused for an increasing time span (like in sonarr)
 * Reverse proxy compatible without further configuration (tested with Apache) as long as the host is preserved. If you want to access the API from outside you may need to set the "Base URL" setting.
 * A GUI that looks like ass
+* See http://i.imgur.com/d53cmM7.png http://i.imgur.com/2DpXtxM.png http://i.imgur.com/uk9zwZB.png http://i.imgur.com/M0Pxy2F.png for screenshots
 
 ##How to run
 Run with Python 2.7. Runs on http://0.0.0.0:5075 by default. See the console output on how to choose the port and host using command line parameters.
