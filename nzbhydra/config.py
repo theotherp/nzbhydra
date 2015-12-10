@@ -517,6 +517,7 @@ class IndexerWombleSettings(IndexerSettingsAbstract):
         self.show_on_search = Setting(self, name="showOnSearch", default=False, valuetype=bool)
 
 
+
 class IndexerSettings(Category):
     def __init__(self):
         super(IndexerSettings, self).__init__(config_root, "indexers", "Indexer")
@@ -534,11 +535,21 @@ class IndexerSettings(Category):
         self.newznab8 = IndexerNewznabSettings(self, "newznab8", "Newznab 8")
         self.newznab9 = IndexerNewznabSettings(self, "newznab9", "Newznab 9")
         self.newznab10 = IndexerNewznabSettings(self, "newznab10", "Newznab 10")
+        self.newznab11 = IndexerNewznabSettings(self, "newznab11", "Newznab 11")
+        self.newznab12 = IndexerNewznabSettings(self, "newznab12", "Newznab 12")
+        self.newznab13 = IndexerNewznabSettings(self, "newznab13", "Newznab 13")
+        self.newznab14 = IndexerNewznabSettings(self, "newznab14", "Newznab 14")
+        self.newznab15 = IndexerNewznabSettings(self, "newznab15", "Newznab 15")
+        self.newznab16 = IndexerNewznabSettings(self, "newznab16", "Newznab 16")
+        self.newznab17 = IndexerNewznabSettings(self, "newznab17", "Newznab 17")
+        self.newznab18 = IndexerNewznabSettings(self, "newznab18", "Newznab 18")
+        self.newznab19 = IndexerNewznabSettings(self, "newznab19", "Newznab 19")
+        self.newznab20 = IndexerNewznabSettings(self, "newznab20", "Newznab 20")
+        
 
+#TODO: this is horrible
 
 indexerSettings = IndexerSettings()
-
-
 def get_newznab_setting_by_id(id):
     id = str(id)
     return {
@@ -551,7 +562,17 @@ def get_newznab_setting_by_id(id):
         "7": indexerSettings.newznab7,
         "8": indexerSettings.newznab8,
         "9": indexerSettings.newznab9,
-        "10": indexerSettings.newznab10
+        "10": indexerSettings.newznab10,
+        "11": indexerSettings.newznab11,
+        "12": indexerSettings.newznab12,
+        "13": indexerSettings.newznab13,
+        "14": indexerSettings.newznab14,
+        "15": indexerSettings.newznab15,
+        "16": indexerSettings.newznab16,
+        "17": indexerSettings.newznab17,
+        "18": indexerSettings.newznab18,
+        "19": indexerSettings.newznab19,
+        "20": indexerSettings.newznab20
 
     }[id]
 

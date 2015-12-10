@@ -1257,7 +1257,17 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             getNewznabFieldset(7),
             getNewznabFieldset(8),
             getNewznabFieldset(9),
-            getNewznabFieldset(10)
+            getNewznabFieldset(10),
+            getNewznabFieldset(11),
+            getNewznabFieldset(12),
+            getNewznabFieldset(13),
+            getNewznabFieldset(14),
+            getNewznabFieldset(15),
+            getNewznabFieldset(16),
+            getNewznabFieldset(17),
+            getNewznabFieldset(18),
+            getNewznabFieldset(19),
+            getNewznabFieldset(20)
             
 
         ],
