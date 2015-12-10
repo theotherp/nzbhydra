@@ -942,8 +942,8 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         $scope.query = "";
 
         if (safeConfig.searching.categorysizes.enable_category_sizes) {
-            var min = safeConfig.searching.categorysizes[searchCategory + " min"];
-            var max = safeConfig.searching.categorysizes[searchCategory + " max"];
+            var min = safeConfig.searching.categorysizes[(searchCategory + " min").toLowerCase().replace(" ", "")];
+            var max = safeConfig.searching.categorysizes[(searchCategory + " max").toLowerCase().replace(" ", "")];
             if (_.isNumber(min)) {
                 $scope.minsize = min;
             } else {
@@ -1041,6 +1041,8 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             }
             if (!_.isUndefined($scope.episode)) {
             }
+        } else if ($scope.category == "Ebook") {
+            stateParams.mode = "ebook";
         } else {
             stateParams.mode = "search";
         }
@@ -1324,6 +1326,7 @@ function ConfigService($http, $q, $cacheFactory) {
         set: setConfig,
         get: getConfig,
         getSafe: getSafe,
+        invalidateSafe: invalidateSafe,
         maySeeAdminArea: maySeeAdminArea
     };
     
@@ -1384,6 +1387,10 @@ function ConfigService($http, $q, $cacheFactory) {
         return loadAll().then(function (config) {
             return config;
         });
+    }
+    
+    function invalidateSafe() {
+        cache.remove("safeconfig");
     }
 
     function maySeeAdminArea() {
@@ -1658,6 +1665,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
 
     function submit(form) {
         ConfigService.set($scope.config);
+        ConfigService.invalidateSafe();
         form.$setPristine();
         CategoriesService.invalidate();
     }

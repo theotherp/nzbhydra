@@ -340,7 +340,11 @@ internalapi_search_args = {
 @use_args(internalapi_search_args, locations=['querystring'])
 def internalapi_search(args):
     logger.debug("Search request with args %s" % args)
-    search_request = SearchRequest(type="general", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=args["indexers"])
+    if args["category"].lower() == "ebook":
+        type = "ebook"
+    else:
+        type = "general"
+    search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=args["indexers"])
     results = search.search(True, search_request)
     return process_and_jsonify_for_internalapi(results)
 

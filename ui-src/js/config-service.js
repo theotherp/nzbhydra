@@ -10,6 +10,7 @@ function ConfigService($http, $q, $cacheFactory) {
         set: setConfig,
         get: getConfig,
         getSafe: getSafe,
+        invalidateSafe: invalidateSafe,
         maySeeAdminArea: maySeeAdminArea
     };
     
@@ -70,6 +71,10 @@ function ConfigService($http, $q, $cacheFactory) {
         return loadAll().then(function (config) {
             return config;
         });
+    }
+    
+    function invalidateSafe() {
+        cache.remove("safeconfig");
     }
 
     function maySeeAdminArea() {

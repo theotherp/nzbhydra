@@ -171,6 +171,10 @@ class NewzNab(SearchModule):
 
         return [url.url]
 
+    def get_ebook_urls(self, search_request):
+        search_request.query += " ebook|mobi|pdf|epub"
+        return self.get_search_urls(search_request)
+
     def get_details_link(self, guid):
         f = furl(self.settings.host.get())
         f.path.add("details")

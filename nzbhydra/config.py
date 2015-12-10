@@ -373,6 +373,9 @@ class CategorySizeSettings(Category):
         self.xxxmin = Setting(self, name="xxxmin", default=100, valuetype=int)
         self.xxxmax = Setting(self, name="xxxmax", default=10000, valuetype=int)
 
+        self.ebookmin = Setting(self, name="ebookmin", default=None, valuetype=int)
+        self.ebookmax = Setting(self, name="ebookmax", default=100, valuetype=int)
+
 
 class SearchingSettings(Category):
     """
@@ -494,7 +497,7 @@ class IndexerNewznabSettings(IndexerSettingsAbstract):
 class IndexerNzbclubSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
         super(IndexerNzbclubSettings, self).__init__(parent, "NZBClub", "NZBClub")
-        self.host = Setting(self, name="host", default="http://nzbclub.com", valuetype=str)
+        self.host = Setting(self, name="host", default="https://nzbclub.com", valuetype=str)
         self.name = Setting(self, name="name", default="NZBClub", valuetype=str)
 
 

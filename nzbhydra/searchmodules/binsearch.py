@@ -78,8 +78,22 @@ class Binsearch(SearchModule):
                 urls.extend(self.get_search_urls(search_request))
         return urls
 
-    def get_moviesearch_urls(self, args):
-        return self.get_search_urls(args)
+    def get_moviesearch_urls(self, search_request):
+        return self.get_search_urls(search_request)
+    
+    def get_ebook_urls(self, search_request):
+        urls = []
+        query = search_request.query
+        search_request.query = query + " ebook"
+        urls.extend(self.get_search_urls(search_request))
+        search_request.query = query + " mobi"
+        urls.extend(self.get_search_urls(search_request))
+        search_request.query = query + " pdf"
+        urls.extend(self.get_search_urls(search_request))
+        search_request.query = query + " epub"
+        urls.extend(self.get_search_urls(search_request))
+        return urls
+        
     
     def get_details_link(self, guid):
         logger.info("Details for binsearch not yet implemented")

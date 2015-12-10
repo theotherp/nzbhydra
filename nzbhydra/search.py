@@ -96,6 +96,7 @@ def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selec
         else:
             with_query_generation = True
 
+        logger.debug("Picked %s" % p)
         picked_indexers.append(p)
 
     return picked_indexers, with_query_generation
@@ -196,7 +197,7 @@ def start_search_futures(indexers_and_search_requests):
         futures_to_indexers = {}
         count = 1
         for indexer, search_request in indexers_and_search_requests.items():
-            future = executor.submit(indexer.search, search_request)
+            future = executor.submit(indexer.search, copy.copy(search_request))
             futures_to_indexers[future] = indexer
             logger.debug("Added %d of %d calls to executor" % (count, len(indexers_and_search_requests)))
             count += 1

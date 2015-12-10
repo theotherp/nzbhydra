@@ -80,6 +80,17 @@ class NzbIndex(SearchModule):
         # overwrite for special handling, e.g. cookies
         return requests.get(query, timeout=timeout, verify=False, cookies={"agreed": "true", "lang": "2"})
 
+
+    def get_ebook_urls(self, search_request):
+        #NZBIndex's search is a bit weird, apparently we can only use one "or" or something like that, so we use two different queries
+        urls = []
+        query = search_request.query
+        search_request.query = query + " ebook | pdf"
+        urls.extend(self.get_search_urls(search_request))
+        search_request.query = query + " mobi | epub"
+        urls.extend(self.get_search_urls(search_request))
+        return urls
+
     def process_query_result(self, html, query):
         logger.debug("%s started processing results" % self.name)
 
@@ -88,7 +99,8 @@ class NzbIndex(SearchModule):
         soup = BeautifulSoup(html, searchingSettings.htmlParser.get())
         main_table = soup.find(id="results").find('table')
 
-
+        if "No results found" in html:
+            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
         if not main_table or not main_table.find("tbody"):
             logger.error("Unable to find main table in NZBIndex page: %s..." % html[:500])
             logger.debug(html[:1000])

@@ -246,6 +246,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
 
     function submit(form) {
         ConfigService.set($scope.config);
+        ConfigService.invalidateSafe();
         form.$setPristine();
         CategoriesService.invalidate();
     }

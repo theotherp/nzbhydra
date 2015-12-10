@@ -109,6 +109,8 @@ class SearchModule(object):
                 # Just show all the latest movie releases
                 urls = self.get_moviesearch_urls(search_request)
             return self.execute_queries(urls)
+        elif search_request.type == "ebook":
+            urls = self.get_ebook_urls(search_request)
         else:
             urls = self.get_search_urls(search_request)
         queries_execution_result = self.execute_queries(urls)
@@ -121,13 +123,18 @@ class SearchModule(object):
         # using general queries
         return []
 
-    def get_showsearch_urls(self, args):
+    def get_showsearch_urls(self, search_request):
         # to extend
         # if module supports it, search specifically for show, otherwise make sure we create a query that searches
         # for for s01e01, 1x1 etc
         return []
 
-    def get_moviesearch_urls(self, args):
+    def get_moviesearch_urls(self, search_request):
+        # to extend
+        # if module doesnt support it possibly use (configurable) size restrictions when searching
+        return []
+
+    def get_ebook_urls(self, search_request):
         # to extend
         # if module doesnt support it possibly use (configurable) size restrictions when searching
         return []
