@@ -14,8 +14,8 @@ function addableNzb() {
 
     function controller($scope, ConfigService, NzbDownloadService, growl) {
         $scope.classname = "nzb";
-        ConfigService.get().then(function (settings) {
-            $scope.enabled = settings.downloader.downloader != "none";
+        ConfigService.getSafe().then(function (settings) {
+            $scope.enabled = settings.downloader != "none";
         });
         
         $scope.add = function() {

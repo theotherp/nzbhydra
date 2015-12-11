@@ -750,6 +750,15 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                                 text: 'seconds'
                             }
                         }
+                    },
+                    {
+                        key: 'removeDuplicatesExternal',
+                        type: 'horizontalSwitch',
+                        templateOptions: {
+                            type: 'switch',
+                            label: 'Remove API duplicates',
+                            help: 'Remove duplicates when searching via API'
+                        }
                     }
                 ]
             },

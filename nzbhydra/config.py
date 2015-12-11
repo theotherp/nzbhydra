@@ -239,6 +239,7 @@ def update(d, u, level):
             if k in d.keys():
                 d[k] = u[k]
             else:
+                u.pop(k, None)
                 addLogMessage(20, "Found obsolete setting %s.%s and will remove it" % (level, k))
     return d
 
@@ -418,6 +419,7 @@ class SearchingSettings(Category):
 
         self.duplicateSizeThresholdInPercent = Setting(self, name="duplicateSizeThresholdInPercent", default=0.1, valuetype=float)
         self.duplicateAgeThreshold = Setting(self, name="duplicateAgeThreshold", default=3600, valuetype=int)
+        self.removeDuplicatesExternal = Setting(self, name="removeDuplicatesExternal", default=True, valuetype=bool)
         self.htmlParser = SelectionSetting(self, name="htmlParser", default=HtmlParserSelection.html, valuetype=str, options=HtmlParserSelection.options)
 
         self.category_sizes = CategorySizeSettings(self)
@@ -609,5 +611,5 @@ def getSafeConfig():
     return {
         "indexers": [{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "showOnSearch": x["showOnSearch"]} for x in cfg["indexers"].values()],
         "searching": {"categorysizes": cfg["searching"]["categorysizes"]},
-        "downloader": {"downloader": cfg["downloader"]["downloader"]}
+        "downloader": {"downloader": cfg["downloader"]["downloader"], "nzbget": {"defaultCategory": cfg["downloader"]["nzbget"]["defaultCategory"]}, "sabnzbd": {"defaultCategory": cfg["downloader"]["sabnzbd"]["defaultCategory"]}}
     }

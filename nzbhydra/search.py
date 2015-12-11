@@ -2,12 +2,16 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
+
+from itertools import groupby
+
 from builtins import int
 from future import standard_library
 standard_library.install_aliases()
 from builtins import *
 import concurrent
 from concurrent.futures import ThreadPoolExecutor
+from marshmallow import Schema, fields
 import copy
 import logging
 
@@ -102,6 +106,8 @@ def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selec
     return picked_indexers, with_query_generation
 
 
+
+
 pseudo_cache = {}
 
 
@@ -157,13 +163,31 @@ def search(internal, search_request):
                 logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
                 cache_entry["total"] += 100
 
+        if internal or config.searchingSettings.removeDuplicatesExternal.get():
+            countBefore = len(search_results)
+            grouped_by_sameness = find_duplicates(search_results)
+            allresults = []
+            for group in grouped_by_sameness:
+                if internal:
+                    for i in group:
+                        # We give each group of results a unique value by which they can be identified later
+                        i.hash = hash(group[0].guid)
+                        allresults.append(i)
+                else:
+                    #We sort by age first and then by indexerscore so the newest result with the highest indexer score is chosen
+                    group = sorted(group, key=lambda x: x.epoch, reverse=True)
+                    group = sorted(group, key=lambda x: x.indexerscore, reverse=True)
+                    allresults.append(group[0])
+            search_results = allresults
+            if not internal:
+                countAfter = len(search_results)
+                countRemoved = countBefore - countAfter
+                logger.info("Removed %d duplicates from %d results" % (countRemoved, countBefore))
         search_results = sorted(search_results, key=lambda x: x.epoch, reverse=True)
+        
         cache_entry["results"].extend(search_results)
         cache_entry["offset"] += limit
-        #todo: perhaps move duplicate handling here. WOuld allow to recognize duplicates that were added, for example 100 were already loaded and then we get 101-200 und 100 and 101 are duplicates
-        #todo: then make configurable if we want to delete duplicates for api, internal, both, none. would also mean that we return 100 actually different results, otherwise in the worst case we could for example return 50 originals and 50 duplicates
-    
-    
+        
     if internal:
         logger.debug("We have %d cached results and them all because we search internally" % len(cache_entry["results"]))
         nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:])
@@ -209,3 +233,66 @@ def start_search_futures(indexers_and_search_requests):
             count += 1
 
     return indexer_to_searchresults
+
+
+def find_duplicates(results):
+    sorted_results = sorted(results, key=lambda x: x.title.lower())
+    grouped_by_title = groupby(sorted_results, key=lambda x: x.title.lower())
+    grouped_by_sameness = []
+    for key, group in grouped_by_title:
+        results_to_sets = {}
+        group = list(group)
+        for i in range(0, len(group)):
+            a = group[i]
+            if a not in results_to_sets.keys():
+                results_to_sets[a] = {a}
+            for j in range(i + 1, len(group)):
+                b = group[j]
+                same = a.indexer != b.indexer
+                same = same and test_for_duplicate_age(a, b)
+                same = same and test_for_duplicate_size(a, b)
+                if same:
+                    results_to_sets[a].add(b)
+                    results_to_sets[b] = results_to_sets[a]
+                else:
+                    if b not in results_to_sets.keys():
+                        results_to_sets[b] = {b}
+
+        duplicate_groups = []
+        for x in results_to_sets.values():
+            if x not in duplicate_groups:
+                duplicate_groups.append(x)
+        grouped_by_sameness.extend([list(x) for x in duplicate_groups])
+    return grouped_by_sameness
+
+
+def test_for_duplicate_age(search_result_1, search_result_2):
+    if search_result_1.epoch is None or search_result_2.epoch is None:
+        return False
+    age_threshold = config.searchingSettings.duplicateAgeThreshold.get()
+
+    group_known = search_result_1.group is not None and search_result_2.group is not None
+    same_group = search_result_1.group == search_result_2.group
+    poster_known = search_result_1.poster is not None and search_result_2.poster is not None
+    same_poster = search_result_1.poster == search_result_2.poster
+    if (group_known and not same_group) or (poster_known and not same_poster):
+        return False
+    if (same_group and not poster_known) or (same_poster and not group_known):
+        age_threshold = 12
+    if same_group and same_poster:
+        age_threshold = 24
+
+    same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold  # epoch difference (ms) to minutes    
+    return same_age
+
+
+def test_for_duplicate_size(search_result_1, search_result_2):
+    if not search_result_1.size or not search_result_2.size:
+        return False
+    size_threshold = config.searchingSettings.duplicateSizeThresholdInPercent.get()
+    size_difference = search_result_1.size - search_result_2.size
+    size_average = (search_result_1.size + search_result_2.size) / 2
+    size_difference_percent = abs(size_difference / size_average) * 100
+    same_size = size_difference_percent <= size_threshold
+
+    return same_size

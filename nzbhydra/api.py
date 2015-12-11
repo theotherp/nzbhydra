@@ -47,69 +47,6 @@ categories = {'Console': {'code': [1000, 1010, 1020, 1030, 1040, 1050, 1060, 107
               }
 
 
-def find_duplicates(results):
-    sorted_results = sorted(results, key=lambda x: x.title.lower())
-    grouped_by_title = groupby(sorted_results, key=lambda x: x.title.lower())
-    grouped_by_sameness = []
-    for key, group in grouped_by_title:
-        results_to_sets = {}
-        group = list(group)
-        for i in range(0, len(group)):
-            a = group[i]
-            if a not in results_to_sets.keys():
-                results_to_sets[a] = {a}
-            for j in range(i + 1, len(group)):
-                b = group[j]
-                same = a.indexer != b.indexer
-                same = same and test_for_duplicate_age(a, b)
-                same = same and test_for_duplicate_size(a, b)
-                if same:
-                    results_to_sets[a].add(b)
-                    results_to_sets[b] = results_to_sets[a]
-                else:
-                    if b not in results_to_sets.keys():
-                        results_to_sets[b] = {b}
-
-        duplicate_groups = []
-        for x in results_to_sets.values():
-            if x not in duplicate_groups:
-                duplicate_groups.append(x)
-        grouped_by_sameness.extend([list(x) for x in duplicate_groups])
-    return grouped_by_sameness
-
-
-def test_for_duplicate_age(search_result_1, search_result_2):
-    if search_result_1.epoch is None or search_result_2.epoch is None:
-        return False
-    age_threshold = config.searchingSettings.duplicateAgeThreshold.get()
-
-    group_known = search_result_1.group is not None and search_result_2.group is not None
-    same_group = search_result_1.group == search_result_2.group
-    poster_known = search_result_1.poster is not None and search_result_2.poster is not None
-    same_poster = search_result_1.poster == search_result_2.poster
-    if (group_known and not same_group) or (poster_known and not same_poster):
-        return False
-    if (same_group and not poster_known) or (same_poster and not group_known):
-        age_threshold = 12
-    if same_group and same_poster:
-        age_threshold = 24
-
-    same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold  # epoch difference (ms) to minutes    
-    return same_age
-
-
-def test_for_duplicate_size(search_result_1, search_result_2):
-    if not search_result_1.size or not search_result_2.size:
-        return False
-    size_threshold = config.searchingSettings.duplicateSizeThresholdInPercent.get()
-    size_difference = search_result_1.size - search_result_2.size
-    size_average = (search_result_1.size + search_result_2.size) / 2
-    size_difference_percent = abs(size_difference / size_average) * 100
-    same_size = size_difference_percent <= size_threshold
-
-    return same_size
-
-
 class IndexerSchema(Schema):
     name = fields.String()
     module = fields.String()
@@ -215,7 +152,6 @@ def sizeof_fmt(num, suffix='B'):
 
 def process_for_external_api(results):
     results = transform_results(results["results"], results["dbsearch"])
-    results = sorted(results, key=lambda x: x.epoch, reverse=True)
     return results
 
 
@@ -232,27 +168,13 @@ def process_for_internal_api(search_result):
         indexersearchdbentries.append(indexer_search_info)
 
     nzbsearchresults = transform_results(nzbsearchresults, search_result["dbsearch"])
+    nzbsearchresults = serialize_nzb_search_result(nzbsearchresults)
 
-    grouped_by_sameness = find_duplicates(nzbsearchresults)
-    logger.debug("Duplicate check left %d groups of separate results" % len(grouped_by_sameness))
-    # Will be sorted by GUI later anyway but makes debugging easier
-    results = sorted(grouped_by_sameness, key=lambda x: x[0].epoch, reverse=True)
-
-    allresults = []
-    for group in results:
-        # Sort duplicates by age and then indexer's score
-        # group = sorted(group, key=lambda x: x.epoch, reverse=True)
-        # group = sorted(group, key=lambda x: x.indexerscore)
-        for i in group:
-            # We give each group of results a unique value by which they can be identified later
-            i.hash = hash(group[0].guid)
-            allresults.append(NzbSearchResultSchema().dump(i).data)
-
-    return {"results": allresults, "indexersearches": indexersearchdbentries, "searchentryid": search_result["dbsearch"], "total": search_result["total"]}
+    return {"results": nzbsearchresults, "indexersearches": indexersearchdbentries, "searchentryid": search_result["dbsearch"], "total": search_result["total"]}
 
 
-def serialize_nzb_search_result(result):
-    return NzbSearchResultSchema(many=True).dump(result)
+def serialize_nzb_search_result(results):
+    return NzbSearchResultSchema(many=True).dump(results).data
 
 
 def get_nfo(indexer_name, guid):

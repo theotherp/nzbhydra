@@ -18,7 +18,7 @@ function NzbDownloadService($http, ConfigService, CategoriesService) {
     }
 
     function download (guids) {
-        return ConfigService.get().then(function (settings) {
+        return ConfigService.getSafe().then(function (settings) {
 
             var category;
             if (settings.downloader.downloader == "nzbget") {

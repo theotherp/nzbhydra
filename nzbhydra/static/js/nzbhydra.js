@@ -510,8 +510,8 @@ function addableNzb() {
 
     function controller($scope, ConfigService, NzbDownloadService, growl) {
         $scope.classname = "nzb";
-        ConfigService.get().then(function (settings) {
-            $scope.enabled = settings.downloader.downloader != "none";
+        ConfigService.getSafe().then(function (settings) {
+            $scope.enabled = settings.downloader != "none";
         });
         
         $scope.add = function() {
@@ -1150,7 +1150,7 @@ function NzbDownloadService($http, ConfigService, CategoriesService) {
     }
 
     function download (guids) {
-        return ConfigService.get().then(function (settings) {
+        return ConfigService.getSafe().then(function (settings) {
 
             var category;
             if (settings.downloader.downloader == "nzbget") {
@@ -2170,6 +2170,15 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                             addonRight: {
                                 text: 'seconds'
                             }
+                        }
+                    },
+                    {
+                        key: 'removeDuplicatesExternal',
+                        type: 'horizontalSwitch',
+                        templateOptions: {
+                            type: 'switch',
+                            label: 'Remove API duplicates',
+                            help: 'Remove duplicates when searching via API'
                         }
                     }
                 ]
