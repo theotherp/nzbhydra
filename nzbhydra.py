@@ -40,6 +40,7 @@ def run():
     config.save(settings_file)  # Write any new settings back to the file
     logger = log.setup_custom_logger('root')
     logger.info("Started")
+    config.logLogMessages()
     logger.info("Loading database file %s" % database_file)
     if not os.path.exists(database_file):
         database.init_db(database_file)

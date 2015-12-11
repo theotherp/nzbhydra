@@ -3,6 +3,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import copy
+
 from builtins import open
 from builtins import range
 from builtins import str
@@ -206,13 +208,38 @@ class OrderedMultiSelectionSetting(Setting):
         return super(OrderedMultiSelectionSetting, self).get()
 
 
-def update(d, u):
+logMessages = []
+
+
+def addLogMessage(level, message):
+    """
+        Adds a log message to a list which can be logged after the logger was initialized 
+    """
+    global logMessages
+    logMessages.append({"level": level, "message": message})
+
+
+def logLogMessages():
+    """
+        Logs the messages that were created before the logger was initialized and then removes them from the list 
+    """
+    global logMessages
+    for x in logMessages:
+        logger.log(x["level"], x["message"])
+    logMessages = []
+
+
+def update(d, u, level):
     for k, v in u.items():
+
         if isinstance(v, collections.Mapping):
-            r = update(d.get(k, {}), v)
+            r = update(d.get(k, {}), v, "%s.%s" % (level, k))
             d[k] = r
         else:
-            d[k] = u[k]
+            if k in d.keys():
+                d[k] = u[k]
+            else:
+                addLogMessage(20, "Found obsolete setting %s.%s and will remove it" % (level, k))
     return d
 
 
@@ -223,7 +250,7 @@ def load(filename):
     if os.path.exists(filename):
         with open(filename) as f:
             loaded_config = json.load(f)
-            cfg = update(cfg, loaded_config)
+            cfg = update(cfg, loaded_config, level="root")
             pass
 
 
@@ -517,7 +544,6 @@ class IndexerWombleSettings(IndexerSettingsAbstract):
         self.show_on_search = Setting(self, name="showOnSearch", default=False, valuetype=bool)
 
 
-
 class IndexerSettings(Category):
     def __init__(self):
         super(IndexerSettings, self).__init__(config_root, "indexers", "Indexer")
@@ -545,11 +571,13 @@ class IndexerSettings(Category):
         self.newznab18 = IndexerNewznabSettings(self, "newznab18", "Newznab 18")
         self.newznab19 = IndexerNewznabSettings(self, "newznab19", "Newznab 19")
         self.newznab20 = IndexerNewznabSettings(self, "newznab20", "Newznab 20")
-        
 
-#TODO: this is horrible
+
+# TODO: this is horrible
 
 indexerSettings = IndexerSettings()
+
+
 def get_newznab_setting_by_id(id):
     id = str(id)
     return {
