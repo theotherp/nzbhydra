@@ -221,7 +221,8 @@ function otherColumns($http, $templateCache, $compile) {
 
         $scope.showNfo = showNfo;
         function showNfo(resultItem) {
-            if (resultItem.has_nfo) {
+            if (resultItem.has_nfo == 0) {
+                console.log("Ignoring NFO request because we know the item has no NFO");
                 return;
             }
             var uri = new URI("internalapi/getnfo");
