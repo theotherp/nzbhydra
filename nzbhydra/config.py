@@ -513,6 +513,15 @@ class IndexerBinsearchSettings(IndexerSettingsAbstract):
         self.name = Setting(self, name="name", default="Binsearch", valuetype=str)
 
 
+class IndexerOmgWtfSettings(IndexerSettingsAbstract):
+    def __init__(self, parent):
+        super(IndexerOmgWtfSettings, self).__init__(parent, "omgwtfnzbs", "omgwtfnzbs.org")
+        self.host = Setting(self, name="host", default="https:/api.omgwtfnzbs.org", valuetype=str)
+        self.name = Setting(self, name="name", default="omgwtfnzbs.org", valuetype=str)
+        self.username = Setting(self, name="username", default="", valuetype=str)
+        self.apikey = Setting(self, name="apikey", default="", valuetype=str)
+
+
 class IndexerNewznabSettings(IndexerSettingsAbstract):
     def __init__(self, parent, name, title):
         super(IndexerNewznabSettings, self).__init__(parent, name, title)
@@ -552,6 +561,7 @@ class IndexerSettings(Category):
         self.binsearch = IndexerBinsearchSettings(self)
         self.nzbclub = IndexerNzbclubSettings(self)
         self.nzbindex = IndexerNzbindexSettings(self)
+        self.omgwtf = IndexerOmgWtfSettings(self)
         self.womble = IndexerWombleSettings(self)
         self.newznab1 = IndexerNewznabSettings(self, "newznab1", "Newznab 1")
         self.newznab2 = IndexerNewznabSettings(self, "newznab2", "Newznab 2")

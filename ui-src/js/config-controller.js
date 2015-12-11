@@ -121,6 +121,9 @@ angular
                     } else if ($scope.to.testType == "newznab") {
                         url = "internalapi/test_newznab";
                         params = {host: $scope.model.host, apikey: $scope.model.apikey};
+                    } else if ($scope.to.testType == "omgwtf") {
+                        url = "internalapi/test_omgwtf";
+                        params = {username: $scope.model.username, apikey: $scope.model.apikey};
                     }
                     $http.get(url, {params: params}).success(function (result) {
                         //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
@@ -251,7 +254,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
         CategoriesService.invalidate();
     }
 
-    function getBasicIndexerFieldset(showName, host, apikey, searchIds, testConnection) {
+    function getBasicIndexerFieldset(showName, host, apikey, username, searchIds, testConnection, testtype) {
         var fieldset = [];
 
         fieldset.push({
@@ -300,6 +303,20 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                     templateOptions: {
                         type: 'text',
                         label: 'API Key'
+                    }
+                }
+            )
+        }
+
+        if (username) {
+            fieldset.push(
+                {
+                    key: 'username',
+                    type: 'horizontalInput',
+                    hideExpression: '!model.enabled',
+                    templateOptions: {
+                        type: 'text',
+                        label: 'Username'
                     }
                 }
             )
@@ -362,7 +379,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                     hideExpression: '!model.enabled',
                     templateOptions: {
                         label: 'Test connection',
-                        testType: 'newznab'
+                        testType: testtype
                     }
                 }
             )
@@ -376,7 +393,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             wrapper: 'fieldset',
             key: 'newznab' + index,
             templateOptions: {label: 'Newznab ' + index},
-            fieldGroup: getBasicIndexerFieldset(true, true, true, true, true)
+            fieldGroup: getBasicIndexerFieldset(true, true, true, false, true, true, 'newznab')
         };
     }
     
@@ -1226,19 +1243,19 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 wrapper: 'fieldset',
                 key: 'Binsearch',
                 templateOptions: {label: 'Binsearch'},
-                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false)
+                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false)
             },
             {
                 wrapper: 'fieldset',
                 key: 'NZBClub',
                 templateOptions: {label: 'NZBClub'},
-                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false)
+                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false)
             },
             {
                 wrapper: 'fieldset',
                 key: 'NZBIndex',
                 templateOptions: {label: 'NZBIndex'},
-                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false).concat([{
+                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false).concat([{
                     key: 'generalMinSize',
                     type: 'horizontalInput',
                     hideExpression: '!model.enabled',
@@ -1248,13 +1265,18 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         help: 'NZBIndex returns a lot of crap with small file sizes. Set this value and all smaller results will be filtered out no matter the category'
                     }
                 }])
-
+            },
+            {
+                wrapper: 'fieldset',
+                key: 'omgwtfnzbs',
+                templateOptions: {label: 'omgwtfnzbs.org'},
+                fieldGroup: getBasicIndexerFieldset(false, false, true, true, false, true, 'omgwtf')
             },
             {
                 wrapper: 'fieldset',
                 key: 'Womble',
                 templateOptions: {label: 'Womble'},
-                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false)
+                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false)
             },
 
             getNewznabFieldset(1),

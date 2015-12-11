@@ -14,7 +14,7 @@ from nzbhydra.config import MainSettings, mainSettings
 
 
 class SensitiveDataFilter(logging.Filter):
-    regex = re.compile(r"apikey=[\w]+", re.I)
+    regex = re.compile(r"(apikey|api)=[\w]+", re.I)
     
     def filter(self, record):
         msg = record.msg

@@ -12,7 +12,7 @@ from builtins import *
 import logging
 from nzbhydra import config, database
 from nzbhydra.database import Indexer
-from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch
+from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch, omgwtf
 
 logger = logging.getLogger('root')
 configured_indexers = []
@@ -48,6 +48,13 @@ def read_indexers_from_config():
         
     instance = nzbclub.get_instance(config.indexerSettings.nzbclub)
     if config.indexerSettings.nzbclub.enabled.get():
+        enabled_indexers.append(instance)
+        logger.info("Loaded indexer %s" % instance.name)
+    init_indexer_table_entry(instance.name)
+    configured_indexers.append(instance)
+
+    instance = omgwtf.get_instance(config.indexerSettings.omgwtf)
+    if config.indexerSettings.omgwtf.enabled.get():
         enabled_indexers.append(instance)
         logger.info("Loaded indexer %s" % instance.name)
     init_indexer_table_entry(instance.name)

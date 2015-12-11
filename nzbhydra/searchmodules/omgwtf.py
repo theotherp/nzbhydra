@@ -1,0 +1,313 @@
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
+
+import json
+
+from builtins import super
+from builtins import str
+from builtins import int
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
+import logging
+import re
+
+import arrow
+import xml.etree.ElementTree as ET
+
+from furl import furl
+from requests.exceptions import RequestException
+import requests
+from nzbhydra import config
+
+from nzbhydra.config import searchingSettings
+from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException, IndexerAuthException
+from nzbhydra.nzb_search_result import NzbSearchResult
+from nzbhydra.search_module import SearchModule, IndexerProcessingResult
+
+logger = logging.getLogger('root')
+
+categories_to_omgwtf = { 
+    'All': [],
+    'Movies': ["15", "16", "17", "18"],
+    'Movies HD': ["16"],
+    'Movies SD': ["15"],
+    'TV': ["19", "20", "21"],
+    'TV SD': ["19"],
+    'TV HD': ["20"],
+    'Audio': ["3", "7", "8", "22"],
+    'Audio FLAC': ["22"],
+    'Audio MP3': ["7"],
+    'Console': ["14"],
+    'PC': ["1", "12"],
+    'XXX': ["23", "24", "25", "26", "27", "28"],
+    'Other': ["11"],
+    'Ebook': ["9"]
+}
+
+omgwtf_to_categories = {
+    "1": "PC",
+    "2": "Other",
+    "3": "Audio",
+    "4": "Other",
+    "5": "Other",
+    "6": "Other",
+    "7": "Audio MP3",
+    "8": "Audio",
+    "9": "Ebook",
+    "10": "Other",
+    "11": "Other",
+    "12": "PC",
+    "13": "Other",
+    "14": "Other",
+    "15": "Movies SD",
+    "16": "Movies HD",
+    "17": "Movies ",
+    "18": "Movies ",
+    "19": "TV SD",
+    "20": "TV HD",
+    "21": "TV",
+    "22": "Audio FLAC",
+    "23": "XXX",
+    "24": "XXX",
+    "25": "XXX",
+    "26": "XXX",
+    "27": "XXX",
+    "28": "XXX",
+}
+
+newznab_to_omgwtf = {
+    "2000": ["15", "16", "17", "18"],
+    '2040': ["16"],
+    '2030': ["15"],
+    '5000': ["19", "20", "21"],
+    '5030': ["19"],
+    '5040': ["20"],
+    '3000': ["3", "7", "8", "22"],
+    '3040': ["22"],
+    '3010': ["7"],
+    '1000': ["14"],
+    '4000': ["1", "12"],
+    '6000': ["23", "24", "25", "26", "27", "28"],
+    '7000': ["11"],
+    '7020': ["9"]
+}
+
+
+def map_category(category):
+    if category is None:
+        return []
+    if "," in category:
+        #newznab categories
+        cats = []
+        for x in category.split(","):
+            if x in newznab_to_omgwtf:
+                logger.debug("Mapped category %s to %s" % (x, newznab_to_omgwtf[x]))
+                cats.extend(newznab_to_omgwtf[x])
+        return cats
+    else:
+        if category in categories_to_omgwtf.keys():
+            return categories_to_omgwtf[category]
+        else:
+            if category in newznab_to_omgwtf:
+                logger.debug("Mapped category %s to %s" % (category, newznab_to_omgwtf[category]))
+                return newznab_to_omgwtf[category]
+            else:
+                # If not we return an empty list so that we search in all categories
+                return []
+
+
+def test_connection(apikey, username):
+    logger.info("Testing connection for omgwtfnzbs")
+    f = furl(config.indexerSettings.omgwtf.host.get())
+    f.path.add("xml")
+    f = f.add({"api": apikey, "user": username})
+    try:
+        headers = {
+            'User-Agent': config.searchingSettings.user_agent.get()
+        }
+        r = requests.get(f.url, verify=False, headers=headers, timeout=config.searchingSettings.timeout.get())
+        r.raise_for_status()
+        if "your user/api information is incorrect" in r.text:
+            raise IndexerAuthException("Wrong credentials", None)
+    except RequestException as e:
+        logger.info("Unable to connect to indexer using URL %s: %s" % (f.url, str(e)))
+        return False, "Unable to connect to host"
+    except IndexerAuthException:
+        logger.info("Unable to log in to indexer omgwtfnzbs due to wrong credentials")
+        return False, "Wrong credentials"
+    except IndexerAccessException as e:
+        logger.info("Unable to log in to indexer omgwtfnzbs. Unknown error %s." % str(e))
+        return False, "Host reachable but unknown error returned"
+    return True, ""
+
+
+class OmgWtf(SearchModule):
+    def __init__(self, indexer):
+        super(OmgWtf, self).__init__(indexer)
+        self.module = "omgwtfnzbs.org"
+
+        self.supports_queries = True  # We can only search using queries
+        self.needs_queries = False
+        self.category_search = True
+
+    def build_base_url(self):
+        f = furl(self.host)
+        f = f.add({"api": config.indexerSettings.omgwtf.apikey.get(), "user": config.indexerSettings.omgwtf.username.get()})
+        return f
+
+    def get_search_urls(self, search_request):
+        if search_request.offset > 0:
+            return []
+        f = self.build_base_url()
+        cats = map_category(search_request.category)
+        if search_request.query is not None and search_request.query != "":
+            #Query based XML search
+            f.path.add("xml")
+            f = f.add({"search": search_request.query})
+            if search_request.maxage:
+                f = f.add({"retention": search_request.maxage})        
+            if len(cats) > 0:
+                f = f.add({"cat": ",".join(cats)})
+        else:
+            #RSS
+            f.host = f.host.replace("api", "rss") #Haaaaacky
+            f.path.add("rss-download.php")
+            if len(cats) > 0:
+                f = f.add({"catid": ",".join(cats)})
+            
+        return [f.tostr()]
+
+    def get_showsearch_urls(self, search_request):
+        if search_request.category is None:
+            search_request.category = "TV"
+        return self.get_search_urls(search_request)
+
+    def get_moviesearch_urls(self, search_request):
+        if search_request.category is None:
+            search_request.category = "Movies"
+        return self.get_search_urls(search_request)
+    
+    def get_details_link(self, guid):
+        f = furl(self.host)
+        f.path.add("details.php")
+        f = f.add({"id": guid})
+        return f.tostr()
+
+    def get(self, query, timeout=None, cookies=None):
+        # overwrite for special handling, e.g. cookies
+        return requests.get(query, timeout=timeout, verify=False)
+
+
+    def get_ebook_urls(self, search_request):
+        return self.get_search_urls(search_request)
+
+    def process_query_result(self, xml_response, query):
+        logger.debug("%s started processing results" % self.name)
+
+        if "0 results found" in xml_response:
+            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
+        if "search to short" in xml_response:
+            logger.info("omgwtf says the query was too short")
+            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
+            
+
+        entries = []
+        try:
+            tree = ET.fromstring(xml_response)
+        except Exception:
+            logger.exception("Error parsing XML: %s..." % xml_response[:500])
+            raise IndexerResultParsingException("Error parsing XML", self)
+        
+        if tree.tag == "xml":
+            total = int(tree.find("info").find("results").text)
+            current_page = int(tree.find("info").find("current_page").text)
+            total_pages = int(tree.find("info").find("pages").text)
+            has_more = current_page < total_pages
+            for item in tree.find("search_req").findall("post"):
+                entry = self.create_nzb_search_result()
+                entry.guid = item.find("nzbid").text
+                entry.title = item.find("release").text
+                entry.group = item.find("group").text
+                entry.size = item.find("sizebytes").text
+                entry.epoch = item.find("usenetage").text
+                pubdate = arrow.get(entry.epoch)
+                entry.pubdate_utc = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
+                entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
+                entry.age_days = (arrow.utcnow() - pubdate).days
+                entry.age_precise = True
+                entry.details_link = item.find("details").text
+                entry.has_nfo = NzbSearchResult.HAS_NFO_MAYBE
+                categoryid = item.find("categoryid").text
+                if categoryid in omgwtf_to_categories.keys():
+                    entry.category = omgwtf_to_categories[categoryid]
+                else:
+                    entry.category = "N/A"
+                entries.append(entry)
+            return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=has_more)      
+        elif tree.tag == "rss":
+            regexGuid = re.compile(r".*\?id=(\w+)&.*")
+            regexGroup = re.compile(r".*Group:<\/b> ([\w\.\-]+)<br \/>.*")
+            for item in tree.find("channel").findall("item"):
+                entry = self.create_nzb_search_result()
+                guid = item.find("guid").text
+                m = regexGuid.match(guid)
+                if m:
+                    entry.guid = m.group(1)
+                else:
+                    logger.warn("Unable to find GUID in " + guid)
+                    continue
+                entry.title = item.find("title").text
+                description = item.find("description").text
+                m = regexGroup.match(description)
+                if m:
+                    entry.group = m.group(1)
+                else:
+                    logger.warn("Unable to find group in " + description)
+                    continue
+                entry.size = item.find("enclosure").attrib["length"]
+                entry.pubDate = item.find("pubDate").text
+                pubdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
+                entry.epoch = pubdate.timestamp
+                entry.pubdate_utc = str(pubdate)
+                entry.age_days = (arrow.utcnow() - pubdate).days
+                entry.precise_date = True
+                entry.has_nfo = NzbSearchResult.HAS_NFO_MAYBE
+                categoryid = item.find("categoryid").text
+                if categoryid in omgwtf_to_categories.keys():
+                    entry.category = omgwtf_to_categories[categoryid]
+                else:
+                    entry.category = "N/A"
+                entries.append(entry)
+            return IndexerProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False)
+        else:
+            logger.warn("Unknown response type: %s" % xml_response[:100])
+            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
+        
+
+    def get_nfo(self, guid):
+        f = furl(self.host)
+        f.path.add("nfo")
+        f = f.add({"id": guid, "api": config.indexerSettings.omgwtf.apikey.get(), "user": config.indexerSettings.omgwtf.username.get(), "send": "1"})
+        r, papiaccess = self.get_url_with_papi_access(f.tostr(), "nfo")
+        return True, r.text, None
+        
+
+    def get_nzb_link(self, guid, title):
+        f = furl(self.host)
+        f.path.add("nzb")
+        f = f.add({"id": guid, "api": config.indexerSettings.omgwtf.apikey.get(), "user": config.indexerSettings.omgwtf.username.get()})
+        return f.tostr()
+
+    def check_auth(self, xml):
+        if "your user/api information is incorrect.. check and try again" in xml:
+            raise IndexerAuthException("Wrong API key or username", None)
+        if "applying some updates please try again later." in xml:
+            raise IndexerAccessException("Indexer down for maintenance", None)
+        
+
+
+def get_instance(indexer):
+    return OmgWtf(indexer)

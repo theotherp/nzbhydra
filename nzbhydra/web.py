@@ -9,6 +9,8 @@ import os
 
 import rison
 
+from nzbhydra.searchmodules import omgwtf
+
 sslImported = True
 try:
     import ssl
@@ -569,6 +571,20 @@ internalapi__testnewznab_args = {
 @requires_auth
 def internalapi_testnewznab(args):
     success, message = test_connection(args["host"], args["apikey"])
+    return jsonify({"result": success, "message": message})
+
+
+internalapi__testomgwtf_args = {
+    "username": fields.String(missing=None),
+    "apikey": fields.String(missing=None),
+}
+
+
+@app.route('/internalapi/test_omgwtf')
+@use_args(internalapi__testomgwtf_args)
+@requires_auth
+def internalapi_testomgwtf(args):
+    success, message = omgwtf.test_connection(args["apikey"], args["username"])
     return jsonify({"result": success, "message": message})
 
 
