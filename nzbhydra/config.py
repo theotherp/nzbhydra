@@ -581,5 +581,5 @@ def getSafeConfig():
     return {
         "indexers": [{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "showOnSearch": x["showOnSearch"]} for x in cfg["indexers"].values()],
         "searching": {"categorysizes": cfg["searching"]["categorysizes"]},
-        "downloader": {"downloader": cfg["downloader"]["downloader"], "askForCategory": cfg["downloader"]["askForCategory"]}
+        "downloader": {"downloader": cfg["downloader"]["downloader"]}
     }
