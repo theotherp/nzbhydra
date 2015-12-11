@@ -216,7 +216,7 @@ class NewzNab(SearchModule):
             description = item.find("description").text
             if description is not None and "Group:" in description:  # DogNZB has the group in its description
                 m = grouppattern.search(description)
-                if m:
+                if m and m.group(1) != "not available":
                     entry.group = m.group(1)
 
             categories = []
@@ -233,7 +233,7 @@ class NewzNab(SearchModule):
                     entry.poster = attribute_value
                 elif attribute_name == "info":
                     entry.details_link = attribute_value
-                elif attribute_name == "group":
+                elif attribute_name == "group" and attribute_value != "not available":
                     entry.group = attribute_value
                 # Store all the extra attributes, we will return them later for external apis
                 entry.attributes.append({"name": attribute_name, "value": attribute_value})
