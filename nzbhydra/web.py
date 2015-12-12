@@ -346,7 +346,7 @@ def internalapi_search(args):
         type = "ebook"
     else:
         type = "general"
-    search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=args["indexers"])
+    search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=urllib.unquote(args["indexers"]))
     results = search.search(True, search_request)
     return process_and_jsonify_for_internalapi(results)
 
@@ -372,7 +372,7 @@ internalapi_moviesearch_args = {
 @use_args(internalapi_moviesearch_args, locations=['querystring'])
 def internalapi_moviesearch(args):
     logger.debug("Movie search request with args %s" % args)
-    search_request = SearchRequest(type="movie", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=args["indexers"])
+    search_request = SearchRequest(type="movie", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=urllib.unquote(args["indexers"]))
     if args["imdbid"]:
         search_request.identifier_key = "imdbid"
         search_request.identifier_value = args["imdbid"]
@@ -410,7 +410,7 @@ internalapi_tvsearch_args = {
 def internalapi_tvsearch(args):
     logger.debug("TV search request with args %s" % args)
     search_request = SearchRequest(type="tv", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], episode=args["episode"], season=args["season"], title=args["title"],
-                                   indexers=args["indexers"])
+                                   indexers=urllib.unquote(args["indexers"]))
     if args["tvdbid"]:
         search_request.identifier_key = "tvdbid"
         search_request.identifier_value = args["tvdbid"]

@@ -61,7 +61,7 @@ function SearchService($http) {
             uri.addQuery("maxage", maxage);
         }
         if (!angular.isUndefined(indexers)) {
-            uri.addQuery("indexers", indexers);
+            uri.addQuery("indexers", decodeURIComponent(indexers));
         }
         
 

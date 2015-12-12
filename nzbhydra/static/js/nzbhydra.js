@@ -614,7 +614,7 @@ function SearchService($http) {
             uri.addQuery("maxage", maxage);
         }
         if (!angular.isUndefined(indexers)) {
-            uri.addQuery("indexers", indexers);
+            uri.addQuery("indexers", decodeURIComponent(indexers));
         }
         
 
@@ -917,7 +917,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         $scope.query = $scope.title;
     }
     if (!angular.isUndefined($stateParams.indexers)) {
-        $scope.indexers = $stateParams.indexers.split(",");
+        $scope.indexers = decodeURIComponent($stateParams.indexers).split("|");
     }
 
     $scope.showIndexers = {};
@@ -1000,7 +1000,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
     $scope.startSearch = function () {
         blockUI.start("Searching...");
-        var indexers = angular.isUndefined($scope.indexers) ? undefined : $scope.indexers.join(",");
+        var indexers = angular.isUndefined($scope.indexers) ? undefined : $scope.indexers.join("|");
         SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers).then(function (searchResult) {
             $state.go("search.results", {
                 results: searchResult.results,
@@ -1023,7 +1023,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         var activatedIndexers = _.filter($scope.availableIndexers).filter(function (indexer) {
             return indexer.activated ;
         });
-            return _.pluck(activatedIndexers, "name").join(",");
+            return _.pluck(activatedIndexers, "name").join("|");
     }
 
 
@@ -1059,7 +1059,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         stateParams.minage = $scope.minage;
         stateParams.maxage = $scope.maxage;
         stateParams.category = $scope.category;
-        stateParams.indexers = getSelectedIndexers();
+        stateParams.indexers = encodeURIComponent(getSelectedIndexers());
         
         $state.go("search", stateParams, {inherit: false, notify: true, reload: true});
     };
