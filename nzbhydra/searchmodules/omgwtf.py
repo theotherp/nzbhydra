@@ -232,7 +232,7 @@ class OmgWtf(SearchModule):
                 entry.title = item.find("release").text
                 entry.group = item.find("group").text
                 entry.size = item.find("sizebytes").text
-                entry.epoch = item.find("usenetage").text
+                entry.epoch = long(item.find("usenetage").text)
                 pubdate = arrow.get(entry.epoch)
                 entry.pubdate_utc = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
                 entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
