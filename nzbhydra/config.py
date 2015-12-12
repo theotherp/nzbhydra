@@ -516,7 +516,7 @@ class IndexerBinsearchSettings(IndexerSettingsAbstract):
 class IndexerOmgWtfSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
         super(IndexerOmgWtfSettings, self).__init__(parent, "omgwtfnzbs", "omgwtfnzbs.org")
-        self.host = Setting(self, name="host", default="https:/api.omgwtfnzbs.org", valuetype=str)
+        self.host = Setting(self, name="host", default="https://api.omgwtfnzbs.org", valuetype=str)
         self.name = Setting(self, name="name", default="omgwtfnzbs.org", valuetype=str)
         self.username = Setting(self, name="username", default="", valuetype=str)
         self.apikey = Setting(self, name="apikey", default="", valuetype=str)
