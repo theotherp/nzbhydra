@@ -16,7 +16,7 @@ from peewee import *
 
 logger = logging.getLogger('root')
 
-db = SqliteDatabase(None)
+db = SqliteDatabase(None, threadlocals=True)
 
 class JSONField(TextField):
     db_field = "text"
