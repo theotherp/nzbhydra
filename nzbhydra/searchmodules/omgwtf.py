@@ -267,7 +267,7 @@ class OmgWtf(SearchModule):
                 else:
                     logger.warn("Unable to find group in " + description)
                     continue
-                entry.size = item.find("enclosure").attrib["length"]
+                entry.size = long(item.find("enclosure").attrib["length"])
                 entry.pubDate = item.find("pubDate").text
                 pubdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
                 entry.epoch = pubdate.timestamp
