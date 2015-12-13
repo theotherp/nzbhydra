@@ -1035,13 +1035,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             stateParams.mode = "moviesearch";
         } else if ($scope.category.indexOf("TV") > -1) {
             stateParams.mode = "tvsearch";
-            if (!_.isUndefined($scope.tvdbid)) {
-            }
-
-            if (!_.isUndefined($scope.season)) {
-            }
-            if (!_.isUndefined($scope.episode)) {
-            }
+            stateParams.title = $scope.title;
         } else if ($scope.category == "Ebook") {
             stateParams.mode = "ebook";
         } else {
@@ -1567,6 +1561,66 @@ angular
         });
 
         formlyConfigProvider.setType({
+            name: 'horizontalNewznabPreset',
+            wrapper: ['horizontalBootstrapLabel'],
+            templateUrl: 'newznab-preset.html',
+            controller: function ($scope) {
+                $scope.display = "Presets...";
+                
+                $scope.presets = [
+                    {
+                        name: "DogNZB",
+                        host: "https://api.dognzb.cr",
+                        searchIds: ["tvdbid", "rid", "imdbid"]
+                    },
+                    {
+                        name: "NZBs.org",
+                        host: "https://nzbs.org",
+                        searchIds: ["tvdbid", "rid", "imdbid"]
+                    },
+                    {
+                        name: "nzb.su",
+                        host: "https://api.nzb.su/",
+                        searchIds: ["rid", "imdbid"]
+                    },
+                    {
+                        name: "nzbgeek",
+                        host: "https://api.nzbgeek.info",
+                        searchIds: ["tvdbid", "rid", "imdbid"]
+                    },
+                    {
+                        name: "6box nzedb",
+                        host: "https://nzedb.6box.me",
+                        searchIds: ["rid", "imdbid"]
+                    },
+                    {
+                        name: "6box nntmux",
+                        host: "https://nn-tmux.6box.me",
+                        searchIds: ["tvdbid", "rid", "imdbid"]
+                    },
+                     {
+                        name: "6box",
+                        host: "https://6box.me",
+                        searchIds: ["imdbid"]
+                    },
+                    {
+                        name: "Drunken Slug",
+                        host: "https://drunkenslug.com",
+                        searchIds: ["tvdbid", "imdbid"]
+                    }                    
+                    
+                ];
+                
+                $scope.selectPreset = function(item, model) {
+                    $scope.display = item.name;
+                    $scope.model.name = item.name;
+                    $scope.model.host = item.host;
+                    $scope.model.search_ids = item.searchIds;
+                }
+            }
+        });
+
+        formlyConfigProvider.setType({
             name: 'horizontalTestConnection',
             extends: 'testConnection',
             wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
@@ -1641,6 +1695,8 @@ angular
             templateUrl: 'ui-select-multiple.html',
             wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
         });
+        
+        
 
 
         formlyConfigProvider.setType({
@@ -1686,6 +1742,15 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 label: 'Enabled'
             }
         });
+        
+        if (testtype == 'newznab') {
+            fieldset.push(
+                {
+                    key: 'name',
+                    type: 'horizontalNewznabPreset'
+                    
+                });
+        }
 
         if (showName) {
             fieldset.push(

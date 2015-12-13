@@ -7219,5 +7219,17 @@ a.disabled:hover {
 .pagination {
   margin: 0;
 }
+.ui-select-choices-row > a {
+  background-color: #fff;
+  color: #272B30;
+}
+.ui-select-match > .btn {
+  background-color: #fff;
+  color: #272B30;
+}
+.dropdown-menu {
+  background-color: #fff;
+  color: #272B30;
+}
 
 /*# sourceMappingURL=nzbhydra.css.map */

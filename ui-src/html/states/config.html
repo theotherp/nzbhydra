@@ -26,4 +26,15 @@
     <span style="text-align: left;"><button class="btn btn-default" id="button-test-connection-{{ formId }}" type="button" ng-click="testConnection()"><span class="glyphicon glyphicon-refresh"></span></button> <span id="message-test-connection-{{ formId }}"></span></span>
 </script>
 
+<script type="text/ng-template" id="newznab-preset.html">
+    <ui-select data-ng-model="selected" theme="bootstrap" on-select="selectPreset($item, $model)" search-enabled="false">
+        <ui-select-match placeholder="{{ display }}">{{ display }}</ui-select-match>
+        <ui-select-choices repeat="preset in presets">
+            <div ng-bind-html="preset.name"></div>
+        </ui-select-choices>
+    </ui-select>
+   
+</script>
+
+
    
