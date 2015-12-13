@@ -37,6 +37,8 @@ As I said query generation is very basic. When selecting a category and doing a 
 
 Newznab providers don't send information on NFO availablity. If the search results show an NFO link for such an indexer you will need to just try if you can get one.
 
+Not all newznab indexers support search by imdbid, tvdbid and rageid. I added presets for common indexers. If you find an error or know the supported IDs and the indexer's host please let me know. 
+
 Currently the config GUI does not provide any validation apart from the connection tests.
 
 The perfomance could / needs to be improved. Searches can easily take 20 seconds although they're executed in parallel. This is mainly due to the parsing of search results from indexers like NZBIndex being slow, but also due to some problems in the code which I don't really understand so far.
