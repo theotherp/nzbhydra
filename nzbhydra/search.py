@@ -1,23 +1,20 @@
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
 
 from itertools import groupby
 
 from builtins import int
 from future import standard_library
+
 standard_library.install_aliases()
 from builtins import *
 import concurrent
-from concurrent.futures import ThreadPoolExecutor
-from marshmallow import Schema, fields
 import copy
 import logging
-
 import arrow
 from requests_futures.sessions import FuturesSession
-
 from nzbhydra.config import searchingSettings
 from nzbhydra.database import IndexerStatus, Search
 from nzbhydra import config, indexers, infos
@@ -64,6 +61,34 @@ class SearchRequest(object):
     def search_hash(self):
         return hash(frozenset([self.type, self.query, self.identifier_key, self.identifier_value, self.title, self.season, self.episode, self.category, self.minsize, self.maxsize, self.minage, self.maxage]))
 
+    def __repr__(self):
+        rep = "SearchRequest ["
+        rep += " type \"%s\"" % self.type
+        rep += (", identifier_key \"%s\" " % self.identifier_key) if self.identifier_key is not None else ""
+        rep += (", identifier_value \"%s\"" % self.identifier_value) if self.identifier_value is not None else ""
+        rep += (", title \"%s\"" % self.title) if self.title is not None else ""
+        rep += (", season \"%s\"" % self.season) if self.season is not None else ""
+        rep += (", episode \"%s\"" % self.episode) if self.episode is not None else ""
+        rep += (", category \"%s\"" % self.category) if self.category is not None else ""
+        rep += (", minsize \"%s\"" % self.minsize) if self.minsize is not None else ""
+        rep += (", maxsize \"%s\"" % self.maxsize) if self.maxsize is not None else ""
+        rep += (", minage \"%s\"" % self.minage) if self.minage is not None else ""
+        rep += (", maxage \"%s\"" % self.maxage) if self.maxage is not None else ""
+        rep += (", offset \"%s\"" % self.offset) if self.offset is not None else ""
+        rep += (", limit \"%s\"" % self.limit) if self.limit is not None else ""
+        rep += (", indexers \"%s\"" % self.indexers) if self.indexers is not None else ""
+        return rep
+
+
+def canUseIdKey(indexer, key):
+    if key in indexer.settings.search_ids.get():
+        return True
+    # We might be able to convert them using TVMaze
+    if key == "tvdbid" and "rid" in indexer.settings.search_ids.get():
+        return True
+    if key == "rid" and "tvdbid" in indexer.settings.search_ids.get():
+        return True
+
 
 def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selected_indexers=None):
     picked_indexers = []
@@ -94,18 +119,17 @@ def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selec
             logger.debug("Did not pick %s because no query was supplied but the indexer needs queries" % p)
             continue
         allow_query_generation = (config.InternalExternalSelection.internal.name in config.searchingSettings.generate_queries.get() and internal) or (config.InternalExternalSelection.external.name in config.searchingSettings.generate_queries.get() and not internal)
-        if (identifier_key is not None and identifier_key not in p.settings.search_ids.get()) and not (allow_query_generation and p.generate_queries):
-            logger.debug("Did not pick %s because search will be done by an identifier and the indexer or system wide settings don't allow query generation" % p)
-            continue
-        else:
-            with_query_generation = True
+        if identifier_key is not None and not canUseIdKey(p, identifier_key):
+            if not (allow_query_generation and p.generate_queries):
+                logger.debug("Did not pick %s because search will be done by an identifier and the indexer or system wide settings don't allow query generation" % p)
+                continue
+            else:
+                with_query_generation = True
 
         logger.debug("Picked %s" % p)
         picked_indexers.append(p)
 
     return picked_indexers, with_query_generation
-
-
 
 
 pseudo_cache = {}
@@ -118,7 +142,7 @@ def search(internal, search_request):
     limit = search_request.limit  # todo use actual configured limit
     external_offset = int(search_request.offset)
     search_hash = search_request.search_hash
-    if search_hash not in pseudo_cache.keys() or search_request.offset == 0: #If it's a new search (which starts with offset 0) do it again instead of using the cached results
+    if search_hash not in pseudo_cache.keys() or search_request.offset == 0:  # If it's a new search (which starts with offset 0) do it again instead of using the cached results
         logger.debug("Didn't find this query in cache or want to do a new search")
         cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0}
         indexers_to_call, with_query_generation = pick_indexers(query_supplied=True if search_request.query is not None and search_request.query != "" else False, identifier_key=search_request.identifier_key, internal=internal, selected_indexers=search_request.indexers)
@@ -174,7 +198,7 @@ def search(internal, search_request):
                         i.hash = hash(group[0].guid)
                         allresults.append(i)
                 else:
-                    #We sort by age first and then by indexerscore so the newest result with the highest indexer score is chosen
+                    # We sort by age first and then by indexerscore so the newest result with the highest indexer score is chosen
                     group = sorted(group, key=lambda x: x.epoch, reverse=True)
                     group = sorted(group, key=lambda x: x.indexerscore, reverse=True)
                     allresults.append(group[0])
@@ -184,10 +208,10 @@ def search(internal, search_request):
                 countRemoved = countBefore - countAfter
                 logger.info("Removed %d duplicates from %d results" % (countRemoved, countBefore))
         search_results = sorted(search_results, key=lambda x: x.epoch, reverse=True)
-        
+
         cache_entry["results"].extend(search_results)
         cache_entry["offset"] += limit
-        
+
     if internal:
         logger.debug("We have %d cached results and them all because we search internally" % len(cache_entry["results"]))
         nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:])
@@ -195,8 +219,7 @@ def search(internal, search_request):
         logger.debug("We have %d cached results and return %d-%d of %d total available accounting for the limit set for the API search" % (len(cache_entry["results"]), external_offset, external_offset + limit, cache_entry["total"]))
         nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:(external_offset + limit)])
     cache_entry["last_access"] = arrow.utcnow()
-    
-    
+
     return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearch": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset}
 
 

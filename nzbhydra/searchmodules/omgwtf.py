@@ -170,7 +170,7 @@ class OmgWtf(SearchModule):
             if search_request.maxage:
                 f = f.add({"retention": search_request.maxage})        
             if len(cats) > 0:
-                f = f.add({"cat": ",".join(cats)})
+                f = f.add({"catid": ",".join(cats)})
         else:
             #RSS
             f.host = f.host.replace("api", "rss") #Haaaaacky
@@ -183,6 +183,13 @@ class OmgWtf(SearchModule):
     def get_showsearch_urls(self, search_request):
         if search_request.category is None:
             search_request.category = "TV"
+        #Should get most results, apparently there is no way of using "or" searches
+        if search_request.season is not None:
+            if search_request.episode is not None:
+                search_request.query = "%s s%02de%02d" % (search_request.query, search_request.season, search_request.episode)
+            else:
+                search_request.query = "%s s%02d" % (search_request.query, search_request.season)
+            
         return self.get_search_urls(search_request)
 
     def get_moviesearch_urls(self, search_request):

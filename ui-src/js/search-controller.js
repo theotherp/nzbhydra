@@ -157,13 +157,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
             stateParams.mode = "moviesearch";
         } else if ($scope.category.indexOf("TV") > -1) {
             stateParams.mode = "tvsearch";
-            if (!_.isUndefined($scope.tvdbid)) {
-            }
-
-            if (!_.isUndefined($scope.season)) {
-            }
-            if (!_.isUndefined($scope.episode)) {
-            }
+            stateParams.title = $scope.title;
         } else if ($scope.category == "Ebook") {
             stateParams.mode = "ebook";
         } else {

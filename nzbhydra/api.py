@@ -276,6 +276,7 @@ def get_nzb_response(indexer_name, guid, title, searchid):
         for header in nzbdownloadresult.headers.keys():
             if header.lower().startswith("x-dnzb") or header.lower() in ("content-disposition", "content-type"):
                 response.headers[header] = nzbdownloadresult.headers[header]
+        logger.info("Returning downloaded NZB %s from %s" % (title, indexer_name))
         return response
     else:
         logger.error("Error while trying to download NZB %s from %s" % (title, indexer_name))

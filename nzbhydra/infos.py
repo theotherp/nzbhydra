@@ -12,6 +12,7 @@ import requests
 import tmdbsimple as tmdb
 from furl import furl
 from nzbhydra.exceptions import ExternalApiInfoException
+from nzbhydra.database import TvIdCache
 
 logger = logging.getLogger('root')
 
@@ -41,6 +42,44 @@ def get_imdbid_from_tmdbid(tmdbid):
     movie = tmdb.Movies(tmdbid)
     response = movie.info()
     return response["imdb_id"][2:]
+
+
+def tvdbid_to_rid(tvdbid):
+    try:
+        id = TvIdCache.get(TvIdCache.tvdb == tvdbid)
+        return id.tvrage
+    except TvIdCache.DoesNotExist:
+        logger.debug("Did not find entry for TVDB id %s in database. Will get infos from TVMaze")
+    info = requests.get("http://api.tvmaze.com/lookup/shows?thetvdb=%s" % tvdbid)
+    info.raise_for_status()
+    result = info.json()
+    
+    if "tvrage" not in result["externals"].keys():
+        return None
+    id = TvIdCache()
+    id.tvdb = tvdbid
+    id.tvrage = result["externals"]["tvrage"]
+    id.save()
+    return result["externals"]["tvrage"]
+
+
+def rid_to_tvdbid(rid):
+    try:
+        id = TvIdCache.get(TvIdCache.tvrage == rid)
+        return id.tvdb
+    except TvIdCache.DoesNotExist:
+        logger.debug("Did not find entry for TVRage id %s in database. Will get infos from TVMaze")
+    info = requests.get("http://api.tvmaze.com/lookup/shows?tvrage=%s" % rid)
+    info.raise_for_status()
+    result = info.json()
+
+    if "thetvdb" not in result["externals"].keys():
+        return None
+    id = TvIdCache()
+    id.tvdb = result["externals"]["thetvdb"]
+    id.tvrage = rid
+    id.save()
+    return result["externals"]["thetvdb"]
 
 
 def find_series_ids(input):

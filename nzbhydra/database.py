@@ -147,9 +147,16 @@ class VersionInfo(Model):
 
     class Meta(object):
         database = db
+        
+class TvIdCache(Model):
+    tvdb = CharField()
+    tvrage = CharField()
+
+    class Meta(object):
+        database = db
 
 def init_db(dbfile):
-    tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, VersionInfo]
+    tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, VersionInfo, TvIdCache]
     db.init(dbfile)
     db.connect()
 
@@ -173,9 +180,25 @@ def update_db(dbfile):
     try:
         db.create_table(VersionInfo)
         logger.info("Added new version info entry with database version 1 to existing database")
-        VersionInfo(version=1).create()
+        VersionInfo(version=2).create()
     except OperationalError:
         logger.debug("Skipping creation of table VersionInfo because it already exists")
         pass
+
+    vi = VersionInfo().get()
+    if vi.version == 1:
+        logger.info("Upgrading database to version 2")
+        #Update from 1 to 2
+        # Add tv id cache info 
+        try:
+            db.create_table(TvIdCache)
+            logger.info("Added new table TvIdCache to database")
+        except OperationalError:
+            logger.error("Error adding table TvIdCache to database")
+            #TODO How should we handle this?
+            pass
+        vi.version = 2
+        vi.save()
+    
     db.close()
 

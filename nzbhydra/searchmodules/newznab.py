@@ -22,6 +22,7 @@ import requests
 from requests.exceptions import RequestException
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.datestuff import now
+from nzbhydra import infos
 from nzbhydra.exceptions import IndexerAuthException, IndexerAccessException, IndexerResultParsingException
 from nzbhydra.search_module import SearchModule, IndexerProcessingResult
 
@@ -149,6 +150,17 @@ class NewzNab(SearchModule):
 
         url = self.build_base_url("tvsearch", search_request.category, offset=search_request.offset)
         if search_request.identifier_key is not None:
+            if "tvdbid" not in self.search_ids and "rid" not in self.search_ids:
+                logger.error("Indexer does not support tv search by either TVDB or TVRage ID")  # We shouldn't ever land here, but just wanna make sure
+                return []
+            #See if we need to to some conversion between rid and tvdbid
+            if search_request.identifier_key == "rid" and "rid" not in self.search_ids:
+                search_request.identifier_key = "tvdbid"
+                search_request.identifier_value = infos.rid_to_tvdbid(search_request.identifier_value)
+            elif search_request.identifier_key == "tvdbid" and "tvdbid" not in self.search_ids:
+                search_request.identifier_key = "rid"
+                search_request.identifier_value = infos.tvdbid_to_rid(search_request.identifier_value)
+
             url.add({search_request.identifier_key: search_request.identifier_value})
         if search_request.episode is not None:
             url.add({"ep": search_request.episode})

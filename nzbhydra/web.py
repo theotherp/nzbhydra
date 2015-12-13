@@ -265,6 +265,17 @@ def api(args):
     # Map newznab api parameters to internal
     args["category"] = args["cat"]
     args["episode"] = args["ep"]
+    
+    if args["id"] is not None:
+        #Sometimes the id is not parsed properly and contains other parts of the URL so we try to remove them here
+        idDic = urllib.parse.parse_qs(args["id"])
+        if "id" in idDic.keys():
+            args["id"] = idDic["id"][0]
+            logger.debug("Query ID was not properly parsed. Converted it to %s" % args["id"])
+        else:
+            #The other if path will unquote the id with parse_qs unqotes so we do it here do 
+            args["id"] = urllib.parse.unquote(args["id"])
+            
 
     if args["q"] is not None and args["q"] != "":
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
@@ -275,6 +286,7 @@ def api(args):
         search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], query=args["q"])
         if args["t"] == "search":
             search_request.type = "general"
+            logger.info("")
         elif args["t"] == "tvsearch":
             search_request.type = "tv"
             identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
@@ -288,6 +300,7 @@ def api(args):
             search_request.type = "movie"
             search_request.identifier_key = "imdbid" if args["imdbid"] is not None else None
             search_request.identifier_value = args["imdbid"] if args["imdbid"] is not None else None
+        logger.info("API search request: %s" % search_request)
         result = search.search(False, search_request)
         results = process_for_external_api(result)
         content = render_search_results_for_api(results, result["total"], result["offset"])
@@ -295,7 +308,8 @@ def api(args):
         response.headers["Content-Type"] = "application/xml"
         return content
     elif args["t"] == "get":
-        args = rison.loads(urllib.parse.unquote(args["id"]))
+        args = rison.loads(args["id"])
+        logger.info("API request to download %s from %s" % (args["title"], args["indexer"]))
         return extract_nzb_infos_and_return_response(args["indexer"], args["guid"], args["title"], args["searchid"])
     elif args["t"] == "caps":
         xml = render_template("caps.html")
@@ -409,8 +423,9 @@ internalapi_tvsearch_args = {
 @use_args(internalapi_tvsearch_args, locations=['querystring'])
 def internalapi_tvsearch(args):
     logger.debug("TV search request with args %s" % args)
+    indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None 
     search_request = SearchRequest(type="tv", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], episode=args["episode"], season=args["season"], title=args["title"],
-                                   indexers=urllib.unquote(args["indexers"]))
+                                   indexers=indexers)
     if args["tvdbid"]:
         search_request.identifier_key = "tvdbid"
         search_request.identifier_value = args["tvdbid"]
@@ -454,7 +469,7 @@ internalapi__getnfo_args = {
 @use_args(internalapi__getnfo_args, locations=['querystring'])
 @search_cache.memoize()
 def internalapi_getnfo(args):
-    logger.debug("Get NFO  request with args %s" % args)
+    logger.debug("Get NFO request with args %s" % args)
     nfo = get_nfo(args["indexer"], args["guid"])
     return jsonify(nfo)
 

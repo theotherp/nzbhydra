@@ -27,8 +27,8 @@ def get_rep_version():
         r = requests.get(version_txt_url)
         r.raise_for_status()
         return StrictVersion(r.text)
-    except requests.exceptions.ConnectionError:
-        logger.error("Error download repository version.txt for version check")
+    except requests.RequestException:
+        logger.error("Error downloading version.txt from repository to check new updates")
         return None
 
 
@@ -39,7 +39,6 @@ def get_current_version():
 
 
 def is_new_version_available():
-    
     rep_version = get_rep_version()
     current_version = get_current_version()
     if rep_version is not None and current_version is not None:
