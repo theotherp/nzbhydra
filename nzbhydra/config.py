@@ -520,6 +520,7 @@ class IndexerOmgWtfSettings(IndexerSettingsAbstract):
         self.name = Setting(self, name="name", default="omgwtfnzbs.org", valuetype=str)
         self.username = Setting(self, name="username", default="", valuetype=str)
         self.apikey = Setting(self, name="apikey", default="", valuetype=str)
+        self.enabled = Setting(self, name="enabled", default=False, valuetype=bool)
 
 
 class IndexerNewznabSettings(IndexerSettingsAbstract):
