@@ -53,8 +53,9 @@ def tvdbid_to_rid(tvdbid):
     info = requests.get("http://api.tvmaze.com/lookup/shows?thetvdb=%s" % tvdbid)
     info.raise_for_status()
     result = info.json()
-    
-    if "tvrage" not in result["externals"].keys():
+
+    tvrage = result["externals"]["tvrage"] or None #always present, but None if no result
+    if tvrage is None:
         return None
     id = TvIdCache()
     id.tvdb = tvdbid
