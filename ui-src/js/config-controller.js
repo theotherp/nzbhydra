@@ -306,8 +306,8 @@ angular
 
 function ConfigController($scope, ConfigService, config, CategoriesService) {
     $scope.config = config;
-
     $scope.submit = submit;
+    
 
     function submit(form) {
         ConfigService.set($scope.config);
@@ -1376,15 +1376,6 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
         
         system: [
             {
-                key: 'restart',
-                type: 'restart',
-                templateOptions: {
-                    type: 'button',
-                    label: 'Restart'
-                }
-            },
-
-            {
                 key: 'shutdown',
                 type: 'shutdown',
                 templateOptions: {
@@ -1433,6 +1424,17 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
 
     $scope.isSavingNeeded = function (form) {
         return form.$dirty && !form.$submitted;
+    };
+    
+    $scope.downloadLog = function() {
+        var myInjector = angular.injector(["ng"]);
+        var $http = myInjector.get("$http");
+        $http.get("/internalapi/getlogs").success(function(data) {
+            console.log(data.log);
+            $scope.log = data.log;
+            $scope.$digest();
+        });
+        console.log($scope.log);
     }
 }
 

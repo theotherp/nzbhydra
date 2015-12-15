@@ -1,15 +1,18 @@
 <div class="row">
     <form ng-submit="submit(form)" name="form" novalidate>
         <uib-tabset>
-            <uib-tab ng-repeat="tab in tabs" heading="{{ tab.name }}" select="tabs[$index].active = true">
+            <uib-tab ng-repeat="tab in tabs" heading="{{ tab.name }}" select="tabs[$index].active = true" active="tabs[$index].active">
                 <formly-form model="tab.model" fields="tab.fields" ng-if="tabs[$index].active == true">
                 </formly-form>
+            </uib-tab>
+            <uib-tab heading="Current log" select="downloadLog()">
+                <pre ng-bind-html="log" style="text-align: left"></pre>
+                
             </uib-tab>
             <li style="position: absolute; right:0px; ">
                 <button ng-disabled="form.$invalid" type="submit" class="btn config-submit" ng-class="{'btn-info': isSavingNeeded(form), 'pulse2': isSavingNeeded(form), 'btn-success': !isSavingNeeded(form)}">Save</button>
             </li>
         </uib-tabset>
-
     </form>
 </div>
 

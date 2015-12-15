@@ -51,6 +51,7 @@ from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses
 from nzbhydra.versioning import get_rep_version, get_current_version
 from nzbhydra.searchmodules.newznab import test_connection
+from nzbhydra.log import  getLogs
 
 
 class ReverseProxied(object):
@@ -713,6 +714,16 @@ def internalapi_getversions():
     current_version = get_current_version()
     rep_version = get_rep_version()
     return jsonify({"currentVersion": str(current_version), "repVersion": str(rep_version), "updateAvailable": rep_version > current_version})
+
+
+@app.route('/internalapi/getlogs')
+@requires_admin_auth
+def internalapi_getlogs():
+    logger.debug("Get logs request")
+    logs = getLogs()
+    return jsonify(logs)
+
+
 
 
 @app.route('/internalapi/getcategories')
