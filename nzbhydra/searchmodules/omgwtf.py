@@ -186,9 +186,9 @@ class OmgWtf(SearchModule):
         #Should get most results, apparently there is no way of using "or" searches
         if search_request.season is not None:
             if search_request.episode is not None:
-                search_request.query = "%s s%02de%02d" % (search_request.query, search_request.season, search_request.episode)
+                search_request.query = "{0} s{1:02d}e{2:02d}".format(str(search_request.query),int(search_request.season),int(search_request.episode))
             else:
-                search_request.query = "%s s%02d" % (search_request.query, search_request.season)
+                search_request.query = "{0} s{1:02d}".format(str(search_request.query), int(search_request.season))
             
         return self.get_search_urls(search_request)
 
