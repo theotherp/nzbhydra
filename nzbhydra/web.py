@@ -42,7 +42,7 @@ from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
 from flask.ext.session import Session
 from nzbhydra import config, search, infos, database
-from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link
+from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid
 from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
 from nzbhydra.database import IndexerStatus, Indexer
 from nzbhydra.downloader import Nzbget, Sabnzbd
@@ -530,7 +530,8 @@ def internalapi_addnzb(args):
         guid = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(guid).query))["id"]
         guid = rison.loads(guid)
         if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
-            add_success = downloader.add_link(guid, guid["title"], args["category"])
+            link = get_nzb_link_and_guid(guid["indexer"], guid["guid"], guid["searchid"], guid["title"])[0]
+            add_success = downloader.add_link(link, guid["title"], args["category"])
 
         else:  # We download an NZB send it to the downloader
             nzbdownloadresult = download_nzb_and_log(guid["indexer"], guid["guid"], guid["title"], guid["searchid"])

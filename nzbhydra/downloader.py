@@ -94,7 +94,7 @@ class Nzbget(Downloader):
 
         rpc = self.get_rpc()
         try:
-            rcode = rpc.append(title, link, category, 0, False, False, "", 0, "SCORE")
+            rcode = rpc.append(title, link, category, 0, False, False, "", 0, "SCORE",[])
             if rcode > 0:
                 self.logger.info("Successfully added %s from %s to NZBGet" % (title, link))
                 return True

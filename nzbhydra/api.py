@@ -103,14 +103,14 @@ def get_nzb_link_and_guid(indexer, guid, searchid, title):
     else:
         f = furl(get_root_url())
     f.path.add("api")
-    f = f.url
-    guid_rison = urllib.parse.quote(rison.dumps(data_getnzb))
-    f += "?t=get&id=" + guid_rison
+    guid_rison = rison.dumps(data_getnzb)
+    args = {"t": "get", "id": guid_rison}
     apikey = config.mainSettings.apikey.get_with_default(None)
     if apikey is not None:
-        f += "&apikey=" + apikey
+        args["apikey"] = apikey
+    f.set(args=args)
     
-    return f, guid_rison
+    return f.url, guid_rison
 
 
 def transform_results(results, dbsearch):
