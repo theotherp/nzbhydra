@@ -59,13 +59,18 @@ class ReverseProxied(object):
         self.app = app
 
     def __call__(self, environ, start_response):
-        script_name = "/nzbhydra"
+        if config.mainSettings.baseUrl.get() is not None and config.mainSettings.baseUrl.get() != "":
+            baseUrlSetting = config.mainSettings.baseUrl.get()
+            if baseUrlSetting[-1:] == "/":
+                baseUrlSetting = baseUrlSetting[:-1]
+            lastSlash = baseUrlSetting.rfind("/")
+            script_name = baseUrlSetting[lastSlash:]
+        else:
+            script_name = "/hydra"
         path_info = environ['PATH_INFO']
         environ['URL_BASE'] = environ['PATH_INFO']
         if path_info.startswith(script_name):
             environ['PATH_INFO'] = path_info[len(script_name):]
-            pass
-
         return self.app(environ, start_response)
 
 
