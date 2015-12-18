@@ -48,7 +48,12 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
         .state("stats", {
             url: "/stats",
             templateUrl: "static/html/states/stats.html",
-            controller: "StatsController"
+            controller: "StatsController",
+            resolve: {
+                stats: ['StatsService', function(StatsService) {
+                    return StatsService.get();
+                }]
+            }
         })
         .state("about", {
             url: "/about",
@@ -535,21 +540,39 @@ function addableNzb() {
 
 angular
     .module('nzbhydraApp')
+    .factory('StatsService', StatsService);
+
+function StatsService($http) {
+    
+    return {
+        get: getStats
+    };
+
+    function getStats() {
+            return $http.get("internalapi/getstats").success(function (response) {
+               return response.data;
+            });
+
+    }
+
+}
+StatsService.$inject = ["$http"];
+angular
+    .module('nzbhydraApp')
     .controller('StatsController', StatsController);
 
-function StatsController($scope, $http) {
+function StatsController($scope, $http, stats) {
 
+    stats = stats.data;
     $scope.nzbDownloads = null;
+    console.log(stats);
+    $scope.avgResponseTimes = stats.avgResponseTimes;
+    $scope.avgIndexerSearchResultsShares = stats.avgIndexerSearchResultsShares;
+    $scope.avgIndexerAccessSuccesses = stats.avgIndexerAccessSuccesses;
 
 
-    $http.get("internalapi/getstats").success(function (response) {
-        $scope.avgResponseTimes = response.avgResponseTimes;
-        $scope.avgIndexerSearchResultsShares = response.avgIndexerSearchResultsShares;
-        $scope.avgIndexerAccessSuccesses = response.avgIndexerAccessSuccesses;
-    });
-    
 }
-StatsController.$inject = ["$scope", "$http"];
+StatsController.$inject = ["$scope", "$http", "stats"];
 
 angular
     .module('nzbhydraApp')
@@ -1989,6 +2012,14 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         }
                     },
                     {
+                        key: 'apikey',
+                        type: 'horizontalApiKeyInput',
+                        templateOptions: {
+                            label: 'API key',
+                            help: 'Remove to disable. Alphanumeric only'
+                        }
+                    },
+                    {
                         key: 'enableAdminAuth',
                         type: 'horizontalSwitch',
                         templateOptions: {
@@ -2018,13 +2049,16 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         }
                     },
                     {
-                        key: 'apikey',
-                        type: 'horizontalApiKeyInput',
+                        key: 'enableAdminAuthForStats',
+                        type: 'horizontalSwitch',
+                        hideExpression: '!model.enableAdminAuth',
                         templateOptions: {
-                            label: 'API key',
-                            help: 'Remove to disable. Alphanumeric only'
+                            type: 'switch',
+                            label: 'Enable stats admin',
+                            help: 'Enable to protect the history & stats with the admin user'
                         }
                     }
+                    
 
                 ]
             },

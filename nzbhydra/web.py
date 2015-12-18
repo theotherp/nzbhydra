@@ -204,6 +204,24 @@ def requires_admin_auth(f):
     return decorated
 
 
+def requires_stats_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if config.mainSettings.enableAdminAuth.get() and config.mainSettings.enableAdminAuthForStats.get():
+            if not isAdminLoggedIn():
+                return authenticate()
+            else:
+                return f(*args, **kwargs)
+        if mainSettings.enableAuth.get():
+            if isLoggedIn():
+                return f(*args, **kwargs)
+            else:
+                return authenticate()
+        else:
+            return f(*args, **kwargs)
+
+    return decorated
+
 @app.route('/<path:path>')
 @app.route('/', defaults={"path": None})
 @requires_auth
@@ -608,7 +626,7 @@ def internalapi_testomgwtf(args):
 
 
 @app.route('/internalapi/getstats')
-@requires_auth
+@requires_stats_auth
 def internalapi_getstats():
     logger.debug("Get stats")
     return jsonify({"avgResponseTimes": get_avg_indexer_response_times(),
@@ -617,7 +635,7 @@ def internalapi_getstats():
 
 
 @app.route('/internalapi/getindexerstatuses')
-@requires_auth
+@requires_stats_auth
 def internalapi_getindexerstatuses():
     logger.debug("Get indexer statuses")
     return jsonify({"indexerStatuses": get_indexer_statuses()})
@@ -631,7 +649,7 @@ internalapi__getnzbdownloads_args = {
 
 
 @app.route('/internalapi/getnzbdownloads')
-@requires_auth
+@requires_stats_auth
 @use_args(internalapi__getnzbdownloads_args)
 def internalapi_getnzb_downloads(args):
     logger.debug("Get NZB downloads")
@@ -646,7 +664,7 @@ internalapi__getsearchrequests_args = {
 
 
 @app.route('/internalapi/getsearchrequests')
-@requires_auth
+@requires_stats_auth
 @use_args(internalapi__getsearchrequests_args)
 def internalapi_search_requests(args):
     logger.debug("Get search requests")
@@ -659,7 +677,7 @@ internalapi__enableindexer_args = {
 
 
 @app.route('/internalapi/enableindexer')
-@requires_auth
+@requires_stats_auth
 @use_args(internalapi__enableindexer_args)
 def internalapi_enable_indexer(args):
     logger.debug("Enabling indexer %s" % args["name"])

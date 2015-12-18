@@ -325,6 +325,7 @@ class MainSettings(Category):
         self.adminUsername = Setting(self, name="adminUsername", default="", valuetype=str)
         self.adminPassword = Setting(self, name="adminPassword", default="", valuetype=str)
         self.apikey = Setting(self, name="apikey", default=''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(30)), valuetype=str)
+        self.enableAdminAuthForStats = Setting(self, name="enableAdminAuthForStats", default=False, valuetype=bool)
 
         self.ssl = Setting(self, name="ssl", default=False, valuetype=bool)
         self.sslcert = Setting(self, name="sslcert", default="nzbhydra.crt", valuetype=str)

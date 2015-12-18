@@ -574,6 +574,14 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         }
                     },
                     {
+                        key: 'apikey',
+                        type: 'horizontalApiKeyInput',
+                        templateOptions: {
+                            label: 'API key',
+                            help: 'Remove to disable. Alphanumeric only'
+                        }
+                    },
+                    {
                         key: 'enableAdminAuth',
                         type: 'horizontalSwitch',
                         templateOptions: {
@@ -603,13 +611,16 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         }
                     },
                     {
-                        key: 'apikey',
-                        type: 'horizontalApiKeyInput',
+                        key: 'enableAdminAuthForStats',
+                        type: 'horizontalSwitch',
+                        hideExpression: '!model.enableAdminAuth',
                         templateOptions: {
-                            label: 'API key',
-                            help: 'Remove to disable. Alphanumeric only'
+                            type: 'switch',
+                            label: 'Enable stats admin',
+                            help: 'Enable to protect the history & stats with the admin user'
                         }
                     }
+                    
 
                 ]
             },

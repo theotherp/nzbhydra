@@ -48,7 +48,12 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         .state("stats", {
             url: "/stats",
             templateUrl: "static/html/states/stats.html",
-            controller: "StatsController"
+            controller: "StatsController",
+            resolve: {
+                stats: ['StatsService', function(StatsService) {
+                    return StatsService.get();
+                }]
+            }
         })
         .state("about", {
             url: "/about",
