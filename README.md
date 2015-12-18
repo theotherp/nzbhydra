@@ -55,6 +55,9 @@ Any pull requests are also welcome, but I feel I and the program would mostly pr
 * Auto update (see above)
 * Any features you know and would expect like restart via GUI, daemonization in linux
 
+### Contact ###
+Send me an email at TheOtherP@gmx.de or a PM at https://www.reddit.com/user/TheOtherP
+
 ### License ###
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
