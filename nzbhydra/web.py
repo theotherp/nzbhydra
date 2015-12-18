@@ -361,7 +361,9 @@ def internalapi_search(args):
         type = "ebook"
     else:
         type = "general"
-    search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=urllib.unquote(args["indexers"]))
+    if args["indexers"] is not None:
+        args["indexers"] = urllib.unquote(args["indexers"])
+    search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=args["indexers"])
     results = search.search(True, search_request)
     return process_and_jsonify_for_internalapi(results)
 
