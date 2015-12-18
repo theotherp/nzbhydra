@@ -1580,7 +1580,7 @@ angular
                     },
                     {
                         name: "nzb.su",
-                        host: "https://api.nzb.su/",
+                        host: "https://api.nzb.su",
                         searchIds: ["rid", "imdbid"]
                     },
                     {

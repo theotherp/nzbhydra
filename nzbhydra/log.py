@@ -17,22 +17,28 @@ from os.path import isfile, join, exists, getmtime
 from nzbhydra import config
 from nzbhydra.config import MainSettings, mainSettings
 
+regexApikey = re.compile(r"(apikey|api)=[\w]+", re.I)
+regexUser = re.compile(r"(user|username)=[\w]+", re.I)
+regexPassword = re.compile(r"(password)=[\w]+", re.I)
+
+
+def removeSensitiveData(msg):
+    msg = regexApikey.sub("apikey=<APIKEY>", msg)
+    msg = regexUser.sub("\g<1>=<USER>", msg)
+    msg = regexPassword.sub("password=<PASSWORD>", msg)
+    return msg
+
 
 class SensitiveDataFilter(logging.Filter):
-    regexApikey = re.compile(r"(apikey|api)=[\w]+", re.I)
-    regexUser = re.compile(r"(user|username)=[\w]+", re.I)
-    regexPassword = re.compile(r"(password)=[\w]+", re.I)
+    
     
     
     def filter(self, record):
         msg = record.msg
         if type(msg) is types.StringType or isinstance(msg, str):
-            msg = self.regexApikey.sub("apikey=<APIKEY>", msg)
-            msg = self.regexUser.sub("\g<1>=<USER>", msg)
-            msg = self.regexPassword.sub("password=<PASSWORD>", msg)
+            msg = removeSensitiveData(msg)
         record.msg = msg
         return True
-        
 
 def setup_custom_logger(name):
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')

@@ -7,6 +7,7 @@ import time
 from builtins import str
 from future import standard_library
 
+from nzbhydra.log import removeSensitiveData
 
 standard_library.install_aliases()
 from builtins import *
@@ -211,9 +212,9 @@ class SearchModule(object):
             self.handle_indexer_success()
         except RequestException as e:
             self.logger.error("Error while connecting to URL %s: %s" % (url, str(e)))
-            papiaccess.error = "Connection failed: %s" % str(e)
+            papiaccess.error = "Connection failed: %s" % removeSensitiveData(str(e))
             response = None
-            self.handle_indexer_failure("Connection failed: %s" % str(e))
+            self.handle_indexer_failure("Connection failed: %s" % removeSensitiveData(str(e)))
         finally:
             papiaccess.save()
         return response, papiaccess
