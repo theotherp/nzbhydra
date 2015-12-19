@@ -110,7 +110,7 @@ class Binsearch(SearchModule):
         main_table = soup.find('table', attrs={'id': 'r2'})
 
         if not main_table:
-            logger.error("Unable to find main table in binsearch page: %s..." % html)
+            logger.error("Unable to find main table in binsearch page: %s..." % html[:500])
             logger.debug(html)
             raise IndexerResultParsingException("Unable to find main table in binsearch page", self)
 

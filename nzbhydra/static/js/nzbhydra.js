@@ -1947,8 +1947,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         templateOptions: {
                             type: 'text',
                             label: 'Base URL',
-                            placeholder: 'http://127.0.0.1:5075',
-                            help: 'Set if the external URL is different from the local URL'
+                            placeholder: 'http://127.0.0.1:5075/',
+                            help: 'Set if the external URL is different from the local URL (must end with \"/\"'
                         }
                     },
                     {
