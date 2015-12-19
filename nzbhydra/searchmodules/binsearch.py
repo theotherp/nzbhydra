@@ -129,7 +129,6 @@ class Binsearch(SearchModule):
                 continue
             title = title.text
 
-            
             m = title_pattern.search(title)
             if m:
                 entry.title = m.group(1)

@@ -38,6 +38,7 @@ from flask import send_file, redirect, make_response
 from flask.ext.cache import Cache
 from flask.json import JSONEncoder
 from webargs import fields
+from furl import furl
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
 from flask.ext.session import Session
@@ -59,18 +60,20 @@ class ReverseProxied(object):
         self.app = app
 
     def __call__(self, environ, start_response):
+        old_path_info = environ["PATH_INFO"]
+        path_info = environ['PATH_INFO']
+        
+        environ["URL_BASE"] = old_path_info
         if config.mainSettings.baseUrl.get() is not None and config.mainSettings.baseUrl.get() != "":
             baseUrlSetting = config.mainSettings.baseUrl.get()
-            if baseUrlSetting[-1:] == "/":
-                baseUrlSetting = baseUrlSetting[:-1]
-            lastSlash = baseUrlSetting.rfind("/")
-            script_name = baseUrlSetting[lastSlash:]
-        else:
-            script_name = "/hydra"
-        path_info = environ['PATH_INFO']
-        environ['URL_BASE'] = environ['PATH_INFO']
-        if path_info.startswith(script_name):
-            environ['PATH_INFO'] = path_info[len(script_name):]
+            f = furl(baseUrlSetting)
+            baseUrl = str(f.path)
+            if baseUrl.endswith("/"):
+                baseUrl = baseUrl[:len(baseUrl) - 1]
+            if path_info.startswith(baseUrl):
+                path_info = path_info[len(baseUrl):]
+            environ["PATH_INFO"] = path_info
+        
         return self.app(environ, start_response)
 
 
