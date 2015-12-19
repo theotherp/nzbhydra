@@ -581,6 +581,7 @@ internalapi__testdownloader_args = {
     "ssl": fields.Boolean(missing=False),
     "host": fields.String(missing=None),
     "port": fields.String(missing=None),
+    "url": fields.String(missing=None),
     "username": fields.String(missing=None),
     "password": fields.String(missing=None),
     "apikey": fields.String(missing=None),
@@ -599,7 +600,7 @@ def internalapi_testdownloader(args):
         success, message = Nzbget().test(args["host"], args["ssl"], args["port"], args["username"], args["password"])
         return jsonify({"result": success, "message": message})
     if args["name"] == "sabnzbd":
-        success, message = Sabnzbd().test(args["host"], args["ssl"], args["port"], args["username"], args["password"], args["apikey"])
+        success, message = Sabnzbd().test(args["url"], args["username"], args["password"], args["apikey"])
         return jsonify({"result": success, "message": message})
     logger.error("Test downloader request with unknown downloader %s" % args["name"])
     return jsonify({"result": False, "message": "Internal error. Sorry..."})

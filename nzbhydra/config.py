@@ -11,6 +11,7 @@ from builtins import str
 from builtins import super
 from future import standard_library
 
+
 standard_library.install_aliases()
 from builtins import *
 from enum import Enum
@@ -20,6 +21,7 @@ import os
 import collections
 import random
 import string
+from furl import furl
 
 logger = logging.getLogger('root')
 
@@ -244,6 +246,27 @@ def update(d, u, level):
     return d
 
 
+def migrate(cfg):
+    version = cfg["main"]["configVersion"]
+    if version == 1:
+        addLogMessage(20, "Migrating config to version 2")
+        #Migrate sabnzbd setting
+        sabnzbd = cfg["downloader"]["sabnzbd"]
+        if sabnzbd["host"] and sabnzbd["port"]:
+            addLogMessage(20, "Migrating sabnzbd settings")
+            f = furl()
+            f.host = sabnzbd["host"]
+            f.port = sabnzbd["port"]
+            f.scheme = "https" if sabnzbd["ssl"] else "http"
+            f.path = "/sabnzbd/"
+            cfg["downloader"]["sabnzbd"]["url"] = f.url
+            addLogMessage(20, "Built sabnzbd URL: %s" % f.url)
+        elif cfg["downloader"]["downloader"] == "sabnzbd":
+            addLogMessage(30, "Unable to migrate from incomplete sabnzbd settings. Please set the sabnzbd URL manually")
+        addLogMessage(20, "Migration of config to version 2 finished")
+        cfg["main"]["configVersion"] = 2
+        
+
 def load(filename):
     global cfg
     global config_file
@@ -251,6 +274,7 @@ def load(filename):
     if os.path.exists(filename):
         with open(filename) as f:
             loaded_config = json.load(f)
+            migrate(loaded_config)
             cfg = update(cfg, loaded_config, level="root")
             pass
 
@@ -460,9 +484,10 @@ downloaderSettings = DownloaderSettings()
 class SabnzbdSettings(Category):
     def __init__(self):
         super(SabnzbdSettings, self).__init__(downloaderSettings, "sabnzbd", "SabNZBD")
-        self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str)
-        self.port = Setting(self, name="port", default=8080, valuetype=int)
-        self.ssl = Setting(self, name="ssl", default=False, valuetype=bool)
+        #self.host = Setting(self, name="host", default="127.0.0.1", valuetype=str)
+        #self.port = Setting(self, name="port", default=8080, valuetype=int)
+        #self.ssl = Setting(self, name="ssl", default=False, valuetype=bool)
+        self.url = Setting(self, name="url", default="http://localhost:8080/sabnzbd/", valuetype=str)
         self.apikey = Setting(self, name="apikey", default=None, valuetype=str)
         self.username = Setting(self, name="username", default=None, valuetype=str)
         self.password = Setting(self, name="password", default=None, valuetype=str)

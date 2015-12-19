@@ -22,9 +22,7 @@ from nzbhydra.config import sabnzbdSettings, nzbgetSettings
 
 
 class Downloader(object):
-    def test(self, host, ssl=False, port=None, username=None, password=None, apikey=None):
-        return True
-
+    
     def add_link(self, link, title, category):
         return True
 
@@ -68,7 +66,7 @@ class Nzbget(Downloader):
                 #todo: show error if version older than 13
                 if int(version[:2]) < 13:
                     return False, "NZBGet needs to be version 13 or higher"
-                self.logger.debug('Successfully connected to NZBGet')
+                self.logger.info('Connection test to NZBGet successful')
             else:
                 self.logger.info('Successfully connected to NZBGet, but unable to send a message')
         except socket.error:
@@ -167,41 +165,38 @@ class Nzbget(Downloader):
 class Sabnzbd(Downloader):
     logger = logging.getLogger('root')
 
-    def get_sab(self, host=None, port=None, scheme=None, apikey=None, username=None, password=None):
-        if host is None:
-            host = sabnzbdSettings.host.get()
-        if port is None:
-            port = sabnzbdSettings.port.get()
+    def get_sab(self, url=None, apikey=None, username=None, password=None):
+        if url is None:
+            url = sabnzbdSettings.url.get()
         if apikey is None:
             apikey = sabnzbdSettings.apikey.get()
         if username is None:
             username = sabnzbdSettings.username.get()
         if password is None:
             password = sabnzbdSettings.password.get()
-        f = furl()
+        f = furl(url)
+        f.path.add("api")
         if apikey:
             f.add({"apikey": apikey})
         elif username and password:
             pass
         else:
             raise DownloaderException("Neither API key nor username/password provided")
-        f.scheme = "https" if scheme else "http"
-        f.host = host
-        f.port = port
-        f.path.add("api")
         f.add({"output": "json"})
 
         return f
 
-    def test(self, host, ssl=False, port=None, username=None, password=None, apikey=None):
-        f = self.get_sab(host, port, ssl, apikey, username, password)
+    def test(self, url, username=None, password=None, apikey=None):
+        f = self.get_sab(url, apikey, username, password)
         f.add({"mode": "qstatus"})
         try:
             r = requests.get(f.tostr(), verify=False)
             r.raise_for_status()
             if "state" in json.loads(r.text).keys():
+                self.logger.info('Connection test to sabnzbd successful')
                 return True, ""
             else:
+                self.logger.info("Access to sabnzbd failed, probably due to wrong credentials")
                 return False, "Credentials wrong?"
 
         except (SSLError, HTTPError, ConnectionError) as e:

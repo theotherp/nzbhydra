@@ -113,9 +113,14 @@ angular
                     var params;
                     if ($scope.to.testType == "downloader") {
                         url = "internalapi/test_downloader";
-                        params = {name: $scope.to.downloader, host: $scope.model.host, port: $scope.model.port, ssl: $scope.model.ssl, username: $scope.model.username, password: $scope.model.password};
+                        params = {name: $scope.to.downloader, username: $scope.model.username, password: $scope.model.password};
                         if ($scope.to.downloader == "sabnzbd") {
                             params.apikey = $scope.model.apikey;
+                            params.url = $scope.model.url;
+                        } else {
+                            params.host = $scope.model.host;
+                            params.port= $scope.model.port;
+                            params.ssl = $scope.model.ssl;
                         }
                     } else if ($scope.to.testType == "newznab") {
                         url = "internalapi/test_newznab";
@@ -1346,28 +1351,11 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 templateOptions: {label: 'SABnzbd'},
                 fieldGroup: [
                     {
-                        key: 'host',
+                        key: 'url',
                         type: 'horizontalInput',
                         templateOptions: {
                             type: 'text',
-                            label: 'Host'
-                        }
-                    },
-                    {
-                        key: 'port',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Port',
-                            placeholder: '5050'
-                        }
-                    },
-                    {
-                        key: 'ssl',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Use SSL'
+                            label: 'URL'
                         }
                     },
                     {
