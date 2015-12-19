@@ -92,8 +92,10 @@ def find_series_ids(input):
         if result["externals"]["thetvdb"] is None:
             continue
         info = {"label": result["name"], "value": result["externals"]["thetvdb"]}
-        if result["image"]["medium"]:
+        try:
             info["poster"] = result["image"]["medium"]
+        except:
+            pass
         results.append(info)
     return results
 

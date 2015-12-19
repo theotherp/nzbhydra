@@ -244,7 +244,7 @@ class Sabnzbd(Downloader):
             r.raise_for_status()
             return r.json()["status"]
         except (SSLError, HTTPError, ConnectionError):
-            self.logger.exception("Error while trying to connect to sabnzbd")
+            self.logger.exception("Error while trying to connect to sabnzbd with URL %s" % f.url)
             return False
 
     def get_categories(self):
@@ -255,5 +255,5 @@ class Sabnzbd(Downloader):
             r.raise_for_status()
             return r.json()["categories"]
         except (SSLError, HTTPError, ConnectionError):
-            self.logger.exception("Error while trying to connect to sabnzbd")
+            self.logger.exception("Error while trying to connect to sabnzbd with URL %s" % f.url)
             raise DownloaderException("Unable to contact SabNZBd")
