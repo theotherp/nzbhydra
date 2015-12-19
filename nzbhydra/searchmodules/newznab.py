@@ -201,6 +201,7 @@ class NewzNab(SearchModule):
         entries = []
         grouppattern = re.compile(r"Group:</b> ?([\w\.]+)<br ?/>")
         guidpattern = re.compile(r"(.*/)?([a-zA-Z0-9]+)")
+        
 
         try:
             tree = ET.fromstring(xml_response)
@@ -208,17 +209,13 @@ class NewzNab(SearchModule):
             logger.exception("Error parsing XML: %s..." % xml_response[:500])
             raise IndexerResultParsingException("Error parsing XML", self)
         for item in tree.find("channel").findall("item"):
+            usenetdate = None
             entry = self.create_nzb_search_result()
             # These are the values that absolutely must be contained in the response
             entry.title = item.find("title").text
             entry.link = item.find("link").text
-            entry.pubDate = item.find("pubDate").text
-            pubdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
-            entry.epoch = pubdate.timestamp
-            entry.pubdate_utc = str(pubdate)
-            entry.age_days = (arrow.utcnow() - pubdate).days
-            entry.precise_date = True
             entry.attributes = []
+            entry.pubDate = item.find("pubDate").text
             entry.guid = item.find("guid").text
             entry.has_nfo = NzbSearchResult.HAS_NFO_MAYBE
             m = guidpattern.search(entry.guid)
@@ -249,9 +246,20 @@ class NewzNab(SearchModule):
                     entry.details_link = attribute_value
                 elif attribute_name == "group" and attribute_value != "not available":
                     entry.group = attribute_value
+                elif attribute_name == "usenetdate":
+                    usenetdate = arrow.get(attribute_value, 'ddd, DD MMM YYYY HH:mm:ss Z')
                 # Store all the extra attributes, we will return them later for external apis
                 entry.attributes.append({"name": attribute_name, "value": attribute_value})
             entry.details_link = self.get_details_link(entry.guid)
+
+            if usenetdate is None:
+                #Not provided by attributes, use pubDate instead
+                usenetdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
+            entry.epoch = usenetdate.timestamp
+            entry.pubdate_utc = str(usenetdate)
+            entry.age_days = (arrow.utcnow() - usenetdate).days
+            entry.precise_date = True
+            
             # Map category. Try to find the most specific category (like 2040), then the more general one (like 2000)
             categories = sorted(categories, reverse=True)  # Sort to make the most specific category appear first
             if len(categories) > 0:
