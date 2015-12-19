@@ -1,1 +1,5 @@
-{}
+{
+  "testNewznab.py::MyTestCase::testGetNfo": true, 
+  "testNewznab.py::MyTestCase::testOffsetStuff": true, 
+  "testNewznab.py::MyTestCase::testParseSearchResult": true
+}

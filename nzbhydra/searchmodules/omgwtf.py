@@ -211,7 +211,7 @@ class OmgWtf(SearchModule):
     def get_ebook_urls(self, search_request):
         return self.get_search_urls(search_request)
 
-    def process_query_result(self, xml_response, query):
+    def process_query_result(self, html, maxResults=None):
         logger.debug("%s started processing results" % self.name)
 
         if "0 results found" in xml_response:

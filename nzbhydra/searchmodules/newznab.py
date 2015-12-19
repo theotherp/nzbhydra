@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import concurrent
 from future import standard_library
 
 from nzbhydra import config
@@ -117,8 +118,106 @@ def test_connection(host, apikey):
         return False, "Host reachable but unknown error returned"
     return True, ""
 
+
+def testId(host, apikey, t, idkey, idvalue, expectedResult):
+    logger.info("Testing for ID capability \"%s\"" % idkey)
+
+    try:
+        url = _build_base_url(host, apikey, t, None, 25)
+        url.query.add({idkey: idvalue})
+        headers = {
+            'User-Agent': config.searchingSettings.user_agent.get()
+        }
+        logger.debug("Requesting %s" % url)
+        r = requests.get(url, verify=False, timeout=config.searchingSettings.timeout.get(), headers=headers)
+        r.raise_for_status()
+        titles = []
+        tree = ET.fromstring(r.content)
+    except Exception:
+        logger.exception("Error getting or parsing XML")
+        raise IndexerAccessException("Error getting or parsing XML", None)
+    for item in tree.find("channel").findall("item"):
+        titles.append(item.find("title").text)
+    
+    
+    if len(titles) == 0:
+        logger.debug("Search with t=%s and %s=%s returned no results" % (t, idkey, idvalue))
+        return False
+    countWrong = 0
+    for title in titles:
+        title = title.lower()
+        if expectedResult.lower() not in title:
+            logger.debug("Search with t=%s and %s=%s returned \"%s\" which does not contain the expected string \"%s\"" % (t, idkey, idvalue, title, expectedResult))
+            countWrong += 1
+    percentWrong = (100 * countWrong) / len(titles)
+    if percentWrong > 30:
+        logger.info("%d%% wrong results, this indexer probably doesn't support %s" % (percentWrong, idkey))
+        return False
+    logger.info("%d%% wrong results, this indexer probably supports %s" % (percentWrong, idkey))
+
+    return True
+
+
 def check_caps(host, apikey):
-    pass
+    toCheck = [
+        {"t": "tvsearch",
+         "id": "tvdbid",
+         "key": "121361",
+         "expected": "Thrones"
+         },
+        {"t": "movie",
+         "id": "imdbid",
+         "key": "0848228",
+         "expected": "Avengers"
+         },
+        {"t": "tvsearch",
+         "id": "rid",
+         "key": "24493",
+         "expected": "Thrones"
+         },
+        {"t": "tvsearch",
+         "id": "tvmazeid",
+         "key": "82",
+         "expected": "Thrones"
+         },
+        {"t": "tvsearch",
+         "id": "traktid",
+         "key": "1390",
+         "expected": "Thrones"
+         },
+        {"t": "tvsearch",
+         "id": "tmdbid",
+         "key": "1399",
+         "expected": "Thrones"
+         }
+
+    ]
+    result = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(toCheck)) as executor:
+        futures_to_ids = {executor.submit(testId, host, apikey, x["t"], x["id"], x["key"], x["expected"]): x["id"] for x in toCheck}
+        for future in concurrent.futures.as_completed(futures_to_ids):
+            id = futures_to_ids[future]
+            try:
+                supported = future.result()
+                if supported:
+                    result.append(id)
+            except Exception as e:
+                logger.error("An error occurred while trying to test the caps of host %s" % host)
+                raise IndexerResultParsingException("Unable to check caps: %s" % str(e), None)
+    return result
+
+
+def _build_base_url(host, apikey, action, category, limit, offset=0):
+    f = furl(host)
+    f.path.add("api")
+    url = f.add({"apikey": apikey, "extended": 1, "t": action, "limit": limit, "offset": offset})
+
+    if category is not None:
+        categories = map_category(category)
+        if len(categories) > 0:
+            url.add({"cat": ",".join(str(x) for x in categories)})
+    return url
+
 
 class NewzNab(SearchModule):
     # todo feature: read caps from server on first run and store them in the config/database
@@ -129,14 +228,7 @@ class NewzNab(SearchModule):
         self.category_search = True
 
     def build_base_url(self, action, category, offset=0):
-        f = furl(self.settings.host.get())
-        f.path.add("api")
-        url = f.add({"apikey": self.settings.apikey.get(), "extended": 1, "t": action, "limit": self.limit, "offset": offset})
-
-        categories = map_category(category)
-        if len(categories) > 0:
-            url.add({"cat": ",".join(str(x) for x in categories)})
-        return url
+        return _build_base_url(self.settings.host.get(), self.settings.apikey.get(), action, category, self.limit, offset)
 
     def get_search_urls(self, search_request):
         f = self.build_base_url("search", search_request.category, offset=search_request.offset)
@@ -155,7 +247,7 @@ class NewzNab(SearchModule):
             if "tvdbid" not in self.search_ids and "rid" not in self.search_ids:
                 logger.error("Indexer does not support tv search by either TVDB or TVRage ID")  # We shouldn't ever land here, but just wanna make sure
                 return []
-            #See if we need to to some conversion between rid and tvdbid
+            # See if we need to to some conversion between rid and tvdbid
             if search_request.identifier_key == "rid" and "rid" not in self.search_ids:
                 search_request.identifier_key = "tvdbid"
                 search_request.identifier_value = infos.rid_to_tvdbid(search_request.identifier_value)
@@ -195,13 +287,12 @@ class NewzNab(SearchModule):
         f.path.add(guid)
         return f.url
 
-    def process_query_result(self, xml_response, query):
+    def process_query_result(self, xml_response, maxResults=None):
         logger.debug("%s started processing results" % self.name)
 
         entries = []
         grouppattern = re.compile(r"Group:</b> ?([\w\.]+)<br ?/>")
         guidpattern = re.compile(r"(.*/)?([a-zA-Z0-9]+)")
-        
 
         try:
             tree = ET.fromstring(xml_response)
@@ -253,13 +344,13 @@ class NewzNab(SearchModule):
             entry.details_link = self.get_details_link(entry.guid)
 
             if usenetdate is None:
-                #Not provided by attributes, use pubDate instead
+                # Not provided by attributes, use pubDate instead
                 usenetdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
             entry.epoch = usenetdate.timestamp
             entry.pubdate_utc = str(usenetdate)
             entry.age_days = (arrow.utcnow() - usenetdate).days
             entry.precise_date = True
-            
+
             # Map category. Try to find the most specific category (like 2040), then the more general one (like 2000)
             categories = sorted(categories, reverse=True)  # Sort to make the most specific category appear first
             if len(categories) > 0:
@@ -270,9 +361,11 @@ class NewzNab(SearchModule):
                             break
 
             entries.append(entry)
+            if maxResults is not None and len(entries) == maxResults:
+                break
 
         response_total_offset = tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"})
-        if response_total_offset is None:
+        if response_total_offset is None or response_total_offset.attrib["total"] == "" or response_total_offset.attrib["offset"] == "":
             logger.warn("Indexer returned a result page without total results and offset. Shame! *rings bell*")
             offset = 0
             total = len(entries)

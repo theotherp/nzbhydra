@@ -29,6 +29,10 @@
     <span style="text-align: left;"><button class="btn btn-default" id="button-test-connection-{{ formId }}" type="button" ng-click="testConnection()"><span class="glyphicon glyphicon-refresh"></span></button> <span id="message-test-connection-{{ formId }}"></span></span>
 </script>
 
+<script type="text/ng-template" id="button-check-caps.html">
+    <span style="text-align: left;"><button class="btn btn-default" id="button-check-caps-{{ formId }}" type="button" ng-click="checkCaps()"><span class="glyphicon glyphicon-refresh"></span></button> <span id="message-check-caps-{{ formId }}"></span></span>
+</script>
+
 <script type="text/ng-template" id="newznab-preset.html">
     <ui-select ng-model="selectedpreset" theme="bootstrap" on-select="selectPreset($item, $model)" search-enabled="false">
         <ui-select-match allow-clear="true">{{ display }}</ui-select-match>
@@ -36,7 +40,6 @@
             <div ng-bind-html="preset.name"></div>
         </ui-select-choices>
     </ui-select>
-   
 </script>
 
 

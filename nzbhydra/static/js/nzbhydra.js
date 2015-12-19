@@ -1509,7 +1509,7 @@ angular
                 }
             }
         });
-        
+
 
         formlyConfigProvider.setType({
             name: 'shutdown',
@@ -1520,7 +1520,6 @@ angular
             ].join(' '),
             wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
         });
-
 
 
         formlyConfigProvider.setType({
@@ -1584,16 +1583,69 @@ angular
         });
 
         formlyConfigProvider.setType({
+            name: 'checkCaps',
+            templateUrl: 'button-check-caps.html',
+            controller: function ($scope) {
+                $scope.message = "";
+
+                var testButton = "#button-check-caps-" + $scope.formId;
+                var testMessage = "#message-check-caps-" + $scope.formId;
+
+                function showSuccess() {
+                    angular.element(testButton).removeClass("btn-default");
+                    angular.element(testButton).removeClass("btn-danger");
+                    angular.element(testButton).addClass("btn-success");
+                }
+
+                function showError() {
+                    angular.element(testButton).removeClass("btn-default");
+                    angular.element(testButton).removeClass("btn-success");
+                    angular.element(testButton).addClass("btn-danger");
+                }
+
+                $scope.checkCaps = function () {
+                    angular.element(testButton).addClass("glyphicon-refresh-animate");
+                    var myInjector = angular.injector(["ng"]);
+                    var $http = myInjector.get("$http");
+                    var url;
+                    var params;
+
+                    url = "internalapi/test_caps";
+                    params = {indexer: $scope.model.name, apikey: $scope.model.apikey, host: $scope.model.host};
+                    $http.get(url, {params: params}).success(function (result) {
+                        //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
+                        if (result.success) {
+                            angular.element(testMessage).text("Supports: " + result.result);
+                            $scope.$apply(function () {
+                                $scope.model.search_ids = result.result;
+                            });
+                            showSuccess();
+                        } else {
+                            angular.element(testMessage).text(result.message);
+                            showError();
+                        }
+
+                    }).error(function () {
+                        angular.element(testMessage).text(result.message);
+                        showError();
+                    }).finally(function () {
+                        angular.element(testButton).removeClass("glyphicon-refresh-animate");
+                    })
+                }
+            }
+        });
+
+        formlyConfigProvider.setType({
             name: 'horizontalNewznabPreset',
             wrapper: ['horizontalBootstrapLabel'],
             templateUrl: 'newznab-preset.html',
             controller: function ($scope) {
                 $scope.display = "";
                 $scope.selectedpreset = undefined;
-                
+
                 $scope.presets = [
                     {
-                      name: "None"  
+                        name: "None"
                     },
                     {
                         name: "DogNZB",
@@ -1625,7 +1677,7 @@ angular
                         host: "https://nn-tmux.6box.me",
                         searchIds: ["tvdbid", "rid", "imdbid"]
                     },
-                     {
+                    {
                         name: "6box",
                         host: "https://6box.me",
                         searchIds: ["imdbid"]
@@ -1633,12 +1685,12 @@ angular
                     {
                         name: "Drunken Slug",
                         host: "https://drunkenslug.com",
-                        searchIds: ["tvdbid", "imdbid"]
-                    }                    
-                    
+                        searchIds: ["tvdbid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
+                    }
+
                 ];
-                
-                $scope.selectPreset = function(item, model) {
+
+                $scope.selectPreset = function (item, model) {
                     if (item.name == "None") {
                         $scope.model.name = "";
                         $scope.model.host = "";
@@ -1651,10 +1703,10 @@ angular
                         $scope.model.name = item.name;
                         $scope.model.host = item.host;
                         $scope.model.search_ids = item.searchIds;
-                        _.defer(function() {
+                        _.defer(function () {
                             $scope.display = item.name;
                         });
-                        
+
                     }
                 };
 
@@ -1667,6 +1719,12 @@ angular
         formlyConfigProvider.setType({
             name: 'horizontalTestConnection',
             extends: 'testConnection',
+            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+        });
+
+        formlyConfigProvider.setType({
+            name: 'horizontalCheckCaps',
+            extends: 'checkCaps',
             wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
         });
 
@@ -1739,8 +1797,6 @@ angular
             templateUrl: 'ui-select-multiple.html',
             wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
         });
-        
-        
 
 
         formlyConfigProvider.setType({
@@ -1766,7 +1822,7 @@ angular
 function ConfigController($scope, ConfigService, config, CategoriesService) {
     $scope.config = config;
     $scope.submit = submit;
-    
+
 
     function submit(form) {
         ConfigService.set($scope.config);
@@ -1775,7 +1831,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
         CategoriesService.invalidate();
     }
 
-    function getBasicIndexerFieldset(showName, host, apikey, username, searchIds, testConnection, testtype, showpreselect) {
+    function getBasicIndexerFieldset(showName, host, apikey, username, searchIds, testConnection, testtype, showpreselect, showCheckCaps) {
         var fieldset = [];
 
         fieldset.push({
@@ -1786,7 +1842,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 label: 'Enabled'
             }
         });
-        
+
         if (testtype == 'newznab') {
             fieldset.push(
                 {
@@ -1795,7 +1851,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                     templateOptions: {
                         label: 'Presets'
                     }
-                    
+
                 });
         }
 
@@ -1876,8 +1932,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                     help: 'Supercedes the general timeout in "Searching"'
                 }
             },
-            ]);
-        
+        ]);
+
         if (showpreselect) {
             fieldset.push(
                 {
@@ -1904,7 +1960,10 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         options: [
                             {label: 'TVDB', id: 'tvdbid'},
                             {label: 'TVRage', id: 'rid'},
-                            {label: 'IMDB', id: 'imdbid'}
+                            {label: 'IMDB', id: 'imdbid'},
+                            {label: 'Trakt', id: 'traktid'},
+                            {label: 'TVMaze', id: 'tvmazeid'},
+                            {label: 'TMDB', id: 'tmdbid'}
                         ]
                     }
                 }
@@ -1915,10 +1974,22 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             fieldset.push(
                 {
                     type: 'horizontalTestConnection',
-                    hideExpression: '!model.enabled',
+                    hideExpression: '!model.enabled || !model.host || !model.apikey || !model.name',
                     templateOptions: {
                         label: 'Test connection',
                         testType: testtype
+                    }
+                }
+            )
+        }
+        
+        if (showCheckCaps) {
+            fieldset.push(
+                {
+                    type: 'horizontalCheckCaps',
+                    hideExpression: '!model.enabled || !model.host || !model.apikey || !model.name',
+                    templateOptions: {
+                        label: 'Check search types'
                     }
                 }
             )
@@ -1932,11 +2003,9 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             wrapper: 'fieldset',
             key: 'newznab' + index,
             templateOptions: {label: 'Newznab ' + index},
-            fieldGroup: getBasicIndexerFieldset(true, true, true, false, true, true, 'newznab', true)
+            fieldGroup: getBasicIndexerFieldset(true, true, true, false, true, true, 'newznab', true, true)
         };
     }
-    
-    
 
 
     $scope.fields = {
@@ -2088,7 +2157,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                             help: 'Enable to protect the history & stats with the admin user'
                         }
                     }
-                    
+
 
                 ]
             },
@@ -2849,10 +2918,10 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             getNewznabFieldset(18),
             getNewznabFieldset(19),
             getNewznabFieldset(20)
-            
+
 
         ],
-        
+
         system: [
             {
                 key: 'shutdown',
@@ -2863,8 +2932,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 }
             }
         ]
-    
-        
+
+
     };
 
     $scope.tabs = [
@@ -2904,11 +2973,11 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
     $scope.isSavingNeeded = function (form) {
         return form.$dirty && !form.$submitted;
     };
-    
-    $scope.downloadLog = function() {
+
+    $scope.downloadLog = function () {
         var myInjector = angular.injector(["ng"]);
         var $http = myInjector.get("$http");
-        $http.get("/internalapi/getlogs").success(function(data) {
+        $http.get("/internalapi/getlogs").success(function (data) {
             console.log(data.log);
             $scope.log = data.log;
             $scope.$digest();

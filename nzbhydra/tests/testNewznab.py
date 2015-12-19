@@ -4,6 +4,8 @@ from __future__ import division
 from __future__ import absolute_import
 from builtins import range
 from builtins import open
+from os.path import dirname, join, abspath
+from sys import path
 from future import standard_library
 standard_library.install_aliases()
 from builtins import *
@@ -20,10 +22,9 @@ from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.newznab import NewzNab
 from nzbhydra.tests import mockbuilder
 from nzbhydra.tests.db_prepare import set_and_drop
-from nzbhydra.tests.indexerTest import IndexerTestcase
 
 
-class MyTestCase(IndexerTestcase):
+class MyTestCase(unittest.TestCase):
 
     def setUp(self):    
         set_and_drop()

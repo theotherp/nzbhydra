@@ -91,7 +91,7 @@ class NzbIndex(SearchModule):
         urls.extend(self.get_search_urls(search_request))
         return urls
 
-    def process_query_result(self, html, query):
+    def process_query_result(self, html, maxResults=None):
         logger.debug("%s started processing results" % self.name)
 
         entries = []

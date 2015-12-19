@@ -26,7 +26,7 @@ from builtins import int
 from builtins import *
 from future import standard_library
 from peewee import fn
-from nzbhydra.exceptions import DownloaderException
+from nzbhydra.exceptions import DownloaderException, IndexerResultParsingException
 
 standard_library.install_aliases()
 from functools import wraps
@@ -47,11 +47,11 @@ from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external
 from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
 from nzbhydra.database import IndexerStatus, Indexer
 from nzbhydra.downloader import Nzbget, Sabnzbd
-from nzbhydra.indexers import read_indexers_from_config, clean_up_database
+from nzbhydra.indexers import read_indexers_from_config, clean_up_database, getIndexerByName
 from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses
 from nzbhydra.versioning import get_rep_version, get_current_version
-from nzbhydra.searchmodules.newznab import test_connection
+from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import  getLogs
 
 
@@ -632,6 +632,30 @@ def internalapi_testomgwtf(args):
     success, message = omgwtf.test_connection(args["apikey"], args["username"])
     return jsonify({"result": success, "message": message})
 
+
+internalapi_testcaps_args = {
+    "indexer": fields.String(missing=None),
+    "apikey": fields.String(missing=None),
+    "host": fields.String(missing=None)
+}
+
+
+@app.route('/internalapi/test_caps')
+@use_args(internalapi_testcaps_args)
+@requires_admin_auth
+def internalapi_testcaps(args): 
+    
+    indexer = urllib.parse.unquote(args["indexer"])
+    apikey = args["apikey"]
+    host = urllib.parse.unquote(args["host"])
+    logger.debug("Check caps for %s" % indexer)
+    
+    try:
+        result = check_caps(host, apikey)
+
+        return jsonify({"success": True, "result": result})
+    except IndexerResultParsingException as e:
+        return jsonify({"success": False, "message": e.message})
 
 @app.route('/internalapi/getstats')
 @requires_stats_auth

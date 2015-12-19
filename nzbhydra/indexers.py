@@ -84,6 +84,13 @@ def read_indexers_from_config():
     return enabled_indexers
 
 
+def getIndexerByName(name):
+    for i in enabled_indexers:
+        if i.name == name:
+            return i
+    return None
+
+
 def clean_up_database():
     configured_indexer_names = set([x.name for x in configured_indexers])
     for indexer in database.Indexer.select():

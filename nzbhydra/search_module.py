@@ -146,7 +146,7 @@ class SearchModule(object):
     def create_nzb_search_result(self):
         return NzbSearchResult(indexer=self.name, indexerscore=self.score)
 
-    def process_query_result(self, result, query):
+    def process_query_result(self, result, maxResults=None):
         return []
 
     def check_auth(self, body):
@@ -254,7 +254,7 @@ class SearchModule(object):
                     self.logger.debug("Successfully loaded URL %s" % request.url)
                     try:
 
-                        parsed_results = self.process_query_result(request.content, query)
+                        parsed_results = self.process_query_result(request.content)
                         results.extend(parsed_results.entries)  # Retrieve the processed results
                         queries.extend(parsed_results.queries)  # Add queries that were added as a result of the parsing, e.g. when the next result page should also be loaded
                         total_results += parsed_results.total

@@ -100,7 +100,7 @@ class Binsearch(SearchModule):
         #Unfortunately binsearch uses different GUIDs for downloading and detail links. We store the one for NZBs
         return None
 
-    def process_query_result(self, html, query):
+    def process_query_result(self, html, maxResults = None):
         logger.debug("Binsearch started processing results")
         logger.info("Last results count %d" % self.last_results_count)
         entries = []

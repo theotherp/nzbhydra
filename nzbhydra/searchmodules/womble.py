@@ -66,7 +66,7 @@ class Womble(SearchModule):
         logger.info("Womble does not provide details on releases")
         return None
 
-    def process_query_result(self, xml, query):
+    def process_query_result(self, html, maxResults=None):
         entries = []
         try:
             tree = ET.fromstring(xml)
