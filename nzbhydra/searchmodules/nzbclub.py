@@ -71,7 +71,7 @@ class NzbClub(SearchModule):
         f.path.add(guid)
         return f.url
 
-    def process_query_result(self, html, maxResults=None):
+    def process_query_result(self, xml, maxResults=None):
         logger.debug("%s started processing results" % self.name)
         entries = []
         try:
