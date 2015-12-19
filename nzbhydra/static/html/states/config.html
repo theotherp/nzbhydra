@@ -30,8 +30,8 @@
 </script>
 
 <script type="text/ng-template" id="newznab-preset.html">
-    <ui-select data-ng-model="selected" theme="bootstrap" on-select="selectPreset($item, $model)" search-enabled="false">
-        <ui-select-match placeholder="{{ display }}">{{ display }}</ui-select-match>
+    <ui-select ng-model="selectedpreset" theme="bootstrap" on-select="selectPreset($item, $model)" search-enabled="false">
+        <ui-select-match allow-clear="true">{{ display }}</ui-select-match>
         <ui-select-choices repeat="preset in presets">
             <div ng-bind-html="preset.name"></div>
         </ui-select-choices>

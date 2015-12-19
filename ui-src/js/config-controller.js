@@ -150,9 +150,13 @@ angular
             wrapper: ['horizontalBootstrapLabel'],
             templateUrl: 'newznab-preset.html',
             controller: function ($scope) {
-                $scope.display = "Presets...";
+                $scope.display = "";
+                $scope.selectedpreset = undefined;
                 
                 $scope.presets = [
+                    {
+                      name: "None"  
+                    },
                     {
                         name: "DogNZB",
                         host: "https://api.dognzb.cr",
@@ -197,11 +201,28 @@ angular
                 ];
                 
                 $scope.selectPreset = function(item, model) {
-                    $scope.display = item.name;
-                    $scope.model.name = item.name;
-                    $scope.model.host = item.host;
-                    $scope.model.search_ids = item.searchIds;
-                }
+                    if (item.name == "None") {
+                        $scope.model.name = "";
+                        $scope.model.host = "";
+                        $scope.model.apikey = "";
+                        $scope.model.score = 0;
+                        $scope.model.timeout = null;
+                        $scope.model.search_ids = ["tvdbid", "rid", "imdbid"]; //Default
+                        $scope.display = "";
+                    } else {
+                        $scope.model.name = item.name;
+                        $scope.model.host = item.host;
+                        $scope.model.search_ids = item.searchIds;
+                        _.defer(function() {
+                            $scope.display = item.name;
+                        });
+                        
+                    }
+                };
+
+                $scope.$watch('[model.host]', function () {
+                    $scope.display = "";
+                }, true);
             }
         });
 
@@ -332,7 +353,10 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             fieldset.push(
                 {
                     key: 'name',
-                    type: 'horizontalNewznabPreset'
+                    type: 'horizontalNewznabPreset',
+                    templateOptions: {
+                        label: 'Presets'
+                    }
                     
                 });
         }
