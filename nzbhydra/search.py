@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import re
 from itertools import groupby
 
 from builtins import int
@@ -259,8 +260,8 @@ def start_search_futures(indexers_and_search_requests):
 
 
 def find_duplicates(results):
-    sorted_results = sorted(results, key=lambda x: x.title.lower())
-    grouped_by_title = groupby(sorted_results, key=lambda x: x.title.lower())
+    sorted_results = sorted(results, key=lambda x: re.sub(r"[ \.\-_]", "", x.title.lower()))
+    grouped_by_title = groupby(sorted_results, key=lambda x: re.sub(r"[ \.\-_]", "", x.title.lower()))
     grouped_by_sameness = []
     for key, group in grouped_by_title:
         results_to_sets = {}
@@ -301,11 +302,11 @@ def test_for_duplicate_age(search_result_1, search_result_2):
     if (group_known and not same_group) or (poster_known and not same_poster):
         return False
     if (same_group and not poster_known) or (same_poster and not group_known):
-        age_threshold = 12
+        age_threshold = 3
     if same_group and same_poster:
-        age_threshold = 24
+        age_threshold = 8
 
-    same_age = abs(search_result_1.epoch - search_result_2.epoch) / (1000 * 60) <= age_threshold  # epoch difference (ms) to minutes    
+    same_age = abs(search_result_1.epoch - search_result_2.epoch) / (60 * 60) <= age_threshold  # epoch difference (seconds) to minutes    
     return same_age
 
 

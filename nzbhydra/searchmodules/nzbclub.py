@@ -115,10 +115,10 @@ class NzbClub(SearchModule):
                 entry.has_nfo = NzbSearchResult.HAS_NFO_NO
             m = group_pattern.search(description)
             if m:
-                entry.group = m.group(1)
+                entry.group = m.group(1).strip()
             m = poster_pattern.search(description)
             if m:
-                entry.poster = m.group(1)
+                entry.poster = m.group(1).strip()
 
             entry.pubDate = pubdate.text
             pubdate = arrow.get(pubdate.text, '"ddd, DD MMM YYYY HH:mm:ss Z')

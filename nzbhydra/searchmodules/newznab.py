@@ -117,6 +117,8 @@ def test_connection(host, apikey):
         return False, "Host reachable but unknown error returned"
     return True, ""
 
+def check_caps(host, apikey):
+    pass
 
 class NewzNab(SearchModule):
     # todo feature: read caps from server on first run and store them in the config/database

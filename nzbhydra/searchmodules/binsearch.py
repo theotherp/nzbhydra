@@ -147,11 +147,11 @@ class Binsearch(SearchModule):
             entry.details_link = "%s%s" % (self.host, collection_link)
             m = goup_pattern.search(collection_link)
             if m:
-                entry.group = m.group(1)
+                entry.group = m.group(1).strip()
             
             m = poster_pattern.search(collection_link)
             if m:
-                poster = m.group(1)
+                poster = m.group(1).strip()
                 import urllib.parse
                 entry.poster = urllib.parse.unquote(poster).replace("+", " ")
             

@@ -140,7 +140,7 @@ class NzbIndex(SearchModule):
             if poster is not None:
                 poster = poster.text.replace("\n", "")
                 poster = re.sub(" +", "", poster)
-                entry.poster = poster.replace("(", " (").replace("<", " <")
+                entry.poster = poster.replace("(", " (").replace("<", " <").strip()
 
             link = infotd.findAll('a', text=re.compile('Download'))
             if link is not None and len(link) == 1:
@@ -167,7 +167,7 @@ class NzbIndex(SearchModule):
                 entry.size = int(size)
 
             grouptd = tds[3]
-            group = grouptd.text.replace("\n", "").replace("a.b.", "alt.binaries.")
+            group = grouptd.text.replace("\n", "").replace("a.b.", "alt.binaries.").strip()
             entry.group = group
             
             agetd = tds[4]

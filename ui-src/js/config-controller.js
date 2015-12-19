@@ -316,7 +316,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
         CategoriesService.invalidate();
     }
 
-    function getBasicIndexerFieldset(showName, host, apikey, username, searchIds, testConnection, testtype) {
+    function getBasicIndexerFieldset(showName, host, apikey, username, searchIds, testConnection, testtype, showpreselect) {
         var fieldset = [];
 
         fieldset.push({
@@ -414,16 +414,22 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                     help: 'Supercedes the general timeout in "Searching"'
                 }
             },
-            {
-                key: 'preselect',
-                type: 'horizontalSwitch',
-                hideExpression: '!model.enabled',
-                templateOptions: {
-                    type: 'switch',
-                    label: 'Preselect',
-                    help: 'Preselect this indexer on the search page'
+            ]);
+        
+        if (showpreselect) {
+            fieldset.push(
+                {
+                    key: 'preselect',
+                    type: 'horizontalSwitch',
+                    hideExpression: '!model.enabled',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Preselect',
+                        help: 'Preselect this indexer on the search page'
+                    }
                 }
-            }]);
+            );
+        }
 
         if (searchIds) {
             fieldset.push(
@@ -464,7 +470,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             wrapper: 'fieldset',
             key: 'newznab' + index,
             templateOptions: {label: 'Newznab ' + index},
-            fieldGroup: getBasicIndexerFieldset(true, true, true, false, true, true, 'newznab')
+            fieldGroup: getBasicIndexerFieldset(true, true, true, false, true, true, 'newznab', true)
         };
     }
     
@@ -1325,19 +1331,19 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 wrapper: 'fieldset',
                 key: 'Binsearch',
                 templateOptions: {label: 'Binsearch'},
-                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false)
+                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "binsearch", true)
             },
             {
                 wrapper: 'fieldset',
                 key: 'NZBClub',
                 templateOptions: {label: 'NZBClub'},
-                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false)
+                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbclub", true)
             },
             {
                 wrapper: 'fieldset',
                 key: 'NZBIndex',
                 templateOptions: {label: 'NZBIndex'},
-                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false).concat([{
+                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbindex", true).concat([{
                     key: 'generalMinSize',
                     type: 'horizontalInput',
                     hideExpression: '!model.enabled',
@@ -1352,13 +1358,13 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 wrapper: 'fieldset',
                 key: 'omgwtfnzbs',
                 templateOptions: {label: 'omgwtfnzbs.org'},
-                fieldGroup: getBasicIndexerFieldset(false, false, true, true, false, true, 'omgwtf')
+                fieldGroup: getBasicIndexerFieldset(false, false, true, true, false, true, 'omgwtf', true)
             },
             {
                 wrapper: 'fieldset',
                 key: 'Womble',
                 templateOptions: {label: 'Womble'},
-                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false)
+                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "womble", false)
             },
 
             getNewznabFieldset(1),

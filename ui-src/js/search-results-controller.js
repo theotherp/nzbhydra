@@ -96,8 +96,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
             return $scope.indexerDisplayState[item.indexer.toLowerCase()];
         }
 
-        function getTitleLowerCase(element) {
-            return element.title.toLowerCase();
+        function getCleanedTitle(element) {
+            return element.title.toLowerCase().replace(/[\s\-\._]/ig, "");
         }
 
         function createSortedHashgroups(titleGroup) {
@@ -134,7 +134,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
             //and which were not filtered by the indexers (because they don't support queries with min/max size/age)
             .filter(filterByAgeAndSize)
             //Make groups of results with the same title    
-            .groupBy(getTitleLowerCase)
+            .groupBy(getCleanedTitle)
             //For every title group make subgroups of duplicates and sort the group    
             .map(createSortedHashgroups)
             //And then sort the title group using its first hashgroup's first item (the group itself is already sorted and so are the hash groups)    
