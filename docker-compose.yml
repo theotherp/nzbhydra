@@ -1,0 +1,6 @@
+nzbhydra:
+    build: .
+    hostname: nzbhydra
+    container_name: NZBHydra
+    ports:
+        - "5075:5075"
