@@ -3,6 +3,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import cgi
 import types
 
 from future import standard_library
@@ -20,6 +21,8 @@ from nzbhydra.config import MainSettings, mainSettings
 regexApikey = re.compile(r"(apikey|api)=[\w]+", re.I)
 regexUser = re.compile(r"(user|username)=[\w]+", re.I)
 regexPassword = re.compile(r"(password)=[\w]+", re.I)
+
+logger = None
 
 
 def removeSensitiveData(msg):
@@ -51,6 +54,7 @@ def setup_custom_logger(name):
     file_handler.setLevel(mainSettings.logging.logfilelevel.get())
     file_handler.setFormatter(formatter)
 
+    global logger
     logger = logging.getLogger(name)
     
     logger.addHandler(stream_handler)
@@ -63,6 +67,8 @@ def setup_custom_logger(name):
     logging.getLogger("requests").setLevel(logging.CRITICAL)
     logging.getLogger("urllib3").setLevel(logging.CRITICAL)
     logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
+
+    
     
     return logger
 
@@ -70,9 +76,12 @@ def getLogs():
     logRe = re.compile(r".*\.log(\.\d+)?")
     logFiles = [f for f in listdir(".") if isfile(f) and logRe.match(f)]
     logFiles = [{"name": f, "lastModified": getmtime(f)} for f in logFiles]
-    if exists(config.mainSettings.logging.logfilename.get()):
-        with open(config.mainSettings.logging.logfilename.get(), "r") as logFile:
-            log = logFile.read()
+    logfile = config.mainSettings.logging.logfilename.get()
+    if exists(logfile):
+        logger.debug("Reading log file %s" % logfile)
+        with open(logfile, "r") as logFile:
+            log = cgi.escape(logFile.read())
     else:
+        logger.debug("Configured log file %s was not found" % logfile)
         log = "No log available"
     return {"logFiles": logFiles, "log": log}

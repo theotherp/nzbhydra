@@ -52,7 +52,7 @@ from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses
 from nzbhydra.versioning import get_rep_version, get_current_version
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
-from nzbhydra.log import  getLogs
+from nzbhydra.log import getLogs
 
 
 class ReverseProxied(object):

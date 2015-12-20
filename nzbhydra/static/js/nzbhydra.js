@@ -1514,7 +1514,7 @@ angular
         formlyConfigProvider.setType({
             name: 'shutdown',
             template: [
-                '<a href="/internalapi/shutdown" target="_top">',
+                '<a href="internalapi/shutdown" target="_top">',
                 '<button class="btn btn-default" type="button">Shutdown</button>',
                 '</a>'
             ].join(' '),
@@ -2974,12 +2974,12 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
     $scope.downloadLog = function () {
         var myInjector = angular.injector(["ng"]);
         var $http = myInjector.get("$http");
-        $http.get("/internalapi/getlogs").success(function (data) {
-            console.log(data.log);
-            $scope.log = data.log;
+        var $sce = myInjector.get("$sce");
+        $http.get("internalapi/getlogs").success(function (data) {
+            $scope.log = $sce.trustAsHtml(data.log);
             $scope.$digest();
         });
-        console.log($scope.log);
+        
     }
 }
 ConfigController.$inject = ["$scope", "ConfigService", "config", "CategoriesService"];
@@ -3069,10 +3069,6 @@ angular
         $uibModalInstance.close($scope);
     }
 }]);
-/**
- * Created by Snowcrash on 20.12.2015.
- */
-
 angular
     .module('nzbhydraApp')
     .controller('AboutController', AboutController);
