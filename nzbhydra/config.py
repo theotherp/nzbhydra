@@ -247,30 +247,34 @@ def update(d, u, level):
 
 
 def migrate(cfg):
-    version = cfg["main"]["configVersion"]
-    if version == 1:
-        addLogMessage(20, "Migrating config to version 2")
-        #Migrate sabnzbd setting
-        sabnzbd = cfg["downloader"]["sabnzbd"]
-        if sabnzbd["host"] and sabnzbd["port"]:
-            addLogMessage(20, "Migrating sabnzbd settings")
-            f = furl()
-            f.host = sabnzbd["host"]
-            f.port = sabnzbd["port"]
-            f.scheme = "https" if sabnzbd["ssl"] else "http"
-            f.path = "/sabnzbd/"
-            cfg["downloader"]["sabnzbd"]["url"] = f.url
-            addLogMessage(20, "Built sabnzbd URL: %s" % f.url)
-        elif cfg["downloader"]["downloader"] == "sabnzbd":
-            addLogMessage(30, "Unable to migrate from incomplete sabnzbd settings. Please set the sabnzbd URL manually")
-        addLogMessage(20, "Migration of config to version 2 finished")
-        cfg["main"]["configVersion"] = 2
-    if version == 2:
-        addLogMessage(20, "Migrating config to version 3")
-        addLogMessage(20, "Updating NZBClub host to https://www.nzbclub.com")
-        cfg["indexers"]["NZBClub"]["host"] = "https://www.nzbclub.com"
-        addLogMessage(20, "Migration of config to version 3 finished")
-        cfg["main"]["configVersion"] = 3
+    #CAUTION: Don't forget to increase the default value for configVersion
+    try:
+        version = cfg["main"]["configVersion"]
+        if version == 1:
+            addLogMessage(20, "Migrating config to version 2")
+            #Migrate sabnzbd setting
+            sabnzbd = cfg["downloader"]["sabnzbd"]
+            if sabnzbd["host"] and sabnzbd["port"]:
+                addLogMessage(20, "Migrating sabnzbd settings")
+                f = furl()
+                f.host = sabnzbd["host"]
+                f.port = sabnzbd["port"]
+                f.scheme = "https" if sabnzbd["ssl"] else "http"
+                f.path = "/sabnzbd/"
+                cfg["downloader"]["sabnzbd"]["url"] = f.url
+                addLogMessage(20, "Built sabnzbd URL: %s" % f.url)
+            elif cfg["downloader"]["downloader"] == "sabnzbd":
+                addLogMessage(30, "Unable to migrate from incomplete sabnzbd settings. Please set the sabnzbd URL manually")
+            addLogMessage(20, "Migration of config to version 2 finished")
+            cfg["main"]["configVersion"] = 2
+        if version == 2:
+            addLogMessage(20, "Migrating config to version 3")
+            addLogMessage(20, "Updating NZBClub host to https://www.nzbclub.com")
+            cfg["indexers"]["NZBClub"]["host"] = "https://www.nzbclub.com"
+            addLogMessage(20, "Migration of config to version 3 finished")
+            cfg["main"]["configVersion"] = 3
+    except Exception as e:
+        addLogMessage(40, "Error while trying to migrate config: %s" % str(e))
         
 
 def load(filename):
@@ -373,7 +377,7 @@ class MainSettings(Category):
 
         # Not a config setting but the version of the config file. Useful when we may need to migrate the config later and want
         # to find out which version is used.
-        self.configVersion = Setting(self, name="configVersion", default=1, valuetype=int)
+        self.configVersion = Setting(self, name="configVersion", default=3, valuetype=int)
 
 
 mainSettings = MainSettings()
