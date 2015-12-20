@@ -2291,6 +2291,15 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         }
                     },
                     {
+                        key: 'runThreaded',
+                        type: 'horizontalSwitch',
+                        templateOptions: {
+                            type: 'switch',
+                            label: 'Run threaded server',
+                            help: 'Requires restart. Experimental. Please report your experiences.'
+                        }
+                    },
+                    {
                         key: 'startupBrowser',
                         type: 'horizontalSwitch',
                         templateOptions: {
@@ -3060,6 +3069,10 @@ angular
         $uibModalInstance.close($scope);
     }
 }]);
+/**
+ * Created by Snowcrash on 20.12.2015.
+ */
+
 angular
     .module('nzbhydraApp')
     .controller('AboutController', AboutController);

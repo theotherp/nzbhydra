@@ -99,6 +99,9 @@ Any pull requests are also welcome, but I feel I and the program would mostly pr
 ### Contact ###
 Send me an email at TheOtherP@gmx.de or a PM at https://www.reddit.com/user/TheOtherP
 
+### Donate ###
+If you like to help me, especially with getting a logo and perhaps a better CSS you are welcome to send money to my bitcoin: 13x4cfm5BNzedsSqdPcexUhAF3cP8LYrsk 
+
 ### License ###
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

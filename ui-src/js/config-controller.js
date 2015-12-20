@@ -853,6 +853,15 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         }
                     },
                     {
+                        key: 'runThreaded',
+                        type: 'horizontalSwitch',
+                        templateOptions: {
+                            type: 'switch',
+                            label: 'Run threaded server',
+                            help: 'Requires restart. Experimental. Please report your experiences.'
+                        }
+                    },
+                    {
                         key: 'startupBrowser',
                         type: 'horizontalSwitch',
                         templateOptions: {

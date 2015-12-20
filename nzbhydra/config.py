@@ -347,6 +347,7 @@ class MainSettings(Category):
         self.port = Setting(self, name="port", default=5075, valuetype=int)
         self.baseUrl = Setting(self, name="baseUrl", default=None, valuetype=str)
         self.startup_browser = Setting(self, name="startupBrowser", default=True, valuetype=bool)
+        self.runThreaded = Setting(self, name="runThreaded", default=False, valuetype=bool)
 
         self.enableAuth = Setting(self, name="enableAuth", default=False, valuetype=bool)
         self.username = Setting(self, name="username", default="", valuetype=str)

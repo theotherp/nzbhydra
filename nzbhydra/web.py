@@ -841,9 +841,9 @@ def run(host, port):
     for handler in logger.handlers:
         app.logger.addHandler(handler)
     if context is None:
-        app.run(host=host, port=port, debug=config.mainSettings.debug.get())
+        app.run(host=host, port=port, debug=config.mainSettings.debug.get(), threaded=config.mainSettings.runThreaded.get())
     else:
-        app.run(host=host, port=port, debug=config.mainSettings.debug.get(), ssl_context=context)
+        app.run(host=host, port=port, debug=config.mainSettings.debug.get(), ssl_context=context,threaded=config.mainSettings.runThreaded.get())
 
 
 def configure_cache():
