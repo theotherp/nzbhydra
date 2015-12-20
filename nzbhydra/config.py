@@ -265,6 +265,12 @@ def migrate(cfg):
             addLogMessage(30, "Unable to migrate from incomplete sabnzbd settings. Please set the sabnzbd URL manually")
         addLogMessage(20, "Migration of config to version 2 finished")
         cfg["main"]["configVersion"] = 2
+    if version == 2:
+        addLogMessage(20, "Migrating config to version 3")
+        addLogMessage(20, "Updating NZBClub host to https://www.nzbclub.com")
+        cfg["indexers"]["NZBClub"]["host"] = "https://www.nzbclub.com"
+        addLogMessage(20, "Migration of config to version 3 finished")
+        cfg["main"]["configVersion"] = 3
         
 
 def load(filename):
@@ -562,7 +568,7 @@ class IndexerNewznabSettings(IndexerSettingsAbstract):
 class IndexerNzbclubSettings(IndexerSettingsAbstract):
     def __init__(self, parent):
         super(IndexerNzbclubSettings, self).__init__(parent, "NZBClub", "NZBClub")
-        self.host = Setting(self, name="host", default="https://nzbclub.com", valuetype=str)
+        self.host = Setting(self, name="host", default="https://www.nzbclub.com", valuetype=str)
         self.name = Setting(self, name="name", default="NZBClub", valuetype=str)
 
 

@@ -110,9 +110,9 @@ class Binsearch(SearchModule):
         main_table = soup.find('table', attrs={'id': 'r2'})
 
         if not main_table:
-            logger.error("Unable to find main table in binsearch page: %s..." % html[:500])
+            logger.warn("Unable to find main table in binsearch page. This just sometimes happens...")
             logger.debug(html)
-            raise IndexerResultParsingException("Unable to find main table in binsearch page", self)
+            raise IndexerResultParsingException("Unable to find main table in binsearch page. This happens sometimes... :-)", self)
 
         items = main_table.find_all('tr')
         title_pattern = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"')
