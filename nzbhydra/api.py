@@ -205,14 +205,14 @@ def get_nzb_link(indexer_name, guid, title, searchid):
     :return: str
     """
     for p in indexers.enabled_indexers:
-        if p.name == indexer_name:
+        if p.name.strip() == indexer_name.strip():
             link = p.get_nzb_link(guid, title)
 
             # Log to database
             indexer = Indexer.get(fn.lower(Indexer.name) == indexer_name.lower())
             papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, response_successful=None, indexer_search=indexer)
             papiaccess.save()
-            pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode="redirect")
+            pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode="redirect", title=title, guid=guid)
             pnzbdl.save()
 
             return link

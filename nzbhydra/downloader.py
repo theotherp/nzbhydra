@@ -58,6 +58,7 @@ class Nzbget(Downloader):
         return xmlrpc.client.ServerProxy(f.tostr())
 
     def test(self, host, ssl=False, port=None, username=None, password=None, apikey=None):
+        self.logger.debug("Testing connection to snzbget")
         rpc = self.get_rpc(host, ssl, port, username, password)
 
         try:
@@ -83,6 +84,7 @@ class Nzbget(Downloader):
         return True, ""
 
     def add_link(self, link, title, category):
+        self.logger.debug("Sending add-link request for %s to nzbget" % title)
         if title is None:
             title = ""
         else:
@@ -110,6 +112,7 @@ class Nzbget(Downloader):
             return False
 
     def add_nzb(self, content, title, category):
+        self.logger.debug("Sending add-nzb request for %s to nzbget" % title)
         if title is None:
             title = ""
         else:
@@ -140,6 +143,7 @@ class Nzbget(Downloader):
             return False
         
     def get_categories(self):
+        self.logger.debug("Sending categories request to nzbget")
         try:
             rpc = self.get_rpc()
             config = rpc.config()
@@ -187,10 +191,11 @@ class Sabnzbd(Downloader):
         return f
 
     def test(self, url, username=None, password=None, apikey=None):
+        self.logger.debug("Testing connection to sabnzbd")
         f = self.get_sab(url, apikey, username, password)
         f.add({"mode": "qstatus"})
         try:
-            r = requests.get(f.tostr(), verify=False)
+            r = requests.get(f.tostr(), verify=False, timeout=5)
             r.raise_for_status()
             if "state" in json.loads(r.text).keys():
                 self.logger.info('Connection test to sabnzbd successful')
@@ -204,6 +209,7 @@ class Sabnzbd(Downloader):
             return False, "SABnzbd is not responding under this address, scheme and port"
 
     def add_link(self, link, title, category):
+        self.logger.debug("Sending add-link request for %s to sabnzbd" % title)
         if title is None:
             title = ""
         else:
@@ -215,7 +221,7 @@ class Sabnzbd(Downloader):
         if category is not None:
             f.add({"cat": category})
         try:
-            r = requests.get(f.tostr(), verify=False)
+            r = requests.get(f.tostr(), verify=False, timeout=5)
             r.raise_for_status()
             return r.json()["status"]
         except (SSLError, HTTPError, ConnectionError):
@@ -223,6 +229,7 @@ class Sabnzbd(Downloader):
             return False
 
     def add_nzb(self, content, title, category):
+        self.logger.debug("Sending add-nzb request for %s to sabnzbd" % title)
         if title is None:
             title = ""
         else:
@@ -235,7 +242,7 @@ class Sabnzbd(Downloader):
             f.add({"cat": category})
         try:
             files = {'nzbfile': (title, content)}
-            r = requests.post(f.tostr(), files=files, verify=False)
+            r = requests.post(f.tostr(), files=files, verify=False,timeout=5)
             r.raise_for_status()
             return r.json()["status"]
         except (SSLError, HTTPError, ConnectionError):
@@ -243,10 +250,11 @@ class Sabnzbd(Downloader):
             return False
 
     def get_categories(self):
+        self.logger.debug("Sending categories request to sabnzbd")
         f = self.get_sab()
         f.add({"mode": "get_cats", "output": "json"})
         try:
-            r = requests.get(f.tostr(), verify=False)
+            r = requests.get(f.tostr(), verify=False, timeout=5)
             r.raise_for_status()
             return r.json()["categories"]
         except (SSLError, HTTPError, ConnectionError):

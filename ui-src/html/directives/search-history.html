@@ -41,6 +41,7 @@
         <td>
             <a target="_blank" ng-if="request.identifier_key=='imdbid'" href="http://www.imdb.com/title/tt{{ request.identifier_value }}/">{{ request.identifier_value }}</a>
             <a target="_blank" ng-if="request.identifier_key=='tvdbid'" href="http://thetvdb.com/?tab=series&id={{ request.identifier_value }}/">{{ request.identifier_value }}</a>
+            <span ng-if="request.identifier_key=='rid'" >{{ request.identifier_value }}</span>
         </td>
         <td>{{ request.season }}</td>
         <td>{{ request.episode }}</td>

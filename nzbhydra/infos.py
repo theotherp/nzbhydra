@@ -120,4 +120,4 @@ def title_from_id(identifier_key, identifier_value):
 
     except Exception as e:
         logger.exception("Unable to retrieve title by id %s and value %s" % (identifier_key, identifier_value))
-        raise ExternalApiInfoException(e)
+        raise ExternalApiInfoException(str(e))

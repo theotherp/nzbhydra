@@ -154,7 +154,10 @@ def search(internal, search_request):
         cache_entry["dbsearch"] = dbsearch
 
         if with_query_generation and search_request.identifier_key and search_request.title is None:
-            search_request.title = infos.title_from_id(search_request.identifier_key, search_request.identifier_value)
+            try: 
+                search_request.title = infos.title_from_id(search_request.identifier_key, search_request.identifier_value)
+            except:
+                pass
         pseudo_cache[search_hash] = cache_entry
     else:
         cache_entry = pseudo_cache[search_hash]
