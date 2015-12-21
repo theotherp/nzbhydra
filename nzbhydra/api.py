@@ -114,7 +114,8 @@ def get_nzb_link_and_guid(indexer, guid, searchid, title):
 
 
 def transform_results(results, dbsearch):
-    if downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.direct:  # We don't change the link, the results lead directly to the NZB
+    if downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.direct.name:  # We don't change the link, the results lead directly to the NZB
+        logger.debug("Direct NZB access chosen. Not transforming the results from the indexers")
         return results
     transformed = []
     for i in results:
