@@ -7029,14 +7029,23 @@ textarea.by-id-checkbox {
 .addable-nzb {
   display: inline-block;
 }
-.nzb {
-  background-image: url('../img/nzb.png');
+.sabnzbd {
+  background-image: url('../img/sab.png');
 }
-.nzb-success {
-  background-image: url('../img/nzbsuccess.png');
+.sabnzbd-success {
+  background-image: url('../img/sabsuccess.png');
 }
-.nzb-error {
-  background-image: url('../img/nzberror.png');
+.sabnzbd-error {
+  background-image: url('../img/saberror.png');
+}
+.nzbget {
+  background-image: url('../img/nzbget.png');
+}
+.nzbget-success {
+  background-image: url('../img/nzbgetsuccess.png');
+}
+.nzbget-error {
+  background-image: url('../img/nzbgeterror.png');
 }
 .icon {
   width: 16px;

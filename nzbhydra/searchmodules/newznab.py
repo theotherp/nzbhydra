@@ -82,17 +82,17 @@ def map_category(category):
             return []
 
 
-def check_auth(body):
+def check_auth(body, indexer):
     if '<error code="100"' in body:
-        raise IndexerAuthException("The API key seems to be incorrect.", None)
+        raise IndexerAuthException("The API key seems to be incorrect.", indexer)
     if '<error code="101"' in body:
-        raise IndexerAuthException("The account seems to be suspended.", None)
+        raise IndexerAuthException("The account seems to be suspended.", indexer)
     if '<error code="102"' in body:
-        raise IndexerAuthException("You're not allowed to use the API.", None)
+        raise IndexerAuthException("You're not allowed to use the API.", indexer)
     if '<error code="910"' in body:
-        raise IndexerAccessException("The API seems to be disabled for the moment.", None)
+        raise IndexerAccessException("The API seems to be disabled for the moment.", indexer)
     if '<error code=' in body:
-        raise IndexerAccessException("Unknown error while trying to access the indexer.", None)
+        raise IndexerAccessException("Unknown error while trying to access the indexer.", indexer)
 
 
 def test_connection(host, apikey):
@@ -379,7 +379,7 @@ class NewzNab(SearchModule):
         return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total)
 
     def check_auth(self, body):
-        return check_auth(body)
+        return check_auth(body, self)
 
     def get_nfo(self, guid):
         # try to get raw nfo. if it is xml the indexer doesn't actually return raw nfos (I'm looking at you, DOGNzb)
