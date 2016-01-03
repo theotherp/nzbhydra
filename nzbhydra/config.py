@@ -484,8 +484,8 @@ class DownloaderSelection(object):
 class DownloaderSettings(Category):
     def __init__(self):
         super(DownloaderSettings, self).__init__(config_root, "downloader", "Downloader")
-        self.nzbaccesstype = SelectionSetting(self, name="nzbaccesstype", default=NzbAccessTypeSelection.serve, valuetype=str, options=[NzbAccessTypeSelection.direct, NzbAccessTypeSelection.redirect, NzbAccessTypeSelection.serve])
-        self.nzbAddingType = SelectionSetting(self, name="nzbAddingType", default=NzbAddingTypeSelection.nzb, valuetype=str, options=[NzbAddingTypeSelection.link, NzbAddingTypeSelection.nzb])
+        self.nzbaccesstype = SelectionSetting(self, name="nzbaccesstype", default=NzbAccessTypeSelection.redirect, valuetype=str, options=[NzbAccessTypeSelection.direct, NzbAccessTypeSelection.redirect, NzbAccessTypeSelection.serve])
+        self.nzbAddingType = SelectionSetting(self, name="nzbAddingType", default=NzbAddingTypeSelection.link, valuetype=str, options=[NzbAddingTypeSelection.link, NzbAddingTypeSelection.nzb])
         self.downloader = SelectionSetting(self, name="downloader", default=DownloaderSelection.none, valuetype=str, options=[DownloaderSelection.nzbget, DownloaderSelection.sabnzbd])
 
 
