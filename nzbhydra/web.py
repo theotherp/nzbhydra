@@ -62,7 +62,7 @@ class ReverseProxied(object):
     def __call__(self, environ, start_response):
         old_path_info = environ["PATH_INFO"]
         path_info = environ['PATH_INFO']
-        
+
         environ["URL_BASE"] = old_path_info
         if config.mainSettings.baseUrl.get() is not None and config.mainSettings.baseUrl.get() != "":
             baseUrlSetting = config.mainSettings.baseUrl.get()
@@ -73,7 +73,7 @@ class ReverseProxied(object):
             if path_info.startswith(baseUrl):
                 path_info = path_info[len(baseUrl):]
             environ["PATH_INFO"] = path_info
-        
+
         return self.app(environ, start_response)
 
 
@@ -108,7 +108,7 @@ app.json_encoder = CustomJSONEncoder
 
 @app.before_request
 def _db_connect():
-    if not request.endpoint.endswith("static"):  # No point in opening a db connection if we only serve a static file
+    if request.endpoint is not None and not request.endpoint.endswith("static"):  # No point in opening a db connection if we only serve a static file
         database.db.connect()
 
 
@@ -292,7 +292,7 @@ def api(args):
     # Map newznab api parameters to internal
     args["category"] = args["cat"]
     args["episode"] = args["ep"]
-    
+
     if args["id"] is not None:
         #Sometimes the id is not parsed properly and contains other parts of the URL so we try to remove them here
         idDic = urllib.parse.parse_qs(args["id"])
@@ -300,9 +300,9 @@ def api(args):
             args["id"] = idDic["id"][0]
             logger.debug("Query ID was not properly parsed. Converted it to %s" % args["id"])
         else:
-            #The other if path will unquote the id with parse_qs unqotes so we do it here do 
+            #The other if path will unquote the id with parse_qs unqotes so we do it here do
             args["id"] = urllib.parse.unquote(args["id"])
-            
+
 
     if args["q"] is not None and args["q"] != "":
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
@@ -452,7 +452,7 @@ internalapi_tvsearch_args = {
 @use_args(internalapi_tvsearch_args, locations=['querystring'])
 def internalapi_tvsearch(args):
     logger.debug("TV search request with args %s" % args)
-    indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None 
+    indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None
     search_request = SearchRequest(type="tv", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], episode=args["episode"], season=args["season"], title=args["title"],
                                    indexers=indexers)
     if args["tvdbid"]:
@@ -645,13 +645,13 @@ internalapi_testcaps_args = {
 @app.route('/internalapi/test_caps')
 @use_args(internalapi_testcaps_args)
 @requires_admin_auth
-def internalapi_testcaps(args): 
-    
+def internalapi_testcaps(args):
+
     indexer = urllib.parse.unquote(args["indexer"])
     apikey = args["apikey"]
     host = urllib.parse.unquote(args["host"])
     logger.debug("Check caps for %s" % indexer)
-    
+
     try:
         result = check_caps(host, apikey)
 
