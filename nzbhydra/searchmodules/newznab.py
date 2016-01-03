@@ -268,12 +268,15 @@ class NewzNab(SearchModule):
     def get_moviesearch_urls(self, search_request):
         if search_request.category is None:
             search_request.category = "Movies"
-
-        url = self.build_base_url("movie", search_request.category, offset=search_request.offset)
-        if search_request.identifier_key == "imdbid":
-            url.add({"imdbid": search_request.identifier_value})
+        
+        #A lot of indexers seem to disregard the "q" parameter for "movie" search, so if we have a query use regular search instead 
         if search_request.query is not None:
+            url = self.build_base_url("search", search_request.category, offset=search_request.offset)
             url.add({"q": search_request.query})
+        else:
+            url = self.build_base_url("movie", search_request.category, offset=search_request.offset)
+            if search_request.identifier_key == "imdbid":
+                url.add({"imdbid": search_request.identifier_value})
 
         return [url.url]
 
