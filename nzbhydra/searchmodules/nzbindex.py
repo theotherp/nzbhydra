@@ -99,7 +99,7 @@ class NzbIndex(SearchModule):
         soup = BeautifulSoup(html, searchingSettings.htmlParser.get())
         main_table = soup.find(id="results").find('table')
 
-        if "No results found" in html:
+        if "No results found" in soup.text:
             return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
         if not main_table or not main_table.find("tbody"):
             logger.error("Unable to find main table in NZBIndex page: %s..." % html[:500])

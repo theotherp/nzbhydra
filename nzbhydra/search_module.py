@@ -272,7 +272,7 @@ class SearchModule(object):
                 self.handle_indexer_failure(reason="Authentication failed", disable_permanently=True)
                 papiaccess.response_successful = False
             except IndexerAccessException as e:
-                self.logger.exception("Unable to access %s: %s" % (e.search_module, e.message))
+                self.logger.error("Unable to access %s: %s" % (e.search_module, e.message))
                 papiaccess.error = "Access error: %s" % e.message
                 self.handle_indexer_failure(reason="Access failed")
                 papiaccess.response_successful = False
