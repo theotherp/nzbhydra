@@ -329,8 +329,11 @@ class NewzNab(SearchModule):
                     entry.size = int(attribute_value)
                 elif attribute_name == "guid":
                     entry.guid = attribute_value
-                elif attribute_name == "category":
-                    categories.append(int(attribute_value))
+                elif attribute_name == "category" and attribute_value != "":
+                    try:
+                        categories.append(int(attribute_value))
+                    except ValueError:
+                        logger.error("Unable to parse category %s" % attribute_value)
                 elif attribute_name == "poster":
                     entry.poster = attribute_value
                 elif attribute_name == "info":
