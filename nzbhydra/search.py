@@ -78,6 +78,7 @@ class SearchRequest(object):
         rep += (", offset \"%s\"" % self.offset) if self.offset is not None else ""
         rep += (", limit \"%s\"" % self.limit) if self.limit is not None else ""
         rep += (", indexers \"%s\"" % self.indexers) if self.indexers is not None else ""
+        rep += " ]"
         return rep
 
 
