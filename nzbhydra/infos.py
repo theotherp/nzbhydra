@@ -42,9 +42,9 @@ class TvMaze:
     @staticmethod
     def byId(idType, id):
         try:
-            if idType == TvMaze.IdType.tvdb or idType == TvMaze.IdType.tvrage:
+            if idType == TvMaze.IdType.tvdb.value or idType == TvMaze.IdType.tvrage.value:
                 info = requests.get(furl("http://api.tvmaze.com/lookup/shows").add({idType: id}).url)
-            elif idType == TvMaze.IdType.tvmaze:
+            elif idType == TvMaze.IdType.tvmaze.value:
                 info = requests.get(furl("http://api.tvmaze.com/shows/").add(path=id).url)
             else:
                 logger.error("Invalid call to byId() using idType %s" % idType)
@@ -260,7 +260,8 @@ def convertIdToAny(fromType, possibleToTypes, id):
         return True, fromType, id
     for possibleToType in possibleToTypes:
         if canConvertId(fromType, possibleToType):
-            return True, possibleToType, convertId(fromType, possibleToType, id)
+            result = convertId(fromType, possibleToType, id)
+            return True if result is not None else False, possibleToType, result 
     else:
         logger.info("Unable to convert from ID type %s to any of %s" % (fromType, ",".join(possibleToTypes)))
         return False, None, None
