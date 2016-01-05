@@ -26,6 +26,7 @@ from nzbhydra.config import searchingSettings
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException, IndexerAuthException
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule, IndexerProcessingResult
+from nzbhydra import infos
 
 logger = logging.getLogger('root')
 
@@ -165,7 +166,7 @@ class OmgWtf(SearchModule):
         cats = map_category(search_request.category)
         if search_request.query is not None and search_request.query != "":
             #Query based XML search
-            f.path.add("xml")
+            f.path.add("xml/")
             f = f.add({"search": search_request.query})
             if search_request.maxage:
                 f = f.add({"retention": search_request.maxage})        
@@ -186,7 +187,7 @@ class OmgWtf(SearchModule):
         #Should get most results, apparently there is no way of using "or" searches
         if search_request.season is not None:
             if search_request.episode is not None:
-                search_request.query = "{0} s{1:02d}e{2:02d}".format(str(search_request.query),int(search_request.season),int(search_request.episode))
+                search_request.query = "{0} s{1:02d}e{2:02d}".format(str(search_request.query), int(search_request.season), int(search_request.episode))
             else:
                 search_request.query = "{0} s{1:02d}".format(str(search_request.query), int(search_request.season))
             
@@ -195,6 +196,11 @@ class OmgWtf(SearchModule):
     def get_moviesearch_urls(self, search_request):
         if search_request.category is None:
             search_request.category = "Movies"
+        if search_request.identifier_key is not None:
+            canBeConverted, toType, id = infos.convertIdToAny(search_request.identifier_key, ["imdb"], search_request.identifier_value)
+            if canBeConverted:
+                search_request.query = "tt%s" % id
+            
         return self.get_search_urls(search_request)
     
     def get_details_link(self, guid):
@@ -220,7 +226,6 @@ class OmgWtf(SearchModule):
             logger.info("omgwtf says the query was too short")
             return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
             
-
         entries = []
         try:
             tree = ET.fromstring(xml_response)
@@ -238,15 +243,16 @@ class OmgWtf(SearchModule):
                 entry.guid = item.find("nzbid").text
                 entry.title = item.find("release").text
                 entry.group = item.find("group").text
+                entry.link = item.find("getnzb").text
                 entry.size = long(item.find("sizebytes").text)
                 entry.epoch = long(item.find("usenetage").text)
                 pubdate = arrow.get(entry.epoch)
-                entry.pubdate_utc = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
+                entry.pubdate_utc = str(pubdate)
                 entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
                 entry.age_days = (arrow.utcnow() - pubdate).days
                 entry.age_precise = True
                 entry.details_link = item.find("details").text
-                entry.has_nfo = NzbSearchResult.HAS_NFO_MAYBE
+                entry.has_nfo = NzbSearchResult.HAS_NFO_YES if item.find("getnfo") is not None else NzbSearchResult.HAS_NFO_NO
                 categoryid = item.find("categoryid").text
                 if categoryid in omgwtf_to_categories.keys():
                     entry.category = omgwtf_to_categories[categoryid]

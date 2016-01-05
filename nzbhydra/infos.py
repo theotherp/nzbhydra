@@ -255,6 +255,7 @@ def convertIdToAny(fromType, possibleToTypes, id):
     """
     if not isinstance(possibleToTypes, list):
         possibleToTypes = [possibleToTypes]
+    possibleToTypes = [x.replace("rid", "tvrage").replace("id", "") for x in possibleToTypes]
     if fromType in possibleToTypes:
         return True, fromType, id
     for possibleToType in possibleToTypes:

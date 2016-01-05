@@ -523,6 +523,8 @@ class SearchIdSelection(object):
     rid = SelectOption("rid", "TvRage ID")
     tvdbid = SelectOption("tvdbid", "TVDB ID")
     imdbid = SelectOption("imdbid", "IMDB ID")
+    tmdbid = SelectOption("tmdbid", "TMDB ID")
+    tvmazeid = SelectOption("tvmazeid", "TVMMaze ID")
 
 
 class IndexerSettingsAbstract(Category):
@@ -555,14 +557,16 @@ class IndexerOmgWtfSettings(IndexerSettingsAbstract):
         self.username = Setting(self, name="username", default="", valuetype=str)
         self.apikey = Setting(self, name="apikey", default="", valuetype=str)
         self.enabled = Setting(self, name="enabled", default=False, valuetype=bool)
-
+        self.search_ids = MultiSelectionSetting(self, name="search_ids", default=[SearchIdSelection.imdbid], valuetype=list,
+                                                options=[SearchIdSelection.imdbid],
+                                                setting_type=SettingType.multiselect)
 
 class IndexerNewznabSettings(IndexerSettingsAbstract):
     def __init__(self, parent, name, title):
         super(IndexerNewznabSettings, self).__init__(parent, name, title)
         self.apikey = Setting(self, name="apikey", default=None, valuetype=str)
         self.search_ids = MultiSelectionSetting(self, name="search_ids", default=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid], valuetype=list,
-                                                options=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid],
+                                                options=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid, SearchIdSelection.tvmazeid, SearchIdSelection.tmdbid],
                                                 setting_type=SettingType.multiselect)
         self.enabled = Setting(self, name="enabled", default=False, valuetype=bool)  # Disable by default because we have no meaningful initial data
 

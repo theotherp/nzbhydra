@@ -174,7 +174,7 @@ class MyTestCase(unittest.TestCase):
             rsps.add(responses.GET, url_re,
                      body=self.tvmazeShowResponse, status=200,
                      content_type='application/json')
-            canConvert, toType, id = infos.convertIdToAny("tvmaze", ["tvrage", "tvdb"], "3036")
+            canConvert, toType, id = infos.convertIdToAny("tvmaze", ["rid", "tvdb"], "3036")
             self.assertTrue(canConvert)
             self.assertEqual(toType, "tvrage")
             self.assertEqual("47566", id)
@@ -184,17 +184,17 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(toType, "tvmaze")
             self.assertEqual("3036", id)
 
-            canConvert, toType, id = infos.convertIdToAny("tvrage", ["tvdb", "tvmaze"], "47566")
+            canConvert, toType, id = infos.convertIdToAny("tvrage", ["tvdbid", "tvmazeid"], "47566")
             self.assertTrue(canConvert)
             self.assertEqual(toType, "tvdb")
             self.assertEqual("299350", id)
 
-            canConvert, toType, id = infos.convertIdToAny("tvmaze", ["imdb", "tmdb"], "3036")
+            canConvert, toType, id = infos.convertIdToAny("tvmaze", ["imdbid", "tmdb"], "3036")
             self.assertFalse(canConvert)
 
             with open("mock/tmdb_id_response.json") as f:
                 self.searchMock.return_value = json.load(f)
-                canConvert, toType, id = infos.convertIdToAny("imdb", ["tmdb"], "0169547")
+                canConvert, toType, id = infos.convertIdToAny("imdb", ["tmdbid"], "0169547")
             self.assertTrue(canConvert)
             self.assertEqual(toType, "tmdb")
 
@@ -206,7 +206,7 @@ class MyTestCase(unittest.TestCase):
         self.assertFalse(self.searchMock.called)
 
         self.searchMock.reset_mock()
-        canConvert, toType, id = infos.convertIdToAny("imdb", "imdb", "0169547")
+        canConvert, toType, id = infos.convertIdToAny("imdb", "imdb", "0169547") #Single ID instead of list
         self.assertTrue(canConvert)
         self.assertEqual(toType, "imdb")
         self.assertEqual("0169547", id)

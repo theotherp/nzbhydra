@@ -119,7 +119,7 @@ def test_connection(host, apikey):
     return True, ""
 
 
-def testId(host, apikey, t, idkey, idvalue, expectedResult):
+def _testId(host, apikey, t, idkey, idvalue, expectedResult):
     logger.info("Testing for ID capability \"%s\"" % idkey)
 
     try:
@@ -194,7 +194,7 @@ def check_caps(host, apikey):
     ]
     result = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(toCheck)) as executor:
-        futures_to_ids = {executor.submit(testId, host, apikey, x["t"], x["id"], x["key"], x["expected"]): x["id"] for x in toCheck}
+        futures_to_ids = {executor.submit(_testId, host, apikey, x["t"], x["id"], x["key"], x["expected"]): x["id"] for x in toCheck}
         for future in concurrent.futures.as_completed(futures_to_ids):
             id = futures_to_ids[future]
             try:
