@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import absolute_import
 from builtins import super
 from future import standard_library
-
+from playhouse import apsw_ext
 
 standard_library.install_aliases()
 from builtins import *
@@ -15,7 +15,6 @@ import logging
 import arrow
 from dateutil.tz import tzutc
 from peewee import *
-
 from playhouse.migrate import *
 
 logger = logging.getLogger('root')
@@ -164,38 +163,22 @@ class MovieIdCache(Model):
     class Meta(object):
         database = db
 
-
-def init_db(dbfile, databaseDriver="sqlite"):
+def init_db(dbfile):
     tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, VersionInfo, TvIdCache, MovieIdCache]
-
-    startup(dbfile, databaseDriver)
+    db.init(dbfile)
     db.connect()
 
     logger.info("Initializing database and creating tables")
     for t in tables:
         try:
             db.create_table(t)
-        except Exception:
+        except OperationalError:
             logger.exception("Error while creating table %s" % t)
     
     logger.info("Created new version info entry with database version 1")
     VersionInfo(version=3).create()
     
     db.close()
-
-
-def startup(dbfile, databaseDriver="sqlite"):
-    global db
-    if databaseDriver == "apsw":
-        logger.info("Using APSW database driver")
-        from playhouse.apsw_ext import APSWDatabase
-        db = APSWDatabase(None, threadlocals=True)
-    else:
-        logger.debug("Using default SQLite database driver")
-        db = SqliteDatabase(None, threadlocals=True)
-    db.init(dbfile)
-    
-    
 
 def update_db(dbfile):
     # CAUTION: Don't forget to increase the default value for VersionInfo
@@ -206,8 +189,9 @@ def update_db(dbfile):
     try:
         db.create_table(VersionInfo)
         logger.info("Added new version info entry with database version 1 to existing database")
-        VersionInfo(version=3).create()
-    except Exception:
+        VersionInfo(version=2).create()
+    except OperationalError:
+        logger.debug("Skipping creation of table VersionInfo because it already exists")
         pass
 
     vi = VersionInfo().get()
@@ -241,7 +225,7 @@ def update_db(dbfile):
             )
             logger.info("Adding new table MovieIdCache")
             db.create_table(MovieIdCache)
-        except Exception:
+        except OperationalError:
             logger.error("Error adding columb tvmaze to table TvIdCache")
             # TODO How should we handle this?
             pass

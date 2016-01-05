@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from future import standard_library
-
+from peewee import IntegrityError
 from requests import RequestException
 
 standard_library.install_aliases()
@@ -25,11 +25,6 @@ tmdb_img_config = None
 
 class TvMaze:
     
-    class IdType(Enum):
-        tvmaze = "tvmaze"
-        tvrage = "tvrage"
-        tvdb = "thetvdb"      
-    
     def __init__(self, tvmazeid, rageid, tvdbid, title, poster, all):
         self.tvmazeid = tvmazeid
         self.rageid = rageid
@@ -42,9 +37,9 @@ class TvMaze:
     @staticmethod
     def byId(idType, id):
         try:
-            if idType == TvMaze.IdType.tvdb.value or idType == TvMaze.IdType.tvrage.value:
+            if idType == "thetvdb" or idType == "tvrage":
                 info = requests.get(furl("http://api.tvmaze.com/lookup/shows").add({idType: id}).url)
-            elif idType == TvMaze.IdType.tvmaze.value:
+            elif idType == "tvmaze":
                 info = requests.get(furl("http://api.tvmaze.com/shows/").add(path=id).url)
             else:
                 logger.error("Invalid call to byId() using idType %s" % idType)
@@ -195,6 +190,9 @@ def _tryFromCache(fromType, toType, id):
 def _cacheTvMazeIds(tvMaze):
     try:
         TvIdCache(tvmaze=tvMaze.tvmazeid, tvrage=tvMaze.rageid, tvdb=tvMaze.tvdbid).save()
+    except IntegrityError as e:
+        logger.debug("Unable to save cached TvMaze entry to database. Probably already exists")
+        pass
     except Exception:
         logger.exception("Unable to save cached TvMaze entry to database")
         pass

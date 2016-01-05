@@ -91,7 +91,7 @@ class MyTestCase(unittest.TestCase):
     
     def testConvert(self):
         TvIdCache.delete().execute()
-        with responses.RequestsMock() as rsps:
+        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
             url_re = re.compile(r'http://api.tvmaze.com/lookup/shows\?thetvdb=299350')
             rsps.add(responses.GET, url_re,
                      body=self.tvmazeShowResponse, status=200,
@@ -113,7 +113,7 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual("3036", id)
 
         TvIdCache.delete().execute()
-        with responses.RequestsMock() as rsps:
+        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
             url_re = re.compile(r'http://api.tvmaze.com/lookup/shows\?tvrage=47566')
             rsps.add(responses.GET, url_re,
                      body=self.tvmazeShowResponse, status=200,
@@ -129,7 +129,7 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual("3036", id)
         
         TvIdCache.delete().execute()
-        with responses.RequestsMock() as rsps:
+        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
             url_re = re.compile(r'http://api.tvmaze.com/shows/3036')
             rsps.add(responses.GET, url_re,
                      body=self.tvmazeShowResponse, status=200,
@@ -192,11 +192,11 @@ class MyTestCase(unittest.TestCase):
             canConvert, toType, id = infos.convertIdToAny("tvmaze", ["imdbid", "tmdb"], "3036")
             self.assertFalse(canConvert)
 
-            with open("mock/tmdb_id_response.json") as f:
-                self.searchMock.return_value = json.load(f)
-                canConvert, toType, id = infos.convertIdToAny("imdb", ["tmdbid"], "0169547")
-            self.assertTrue(canConvert)
-            self.assertEqual(toType, "tmdb")
+        with open("mock/tmdb_id_response.json") as f:
+            self.searchMock.return_value = json.load(f)
+            canConvert, toType, id = infos.convertIdToAny("imdb", ["tmdbid"], "0169547")
+        self.assertTrue(canConvert)
+        self.assertEqual(toType, "tmdb")
 
         self.searchMock.reset_mock()
         canConvert, toType, id = infos.convertIdToAny("imdb", ["imdb"], "0169547")
