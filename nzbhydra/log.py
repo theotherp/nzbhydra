@@ -18,7 +18,8 @@ from os.path import isfile, join, exists, getmtime
 from nzbhydra import config
 from nzbhydra.config import MainSettings, mainSettings
 
-regexApikey = re.compile(r"(apikey|api)=[\w]+", re.I)
+regexApikey = re.compile(r"(apikey|api)(=|:)[\w]+", re.I)
+regexApikeyRepr = re.compile(r"u'(apikey|api)': u'[\w]+'", re.I)
 regexUser = re.compile(r"(user|username)=[\w]+", re.I)
 regexPassword = re.compile(r"(password)=[\w]+", re.I)
 
@@ -27,6 +28,7 @@ logger = None
 
 def removeSensitiveData(msg):
     msg = regexApikey.sub("apikey=<APIKEY>", msg)
+    msg = regexApikeyRepr.sub("'apikey':<APIKEY>'", msg)
     msg = regexUser.sub("\g<1>=<USER>", msg)
     msg = regexPassword.sub("password=<PASSWORD>", msg)
     return msg
