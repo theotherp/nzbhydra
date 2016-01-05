@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/">
+    <channel>
+        <title>DOGnzb</title>
+        <description>DOGnzb Feed</description>
+        <uuid>1785D581</uuid>
+        <newznab:response offset="0" total="0"/>
+    </channel>
+</rss>

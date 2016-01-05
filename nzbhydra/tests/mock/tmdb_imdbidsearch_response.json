@@ -1,0 +1,26 @@
+{
+  "tv_season_results": [],
+  "tv_episode_results": [],
+  "person_results": [],
+  "tv_results": [],
+  "movie_results": [
+    {
+      "poster_path": "/or1MP8BZIAjqWYxPdPX724ydKar.jpg",
+      "title": "American Beauty",
+      "overview": "Lester Burnham, a depressed suburban father in a mid-life crisis, decides to turn his hectic life around after developing an infatuation with his daughter's attractive friend.",
+      "release_date": "1999-09-14",
+      "popularity": 3.500617,
+      "original_title": "American Beauty",
+      "backdrop_path": "/z5J18ByLeOZ68iORfMXmxeFuwyL.jpg",
+      "vote_count": 1134,
+      "video": false,
+      "adult": false,
+      "vote_average": 7.5,
+      "genre_ids": [
+        18
+      ],
+      "id": 14,
+      "original_language": "en"
+    }
+  ]
+}

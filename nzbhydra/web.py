@@ -421,7 +421,9 @@ def internalapi_moviesearch(args):
         search_request.identifier_value = args["imdbid"]
     elif args["tmdbid"]:
         logger.debug("Need to get IMDB id from TMDB id %s" % args["tmdbid"])
-        imdbid = infos.get_imdbid_from_tmdbid(args["tmdbid"])
+        imdbid = infos.convertId("tmdb", "imdb", args["tmdbid"])
+        if imdbid is None:
+            raise AttributeError("Unable to convert TMDB id %s" % args["tmdbid"])
         search_request.identifier_key = "imdbid"
         search_request.identifier_value = imdbid
 

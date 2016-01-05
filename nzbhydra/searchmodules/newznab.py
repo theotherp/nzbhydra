@@ -244,16 +244,13 @@ class NewzNab(SearchModule):
 
         url = self.build_base_url("tvsearch", search_request.category, offset=search_request.offset)
         if search_request.identifier_key is not None:
-            if "tvdbid" not in self.search_ids and "rid" not in self.search_ids:
-                logger.error("Indexer does not support tv search by either TVDB or TVRage ID")  # We shouldn't ever land here, but just wanna make sure
+            canBeConverted, toType, id = infos.convertIdToAny(search_request.identifier_key, self.search_ids, search_request.identifier_value)
+            if canBeConverted:
+                search_request.identifier_key = toType
+                search_request.identifier_value = id
+            else:
+                logger.info("Unable to search on indexer %s using ID type %s" % (self.name, search_request.identifier_key))
                 return []
-            # See if we need to to some conversion between rid and tvdbid
-            if search_request.identifier_key == "rid" and "rid" not in self.search_ids:
-                search_request.identifier_key = "tvdbid"
-                search_request.identifier_value = infos.rid_to_tvdbid(search_request.identifier_value)
-            elif search_request.identifier_key == "tvdbid" and "tvdbid" not in self.search_ids:
-                search_request.identifier_key = "rid"
-                search_request.identifier_value = infos.tvdbid_to_rid(search_request.identifier_value)
 
             url.add({search_request.identifier_key: search_request.identifier_value})
         if search_request.episode is not None:
@@ -275,8 +272,14 @@ class NewzNab(SearchModule):
             url.add({"q": search_request.query})
         else:
             url = self.build_base_url("movie", search_request.category, offset=search_request.offset)
-            if search_request.identifier_key == "imdbid":
-                url.add({"imdbid": search_request.identifier_value})
+            if search_request.identifier_key is not None:
+                canBeConverted, toType, id = infos.convertIdToAny(search_request.identifier_key, self.search_ids, search_request.identifier_value)
+                if canBeConverted:
+                    search_request.identifier_key = toType
+                    search_request.identifier_value = id
+                else:
+                    logger.info("Unable to search on indexer %s using ID type %s" % (self.name, search_request.identifier_key))
+                    return []
 
         return [url.url]
 
@@ -316,8 +319,6 @@ class NewzNab(SearchModule):
             if m:
                 entry.guid = m.group(2)
 
-            if entry.details_link is not None and "#comments" in entry.details_link:
-                entry.details_link = entry.details_link[:-9]
             description = item.find("description").text
             if description is not None and "Group:" in description:  # DogNZB has the group in its description
                 m = grouppattern.search(description)
@@ -347,7 +348,8 @@ class NewzNab(SearchModule):
                     usenetdate = arrow.get(attribute_value, 'ddd, DD MMM YYYY HH:mm:ss Z')
                 # Store all the extra attributes, we will return them later for external apis
                 entry.attributes.append({"name": attribute_name, "value": attribute_value})
-            entry.details_link = self.get_details_link(entry.guid)
+            if entry.details_link is None:
+                entry.details_link = self.get_details_link(entry.guid)
 
             if usenetdate is None:
                 # Not provided by attributes, use pubDate instead

@@ -5,7 +5,8 @@
 /nzbhydra/tests/playground.py
 /node_modules
 /bower_components
-*.db
+*.db*
+*.db.*
 *.cfg
 *.iml
 realsettingsmockproviders.cfg

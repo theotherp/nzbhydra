@@ -1,0 +1,51 @@
+{
+  "poster_path": "/or1MP8BZIAjqWYxPdPX724ydKar.jpg",
+  "production_countries": [
+    {
+      "iso_3166_1": "US",
+      "name": "United States of America"
+    }
+  ],
+  "revenue": 356296601,
+  "overview": "Lester Burnham, a depressed suburban father in a mid-life crisis, decides to turn his hectic life around after developing an infatuation with his daughter's attractive friend.",
+  "video": false,
+  "id": 14,
+  "genres": [
+    {
+      "id": 18,
+      "name": "Drama"
+    }
+  ],
+  "title": "American Beauty",
+  "tagline": "Look closer.",
+  "vote_count": 1135,
+  "homepage": "http://www.dreamworks.com/ab/",
+  "belongs_to_collection": null,
+  "original_language": "en",
+  "status": "Released",
+  "spoken_languages": [
+    {
+      "iso_639_1": "en",
+      "name": "English"
+    }
+  ],
+  "imdb_id": "tt0169547",
+  "adult": false,
+  "backdrop_path": "/z5J18ByLeOZ68iORfMXmxeFuwyL.jpg",
+  "production_companies": [
+    {
+      "name": "DreamWorks SKG",
+      "id": 27
+    },
+    {
+      "name": "Jinks/Cohen Company",
+      "id": 2721
+    }
+  ],
+  "release_date": "1999-09-14",
+  "popularity": 3.500617,
+  "original_title": "American Beauty",
+  "budget": 15000000,
+  "vote_average": 7.5,
+  "runtime": 122
+}

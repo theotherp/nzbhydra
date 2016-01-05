@@ -48,12 +48,13 @@ class Womble(SearchModule):
         if search_request.query or search_request.identifier_key or search_request.identifier_value or search_request.season or search_request.episode:
             logger.error("This indexer does not support specific searches")
             return []
-        if search_request.category in("TV SD", "TV") or "5030" in search_request.category or "5000" in search_request.category:
-            urls.append(self.build_base_url().add({"sec": "tv-dvd"}).tostr())
-            urls.append(self.build_base_url().add({"sec": "tv-sd"}).tostr())
-        if search_request.category in ("TV HD", "TV") or "5040" in search_request.category or "5000" in search_request.category:
-            urls.append(self.build_base_url().add({"sec": "tv-x264"}).tostr())
-            urls.append(self.build_base_url().add({"sec": "tv-hd"}).tostr())
+        if search_request.category is not None:
+            if search_request.category in("TV SD", "TV") or "5030" in search_request.category or "5000" in search_request.category:
+                urls.append(self.build_base_url().add({"sec": "tv-dvd"}).tostr())
+                urls.append(self.build_base_url().add({"sec": "tv-sd"}).tostr())
+            if search_request.category in ("TV HD", "TV") or "5040" in search_request.category or "5000" in search_request.category:
+                urls.append(self.build_base_url().add({"sec": "tv-x264"}).tostr())
+                urls.append(self.build_base_url().add({"sec": "tv-hd"}).tostr())
         else:
             urls.append(self.build_base_url().tostr())
         return urls
@@ -112,7 +113,7 @@ class Womble(SearchModule):
         return IndexerProcessingResult(entries=entries, queries=[], total_known=True, has_more=False, total=len(entries))
     
     def get_nzb_link(self, guid, title):
-        f = furl(self.base_url)
+        f = furl(self.settings.host.get())
         f.path.add("nzb")
         f.path.add(guid)
         return f.tostr()

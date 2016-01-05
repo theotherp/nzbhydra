@@ -2,6 +2,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
+
+import unittest
+
 from builtins import open
 from future import standard_library
 standard_library.install_aliases()
@@ -15,10 +18,9 @@ from nzbhydra import config
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.nzbindex import NzbIndex
 from nzbhydra.tests.db_prepare import set_and_drop
-from nzbhydra.tests.indexerTest import IndexerTestcase
 
 
-class MyTestCase(IndexerTestcase):
+class MyTestCase(unittest.TestCase):
     @pytest.fixture
     def setUp(self):
         set_and_drop()
@@ -41,20 +43,20 @@ class MyTestCase(IndexerTestcase):
     @ freeze_time("2015-10-03 20:15:00", tz_offset=+2)
     def testProcess_results(self):
         w = NzbIndex(config.indexerSettings.nzbindex)
-        with open("mock/nzbindex--q-avengers.html") as f:
+        with open("mock/nzbindex--q-testtitle.html") as f:
             processing_result = w.process_query_result(f.read(), "aquery")
             entries = processing_result.entries
             self.assertEqual('114143855', entries[0].guid)
-            self.assertEqual('Avengers.Assemble.S02E05.Beneath.the.Surface.WEB-DL.x264.AAC', entries[0].title)
+            self.assertEqual('testtitle1', entries[0].title)
             self.assertFalse(entries[0].has_nfo)
             self.assertEqual('bowibow@gmail.com (senior)', entries[0].poster)
             self.assertEqual('alt.binaries.mom', entries[0].group)
-            self.assertEqual("https://nzbindex.com/download/114143855/Avengers.Assemble.S02E05.Beneath.the.Surface.WEB-DL.x264.AAC-Avengers.Assemble.S02E05.Beneath.the.Surface.WEB-DL.x264.AAC.nzb", entries[0].link)
+            self.assertEqual("https://nzbindex.com/download/114143855/testtitle1-testtitle1.nzb", entries[0].link)
             self.assertEqual(169103851, entries[0].size)
             self.assertEqual("2014-11-04T10:39:00+01:00", entries[0].pubdate_utc)  # would be perfect, that is the exact pubdate 
             self.assertEqual(1415093940, entries[0].epoch)
             self.assertEqual(333, entries[0].age_days)
-            self.assertEqual("https://nzbindex.com/release/114143855/Avengers.Assemble.S02E05.Beneath.the.Surface.WEB-DL.x264.AAC-Avengers.Assemble.S02E05.Beneath.the.Surface.WEB-DL.x264.AAC.nzb", entries[0].details_link)
+            self.assertEqual("https://nzbindex.com/release/114143855/testtitle1-testtitle1.nzb", entries[0].details_link)
 
             self.assertEqual(0, entries[1].age_days)
             self.assertEqual("2015-10-03T20:15:00+01:00", entries[1].pubdate_utc)  # would be perfect, that is the exact pubdate 
@@ -64,7 +66,7 @@ class MyTestCase(IndexerTestcase):
             self.assertTrue(processing_result.has_more)
 
     def testCookies(self):
-        url = "https://nzbindex.com/search/?q=avengers&age=&max=250&minage=&sort=agedesc&minsize=1&maxsize=&dq=&poster=&nfo=&hidecross=1&complete=1&hidespam=0&hidespam=1&more=1"
+        url = "https://nzbindex.com/search/?q=testtitle&age=&max=250&minage=&sort=agedesc&minsize=1&maxsize=&dq=&poster=&nfo=&hidecross=1&complete=1&hidespam=0&hidespam=1&more=1"
         r = requests.get(url, cookies={"agreed": "true"}, timeout=5)
         text = r.text
         assert "I agree" not in text
@@ -72,4 +74,4 @@ class MyTestCase(IndexerTestcase):
     def testGetNzbLink(self):
         n = NzbIndex(config.indexerSettings.nzbindex)
         link = n.get_nzb_link("guid", "title")
-        self.assertEqual("http://127.0.0.1:5001/nzbindex/download/guid/title.nzb", link)
+        self.assertEqual("https://nzbindex.com/download/guid/title.nzb", link)

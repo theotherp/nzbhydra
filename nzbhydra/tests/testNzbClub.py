@@ -2,6 +2,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
+
+import unittest
+
+import pytest
 from builtins import open
 from future import standard_library
 standard_library.install_aliases()
@@ -15,10 +19,11 @@ from nzbhydra.database import Indexer
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.nzbclub import NzbClub
 from nzbhydra.tests.db_prepare import set_and_drop
-from nzbhydra.tests.indexerTest import IndexerTestcase
 
 
-class MyTestCase(IndexerTestcase):
+
+class MyTestCase(unittest.TestCase):
+    @pytest.fixture
     def setUp(self):
         set_and_drop()
         config.load("testsettings.cfg")
@@ -39,16 +44,16 @@ class MyTestCase(IndexerTestcase):
     @freeze_time("2015-09-24 14:00:00", tz_offset=-4)
     def testProcess_results(self):
         w = NzbClub(config.indexerSettings.nzbclub)
-        with open("mock/nzbclub--q-avengers.xml", encoding="latin-1") as f:
+        with open("mock/nzbclub--q-testtitle.xml", encoding="latin-1") as f:
             entries = w.process_query_result(f.read(), "aquery").entries
-            self.assertEqual('Avengers.Age.of.Ultron.2015.720p.BluRay.x264.YIFY', entries[0].title)
-            self.assertEqual("http://www.nzbclub.com/nzb_get/60269450/Avengers Age of Ultron 720p BrRip x264 YIFY Avengers Age of Ultron 2015 720p BluRay x264 YIFY.nzb", entries[0].link)
+            self.assertEqual('testtitle1', entries[0].title)
+            self.assertEqual("http://www.nzbclub.com/nzb_get/60269450/testtitle1.nzb", entries[0].link)
             self.assertEqual(1075514926, entries[0].size)
             self.assertEqual("60269450", entries[0].guid)
             self.assertEqual(1443019463, entries[0].epoch)
             self.assertEqual("2015-09-23T09:44:23-05:00", entries[0].pubdate_utc)
             self.assertEqual(0, entries[0].age_days)
-            self.assertEqual("http://www.nzbclub.com/nzb_view/60269450/Avengers_Age_of_Ultron_720p_BrRip_x264_YIFY_Avengers_Age_of_Ultron_2015_720p_BluRay_x264_YIFY", entries[0].details_link)
+            self.assertEqual("http://www.nzbclub.com/nzb_view/60269450/testtitle1", entries[0].details_link)
             self.assertEqual("YIFY@gmail.com (YIFY)", entries[0].poster)
             self.assertEqual("alt.binaries.movies", entries[0].group)
 
@@ -56,5 +61,5 @@ class MyTestCase(IndexerTestcase):
     def testGetNzbLink(self):
         n = NzbClub(config.indexerSettings.nzbclub)
         link = n.get_nzb_link("guid", "title")
-        self.assertEqual("http://127.0.0.1:5001/nzbclub/nzb_get/guid/title.nzb", link)
+        self.assertEqual("https://www.nzbclub.com/nzb_get/guid/title.nzb", link)
     

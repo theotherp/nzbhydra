@@ -1,16 +1,18 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from builtins import range
-from builtins import str
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from future import standard_library
+
 standard_library.install_aliases()
 from builtins import *
 import random
 import string
-
 import arrow
+from flask import app, render_template, Flask
+
+app = Flask(__name__)
 
 
 def buildNewznabItem(id=None, title=None, guid=None, link=None, pubdate=None, description=None, size=None, indexer_name=None, categories=[]):
@@ -32,11 +34,14 @@ def buildNewznabItem(id=None, title=None, guid=None, link=None, pubdate=None, de
         size = random.randint(10000, 10000000)
     size = str(size)
 
-    attributes = [{"@attributes": {
+    attributes = [{
         "name": "size",
         "value": size
-    }}]
-    attributes.extend([{"@attributes": {"name": "category", "value": x}} for x in categories])
+    },
+        {"name": "guid",
+         "value": guid}
+    ]
+    attributes.extend([{"name": "category", "value": x} for x in categories])
 
     return {
         "id": id,
@@ -46,13 +51,6 @@ def buildNewznabItem(id=None, title=None, guid=None, link=None, pubdate=None, de
         "comments": "",
         "pubDate": pubdate,
         "description": description,
-        "enclosure": {
-            "@attribute": {
-                "url": link,
-                "length": size,
-                "type": "appplication/x-nzb"
-            }
-        },
         "attr": attributes
 
     }
@@ -61,18 +59,6 @@ def buildNewznabItem(id=None, title=None, guid=None, link=None, pubdate=None, de
 def buildNewznabResponse(title, items, offset=0, total=None):
     if total is None:
         total = str(len(items))
-    return {"@attributes": "2.0",
-            "channel":
-                {
-                    "title": title,
-                    "description": title + " - description",
-                    "uuid": "uuid",
-                    "response": {
-                        "@attributes": {
-                            "offset": str(offset),
-                            "total": total}
-                    },
-                    "item": items
-                }
-
-            }
+    with app.test_request_context('/'):
+        result = render_template("api.html", items=items, offset=offset, total=total, title=title, description=title + " - description")
+        return result

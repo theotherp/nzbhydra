@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/">
+    <channel>
+        <title>{{ title }}</title>
+        <description>{{ description }}</description>
+        <link>
+        https://github.com/theotherp/nzbhydra</link>
+        <language>en-gb</language>
+        <webMaster>TheOtherP@web.de (TheOtherP)</webMaster>
+
+        <newznab:response offset="{{ offset }}" total="{{ total }}"/>
+
+        {% for item in items -%}
+            <item>
+                <title>{{ item.title }}</title>
+                <guid isPermaLink="true">{{ item.id }}</guid>
+                <link>{{ item.link }}</link>
+                <comments></comments>
+                <pubDate>{{ item.pubDate }}</pubDate>
+                <description></description>
+                <enclosure url="{{ item.link }}" length="{{ item.size }}" type="application/x-nzb"/>
+
+                {% for attribute in item.attributes %}
+                    <newznab:attr name="{{ attribute.name }}" value="{{ attribute.value }}"/>
+                {%- endfor %}
+                
+
+
+            </item>
+
+        {%- endfor %}
+
+    </channel>
+</rss>

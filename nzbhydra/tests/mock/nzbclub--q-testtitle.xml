@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0">
+  <channel>
+    <description>Latest Search Result for "avengers"</description>
+    <generator>Feed Generator</generator>
+    <item>
+      <description>Size: 1.00 GB in 19 files.&lt;br /&gt;Poster: YIFY@gmail.com (YIFY) &lt;br /&gt;Newsgroup: alt.binaries.movies &lt;br /&gt;Files Information:  [10 Archive Files 1,523 p] |  [8 Par2 Files 113 p] |  [1 NFO Files]
+</description>
+      <enclosure length="1075514926" type="text/xml" url="http://www.nzbclub.com/nzb_get/60269450/testtitle1.nzb" />
+      <guid isPermaLink="true">http://www.nzbclub.com/nzb_view60269450</guid>
+      <link>http://www.nzbclub.com/nzb_view/60269450/testtitle1</link>
+      <pubDate>Wed, 23 Sep 2015 09:44:23 -0500</pubDate>
+      <title>testtitle1</title>
+    </item>
+    <link>http://www.nzbclub.com/nzbrss.aspx</link>
+    <title>NZBClub RSS</title>
+    <pubDate>Mon, 28 Sep 2015 22:40:47 -0500</pubDate>
+    <language>en</language>
+  </channel>
+</rss>

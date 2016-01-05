@@ -13,6 +13,7 @@ import logging
 import arrow
 from dateutil.tz import tzutc
 from peewee import *
+from playhouse.migrate import *
 
 logger = logging.getLogger('root')
 
@@ -149,14 +150,24 @@ class VersionInfo(Model):
         database = db
         
 class TvIdCache(Model):
-    tvdb = CharField()
-    tvrage = CharField()
+    tvdb = CharField(null=True)
+    tvrage = CharField(null=True)
+    tvmaze = CharField(null=True)
+
+    class Meta(object):
+        database = db
+        indexes = (("tvdb", "tvrage", "tvmaze"), True)
+
+
+class MovieIdCache(Model):
+    imdb = CharField()
+    tmdb = CharField()
 
     class Meta(object):
         database = db
 
 def init_db(dbfile):
-    tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, VersionInfo, TvIdCache]
+    tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, VersionInfo, TvIdCache, MovieIdCache]
     db.init(dbfile)
     db.connect()
 
@@ -168,11 +179,12 @@ def init_db(dbfile):
             logger.exception("Error while creating table %s" % t)
     
     logger.info("Created new version info entry with database version 1")
-    VersionInfo(version=1).create()
+    VersionInfo(version=3).create()
     
     db.close()
 
 def update_db(dbfile):
+    # CAUTION: Don't forget to increase the default value for VersionInfo
     db.init(dbfile)
     db.connect()
     
@@ -191,13 +203,36 @@ def update_db(dbfile):
         #Update from 1 to 2
         # Add tv id cache info 
         try:
+            logger.info("Adding new table TvIdCache to database")
             db.create_table(TvIdCache)
-            logger.info("Added new table TvIdCache to database")
         except OperationalError:
             logger.error("Error adding table TvIdCache to database")
             #TODO How should we handle this?
             pass
         vi.version = 2
+        vi.save()
+    if vi.version == 2:
+        logger.info("Upgrading database to version 3")
+        # Update from 2 to 3
+        # Add tvmaze cache info column 
+        try:
+            logger.debug("Deleting all rows in TvIdCache")
+            TvIdCache.delete().execute()
+            migrator = SqliteMigrator(db)
+            logger.info("Adding new column tvmaze to table TvIdCache, setting nullable columns and adding index")
+            migrate(
+                migrator.add_column("tvidcache", "tvmaze", TvIdCache.tvmaze), 
+                migrator.drop_not_null("tvidcache", "tvdb"), 
+                migrator.drop_not_null("tvidcache", "tvrage"), 
+                migrator.add_index("tvidcache", ("tvdb", "tvrage", "tvmaze"), True)
+            )
+            logger.info("Adding new table MovieIdCache")
+            db.create_table(MovieIdCache)
+        except OperationalError:
+            logger.error("Error adding columb tvmaze to table TvIdCache")
+            # TODO How should we handle this?
+            pass
+        vi.version = 3
         vi.save()
     
     db.close()

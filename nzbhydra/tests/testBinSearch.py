@@ -17,10 +17,9 @@ from nzbhydra.database import Indexer
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.binsearch import Binsearch
 from nzbhydra.tests.db_prepare import set_and_drop
-from nzbhydra.tests.indexerTest import IndexerTestcase
 
 
-class MyTestCase(IndexerTestcase):
+class MyTestCase(unittest.TestCase):
     
     @pytest.fixture
     def setUp(self):
@@ -45,43 +44,31 @@ class MyTestCase(IndexerTestcase):
     @freeze_time("2015-09-30 14:00:00", tz_offset=-4)
     def testProcess_results(self):
         w = Binsearch(config.indexerSettings.binsearch)
-        with open("mock/binsearch--q-avengers.html", encoding="latin-1") as f:
+        with open("mock/binsearch--q-testtitle.html", encoding="latin-1") as f:
             body = f.read()
             result = w.process_query_result(body, "aquery")
             entries = result.entries
-            self.assertEqual('MARVELS.AVENGERS.AGE.OF.ULTRON. 3D.TOPBOT.TrueFrench.1080p.X264.AC3.5.1-JKF.mkv', entries[0].title)
+            self.assertEqual('testtitle1.TrueFrench.1080p.X264.AC3.5.1-JKF.mkv', entries[0].title)
             self.assertEqual("https://www.binsearch.info/fcgi/nzb.fcgi?q=176073735", entries[0].link)
             self.assertEqual(13110387671, entries[0].size)
             self.assertEqual("176073735", entries[0].guid)
-            self.assertEqual(1437868800, entries[0].epoch)
-            self.assertEqual("2015-07-26T00:00:00+00:00", entries[0].pubdate_utc)
-            self.assertEqual(66, entries[0].age_days)
+            self.assertEqual(1443312000, entries[0].epoch)
+            self.assertEqual("2015-09-27T00:00:00+00:00", entries[0].pubdate_utc)
+            self.assertEqual(3, entries[0].age_days)
             self.assertFalse(entries[0].age_precise)
             self.assertEqual("Ramer@marmer.com (Clown_nez)", entries[0].poster)
             self.assertEqual("alt.binaries.movies.mkv", entries[0].group)
-            self.assertFalse(entries[0].has_nfo)
-            self.assertEqual("https://binsearch.com/?b=MARVELS.AVENGERS.AGE.OF.ULTRON.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250", entries[0].details_link)
-            
-            self.assertTrue(entries[8].has_nfo)
-            
+            self.assertEqual("https://binsearch.info/?b=testtitle1.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250", entries[0].details_link)
             self.assertTrue(result.has_more)
             self.assertFalse(result.total_known)
-    
-    
-    
+        
     def testProcess_results_totalknown(self):
         w = Binsearch(config.indexerSettings.binsearch)
-        with open("mock/binsearch--q-avengers3results.html", encoding="latin-1") as f:
+        with open("mock/binsearch--q-testtitle3results.html", encoding="latin-1") as f:
             body = f.read()
             result = w.process_query_result(body, "aquery")
             self.assertFalse(result.has_more)
-            self.assertEqual(3, result.total)
-            
-            
-            
-            
-        
-            
+            self.assertEqual(3, result.total)  
                 
     def testGetNzbLink(self):
         n = Binsearch(config.indexerSettings.binsearch)

@@ -1,0 +1,396 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>&nbsp;NZBIndex - We index, you search&nbsp;</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="Generator" content="Eclipse">
+    <meta name="Author" content="NZBIndex">
+    <meta name="Keywords"
+          content="Usenet, nzbindex, nzbindex.nl, nzbindex.com, ftd, download, downloaden, software, binaries, newsleecher, nzb, search, zoeken, newsgroups, nieuwsgroepen, ftn2day, ftd, binsearch, yabse, giganews, astraweb, xsnews, movies, films, DVD, games, spellen, usenet, torrents">
+    <meta name="Description" content="NZBIndex.nl - We index, you search on the best usenet search engine on the web.">
+    <meta name="revisit-after" content="3 days">
+    <meta name="robots" content="index,follow">
+    <link rel="shortcut icon" type="image/png" href="https://nzbindex.com/template/nzbindex/images/icon.png">
+    <link rel="alternate" type="application/rss+xml" title="NZBIndex RSS Feed" href="https://nzbindex.com/rss/?q=testtitle&age=700&minage=333&sort=agedesc&minsize=100&maxsize=555&max=250&more=1">
+    <link rel="alternate" type="application/rss+xml" title="NZBIndex RSS Feed for SABnzbd" href="https://nzbindex.com/rss/?q=testtitle&age=700&minage=333&sort=agedesc&minsize=100&maxsize=555&max=250&more=1&nzblink=1">
+    <link rel="stylesheet" type="text/css" href="https://nzbindex.com/template/nzbindex/css/style.css?v=1.1">
+    <!--[if lt IE 7.]>
+<link rel="stylesheet" type="text/css" href="https://nzbindex.com/template/nzbindex/css/style_ie6.css?v=1.1">
+<![endif]-->
+    <!--[if gte IE 7.]>
+<link rel="stylesheet" type="text/css" href="https://nzbindex.com/template/nzbindex/css/style_ie.css?v=1.1">
+<![endif]-->
+    <script type="text/javascript" src="https://nzbindex.com/template/nzbindex/js/headerscript.js?v=1.1"></script>
+</head>
+<body>
+<div id="languages">
+    <ul>
+        <li><a href="https://nzbindex.com/?lang=2" class="nowrap">English</a></li>
+        <li><a href="https://nzbindex.com/?lang=1" class="nowrap">Nederlands</a></li>
+    </ul>
+</div>
+<div id="container">
+    <div id="header">
+        <div id="glass"><a href="https://nzbindex.com/"><img src="https://nzbindex.com/template/nzbindex/images/glass.png" alt="" title=""></a></div>
+        <div class="corner"></div>
+        <div id="logo" onclick="location.href='https://nzbindex.com/';"></div>
+        <div id="menu">
+            <ul>
+                <li><a href="https://nzbindex.com/" class="nowrap"><span class="search"></span>&nbsp;Search</a></li>
+                <li><a href="https://nzbindex.com/forum/" class="nowrap"><span class="forum"></span>&nbsp;FAQ</a></li>
+                <li><a href="https://nzbindex.com/groups/" class="nowrap"><span class="groups"></span>&nbsp;Groups</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="main">
+        <div id="search">
+            <form id="searchform" action="https://nzbindex.com/search/">
+                <fieldset class="searchform">
+                    <table>
+                        <tr>
+                            <td class="nowrap searchblock">
+                                <input type="text" id="q" name="q" style="width: 250px;" value="testtitle"> <input type="submit" value="Search">
+                            </td>
+                            <td class="nowrap searchblock">
+                                Maximum age:
+                                <select id="age" name="age">
+                                    <option value="">- Any age -</option>
+                                    <option value="30">30 days</option>
+                                    <option value="60">60 days</option>
+                                    <option value="100">100 days</option>
+                                    <option value="150">150 days</option>
+                                    <option value="200">200 days</option>
+                                    <option value="250">250 days</option>
+                                    <option value="300">300 days</option>
+                                    <option value="350">350 days</option>
+                                    <option value="400">400 days</option>
+                                    <option value="450">450 days</option>
+                                    <option value="500">500 days</option>
+                                    <option value="550">550 days</option>
+                                    <option value="600">600 days</option>
+                                    <option value="650">650 days</option>
+                                    <option value="700" selected>700 days</option>
+                                </select>
+                            </td>
+                            <td class="nowrap searchblock" align="right">
+                                Results per page:
+                                <select id="max" name="max">
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="250" selected>250</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="nowrap searchblock smaller" colspan="2">
+                                Did you mean: <a href="https://nzbindex.com/search/?q=testtitle&age=700&minage=333&sort=agedesc&minsize=100&maxsize=555&max=250&more=1&q=rangers">rangers</a>
+                            </td>
+                            <td class="nowrap searchblock smaller" align="right">
+                                <a href="javascript:void(0);" onclick="advanced(); return false;">Advanced search</a>
+                            </td>
+                        </tr>
+                    </table>
+                    <div id="advanced">
+                        <hr style="border: 0px solid gray; background-color: gray; height: 1px;">
+                        <div class="grouplistbox">
+			<span class="right nowrap smaller">
+				<span class="nowrap searchblock"><a href="javascript:uncheckAll('grouplist');">Deselect all</a></span>
+			</span>
+                            Search in groups:
+                            <a href="https://nzbindex.com/forum/searchhelp/" class="nowrap"><span id="helpicon"></span></a>
+                            <ul id="grouplist" class="grouplist">&nbsp;Loading...</ul>
+                        </div>
+                        <table style="line-height: 24px;">
+                            <tr>
+                                <td class="nowrap searchblock">
+                                    <br/>
+                                    Minimum age:
+                                </td>
+                                <td>
+                                    <br/>
+                                    <input type="text" id="minage" name="minage" style="width: 50px;" value="333"> days
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="nowrap searchblock">
+                                    Sort by:
+                                </td>
+                                <td>
+                                    <select id="sort" name="sort">
+                                        <option value="agedesc" selected>Age (newest first)&nbsp;</option>
+                                        <option value="age">Age (oldest first)&nbsp;</option>
+                                        <option value="size">Size (smallest first)&nbsp;</option>
+                                        <option value="sizedesc">Size (largest first)&nbsp;</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="nowrap searchblock">
+                                    Minimum size:
+                                </td>
+                                <td>
+                                    <input type="text" id="minsize" name="minsize" style="width: 50px;" value="100"> MB
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="nowrap searchblock">
+                                    Maximum size:
+                                </td>
+                                <td>
+                                    <input type="text" id="maxsize" name="maxsize" style="width: 50px;" value="555"> MB
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="nowrap searchblock">
+                                    Default query:
+                                </td>
+                                <td>
+                                    <input type="text" id="dq" name="dq" style="width: 200px;" value="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="nowrap searchblock">
+                                    Poster:
+                                </td>
+                                <td>
+                                    <input type="text" id="poster" name="poster" style="width: 200px;" value="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="nowrap searchblock">
+                                    NFO content:
+                                </td>
+                                <td class="nowrap">
+                                    <input type="text" id="nfo" name="nfo" style="width: 200px;" value="">
+                                    <a href="https://nzbindex.com/forum/searchhelp/" class="nowrap"><span id="helpicon"></span></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="nowrap searchblock" colspan="2">
+                                    <input type="checkbox" id="hasnfo" name="hasnfo" value="1"> <label for="hasnfo">Has NFO file</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="nowrap searchblock" colspan="2">
+                                    <input type="checkbox" id="hidecross" name="hidecross" value="1"> <label for="hidecross">Hide crossposts</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="nowrap searchblock" colspan="2">
+                                    <input type="checkbox" id="complete" name="complete" value="1"> <label for="complete">Show complete releases only</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="nowrap searchblock" colspan="2">
+                                    <input type="hidden" name="hidespam" value="0">
+                                    <input type="checkbox" id="hidespambox" name="hidespam" value="1" checked> <label for="hidespambox">Hide possible spam</label>
+                                    <a href="https://nzbindex.com/forum/searchhelp/" class="nowrap"><span id="helpicon"></span></a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
+                <div class="savesettings smaller">
+                    <a href="javascript:void(0);" onclick="if(saveSettings()) alert('Your settings are saved'); return false;">Save these settings</a>
+                </div>
+                <input type="hidden" id="more" name="more" value="1">
+            </form>
+        </div>
+        <div id="searchresults" class="clear"></div>
+        <div>
+            <center>
+                <a href="http://www.xsusenet.com/?ref=327268"><img
+                        src="https://www.xsusenet.com/banners/728x90.gif"
+                        alt="XSUsenet"/></a></center>
+        </div>
+        <div id="template">
+            <div id="results">
+                <form method="POST" action="https://nzbindex.com/download/" onsubmit="if(verifyNZB(this)) return true; else alert('Select at least one release'); return false;">
+                    <table>
+                        <thead>
+                        <tr>
+                            <td class="nowrap" colspan="2">
+                                <a href="https://nzbindex.com/rss/?q=testtitle&age=700&minage=333&sort=agedesc&minsize=100&maxsize=555&max=250&more=1" target="_blank"><span id="rssicon"></span>&nbsp;RSS</a>
+                            </td>
+                            <td align="right" class="nowrap" colspan="3">
+                                <p><b>1 - 208</b> of 208 results <i>(0.022 s)</i></p>
+                            </td>
+                        </tr>
+                        <tr class="line">
+                            <td class="nowrap" colspan="2">
+                                <input type="submit" value="Create NZB">
+                                <input type="button" value="Select all" onclick="checkAll('results'); return false;">
+                                <input type="button" value="Inverse" onclick="checkInverse('results'); return false;">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <input type="button" value="SPAM" onclick="if(!spam('results', 'https://nzbindex.com/spam/')) alert('Select at least one release'); return false;">
+                                <input type="button" value="Notice & takedown" onclick="if(!noticetakedown('results', 'https://nzbindex.com/notice-takedown/')) alert('Select at least one release'); return false;">
+                                <input type="hidden" name="n" value="testtitle">
+                                &nbsp;&nbsp;<a href="https://nzbindex.com/forum/resultshelp/" class="nowrap"><span id="helpicon"></span></a>
+                            </td>
+                            <td class="nowrap" width="60" align="right">
+                                <h2>Size</h2>
+                            </td>
+                            <td width="10">
+                                <h2>Group</h2>
+                            </td>
+                            <td width="10" align="right">
+                                <h2>Age</h2>
+                            </td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="odd">
+                            <td class="nowrap firstcolumn" width="10" align="center">
+                                <input type="checkbox" id="box114143855" name="r[]" value="114143855" onclick="shiftclick(arguments[0]);">
+                            </td>
+                            <td>
+                                <label for="box114143855"><span class="highlight"><wbr/>testtitle1</span></label>
+
+                                <div class="info">
+                                    <span class="complete">12 files (662 parts)</span>
+                                    <span class="poster">by <a href="https://nzbindex.com/search/?poster=bowibow%40gmail.com+%28senior%29&more=1">bowibow@gmail
+                                        <wbr/>
+                                        .com (senior)</a></span>
+
+                                    <div class="fileinfo">
+                                        6 PAR2 | 1 NZB | 5 ARCHIVE
+                                    </div>
+                                    <div>
+                                        <a href="https://nzbindex.com/download/114143855/testtitle1-testtitle1.nzb">Download</a>
+                                        - <a href="https://nzbindex.com/release/114143855/testtitle1-testtitle1.nzb">View collection</a>
+                                        - <span class="threat">Password protected</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="nowrap" align="right">
+                                <div>161.27 MB</div>
+                                <div>
+                                    <div class="sizeblock"></div>
+                                    <div class="sizeblock"></div>
+                                </div>
+                            </td>
+                            <td class="nowrap">
+                                <a href="https://nzbindex.com/groups/alt.binaries.mom/?q=testtitle&age=700&minage=333&sort=agedesc&minsize=100&maxsize=555&max=250&more=1" class="group">a.b.mom<br/></td>
+                            <td class="nowrap" align="right">
+                                333.4 days
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="even" colspan="5">
+                                <script>
+                                    function afe4341() {
+                                        window.location.href = "http://www.friendlyduck.com/AF_TA/rel/index.cfm?RST=UNF&TAD=430955";
+                                    }
+                                </script>
+                                <div style="text-align: left; font-size: 16px; padding: 3px; padding-left: 25px; padding-bottom: 10px">
+                                    <a href="javascript:afe4341();">
+                                        <img src="/template/nzbindex/images/download.png">
+                                        <strong>FAST, FREE, UNTRACEABLE DOWNLOADS WITH USENET! GET 500GB TODAY!<strong>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="even">
+                            <td class="nowrap firstcolumn" width="10" align="center">
+                                <input type="checkbox" id="box113975868" name="r[]" value="113975868" onclick="shiftclick(arguments[0]);">
+                            </td>
+                            <td>
+                                <label for="box113975868">(humo)
+                                   </label>
+
+                                <div class="info">
+                                    <span class="complete">9 files (500 parts)</span>
+                                    <span class="poster">by <a href="https://nzbindex.com/search/?poster=haer%40fake.nl+%28Asics%29&more=1">haer@fake
+                                        <wbr/>
+                                        .nl (
+                                        <wbr/>
+                                        Asics)</a></span>
+
+                                    <div class="fileinfo">
+                                        7 PAR2 | 1 NZB
+                                    </div>
+                                    <div>
+                                        <a href="https://nzbindex.com/download/113975868/testtitle2.nzb">Download</a>
+                                        - <a href="https://nzbindex.com/release/113975868/testtitle2.nzb">View collection</a>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="nowrap" align="right">
+                                <div>186.26 MB</div>
+                                <div>
+                                    <div class="sizeblock"></div>
+                                    <div class="sizeblock"></div>
+                                </div>
+                            </td>
+                            <td class="nowrap">
+                                <a href="https://nzbindex.com/groups/alt.binaries.pictures.comic-strips/?q=testtitle&age=700&minage=333&sort=agedesc&minsize=100&maxsize=555&max=250&more=1" class="group">a.b.pictures.comic-strips<br/><a
+                                        href="https://nzbindex.com/groups/alt.binaries.stripboeken.nl/?q=testtitle&age=700&minage=333&sort=agedesc&minsize=100&maxsize=555&max=250&more=1" class="group">a.b.stripboeken.nl<br/></td>
+                            <td class="nowrap" align="right">
+                                0 hours
+                            </td>
+                        </tr>
+
+                        </tbody>
+                        <tfoot>
+                        <tr class="line">
+                            <td class="nowrap" colspan="5">
+                                <input value="Create NZB" type="submit">
+                                <input value="Select all" onclick="checkAll('results');" type="button">
+                                <input value="Inverse" onclick="checkInverse('results');" type="button">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <input value="SPAM" onclick="if(!spam('results', 'https://nzbindex.com/spam/')) alert('Select at least one release'); return false;" type="button">
+                                <input value="Notice &amp; takedown" onclick="if(!noticetakedown('results', 'https://nzbindex.com/notice-takedown/')) alert('Select at least one release'); return false;" type="button">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="nowrap" colspan="5" align="center">
+                                <b>1</b>
+                                <a href="https://nzbindex.com/search/?q=testtitle&amp;sort=dateTime&amp;hidecross=1&amp;max=250&amp;more=1&amp;p=1">2</a>
+                                <a href="https://nzbindex.com/search/?q=testtitle&amp;sort=dateTime&amp;hidecross=1&amp;max=250&amp;more=1&amp;p=2">3</a>
+                                ... <a href="https://nzbindex.com/search/?q=testtitle&amp;sort=dateTime&amp;hidecross=1&amp;max=250&amp;more=1&amp;p=9">10</a>
+                                &nbsp;&nbsp; <a href="https://nzbindex.com/search/?q=testtitle&amp;sort=dateTime&amp;hidecross=1&amp;max=250&amp;more=1&amp;p=1">next »</a>
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div>
+            <center>
+            </center>
+        </div>
+    </div>
+    <div id="bottom">
+        <div class="corner"></div>
+        <div id="disclaimer">
+            <div class="right"><span class="smaller" style="margin-right: 20px;">WISE solutions &#149; Rijnlaan 24 &#149; 3522BN Utrecht, Netherlands</span> &copy; NZBIndex 2015</div>
+            <a href="https://nzbindex.com/disclaimer/">Disclaimer</a>
+        </div>
+    </div>
+</div>
+</body>
+<!--[if lt IE 7.]>
+<script type="text/javascript" src="https://nzbindex.com/template/nzbindex/js/pngfix.js?v=1.1"></script>
+<![endif]-->
+<script type="text/javascript">
+    document.getElementById('q').focus();
+    document.getElementById('q').value = document.getElementById('q').value;
+    userGroups = '';
+    showSearchGroups(userGroups);
+    Nifty("#container", "big");
+</script>
+<script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+    var pageTracker = _gat._getTracker('UA-884390-1');
+    pageTracker._trackPageview();
+    pageTracker._trackPageview("/english");
+</script>
+</html>
+
+<!-- ** php parsetime: 0.45018 sec. ** -->
+<!-- ** tpl parsetime: 0.17955 sec. ** -->
