@@ -33,9 +33,7 @@ def removeSensitiveData(msg):
 
 
 class SensitiveDataFilter(logging.Filter):
-    
-    
-    
+
     def filter(self, record):
         msg = record.msg
         if type(msg) is types.StringType or isinstance(msg, str):

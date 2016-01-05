@@ -104,10 +104,10 @@ def run():
         config.logLogMessages()
         logger.info("Loading database file %s" % database_file)
         if not os.path.exists(database_file):
-            database.init_db(database_file)
+            database.init_db(database_file, config.mainSettings.database_driver.get())
         else:
             database.update_db(database_file)
-        database.db.init(database_file)
+        database.startup(database_file, config.mainSettings.database_driver.get())
         indexers.read_indexers_from_config()
     
         if config.mainSettings.debug.get():

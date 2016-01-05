@@ -285,9 +285,12 @@ class SearchModule(object):
                 papiaccess.error = "Unknown error :%s" % e
                 papiaccess.response_successful = False
             finally:
-                papiaccess.save()
+                if papiaccess is not None:
+                    papiaccess.save()
+                    psearch.successful = papiaccess.response_successful
+                else:
+                    self.logger.error("Unable to save API response to database")
                 psearch.results = total_results
-                psearch.successful = papiaccess.response_successful
                 psearch.save()
         return QueriesExecutionResult(results=results, dbentry=psearch, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)
 

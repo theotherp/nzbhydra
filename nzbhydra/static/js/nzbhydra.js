@@ -2299,6 +2299,19 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         }
                     },
                     {
+                        key: 'databaseDriver',
+                        type: 'horizontalSelect',
+                        templateOptions: {
+                            type: 'select',
+                            label: 'Database driver',
+                            options: [
+                                {name: 'Default (sqlite)', value: 'sqlite'},
+                                {name: 'APSW (Install separately!)', value: 'apsw'}
+                            ],
+                            help: 'Choose APSW for better stability. Needs to be installed separately.'
+                        }
+                    },
+                    {
                         key: 'runThreaded',
                         type: 'horizontalSwitch',
                         templateOptions: {

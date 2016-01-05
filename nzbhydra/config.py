@@ -339,6 +339,10 @@ class CacheTypeSelection(object):
     file = SelectOption("file", "Cache on the file system")
     memory = SelectOption("memory", "Cache in the memory during runtime")
 
+class DatabaseDriverSelection(object):
+    sqlite = SelectOption("sqlite", "Default")
+    apsw = SelectOption("apsw", "More robust, I think")
+
 
 class MainSettings(Category):
     """
@@ -372,6 +376,8 @@ class MainSettings(Category):
         self.cache_timeout = Setting(self, name="cacheTimeout", default=30, valuetype=int)
         self.cache_threshold = Setting(self, name="cachethreshold", default=25, valuetype=int)
         self.cache_folder = Setting(self, name="cacheFolder", default="cache", valuetype=str)
+
+        self.database_driver = SelectionSetting(self, name="databaseDriver", default=DatabaseDriverSelection.sqlite, valuetype=str, options=[DatabaseDriverSelection.sqlite, DatabaseDriverSelection.apsw])
 
         self.logging = LoggingSettings(self)
 
