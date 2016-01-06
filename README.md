@@ -12,7 +12,6 @@ NZBHydra is a meta search for NZB indexers and the "spiritual successor" to [NZB
 * Included function to add results (single or a bunch) to SABnzbd or NZBGet(v13+) and show NFOs where available. Option to decide if links are added as links or the NZBs are uploaded. Select category in GUI or define a default.
 * Statistics on indexers (average response time, share of results, access errors), NZB download history and search history (both via internal GUI and API). Indexers with problems are paused for an increasing time span (like in sonarr)
 * Reverse proxy compatible without further configuration (tested with Apache) as long as the host is preserved. If you want to access the API from outside you may need to set the "Base URL" setting.
-* A GUI that looks like ass
 * See https://imgur.com/a/lBq9n for screenshots
 
 ##  How to run
@@ -61,13 +60,11 @@ More information about getting the docker-machine IP is available [here](https:/
 
 ## TODO
 * A lot of bug fixing and improvements regarding performance and stability
-* Designing a better GUI (see below)
 * Better query generation
-* Shutdown and restart via GUI
+* Restart via GUI
 * More stats
 * More indexers? Again, see ( https://github.com/theotherp/nzbhydra/issues/20 )
 * Auto update (will need help with that one)
-* A logo. Nothing too fancy.
 * Authentication via form for mobile users
 * Include comments, rating, etc or link to them
 * Clean up code base
@@ -90,7 +87,6 @@ The program is currently in very early alpha. Upgrading to an new version might 
 Generally testing and any bug reports are very welcome.
 
 Any pull requests are also welcome, but I feel I and the program would mostly profit from:
-* A web designer / better web design. I'm not going to spend a lot of work to make the frontend look slightly better.
 * Advice regarding stability, error handling, net code (I program Java by day and it shows) and performance (see above)
 * More indexers (see above)
 * Auto update (see above)
@@ -100,7 +96,7 @@ Any pull requests are also welcome, but I feel I and the program would mostly pr
 Send me an email at TheOtherP@gmx.de or a PM at https://www.reddit.com/user/TheOtherP
 
 ### Donate ###
-If you like to help me, especially with getting a logo and perhaps a better CSS you are welcome to send money to my bitcoin: 13x4cfm5BNzedsSqdPcexUhAF3cP8LYrsk 
+If you like to help me with any running or upcoming costs you're welcome to send money to my bitcoin: 13x4cfm5BNzedsSqdPcexUhAF3cP8LYrsk 
 
 ### License ###
    Licensed under the Apache License, Version 2.0 (the "License");
