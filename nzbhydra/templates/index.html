@@ -18,10 +18,10 @@
     <div class="container">
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li class="active"><a ui-sref="home">Search</a></li>
-                <li class="active"><a ui-sref="stats">History & Stats</a></li>
-                <li class="active"><a ui-sref="config">Config</a></li>
-                <li class="active"><a ui-sref="about">About</a></li>
+                <li ui-sref-active="active"><a ui-sref="home">Search</a></li>
+                <li ui-sref-active="active"><a ui-sref="stats">History & Stats</a></li>
+                <li ui-sref-active="active"><a ui-sref="config">Config</a></li>
+                <li ui-sref-active="active"><a ui-sref="about">About</a></li>
             </ul>
 
         </div>
@@ -29,6 +29,7 @@
 </nav>
 
 <div style="margin: auto; max-width: 1400px;">
+    <img src="static/img/banner.png" style="width: 40%; margin-bottom: 25px;">
     <div ui-view class="container-fluid" block-ui="main">
 
     </div>

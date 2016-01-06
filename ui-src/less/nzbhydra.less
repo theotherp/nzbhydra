@@ -6,7 +6,7 @@
 html,
 body {
   height: 100%;
-  background: #555;
+  background: @body-bg;
 }
 
 /* ------ featurette */
@@ -42,12 +42,12 @@ body {
 }
 
 .td-embedded {
-  background-color: @table-bg-subrow;
-  //font-size: @font-size-smaller;
+  //background-color: @table-bg-subrow;
+  
 }
 
 .td-embedded2 {
-  background-color: darken(@table-bg-subrow, 20%);
+  //background-color: darken(@table-bg-subrow, 20%);
 }
 
 .td-embedded:first-child {
@@ -247,11 +247,11 @@ a.disabled:hover {
 }
 
 .duplicate {
-    background-color: darken(@table-bg-subrow, 20%);
+    //background-color: darken(@table-bg-subrow, 20%);
   }
 
 .other {
-  background-color: @table-bg-subrow;
+  //background-color: @table-bg-subrow;
 }
 
 .other-duplicate-toggle {
@@ -350,8 +350,8 @@ a.disabled:hover {
 .config-submit {
   border: 1px solid #1c1e22;
   border-bottom-color: transparent;
-  border-radius: 4px 4px 0 0;
-  margin-top: 3px
+  border-radius: @border-radius-base @border-radius-base 0 0;
+  margin-top: 7px
 }
 
 .pulse2 {
@@ -399,4 +399,24 @@ a.disabled:hover {
 .dropdown-menu {
   background-color: @input-bg;
   color: @input-color;
+}
+
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary {
+  background-color: @brand-success;
+  color: @btn-primary-color;
+}
+
+.input-group-btn {
+  border: 1px solid @navbar-default-border;
+  border-radius: @border-radius-base;
+}
+
+.input-group-btn:first-child {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.input-group-btn:last-child {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
 }
