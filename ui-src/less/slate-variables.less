@@ -29,10 +29,11 @@
 @container-large-desktop: ((1140px + @grid-gutter-width));
 @navbar-default-color: @text-color;
 @navbar-default-bg: rgb(6, 161, 40);
-@navbar-default-link-color: @gray-dark;
+@navbar-default-link-color: rgb(255, 255, 255);
+@navbar-default-link-hover-color: @navbar-default-link-color;
 @navbar-default-link-hover-bg: lighten(@navbar-default-bg, 5%);
-@navbar-default-link-active-color: rgb(255, 255, 255);
-@navbar-default-link-active-bg: transparent;
+@navbar-default-link-active-color: @navbar-default-link-color;
+@navbar-default-link-active-bg: darken(@navbar-default-bg, 5%);
 @navbar-default-link-disabled-color: @gray-lighter;
 @navbar-default-toggle-hover-bg: rgb(255, 255, 255);
 @navbar-default-toggle-icon-bar-bg: @gray-light;
