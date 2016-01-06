@@ -2612,7 +2612,7 @@ pre code {
   }
 }
 table {
-  background-color: transparent;
+  background-color: #ffffff;
 }
 caption {
   padding-top: 8px;
@@ -7101,10 +7101,16 @@ a.disabled:hover {
 .search-results-table {
   display: table;
   width: 100%;
-  background-color: transparent;
+  background-color: #ffffff;
 }
 .search-results-header {
   text-align: center;
+}
+.duplicate {
+  background-color: #cccccc;
+}
+.other {
+  background-color: #e6e6e6;
 }
 .other-duplicate-toggle {
   margin-left: 18px;

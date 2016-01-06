@@ -1,7 +1,7 @@
 @import "../../bower_components/bootstrap-less/less/bootstrap.less";
 @import "slate-variables.less";
 
-@grid-columns:              20;
+@grid-columns: 20;
 
 html,
 body {
@@ -39,15 +39,6 @@ body {
   border-radius: 6px;
   font-size: 18px;
   line-height: normal;
-}
-
-.td-embedded {
-  //background-color: @table-bg-subrow;
-  
-}
-
-.td-embedded2 {
-  //background-color: darken(@table-bg-subrow, 20%);
 }
 
 .td-embedded:first-child {
@@ -243,15 +234,15 @@ a.disabled:hover {
 
 .search-results-row {
   //display: table-row;
-  
+
 }
 
 .duplicate {
-    //background-color: darken(@table-bg-subrow, 20%);
-  }
+  background-color: darken(@table-bg, 20%)
+}
 
 .other {
-  //background-color: @table-bg-subrow;
+  background-color: darken(@table-bg, 10%)
 }
 
 .other-duplicate-toggle {
@@ -268,14 +259,14 @@ a.disabled:hover {
 }
 
 .nav-tabs > li, .nav-pills > li {
-    float:none;
-    display:inline-block;
-    *display:inline; /* ie7 fix */
-     zoom:1; /* hasLayout ie7 trigger */
+  float: none;
+  display: inline-block;
+  *display: inline; /* ie7 fix */
+  zoom: 1; /* hasLayout ie7 trigger */
 }
 
 .nav-tabs, .nav-pills {
-    text-align:center;
+  text-align: center;
 }
 
 .table > tbody > tr > td {
@@ -294,7 +285,6 @@ a.disabled:hover {
   -webkit-animation: spinw .7s infinite linear;
   -moz-animation: spinm .7s infinite linear;
 }
-
 
 @-webkit-keyframes spinw {
   from {
@@ -374,8 +364,9 @@ a.disabled:hover {
   }
 
 }
+
 .fuzzy-nfo {
-  color: @gray; 
+  color: @gray;
 }
 
 .no-nfo {
@@ -386,7 +377,7 @@ a.disabled:hover {
   margin: 0;
 }
 
-.ui-select-choices-row>a {
+.ui-select-choices-row > a {
   background-color: @input-bg;
   color: @input-color;
 }
