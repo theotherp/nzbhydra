@@ -65,7 +65,7 @@ def find_movie_ids(input):
     poster_size = "w92" if "w92" in tmdb_img_config["poster_sizes"] else tmdb_img_config["poster_sizes"][0]
 
     search = tmdbsimple.Search()
-    results = search.movie(query=input)
+    results = search.movie(query=input)["results"]
     infos = []
     for s in results:
         result = {"label": s["title"], "value": s["id"]}
