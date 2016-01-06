@@ -5,18 +5,8 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
 
     blockUIConfig.autoBlock = false;
     //$urlRouterProvider.otherwise("/search/");
-
+    
     $stateProvider
-        .state("home", {
-            url: "/",
-            templateUrl: "static/html/states/search.html",
-            controller: "SearchController"
-        })
-        .state("search", {
-            url: "/search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid&indexers",
-            templateUrl: "static/html/states/search.html",
-            controller: "SearchController"
-        })
         .state("search.results", {
             templateUrl: "static/html/states/search-results.html",
             controller: "SearchResultsController",
@@ -64,6 +54,11 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     return $http.get("internalapi/get_versions");
                 }]
             }
+        })
+        .state("search", {
+            url: "/:search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid&indexers",
+            templateUrl: "static/html/states/search.html",
+            controller: "SearchController"
         })
     ;
 
