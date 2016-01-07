@@ -5,7 +5,8 @@ branches:
   only:
     - develop
 before_install:
-    - pip install pytest pytest-cov
+    - pip install pytest pytest-cov pytest-travis-fold
 install: pip install -r requirements.txt
+before_script: cd ./nzbhydra/tests
 script:
-    - py.test nzbhydra/tests
+    - py.test

@@ -1,1 +1,7 @@
-{}
+{
+  "test_Api.py": true, 
+  "test_Config.py::testSchema": true, 
+  "test_Config.py::testThatGetAndSetWork": true, 
+  "test_Infos.py::MyTestCase::testFindMovieIds": true, 
+  "test_Search.py": true
+}
