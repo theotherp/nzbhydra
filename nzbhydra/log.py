@@ -56,8 +56,9 @@ def setup_custom_logger(name):
 
     global logger
     logger = logging.getLogger(name)
-    
-    logger.addHandler(stream_handler)
+
+    if not sys.executable.endswith("pythonw.exe"): #Don't use console logging if started headless
+        logger.addHandler(stream_handler)
     logger.addHandler(file_handler)
     
     logger.setLevel("DEBUG")
