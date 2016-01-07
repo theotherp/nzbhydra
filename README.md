@@ -1,4 +1,4 @@
-# nzbhydra
+# nzbhydra  [![Build Status](https://travis-ci.org/theotherp/nzbhydra.svg?branch=master)](https://travis-ci.org/theotherp/nzbhydra) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/theotherp/nzbhydra.svg)](http://isitmaintained.com/project/theotherp/nzbhydra "Average time to resolve an issue") 
 NZBHydra is a meta search for NZB indexers and the "spiritual successor" to [NZBmegasearcH](https://github.com/pillone/usntssearch). It provides easy access to a number of raw and newznab based indexers.
 
 
