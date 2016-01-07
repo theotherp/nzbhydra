@@ -21,8 +21,6 @@ orderedmultidict==0.7.5
 pbr==1.8.1
 peewee==2.7.4
 py==1.4.31
-PyInstaller==3.0
-pypiwin32==219
 pytest==2.8.5
 python-dateutil==2.4.2
 requests==2.4.3
