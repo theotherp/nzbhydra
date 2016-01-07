@@ -22,7 +22,7 @@ from nzbhydra.tests.db_prepare import set_and_drop
 
 
 
-class MyTestCase(unittest.TestCase):
+class NzbclubTests(unittest.TestCase):
     @pytest.fixture
     def setUp(self):
         set_and_drop()
