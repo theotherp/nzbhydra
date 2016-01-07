@@ -13,7 +13,7 @@ from nzbhydra import api
 from nzbhydra.nzb_search_result import NzbSearchResult
 
 
-class MyTestCase(unittest.TestCase):
+class ApiTests(unittest.TestCase):
     def testTestForDuplicate(self):
         config.searchingSettings.duplicateAgeThreshold.set(120)
         age_threshold = config.searchingSettings.duplicateAgeThreshold.get()
