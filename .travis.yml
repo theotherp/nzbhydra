@@ -2,7 +2,7 @@ language: python
 python:
     - "2.7"
 before_install:
-    - pip install pytest pytest-cov pytest-travis-fold
+    - pip install pytest pytest-cov pytest-travis-fold responses
 #install: pip install -r requirements.txt
 before_script: cd ./nzbhydra/tests
 script:
