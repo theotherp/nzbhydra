@@ -8,8 +8,6 @@ from builtins import *
 from future import standard_library
 from peewee import fn
 
-
-
 standard_library.install_aliases()
 from collections import namedtuple
 from itertools import groupby

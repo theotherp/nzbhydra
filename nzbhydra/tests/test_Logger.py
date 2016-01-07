@@ -19,29 +19,30 @@ class LoggingCaptor(logging.StreamHandler):
         self.records.append(record)
         self.messages.append(record.msg)
 
-class MyTestCase(unittest.TestCase):
+class LoggingTests(unittest.TestCase):
     def testThatSensitiveDataIsRemoved(self):
-        from nzbhydra.config import cfg
-        
-        cfg.section("main")["apikey"] = "testapikey"
-        cfg.section("main")["username"] = "asecretusername"
-        cfg.section("main")["password"] = "somepassword"
-        
+        from nzbhydra import config
+        config.mainSettings.apikey.set("testapikey")
+        config.mainSettings.username.set("asecretusername")
+        config.mainSettings.password.set("somepassword")
+ 
         from nzbhydra.log import setup_custom_logger
         logger = setup_custom_logger("test")
         logging_captor = LoggingCaptor()
         logger.addHandler(logging_captor)
         
         logger.info("Test")
-        logger.info("Using apikey testapikey")
-        logger.info("Configured username is asecretusername")
-        logger.info("somepassword")
+        logger.info("Using apikey=testapikey")
+        logger.info("Using username=asecretusername")
+        logger.info("Using password=somepassword")
+        logger.info({"apikey": "testapikey"})
         
         
         self.assertEqual(logging_captor.records[0].message, "Test")
-        self.assertEqual(logging_captor.records[1].message, "Using apikey <XXX>")
-        self.assertEqual(logging_captor.records[2].message, "Configured username is <XXX>")
-        self.assertEqual(logging_captor.records[3].message, "<XXX>")
+        self.assertEqual(logging_captor.records[1].message, "Using apikey=<APIKEY>")
+        self.assertEqual(logging_captor.records[2].message, "Using username=<USER>")
+        self.assertEqual(logging_captor.records[3].message, "Using password=<PASSWORD>")
+        self.assertEqual(logging_captor.records[4].message, "{u'apikey': u'testapikey'}")
         
         logger.error("An error that should be visible on the console")
         logger.info("A text that should not be added to the log file but not be visible on the console")

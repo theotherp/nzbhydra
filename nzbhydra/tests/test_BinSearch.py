@@ -19,7 +19,7 @@ from nzbhydra.searchmodules.binsearch import Binsearch
 from nzbhydra.tests.db_prepare import set_and_drop
 
 
-class MyTestCase(unittest.TestCase):
+class TestInfos(unittest.TestCase):
     
     @pytest.fixture
     def setUp(self):

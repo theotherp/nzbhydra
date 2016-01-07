@@ -29,6 +29,7 @@ class MyTestCase(unittest.TestCase):
         config.indexerSettings.newznab1.name.set("indexer.com")
         config.indexerSettings.newznab1.host.set("https://indexer.com")
         config.indexerSettings.newznab1.apikey.set("apikeyindexer.com")
+        config.indexerSettings.newznab1.search_ids.set(["imdbid", "rid", "tvdbid"])
         self.n1 = NewzNab(config.indexerSettings.newznab1)
 
     @freeze_time("2015-10-12 18:00:00", tz_offset=-4)
@@ -201,6 +202,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=search&extended=1&offset=0&q=novel+ebook%7Cmobi%7Cpdf%7Cepub", urls[0])
 
     def testGetMovieSearchUrls(self):
+        config.indexerSettings.newznab1.search_ids.set(["imdbid"])
         # Doing a query based movie search uses regular search with the proper category 
         searchRequest = SearchRequest(type="movie", query="atitle")
         urls = self.n1.get_moviesearch_urls(searchRequest)

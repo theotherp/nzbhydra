@@ -11,7 +11,7 @@ from nzbhydra.database import init_db, TvIdCache, MovieIdCache
 from nzbhydra.infos import find_movie_ids, tmdbid_to_imdbid
 
 
-class MyTestCase(unittest.TestCase):
+class TestInfos(unittest.TestCase):
     
     @pytest.fixture
     def setUp(self):
@@ -22,7 +22,7 @@ class MyTestCase(unittest.TestCase):
         tmdbSearchPatcher = mock.patch("tmdbsimple.Search.movie")
         self.searchMock = tmdbSearchPatcher.start()
         with open("mock/tmdb_search_response.json") as f:
-            self.searchMock.return_value = json.load(f)
+            self.searchMock.return_value = {"results": json.load(f)}
         
         tmdbFindPatcher = mock.patch("tmdbsimple.Find.info")
         self.findMock = tmdbFindPatcher.start()

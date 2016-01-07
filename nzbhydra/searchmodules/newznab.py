@@ -275,11 +275,13 @@ class NewzNab(SearchModule):
             if search_request.identifier_key is not None:
                 canBeConverted, toType, id = infos.convertIdToAny(search_request.identifier_key, self.search_ids, search_request.identifier_value)
                 if canBeConverted:
-                    search_request.identifier_key = toType.replace("tvrage", "rid").replace("tvdb", "tvdbid")
+                    search_request.identifier_key = toType.replace("tvrage", "rid").replace("tvdb", "tvdbid").replace("imdb", "imdbid")
                     search_request.identifier_value = id
                 else:
                     logger.info("Unable to search on indexer %s using ID type %s" % (self.name, search_request.identifier_key))
                     return []
+                
+                url.add({search_request.identifier_key: search_request.identifier_value})
 
         return [url.url]
 

@@ -204,7 +204,7 @@ def convertId(fromType, toType, id):
     fromType = fromType.replace("rid", "tvrage").replace("id", "")
     toType = toType.replace("rid", "tvrage").replace("id", "")
     
-    if fromType == toType:
+    if fromType.replace("rid", "tvrage").replace("id", "") == toType.replace("rid", "tvrage").replace("id", ""):
         return id
     
     if not canConvertId(fromType, toType):
@@ -253,6 +253,7 @@ def convertIdToAny(fromType, possibleToTypes, id):
     """
     if not isinstance(possibleToTypes, list):
         possibleToTypes = [possibleToTypes]
+    fromType = fromType.replace("rid", "tvrage").replace("id", "")
     possibleToTypes = [x.replace("rid", "tvrage").replace("id", "") for x in possibleToTypes]
     if fromType in possibleToTypes:
         return True, fromType, id
