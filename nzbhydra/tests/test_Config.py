@@ -6,17 +6,16 @@ from future import standard_library
 standard_library.install_aliases()
 from builtins import *
 import os
-from pprint import pprint
 import shutil
 from nzbhydra import config
-from nzbhydra.config import mainSettings, indexerSettings, SettingType, IndexerNewznabSettings
+from nzbhydra.config import mainSettings, indexerSettings, SettingType
 
 print("Loading config from testsettings.cfg")
 
 if os.path.exists("testsettings.cfg"):
     os.remove("testsettings.cfg")
 shutil.copy("testsettings.cfg.orig", "testsettings.cfg")
-# config.load("testsettings.cfg")
+config.load("testsettings.cfg")
 
 
 def testThatGetAndSetWork():
@@ -31,10 +30,7 @@ def testThatGetAndSetWork():
     # Setting in subcategory
     assert mainSettings.logging.logfilelevel.get() == "INFO"
 
-    # Setting with a SettingType  
-    assert mainSettings.password.setting_type == SettingType.password
-
-    assert indexerSettings.binsearch.name.get() == "binsearch"
+    assert indexerSettings.binsearch.name.get() == "Binsearch"
 
 
 def testThatWritingSettingsWorks():
@@ -52,13 +48,6 @@ def testNewznabIndexers():
     config.load("testsettings.cfg")
     assert indexerSettings.newznab1.host.get() == "http://127.0.0.1" 
 
-
-def testSchema():
-    assert mainSettings.host.path == "main.host"
-    schema = config.get_settings_schema()
-    form = config.get_settings_form()
-    print(schema)
-    pass
 
 # 
 # 
