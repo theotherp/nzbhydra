@@ -4,7 +4,7 @@ NZBHydra is a meta search for NZB indexers and the "spiritual successor" to [NZB
 
 ## Features
 * Searches Binsearch, NZBIndex, NZBClub, omgwtfnzbs.org, Womble and most newznab compatible indexers (see https://github.com/theotherp/nzbhydra/issues/20 and https://github.com/theotherp/nzbhydra/wiki/Supported-Search-Types-And-Indexer-Hosts )
-* Search by IMDB, TVDB and TVRage ID (including season and episode) and filter by age and size
+* Search by IMDB, TMDB, TVDB, TVRage and TVMaze ID (including season and episode) and filter by age and size. If an ID is not supported by an indexer it is attempted to be converted (e.g. TMDB to IMDB)
 * Rudimentary (for now) query generation, meaning when you search for a movie using e.g. an IMDB ID a query will be generated for raw indexers. Searching for a series season 1 episode 2 will also generate queries for raw indexers, like s01e02 and 1x02
 * Grouping of results with the same title and of duplicate results, accounting for result posting time, size, group and poster. By default only one of the duplicates is shown. You can provide an indexer score to influence which one that might be.
 * Mostly compatible with newznab search API (tested with Sonarr, CP and NZB 360).

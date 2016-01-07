@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import absolute_import
 from builtins import super
 from future import standard_library
-from playhouse import apsw_ext
 
 standard_library.install_aliases()
 from builtins import *
