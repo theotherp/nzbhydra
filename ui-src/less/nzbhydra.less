@@ -237,14 +237,6 @@ a.disabled:hover {
 
 }
 
-.duplicate {
-  background-color: darken(@table-bg, 20%)
-}
-
-.other {
-  background-color: darken(@table-bg, 10%)
-}
-
 .other-duplicate-toggle {
   margin-left: 18px;
 }
@@ -275,6 +267,10 @@ a.disabled:hover {
 
 .table > thead > tr > th {
   text-align: left;
+}
+
+.table > tbody + tbody {
+  border-top: 1px solid @table-border-color;
 }
 
 .tab-content {
@@ -410,4 +406,54 @@ a.disabled:hover {
 .input-group-btn:last-child {
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
+}
+
+.search-results-table {
+  border: 1px solid @brand-primary;
+}
+
+.search-results-table > tbody > tr > td {
+  border-top-width: 0 !important;
+}
+
+.duplicate {
+  background-color: darken(@table-bg, 5%);
+  
+}
+
+
+.title-group-first-row {
+  border-width: 1px 1px 0 1px;
+  border-style: solid;
+  border-left-color: @brand-primary;
+  border-right-color: @brand-primary;
+  border-top-color: @table-border-color;
+}
+
+.title-group-last-row {
+  border-width: 0 1px 1px 1px;
+  border-style: solid;
+  border-left-color: @brand-primary;
+  border-right-color: @brand-primary;
+  border-bottom-color: @table-border-color;
+}
+
+.title-group-middle-row {
+  border: 0 solid;
+  border-right: 1px @brand-primary;
+  border-left: 1px @brand-primary;
+}
+
+.duplicate-group-middle-row {
+  border: 0 solid;
+  border-right: 1px @brand-primary;
+  border-left: 1px @brand-primary;
+}
+
+.duplicate-group-last-row {
+  border-width: 0 1px 1px 1px;
+  border-style: solid;
+  border-left-color: @brand-primary;
+  border-right-color: @brand-primary;
+  border-bottom-color: @table-border-color;
 }
