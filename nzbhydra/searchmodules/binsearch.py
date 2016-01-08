@@ -214,7 +214,7 @@ class Binsearch(SearchModule):
         f = furl(self.host)
         f.path.add("viewNFO.php")
         f.add({"oid": guid})
-        r, papiaccess = self.get_url_with_papi_access(f.tostr(), "nfo")
+        r, papiaccess, _ = self.get_url_with_papi_access(f.tostr(), "nfo")
         if r is not None:
             html = r.text
             p = re.compile(r"<pre>(?P<nfo>.*)<\/pre>", re.DOTALL)

@@ -166,10 +166,10 @@ def process_for_internal_api(search_result):
         indexer_search_info["has_more"] = indexer_info["has_more"]
         indexersearchdbentries.append(indexer_search_info)
 
-    nzbsearchresults = transform_results(nzbsearchresults, search_result["dbsearch"])
+    nzbsearchresults = transform_results(nzbsearchresults, search_result["dbsearchid"])
     nzbsearchresults = serialize_nzb_search_result(nzbsearchresults)
 
-    return {"results": nzbsearchresults, "indexersearches": indexersearchdbentries, "searchentryid": search_result["dbsearch"], "total": search_result["total"]}
+    return {"results": nzbsearchresults, "indexersearches": indexersearchdbentries, "searchentryid": search_result["dbsearchid"], "total": search_result["total"]}
 
 
 def serialize_nzb_search_result(results):
@@ -209,7 +209,7 @@ def get_nzb_link(indexer_name, guid, title, searchid):
 
             # Log to database
             indexer = Indexer.get(fn.lower(Indexer.name) == indexer_name.lower())
-            papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, response_successful=None, indexer_search=indexer)
+            papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, response_successful=None, indexer_search=searchid)
             papiaccess.save()
             pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode="redirect", title=title, guid=guid)
             pnzbdl.save()

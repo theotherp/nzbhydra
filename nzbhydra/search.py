@@ -111,9 +111,6 @@ def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selec
         except IndexerStatus.DoesNotExist:
             pass
 
-        # if category is not None and p.indexer.settings.get("categories") is not None and category not in p.indexer.settings.get("categories", []):
-        #     logger.debug("Did not pick %s because it is not enabled for category %s" % (p, category))
-        #     continue
         if query_supplied and not p.supports_queries:
             logger.debug("Did not pick %s because a query was supplied but the indexer does not support queries" % p)
             continue
@@ -141,7 +138,7 @@ def search(internal, search_request):
     for k in list(pseudo_cache.keys()):
         if pseudo_cache[k]["last_access"].replace(minutes=+5) < arrow.utcnow():
             pseudo_cache.pop(k)
-    limit = search_request.limit  # todo use actual configured limit
+    limit = search_request.limit
     external_offset = int(search_request.offset)
     search_hash = search_request.search_hash
     if search_hash not in pseudo_cache.keys() or search_request.offset == 0:  # If it's a new search (which starts with offset 0) do it again instead of using the cached results
@@ -151,7 +148,7 @@ def search(internal, search_request):
         for p in indexers_to_call:
             cache_entry["indexer_infos"][p] = {"has_more": True, "search_request": search_request, "total_included": False}
         dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode, type=search_request.type)
-        dbsearch.save()
+        #dbsearch.save()
         cache_entry["dbsearch"] = dbsearch
 
         if with_query_generation and search_request.identifier_key and search_request.title is None:
@@ -175,10 +172,11 @@ def search(internal, search_request):
         result = search_and_handle_db(dbsearch, {x: search_request for x in indexers_to_call})
         search_results = []
         indexers_to_call = []
+        
         for indexer, queries_execution_result in result["results"].items():
             search_results.extend(queries_execution_result.results)
             logger.debug("%s returned %d results" % (indexer, len(queries_execution_result.results)))
-            cache_entry["indexer_infos"][indexer].update({"search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known, "indexer_search": queries_execution_result.dbentry})
+            cache_entry["indexer_infos"][indexer].update({"search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known, "indexer_search": queries_execution_result.indexerSearchEntry})
             if queries_execution_result.has_more:
                 indexers_to_call.append(indexer)
                 logger.debug("%s still has more results so we could use it the next round" % indexer)
@@ -191,6 +189,7 @@ def search(internal, search_request):
             elif queries_execution_result.has_more:
                 logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
                 cache_entry["total"] += 100
+
 
         if internal or config.searchingSettings.removeDuplicatesExternal.get():
             countBefore = len(search_results)
@@ -218,24 +217,28 @@ def search(internal, search_request):
         cache_entry["offset"] += limit
 
     if internal:
-        logger.debug("We have %d cached results and them all because we search internally" % len(cache_entry["results"]))
+        logger.debug("We have %d cached results and return them all because we search internally" % len(cache_entry["results"]))
         nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:])
     else:
         logger.debug("We have %d cached results and return %d-%d of %d total available accounting for the limit set for the API search" % (len(cache_entry["results"]), external_offset, external_offset + limit, cache_entry["total"]))
         nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:(external_offset + limit)])
     cache_entry["last_access"] = arrow.utcnow()
-
-    return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearch": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset}
+    
+    return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearchid": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset}
 
 
 def search_and_handle_db(dbsearch, indexers_and_search_requests):
     results_by_indexer = start_search_futures(indexers_and_search_requests)
+    dbsearch.save()
     for i in results_by_indexer.values():
-        indexersearchentry = i.dbentry
+        indexersearchentry = i.indexerSearchEntry
         indexersearchentry.search = dbsearch
         indexersearchentry.save()
+        i.indexerApiAccessEntry.save()
+        i.indexerStatus.save()
+        
     logger.debug("Returning search results now")
-    return {"results": results_by_indexer, "dbsearchid": dbsearch.id}
+    return {"results": results_by_indexer, "dbsearch": dbsearch}
 
 
 def execute(indexer, search_function, args):

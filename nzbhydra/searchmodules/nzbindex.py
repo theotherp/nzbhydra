@@ -223,7 +223,7 @@ class NzbIndex(SearchModule):
         f = furl(self.host)
         f.path.add("nfo")
         f.path.add(guid)
-        r, papiaccess = self.get_url_with_papi_access(f.tostr(), "nfo", cookies={"agreed": "true"})
+        r, papiaccess, _ = self.get_url_with_papi_access(f.tostr(), "nfo", cookies={"agreed": "true"})
         if r is not None:
             html = r.text
             p = re.compile(r'<pre id="nfo0">(?P<nfo>.*)<\/pre>', re.DOTALL)

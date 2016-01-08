@@ -23,7 +23,7 @@ from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, In
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAuthException, IndexerAccessException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
-QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "results dbentry total loaded_results total_known has_more")
+QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "results indexerSearchEntry indexerApiAccessEntry indexerStatus total loaded_results total_known has_more")
 IndexerProcessingResult = collections.namedtuple("IndexerProcessingResult", "entries queries total total_known has_more")
 
 
@@ -155,7 +155,7 @@ class SearchModule(object):
 
     disable_periods = [0, 15, 30, 60, 3 * 60, 6 * 60, 12 * 60, 24 * 60]
 
-    def handle_indexer_success(self):
+    def handle_indexer_success(self, saveIndexerStatus=True):
         # Deescalate level by 1 (or stay at 0) and reset reason and disable-time
         try:
             indexer_status = self.indexer.status.get()
@@ -165,9 +165,12 @@ class SearchModule(object):
             indexer_status.level -= 1
         indexer_status.reason = None
         indexer_status.disabled_until = arrow.get(0)  # Because I'm too dumb to set it to None/null
-        indexer_status.save()
+        
+        if saveIndexerStatus:
+            indexer_status.save()
+        return indexer_status
 
-    def handle_indexer_failure(self, reason=None, disable_permanently=False):
+    def handle_indexer_failure(self, reason=None, disable_permanently=False, saveIndexerStatus=True):
         # Escalate level by 1. Set disabled-time according to level so that with increased level the time is further in the future
         try:
             indexer_status = self.indexer.status.get()
@@ -185,7 +188,9 @@ class SearchModule(object):
             indexer_status.level = min(len(self.disable_periods) - 1, indexer_status.level + 1)
             indexer_status.disabled_until = arrow.utcnow().replace(minutes=self.disable_periods[indexer_status.level])
 
-        indexer_status.save()
+        if saveIndexerStatus:
+            indexer_status.save()
+        return indexer_status
 
     def get(self, url, timeout=None, cookies=None):
         # overwrite for special handling, e.g. cookies
@@ -199,9 +204,9 @@ class SearchModule(object):
         self.logger.debug("Requesting %s with timeout %d" % (url, timeout))
         return requests.get(url, timeout=timeout, verify=False, cookies=cookies, headers=headers)
 
-    def get_url_with_papi_access(self, url, type, cookies=None, timeout=None):
+    def get_url_with_papi_access(self, url, type, cookies=None, timeout=None, saveToDb=True):
         papiaccess = IndexerApiAccess(indexer=self.indexer, type=type, url=url, time=arrow.utcnow().datetime)
-
+        indexerStatus = None
         try:
             time_before = arrow.utcnow()
             response = self.get(url, cookies=cookies, timeout=timeout)
@@ -209,15 +214,16 @@ class SearchModule(object):
             time_after = arrow.utcnow()
             papiaccess.response_time = (time_after - time_before).seconds * 1000 + ((time_after - time_before).microseconds / 1000)
             papiaccess.response_successful = True
-            self.handle_indexer_success()
+            indexerStatus = self.handle_indexer_success(saveIndexerStatus=saveToDb)
         except RequestException as e:
             self.logger.error("Error while connecting to URL %s: %s" % (url, str(e)))
             papiaccess.error = "Connection failed: %s" % removeSensitiveData(str(e))
             response = None
-            self.handle_indexer_failure("Connection failed: %s" % removeSensitiveData(str(e)))
+            indexerStatus = self.handle_indexer_failure("Connection failed: %s" % removeSensitiveData(str(e)), saveIndexerStatus=saveToDb)
         finally:
-            papiaccess.save()
-        return response, papiaccess
+            if saveToDb:
+                papiaccess.save()
+        return response, papiaccess, indexerStatus
 
     def get_nfo(self, guid):
         return None
@@ -232,7 +238,7 @@ class SearchModule(object):
         results = []
         executed_queries = set()
         psearch = IndexerSearch(indexer=self.indexer)
-        psearch.save()
+        #psearch.save()
         total_results = 0
         total_known = False
         has_more = False
@@ -243,11 +249,11 @@ class SearchModule(object):
                 continue
 
             try:
-                request, papiaccess = self.get_url_with_papi_access(query, "search")
+                request, papiaccess, indexerStatus = self.get_url_with_papi_access(query, "search", False)
                 papiaccess.indexer_search = psearch
 
                 executed_queries.add(query)
-                papiaccess.save()
+                #papiaccess.save()
 
                 if request is not None:
                     self.check_auth(request.text)
@@ -286,13 +292,13 @@ class SearchModule(object):
                 papiaccess.response_successful = False
             finally:
                 if papiaccess is not None:
-                    papiaccess.save()
+                    #papiaccess.save()
                     psearch.successful = papiaccess.response_successful
                 else:
                     self.logger.error("Unable to save API response to database")
                 psearch.results = total_results
-                psearch.save()
-        return QueriesExecutionResult(results=results, dbentry=psearch, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)
+                #psearch.save()
+        return QueriesExecutionResult(results=results, indexerSearchEntry=psearch, indexerApiAccessEntry=papiaccess, indexerStatus=indexerStatus, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)
 
 
 def get_instance(indexer):

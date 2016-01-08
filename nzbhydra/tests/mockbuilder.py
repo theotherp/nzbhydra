@@ -15,11 +15,9 @@ from flask import app, render_template, Flask
 app = Flask(__name__)
 
 
-def buildNewznabItem(id=None, title=None, guid=None, link=None, pubdate=None, description=None, size=None, indexer_name=None, categories=[]):
+def buildNewznabItem(title=None, guid=None, link=None, pubdate=None, description=None, size=None, indexer_name=None, categories=None):
     if title is None:
         ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-    if id is None:
-        id = title + ".id"
     if guid is None:
         guid = title + ".guid"
     if link is None:
@@ -32,6 +30,8 @@ def buildNewznabItem(id=None, title=None, guid=None, link=None, pubdate=None, de
         pubdate = str(utcnow.format("ddd, DD MMM YYYY HH:mm:ss Z"))
     if size is None:
         size = random.randint(10000, 10000000)
+    if categories is None:
+        categories = []
     size = str(size)
 
     attributes = [{
@@ -44,14 +44,13 @@ def buildNewznabItem(id=None, title=None, guid=None, link=None, pubdate=None, de
     attributes.extend([{"name": "category", "value": x} for x in categories])
 
     return {
-        "id": id,
+        "guid": id,
         "title": title,
-        "guid": guid,
         "link": link,
         "comments": "",
         "pubDate": pubdate,
         "description": description,
-        "attr": attributes
+        "attributes": attributes
 
     }
 

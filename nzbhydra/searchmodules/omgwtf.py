@@ -304,7 +304,7 @@ class OmgWtf(SearchModule):
         f = furl(self.host)
         f.path.add("nfo")
         f = f.add({"id": guid, "api": config.indexerSettings.omgwtf.apikey.get(), "user": config.indexerSettings.omgwtf.username.get(), "send": "1"})
-        r, papiaccess = self.get_url_with_papi_access(f.tostr(), "nfo")
+        r, papiaccess, _ = self.get_url_with_papi_access(f.tostr(), "nfo")
         return True, r.text, None
         
 

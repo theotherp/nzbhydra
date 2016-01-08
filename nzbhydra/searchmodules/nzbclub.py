@@ -135,7 +135,7 @@ class NzbClub(SearchModule):
         f = furl(self.settings.host.get())
         f.path.add("api/NFO")
         f.path.segments.append(guid)
-        r, papiaccess = self.get_url_with_papi_access(f.tostr(), "nfo")
+        r, papiaccess, _ = self.get_url_with_papi_access(f.tostr(), "nfo")
         if r is not None:
             r.raise_for_status()
             if r.json()["Count"] == 0:

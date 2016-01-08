@@ -397,7 +397,7 @@ class NewzNab(SearchModule):
         url.path.add("api")
         url.add({"apikey": self.settings.apikey.get(), "t": "getnfo", "o": "xml", "id": guid, "raw": "1"})
 
-        response, papiaccess = self.get_url_with_papi_access(url, "nfo")
+        response, papiaccess, _ = self.get_url_with_papi_access(url, "nfo")
         if response is None:
             return False, None, "Unable to access indexer"
 
