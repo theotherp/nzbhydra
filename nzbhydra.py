@@ -117,15 +117,18 @@ def run():
         port = config.mainSettings.port.get() if args.port is None else args.port
     
         logger.info("Starting web app on %s:%d" % (host, port))
-        f = furl()
-        f.host = "127.0.0.1"
-        f.port = port
-        f.scheme = "https" if config.mainSettings.ssl.get() else "http"
+        if config.mainSettings.baseUrl.get() is not None and config.mainSettings.baseUrl.get() != "":
+            f = furl(config.mainSettings.baseUrl.get())
+        else:
+            f = furl()
+            f.host = "127.0.0.1"
+            f.port = port
+            f.scheme = "https" if config.mainSettings.ssl.get() else "http"
         if not args.nobrowser and config.mainSettings.startup_browser.get():
             logger.info("Opening browser to %s" % f.url)
             webbrowser.open_new(f.url)
         else:
-            logger.info("Go to %s for the frontend (or whatever your public IP is)" % f.url)
+            logger.info("Go to %s for the frontend" % f.url)
         
         check_for_new_version()
         web.run(host, port)
