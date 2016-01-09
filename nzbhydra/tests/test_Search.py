@@ -10,7 +10,7 @@ from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search import SearchRequest
 from nzbhydra.tests import mockbuilder
 
-standard_library.install_aliases()
+#standard_library.install_aliases()
 from builtins import *
 import re
 import unittest

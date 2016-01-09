@@ -9,7 +9,7 @@ from itertools import groupby
 from builtins import int
 from future import standard_library
 
-standard_library.install_aliases()
+#standard_library.install_aliases()
 from builtins import *
 import concurrent
 import copy

@@ -20,7 +20,7 @@ var print = require('gulp-print');
 
 
 gulp.task('vendor-scripts', function () {
-    var dest = 'nzbhydra/static/js';
+    var dest = 'static/js';
     return gulp.src(wiredep().js)
         .pipe(sourcemaps.init())
         .pipe(concat('alllibs.js'))
@@ -31,7 +31,7 @@ gulp.task('vendor-scripts', function () {
 });
 
 gulp.task('vendor-css', function () {
-    var dest = 'nzbhydra/static/css';
+    var dest = 'static/css';
     return gulp.src(wiredep().css)
         .pipe(sourcemaps.init())
         .pipe(concat('alllibs.css'))
@@ -42,7 +42,7 @@ gulp.task('vendor-css', function () {
 });
 
 gulp.task('scripts', function () {
-    var dest = 'nzbhydra/static/js';
+    var dest = 'static/js';
     return gulp.src("ui-src/js/**/*.js")
         .pipe(ngAnnotate())
         .on('error', swallowError)
@@ -59,7 +59,7 @@ gulp.task('scripts', function () {
 });
 
 gulp.task('less', function () {
-    var dest = 'nzbhydra/static/css';
+    var dest = 'static/css';
     gulp.src('ui-src/less/nzbhydra.less')
         .pipe(sourcemaps.init())
         .pipe(newer(dest))
@@ -70,17 +70,17 @@ gulp.task('less', function () {
 });
 
 gulp.task('copy-assets', function () {
-    var fontDest = 'nzbhydra/static/fonts';
+    var fontDest = 'static/fonts';
     var fonts = gulp.src("bower_components/bootstrap/fonts/*")
         .pipe(changed(fontDest))
         .pipe(gulp.dest(fontDest));
 
-    var imgDest = 'nzbhydra/static/img';
+    var imgDest = 'static/img';
     var img = gulp.src("ui-src/img/**/*")
         .pipe(changed(imgDest))
         .pipe(gulp.dest(imgDest));
 
-    var htmlDest = 'nzbhydra/static/html';
+    var htmlDest = 'static/html';
     var html = gulp.src(["ui-src/html/**/*", "bower_components/angularUtils-pagination/dirPagination.tpl.html"])
         .pipe(changed(htmlDest))
         .pipe(gulp.dest(htmlDest));
@@ -90,26 +90,25 @@ gulp.task('copy-assets', function () {
 });
 
 gulp.task('add', function () {
-    return gulp.src('nzbhydra/static/**')
+    return gulp.src('static/**')
         .pipe(git.add());
 });
 
 gulp.task('index', ['scripts', 'less', 'vendor-scripts', 'vendor-css', 'copy-assets'], function () {
     return gulp.src('ui-src/index.html')
-        .pipe(gulp.dest('nzbhydra/templates'))
+        .pipe(gulp.dest('templates'))
         .pipe(livereload())
         .add;
 });
 
-gulp.task('updateAdd', function() {
-    runSequence('index', 'add'); 
+gulp.task('updateAdd', function () {
+    runSequence('index', 'add');
 });
 
 function swallowError(error) {
     console.log(error.toString());
     this.emit('end');
 }
-
 
 
 gulp.task('default', function () {

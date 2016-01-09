@@ -7,7 +7,7 @@ from future import standard_library
 
 from nzbhydra.nzb_search_result import NzbSearchResult
 
-standard_library.install_aliases()
+#standard_library.install_aliases()
 from builtins import *
 import unittest
 from freezegun import freeze_time

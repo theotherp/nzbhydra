@@ -2,12 +2,15 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+
+import urlparse
+
 from builtins import super
 from builtins import str
 from builtins import int
 from builtins import *
 from future import standard_library
-standard_library.install_aliases()
+#standard_library.install_aliases()
 import logging
 import re
 import xml.etree.ElementTree as ET
@@ -107,8 +110,7 @@ class NzbClub(SearchModule):
             entry.guid = elem.find("guid").text[-8:] #GUID looks like "http://www.nzbclub.com/nzb_view58556415" of which we only want the last part
             
             description = elem.find("description").text
-            import urllib.parse
-            description = urllib.parse.unquote(description).replace("+", " ")
+            description = urlparse.unquote(description).replace("+", " ")
             if re.compile(r"\d NFO Files").search(description): # [x NFO Files] is missing if there is no NFO
                 entry.has_nfo = NzbSearchResult.HAS_NFO_YES
             else:

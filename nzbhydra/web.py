@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import json
 import logging
 import os
+import urlparse
 
 import rison
 
@@ -17,37 +18,32 @@ try:
 except:
     sslImported = False
     print("Unable to import SSL")
-import sys
 import threading
 import urllib
-from builtins import dict
-from builtins import str
-from builtins import int
 from builtins import *
-from future import standard_library
 from peewee import fn
 from nzbhydra.exceptions import DownloaderException, IndexerResultParsingException
 
-standard_library.install_aliases()
+# standard_library.install_aliases()
 from functools import wraps
 from pprint import pprint
 from time import sleep
 from arrow import Arrow
 from flask import Flask, render_template, request, jsonify, Response
 from flask import send_file, redirect, make_response
-from flask.ext.cache import Cache
+from flask_cache import Cache
 from flask.json import JSONEncoder
 from webargs import fields
 from furl import furl
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
-from flask.ext.session import Session
+from flask_session import Session
 from nzbhydra import config, search, infos, database
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid
 from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
 from nzbhydra.database import IndexerStatus, Indexer
 from nzbhydra.downloader import Nzbget, Sabnzbd
-from nzbhydra.indexers import read_indexers_from_config, clean_up_database, getIndexerByName
+from nzbhydra.indexers import read_indexers_from_config, clean_up_database
 from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses
 from nzbhydra.versioning import get_rep_version, get_current_version
@@ -154,8 +150,8 @@ def handle_bad_request(err):
 
 def authenticate():
     return Response(
-        'Could not verify your access level for that URL. You have to login with proper credentials', 401,
-        {'WWW-Authenticate': 'Basic realm="Login Required"'})
+            'Could not verify your access level for that URL. You have to login with proper credentials', 401,
+            {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 
 # TODO: use this to create generic responses. the gui should have a service to intercept this and forward only the data (if it was successful) or else show the error, possibly log it
@@ -230,6 +226,7 @@ def requires_stats_auth(f):
 
     return decorated
 
+
 @app.route('/<path:path>')
 @app.route('/', defaults={"path": None})
 @requires_auth
@@ -294,15 +291,14 @@ def api(args):
     args["episode"] = args["ep"]
 
     if args["id"] is not None:
-        #Sometimes the id is not parsed properly and contains other parts of the URL so we try to remove them here
-        idDic = urllib.parse.parse_qs(args["id"])
+        # Sometimes the id is not parsed properly and contains other parts of the URL so we try to remove them here
+        idDic = urlparse.parse_qs(args["id"])
         if "id" in idDic.keys():
             args["id"] = idDic["id"][0]
             logger.debug("Query ID was not properly parsed. Converted it to %s" % args["id"])
         else:
-            #The other if path will unquote the id with parse_qs unqotes so we do it here do
-            args["id"] = urllib.parse.unquote(args["id"])
-
+            # The other if path will unquote the id with parse_qs unqotes so we do it here do
+            args["id"] = urlparse.unquote(args["id"])
 
     if args["q"] is not None and args["q"] != "":
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
@@ -350,7 +346,7 @@ def api(args):
 @requires_auth
 def get_details(guid):
     # GUID is not the GUID-item from the RSS but the newznab GUID which in our case is just a rison string 
-    d = rison.loads(urllib.parse.unquote(guid))
+    d = rison.loads(urlparse.unquote(guid))
     details_link = get_details_link(d["indexer"], d["guid"])
     if details_link:
         return redirect(details_link)
@@ -558,7 +554,7 @@ def internalapi_addnzb(args):
         return jsonify({"success": False})
     added = 0
     for guid in guids:
-        guid = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(guid).query))["id"]
+        guid = dict(urlparse.parse_qsl(urlparse.urlparse(guid).query))["id"]
         guid = rison.loads(guid)
         if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
             link = get_nzb_link_and_guid(guid["indexer"], guid["guid"], guid["searchid"], guid["title"])[0]
@@ -648,10 +644,9 @@ internalapi_testcaps_args = {
 @use_args(internalapi_testcaps_args)
 @requires_admin_auth
 def internalapi_testcaps(args):
-
-    indexer = urllib.parse.unquote(args["indexer"])
+    indexer = urlparse.unquote(args["indexer"])
     apikey = args["apikey"]
-    host = urllib.parse.unquote(args["host"])
+    host = urlparse.unquote(args["host"])
     logger.debug("Check caps for %s" % indexer)
 
     try:
@@ -660,6 +655,7 @@ def internalapi_testcaps(args):
         return jsonify({"success": True, "result": result})
     except IndexerResultParsingException as e:
         return jsonify({"success": False, "message": e.message})
+
 
 @app.route('/internalapi/getstats')
 @requires_stats_auth
@@ -781,8 +777,6 @@ def internalapi_getlogs():
     return jsonify(logs)
 
 
-
-
 @app.route('/internalapi/getcategories')
 @requires_auth
 def internalapi_getcategories():
@@ -838,15 +832,16 @@ def development_staticindex():
     return send_file("static/index.html")
 
 
-def run(host, port):
+def run(host, port, basepath):
     context = create_context()
     configure_cache()
+    configureFolders(basepath)
     for handler in logger.handlers:
         app.logger.addHandler(handler)
     if context is None:
         app.run(host=host, port=port, debug=config.mainSettings.debug.get(), threaded=config.mainSettings.runThreaded.get())
     else:
-        app.run(host=host, port=port, debug=config.mainSettings.debug.get(), ssl_context=context,threaded=config.mainSettings.runThreaded.get())
+        app.run(host=host, port=port, debug=config.mainSettings.debug.get(), ssl_context=context, threaded=config.mainSettings.runThreaded.get())
 
 
 def configure_cache():
@@ -865,6 +860,11 @@ def configure_cache():
                                        "CACHE_THRESHOLD": mainSettings.cache_threshold.get(),
                                        "CACHE_DIR": mainSettings.cache_folder.get(),
                                        "CACHE_NO_NULL_WARNING": True})
+
+
+def configureFolders(basepath):
+    app.template_folder = os.path.join(basepath, "templates")
+    app.static_folder = os.path.join(basepath, "static")
 
 
 def create_context():

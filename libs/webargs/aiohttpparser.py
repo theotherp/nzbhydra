@@ -53,7 +53,7 @@ class AIOHTTPParser(AsyncParser):
         """Pull a form value from the request."""
         post_data = self._cache.get('post')
         if post_data is None:
-            yield from req.post()
+            pass
             self._cache['post'] = req.POST
         return core.get_value(self._cache['post'], name, field)
 
@@ -63,7 +63,7 @@ class AIOHTTPParser(AsyncParser):
         if req.has_body:
             json_data = self._cache.get('json')
             if json_data is None:
-                self._cache['json'] = yield from req.json()
+                pass
             return core.get_value(self._cache['json'], name, field)
         else:
             return core.missing

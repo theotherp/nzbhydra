@@ -12,8 +12,8 @@ from builtins import super
 from future import standard_library
 
 
-standard_library.install_aliases()
-from builtins import *
+#standard_library.install_aliases()
+#from builtins import *
 from enum import Enum
 import json
 import logging

@@ -1,3 +1,5 @@
+/dist
+/build
 /flask_session
 /.idea/**
 /cache

@@ -1,10 +1,9 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from builtins import open
-from future import standard_library
-standard_library.install_aliases()
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+# standard_library.install_aliases()
 from builtins import *
 import logging
 from distutils.version import StrictVersion
@@ -24,18 +23,21 @@ def check_for_new_version():
 
 def get_rep_version():
     try:
-        r = requests.get(version_txt_url)
+        r = requests.get(version_txt_url, verify=False)
         r.raise_for_status()
         return StrictVersion(r.text)
-    except requests.RequestException:
-        logger.error("Error downloading version.txt from repository to check new updates")
+    except requests.RequestException as e:
+        logger.error("Error downloading version.txt from %s to check new updates: %s" % (version_txt_url, e))
         return None
 
 
 def get_current_version():
-    with open("version.txt", "r") as f:
-        version = f.read()
-    return StrictVersion(version)
+    try: 
+        with open("version.txt", "r") as f:
+            version = f.read()
+        return StrictVersion(version)
+    except Exception as e:
+        logger.error("Unable to open version.txt: %s" % e)
 
 
 def is_new_version_available():

@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 from builtins import super
 from future import standard_library
 
-standard_library.install_aliases()
+#standard_library.install_aliases()
 from builtins import *
 
 

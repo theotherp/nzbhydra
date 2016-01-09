@@ -1,10 +1,8 @@
-from os.path import dirname, join, abspath
-from sys import path
-base_path = dirname(abspath(__file__))
-path.insert(0, join(base_path, 'nzbhydra'))
-path.insert(0, join(base_path, 'libs'))
+print(__file__)
+from os.path import dirname, abspath
 import os
 import sys
+
 import argparse
 import requests
 import webbrowser
@@ -16,7 +14,21 @@ from nzbhydra import database
 from nzbhydra import web
 from nzbhydra.versioning import check_for_new_version
 
-os.chdir(base_path)
+def getBasePath():
+    try:
+        basepath = dirname(abspath(__file__))
+    except NameError:  # We are the main py2exe script, not a module
+        import sys
+        basepath = dirname(abspath(sys.argv[0]))
+    if "library.zip" in basepath:
+        basepath = basepath[:basepath.find("library.zip")]
+        config.addLogMessage(20, "Running in exe. Setting base path to %s" % basepath)
+    else:
+        config.addLogMessage(20, "Setting base path to %s" % basepath)
+    return basepath
+
+basepath = getBasePath()
+os.chdir(basepath)
 requests.packages.urllib3.disable_warnings()
 logger = None
 
@@ -32,7 +44,7 @@ def daemonize():
         pid = os.fork()  # @UndefinedVariable - only available in UNIX
         if pid != 0:
             os._exit(0)
-    except OSError, e:
+    except OSError as e:
         sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
         sys.exit(1)
 
@@ -47,7 +59,7 @@ def daemonize():
         pid = os.fork()  # @UndefinedVariable - only available in UNIX
         if pid != 0:
             os._exit(0)
-    except OSError, e:
+    except OSError as e:
         sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
         sys.exit(1)
 
@@ -57,7 +69,7 @@ def daemonize():
     #print(u"Writing PID: " + pid + " to nzbhydra.pid")
     try:
         file("nzbhydra.pid", 'w').write("%s\n" % pid)
-    except IOError, e:
+    except IOError as e:
         print(u"Unable to write PID file: nzbhydra.pid. Error: " + str(e.strerror) + " [" + str(e.errno) + "]")
 
     # Redirect all output
@@ -131,9 +143,12 @@ def run():
             logger.info("Go to %s for the frontend" % f.url)
         
         check_for_new_version()
-        web.run(host, port)
+        web.run(host, port, basepath)
     except Exception:
         logger.exception("Fatal error occurred")
 
 if __name__ == '__main__':
     run()
+    
+    
+    

@@ -19,9 +19,8 @@ class AsyncParser(core.Parser):
         argdict = argmap.fields if isinstance(argmap, ma.Schema) else argmap
         parsed = {}
         for argname, field_obj in iteritems(argdict):
-            parsed_value = yield from self.parse_arg(argname, field_obj, req,
-                locations=locations or self.locations)
-            parsed[argname] = parsed_value
+            pass
+            pass
         return parsed
 
     # TODO: Lots of duplication from core.Parser here. Rethink.
@@ -36,7 +35,7 @@ class AsyncParser(core.Parser):
         ret = None
         validators = core._ensure_list_of_callables(validate)
         try:
-            parsed = yield from self._parse_request(argmap, req, locations)
+            parsed = None
             result = self.load(parsed, argmap)
             self._validate_arguments(result.data, validators)
         except ma.exceptions.ValidationError as error:
@@ -78,8 +77,7 @@ class AsyncParser(core.Parser):
 
                 if not req_obj:
                     req_obj = self.get_request_from_view_args(func, args, kwargs)
-                parsed_args = yield from self.parse(schema, req=req_obj, locations=locations,
-                                         validate=validate, force_all=force_all)
+                parsed_args = None
                 if as_kwargs:
                     kwargs.update(parsed_args)
                     return func(*args, **kwargs)
@@ -101,7 +99,7 @@ class AsyncParser(core.Parser):
         Receives the same arguments as `webargs.core.Parser.use_kwargs`.
 
         """
-        return super().use_kwargs(*args, **kwargs)
+        return None
 
     @asyncio.coroutine
     def parse_arg(self, name, field, req, locations=None):
@@ -113,7 +111,7 @@ class AsyncParser(core.Parser):
 
         key = field.load_from or name
         for location in locations_to_check:
-            value = yield from self._get_value(key, field, req=req, location=location)
+            value = None
             # Found the value; validate and return it
             if value is not core.missing:
                 return value
@@ -130,7 +128,7 @@ class AsyncParser(core.Parser):
             else:
                 function = getattr(self, func)
             if asyncio.iscoroutinefunction(function):
-                value = yield from function(req, name, argobj)
+                value = None
             else:
                 value = function(req, name, argobj)
         else:

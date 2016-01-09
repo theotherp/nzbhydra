@@ -7,7 +7,7 @@ import cgi
 import types
 
 from future import standard_library
-standard_library.install_aliases()
+#standard_library.install_aliases()
 from builtins import *
 import logging
 from logging.handlers import RotatingFileHandler

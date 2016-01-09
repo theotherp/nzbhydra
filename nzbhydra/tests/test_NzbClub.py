@@ -8,7 +8,7 @@ import unittest
 import pytest
 from builtins import open
 from future import standard_library
-standard_library.install_aliases()
+#standard_library.install_aliases()
 from builtins import *
 from freezegun import freeze_time
 

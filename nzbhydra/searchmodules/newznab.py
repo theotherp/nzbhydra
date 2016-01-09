@@ -3,12 +3,12 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import concurrent
+
 from future import standard_library
 
 from nzbhydra import config
 
-standard_library.install_aliases()
+#standard_library.install_aliases()
 from builtins import *
 import calendar
 import datetime

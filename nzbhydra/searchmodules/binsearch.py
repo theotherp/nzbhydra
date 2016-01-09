@@ -2,12 +2,15 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+
+import urlparse
+
 from builtins import super
 from builtins import str
 from builtins import int
 from builtins import *
 from future import standard_library
-standard_library.install_aliases()
+#standard_library.install_aliases()
 import logging
 import re
 
@@ -151,8 +154,7 @@ class Binsearch(SearchModule):
             m = poster_pattern.search(collection_link)
             if m:
                 poster = m.group(1).strip()
-                import urllib.parse
-                entry.poster = urllib.parse.unquote(poster).replace("+", " ")
+                entry.poster = urlparse.unquote(poster).replace("+", " ")
             
             # Size
             m = size_pattern.search(info.text)

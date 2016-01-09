@@ -7,7 +7,7 @@ from future import standard_library
 from peewee import IntegrityError
 from requests import RequestException
 
-standard_library.install_aliases()
+#standard_library.install_aliases()
 from builtins import *
 import logging
 import requests

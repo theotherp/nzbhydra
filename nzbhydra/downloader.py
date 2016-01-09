@@ -9,7 +9,7 @@ from future import standard_library
 
 from nzbhydra.exceptions import DownloaderException
 
-standard_library.install_aliases()
+#standard_library.install_aliases()
 import base64
 import json
 import logging
