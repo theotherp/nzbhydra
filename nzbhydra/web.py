@@ -6,9 +6,12 @@ from __future__ import unicode_literals
 import json
 import logging
 import os
+import subprocess
 import urlparse
 
+import psutil
 import rison
+import signal
 
 from nzbhydra.searchmodules import omgwtf
 
@@ -792,22 +795,49 @@ def internalapi_getcategories():
         return jsonify({"success": False, "message": e.message})
 
 
+    
 def restart():
-    python = sys.executable
-    print("Restarting with executable %s and args %s" % (python, sys.argv))
-    os.execl(python, python, *sys.argv)
-    print("Exiting")
-    # sys.exit(0)
+    # args = [sys.executable] + sys.argv
+    # new_environ = os.environ.copy()
+    # thread = threading.Thread(target=shutdown)
+    # thread.daemon = True
+    # thread.start()
+    # subprocess.call(args, env=new_environ)
+    #os.execl(sys.executable, *([sys.executable] + sys.argv))
+    args = sys.argv[:]
+    logger.info('Re-spawning %s' % ' '.join(args))
+
+    args.insert(0, sys.executable)
+    if sys.platform == 'win32':
+        args = ['"%s"' % arg for arg in args]
+        oldpid = os.getpid()
+        print("Old pid: " + str(oldpid))
+        newpid = os.spawnv(os.P_NOWAIT, sys.executable, args)
+        print("New pid:" + str(newpid))
+        #sleep(1)
+        print("Killing old process")
+        #os.kill(oldpid, signal.SIGTERM)
+        #os.execv(sys.executable, args)
+        print("Danach")
+        func = request.environ.get('werkzeug.server.shutdown')
+        if func is None:
+            raise RuntimeError('Not running with the Werkzeug Server')
+        func()
+    else:
+        os.execv(sys.executable, args)
+    
+    
 
 
 @app.route("/internalapi/restart")
 @requires_auth
 def internalapi_restart():
-    # DOES NOT WORK CORRECTLY YET
-    # Only works the first time, the second time it just hangs somewhere. Right now we don't need a restart function anyway (I hope)
-    logger.info("Restarting due to external request")
-    threading.Timer(1, restart).start()
-    return send_file("static/restart.html")
+    logger.info("Restarting due to external request...")
+    # thread = threading.Thread(target=restart)
+    # thread.daemon = True
+    # thread.start()
+    restart()
+    return "Restarting"
 
 
 def shutdown():

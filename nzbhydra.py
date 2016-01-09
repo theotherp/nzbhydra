@@ -1,18 +1,10 @@
-print(__file__)
 from os.path import dirname, abspath
 import os
 import sys
-
 import argparse
 import requests
 import webbrowser
 import nzbhydra.config as config
-from furl import furl
-from nzbhydra import log
-from nzbhydra import indexers
-from nzbhydra import database
-from nzbhydra import web
-from nzbhydra.versioning import check_for_new_version
 
 def getBasePath():
     try:
@@ -27,8 +19,20 @@ def getBasePath():
         config.addLogMessage(20, "Setting base path to %s" % basepath)
     return basepath
 
+
 basepath = getBasePath()
 os.chdir(basepath)
+sys.path.insert(0, os.path.join(basepath, 'libs'))
+
+
+from furl import furl
+from nzbhydra import log
+from nzbhydra import indexers
+from nzbhydra import database
+from nzbhydra import web
+from nzbhydra.versioning import check_for_new_version
+
+
 requests.packages.urllib3.disable_warnings()
 logger = None
 

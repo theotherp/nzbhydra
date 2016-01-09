@@ -83,6 +83,27 @@ angular
             wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
         });
 
+        formlyConfigProvider.setType({
+            name: 'restart',
+            template: [
+                '<button class="btn btn-default" type="button" ng-click="restart()">Restart</button>'
+            ].join(' '),
+            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError'],
+            controller: function ($http, $scope) {
+
+                $scope.restart = function () {
+                    $http.get("internalapi/restart").then(function () {
+                            var myInjector = angular.injector(["ng"]);
+                            var $growl = myInjector.get("$growl");
+                            $growl.info("Restart initiated. Give it a couple of seconds...");
+                        },
+                        function () {
+
+                        })
+                }
+            }
+        });
+
 
         formlyConfigProvider.setType({
             name: 'testConnection',
@@ -119,7 +140,7 @@ angular
                             params.url = $scope.model.url;
                         } else {
                             params.host = $scope.model.host;
-                            params.port= $scope.model.port;
+                            params.port = $scope.model.port;
                             params.ssl = $scope.model.ssl;
                         }
                     } else if ($scope.to.testType == "newznab") {
@@ -549,7 +570,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 }
             )
         }
-        
+
         if (showCheckCaps) {
             fieldset.push(
                 {
@@ -1490,6 +1511,14 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                     label: 'Shutdown'
                 }
             }
+            //{
+            //    key: 'restart',
+            //    type: 'restart',
+            //    templateOptions: {
+            //        type: 'button',
+            //        label: 'restart'
+            //    }
+            //}
         ]
 
 
@@ -1541,7 +1570,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             $scope.log = $sce.trustAsHtml(data.log);
             $scope.$digest();
         });
-        
+
     }
 }
 
