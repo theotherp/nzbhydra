@@ -1,3 +1,4 @@
+import subprocess
 from os.path import dirname, abspath
 import os
 import sys
@@ -98,6 +99,7 @@ def run():
     parser.add_argument('--port', action='store', help='Port to run on', type=int)
     parser.add_argument('--nobrowser', action='store_true', help='Don\'t open URL on startup', default=False)
     parser.add_argument('--daemon', action='store_true', help='Run as daemon. *nix only', default=False)
+    parser.add_argument('--startinsubprocess', action='store_true', help=argparse.SUPPRESS, default=False)
     
     args = parser.parse_args()
     
@@ -152,7 +154,22 @@ def run():
         logger.exception("Fatal error occurred")
 
 if __name__ == '__main__':
-    run()
+    if "--startinsubprocess" not in sys.argv[1:]:
+        print("Initial start. Starting subprocess in loop")
+        retcode = 3
+        while retcode == 3:
+            args = [sys.executable]
+            args.extend(sys.argv)
+            args.append("--startinsubprocess")
+            retcode = subprocess.call(args)
+            if retcode == 3:
+                print("Subprocess returned with code 3. Restarting program")
+            else:
+                print("Subprocess returned with code %d. Exiting." % retcode)
+    else:
+        print("Starting main program")
+        run()
+    
     
     
     

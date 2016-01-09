@@ -76,11 +76,19 @@ angular
         formlyConfigProvider.setType({
             name: 'shutdown',
             template: [
-                '<a href="internalapi/shutdown" target="_top">',
-                '<button class="btn btn-default" type="button">Shutdown</button>',
-                '</a>'
+                '<button class="btn btn-default" type="button" ng-click="shutdown()">Shutdown</button>'
             ].join(' '),
-            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError'],
+            controller: function ($http, $scope, growl) {
+                $scope.shutdown = function () {
+                    $http.get("internalapi/shutdown").then(function () {
+                            growl.info("Shutdown initiated. Cya!");
+                        },
+                        function () {
+                            growl.info("Unable to send shutdown command.");
+                        })
+                }
+            }
         });
 
         formlyConfigProvider.setType({
@@ -89,16 +97,13 @@ angular
                 '<button class="btn btn-default" type="button" ng-click="restart()">Restart</button>'
             ].join(' '),
             wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError'],
-            controller: function ($http, $scope) {
-
+            controller: function ($http, $scope, growl) {
                 $scope.restart = function () {
                     $http.get("internalapi/restart").then(function () {
-                            var myInjector = angular.injector(["ng"]);
-                            var $growl = myInjector.get("$growl");
-                            $growl.info("Restart initiated. Give it a couple of seconds...");
+                            growl.info("Restart initiated. Give it a couple of seconds...");
                         },
                         function () {
-
+                            growl.info("Unable to send restart command.");
                         })
                 }
             }
@@ -1510,15 +1515,15 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                     type: 'button',
                     label: 'Shutdown'
                 }
+            },
+            {
+                key: 'restart',
+                type: 'restart',
+                templateOptions: {
+                    type: 'button',
+                    label: 'restart'
+                }
             }
-            //{
-            //    key: 'restart',
-            //    type: 'restart',
-            //    templateOptions: {
-            //        type: 'button',
-            //        label: 'restart'
-            //    }
-            //}
         ]
 
 

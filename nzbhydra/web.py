@@ -6,12 +6,8 @@ from __future__ import unicode_literals
 import json
 import logging
 import os
-import subprocess
 import urlparse
-
-import psutil
 import rison
-import signal
 
 from nzbhydra.searchmodules import omgwtf
 
@@ -797,35 +793,8 @@ def internalapi_getcategories():
 
     
 def restart():
-    # args = [sys.executable] + sys.argv
-    # new_environ = os.environ.copy()
-    # thread = threading.Thread(target=shutdown)
-    # thread.daemon = True
-    # thread.start()
-    # subprocess.call(args, env=new_environ)
-    #os.execl(sys.executable, *([sys.executable] + sys.argv))
-    args = sys.argv[:]
-    logger.info('Re-spawning %s' % ' '.join(args))
-
-    args.insert(0, sys.executable)
-    if sys.platform == 'win32':
-        args = ['"%s"' % arg for arg in args]
-        oldpid = os.getpid()
-        print("Old pid: " + str(oldpid))
-        newpid = os.spawnv(os.P_NOWAIT, sys.executable, args)
-        print("New pid:" + str(newpid))
-        #sleep(1)
-        print("Killing old process")
-        #os.kill(oldpid, signal.SIGTERM)
-        #os.execv(sys.executable, args)
-        print("Danach")
-        func = request.environ.get('werkzeug.server.shutdown')
-        if func is None:
-            raise RuntimeError('Not running with the Werkzeug Server')
-        func()
-    else:
-        os.execv(sys.executable, args)
-    
+    sleep(1)
+    os._exit(3)
     
 
 
@@ -833,10 +802,9 @@ def restart():
 @requires_auth
 def internalapi_restart():
     logger.info("Restarting due to external request...")
-    # thread = threading.Thread(target=restart)
-    # thread.daemon = True
-    # thread.start()
-    restart()
+    thread = threading.Thread(target=restart)
+    thread.daemon = True
+    thread.start()
     return "Restarting"
 
 

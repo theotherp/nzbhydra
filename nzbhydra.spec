@@ -14,7 +14,7 @@ a = Analysis(['nzbhydra.py'],
                     ('LICENSE', '.'),
                     ('nzbhydra.key', '.'),
                     ('nzbhydra.crt', '.')],
-             hiddenimports=[],
+             hiddenimports=["rison"],
              hookspath=None,
              
              runtime_hooks=None,
