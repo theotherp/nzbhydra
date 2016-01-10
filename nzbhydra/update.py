@@ -244,7 +244,7 @@ class GitUpdateManager(UpdateManager):
 
             if output:
                 output = output.strip()
-            logger.error(u"git output: " + output)
+            logger.info(u"git output: " + output)
 
         except OSError:
             logger.error(u"Command " + cmd + " didn't work")

@@ -4,7 +4,7 @@ Current version: {{ currentVersion }}
 <br>
 Latest version: {{ repVersion }}
 <br>
-<h4 ng-if="updateAvailable">Currently only source code update is available, so you will lose git information! You might want to do a backup of your .cfg and .db files first.</h4>
+<h4 ng-if="updateAvailable">Considering we're still in alpha you might want to do a backup of your .cfg and .db files first.</h4>
 <button ng-if="updateAvailable" class="btn btn-default" type="button" ng-click="update()">Update!</button>
 <span ng-if="!updateAvailable">You're up to date!</span>
 

@@ -2935,14 +2935,14 @@ output {
   box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
 .form-control::-moz-placeholder {
-  color: #777777;
+  color: #c1c1c1;
   opacity: 1;
 }
 .form-control:-ms-input-placeholder {
-  color: #777777;
+  color: #c1c1c1;
 }
 .form-control::-webkit-input-placeholder {
-  color: #777777;
+  color: #c1c1c1;
 }
 .form-control[disabled],
 .form-control[readonly],
@@ -6988,9 +6988,6 @@ a.expand-collapse:focus {
   border-right-width: 0px !important;
   border-radius: 0;
 }
-.episode-input:focus {
-  border-width: 0px !important;
-}
 .season-input {
   border-radius: 0;
 }
@@ -7235,7 +7232,7 @@ a.disabled:hover {
   background-color: #23a123;
   color: #fff;
 }
-.input-group-btn {
+.input-group-btn2 {
   border: 1px solid #058120;
   border-radius: 4px;
 }
@@ -7294,6 +7291,24 @@ a.disabled:hover {
 .nav-tabs > li > a:hover {
   border-color: #eeeeee #eeeeee transparent;
   background-color: transparent;
+}
+.form-control::-webkit-input-placeholder {
+  color: #c1c1c1;
+}
+.form-control:-moz-placeholder {
+  color: #c1c1c1;
+}
+.form-control::-moz-placeholder {
+  color: #c1c1c1;
+}
+.form-control:-ms-input-placeholder {
+  color: #c1c1c1;
+}
+.bootstrap-switch {
+  border: 1px solid #058120;
+}
+.indexer-checkbox {
+  margin-left: 10px;
 }
 
 /*# sourceMappingURL=nzbhydra.css.map */

@@ -66,6 +66,7 @@ class Nzbget(Downloader):
                 version = rpc.version()
                 #todo: show error if version older than 13
                 if int(version[:2]) < 13:
+                    self.logger.error("NZBGet needs to be version 13 or higher")
                     return False, "NZBGet needs to be version 13 or higher"
                 self.logger.info('Connection test to NZBGet successful')
             else:
@@ -205,8 +206,8 @@ class Sabnzbd(Downloader):
                 return False, "Credentials wrong?"
 
         except (SSLError, HTTPError, ConnectionError) as e:
-            self.logger.exception("Error while trying to connect to sabnzbd")
-            return False, "SABnzbd is not responding under this address, scheme and port"
+            self.logger.error("Error while trying to connect to sabnzbd: %s" % e)
+            return False, "SABnzbd is not responding"
 
     def add_link(self, link, title, category):
         self.logger.debug("Sending add-link request for %s to sabnzbd" % title)

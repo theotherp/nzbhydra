@@ -97,10 +97,10 @@ angular
                 '<button class="btn btn-default" type="button" ng-click="restart()">Restart</button>'
             ].join(' '),
             wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError'],
-            controller: function ($http, $scope, growl) {
+            controller: function ($http, $scope, growl, RestartService) {
                 $scope.restart = function () {
                     $http.get("internalapi/restart").then(function () {
-                            growl.info("Restart initiated. Give it a couple of seconds...");
+                            RestartService.restart();
                         },
                         function () {
                             growl.info("Unable to send restart command.");

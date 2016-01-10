@@ -549,7 +549,7 @@ angular
     .module('nzbhydraApp')
     .factory('UpdateService', UpdateService);
 
-function UpdateService($http, growl, blockUI, $timeout, $window) {
+function UpdateService($http, growl, blockUI, RestartService) {
     
     return {
         update: update
@@ -559,24 +559,7 @@ function UpdateService($http, growl, blockUI, $timeout, $window) {
         blockUI.start("Updating. Please stand by...");
         $http.get("internalapi/update").then(function (data) {
                 if (data.data.success) {
-                    //Hell yeah...
-                    blockUI.start("Update complete. Restarting. Will reload page in 5 seconds...");
-                    $timeout(function () {
-                        blockUI.start("Update complete. Restarting. Will reload page in 4 seconds...");
-                        $timeout(function () {
-                            blockUI.start("Update complete. Restarting. Will reload page in 3 seconds...");
-                            $timeout(function () {
-                                blockUI.start("Update complete. Restarting. Will reload page in 2 seconds...");
-                                $timeout(function () {
-                                    blockUI.start("Update complete. Restarting. Will reload page in 1 second...");
-                                    $timeout(function () {
-                                        blockUI.start("Reloading page...");
-                                        $window.location.reload();
-                                    }, 1000);
-                                }, 1000);
-                            }, 1000);
-                        }, 1000);
-                    }, 1000);
+                    RestartService.restart("Update complete.");
                 } else {
                     blockUI.reset();
                     growl.info("An error occurred while updating. Please check the logs.");
@@ -588,7 +571,7 @@ function UpdateService($http, growl, blockUI, $timeout, $window) {
             });
     }
 }
-UpdateService.$inject = ["$http", "growl", "blockUI", "$timeout", "$window"];
+UpdateService.$inject = ["$http", "growl", "blockUI", "RestartService"];
 
 angular
     .module('nzbhydraApp')
@@ -1200,6 +1183,40 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
 angular
     .module('nzbhydraApp')
+    .factory('RestartService', RestartService);
+
+function RestartService(blockUI, $timeout, $window) {
+
+    return {
+        restart: restart
+    };
+
+    function restart(message) {
+        message = angular.isUndefined ? "" : " ";
+        
+        blockUI.start(message  + "Restarting. Will reload page in 5 seconds...");
+        $timeout(function () {
+            blockUI.start(message  + "Restarting. Will reload page in 4 seconds...");
+            $timeout(function () {
+                blockUI.start(message  +  "Restarting. Will reload page in 3 seconds...");
+                $timeout(function () {
+                    blockUI.start(message  + "Restarting. Will reload page in 2 seconds...");
+                    $timeout(function () {
+                        blockUI.start(message + "Restarting. Will reload page in 1 second...");
+                        $timeout(function () {
+                            blockUI.start("Reloading page...");
+                            $window.location.reload();
+                        }, 1000);
+                    }, 1000);
+                }, 1000);
+            }, 1000);
+        }, 1000);
+    }
+}
+RestartService.$inject = ["blockUI", "$timeout", "$window"];
+
+angular
+    .module('nzbhydraApp')
     .factory('NzbDownloadService', NzbDownloadService);
 
 function NzbDownloadService($http, ConfigService, CategoriesService) {
@@ -1586,10 +1603,10 @@ angular
                 '<button class="btn btn-default" type="button" ng-click="restart()">Restart</button>'
             ].join(' '),
             wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError'],
-            controller: function ($http, $scope, growl) {
+            controller: function ($http, $scope, growl, RestartService) {
                 $scope.restart = function () {
                     $http.get("internalapi/restart").then(function () {
-                            growl.info("Restart initiated. Give it a couple of seconds...");
+                            RestartService.restart();
                         },
                         function () {
                             growl.info("Unable to send restart command.");

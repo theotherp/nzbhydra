@@ -427,7 +427,6 @@ internalapi_moviesearch_args = {
 
 @app.route('/internalapi/moviesearch')
 @requires_auth
-@search_cache.memoize()
 @use_args(internalapi_moviesearch_args, locations=['querystring'])
 def internalapi_moviesearch(args):
     logger.debug("Movie search request with args %s" % args)
@@ -465,7 +464,6 @@ internalapi_tvsearch_args = {
 
 
 @app.route('/internalapi/tvsearch')
-@search_cache.memoize()
 @requires_auth
 @use_args(internalapi_tvsearch_args, locations=['querystring'])
 def internalapi_tvsearch(args):

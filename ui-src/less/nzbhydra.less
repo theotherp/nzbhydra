@@ -71,10 +71,6 @@ a.expand-collapse:focus {
   border-radius: 0;
 }
 
-.episode-input:focus {
-  border-width: 0px !important;
-}
-
 .season-input {
   border-radius: 0;
 }
@@ -393,7 +389,7 @@ a.disabled:hover {
   color: @btn-primary-color;
 }
 
-.input-group-btn {
+.input-group-btn2 {
   border: 1px solid @navbar-default-border;
   border-radius: @border-radius-base;
 }
@@ -408,6 +404,8 @@ a.disabled:hover {
   border-top-left-radius: 0;
   border-left-width: 0;
 }
+
+
 
 .search-results-table {
   border: 1px solid @brand-primary;
@@ -465,4 +463,32 @@ a.disabled:hover {
 .nav-tabs > li > a:hover {
   border-color: @nav-tabs-link-hover-border-color @nav-tabs-link-hover-border-color transparent;
   background-color: transparent;
+}
+
+@input-color-placeholder: #c1c1c1;
+
+
+.form-control::-webkit-input-placeholder {
+  color: @input-color-placeholder;
+}
+
+.form-control:-moz-placeholder {
+  color: @input-color-placeholder;
+}
+
+.form-control::-moz-placeholder {
+  color: @input-color-placeholder;
+}
+
+.form-control:-ms-input-placeholder {
+  color: @input-color-placeholder;
+}
+
+.bootstrap-switch {
+  border: 1px solid @input-border;
+}
+
+
+.indexer-checkbox {
+  margin-left: 10px
 }
