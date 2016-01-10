@@ -50,6 +50,7 @@ from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_searc
 from nzbhydra.versioning import get_rep_version, get_current_version
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import getLogs
+from nzbhydra import update
 
 
 class ReverseProxied(object):
@@ -854,7 +855,7 @@ def internalapi_shutdown():
 @requires_admin_auth
 def internalapi_update():
     logger.info("Starting update")
-    updated = SourceUpdateManager(get_current_version(), get_rep_version()).update()
+    updated = update.update()
     if not updated:
         return jsonify({"success": False})
     logger.info("Will send restart command in 1 second")
