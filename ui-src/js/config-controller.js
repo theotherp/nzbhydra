@@ -1521,7 +1521,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 type: 'restart',
                 templateOptions: {
                     type: 'button',
-                    label: 'restart'
+                    label: 'Restart'
                 }
             }
         ]

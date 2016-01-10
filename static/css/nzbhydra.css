@@ -7291,5 +7291,9 @@ a.disabled:hover {
 .odd {
   background-color: #f2f2f2;
 }
+.nav-tabs > li > a:hover {
+  border-color: #eeeeee #eeeeee transparent;
+  background-color: transparent;
+}
 
 /*# sourceMappingURL=nzbhydra.css.map */
