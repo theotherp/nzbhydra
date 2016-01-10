@@ -300,6 +300,22 @@ class SearchModule(object):
                 #psearch.save()
         return QueriesExecutionResult(results=results, indexerSearchEntry=psearch, indexerApiAccessEntry=papiaccess, indexerStatus=indexerStatus, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)
 
+    def debug(self, msg, *args, **kwargs):
+        self.logger.debug("%s: %s" % (self.name, msg), *args, **kwargs)
+
+    def info(self, msg, *args, **kwargs):
+        self.logger.info("%s: %s" % (self.name, msg), *args, **kwargs)
+
+    def warn(self, msg, *args, **kwargs):
+        self.logger.warn("%s: %s" % (self.name, msg), *args, **kwargs)
+
+    def error(self, msg, *args, **kwargs):
+        self.logger.error("%s: %s" % (self.name, msg), *args, **kwargs)
+        
+    def exception(self, msg, *args, **kwargs):
+        self.logger.exception("%s: %s" % (self.name, msg), *args, **kwargs)
+        
+
 
 def get_instance(indexer):
     return SearchModule(indexer)

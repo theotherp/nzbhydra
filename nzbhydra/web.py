@@ -820,13 +820,14 @@ def internalapi_getcategories():
 
 def restart():
     sleep(1)
+    logger.info("Restarting now")
     os._exit(3)
 
 
 @app.route("/internalapi/restart")
 @requires_admin_auth
 def internalapi_restart():
-    logger.info("Restarting due to external request...")
+    logger.info("User requested to restart. Sending restart command in 1 second")
     thread = threading.Thread(target=restart)
     thread.daemon = True
     thread.start()
@@ -847,6 +848,20 @@ def internalapi_shutdown():
     thread.daemon = True
     thread.start()
     return "Shutting down..."
+
+
+@app.route("/internalapi/update")
+@requires_admin_auth
+def internalapi_update():
+    logger.info("Starting update")
+    updated = SourceUpdateManager(get_current_version(), get_rep_version()).update()
+    if not updated:
+        return jsonify({"success": False})
+    logger.info("Will send restart command in 1 second")
+    thread = threading.Thread(target=restart)
+    thread.daemon = True
+    thread.start()
+    return jsonify({"success": True})
 
 
 def run(host, port, basepath):

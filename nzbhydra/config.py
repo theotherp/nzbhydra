@@ -371,6 +371,9 @@ class MainSettings(Category):
         self.sslkey = Setting(self, name="sslkey", default="nzbhydra.key", valuetype=str)
 
         self.debug = Setting(self, name="debug", default=False, valuetype=bool)
+
+        self.branch = Setting(self, name="branch", default="master", valuetype=str)
+        
         self.cache_enabled = Setting(self, name="enableCache", default=False, valuetype=bool)
         self.cache_enabled_for_api = Setting(self, name="enableCacheForApi", default=False, valuetype=bool)
         self.cache_type = SelectionSetting(self, name="cacheType", default=CacheTypeSelection.memory, valuetype=str, options=[CacheTypeSelection.memory, CacheTypeSelection.file])
