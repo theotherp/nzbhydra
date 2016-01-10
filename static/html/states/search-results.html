@@ -99,7 +99,7 @@
         <!--<tbody ng-repeat-start="titleGroup in filteredResults track by groupId(titleGroup)" ng-if="0"></tbody>-->
         <tbody dir-paginate-start="titleGroup in filteredResults | itemsPerPage:limitTo track by groupId(titleGroup)" ng-show="0"></tbody>
 
-        <tbody search-result title-group="titleGroup" show-duplicates="doShowDuplicates" selected="selected" style="display: table-row-group"></tbody>
+        <tbody search-result title-group="titleGroup" show-duplicates="doShowDuplicates" selected="selected" style="display: table-row-group" row-index="$index"></tbody>
 
         <tbody dir-paginate-end ng-show="0"></tbody>
 

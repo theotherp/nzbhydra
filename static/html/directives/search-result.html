@@ -1,4 +1,4 @@
-<tr class="search-results-row" ng-class="{'title-group-first-row': titleGroupExpanded || (hashGroupExpanded[titleGroup[0][0].hash])}">
+<tr class="search-results-row" ng-class="{'title-group-first-row': titleGroupExpanded || (hashGroupExpanded[titleGroup[0][0].hash]), 'odd': rowIndex % 2 == 0, 'even' : rowIndex % 2 == 1}">
     <td class="col-md-12 search-results-cell" ng-init="result = titleGroup[0][0]">
         <input type="checkbox" ng-model="selected[result.guid]"/>
         <a href="" ng-click="toggleTitleGroup()" ng-class="{'visibility-hidden': titleGroup.length == 1}"><span class="glyphicon"

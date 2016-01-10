@@ -148,7 +148,8 @@ function searchResult() {
         scope: {
             titleGroup: "=",
             showDuplicates: "=",
-            selected: "="
+            selected: "=",
+            rowIndex: "="
         },
         controller: ['$scope', '$element', '$attrs', controller],
         multiElement: true

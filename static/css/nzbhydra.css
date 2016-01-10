@@ -2637,11 +2637,11 @@ th {
   padding: 8px;
   line-height: 1.42857143;
   vertical-align: top;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #b0b0b0;
 }
 .table > thead > tr > th {
   vertical-align: bottom;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid #b0b0b0;
 }
 .table > caption + thead > tr:first-child > th,
 .table > colgroup + thead > tr:first-child > th,
@@ -2652,7 +2652,7 @@ th {
   border-top: 0;
 }
 .table > tbody + tbody {
-  border-top: 2px solid #ddd;
+  border-top: 2px solid #b0b0b0;
 }
 .table .table {
   background-color: #fff;
@@ -2666,7 +2666,7 @@ th {
   padding: 5px;
 }
 .table-bordered {
-  border: 1px solid #ddd;
+  border: 1px solid #b0b0b0;
 }
 .table-bordered > thead > tr > th,
 .table-bordered > tbody > tr > th,
@@ -2674,7 +2674,7 @@ th {
 .table-bordered > thead > tr > td,
 .table-bordered > tbody > tr > td,
 .table-bordered > tfoot > tr > td {
-  border: 1px solid #ddd;
+  border: 1px solid #b0b0b0;
 }
 .table-bordered > thead > tr > th,
 .table-bordered > thead > tr > td {
@@ -2812,7 +2812,7 @@ table th[class*="col-"] {
     margin-bottom: 15px;
     overflow-y: hidden;
     -ms-overflow-style: -ms-autohiding-scrollbar;
-    border: 1px solid #ddd;
+    border: 1px solid #b0b0b0;
   }
   .table-responsive > .table {
     margin-bottom: 0;
@@ -5801,7 +5801,7 @@ a.list-group-item-danger.active:focus {
 .panel > .panel-body + .table-responsive,
 .panel > .table + .panel-body,
 .panel > .table-responsive + .panel-body {
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #b0b0b0;
 }
 .panel > .table > tbody:first-child > tr:first-child th,
 .panel > .table > tbody:first-child > tr:first-child td {
@@ -7135,7 +7135,7 @@ a.disabled:hover {
   text-align: left;
 }
 .table > tbody + tbody {
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #b0b0b0;
 }
 .tab-content {
   padding-top: 30px;
@@ -7246,6 +7246,7 @@ a.disabled:hover {
 .input-group-btn:last-child {
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
+  border-left-width: 0;
 }
 .search-results-table {
   border: 1px solid #00640e;
@@ -7254,21 +7255,21 @@ a.disabled:hover {
   border-top-width: 0 !important;
 }
 .duplicate {
-  background-color: #f2f2f2;
+  background-color: #d9d9d9;
 }
 .title-group-first-row {
   border-width: 1px 1px 0 1px;
   border-style: solid;
   border-left-color: #00640e;
   border-right-color: #00640e;
-  border-top-color: #ddd;
+  border-top-color: #b0b0b0;
 }
 .title-group-last-row {
   border-width: 0 1px 1px 1px;
   border-style: solid;
   border-left-color: #00640e;
   border-right-color: #00640e;
-  border-bottom-color: #ddd;
+  border-bottom-color: #b0b0b0;
 }
 .title-group-middle-row {
   border: 0 solid;
@@ -7285,7 +7286,10 @@ a.disabled:hover {
   border-style: solid;
   border-left-color: #00640e;
   border-right-color: #00640e;
-  border-bottom-color: #ddd;
+  border-bottom-color: #b0b0b0;
+}
+.odd {
+  background-color: #f2f2f2;
 }
 
 /*# sourceMappingURL=nzbhydra.css.map */

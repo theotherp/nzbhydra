@@ -406,6 +406,7 @@ a.disabled:hover {
 .input-group-btn:last-child {
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
+  border-left-width: 0;
 }
 
 .search-results-table {
@@ -417,10 +418,9 @@ a.disabled:hover {
 }
 
 .duplicate {
-  background-color: darken(@table-bg, 5%);
+  background-color: darken(@table-bg, 15%);
   
 }
-
 
 .title-group-first-row {
   border-width: 1px 1px 0 1px;
@@ -457,3 +457,8 @@ a.disabled:hover {
   border-right-color: @brand-primary;
   border-bottom-color: @table-border-color;
 }
+
+.odd {
+  background-color: darken(@table-bg, 5%);
+}
+
