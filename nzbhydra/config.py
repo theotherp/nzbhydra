@@ -607,58 +607,15 @@ class IndexerSettings(Category):
         self.nzbindex = IndexerNzbindexSettings(self)
         self.omgwtf = IndexerOmgWtfSettings(self)
         self.womble = IndexerWombleSettings(self)
-        self.newznab1 = IndexerNewznabSettings(self, "newznab1", "Newznab 1")
-        self.newznab2 = IndexerNewznabSettings(self, "newznab2", "Newznab 2")
-        self.newznab3 = IndexerNewznabSettings(self, "newznab3", "Newznab 3")
-        self.newznab4 = IndexerNewznabSettings(self, "newznab4", "Newznab 4")
-        self.newznab5 = IndexerNewznabSettings(self, "newznab5", "Newznab 5")
-        self.newznab6 = IndexerNewznabSettings(self, "newznab6", "Newznab 6")
-        self.newznab7 = IndexerNewznabSettings(self, "newznab7", "Newznab 7")
-        self.newznab8 = IndexerNewznabSettings(self, "newznab8", "Newznab 8")
-        self.newznab9 = IndexerNewznabSettings(self, "newznab9", "Newznab 9")
-        self.newznab10 = IndexerNewznabSettings(self, "newznab10", "Newznab 10")
-        self.newznab11 = IndexerNewznabSettings(self, "newznab11", "Newznab 11")
-        self.newznab12 = IndexerNewznabSettings(self, "newznab12", "Newznab 12")
-        self.newznab13 = IndexerNewznabSettings(self, "newznab13", "Newznab 13")
-        self.newznab14 = IndexerNewznabSettings(self, "newznab14", "Newznab 14")
-        self.newznab15 = IndexerNewznabSettings(self, "newznab15", "Newznab 15")
-        self.newznab16 = IndexerNewznabSettings(self, "newznab16", "Newznab 16")
-        self.newznab17 = IndexerNewznabSettings(self, "newznab17", "Newznab 17")
-        self.newznab18 = IndexerNewznabSettings(self, "newznab18", "Newznab 18")
-        self.newznab19 = IndexerNewznabSettings(self, "newznab19", "Newznab 19")
-        self.newznab20 = IndexerNewznabSettings(self, "newznab20", "Newznab 20")
-
-
-# TODO: this is horrible
-
+        
+        for i in range(1, 41):
+            setattr(self, "newznab%d" % i, IndexerNewznabSettings(self, "newznab%d" % i, "Newznab %d" % i))
+        
 indexerSettings = IndexerSettings()
 
 
 def get_newznab_setting_by_id(id):
-    id = str(id)
-    return {
-        "1": indexerSettings.newznab1,
-        "2": indexerSettings.newznab2,
-        "3": indexerSettings.newznab3,
-        "4": indexerSettings.newznab4,
-        "5": indexerSettings.newznab5,
-        "6": indexerSettings.newznab6,
-        "7": indexerSettings.newznab7,
-        "8": indexerSettings.newznab8,
-        "9": indexerSettings.newznab9,
-        "10": indexerSettings.newznab10,
-        "11": indexerSettings.newznab11,
-        "12": indexerSettings.newznab12,
-        "13": indexerSettings.newznab13,
-        "14": indexerSettings.newznab14,
-        "15": indexerSettings.newznab15,
-        "16": indexerSettings.newznab16,
-        "17": indexerSettings.newznab17,
-        "18": indexerSettings.newznab18,
-        "19": indexerSettings.newznab19,
-        "20": indexerSettings.newznab20
-
-    }[id]
+    return getattr(indexerSettings, "newznab%d" % id)
 
 
 def getSafeConfig():
