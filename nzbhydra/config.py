@@ -628,6 +628,26 @@ class IndexerSettings(Category):
         self.newznab18 = IndexerNewznabSettings(self, "newznab18", "Newznab 18")
         self.newznab19 = IndexerNewznabSettings(self, "newznab19", "Newznab 19")
         self.newznab20 = IndexerNewznabSettings(self, "newznab20", "Newznab 20")
+        self.newznab21 = IndexerNewznabSettings(self, "newznab11", "Newznab 21")
+        self.newznab22 = IndexerNewznabSettings(self, "newznab12", "Newznab 22")
+        self.newznab23 = IndexerNewznabSettings(self, "newznab13", "Newznab 23")
+        self.newznab24 = IndexerNewznabSettings(self, "newznab14", "Newznab 24")
+        self.newznab25 = IndexerNewznabSettings(self, "newznab15", "Newznab 25")
+        self.newznab26 = IndexerNewznabSettings(self, "newznab16", "Newznab 26")
+        self.newznab27 = IndexerNewznabSettings(self, "newznab17", "Newznab 27")
+        self.newznab28 = IndexerNewznabSettings(self, "newznab18", "Newznab 28")
+        self.newznab29 = IndexerNewznabSettings(self, "newznab19", "Newznab 29")
+        self.newznab30 = IndexerNewznabSettings(self, "newznab10", "Newznab 30")
+        self.newznab31 = IndexerNewznabSettings(self, "newznab11", "Newznab 31")
+        self.newznab32 = IndexerNewznabSettings(self, "newznab12", "Newznab 32")
+        self.newznab33 = IndexerNewznabSettings(self, "newznab13", "Newznab 33")
+        self.newznab34 = IndexerNewznabSettings(self, "newznab14", "Newznab 34")
+        self.newznab35 = IndexerNewznabSettings(self, "newznab15", "Newznab 35")
+        self.newznab36 = IndexerNewznabSettings(self, "newznab16", "Newznab 36")
+        self.newznab37 = IndexerNewznabSettings(self, "newznab17", "Newznab 37")
+        self.newznab38 = IndexerNewznabSettings(self, "newznab18", "Newznab 38")
+        self.newznab39 = IndexerNewznabSettings(self, "newznab19", "Newznab 39")
+        self.newznab40 = IndexerNewznabSettings(self, "newznab20", "Newznab 40")
 
 
 # TODO: this is horrible
@@ -657,7 +677,27 @@ def get_newznab_setting_by_id(id):
         "17": indexerSettings.newznab17,
         "18": indexerSettings.newznab18,
         "19": indexerSettings.newznab19,
-        "20": indexerSettings.newznab20
+        "20": indexerSettings.newznab20.
+        "21": indexerSettings.newznab21,
+        "22": indexerSettings.newznab22,
+        "23": indexerSettings.newznab23,
+        "24": indexerSettings.newznab24,
+        "25": indexerSettings.newznab25,
+        "26": indexerSettings.newznab26,
+        "27": indexerSettings.newznab27,
+        "28": indexerSettings.newznab28,
+        "29": indexerSettings.newznab29,
+        "30": indexerSettings.newznab30.
+        "31": indexerSettings.newznab31,
+        "32": indexerSettings.newznab32,
+        "33": indexerSettings.newznab33,
+        "34": indexerSettings.newznab34,
+        "35": indexerSettings.newznab35,
+        "36": indexerSettings.newznab36,
+        "37": indexerSettings.newznab37,
+        "38": indexerSettings.newznab38,
+        "39": indexerSettings.newznab39,
+        "40": indexerSettings.newznab40
 
     }[id]
 
