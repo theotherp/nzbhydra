@@ -2936,7 +2936,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             getNewznabFieldset(37),
             getNewznabFieldset(38),
             getNewznabFieldset(39),
-            getNewznabFieldset(40),
+            getNewznabFieldset(40)
 
 
         ],
