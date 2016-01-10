@@ -677,8 +677,8 @@ def get_newznab_setting_by_id(id):
         "17": indexerSettings.newznab17,
         "18": indexerSettings.newznab18,
         "19": indexerSettings.newznab19,
-        "20": indexerSettings.newznab20
-	"21": indexerSettings.newznab21,
+        "20": indexerSettings.newznab20.
+        "21": indexerSettings.newznab21,
         "22": indexerSettings.newznab22,
         "23": indexerSettings.newznab23,
         "24": indexerSettings.newznab24,
@@ -687,8 +687,8 @@ def get_newznab_setting_by_id(id):
         "27": indexerSettings.newznab27,
         "28": indexerSettings.newznab28,
         "29": indexerSettings.newznab29,
-        "30": indexerSettings.newznab30
-	"31": indexerSettings.newznab31,
+        "30": indexerSettings.newznab30.
+        "31": indexerSettings.newznab31,
         "32": indexerSettings.newznab32,
         "33": indexerSettings.newznab33,
         "34": indexerSettings.newznab34,
