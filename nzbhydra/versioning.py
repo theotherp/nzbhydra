@@ -8,7 +8,8 @@ from future import standard_library
 standard_library.install_aliases()
 from builtins import *
 import logging
-from distutils.version import StrictVersion
+
+
 from nzbhydra import config
 import requests
 
@@ -26,20 +27,28 @@ def check_for_new_version():
 
 def get_rep_version():
     try:
+        from distutils.version import StrictVersion
         url = "https://raw.githubusercontent.com/theotherp/nzbhydra/" + config.mainSettings.branch.get() + "/version.txt"
         r = requests.get(url, verify=False)
         r.raise_for_status()
         return StrictVersion(r.text)
+    except (ImportError, AttributeError):
+        logger.error("Error while getting repository version: Unable to import StrictVersion. Are you running this in virtualenv?")
+        return None
     except requests.RequestException as e:
         logger.error("Error downloading version.txt from %s to check new updates: %s" % (url, e))
         return None
 
 
 def get_current_version():
-    try: 
+    try:
+        from distutils.version import StrictVersion
         with open("version.txt", "r") as f:
             version = f.read()
         return StrictVersion(version)
+    except (ImportError, AttributeError):
+        logger.error("Error while getting current version: Unable to import StrictVersion. Are you running this in virtualenv?")
+        return None
     except Exception as e:
         logger.error("Unable to open version.txt: %s" % e)
         return None
@@ -54,4 +63,5 @@ def is_new_version_available():
     except Exception as e:
         logger.error("Error while comparion versions: %s" % e)
         return False, None
+    return False, None
         
