@@ -61,11 +61,9 @@ More information about getting the docker-machine IP is available [here](https:/
 ## TODO
 * A lot of bug fixing and improvements regarding performance and stability
 * Better query generation
-* Restart via GUI
 * More stats
 * More indexers? Again, see ( https://github.com/theotherp/nzbhydra/issues/20 )
 * Auto update (will need help with that one)
-* Authentication via form for mobile users
 * Include comments, rating, etc or link to them
 * Clean up code base
 
@@ -90,7 +88,6 @@ Any pull requests are also welcome, but I feel I and the program would mostly pr
 * Advice regarding stability, error handling, net code (I program Java by day and it shows) and performance (see above)
 * More indexers (see above)
 * Auto update (see above)
-* Any features you know and would expect like restart via GUI, daemonization in linux
 
 ### Contact ###
 Send me an email at TheOtherP@gmx.de or a PM at https://www.reddit.com/user/TheOtherP
