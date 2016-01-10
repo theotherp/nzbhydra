@@ -226,6 +226,7 @@ class NewzNab(SearchModule):
         self.settings = settings  # Already done by super.__init__ but this way PyCharm knows the correct type
         self.module = "newznab"
         self.category_search = True
+    
 
     def build_base_url(self, action, category, offset=0):
         return _build_base_url(self.settings.host.get(), self.settings.apikey.get(), action, category, self.limit, offset)
@@ -249,7 +250,7 @@ class NewzNab(SearchModule):
                 search_request.identifier_key = toType.replace("tvrage", "rid").replace("tvdb", "tvdbid")
                 search_request.identifier_value = id
             else:
-                logger.info("Unable to search on indexer %s using ID type %s" % (self.name, search_request.identifier_key))
+                self.info("Unable to search using ID type %s" % search_request.identifier_key)
                 return []
 
             url.add({search_request.identifier_key: search_request.identifier_value})
@@ -278,7 +279,7 @@ class NewzNab(SearchModule):
                     search_request.identifier_key = toType.replace("tvrage", "rid").replace("tvdb", "tvdbid").replace("imdb", "imdbid")
                     search_request.identifier_value = id
                 else:
-                    logger.info("Unable to search on indexer %s using ID type %s" % (self.name, search_request.identifier_key))
+                    self.info("Unable to search using ID type %s" % search_request.identifier_key)
                     return []
                 
                 url.add({search_request.identifier_key: search_request.identifier_value})
@@ -296,7 +297,7 @@ class NewzNab(SearchModule):
         return f.url
 
     def process_query_result(self, xml_response, maxResults=None):
-        logger.debug("%s started processing results" % self.name)
+        self.debug("Started processing results")
 
         entries = []
         grouppattern = re.compile(r"Group:</b> ?([\w\.]+)<br ?/>")
@@ -305,7 +306,7 @@ class NewzNab(SearchModule):
         try:
             tree = ET.fromstring(xml_response)
         except Exception:
-            logger.exception("Error parsing XML: %s..." % xml_response[:500])
+            self.exception("Error parsing XML: %s..." % xml_response[:500])
             raise IndexerResultParsingException("Error parsing XML", self)
         for item in tree.find("channel").findall("item"):
             usenetdate = None
@@ -339,7 +340,7 @@ class NewzNab(SearchModule):
                     try:
                         categories.append(int(attribute_value))
                     except ValueError:
-                        logger.error("Unable to parse category %s" % attribute_value)
+                        self.error("Unable to parse category %s" % attribute_value)
                 elif attribute_name == "poster":
                     entry.poster = attribute_value
                 elif attribute_name == "info":
@@ -376,14 +377,14 @@ class NewzNab(SearchModule):
 
         response_total_offset = tree.find("./channel[1]/newznab:response", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"})
         if response_total_offset is None or response_total_offset.attrib["total"] == "" or response_total_offset.attrib["offset"] == "":
-            logger.warn("Indexer returned a result page without total results and offset. Shame! *rings bell*")
+            self.warn("Indexer returned a result page without total results and offset. Shame! *rings bell*")
             offset = 0
             total = len(entries)
         else:
             total = int(response_total_offset.attrib["total"])
             offset = int(response_total_offset.attrib["offset"])
         if total == 0 or len(entries) == 0:
-            logger.info("Query at %s returned no results" % self)
+            self.info("Query returned no results")
             return IndexerProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False)
 
         return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total)
@@ -411,7 +412,7 @@ class NewzNab(SearchModule):
                         nfo = nfo.replace("\\n", "\r\n").replace("\/", "/")  # TODO: Not completely correct, looks still a bit werid
                         return True, nfo, None
                 except ET.ParseError:
-                    logger.error("Error parsing NFO response for indexer %s and GUID %s" % (self.name, guid))
+                    self.error("Error parsing NFO response for GUID %s" % guid)
                     return False, None, "Unable to parse response"
             else:
                 return False, None, "No NFO available"

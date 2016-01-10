@@ -92,7 +92,7 @@ class NzbIndex(SearchModule):
         return urls
 
     def process_query_result(self, html, maxResults=None):
-        logger.debug("%s started processing results" % self.name)
+        self.debug("Started processing results")
 
         entries = []
         logger.debug("Using HTML parser %s" % searchingSettings.htmlParser.get())
@@ -102,8 +102,8 @@ class NzbIndex(SearchModule):
         if "No results found" in soup.text:
             return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
         if not main_table or not main_table.find("tbody"):
-            logger.error("Unable to find main table in NZBIndex page: %s..." % html[:500])
-            logger.debug(html[:1000])
+            self.error("Unable to find main table in NZBIndex page: %s..." % html[:500])
+            self.debug(html[:500])
             raise IndexerResultParsingException("Unable to find main table in NZBIndex page", self)
 
         items = main_table.find("tbody").find_all('tr')
@@ -146,7 +146,7 @@ class NzbIndex(SearchModule):
             if link is not None and len(link) == 1:
                 entry.link = link[0]["href"]
             else:
-                logger.debug("Did not find link in row")
+                self.debug("Did not find link in row")
 
             entry.category = "N/A"
 
@@ -154,7 +154,7 @@ class NzbIndex(SearchModule):
             
             m = size_pattern.search(sizetd.text)
             if not m:
-                logger.debug("Unable to find size information in %s" % sizetd.text)
+                self.debug("Unable to find size information in %s" % sizetd.text)
             else:
                 size = float(m.group("size"))
                 unit = m.group("unit")
@@ -195,7 +195,7 @@ class NzbIndex(SearchModule):
                 entry.age_precise = True  # Precise to 2.4 hours, should be enough for duplicate detection
                 entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z") 
             else:
-                logger.debug("Found no age info in %s" % str(agetd))
+                self.debug("Found no age info in %s" % str(agetd))
 
             collection_links = infotd.findAll("a", href=True, text="View collection")
             if collection_links is not None and len(collection_links) > 0: 
@@ -212,11 +212,11 @@ class NzbIndex(SearchModule):
                 has_more = pagecount > currentpage
                 total = self.limit * pagecount #Good enough
         except Exception:
-            logger.exception("Error while trying to find page count")
+            self.exception("Error while trying to find page count")
             total = len(entries)
             has_more = False
-            
-        logger.debug("%s finished processing results" % self.name)
+
+            self.debug("Finished processing results")
         return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=has_more)
 
     def get_nfo(self, guid):

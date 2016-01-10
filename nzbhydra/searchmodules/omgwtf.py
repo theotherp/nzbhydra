@@ -218,19 +218,19 @@ class OmgWtf(SearchModule):
         return self.get_search_urls(search_request)
 
     def process_query_result(self, xml_response, maxResults=None):
-        logger.debug("%s started processing results" % self.name)
+        self.debug("Started processing results")
 
         if "0 results found" in xml_response:
             return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
         if "search to short" in xml_response:
-            logger.info("omgwtf says the query was too short")
+            self.info("omgwtf says the query was too short")
             return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
             
         entries = []
         try:
             tree = ET.fromstring(xml_response)
         except Exception:
-            logger.exception("Error parsing XML: %s..." % xml_response[:500])
+            self.exception("Error parsing XML: %s..." % xml_response[:500])
             raise IndexerResultParsingException("Error parsing XML", self)
         
         if tree.tag == "xml":
@@ -270,7 +270,7 @@ class OmgWtf(SearchModule):
                 if m:
                     entry.guid = m.group(1)
                 else:
-                    logger.warn("Unable to find GUID in " + guid)
+                    self.warn("Unable to find GUID in " + guid)
                     continue
                 entry.title = item.find("title").text
                 description = item.find("description").text
@@ -278,7 +278,7 @@ class OmgWtf(SearchModule):
                 if m:
                     entry.group = m.group(1)
                 else:
-                    logger.warn("Unable to find group in " + description)
+                    self.warn("Unable to find group in " + description)
                     continue
                 entry.size = long(item.find("enclosure").attrib["length"])
                 entry.pubDate = item.find("pubDate").text
@@ -296,7 +296,7 @@ class OmgWtf(SearchModule):
                 entries.append(entry)
             return IndexerProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False)
         else:
-            logger.warn("Unknown response type: %s" % xml_response[:100])
+            self.warn("Unknown response type: %s" % xml_response[:100])
             return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
         
 

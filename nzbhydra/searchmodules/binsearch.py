@@ -104,17 +104,17 @@ class Binsearch(SearchModule):
         return None
 
     def process_query_result(self, html, maxResults = None):
-        logger.debug("Binsearch started processing results")
+        self.debug("Started processing results")
         logger.info("Last results count %d" % self.last_results_count)
         entries = []
         soup = BeautifulSoup(html, searchingSettings.htmlParser.get())
-        logger.debug("Using HTML parser %s" % searchingSettings.htmlParser.get())
+        self.debug("Using HTML parser %s" % searchingSettings.htmlParser.get())
 
         main_table = soup.find('table', attrs={'id': 'r2'})
 
         if not main_table:
-            logger.warn("Unable to find main table in binsearch page. This just sometimes happens...")
-            logger.debug(html)
+            self.warn("Unable to find main table in binsearch page. This just sometimes happens...")
+            self.debug(html[:500])
             raise IndexerResultParsingException("Unable to find main table in binsearch page. This happens sometimes... :-)", self)
 
         items = main_table.find_all('tr')
@@ -128,7 +128,7 @@ class Binsearch(SearchModule):
             title = row.find('span', attrs={'class': 's'})
 
             if title is None:
-                logger.debug("Ignored entry because it has no title")
+                self.debug("Ignored entry because it has no title")
                 continue
             title = title.text
 
@@ -142,7 +142,7 @@ class Binsearch(SearchModule):
             entry.link = "https://www.binsearch.info/fcgi/nzb.fcgi?q=%s" % entry.guid
             info = row.find("span", attrs={"class": "d"})
             if info is None:
-                logger.debug("Ignored entry because it has no info")
+                self.debug("Ignored entry because it has no info")
                 continue
 
             collection_link = info.find("a")["href"]  # '/?b=MARVELS.AVENGERS.AGE.OF.ULTRON.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250'
@@ -159,7 +159,7 @@ class Binsearch(SearchModule):
             # Size
             m = size_pattern.search(info.text)
             if not m:
-                logger.debug("Unable to find size information in %s" % info.text)
+                self.debug("Unable to find size information in %s" % info.text)
             else:
                 size = float(m.group("size"))
                 unit = m.group("unit")
@@ -194,11 +194,11 @@ class Binsearch(SearchModule):
             except Exception as e:
                 entry.epoch = 0
 
-                logger.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
+                self.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
 
             entries.append(entry)
             
-        logger.debug("Binsearch finished processing %d results" % len(entries))
+        self.debug("Finished processing %d results" % len(entries))
         
         page_links = soup.find_all('table', attrs={'class': 'xMenuT'})[1].find_all("a")
         has_more = len(page_links) > 0 and page_links[-1].text == ">"

@@ -75,13 +75,13 @@ class NzbClub(SearchModule):
         return f.url
 
     def process_query_result(self, xml, maxResults=None):
-        logger.debug("%s started processing results" % self.name)
+        self.debug("Started processing results")
         entries = []
         try:
             tree = ET.fromstring(xml)
         except Exception:
-            logger.exception("Error parsing XML: %s..." % xml[:500])
-            logger.debug(xml)
+            self.exception("Error parsing XML: %s..." % xml[:500])
+            self.debug(xml[:500])
             raise IndexerResultParsingException("Error while parsing XML from NZBClub", self)
         
         group_pattern = re.compile(r"Newsgroup: ?([\w@\. \(\)]+) <br />")
@@ -130,7 +130,7 @@ class NzbClub(SearchModule):
 
             entries.append(entry)
             
-        logger.debug("%s finished processing results" % self.name)
+        self.debug("Finished processing results")
         return IndexerProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False) #No paging with RSS. Might need/want to change to HTML and BS
     
     def get_nfo(self, guid):
@@ -148,7 +148,7 @@ class NzbClub(SearchModule):
         f = furl(self.settings.host.get())
         f.path.add("nzb_get")
         f.path.add(guid)
-        f.path.add("title" + ".nzb")
+        f.path.add(title + ".nzb")
         return f.tostr()
         
 

@@ -40,13 +40,13 @@ class Womble(SearchModule):
         return url
 
     def get_search_urls(self, search_request):
-        logger.error("This indexer does not support queries")
+        self.error("This indexer does not support queries")
         return []
 
     def get_showsearch_urls(self, search_request):
         urls = []
         if search_request.query or search_request.identifier_key or search_request.identifier_value or search_request.season or search_request.episode:
-            logger.error("This indexer does not support specific searches")
+            self.error("This indexer does not support specific searches")
             return []
         if search_request.category is not None:
             if search_request.category in("TV SD", "TV") or "5030" in search_request.category or "5000" in search_request.category:
@@ -60,11 +60,11 @@ class Womble(SearchModule):
         return urls
 
     def get_moviesearch_urls(self, search_request):
-        logger.error("This indexer does not support movie search")
+        self.error("This indexer does not support movie search")
         return []
     
     def get_details_link(self, guid):
-        logger.info("Womble does not provide details on releases")
+        self.info("This indexer does not provide details on releases")
         return None
 
     def process_query_result(self, xml, maxResults=None):
@@ -72,7 +72,7 @@ class Womble(SearchModule):
         try:
             tree = ET.fromstring(xml)
         except Exception:
-            logger.exception("Error parsing XML: %s..." % xml[:500])
+            self.exception("Error parsing XML: %s..." % xml[:500])
             logger.debug(xml)
             raise IndexerResultParsingException("Error parsing XML", self)
         for elem in tree.iter('item'):
