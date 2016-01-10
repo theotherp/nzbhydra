@@ -7,9 +7,11 @@ import json
 import logging
 import os
 import urlparse
+
 import rison
 
 from nzbhydra.searchmodules import omgwtf
+from nzbhydra.update import SourceUpdateManager
 
 sslImported = True
 try:
@@ -29,7 +31,7 @@ from pprint import pprint
 from time import sleep
 from arrow import Arrow
 from flask import Flask, render_template, request, jsonify, Response
-from flask import send_file, redirect, make_response
+from flask import redirect, make_response
 from flask_cache import Cache
 from flask.json import JSONEncoder
 from webargs import fields
@@ -40,7 +42,7 @@ from flask_session import Session
 from nzbhydra import config, search, infos, database
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid
 from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
-from nzbhydra.database import IndexerStatus, Indexer, IndexerNzbDownload
+from nzbhydra.database import IndexerStatus, Indexer
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
 from nzbhydra.search import SearchRequest
@@ -83,6 +85,10 @@ Session(app)
 search_cache = Cache()
 internal_cache = Cache(app, config={'CACHE_TYPE': "simple",  # Cache for internal data like settings, form, schema, etc. which will be invalidated on request
                                     "CACHE_DEFAULT_TIMEOUT": 60 * 30})
+
+
+def make_request_cache_key(*args, **kwargs):
+    return str(hash(frozenset(request.args.items())))
 
 
 class CustomJSONEncoder(JSONEncoder):
@@ -344,6 +350,8 @@ def api_search(args):
     response.headers["Content-Type"] = "application/xml"
     return content
 
+api_search.make_cache_key = make_request_cache_key
+
 
 @app.route("/details/<path:guid>")
 @requires_auth
@@ -364,6 +372,14 @@ def process_and_jsonify_for_internalapi(results):
         return "No results", 500
 
 
+@search_cache.memoize(unless=not config.mainSettings.cache_enabled.get())
+def cached_search(search_request):
+    results = search.search(True, search_request)
+    return process_and_jsonify_for_internalapi(results)
+
+
+cached_search.make_cache_key = make_request_cache_key
+
 internalapi_search_args = {
     "query": fields.String(missing=None),
     "category": fields.String(missing=None),
@@ -379,7 +395,6 @@ internalapi_search_args = {
 
 @app.route('/internalapi/search')
 @requires_auth
-@search_cache.memoize(unless=not config.mainSettings.cache_enabled.get())
 @use_args(internalapi_search_args, locations=['querystring'])
 def internalapi_search(args):
     logger.debug("Search request with args %s" % args)
@@ -390,8 +405,7 @@ def internalapi_search(args):
     if args["indexers"] is not None:
         args["indexers"] = urllib.unquote(args["indexers"])
     search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=args["indexers"])
-    results = search.search(True, search_request)
-    return process_and_jsonify_for_internalapi(results)
+    return cached_search(search_request)
 
 
 internalapi_moviesearch_args = {
@@ -428,8 +442,7 @@ def internalapi_moviesearch(args):
         search_request.identifier_key = "imdbid"
         search_request.identifier_value = imdbid
 
-    results = search.search(True, search_request)
-    return process_and_jsonify_for_internalapi(results)
+    return cached_search(search_request)
 
 
 internalapi_tvsearch_args = {
@@ -465,11 +478,10 @@ def internalapi_tvsearch(args):
     elif args["rid"]:
         search_request.identifier_key = "rid"
         search_request.identifier_value = args["rid"]
-    results = search.search(True, search_request)
-    return process_and_jsonify_for_internalapi(results)
+    return cached_search(search_request)
 
 
-internalapi__autocomplete_args = {
+internalapi_autocomplete_args = {
     "input": fields.String(missing=None),
     "type": fields.String(missing=None),
 }
@@ -477,7 +489,7 @@ internalapi__autocomplete_args = {
 
 @app.route('/internalapi/autocomplete')
 @requires_auth
-@use_args(internalapi__autocomplete_args, locations=['querystring'])
+@use_args(internalapi_autocomplete_args, locations=['querystring'])
 @search_cache.memoize()
 def internalapi_autocomplete(args):
     logger.debug("Autocomplete request with args %s" % args)
@@ -489,7 +501,7 @@ def internalapi_autocomplete(args):
         return jsonify({"results": results})
     else:
         return "No results", 500
-
+internalapi_autocomplete.make_cache_key = make_request_cache_key
 
 internalapi__getnfo_args = {
     "guid": fields.String(missing=None),
@@ -506,6 +518,7 @@ def internalapi_getnfo(args):
     nfo = get_nfo(args["indexer"], args["guid"])
     return jsonify(nfo)
 
+internalapi_getnfo.make_cache_key = make_request_cache_key
 
 internalapi__getnzb_args = {
     "input": fields.String(missing=None),
@@ -805,15 +818,13 @@ def internalapi_getcategories():
         return jsonify({"success": False, "message": e.message})
 
 
-    
 def restart():
     sleep(1)
     os._exit(3)
-    
 
 
 @app.route("/internalapi/restart")
-@requires_auth
+@requires_admin_auth
 def internalapi_restart():
     logger.info("Restarting due to external request...")
     thread = threading.Thread(target=restart)
@@ -829,19 +840,13 @@ def shutdown():
 
 
 @app.route("/internalapi/shutdown")
-@requires_auth
+@requires_admin_auth
 def internalapi_shutdown():
     logger.info("Shutting down due to external request")
     thread = threading.Thread(target=shutdown)
     thread.daemon = True
     thread.start()
     return "Shutting down..."
-
-
-# Allows us to easily load a static class with results without having to load them
-@app.route("/development/staticindex.html")
-def development_staticindex():
-    return send_file("static/index.html")
 
 
 def run(host, port, basepath):
