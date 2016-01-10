@@ -270,6 +270,7 @@ class GitUpdateManager(UpdateManager):
 
 
     def update(self):
+        logger.debug("Calling %s %s" % (self._git_path, 'pull origin ' + self.branch))
         output, err, exit_status = self._run_git(self._git_path, 'pull origin ' + self.branch)  
         
         if exit_status == 0:
