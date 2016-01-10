@@ -10,7 +10,7 @@ from distutils.version import StrictVersion
 from nzbhydra import config
 import requests
 
-version_txt_url = "https://raw.githubusercontent.com/theotherp/nzbhydra/" + config.mainSettings.branch.get() + "/version.txt"
+ 
 repository_url = "https://github.com/theotherp/nzbhydra"
 
 logger = logging.getLogger('root')
@@ -24,11 +24,12 @@ def check_for_new_version():
 
 def get_rep_version():
     try:
-        r = requests.get(version_txt_url, verify=False)
+        url = "https://raw.githubusercontent.com/theotherp/nzbhydra/" + config.mainSettings.branch.get() + "/version.txt"
+        r = requests.get(url, verify=False)
         r.raise_for_status()
         return StrictVersion(r.text)
     except requests.RequestException as e:
-        logger.error("Error downloading version.txt from %s to check new updates: %s" % (version_txt_url, e))
+        logger.error("Error downloading version.txt from %s to check new updates: %s" % (url, e))
         return None
 
 

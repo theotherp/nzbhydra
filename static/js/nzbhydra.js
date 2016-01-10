@@ -2361,6 +2361,15 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                             type: 'switch',
                             label: 'Open browser on startup'
                         }
+                    },
+                    {
+                        key: 'branch',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Repository branch',
+                            help: 'Stay with master...'
+                        }
                     }
                 ]
             }
