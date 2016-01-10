@@ -7,10 +7,10 @@ from __future__ import unicode_literals
 from builtins import *
 import logging
 from distutils.version import StrictVersion
-
+from nzbhydra import config
 import requests
 
-version_txt_url = "https://raw.githubusercontent.com/theotherp/nzbhydra/master/version.txt"
+version_txt_url = "https://raw.githubusercontent.com/theotherp/nzbhydra/" + config.mainSettings.branch.get() + "/version.txt"
 repository_url = "https://github.com/theotherp/nzbhydra"
 
 logger = logging.getLogger('root')
