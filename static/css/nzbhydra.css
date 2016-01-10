@@ -7308,7 +7308,7 @@ a.disabled:hover {
   border: 1px solid #058120;
 }
 .indexer-checkbox {
-  margin-left: 10px;
+  margin-left: 10px !important;
 }
 
 /*# sourceMappingURL=nzbhydra.css.map */
