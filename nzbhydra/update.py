@@ -179,9 +179,7 @@ class GitUpdateManager(UpdateManager):
         self.github_repo_user = self.get_github_repo_user()
         self.github_repo = self.get_github_repo()
         self.branch = config.mainSettings.branch.get()
-        self._git_path = self._find_working_git()
-        
-        
+        self._git_path = self._find_working_git()   
 
     def _find_working_git(self):
         test_cmd = 'version'
