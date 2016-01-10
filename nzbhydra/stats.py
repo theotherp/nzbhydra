@@ -7,7 +7,7 @@ from future import standard_library
 
 #standard_library.install_aliases()
 from builtins import *
-from peewee import fn
+from peewee import fn, JOIN
 from nzbhydra import database
 from nzbhydra.database import Indexer, IndexerApiAccess, IndexerNzbDownload, IndexerSearch, Search, IndexerStatus
 
@@ -83,16 +83,20 @@ def get_avg_indexer_access_success():
 
 
 def get_nzb_downloads(page=0, limit=100, type=None):
-    where = (IndexerNzbDownload.indexer == Indexer.id) & (Search.id == IndexerSearch.search) & (IndexerApiAccess.indexer_search == IndexerSearch.id)
+    query = IndexerNzbDownload()\
+        .select(Indexer.name, IndexerNzbDownload.title, IndexerNzbDownload.time, IndexerNzbDownload.guid, Search.internal, IndexerApiAccess.response_successful)\
+        .join(IndexerSearch, JOIN.LEFT_OUTER)\
+        .join(Search, JOIN.LEFT_OUTER)\
+        .switch(IndexerNzbDownload)\
+        .join(IndexerApiAccess, JOIN.LEFT_OUTER)\
+        .join(Indexer, JOIN.LEFT_OUTER)
     if type == "Internal":
-        where = where & Search.internal
+        query = query.where(Search.internal)
     elif type == "API":
-        where = where & (~Search.internal)
-    query = IndexerNzbDownload().select(Indexer.name, IndexerNzbDownload.title, IndexerNzbDownload.time, IndexerNzbDownload.guid, Search.internal, IndexerApiAccess.response_successful).join(IndexerApiAccess).join(Indexer).join(IndexerSearch).join(Search).where(where)
-
+        query = query.where(~Search.internal)
+    
     total_downloads = query.count()
-    nzb_downloads = list(query.order_by(IndexerNzbDownload.time.desc()).group_by(
-        IndexerNzbDownload.id).paginate(page, limit).dicts())
+    nzb_downloads = list(query.order_by(IndexerNzbDownload.time.desc()).paginate(page, limit).dicts())
     downloads = {"totalDownloads": total_downloads, "nzbDownloads": nzb_downloads}
     return downloads
 
