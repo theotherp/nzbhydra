@@ -2038,6 +2038,19 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
     function getNewznabFieldset(index) {
         return {
             wrapper: 'fieldset',
+            hideExpression: function ($viewValue, $modelValue, scope) {
+                if (index > 1 && index <= 40) {
+                    var allBeforeNamed = true;
+                    for (var i=1; i < index; i++) {
+                        if (!scope.model["newznab"+ i].name) {
+                            allBeforeNamed = false;
+                            break;
+                        }
+                    } 
+                    return !allBeforeNamed;
+                }
+                return false;
+            },
             key: 'newznab' + index,
             templateOptions: {label: 'Newznab ' + index},
             fieldGroup: getBasicIndexerFieldset(true, true, true, false, true, true, 'newznab', true, true)
@@ -2937,6 +2950,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "womble", false)
             },
 
+            
             getNewznabFieldset(1),
             getNewznabFieldset(2),
             getNewznabFieldset(3),
@@ -2956,7 +2970,27 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             getNewznabFieldset(17),
             getNewznabFieldset(18),
             getNewznabFieldset(19),
-            getNewznabFieldset(20)
+            getNewznabFieldset(20),
+            getNewznabFieldset(21),
+            getNewznabFieldset(22),
+            getNewznabFieldset(23),
+            getNewznabFieldset(24),
+            getNewznabFieldset(25),
+            getNewznabFieldset(26),
+            getNewznabFieldset(27),
+            getNewznabFieldset(28),
+            getNewznabFieldset(29),
+            getNewznabFieldset(30),
+            getNewznabFieldset(31),
+            getNewznabFieldset(32),
+            getNewznabFieldset(33),
+            getNewznabFieldset(34),
+            getNewznabFieldset(35),
+            getNewznabFieldset(36),
+            getNewznabFieldset(37),
+            getNewznabFieldset(38),
+            getNewznabFieldset(39),
+            getNewznabFieldset(40)
 
 
         ],
