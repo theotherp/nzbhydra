@@ -4,7 +4,7 @@ language: python
 python:
     - "2.7"
 before_install:
-    - pip install pytest pytest-travis-fold responses future six freezegun
+    - pip install pytest pytest-travis-fold responses freezegun
     
 #install: pip install -r requirements.txt
 before_script: cd ./nzbhydra/tests

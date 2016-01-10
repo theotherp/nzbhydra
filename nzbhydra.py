@@ -3,9 +3,9 @@ from os.path import dirname, abspath
 import os
 import sys
 import argparse
-import requests
+
 import webbrowser
-import nzbhydra.config as config
+
 
 def getBasePath():
     try:
@@ -15,9 +15,9 @@ def getBasePath():
         basepath = dirname(abspath(sys.argv[0]))
     if "library.zip" in basepath:
         basepath = basepath[:basepath.find("library.zip")]
-        config.addLogMessage(20, "Running in exe. Setting base path to %s" % basepath)
+        print("Running in exe. Setting base path to %s" % basepath)
     else:
-        config.addLogMessage(20, "Setting base path to %s" % basepath)
+        print("Setting base path to %s" % basepath)
     return basepath
 
 
@@ -31,9 +31,10 @@ from nzbhydra import log
 from nzbhydra import indexers
 from nzbhydra import database
 from nzbhydra import web
+import nzbhydra.config as config
 from nzbhydra.versioning import check_for_new_version
 
-
+import requests
 requests.packages.urllib3.disable_warnings()
 logger = None
 
