@@ -697,7 +697,7 @@ def get_newznab_setting_by_id(id):
         "37": indexerSettings.newznab37,
         "38": indexerSettings.newznab38,
         "39": indexerSettings.newznab39,
-        "40": indexerSettings.newznab39,
+        "40": indexerSettings.newznab40,
 
     }[id]
 
