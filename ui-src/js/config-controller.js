@@ -767,6 +767,16 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         }
                     },
                     {
+                        key: 'enableCacheForApi',
+                        hideExpression: '!model.enableCache',
+                        type: 'horizontalSwitch',
+                        templateOptions: {
+                            type: 'switch',
+                            label: 'Cache API search results',
+                            help: 'Enable to reduce load on indexers, disable for always newest results'
+                        }
+                    },
+                    {
                         key: 'cacheType',
                         hideExpression: '!model.enableCache',
                         type: 'horizontalSelect',
@@ -788,7 +798,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                             label: 'Cache timeout',
                             help: 'Time after which cache entries will be discarded',
                             addonRight: {
-                                text: 'seconds'
+                                text: 'minutes'
                             }
                         }
                     },

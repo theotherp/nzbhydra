@@ -38,9 +38,9 @@ from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
 from flask_session import Session
 from nzbhydra import config, search, infos, database
-from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid
+from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid
 from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
-from nzbhydra.database import IndexerStatus, Indexer
+from nzbhydra.database import IndexerStatus, Indexer, IndexerNzbDownload
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
 from nzbhydra.search import SearchRequest
@@ -276,7 +276,6 @@ externalapi_args = {
     "indexers": fields.String(missing=None),
     "indexer": fields.String(missing=None),
     "offsets": fields.String(missing=None),
-
 }
 
 
@@ -305,30 +304,7 @@ def api(args):
         logger.error("Tried API access with invalid or missing API key")
         raise Unauthorized("API key not provided or invalid")
     elif args["t"] in ("search", "tvsearch", "movie"):
-        search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], query=args["q"])
-        if args["t"] == "search":
-            search_request.type = "general"
-            logger.info("")
-        elif args["t"] == "tvsearch":
-            search_request.type = "tv"
-            identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
-            if identifier_key is not None:
-                identifier_value = args[identifier_key]
-                search_request.identifier_key = identifier_key
-                search_request.identifier_value = identifier_value
-            search_request.season = int(args["season"]) if args["season"] else None
-            search_request.episode = int(args["episode"]) if args["episode"] else None
-        elif args["t"] == "movie":
-            search_request.type = "movie"
-            search_request.identifier_key = "imdbid" if args["imdbid"] is not None else None
-            search_request.identifier_value = args["imdbid"] if args["imdbid"] is not None else None
-        logger.info("API search request: %s" % search_request)
-        result = search.search(False, search_request)
-        results = process_for_external_api(result)
-        content = render_search_results_for_api(results, result["total"], result["offset"])
-        response = make_response(content)
-        response.headers["Content-Type"] = "application/xml"
-        return content
+        return api_search(args)
     elif args["t"] == "get":
         args = rison.loads(args["id"])
         logger.info("API request to download %s from %s" % (args["title"], args["indexer"]))
@@ -339,6 +315,34 @@ def api(args):
     else:
         pprint(request)
         return "Unknown API request. Supported functions: search, tvsearch, movie, get, caps", 500
+
+
+@search_cache.memoize(unless=not config.mainSettings.cache_enabled_for_api.get())
+def api_search(args):
+    search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], query=args["q"])
+    if args["t"] == "search":
+        search_request.type = "general"
+        logger.info("")
+    elif args["t"] == "tvsearch":
+        search_request.type = "tv"
+        identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
+        if identifier_key is not None:
+            identifier_value = args[identifier_key]
+            search_request.identifier_key = identifier_key
+            search_request.identifier_value = identifier_value
+        search_request.season = int(args["season"]) if args["season"] else None
+        search_request.episode = int(args["episode"]) if args["episode"] else None
+    elif args["t"] == "movie":
+        search_request.type = "movie"
+        search_request.identifier_key = "imdbid" if args["imdbid"] is not None else None
+        search_request.identifier_value = args["imdbid"] if args["imdbid"] is not None else None
+    logger.info("API search request: %s" % search_request)
+    result = search.search(False, search_request)
+    results = process_for_external_api(result)
+    content = render_search_results_for_api(results, result["total"], result["offset"])
+    response = make_response(content)
+    response.headers["Content-Type"] = "application/xml"
+    return content
 
 
 @app.route("/details/<path:guid>")
@@ -375,6 +379,7 @@ internalapi_search_args = {
 
 @app.route('/internalapi/search')
 @requires_auth
+@search_cache.memoize(unless=not config.mainSettings.cache_enabled.get())
 @use_args(internalapi_search_args, locations=['querystring'])
 def internalapi_search(args):
     logger.debug("Search request with args %s" % args)
@@ -407,6 +412,7 @@ internalapi_moviesearch_args = {
 
 @app.route('/internalapi/moviesearch')
 @requires_auth
+@search_cache.memoize()
 @use_args(internalapi_moviesearch_args, locations=['querystring'])
 def internalapi_moviesearch(args):
     logger.debug("Movie search request with args %s" % args)
@@ -445,6 +451,7 @@ internalapi_tvsearch_args = {
 
 
 @app.route('/internalapi/tvsearch')
+@search_cache.memoize()
 @requires_auth
 @use_args(internalapi_tvsearch_args, locations=['querystring'])
 def internalapi_tvsearch(args):
@@ -518,8 +525,8 @@ def internalapi_getnzb(args):
 
 
 def extract_nzb_infos_and_return_response(indexer, guid, title, searchid):
-    if downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.redirect.name:  # I'd like to have this in api but don't want to have to use redirect() there...
-        link = get_nzb_link(indexer, guid, title, searchid)
+    if downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.redirect.name:
+        link, _, _ = get_indexer_nzb_link(indexer, guid, title, searchid, "redirect", True)
         if link is not None:
             logger.info("Redirecting to %s" % link)
             return redirect(link)
@@ -533,7 +540,7 @@ def extract_nzb_infos_and_return_response(indexer, guid, title, searchid):
 
 
 internalapi__addnzb_args = {
-    "guids": fields.String(missing=[]),
+    "items": fields.String(missing=[]),
     "category": fields.String(missing=None)
 }
 
@@ -543,7 +550,7 @@ internalapi__addnzb_args = {
 @use_args(internalapi__addnzb_args)
 def internalapi_addnzb(args):
     logger.debug("Add NZB request with args %s" % args)
-    guids = json.loads(args["guids"])
+    items = json.loads(args["items"])
     if downloaderSettings.downloader.isSetting(config.DownloaderSelection.nzbget):
         downloader = Nzbget()
     elif downloaderSettings.downloader.isSetting(config.DownloaderSelection.sabnzbd):
@@ -552,24 +559,30 @@ def internalapi_addnzb(args):
         logger.error("Adding an NZB without set downloader should not be possible")
         return jsonify({"success": False})
     added = 0
-    for guid in guids:
-        guid = dict(urlparse.parse_qsl(urlparse.urlparse(guid).query))["id"]
-        guid = rison.loads(guid)
-        if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
-            link = get_nzb_link_and_guid(guid["indexer"], guid["guid"], guid["searchid"], guid["title"])[0]
-            add_success = downloader.add_link(link, guid["title"], args["category"])
+    for item in items:
+        title = item["title"]
+        indexerguid = item["indexerguid"]
+        indexer = item["indexer"]
+        category = args["category"]
+        dbsearchid = item["dbsearchid"]
+        if config.downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.direct.name:
+            link, _, _ = get_indexer_nzb_link(item["indexer"], indexerguid, title, dbsearchid, "direct", True)
+        else:
+            link, _ = get_nzb_link_and_guid(indexer, indexerguid, dbsearchid, title)
 
+        if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
+            add_success = downloader.add_link(link, title, category)
         else:  # We download an NZB send it to the downloader
-            nzbdownloadresult = download_nzb_and_log(guid["indexer"], guid["guid"], guid["title"], guid["searchid"])
+            nzbdownloadresult = download_nzb_and_log(indexer, indexerguid, title, dbsearchid)
             if nzbdownloadresult is not None:
-                add_success = downloader.add_nzb(nzbdownloadresult.content, guid["title"], args["category"])
+                add_success = downloader.add_nzb(nzbdownloadresult.content, title, category)
             else:
                 add_success = False
         if add_success:
             added += 1
 
     if added:
-        return jsonify({"success": True, "added": added, "of": len(guids)})
+        return jsonify({"success": True, "added": added, "of": len(items)})
     else:
         return jsonify({"success": False})
 
@@ -730,6 +743,7 @@ def internalapi_setsettings():
         internal_cache.delete_memoized(internalapi_getsafeconfig)
         read_indexers_from_config()
         clean_up_database()
+        configure_cache()
         return "OK"
     except Exception as e:
         logger.exception("Error saving settings")

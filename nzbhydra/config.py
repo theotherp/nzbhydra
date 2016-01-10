@@ -371,13 +371,12 @@ class MainSettings(Category):
         self.sslkey = Setting(self, name="sslkey", default="nzbhydra.key", valuetype=str)
 
         self.debug = Setting(self, name="debug", default=False, valuetype=bool)
-        self.cache_enabled = Setting(self, name="enableCache", default=True, valuetype=bool)
+        self.cache_enabled = Setting(self, name="enableCache", default=False, valuetype=bool)
+        self.cache_enabled_for_api = Setting(self, name="enableCacheForApi", default=False, valuetype=bool)
         self.cache_type = SelectionSetting(self, name="cacheType", default=CacheTypeSelection.memory, valuetype=str, options=[CacheTypeSelection.memory, CacheTypeSelection.file])
-        self.cache_timeout = Setting(self, name="cacheTimeout", default=30, valuetype=int)
+        self.cache_timeout = Setting(self, name="cacheTimeout", default=60, valuetype=int)
         self.cache_threshold = Setting(self, name="cachethreshold", default=25, valuetype=int)
         self.cache_folder = Setting(self, name="cacheFolder", default="cache", valuetype=str)
-
-        self.database_driver = SelectionSetting(self, name="databaseDriver", default=DatabaseDriverSelection.sqlite, valuetype=str, options=[DatabaseDriverSelection.sqlite, DatabaseDriverSelection.apsw])
 
         self.logging = LoggingSettings(self)
 

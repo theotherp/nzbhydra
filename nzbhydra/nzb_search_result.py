@@ -14,7 +14,7 @@ class NzbSearchResult(object):
     HAS_NFO_MAYBE = 2
 
 
-    def __init__(self, title=None, link=None, indexer=None, guid=None, size=None, category="N/A", attributes=None, epoch=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=HAS_NFO_YES, indexerguid=None, details_link=None, group=None, indexerscore=0):
+    def __init__(self, title=None, link=None, indexer=None, guid=None, size=None, category="N/A", attributes=None, epoch=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=HAS_NFO_YES, indexerguid=None, details_link=None, group=None, indexerscore=0, dbsearchid=None):
     
         self.title = title
         self.link = link
@@ -38,6 +38,7 @@ class NzbSearchResult(object):
         self.details_link = details_link
         self.group = group
         self.indexerscore = indexerscore
+        self.dbsearchid = dbsearchid
         
         
         

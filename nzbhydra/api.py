@@ -68,6 +68,7 @@ class NzbSearchResultSchema(Schema):
     has_nfo = fields.Integer()
     details_link = fields.String()
     hash = fields.Integer()
+    dbsearchid = fields.Integer()
 
 
 class IndexerApiAccessSchema(Schema):
@@ -112,11 +113,9 @@ def get_nzb_link_and_guid(indexer, guid, searchid, title):
 
 
 def transform_results(results, dbsearch):
-    if downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.direct.name:  # We don't change the link, the results lead directly to the NZB
-        logger.debug("Direct NZB access chosen. Not transforming the results from the indexers")
-        return results
     transformed = []
     for i in results:
+        i.dbsearchid = dbsearch
         nzb_link, guid_json = get_nzb_link_and_guid(i.indexer, i.guid, dbsearch, i.title)
         i.link = nzb_link
         i.indexerguid = i.guid  # Save the indexer's original GUID so that we can send it later from the GUI to identify the result
@@ -197,7 +196,7 @@ def get_details_link(indexer_name, guid):
         return None
     
 
-def get_nzb_link(indexer_name, guid, title, searchid):
+def get_indexer_nzb_link(indexer_name, guid, title, searchid, mode, log_api_access):
     """
     Build a link that leads to the actual NZB of the indexer using the given informations. We log this as indexer API access and NZB download because this is only called
     when the NZB will be actually downloaded later (by us or a downloader) 
@@ -209,43 +208,25 @@ def get_nzb_link(indexer_name, guid, title, searchid):
 
             # Log to database
             indexer = Indexer.get(fn.lower(Indexer.name) == indexer_name.lower())
-            papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, response_successful=None, indexer_search=searchid)
+            papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, response_successful=None, indexer_search=searchid) if log_api_access else None
             papiaccess.save()
-            pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode="redirect", title=title, guid=guid)
+            pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode=mode, title=title, guid=guid)
             pnzbdl.save()
 
-            return link
+            return link, papiaccess, pnzbdl
 
     else:
         logger.error("Did not find indexer with name %s" % indexer_name)
-        return None
+        return None, None, None
 
 
 IndexerNzbDownloadResult = namedtuple("IndexerNzbDownload", "content headers")
 
 
 def download_nzb_and_log(indexer_name, provider_guid, title, searchid):
-    """
-    Gets the NZB link from the indexer using the guid, downloads it and logs the download
-
-    :param indexer_name: name of the indexer
-    :param provider_guid: guid to build link
-    :param title: the title to build the link
-    :param searchid: the id of the IndexerSearch entry so we can link the download to a search
-    :return: IndexerNzbDownloadResult
-    """
+    link, papiaccess, _ = get_indexer_nzb_link(indexer_name, provider_guid, title, searchid, "serve", True)
     for p in indexers.enabled_indexers:
         if p.name == indexer_name:
-
-            link = p.get_nzb_link(provider_guid, title)
-            indexer = Indexer.get(fn.lower(Indexer.name) == indexer_name.lower())
-            psearch = IndexerSearch.get((IndexerSearch.indexer == indexer) & (IndexerSearch.search == searchid))
-            papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, indexer_search=psearch)
-            papiaccess.save()
-
-            internallink, guid = get_nzb_link_and_guid(indexer_name, provider_guid, searchid, title)
-            pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode="serve", title=title, guid=internallink)
-            pnzbdl.save()
             try:
                 r = p.get(link, timeout=10)
                 r.raise_for_status()
