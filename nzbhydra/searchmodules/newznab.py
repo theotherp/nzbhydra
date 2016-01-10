@@ -106,7 +106,7 @@ def test_connection(host, apikey):
         }
         r = requests.get(f.url, verify=False, headers=headers, timeout=config.searchingSettings.timeout.get())
         r.raise_for_status()
-        check_auth(r.text)
+        check_auth(r.text, None)
     except RequestException as e:
         logger.info("Unable to connect to indexer using URL %s: %s" % (f.url, str(e)))
         return False, "Unable to connect to host"
