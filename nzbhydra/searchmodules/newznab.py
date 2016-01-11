@@ -134,8 +134,8 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult):
         r.raise_for_status()
         titles = []
         tree = ET.fromstring(r.content)
-    except Exception:
-        logger.exception("Error getting or parsing XML")
+    except Exception as e:
+        logger.error("Error getting or parsing XML: %s" % e)
         raise IndexerAccessException("Error getting or parsing XML", None)
     for item in tree.find("channel").findall("item"):
         titles.append(item.find("title").text)
@@ -194,6 +194,43 @@ def check_caps(host, apikey):
 
     ]
     result = []
+    #Try to find out from caps first
+    try:
+        url = _build_base_url(host, apikey, "caps", None)
+        headers = {
+            'User-Agent': config.searchingSettings.user_agent.get()
+        }
+        logger.debug("Requesting %s" % url)
+        r = requests.get(url, verify=False, timeout=config.searchingSettings.timeout.get(), headers=headers)
+        r.raise_for_status()
+        
+        tree = ET.fromstring(r.content)
+        searching = tree.find("searching")
+        
+        if searching is not None:
+            tvsearch = searching.find("tv-search")
+            if tvsearch is not None and tvsearch.attrib["available"] == "yes":
+                params = tvsearch.attrib["supportedParams"]
+                params = params.split(",")
+                for x in ["q", "season", "ep"]:
+                    if x in params:
+                        params.remove(x)
+                result.extend(params)
+                logger.debug("Found supported TV IDs: %s" % params)
+            movie_search = searching.find("movie-search")
+            if movie_search is not None and movie_search.attrib["available"] == "yes":
+                params = movie_search.attrib["supportedParams"]
+                params = params.split(",")
+                for x in ["q", "genre"]:
+                    if x in params:
+                        params.remove(x)         
+                result.extend(params)
+                logger.debug("Found supported movie IDs: %s" % params)
+            return result
+        
+    except Exception as e:
+        logger.error("Error getting or parsing caps XML. Will continue with brute force. Error message: %s" % e)
+    
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(toCheck)) as executor:
         futures_to_ids = {executor.submit(_testId, host, apikey, x["t"], x["id"], x["key"], x["expected"]): x["id"] for x in toCheck}
         for future in concurrent.futures.as_completed(futures_to_ids):
@@ -203,21 +240,23 @@ def check_caps(host, apikey):
                 if supported:
                     result.append(id)
             except Exception as e:
-                logger.error("An error occurred while trying to test the caps of host %s" % host)
+                logger.error("An error occurred while trying to test the caps of host %s: %s" % (host, e))
                 raise IndexerResultParsingException("Unable to check caps: %s" % str(e), None)
     return result
 
 
-def _build_base_url(host, apikey, action, category, limit, offset=0):
+def _build_base_url(host, apikey, action, category, limit=None, offset=0):
     f = furl(host)
     f.path.add("api")
-    url = f.add({"apikey": apikey, "extended": 1, "t": action, "limit": limit, "offset": offset})
-
+    f.query.add({"apikey": apikey, "extended": 1, "t": action, "offset": offset})
+    if limit is not None:
+        f.query.add({limit: limit})
+    
     if category is not None:
         categories = map_category(category)
         if len(categories) > 0:
-            url.add({"cat": ",".join(str(x) for x in categories)})
-    return url
+            f.query.add({"cat": ",".join(str(x) for x in categories)})
+    return f
 
 
 class NewzNab(SearchModule):

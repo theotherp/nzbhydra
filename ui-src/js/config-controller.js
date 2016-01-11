@@ -248,7 +248,7 @@ angular
                     {
                         name: "NZBs.org",
                         host: "https://nzbs.org",
-                        searchIds: ["tvdbid", "rid", "imdbid"]
+                        searchIds: ["tvdbid", "rid", "imdbid", "tvmazeid"]
                     },
                     {
                         name: "nzb.su",
