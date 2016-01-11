@@ -77,7 +77,7 @@ def read_indexers_from_config():
             init_indexer_table_entry(instance.name)
             configured_indexers.append(instance)
         else:
-            logger.debug("Skipping newznab indexer #%d because it has no name" % i)
+            logger.debug("Skipping newznab indexer # %d because it has no name" % i)
         
                   
     database.db.close()            
