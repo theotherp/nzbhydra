@@ -1,11 +1,9 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from builtins import super
-from future import standard_library
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
-#standard_library.install_aliases()
+# standard_library.install_aliases()
 from builtins import *
 from builtins import object
 import json
@@ -13,12 +11,13 @@ import datetime
 import logging
 import arrow
 from dateutil.tz import tzutc
-from peewee import *
 from playhouse.migrate import *
+from playhouse.sqlite_ext import SqliteExtDatabase
 
 logger = logging.getLogger('root')
 
-db = SqliteDatabase(None, threadlocals=True)
+db = SqliteExtDatabase(None, threadlocals=True, journal_mode="WAL")
+
 
 class JSONField(TextField):
     db_field = "text"
@@ -121,9 +120,6 @@ class IndexerNzbDownload(Model):
         super(IndexerNzbDownload, self).save(*args, **kwargs)
 
 
-
-
-
 class IndexerStatus(Model):
     indexer = ForeignKeyField(Indexer, related_name="status")
     first_failure = DateTimeUTCField(default=datetime.datetime.utcnow(), null=True)
@@ -138,13 +134,15 @@ class IndexerStatus(Model):
 
     class Meta(object):
         database = db
-        
+
+
 class VersionInfo(Model):
     version = IntegerField(default=1)
 
     class Meta(object):
         database = db
-        
+
+
 class TvIdCache(Model):
     tvdb = CharField(null=True)
     tvrage = CharField(null=True)
@@ -162,6 +160,7 @@ class MovieIdCache(Model):
     class Meta(object):
         database = db
 
+
 def init_db(dbfile):
     tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, VersionInfo, TvIdCache, MovieIdCache]
     db.init(dbfile)
@@ -173,18 +172,19 @@ def init_db(dbfile):
             db.create_table(t)
         except OperationalError:
             logger.exception("Error while creating table %s" % t)
-    
+
     logger.info("Created new version info entry with database version 1")
     VersionInfo(version=3).create()
-    
+
     db.close()
+
 
 def update_db(dbfile):
     # CAUTION: Don't forget to increase the default value for VersionInfo
     db.init(dbfile)
     db.connect()
-    
-    #Add version info if none exists
+
+    # Add version info if none exists
     try:
         db.create_table(VersionInfo)
         logger.info("Added new version info entry with database version 1 to existing database")
@@ -196,14 +196,14 @@ def update_db(dbfile):
     vi = VersionInfo().get()
     if vi.version == 1:
         logger.info("Upgrading database to version 2")
-        #Update from 1 to 2
+        # Update from 1 to 2
         # Add tv id cache info 
         try:
             logger.info("Adding new table TvIdCache to database")
             db.create_table(TvIdCache)
         except OperationalError:
             logger.error("Error adding table TvIdCache to database")
-            #TODO How should we handle this?
+            # TODO How should we handle this?
             pass
         vi.version = 2
         vi.save()
@@ -217,10 +217,10 @@ def update_db(dbfile):
             migrator = SqliteMigrator(db)
             logger.info("Adding new column tvmaze to table TvIdCache, setting nullable columns and adding index")
             migrate(
-                migrator.add_column("tvidcache", "tvmaze", TvIdCache.tvmaze), 
-                migrator.drop_not_null("tvidcache", "tvdb"), 
-                migrator.drop_not_null("tvidcache", "tvrage"), 
-                migrator.add_index("tvidcache", ("tvdb", "tvrage", "tvmaze"), True)
+                    migrator.add_column("tvidcache", "tvmaze", TvIdCache.tvmaze),
+                    migrator.drop_not_null("tvidcache", "tvdb"),
+                    migrator.drop_not_null("tvidcache", "tvrage"),
+                    migrator.add_index("tvidcache", ("tvdb", "tvrage", "tvmaze"), True)
             )
             logger.info("Adding new table MovieIdCache")
             db.create_table(MovieIdCache)
@@ -230,6 +230,5 @@ def update_db(dbfile):
             pass
         vi.version = 3
         vi.save()
-    
-    db.close()
 
+    db.close()

@@ -45,6 +45,9 @@ class _LookupNode(Node):
     def clone_base(self):
         return type(self)(self.node, list(self.parts))
 
+    def cast(self, as_type):
+        return Expression(Clause(self, parens=True), OP.CAST, SQL(as_type))
+
 class _JsonLookupBase(_LookupNode):
     def __init__(self, node, parts, as_json=False):
         super(_JsonLookupBase, self).__init__(node, parts)
@@ -212,6 +215,8 @@ class JSONField(Field):
         super(JSONField, self).__init__(*args, **kwargs)
 
     def db_value(self, value):
+        if value is None:
+            return value
         if not isinstance(value, Json):
             return Json(value, dumps=self.dumps)
         return value
@@ -364,11 +369,9 @@ class PostgresqlExtDatabase(PostgresqlDatabase):
             try:
                 cursor.execute(sql, params or ())
             except Exception as exc:
-                logger.exception('%s %s', sql, params)
                 if self.get_autocommit() and self.autorollback:
                     self.rollback()
-                if self.sql_error_handler(exc, sql, params, require_commit):
-                    raise
+                raise
             else:
                 if require_commit and self.get_autocommit():
                     self.commit()

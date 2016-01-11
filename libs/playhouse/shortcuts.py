@@ -99,7 +99,7 @@ def model_to_dict(model, recurse=True, backrefs=False, only=None,
     exclude |= seen
     model_class = type(model)
 
-    for field in model._meta.get_fields():
+    for field in model._meta.sorted_fields:
         if field in exclude or (only and (field not in only)):
             continue
 
@@ -194,3 +194,18 @@ def dict_to_model(model_class, data, ignore_unknown=False):
             setattr(instance, field.name, value)
 
     return instance
+
+
+class RetryOperationalError(object):
+    def execute_sql(self, sql, params=None, require_commit=True):
+        try:
+            cursor = super(RetryOperationalError, self).execute_sql(
+                sql, params, require_commit)
+        except OperationalError:
+            if not self.is_closed():
+                self.close()
+            cursor = self.get_cursor()
+            cursor.execute(sql, params or ())
+            if require_commit and self.get_autocommit():
+                self.commit()
+        return cursor

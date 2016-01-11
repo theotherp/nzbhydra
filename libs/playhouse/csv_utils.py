@@ -19,6 +19,10 @@ import datetime
 import os
 import re
 from contextlib import contextmanager
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from peewee import *
 from peewee import Database
@@ -34,14 +38,26 @@ else:
 class _CSVReader(object):
     @contextmanager
     def get_reader(self, file_or_name, **reader_kwargs):
+        is_file = False
         if isinstance(file_or_name, basestring):
             fh = open(file_or_name, 'r')
+        elif isinstance(file_or_name, StringIO):
+            fh = file_or_name
+            fh.seek(0)
         else:
             fh = file_or_name
             fh.seek(0)
+            is_file = True
         reader = csv.reader(fh, **reader_kwargs)
         yield reader
-        fh.close()
+        if is_file:
+            fh.close()
+
+def convert_field(field_class, **field_kwargs):
+    def decorator(fn):
+        fn.field = lambda: field_class(**field_kwargs)
+        return fn
+    return decorator
 
 class RowConverter(_CSVReader):
     """
@@ -74,17 +90,11 @@ class RowConverter(_CSVReader):
             else:
                 return True
 
-    def field(field_class, **field_kwargs):
-        def decorator(fn):
-            fn.field = lambda: field_class(**field_kwargs)
-            return fn
-        return decorator
-
-    @field(IntegerField, default=0)
+    @convert_field(IntegerField, default=0)
     def is_integer(self, value):
         return value.isdigit()
 
-    @field(FloatField, default=0)
+    @convert_field(FloatField, default=0)
     def is_float(self, value):
         try:
             float(value)
@@ -93,15 +103,15 @@ class RowConverter(_CSVReader):
         else:
             return True
 
-    @field(DateTimeField, null=True)
+    @convert_field(DateTimeField, null=True)
     def is_datetime(self, value):
         return self.matches_date(value, self.datetime_formats)
 
-    @field(DateField, null=True)
+    @convert_field(DateField, null=True)
     def is_date(self, value):
         return self.matches_date(value, self.date_formats)
 
-    @field(BareField, default='')
+    @convert_field(BareField, default='')
     def default(self, value):
         return True
 
@@ -194,6 +204,8 @@ class Loader(_CSVReader):
 
         if isinstance(file_or_name, basestring):
             self.filename = file_or_name
+        elif isinstance(file_or_name, StringIO):
+            self.filename = 'data.csv'
         else:
             self.filename = file_or_name.name
 
@@ -207,8 +219,8 @@ class Loader(_CSVReader):
             self.model = db_or_model
             self.database = self.model._meta.database
             self.db_table = self.model._meta.db_table
-            self.fields = self.model._meta.get_fields()
-            self.field_names = self.model._meta.get_field_names()
+            self.fields = self.model._meta.sorted_fields
+            self.field_names = self.model._meta.sorted_field_names
             # If using an auto-incrementing primary key, ignore it unless we
             # are told the primary key is included in the CSV.
             if self.model._meta.auto_increment and not pk_in_csv:
@@ -282,10 +294,20 @@ class Loader(_CSVReader):
 
 def load_csv(db_or_model, file_or_name, fields=None, field_names=None,
              has_header=True, sample_size=10, converter=None,
-             db_table=None, **reader_kwargs):
-    loader = Loader(db_or_model, file_or_name, fields, field_names, has_header,
-                    sample_size, converter, db_table, **reader_kwargs)
+             db_table=None, pk_in_csv=False, **reader_kwargs):
+    loader = Loader(
+        db_or_model=db_or_model,
+        file_or_name=file_or_name,
+        fields=fields,
+        field_names=field_names,
+        has_header=has_header,
+        sample_size=sample_size,
+        converter=converter,
+        db_table=db_table,
+        pk_in_csv=pk_in_csv,
+        **reader_kwargs)
     return loader.load()
+
 load_csv.__doc__ = Loader.__doc__
 
 def dump_csv(query, file_or_name, include_header=True, close_file=True,

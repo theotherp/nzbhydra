@@ -1,3 +1,7 @@
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 import re
 import sys
 
@@ -11,10 +15,12 @@ except ImportError:
         from StringIO import StringIO
     else:
         from io import StringIO
+
 try:
     import bz2
 except ImportError:
     bz2 = None
+
 try:
     import zlib
 except ImportError:
@@ -26,15 +32,65 @@ try:
 except ImportError:
     AES = Random = None
 
+try:
+    from bcrypt import hashpw, gensalt
+except ImportError:
+    hashpw = gensalt = None
+
 from peewee import *
 from peewee import binary_construct
 from peewee import Field
 from peewee import FieldDescriptor
 from peewee import SelectQuery
+from peewee import unicode_type
+
+if hashpw and gensalt:
+    class PasswordHash(bytes):
+        def check_password(self, password):
+            password = password.encode('utf-8')
+            return hashpw(password, self) == self
+
+
+    class PasswordField(BlobField):
+        def __init__(self, iterations=12, *args, **kwargs):
+            if None in (hashpw, gensalt):
+                raise ValueError('Missing library required for PasswordField: bcrypt')
+            self.bcrypt_iterations = iterations
+            self.raw_password = None
+            super(PasswordField, self).__init__(*args, **kwargs)
+
+        def db_value(self, value):
+            """Convert the python value for storage in the database."""
+            value = value.encode('utf-8')
+            salt = gensalt(self.bcrypt_iterations)
+            return value if value is None else hashpw(value, salt)
+
+        def python_value(self, value):
+            """Convert the database value to a pythonic value."""
+            # FixMe: how do i get this to run before saving to the DB?
+            if isinstance(value, unicode_type):
+                value = value.encode('utf-8')
+
+            return PasswordHash(value)
+
+class DeferredThroughModel(object):
+    def set_field(self, model_class, field, name):
+        self.model_class = model_class
+        self.field = field
+        self.name = name
+
+    def set_model(self, through_model):
+        self.field._through_model = through_model
+        self.field.add_to_class(self.model_class, self.name)
 
 class ManyToManyField(Field):
     def __init__(self, rel_model, related_name=None, through_model=None,
                  _is_backref=False):
+        if through_model is not None and not (
+                isinstance(through_model, (Proxy, DeferredThroughModel)) or
+                issubclass(through_model, Model)):
+            raise TypeError('Unexpected value for `through_model`.  Expected '
+                            '`Model`, `Proxy` or `DeferredThroughModel`.')
         self.rel_model = rel_model
         self._related_name = related_name
         self._through_model = through_model
@@ -48,6 +104,9 @@ class ManyToManyField(Field):
                 self._through_model = through_model
                 self.add_to_class(model_class, name)
             self._through_model.attach_callback(callback)
+            return
+        elif isinstance(self._through_model, DeferredThroughModel):
+            self._through_model.set_field(model_class, self, name)
             return
 
         self.name = name
@@ -132,6 +191,11 @@ class ManyToManyQuery(SelectQuery):
         query.database = self.database
         return self._clone_attributes(query)
 
+    def _id_list(self, model_or_id_list):
+        if isinstance(model_or_id_list[0], Model):
+            return [obj.get_id() for obj in model_or_id_list]
+        return model_or_id_list
+
     def add(self, value, clear_existing=False):
         if clear_existing:
             self.clear()
@@ -147,10 +211,12 @@ class ManyToManyQuery(SelectQuery):
         else:
             if not isinstance(value, (list, tuple)):
                 value = [value]
+            if not value:
+                return
             inserts = [{
                 fd.src_fk.name: self._instance.get_id(),
-                fd.dest_fk.name: rel_instance.get_id()}
-                for rel_instance in value]
+                fd.dest_fk.name: rel_id}
+                for rel_id in self._id_list(value)]
             fd.through_model.insert_many(inserts).execute()
 
     def remove(self, value):
@@ -166,11 +232,12 @@ class ManyToManyQuery(SelectQuery):
         else:
             if not isinstance(value, (list, tuple)):
                 value = [value]
-            primary_keys = [rel_instance.get_id() for rel_instance in value]
+            if not value:
+                return
             return (fd.through_model
                     .delete()
                     .where(
-                        (fd.dest_fk << primary_keys) &
+                        (fd.dest_fk << self._id_list(value)) &
                         (fd.src_fk == self._instance.get_id()))
                     .execute())
 
@@ -221,6 +288,18 @@ class CompressedField(BlobField):
         def python_value(self, value):
             if value is not None:
                 return self.decompress(value).decode('utf-8')
+
+
+class PickledField(BlobField):
+    def db_value(self, value):
+        if value is not None:
+            return pickle.dumps(value)
+
+    def python_value(self, value):
+        if value is not None:
+            if isinstance(value, unicode_type):
+                value = value.encode('raw_unicode_escape')
+            return pickle.loads(value)
 
 
 if AES and Random:

@@ -15,6 +15,7 @@ import logging
 import collections
 import arrow
 import requests
+from nzbhydra import database
 from peewee import fn
 from requests import RequestException
 from nzbhydra import config
@@ -170,6 +171,7 @@ class SearchModule(object):
             indexer_status.save()
         return indexer_status
 
+    
     def handle_indexer_failure(self, reason=None, disable_permanently=False, saveIndexerStatus=True):
         # Escalate level by 1. Set disabled-time according to level so that with increased level the time is further in the future
         try:
