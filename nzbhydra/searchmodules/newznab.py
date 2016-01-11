@@ -20,6 +20,7 @@ import xml.etree.ElementTree as ET
 import arrow
 from furl import furl
 import requests
+import concurrent
 from requests.exceptions import RequestException
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.datestuff import now

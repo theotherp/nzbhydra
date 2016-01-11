@@ -3,7 +3,6 @@ from os.path import dirname, abspath
 import os
 import sys
 import argparse
-
 import webbrowser
 
 
