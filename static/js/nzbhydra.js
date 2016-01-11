@@ -1567,8 +1567,8 @@ angular
             template: [
                 '<div class="input-group">',
                 '<input type="text" class="form-control" ng-model="model[options.key]"/>',
-                '<span class="input-group-btn">',
-                '<button class="btn " type="button" ng-click="generate()"><span class="glyphicon glyphicon-refresh"></span></button>',
+                '<span class="input-group-btn input-group-btn2">',
+                '<button class="btn btn-default" type="button" ng-click="generate()"><span class="glyphicon glyphicon-refresh"></span></button>',
                 '</div>'
             ].join(' '),
             controller: function ($scope) {
