@@ -789,8 +789,8 @@ def internalapi_maySeeAdminArea():
 @requires_auth
 def internalapi_getversions():
     logger.debug("Get versions request")
-    current_version = get_current_version()
-    rep_version = get_rep_version()
+    _, current_version = get_current_version()
+    _, rep_version = get_rep_version()
     return jsonify({"currentVersion": str(current_version), "repVersion": str(rep_version), "updateAvailable": rep_version > current_version})
 
 

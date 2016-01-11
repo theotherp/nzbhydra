@@ -35,25 +35,25 @@ def get_rep_version():
         url = "https://raw.githubusercontent.com/theotherp/nzbhydra/" + config.mainSettings.branch.get() + "/version.txt"
         r = requests.get(url, verify=False)
         r.raise_for_status()
-        return versiontuple(r.text)
+        return versiontuple(r.text), r.text
     except requests.RequestException as e:
         logger.error("Error downloading version.txt from %s to check new updates: %s" % (url, e))
-        return None
+        return None, None
 
 
 def get_current_version():
     try:
         with open("version.txt", "r") as f:
             version = f.read()
-        return versiontuple(version)
+        return versiontuple(version), version
     except Exception as e:
         logger.error("Unable to open version.txt: %s" % e)
-        return None
+        return None, None
 
 
 def is_new_version_available():
-    rep_version = get_rep_version()
-    current_version = get_current_version()
+    rep_version, _ = get_rep_version()
+    current_version, _ = get_current_version()
     try:
         if rep_version is not None and current_version is not None:
             return rep_version > current_version, rep_version
