@@ -15,7 +15,7 @@ NZBHydra is a meta search for NZB indexers and the "spiritual successor" to [NZB
 * See https://imgur.com/a/lBq9n for screenshots
 
 ##  How to run
-Run with Python 2.7. Runs on http://0.0.0.0:5075 by default. See the console output on how to choose the port and host using command line parameters.
+Run with Python 2.7.9+. Runs on http://0.0.0.0:5075 by default. See the console output on how to choose the port and host using command line parameters.
 
 ## Running in Docker Container
 Included with the source is build is a Dockerfile and a Docker Compose template to run this project within a Docker container. Prerequisites is to have Docker installed. If you'd like to run this within Docker Compose, you will need to have that installed as well. All of the following instructions for Docker assume you are in the root directory of this project.
