@@ -15,7 +15,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
     $scope.groupExpanded = {};
     $scope.doShowDuplicates = false;
-    $scope.selected = {};
+    $scope.selected = [];
     
     $scope.countFilteredOut = 0;
 
@@ -201,20 +201,29 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.downloadSelected = downloadSelected;
     function downloadSelected() {
 
-        var guids = Object.keys($scope.selected);
+        if (angular.isUndefined($scope.selected) || $scope.selected.length == 0) {
+            growl.info("You should select at least one result...");
+        } else {
 
-        console.log(guids);
-        NzbDownloadService.download(guids).then(function (response) {
-            if (response.data.success) {
-                growl.info("Successfully added " + response.data.added + " of " + response.data.of + " NZBs");
-            } else {
+            var values = _.map($scope.selected, function (value) {
+                return {"indexerguid": value.indexerguid, "title": value.title, "indexer": value.indexer, "dbsearchid": value.dbsearchid}
+            });
+
+            console.log(values);
+            NzbDownloadService.download(values).then(function (response) {
+                if (response.data.success) {
+                    growl.info("Successfully added " + response.data.added + " of " + response.data.of + " NZBs");
+                } else {
+                    growl.error("Error while adding NZBs");
+                }
+            }, function () {
                 growl.error("Error while adding NZBs");
-            }
-        }, function () {
-            growl.error("Error while adding NZBs");
-        });
-
+            });
+        }
     }
-
+    
+    $scope.inverseSelection = function inverseSelection() {
+        $scope.selected = _.difference($scope.results, $scope.selected);
+    }
 
 }
