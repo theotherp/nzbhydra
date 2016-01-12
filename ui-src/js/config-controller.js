@@ -526,13 +526,15 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 }
             },
         ]);
+        
+        
 
         if (showpreselect) {
             fieldset.push(
                 {
                     key: 'preselect',
                     type: 'horizontalSwitch',
-                    hideExpression: '!model.enabled',
+                    hideExpression: '!model.enabled || model.accessType == "external"',
                     templateOptions: {
                         type: 'switch',
                         label: 'Preselect',
@@ -540,6 +542,21 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                     }
                 }
             );
+            fieldset.push(
+                {
+                    key: 'accessType',
+                    type: 'horizontalSelect',
+                    hideExpression: '!model.enabled',
+                    templateOptions: {
+                        label: 'Enable for...',
+                        options: [
+                            {name: 'Internal searches only', value: 'internal'},
+                            {name: 'API searches only', value: 'external'},
+                            {name: 'Internal and API searches', value: 'both'}
+                        ]
+                    }
+                }
+            )
         }
 
         if (searchIds) {

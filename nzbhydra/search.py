@@ -100,6 +100,12 @@ def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selec
         if not p.settings.enabled.get():
             logger.debug("Did not pick %s because it is disabled" % p)
             continue
+        if internal and p.settings.accessType.get() == "external":
+            logger.debug("Did not pick %s because it is only enabled for external searches" % p)
+            continue
+        if not internal and p.settings.accessType.get() == "internal":
+            logger.debug("Did not pick %s because it is only enabled for internal searches" % p)
+            continue
         if selected_indexers and p.name not in selected_indexers:
             logger.debug("Did not pick %s because it was not selected by the user" % p)
             continue

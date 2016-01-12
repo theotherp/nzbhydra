@@ -3,12 +3,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import copy
-
-from builtins import open
-from builtins import range
-from builtins import str
-from builtins import super
 from future import standard_library
 
 standard_library.install_aliases()
@@ -246,12 +240,12 @@ def update(d, u, level):
 
 
 def migrate(cfg):
-    #CAUTION: Don't forget to increase the default value for configVersion
+    # CAUTION: Don't forget to increase the default value for configVersion
     try:
         version = cfg["main"]["configVersion"]
         if version == 1:
             addLogMessage(20, "Migrating config to version 2")
-            #Migrate sabnzbd setting
+            # Migrate sabnzbd setting
             sabnzbd = cfg["downloader"]["sabnzbd"]
             if sabnzbd["host"] and sabnzbd["port"]:
                 addLogMessage(20, "Migrating sabnzbd settings")
@@ -274,7 +268,7 @@ def migrate(cfg):
             cfg["main"]["configVersion"] = 3
     except Exception as e:
         addLogMessage(40, "Error while trying to migrate config: %s" % str(e))
-        
+
 
 def load(filename):
     global cfg
@@ -338,6 +332,7 @@ class CacheTypeSelection(object):
     file = SelectOption("file", "Cache on the file system")
     memory = SelectOption("memory", "Cache in the memory during runtime")
 
+
 class DatabaseDriverSelection(object):
     sqlite = SelectOption("sqlite", "Default")
     apsw = SelectOption("apsw", "More robust, I think")
@@ -372,7 +367,7 @@ class MainSettings(Category):
         self.debug = Setting(self, name="debug", default=False, valuetype=bool)
 
         self.branch = Setting(self, name="branch", default="master", valuetype=str)
-        
+
         self.cache_enabled = Setting(self, name="enableCache", default=False, valuetype=bool)
         self.cache_enabled_for_api = Setting(self, name="enableCacheForApi", default=False, valuetype=bool)
         self.cache_type = SelectionSetting(self, name="cacheType", default=CacheTypeSelection.memory, valuetype=str, options=[CacheTypeSelection.memory, CacheTypeSelection.file])
@@ -534,12 +529,20 @@ class SearchIdSelection(object):
     tvmazeid = SelectOption("tvmazeid", "TVMMaze ID")
 
 
+class InternalExternalSingleSelection(object):
+    internal = SelectOption("internal", "Internal only")
+    external = SelectOption("external", "API only")
+    both = SelectOption("both", "Both")
+    options = [internal, external, both]
+
+
 class IndexerSettingsAbstract(Category):
     def __init__(self, parent, name, title):
         super(IndexerSettingsAbstract, self).__init__(parent, name, title)
         self.name = Setting(self, name="name", default=None, valuetype=str)
         self.host = Setting(self, name="host", default=None, valuetype=str)
         self.enabled = Setting(self, name="enabled", default=True, valuetype=bool)
+        self.accessType = SelectionSetting(self, name="accessType", default=InternalExternalSingleSelection.both, options=InternalExternalSingleSelection.options, valuetype=str, setting_type=SettingType.select)
         self.search_ids = MultiSelectionSetting(self, name="search_ids", default=[], valuetype=list,
                                                 options=[SearchIdSelection.imdbid, SearchIdSelection.rid, SearchIdSelection.tvdbid],
                                                 setting_type=SettingType.multiselect)
@@ -567,6 +570,7 @@ class IndexerOmgWtfSettings(IndexerSettingsAbstract):
         self.search_ids = MultiSelectionSetting(self, name="search_ids", default=[SearchIdSelection.imdbid], valuetype=list,
                                                 options=[SearchIdSelection.imdbid],
                                                 setting_type=SettingType.multiselect)
+
 
 class IndexerNewznabSettings(IndexerSettingsAbstract):
     def __init__(self, parent, name, title):
@@ -599,6 +603,7 @@ class IndexerWombleSettings(IndexerSettingsAbstract):
         self.host = Setting(self, name="host", default="https://newshost.co.za", valuetype=str)
         self.name = Setting(self, name="name", default="Womble", valuetype=str)
         self.show_on_search = Setting(self, name="showOnSearch", default=False, valuetype=bool)
+        self.accessType = SelectionSetting(self, name="accessType", default=InternalExternalSingleSelection.external, options=InternalExternalSingleSelection.options, valuetype=str, setting_type=SettingType.select)
 
 
 class IndexerSettings(Category):
@@ -609,10 +614,11 @@ class IndexerSettings(Category):
         self.nzbindex = IndexerNzbindexSettings(self)
         self.omgwtf = IndexerOmgWtfSettings(self)
         self.womble = IndexerWombleSettings(self)
-        
+
         for i in range(1, 41):
             setattr(self, "newznab%d" % i, IndexerNewznabSettings(self, "newznab%d" % i, "Newznab %d" % i))
-        
+
+
 indexerSettings = IndexerSettings()
 
 
@@ -622,7 +628,7 @@ def get_newznab_setting_by_id(id):
 
 def getSafeConfig():
     return {
-        "indexers": [{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "showOnSearch": x["showOnSearch"]} for x in cfg["indexers"].values()],
+        "indexers": [{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "showOnSearch": x["showOnSearch"] and x["accessType"] != "external"} for x in cfg["indexers"].values()],
         "searching": {"categorysizes": cfg["searching"]["categorysizes"]},
         "downloader": {"downloader": cfg["downloader"]["downloader"], "nzbget": {"defaultCategory": cfg["downloader"]["nzbget"]["defaultCategory"]}, "sabnzbd": {"defaultCategory": cfg["downloader"]["sabnzbd"]["defaultCategory"]}}
     }
