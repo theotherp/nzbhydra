@@ -106,6 +106,7 @@ class SearchTests(unittest.TestCase):
     def test_pick_indexers(self):
         config.searchingSettings.generate_queries.set([])
         config.indexerSettings.womble.enabled.set(True)
+        config.indexerSettings.womble.accessType.set("both")
         config.indexerSettings.nzbclub.enabled.set(True)
         read_indexers_from_config()
     
@@ -115,7 +116,7 @@ class SearchTests(unittest.TestCase):
         # Indexers with tv search and which support queries (actually searching for particular releases)
         indexers = search.pick_indexers(query_supplied=True)
         self.assertEqual(3, len(indexers[0]))
-    
+        
         # Indexers with tv search, including those that only provide a list of latest releases (womble) but excluding the one that needs a query (nzbclub) 
         indexers = search.pick_indexers(query_supplied=False)
         self.assertEqual(3, len(indexers[0]))
@@ -136,6 +137,31 @@ class SearchTests(unittest.TestCase):
         self.assertEqual("NZBClub", indexers[0][0].name)
         self.assertEqual("newznab1", indexers[0][1].name)
         self.assertEqual("newznab2", indexers[0][2].name)
+        
+        
+        #Test picking depending on internal, external, both
+        config.indexerSettings.womble.enabled.set(False)
+        config.indexerSettings.nzbclub.enabled.set(False)
+
+        config.indexerSettings.newznab2.accessType.set("both")
+        indexers = search.pick_indexers(internal=True)
+        self.assertEqual(2, len(indexers[0]))
+        indexers = search.pick_indexers(internal=False)
+        self.assertEqual(2, len(indexers[0]))
+
+        config.indexerSettings.newznab2.accessType.set("external")
+        indexers = search.pick_indexers(internal=True)
+        self.assertEqual(1, len(indexers[0]))
+        indexers = search.pick_indexers(internal=False)
+        self.assertEqual(2, len(indexers[0]))
+
+        config.indexerSettings.newznab2.accessType.set("internal")
+        indexers = search.pick_indexers(internal=True)
+        self.assertEqual(2, len(indexers[0]))
+        indexers = search.pick_indexers(internal=False)
+        self.assertEqual(1, len(indexers[0]))
+
+        
     
     def testHandleIndexerFailureAndSuccess(self):
         Indexer(module="newznab", name="newznab1").save()
@@ -427,7 +453,7 @@ class SearchTests(unittest.TestCase):
     @responses.activate
     def testDuplicateRemovalForExternalApi(self):
         config.searchingSettings.removeDuplicatesExternal.set(True)
-        with responses.RequestsMock() as rsps:
+        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
             newznabItems = [
                 [mockbuilder.buildNewznabItem(title="title", pubdate=arrow.get(0000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab1")],
                 [mockbuilder.buildNewznabItem(title="title", pubdate=arrow.get(1000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab2")],

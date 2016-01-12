@@ -67,7 +67,7 @@ class NewznabTests(UrlTestCase):
             entries = self.n1.process_query_result(f.read(), "aquery").entries
         self.assertEqual(3, len(entries))
 
-        self.assertEqual(entries[0].title, "Beneath.Hill.60.2010.Theatrical.Cut.DVDRip.XviD-Ips")
+        self.assertEqual(entries[0].title, "title1")
         assert entries[0].size == 954926472
         assert entries[0].guid == "d4776501c2b409c41f0649afc1e2d6d3f033119e"
         self.assertEqual(entries[0].age_days, 323)
