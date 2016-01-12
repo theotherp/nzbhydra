@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/" encoding="utf-8">
+    <channel>
+        <atom:link href="https://piratenzb.com/api" rel="self" type="application/rss+xml"/>
+        <title>PirateNZB</title>
+        <description>PirateNZB API Results</description>
+        <link>https://piratenzb.com/</link>
+        <language>en-gb</language>
+        <webMaster>root@piratenzb.com (PirateNZB)</webMaster>
+        <category></category>
+        <image>
+            <url>https://piratenzb.com/themes_shared/images/logo.png</url>
+            <title>PirateNZB</title>
+            <link>https://piratenzb.com/</link>
+            <description>Visit PirateNZB - Indexing Usenet For You</description>
+        </image>
+        <newznab:response offset="0" total="22"/>
+        <item>
+            <title>title1</title>
+            <guid isPermaLink="true">https://piratenzb.com/details/d4776501c2b409c41f0649afc1e2d6d3f033119e</guid>
+            <link>https://piratenzb.com/getnzb/d4776501c2b409c41f0649afc1e2d6d3f033119e.nzb&amp;i=7241&amp;r=2a4576e777b02053c42b87e48c98a668</link>
+            <comments>https://piratenzb.com/details/d4776501c2b409c41f0649afc1e2d6d3f033119e#comments</comments>
+            <pubDate>Sat, 21 Feb 2015 20:59:17 +0000</pubDate>
+            <category>Movies &gt; SD</category>
+            <description>Beneath.Hill.60.2010.Theatrical.Cut.DVDRip.XviD-Ips</description>
+            <enclosure url="https://piratenzb.com/getnzb/d4776501c2b409c41f0649afc1e2d6d3f033119e.nzb&amp;i=7241&amp;r=2a4576e777b02053c42b87e48c98a668" length="954926472" type="application/x-nzb"/>
+            <newznab:attr name="category" value="2000"/>
+            <newznab:attr name="category" value="2030"/>
+            <newznab:attr name="size" value="954926472"/>
+            <newznab:attr name="coverurl" value="https://piratenzb.com/covers/movies/1418646-cover.jpg"/>
+        </item>
+        <item>
+            <title>title2</title>
+            <guid isPermaLink="true">https://piratenzb.com/details/956b363feb7a6f90d35613f6dc734db51e809312</guid>
+            <link>https://piratenzb.com/getnzb/956b363feb7a6f90d35613f6dc734db51e809312.nzb&amp;i=7241&amp;r=2a4576e777b02053c42b87e48c98a668</link>
+            <comments>https://piratenzb.com/details/956b363feb7a6f90d35613f6dc734db51e809312#comments</comments>
+            <pubDate>Fri, 31 Oct 2014 01:18:24 +0000</pubDate>
+            <category>Movies &gt; SD</category>
+            <description>Beneath.Hill.60.2010.Theatrical.Cut.DVDRip.XviD-yQD</description>
+            <enclosure url="https://piratenzb.com/getnzb/956b363feb7a6f90d35613f6dc734db51e809312.nzb&amp;i=7241&amp;r=2a4576e777b02053c42b87e48c98a668" length="948508772" type="application/x-nzb"/>
+            <newznab:attr name="category" value="2000"/>
+            <newznab:attr name="category" value="2030"/>
+            <newznab:attr name="size" value="948508772"/>
+            <newznab:attr name="coverurl" value="https://piratenzb.com/covers/movies/1418646-cover.jpg"/>
+        </item>
+        <item>
+            <title>title3</title>
+            <guid isPermaLink="true">https://piratenzb.com/details/c6d8598cc7cff0fcebe092eba52314f16c34d3d7</guid>
+            <link>https://piratenzb.com/getnzb/c6d8598cc7cff0fcebe092eba52314f16c34d3d7.nzb&amp;i=7241&amp;r=2a4576e777b02053c42b87e48c98a668</link>
+            <comments>https://piratenzb.com/details/c6d8598cc7cff0fcebe092eba52314f16c34d3d7#comments</comments>
+            <pubDate>Thu, 30 Oct 2014 07:54:10 +0000</pubDate>
+            <category>Movies &gt; SD</category>
+            <description>Beneath.Hill.60.2010.DVDRiP.XviD-kgE.vol001+02.par2 [53/58] - &quot;Beneath.Hill.60.2010.DVDRiP.XviD-kgE.vol001+02.par2&quot;</description>
+            <enclosure url="https://piratenzb.com/getnzb/c6d8598cc7cff0fcebe092eba52314f16c34d3d7.nzb&amp;i=7241&amp;r=2a4576e777b02053c42b87e48c98a668" length="41721142" type="application/x-nzb"/>
+            <newznab:attr name="category" value="2000"/>
+            <newznab:attr name="category" value="2030"/>
+            <newznab:attr name="size" value="41721142"/>
+            <newznab:attr name="coverurl" value="https://piratenzb.com/covers/movies/1418646-cover.jpg"/>
+        </item>
+    </channel>
+</rss>

@@ -1,1 +1,3 @@
-{}
+{
+  "test_Newznab.py::NewznabTests::testPirateNzbParseSearchResult": true
+}

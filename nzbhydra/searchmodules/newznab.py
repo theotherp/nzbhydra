@@ -250,7 +250,7 @@ def _build_base_url(host, apikey, action, category, limit=None, offset=0):
     f.path.add("api")
     f.query.add({"apikey": apikey, "extended": 1, "t": action, "offset": offset})
     if limit is not None:
-        f.query.add({limit: limit})
+        f.query.add({"limit": limit})
     
     if category is not None:
         categories = map_category(category)

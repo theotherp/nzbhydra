@@ -15,10 +15,11 @@ from nzbhydra import config
 from nzbhydra.database import Indexer
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.newznab import NewzNab
+from nzbhydra.tests.UrlTestCase import UrlTestCase
 from nzbhydra.tests.db_prepare import set_and_drop
 
 
-class MyTestCase(unittest.TestCase):
+class NewznabTests(UrlTestCase):
     def setUp(self):
         set_and_drop()
         config.load("testsettings.cfg")
@@ -58,6 +59,22 @@ class MyTestCase(unittest.TestCase):
 
         #Don't use "not available" as group
         self.assertIsNone(entries[2].group)
+
+    @freeze_time("2016-01-11 18:00:00", tz_offset=0)
+    def testPirateNzbParseSearchResult(self):
+        # nzbsorg
+        with open("mock/piratenzb_movies_response.xml") as f:
+            entries = self.n1.process_query_result(f.read(), "aquery").entries
+        self.assertEqual(3, len(entries))
+
+        self.assertEqual(entries[0].title, "Beneath.Hill.60.2010.Theatrical.Cut.DVDRip.XviD-Ips")
+        assert entries[0].size == 954926472
+        assert entries[0].guid == "d4776501c2b409c41f0649afc1e2d6d3f033119e"
+        self.assertEqual(entries[0].age_days, 323)
+        self.assertEqual(entries[0].epoch, 1424552357)
+        self.assertEqual(entries[0].pubdate_utc, "2015-02-21T20:59:17+00:00")
+        self.assertEqual(entries[0].details_link, "https://indexer.com/details/d4776501c2b409c41f0649afc1e2d6d3f033119e")
+
 
     def testNewznabSearchQueries(self):
         self.args = SearchRequest(query="aquery")
@@ -199,7 +216,7 @@ class MyTestCase(unittest.TestCase):
         searchRequest = SearchRequest(query="novel")
         urls = self.n1.get_ebook_urls(searchRequest)
         self.assertEqual(1, len(urls))
-        self.assertEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=search&extended=1&offset=0&q=novel+ebook%7Cmobi%7Cpdf%7Cepub", urls[0])
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=search&extended=1&offset=0&q=novel+ebook%7Cmobi%7Cpdf%7Cepub", urls[0])
 
     def testGetMovieSearchUrls(self):
         config.indexerSettings.newznab1.search_ids.set(["imdbid"])
@@ -207,34 +224,34 @@ class MyTestCase(unittest.TestCase):
         searchRequest = SearchRequest(type="movie", query="atitle")
         urls = self.n1.get_moviesearch_urls(searchRequest)
         self.assertEqual(1, len(urls))
-        self.assertEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=search&extended=1&offset=0&cat=2000&q=atitle", urls[0])
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=search&extended=1&offset=0&cat=2000&q=atitle", urls[0])
 
         searchRequest = SearchRequest(type="movie", identifier_key="imdbid", identifier_value="123")
         urls = self.n1.get_moviesearch_urls(searchRequest)
         self.assertEqual(1, len(urls))
-        self.assertEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=movie&extended=1&offset=0&cat=2000&imdbid=123", urls[0])
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=movie&extended=1&offset=0&cat=2000&imdbid=123", urls[0])
 
     def testGetShowSearchUrls(self):
         config.indexerSettings.newznab1.search_ids.set(["tvdbid", "rid"])
         self.args = SearchRequest(identifier_value="47566", identifier_key="rid")
         urls = self.n1.get_showsearch_urls(self.args)
-        self.assertEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=tvsearch&extended=1&offset=0&cat=5000&rid=47566", urls[0])
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=tvsearch&extended=1&offset=0&cat=5000&rid=47566", urls[0])
         self.args = SearchRequest(identifier_value="299350", identifier_key="tvdbid")
         urls = self.n1.get_showsearch_urls(self.args)
-        self.assertEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=tvsearch&extended=1&offset=0&cat=5000&tvdbid=299350", urls[0])
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=tvsearch&extended=1&offset=0&cat=5000&tvdbid=299350", urls[0])
 
     def testThatShowSearchIdsAreConverted(self):
         config.indexerSettings.newznab1.search_ids.set(["tvdbid"])
         self.args = SearchRequest(identifier_value="47566", identifier_key="rid")
         urls = self.n1.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
-        self.assertEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=tvsearch&extended=1&offset=0&cat=5000&tvdbid=299350", urls[0])
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=tvsearch&extended=1&offset=0&cat=5000&tvdbid=299350", urls[0])
 
         config.indexerSettings.newznab1.search_ids.set(["rid"])
         self.args = SearchRequest(identifier_value="299350", identifier_key="tvdbid")
         urls = self.n1.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
-        self.assertEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=tvsearch&extended=1&offset=0&cat=5000&rid=47566", urls[0])
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=tvsearch&extended=1&offset=0&cat=5000&rid=47566", urls[0])
         
     def testThatNoUrlsAreReturnedIfIdCannotBeConverted(self):
         config.indexerSettings.newznab1.search_ids.set(["unknownid"])
