@@ -19,13 +19,12 @@ from nzbhydra.searchmodules.binsearch import Binsearch
 from nzbhydra.tests.db_prepare import set_and_drop
 
 
-class TestInfos(unittest.TestCase):
+class TestBinsearch(unittest.TestCase):
     
     @pytest.fixture
     def setUp(self):
         set_and_drop()
-         
-        
+    
 
     def testUrlGeneration(self):
         w = Binsearch(config.indexerSettings.binsearch)
@@ -54,6 +53,7 @@ class TestInfos(unittest.TestCase):
             self.assertEqual("176073735", entries[0].guid)
             self.assertEqual(1443312000, entries[0].epoch)
             self.assertEqual("2015-09-27T00:00:00+00:00", entries[0].pubdate_utc)
+            self.assertEqual("Sun, 27 Sep 2015 00:00:00 -0000", entries[0].pubDate)
             self.assertEqual(3, entries[0].age_days)
             self.assertFalse(entries[0].age_precise)
             self.assertEqual("Ramer@marmer.com (Clown_nez)", entries[0].poster)

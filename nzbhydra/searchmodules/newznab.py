@@ -269,7 +269,10 @@ class NewzNab(SearchModule):
     
 
     def build_base_url(self, action, category, offset=0):
-        return _build_base_url(self.settings.host.get(), self.settings.apikey.get(), action, category, self.limit, offset)
+        url = _build_base_url(self.settings.host.get(), self.settings.apikey.get(), action, category, self.limit, offset)
+        if config.searchingSettings.ignorePassworded.get():
+            url.query.add({"password": "0"})
+        return url
 
     def get_search_urls(self, search_request):
         f = self.build_base_url("search", search_request.category, offset=search_request.offset)
@@ -385,6 +388,8 @@ class NewzNab(SearchModule):
                     entry.poster = attribute_value
                 elif attribute_name == "info":
                     entry.details_link = attribute_value
+                elif attribute_name == "password" and attribute_value != "1":
+                    entry.passworded = True
                 elif attribute_name == "group" and attribute_value != "not available":
                     entry.group = attribute_value
                 elif attribute_name == "usenetdate":
@@ -411,7 +416,11 @@ class NewzNab(SearchModule):
                             entry.category = k
                             break
 
-            entries.append(entry)
+            accepted, reason = self.accept_result(entry)
+            if accepted:
+                entries.append(entry)
+            else:
+                self.debug("Rejected search result. Reason: %s" % reason)
             if maxResults is not None and len(entries) == maxResults:
                 break
 

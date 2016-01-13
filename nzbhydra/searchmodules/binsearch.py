@@ -132,6 +132,9 @@ class Binsearch(SearchModule):
                 continue
             title = title.text
 
+            if "password protect" in title.lower() or "passworded" in title.lower():
+                entry.passworded = True
+
             m = title_pattern.search(title)
             if m:
                 entry.title = m.group(1)
@@ -175,6 +178,8 @@ class Binsearch(SearchModule):
                 entry.size = int(size)
             
             entry.category = "N/A"
+            
+            
 
             
             if nfo_pattern.search(info.text):  # 1 nfo file is missing if there is no NFO
@@ -195,8 +200,11 @@ class Binsearch(SearchModule):
                 entry.epoch = 0
 
                 self.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
-
-            entries.append(entry)
+            accepted, reason = self.accept_result(entry)
+            if accepted:
+                entries.append(entry)
+            else:
+                self.debug("Rejected search result. Reason: %s" % reason)
             
         self.debug("Finished processing %d results" % len(entries))
         

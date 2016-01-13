@@ -121,6 +121,9 @@ class NzbIndex(SearchModule):
 
             infotd = tds[1]
 
+            if "password protected" in infotd.text.lower():
+                entry.passworded = True
+
             title = infotd.find("label").text
             title = title.replace("\n","")
             title = re.sub(" +", "", title)
@@ -200,7 +203,11 @@ class NzbIndex(SearchModule):
             collection_links = infotd.findAll("a", href=True, text="View collection")
             if collection_links is not None and len(collection_links) > 0: 
                 entry.details_link = collection_links[0].attrs["href"]
-            entries.append(entry)
+            accepted, reason = self.accept_result(entry)
+            if accepted:
+                entries.append(entry)
+            else:
+                self.debug("Rejected search result. Reason: %s" % reason)
         try:
             page_links = main_table.find("tfoot").find_all("tr")[1].find_all('a')
             if len(page_links) == 0:

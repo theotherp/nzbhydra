@@ -293,7 +293,11 @@ class OmgWtf(SearchModule):
                     entry.category = omgwtf_to_categories[categoryid]
                 else:
                     entry.category = "N/A"
-                entries.append(entry)
+                accepted, reason = self.accept_result(entry)
+                if accepted:
+                    entries.append(entry)
+                else:
+                    self.debug("Rejected search result. Reason: %s" % reason)
             return IndexerProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False)
         else:
             self.warn("Unknown response type: %s" % xml_response[:100])

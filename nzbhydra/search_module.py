@@ -146,6 +146,13 @@ class SearchModule(object):
 
     def create_nzb_search_result(self):
         return NzbSearchResult(indexer=self.name, indexerscore=self.score)
+    
+    def accept_result(self, nzbSearchResult):
+        #Allows the implementations to check against one general rule if the search result is ok or shall be discarded
+        if config.searchingSettings.ignorePassworded.get() and nzbSearchResult.passworded:
+            return False, "Passworded results shall be ignored"
+        return True, None
+        
 
     def process_query_result(self, result, maxResults=None):
         return []

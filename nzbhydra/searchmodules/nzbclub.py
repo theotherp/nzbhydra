@@ -23,6 +23,7 @@ from nzbhydra.exceptions import IndexerResultParsingException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule, IndexerProcessingResult
+from nzbhydra import config
 
 logger = logging.getLogger('root')
 
@@ -94,6 +95,9 @@ class NzbClub(SearchModule):
                 continue
 
             entry = self.create_nzb_search_result()
+            if "password protect" in title.text.lower() or "passworded" in title.text.lower():
+                entry.passworded = True
+            
             p = re.compile(r'"(.*)"')
             m = p.search(title.text)
             if m:
@@ -122,13 +126,22 @@ class NzbClub(SearchModule):
             if m:
                 entry.poster = m.group(1).strip()
 
-            entry.pubDate = pubdate.text
-            pubdate = arrow.get(pubdate.text, '"ddd, DD MMM YYYY HH:mm:ss Z')
-            entry.epoch = pubdate.timestamp
-            entry.pubdate_utc = str(pubdate)
-            entry.age_days = (arrow.utcnow() - pubdate).days
+            try:
+                
+                pubdate = arrow.get(pubdate.text, 'ddd, DD MMM YYYY HH:mm:ss Z')
+                entry.epoch = pubdate.timestamp
+                entry.pubdate_utc = str(pubdate)
+                entry.age_days = (arrow.utcnow() - pubdate).days
+                entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
+            except Exception as e:
+                entry.epoch = 0
+                self.error("Unable to parse pubdate %s" % pubdate.text)
 
-            entries.append(entry)
+            accepted, reason = self.accept_result(entry)
+            if accepted:
+                entries.append(entry)
+            else:
+                self.debug("Rejected search result. Reason: %s" % reason)
             
         self.debug("Finished processing results")
         return IndexerProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False) #No paging with RSS. Might need/want to change to HTML and BS

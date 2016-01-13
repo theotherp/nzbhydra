@@ -976,6 +976,17 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         }
                     },
                     {
+                        key: 'ignorePassworded',
+                        type: 'horizontalSwitch',
+                        templateOptions: {
+                            type: 'switch',
+                            label: 'Ignore passworded releases',
+                            help: "Not all indexers provide this information"
+                        }
+                    },
+                    
+                    
+                    {
                         key: 'generate_queries',
                         type: 'horizontalMultiselect',
                         templateOptions: {
@@ -1344,7 +1355,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                         {name: 'Redirect to the indexer', value: 'redirect'},
                         {name: 'Use direct links', value: 'direct'}
                     ],
-                    help: "How external access to NZBs is provided. Proxying NZBs is recommended."
+                    help: "How external access to NZBs is provided. Redirecting is recommended."
                 }
             },
             {

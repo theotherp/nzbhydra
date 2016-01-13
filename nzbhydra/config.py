@@ -452,6 +452,7 @@ class SearchingSettings(Category):
         super(SearchingSettings, self).__init__(config_root, "searching", "Searching")
         self.timeout = Setting(self, name="timeout", default=20, valuetype=int)
         self.ignore_disabled = Setting(self, name="ignoreTemporarilyDisabled", default=False, valuetype=bool)
+        self.ignorePassworded = Setting(self, name="ignorePassworded", default=False, valuetype=bool)
         self.generate_queries = MultiSelectionSetting(self, name="generate_queries", default=[InternalExternalSelection.internal], options=InternalExternalSelection.options, valuetype=str, setting_type=SettingType.multiselect)
         self.user_agent = Setting(self, name="userAgent", default="NZBHydra", valuetype=str)
 

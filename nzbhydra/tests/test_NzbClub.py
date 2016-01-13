@@ -52,6 +52,7 @@ class NzbclubTests(unittest.TestCase):
             self.assertEqual("60269450", entries[0].guid)
             self.assertEqual(1443019463, entries[0].epoch)
             self.assertEqual("2015-09-23T09:44:23-05:00", entries[0].pubdate_utc)
+            self.assertEqual("Wed, 23 Sep 2015 09:44:23 -0500", entries[0].pubDate)
             self.assertEqual(0, entries[0].age_days)
             self.assertEqual("http://www.nzbclub.com/nzb_view/60269450/testtitle1", entries[0].details_link)
             self.assertEqual("YIFY@gmail.com (YIFY)", entries[0].poster)

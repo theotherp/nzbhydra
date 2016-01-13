@@ -20,7 +20,7 @@ from nzbhydra.searchmodules.nzbindex import NzbIndex
 from nzbhydra.tests.db_prepare import set_and_drop
 
 
-class MyTestCase(unittest.TestCase):
+class NzbIndexTests(unittest.TestCase):
     @pytest.fixture
     def setUp(self):
         set_and_drop()
@@ -54,9 +54,11 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual("https://nzbindex.com/download/114143855/testtitle1-testtitle1.nzb", entries[0].link)
             self.assertEqual(169103851, entries[0].size)
             self.assertEqual("2014-11-04T10:39:00+01:00", entries[0].pubdate_utc)  # would be perfect, that is the exact pubdate 
+            self.assertEqual("Tue, 04 Nov 2014 10:39:00 +0100", entries[0].pubDate)   
             self.assertEqual(1415093940, entries[0].epoch)
             self.assertEqual(333, entries[0].age_days)
             self.assertEqual("https://nzbindex.com/release/114143855/testtitle1-testtitle1.nzb", entries[0].details_link)
+            self.assertTrue(entries[0].passworded)
 
             self.assertEqual(0, entries[1].age_days)
             self.assertEqual("2015-10-03T20:15:00+01:00", entries[1].pubdate_utc)  # would be perfect, that is the exact pubdate 
