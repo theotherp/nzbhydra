@@ -22,8 +22,8 @@
             <comments>https://piratenzb.com/details/d4776501c2b409c41f0649afc1e2d6d3f033119e#comments</comments>
             <pubDate>Sat, 21 Feb 2015 20:59:17 +0000</pubDate>
             <category>Movies &gt; SD</category>
-            <description>Beneath.Hill.60.2010.Theatrical.Cut.DVDRip.XviD-Ips</description>
-            <enclosure url="https://piratenzb.com/getnzb/d4776501c2b409c41f0649afc1e2d6d3f033119e.nzb&amp;i=7241&amp;r=2a4576e777b02053c42b87e48c98a668" length="954926472" type="application/x-nzb"/>
+            <description>description1</description>
+            <enclosure url="https://piratenzb.com/getnzb/d4776501c2b409c41f0649afc1e2d6d3f033119e.nzb&amp;i=7241&amp;r=apikey" length="954926472" type="application/x-nzb"/>
             <newznab:attr name="category" value="2000"/>
             <newznab:attr name="category" value="2030"/>
             <newznab:attr name="size" value="954926472"/>
@@ -36,8 +36,8 @@
             <comments>https://piratenzb.com/details/956b363feb7a6f90d35613f6dc734db51e809312#comments</comments>
             <pubDate>Fri, 31 Oct 2014 01:18:24 +0000</pubDate>
             <category>Movies &gt; SD</category>
-            <description>Beneath.Hill.60.2010.Theatrical.Cut.DVDRip.XviD-yQD</description>
-            <enclosure url="https://piratenzb.com/getnzb/956b363feb7a6f90d35613f6dc734db51e809312.nzb&amp;i=7241&amp;r=2a4576e777b02053c42b87e48c98a668" length="948508772" type="application/x-nzb"/>
+            <description>description2</description>
+            <enclosure url="https://piratenzb.com/getnzb/956b363feb7a6f90d35613f6dc734db51e809312.nzb&amp;i=7241&amp;r=apikey" length="948508772" type="application/x-nzb"/>
             <newznab:attr name="category" value="2000"/>
             <newznab:attr name="category" value="2030"/>
             <newznab:attr name="size" value="948508772"/>
@@ -50,8 +50,8 @@
             <comments>https://piratenzb.com/details/c6d8598cc7cff0fcebe092eba52314f16c34d3d7#comments</comments>
             <pubDate>Thu, 30 Oct 2014 07:54:10 +0000</pubDate>
             <category>Movies &gt; SD</category>
-            <description>Beneath.Hill.60.2010.DVDRiP.XviD-kgE.vol001+02.par2 [53/58] - &quot;Beneath.Hill.60.2010.DVDRiP.XviD-kgE.vol001+02.par2&quot;</description>
-            <enclosure url="https://piratenzb.com/getnzb/c6d8598cc7cff0fcebe092eba52314f16c34d3d7.nzb&amp;i=7241&amp;r=2a4576e777b02053c42b87e48c98a668" length="41721142" type="application/x-nzb"/>
+            <description>description3</description>
+            <enclosure url="https://piratenzb.com/getnzb/c6d8598cc7cff0fcebe092eba52314f16c34d3d7.nzb&amp;i=7241&amp;r=apikey" length="41721142" type="application/x-nzb"/>
             <newznab:attr name="category" value="2000"/>
             <newznab:attr name="category" value="2030"/>
             <newznab:attr name="size" value="41721142"/>
