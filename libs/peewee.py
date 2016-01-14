@@ -37,7 +37,7 @@ from copy import deepcopy
 from functools import wraps
 from inspect import isclass
 
-__version__ = '2.7.4'
+__version__ = '2.8.0'
 __all__ = [
     'BareField',
     'BigIntegerField',
@@ -3839,6 +3839,7 @@ class PostgresqlDatabase(Database):
         self.execute_sql('SET search_path TO %s' % path_params, search_path)
 
 class MySQLDatabase(Database):
+    commit_select = True
     compound_operations = ['UNION', 'UNION ALL']
     field_overrides = {
         'bool': 'BOOL',
