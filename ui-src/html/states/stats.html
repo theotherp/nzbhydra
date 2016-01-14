@@ -1,5 +1,5 @@
 <uib-tabset style="text-align: center">
-    <uib-tab heading="Stats">
+    <uib-tab heading="Stats" active="tabs[0].active" select="goToState(0)">
         <div class="row">
             <div class="col-md-9">
                 <table class="table">
@@ -70,15 +70,15 @@
 
     </uib-tab>
 
-    <uib-tab heading="Indexer statuses">
+    <uib-tab heading="Indexer statuses" active="tabs[1].active" select="goToState(1)">
         <div indexer-statuses></div>
     </uib-tab>
     
-    <uib-tab heading="Searches">
+    <uib-tab heading="Searches" active="tabs[2].active" select="goToState(2)">
         <div search-history></div>
     </uib-tab>
     
-    <uib-tab heading="NZB Downloads">
+    <uib-tab heading="NZB Downloads" active="tabs[3].active" select="goToState(3)">
         <div download-history></div>
     </uib-tab>
 

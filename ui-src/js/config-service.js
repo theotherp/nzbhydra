@@ -4,20 +4,18 @@ angular
 
 function ConfigService($http, $q, $cacheFactory) {
 
-    var cache = $cacheFactory('nzbhydra');
+    var cache = $cacheFactory("nzbhydra");
     
     return {
-        set: setConfig,
-        get: getConfig,
+        set: set,
+        get: get,
         getSafe: getSafe,
         invalidateSafe: invalidateSafe,
         maySeeAdminArea: maySeeAdminArea
     };
     
     
-    function setConfig(newConfig) {
-        console.log("Starting setConfig");
-
+    function set(newConfig) {
         $http.put('internalapi/setsettings', newConfig)
             .then(function (successresponse) {
                 console.log("Settings saved. Updating cache");
@@ -27,50 +25,28 @@ function ConfigService($http, $q, $cacheFactory) {
             });
     }
 
-    function getConfig() {
-        function loadAll() {
-            var config = cache.get("config");
-            if (!angular.isUndefined(config)) {
-                var deferred = $q.defer();
-                deferred.resolve(config);
-                return deferred.promise;
-            }
-
-            return $http.get('internalapi/getconfig')
-                .then(function (configResponse) {
-                    console.log("Updating config cache");
-                    var config = configResponse.data;
-                    cache.put("config", config);
-                    return configResponse.data;
-                });
+    function get() {
+        var config = cache.get("config");
+        if (angular.isUndefined(config)) {
+            config = $http.get('internalapi/getconfig').then(function (data) {
+                return data.data;
+            });
+            cache.put("config", config);
         }
-
-        return loadAll().then(function (config) {
-            return config;
-        });
+        
+        return config;
     }
 
     function getSafe() {
-        function loadAll() {
             var safeconfig = cache.get("safeconfig");
-            if (!angular.isUndefined(safeconfig)) {
-                var deferred = $q.defer();
-                deferred.resolve(safeconfig);
-                return deferred.promise;
-            }
-
-            return $http.get('internalapi/getsafeconfig')
-                .then(function (configResponse) {
-                    console.log("Updating safe config cache");
-                    var config = configResponse.data;
-                    cache.put("safeconfig", config);
-                    return configResponse.data;
+            if (angular.isUndefined(safeconfig)) {
+                safeconfig = $http.get('internalapi/getsafeconfig').then(function(data) {
+                    return data.data;
                 });
-        }
-
-        return loadAll().then(function (config) {
-            return config;
-        });
+                cache.put("safeconfig", safeconfig);
+            }
+        
+            return safeconfig;
     }
     
     function invalidateSafe() {
@@ -88,7 +64,6 @@ function ConfigService($http, $q, $cacheFactory) {
 
             return $http.get('internalapi/mayseeadminarea')
                 .then(function (configResponse) {
-                    console.log("Updating maySeeAdminArea cache");
                     var config = configResponse.data;
                     cache.put("maySeeAdminArea", config);
                     return configResponse.data;

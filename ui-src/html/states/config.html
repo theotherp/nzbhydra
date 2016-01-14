@@ -1,11 +1,11 @@
 <div class="row">
     <form ng-submit="submit(form)" name="form" novalidate>
         <uib-tabset>
-            <uib-tab ng-repeat="tab in tabs" heading="{{ tab.name }}" select="tabs[$index].active = true" active="tabs[$index].active">
-                <formly-form model="tab.model" fields="tab.fields" ng-if="tabs[$index].active == true">
+            <uib-tab ng-repeat="tab in formTabs" heading="{{ tab.name }}"  active="allTabs[$index].active" select="goToConfigState($index)">
+                <formly-form model="tab.model" fields="tab.fields" ng-if="allTabs[$index].active">
                 </formly-form>
             </uib-tab>
-            <uib-tab heading="Current log" select="downloadLog()">
+            <uib-tab heading="Current log" select="goToConfigState(5)">
                 <pre ng-bind-html="log" style="text-align: left"></pre>
                 
             </uib-tab>

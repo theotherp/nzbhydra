@@ -16,8 +16,6 @@ function cfgFormEntry() {
         controller: function ($scope, $element, $attrs) {
             $scope.type = angular.isDefined($scope.type) ? $scope.type : 'text';
             $scope.options = angular.isDefined($scope.type) ? $scope.$eval($attrs.options) : [];
-            console.log($scope.options);
-
         }
     };
 }

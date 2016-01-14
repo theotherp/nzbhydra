@@ -35,12 +35,92 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }]
             }
         })
+        .state("config.searching", {
+            url: "/searching",
+            templateUrl: "static/html/states/config.html",
+            controller: "ConfigController",
+            resolve: {
+                config: ['ConfigService', function (ConfigService) {
+                    return ConfigService.get();
+                }]
+            }
+        })
+        .state("config.downloader", {
+            url: "/downloader",
+            templateUrl: "static/html/states/config.html",
+            controller: "ConfigController",
+            resolve: {
+                config: ['ConfigService', function (ConfigService) {
+                    return ConfigService.get();
+                }]
+            }
+        })
+        .state("config.indexers", {
+            url: "/indexers",
+            templateUrl: "static/html/states/config.html",
+            controller: "ConfigController",
+            resolve: {
+                config: ['ConfigService', function (ConfigService) {
+                    return ConfigService.get();
+                }]
+            }
+        })
+        .state("config.system", {
+            url: "/system",
+            templateUrl: "static/html/states/config.html",
+            controller: "ConfigController",
+            resolve: {
+                config: ['ConfigService', function (ConfigService) {
+                    return ConfigService.get();
+                }]
+            }
+        })
+        .state("config.log", {
+            url: "/log",
+            templateUrl: "static/html/states/config.html",
+            controller: "ConfigController",
+            resolve: {
+                config: ['ConfigService', function (ConfigService) {
+                    return ConfigService.get();
+                }]
+            }
+        })
         .state("stats", {
             url: "/stats",
             templateUrl: "static/html/states/stats.html",
             controller: "StatsController",
             resolve: {
                 stats: ['StatsService', function(StatsService) {
+                    return StatsService.get();
+                }]
+            }
+        })
+        .state("stats.indexers", {
+            url: "/indexers",
+            templateUrl: "static/html/states/stats.html",
+            controller: "StatsController",
+            resolve: {
+                stats: ['StatsService', function (StatsService) {
+                    return StatsService.get();
+                }]
+            }
+        })
+        .state("stats.searches", {
+            url: "/searches",
+            templateUrl: "static/html/states/stats.html",
+            controller: "StatsController",
+            resolve: {
+                stats: ['StatsService', function (StatsService) {
+                    return StatsService.get();
+                }]
+            }
+        })
+        .state("stats.downloads", {
+            url: "/downloads",
+            templateUrl: "static/html/states/stats.html",
+            controller: "StatsController",
+            resolve: {
+                stats: ['StatsService', function (StatsService) {
                     return StatsService.get();
                 }]
             }
@@ -179,8 +259,6 @@ function searchResult() {
         $scope.otherTitleRowsToShow = otherTitleRowsToShow;
         function otherTitleRowsToShow() {
             if ($scope.titleGroup.length > 1 && $scope.titleGroupExpanded) {
-                console.log("Other titles to show:");
-                console.log($scope.titleGroup.slice(1));
                 return $scope.titleGroup.slice(1);
             } else {
                 return [];
@@ -223,7 +301,6 @@ function otherColumns($http, $templateCache, $compile) {
         $scope.showNfo = showNfo;
         function showNfo(resultItem) {
             if (resultItem.has_nfo == 0) {
-                console.log("Ignoring NFO request because we know the item has no NFO");
                 return;
             }
             var uri = new URI("internalapi/getnfo");
@@ -353,7 +430,6 @@ function onFinishRender($timeout) {
         
         if (scope.$last === true) {
                 $timeout(function () {
-                    console.log("Finished last render");
                     scope.$evalAsync(attr.onFinishRender);
                 });
             }
@@ -464,7 +540,6 @@ function downloadHistory() {
             $http.get("internalapi/getnzbdownloads", {params:{page: pageNumber, limit: $scope.limit, type: $scope.type}}).success(function (response) {
                 $scope.nzbDownloads = response.nzbDownloads;
                 $scope.totalDownloads = response.totalDownloads;
-                console.log($scope.nzbDownloads);
             });
         }
 
@@ -489,8 +564,6 @@ function cfgFormEntry() {
         controller: ["$scope", "$element", "$attrs", function ($scope, $element, $attrs) {
             $scope.type = angular.isDefined($scope.type) ? $scope.type : 'text';
             $scope.options = angular.isDefined($scope.type) ? $scope.$eval($attrs.options) : [];
-            console.log($scope.options);
-
         }]
     };
 }
@@ -596,7 +669,7 @@ angular
     .module('nzbhydraApp')
     .controller('StatsController', StatsController);
 
-function StatsController($scope, stats) {
+function StatsController($scope, stats, $state) {
 
     stats = stats.data;
     $scope.nzbDownloads = null;
@@ -605,8 +678,41 @@ function StatsController($scope, stats) {
     $scope.avgIndexerAccessSuccesses = stats.avgIndexerAccessSuccesses;
 
 
+    $scope.tabs = [
+        {
+            active: false,
+            state: 'stats'
+        },
+        {
+            active: false,
+            state: 'stats.indexers'
+        },
+        {
+            active: false,
+            state: 'stats.searches'
+        },
+        {
+            active: false,
+            state: 'stats.downloads'
+        }
+    ];
+
+
+    for (var i = 0; i < $scope.tabs.length; i++) {
+        if ($state.is($scope.tabs[i].state)) {
+            $scope.tabs[i].active = true;
+        }
+    }
+    
+
+    $scope.goToState = function (index) {
+        $state.go($scope.tabs[index].state);
+        
+    }
+
+
 }
-StatsController.$inject = ["$scope", "stats"];
+StatsController.$inject = ["$scope", "stats", "$state"];
 
 angular
     .module('nzbhydraApp')
@@ -1390,133 +1496,6 @@ nzbhydraapp.config(['$provide', '$httpProvider', function ($provide, $httpProvid
         return newHttp;
     }]);
 }]);
-var filters = angular.module('filters', []);
-
-filters.filter('bytes', function() {
-	return function(bytes, precision) {
-		if (isNaN(parseFloat(bytes)) || !isFinite(bytes) || bytes == 0) return '-';
-		if (typeof precision === 'undefined') precision = 1;
-		
-		var units = ['b', 'kB', 'MB', 'GB', 'TB', 'PB'],
-			number = Math.floor(Math.log(bytes) / Math.log(1024));
-		return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) +   units[number];
-	}
-});
-
-
-filters.filter('unsafe', ['$sce', function ($sce) {
-	return $sce.trustAsHtml;
-}]);
-
-
-
-angular
-    .module('nzbhydraApp')
-    .factory('ConfigService', ConfigService);
-
-function ConfigService($http, $q, $cacheFactory) {
-
-    var cache = $cacheFactory('nzbhydra');
-    
-    return {
-        set: setConfig,
-        get: getConfig,
-        getSafe: getSafe,
-        invalidateSafe: invalidateSafe,
-        maySeeAdminArea: maySeeAdminArea
-    };
-    
-    
-    function setConfig(newConfig) {
-        console.log("Starting setConfig");
-
-        $http.put('internalapi/setsettings', newConfig)
-            .then(function (successresponse) {
-                console.log("Settings saved. Updating cache");
-                cache.put("config", newConfig);
-            }, function (errorresponse) {
-                console.log("Error saving settings: " + errorresponse);
-            });
-    }
-
-    function getConfig() {
-        function loadAll() {
-            var config = cache.get("config");
-            if (!angular.isUndefined(config)) {
-                var deferred = $q.defer();
-                deferred.resolve(config);
-                return deferred.promise;
-            }
-
-            return $http.get('internalapi/getconfig')
-                .then(function (configResponse) {
-                    console.log("Updating config cache");
-                    var config = configResponse.data;
-                    cache.put("config", config);
-                    return configResponse.data;
-                });
-        }
-
-        return loadAll().then(function (config) {
-            return config;
-        });
-    }
-
-    function getSafe() {
-        function loadAll() {
-            var safeconfig = cache.get("safeconfig");
-            if (!angular.isUndefined(safeconfig)) {
-                var deferred = $q.defer();
-                deferred.resolve(safeconfig);
-                return deferred.promise;
-            }
-
-            return $http.get('internalapi/getsafeconfig')
-                .then(function (configResponse) {
-                    console.log("Updating safe config cache");
-                    var config = configResponse.data;
-                    cache.put("safeconfig", config);
-                    return configResponse.data;
-                });
-        }
-
-        return loadAll().then(function (config) {
-            return config;
-        });
-    }
-    
-    function invalidateSafe() {
-        cache.remove("safeconfig");
-    }
-
-    function maySeeAdminArea() {
-        function loadAll() {
-            var maySeeAdminArea = cache.get("maySeeAdminArea");
-            if (!angular.isUndefined(maySeeAdminArea)) {
-                var deferred = $q.defer();
-                deferred.resolve(maySeeAdminArea);
-                return deferred.promise;
-            }
-
-            return $http.get('internalapi/mayseeadminarea')
-                .then(function (configResponse) {
-                    console.log("Updating maySeeAdminArea cache");
-                    var config = configResponse.data;
-                    cache.put("maySeeAdminArea", config);
-                    return configResponse.data;
-                });
-        }
-
-        return loadAll().then(function (maySeeAdminArea) {
-            return maySeeAdminArea;
-        });
-    }
-}
-ConfigService.$inject = ["$http", "$q", "$cacheFactory"];
-angular
-    .module('nzbhydraApp')
-    .controller('ConfigController', ConfigController);
-
 angular
     .module('nzbhydraApp')
     .config(["formlyConfigProvider", function config(formlyConfigProvider) {
@@ -1923,21 +1902,115 @@ angular
             }
         });
 
-
     }]);
 
+var filters = angular.module('filters', []);
 
-function ConfigController($scope, ConfigService, config, CategoriesService) {
-    $scope.config = config;
-    $scope.submit = submit;
+filters.filter('bytes', function() {
+	return function(bytes, precision) {
+		if (isNaN(parseFloat(bytes)) || !isFinite(bytes) || bytes == 0) return '-';
+		if (typeof precision === 'undefined') precision = 1;
+		
+		var units = ['b', 'kB', 'MB', 'GB', 'TB', 'PB'],
+			number = Math.floor(Math.log(bytes) / Math.log(1024));
+		return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) +   units[number];
+	}
+});
 
 
-    function submit(form) {
-        ConfigService.set($scope.config);
-        ConfigService.invalidateSafe();
-        form.$setPristine();
-        CategoriesService.invalidate();
+filters.filter('unsafe', ['$sce', function ($sce) {
+	return $sce.trustAsHtml;
+}]);
+
+
+
+angular
+    .module('nzbhydraApp')
+    .factory('ConfigService', ConfigService);
+
+function ConfigService($http, $q, $cacheFactory) {
+
+    var cache = $cacheFactory("nzbhydra");
+    
+    return {
+        set: set,
+        get: get,
+        getSafe: getSafe,
+        invalidateSafe: invalidateSafe,
+        maySeeAdminArea: maySeeAdminArea
+    };
+    
+    
+    function set(newConfig) {
+        $http.put('internalapi/setsettings', newConfig)
+            .then(function (successresponse) {
+                console.log("Settings saved. Updating cache");
+                cache.put("config", newConfig);
+            }, function (errorresponse) {
+                console.log("Error saving settings: " + errorresponse);
+            });
     }
+
+    function get() {
+        var config = cache.get("config");
+        if (angular.isUndefined(config)) {
+            config = $http.get('internalapi/getconfig').then(function (data) {
+                return data.data;
+            });
+            cache.put("config", config);
+        }
+        
+        return config;
+    }
+
+    function getSafe() {
+            var safeconfig = cache.get("safeconfig");
+            if (angular.isUndefined(safeconfig)) {
+                safeconfig = $http.get('internalapi/getsafeconfig').then(function(data) {
+                    return data.data;
+                });
+                cache.put("safeconfig", safeconfig);
+            }
+        
+            return safeconfig;
+    }
+    
+    function invalidateSafe() {
+        cache.remove("safeconfig");
+    }
+
+    function maySeeAdminArea() {
+        function loadAll() {
+            var maySeeAdminArea = cache.get("maySeeAdminArea");
+            if (!angular.isUndefined(maySeeAdminArea)) {
+                var deferred = $q.defer();
+                deferred.resolve(maySeeAdminArea);
+                return deferred.promise;
+            }
+
+            return $http.get('internalapi/mayseeadminarea')
+                .then(function (configResponse) {
+                    var config = configResponse.data;
+                    cache.put("maySeeAdminArea", config);
+                    return configResponse.data;
+                });
+        }
+
+        return loadAll().then(function (maySeeAdminArea) {
+            return maySeeAdminArea;
+        });
+    }
+}
+ConfigService.$inject = ["$http", "$q", "$cacheFactory"];
+angular
+    .module('nzbhydraApp')
+    .factory('ConfigFields', ConfigFields);
+
+function ConfigFields() {
+    
+    return {
+        getFields: getFields
+    };
 
     function getBasicIndexerFieldset(showName, host, apikey, username, searchIds, testConnection, testtype, showpreselect, showCheckCaps) {
         var fieldset = [];
@@ -2041,8 +2114,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
                 }
             },
         ]);
-        
-        
+
 
         if (showpreselect) {
             fieldset.push(
@@ -2129,12 +2201,12 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
             hideExpression: function ($viewValue, $modelValue, scope) {
                 if (index > 1 && index <= 40) {
                     var allBeforeNamed = true;
-                    for (var i=1; i < index; i++) {
-                        if (!scope.model["newznab"+ i].name) {
+                    for (var i = 1; i < index; i++) {
+                        if (!scope.model["newznab" + i].name) {
                             allBeforeNamed = false;
                             break;
                         }
-                    } 
+                    }
                     return !allBeforeNamed;
                 }
                 return false;
@@ -2145,1036 +2217,1105 @@ function ConfigController($scope, ConfigService, config, CategoriesService) {
         };
     }
 
+    function getFields() {
+        console.log("Called getFields() from ConfigFields");
 
-    $scope.fields = {
-        main: [
-            {
-                wrapper: 'fieldset',
-                templateOptions: {label: 'Hosting'},
-                fieldGroup: [
-                    {
-                        key: 'host',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Host',
-                            placeholder: 'IPv4 address to bind to',
-                            help: 'Requires restart'
-                        }
-                    },
-                    {
-                        key: 'port',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Port',
-                            placeholder: '5050',
-                            help: 'Requires restart'
-                        }
-                    },
-                    {
-                        key: 'baseUrl',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Base URL',
-                            placeholder: 'http://127.0.0.1:5075/',
-                            help: 'Set if the external URL is different from the local URL (must end with \"/\)"'
-                        }
-                    },
-                    {
-                        key: 'ssl',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Use SSL',
-                            help: 'Requires restart'
-                        }
-                    },
-                    {
-                        key: 'sslcert',
-                        hideExpression: '!model.ssl',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'SSL certificate file',
-                            required: true,
-                            help: 'Requires restart'
-                        }
-                    },
-                    {
-                        key: 'sslkey',
-                        hideExpression: '!model.ssl',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'SSL key file',
-                            required: true,
-                            help: 'Requires restart'
-                        }
-                    }
-
-                ]
-            },
-            {
-                wrapper: 'fieldset',
-                templateOptions: {label: 'Security'},
-                fieldGroup: [
-                    {
-                        key: 'enableAuth',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enable authentication'
-                        }
-                    },
-                    {
-                        key: 'username',
-                        type: 'horizontalInput',
-                        hideExpression: '!model.enableAuth',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Username',
-                            required: true
-                        }
-                    },
-                    {
-                        key: 'password',
-                        hideExpression: '!model.enableAuth',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'password',
-                            label: 'Password',
-                            required: true
-                        }
-                    },
-                    {
-                        key: 'apikey',
-                        type: 'horizontalApiKeyInput',
-                        templateOptions: {
-                            label: 'API key',
-                            help: 'Remove to disable. Alphanumeric only'
-                        }
-                    },
-                    {
-                        key: 'enableAdminAuth',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enable admin user',
-                            help: 'Enable to protect the config with a separate admin user'
-                        }
-                    },
-                    {
-                        key: 'adminUsername',
-                        type: 'horizontalInput',
-                        hideExpression: '!model.enableAdminAuth',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Admin username',
-                            required: true
-                        }
-                    },
-                    {
-                        key: 'adminPassword',
-                        hideExpression: '!model.enableAdminAuth',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'password',
-                            label: 'Admin password',
-                            required: true
-                        }
-                    },
-                    {
-                        key: 'enableAdminAuthForStats',
-                        type: 'horizontalSwitch',
-                        hideExpression: '!model.enableAdminAuth',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enable stats admin',
-                            help: 'Enable to protect the history & stats with the admin user'
-                        }
-                    }
-
-
-                ]
-            },
-            {
-                wrapper: 'fieldset',
-                templateOptions: {label: 'Caching'},
-                fieldGroup: [
-                    {
-                        key: 'enableCache',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enable caching'
-                        }
-                    },
-                    {
-                        key: 'enableCacheForApi',
-                        hideExpression: '!model.enableCache',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Cache API search results',
-                            help: 'Enable to reduce load on indexers, disable for always newest results'
-                        }
-                    },
-                    {
-                        key: 'cacheType',
-                        hideExpression: '!model.enableCache',
-                        type: 'horizontalSelect',
-                        templateOptions: {
-                            type: 'select',
-                            label: 'Type',
-                            options: [
-                                {name: 'Memory only', value: 'memory'},
-                                {name: 'File sytem', value: 'file'}
-                            ]
-                        }
-                    },
-                    {
-                        key: 'cacheTimeout',
-                        hideExpression: '!model.enableCache',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Cache timeout',
-                            help: 'Time after which cache entries will be discarded',
-                            addonRight: {
-                                text: 'minutes'
+        return {
+            main: [
+                {
+                    wrapper: 'fieldset',
+                    templateOptions: {label: 'Hosting'},
+                    fieldGroup: [
+                        {
+                            key: 'host',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Host',
+                                placeholder: 'IPv4 address to bind to',
+                                help: 'Requires restart'
+                            }
+                        },
+                        {
+                            key: 'port',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'number',
+                                label: 'Port',
+                                placeholder: '5050',
+                                help: 'Requires restart'
+                            }
+                        },
+                        {
+                            key: 'baseUrl',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Base URL',
+                                placeholder: 'http://127.0.0.1:5075/',
+                                help: 'Set if the external URL is different from the local URL (must end with \"/\)"'
+                            }
+                        },
+                        {
+                            key: 'ssl',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Use SSL',
+                                help: 'Requires restart'
+                            }
+                        },
+                        {
+                            key: 'sslcert',
+                            hideExpression: '!model.ssl',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'SSL certificate file',
+                                required: true,
+                                help: 'Requires restart'
+                            }
+                        },
+                        {
+                            key: 'sslkey',
+                            hideExpression: '!model.ssl',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'SSL key file',
+                                required: true,
+                                help: 'Requires restart'
                             }
                         }
-                    },
-                    {
-                        key: 'cachethreshold',
-                        hideExpression: '!model.enableCache',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Cache threshold',
-                            help: 'Max amount of items held in cache',
-                            addonRight: {
-                                text: 'items'
-                            }
-                        }
-                    },
-                    {
-                        key: 'cacheFolder',
-                        hideExpression: '!model.enableCache || model.cacheType == "memory"',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Cache folder'
-                        }
-                    }
 
-                ]
-            },
-
-            {
-                wrapper: 'fieldset',
-                key: 'logging',
-                templateOptions: {label: 'Logging'},
-                fieldGroup: [
-                    {
-                        key: 'logfile-level',
-                        type: 'horizontalSelect',
-                        templateOptions: {
-                            type: 'select',
-                            label: 'Logfile level',
-                            options: [
-                                {name: 'Critical', value: 'CRITICAL'},
-                                {name: 'Error', value: 'ERROR'},
-                                {name: 'Warning', value: 'WARNING'},
-                                {name: 'Debug', value: 'DEBUG'},
-                                {name: 'Info', value: 'INFO'}
-                            ]
-                        }
-                    },
-                    {
-                        key: 'logfile-filename',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Log file'
-                        }
-                    },
-                    {
-                        key: 'consolelevel',
-                        type: 'horizontalSelect',
-                        templateOptions: {
-                            type: 'select',
-                            label: 'Console log level',
-                            options: [
-                                {name: 'Critical', value: 'CRITICAL'},
-                                {name: 'Error', value: 'ERROR'},
-                                {name: 'Warning', value: 'WARNING'},
-                                {name: 'Info', value: 'INFO'},
-                                {name: 'Debug', value: 'DEBUG'}
-                            ]
-                        }
-                    }
-
-
-                ]
-            },
-            {
-                wrapper: 'fieldset',
-                templateOptions: {label: 'Other'},
-                fieldGroup: [
-                    {
-                        key: 'debug',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Enable debugging',
-                            help: "Only do this if you know what and why you're doing it"
-                        }
-                    },
-                    {
-                        key: 'runThreaded',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Run threaded server',
-                            help: 'Requires restart. Experimental. Please report your experiences.'
-                        }
-                    },
-                    {
-                        key: 'startupBrowser',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Open browser on startup'
-                        }
-                    },
-                    {
-                        key: 'branch',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Repository branch',
-                            help: 'Stay with master...'
-                        }
-                    }
-                ]
-            }
-        ],
-
-        searching: [
-            {
-                wrapper: 'fieldset',
-                templateOptions: {
-                    label: 'Indexer access'
+                    ]
                 },
-                fieldGroup: [
-                    {
-                        key: 'timeout',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Timeout when accessing indexers',
-                            addonRight: {
-                                text: 'seconds'
+                {
+                    wrapper: 'fieldset',
+                    templateOptions: {label: 'Security'},
+                    fieldGroup: [
+                        {
+                            key: 'enableAuth',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Enable authentication'
+                            }
+                        },
+                        {
+                            key: 'username',
+                            type: 'horizontalInput',
+                            hideExpression: '!model.enableAuth',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Username',
+                                required: true
+                            }
+                        },
+                        {
+                            key: 'password',
+                            hideExpression: '!model.enableAuth',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'password',
+                                label: 'Password',
+                                required: true
+                            }
+                        },
+                        {
+                            key: 'apikey',
+                            type: 'horizontalApiKeyInput',
+                            templateOptions: {
+                                label: 'API key',
+                                help: 'Remove to disable. Alphanumeric only'
+                            }
+                        },
+                        {
+                            key: 'enableAdminAuth',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Enable admin user',
+                                help: 'Enable to protect the config with a separate admin user'
+                            }
+                        },
+                        {
+                            key: 'adminUsername',
+                            type: 'horizontalInput',
+                            hideExpression: '!model.enableAdminAuth',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Admin username',
+                                required: true
+                            }
+                        },
+                        {
+                            key: 'adminPassword',
+                            hideExpression: '!model.enableAdminAuth',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'password',
+                                label: 'Admin password',
+                                required: true
+                            }
+                        },
+                        {
+                            key: 'enableAdminAuthForStats',
+                            type: 'horizontalSwitch',
+                            hideExpression: '!model.enableAdminAuth',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Enable stats admin',
+                                help: 'Enable to protect the history & stats with the admin user'
                             }
                         }
-                    },
-                    {
-                        key: 'ignoreTemporarilyDisabled',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Ignore temporarily disabled',
-                            help: "If enabled access to indexers will never be paused after an error occurred"
-                        }
-                    },
-                    {
-                        key: 'ignorePassworded',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Ignore passworded releases',
-                            help: "Not all indexers provide this information"
-                        }
-                    },
-                    
-                    
-                    {
-                        key: 'generate_queries',
-                        type: 'horizontalMultiselect',
-                        templateOptions: {
-                            label: 'Generate queries',
-                            options: [
-                                {label: 'Internal searches', id: 'internal'},
-                                {label: 'API searches', id: 'external'}
-                            ],
-                            help: "Generate queries for indexers which do not support ID based searches"
-                        }
-                    },
-                    {
-                        key: 'userAgent',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'User agent'
-                        }
-                    }
-                ]
-            },
-            {
-                wrapper: 'fieldset',
-                templateOptions: {
-                    label: 'Result processing'
+
+
+                    ]
                 },
-                fieldGroup: [
-                    {
-                        key: 'htmlParser',
-                        type: 'horizontalSelect',
-                        templateOptions: {
-                            type: 'select',
-                            label: 'Type',
-                            options: [
-                                {name: 'Default BS (slow)', value: 'html.parser'},
-                                {name: 'LXML (faster, needs to be installed separately)', value: 'lxml'}
-                            ]
-                        }
-                    },
-                    {
-                        key: 'duplicateSizeThresholdInPercent',
-                        type: 'horizontalPercentInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Duplicate size threshold',
-                            addonRight: {
-                                text: '%'
+                {
+                    wrapper: 'fieldset',
+                    templateOptions: {label: 'Caching'},
+                    fieldGroup: [
+                        {
+                            key: 'enableCache',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Enable caching'
                             }
-
-                        }
-                    },
-                    {
-                        key: 'duplicateAgeThreshold',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Duplicate age threshold',
-                            addonRight: {
-                                text: 'seconds'
+                        },
+                        {
+                            key: 'enableCacheForApi',
+                            hideExpression: '!model.enableCache',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Cache API search results',
+                                help: 'Enable to reduce load on indexers, disable for always newest results'
                             }
-                        }
-                    },
-                    {
-                        key: 'removeDuplicatesExternal',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Remove API duplicates',
-                            help: 'Remove duplicates when searching via API'
-                        }
-                    }
-                ]
-            },
-
-            {
-                wrapper: 'fieldset',
-                key: 'categorysizes',
-                templateOptions: {label: 'Category sizes'},
-                fieldGroup: [
-
-                    {
-                        key: 'enable_category_sizes',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Category sizes',
-                            help: "Preset min and max sizes depending on the selected category"
-                        }
-                    },
-                    {
-                        wrapper: 'logicalGroup',
-                        hideExpression: '!model.enable_category_sizes',
-                        fieldGroup: [
-                            {
-                                wrapper: 'horizontalBootstrapLabel',
-                                templateOptions: {
-                                    label: 'Movies'
-                                },
-                                fieldGroup: [
-                                    {
-                                        key: 'moviesmin',
-                                        type: 'duoSetting',
-                                        templateOptions: {
-                                            addonRight: {
-                                                text: 'MB'
-                                            }
-                                        }
-                                    },
-                                    {
-                                        type: 'duolabel'
-                                    },
-                                    {
-                                        key: 'moviesmax',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    }
-                                ]
-                            },
-                            {
-                                wrapper: 'horizontalBootstrapLabel',
-                                templateOptions: {
-                                    label: 'Movies HD'
-                                },
-                                fieldGroup: [
-                                    {
-                                        key: 'movieshdmin',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    },
-                                    {
-                                        type: 'duolabel'
-                                    },
-                                    {
-                                        key: 'movieshdmax',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    }
-                                ]
-                            },
-                            {
-                                wrapper: 'horizontalBootstrapLabel',
-                                templateOptions: {
-                                    label: 'Movies SD'
-                                },
-                                fieldGroup: [
-                                    {
-                                        key: 'moviessdmin',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    },
-                                    {
-                                        type: 'duolabel'
-                                    },
-                                    {
-                                        key: 'movieshdmin',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    }
-                                ]
-                            },
-
-                            {
-                                wrapper: 'horizontalBootstrapLabel',
-                                templateOptions: {
-                                    label: 'TV'
-                                },
-                                fieldGroup: [
-                                    {
-                                        key: 'tvmin',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    },
-                                    {
-                                        type: 'duolabel'
-                                    },
-                                    {
-                                        key: 'tvmax',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    }
-                                ]
-                            },
-
-                            {
-                                wrapper: 'horizontalBootstrapLabel',
-                                templateOptions: {
-                                    label: 'TV HD'
-                                },
-                                fieldGroup: [
-                                    {
-                                        key: 'tvhdmin',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    },
-                                    {
-                                        type: 'duolabel'
-                                    },
-                                    {
-                                        key: 'tvhdmax',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    }
-                                ]
-                            },
-
-                            {
-                                wrapper: 'horizontalBootstrapLabel',
-                                templateOptions: {
-                                    label: 'TV SD'
-                                },
-                                fieldGroup: [
-                                    {
-                                        key: 'tvsdmin',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    },
-                                    {
-                                        type: 'duolabel'
-                                    },
-                                    {
-                                        key: 'tvsdmax',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    }
-                                ]
-                            },
-
-                            {
-                                wrapper: 'horizontalBootstrapLabel',
-                                templateOptions: {
-                                    label: 'Audio'
-                                },
-                                fieldGroup: [
-                                    {
-                                        key: 'audiomin',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    },
-                                    {
-                                        type: 'duolabel'
-                                    },
-                                    {
-                                        key: 'audiomax',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    }
-                                ]
-                            },
-
-                            {
-                                wrapper: 'horizontalBootstrapLabel',
-                                templateOptions: {
-                                    label: 'Audio FLAC'
-                                },
-                                fieldGroup: [
-                                    {
-                                        key: 'flacmin',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    },
-                                    {
-                                        type: 'duolabel'
-                                    },
-                                    {
-                                        key: 'flacmax',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    }
-                                ]
-                            },
-
-                            {
-                                wrapper: 'horizontalBootstrapLabel',
-                                templateOptions: {
-                                    label: 'Audio MP3'
-                                },
-                                fieldGroup: [
-                                    {
-                                        key: 'mp3min',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    },
-                                    {
-                                        type: 'duolabel'
-                                    },
-                                    {
-                                        key: 'mp3max',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    }
-                                ]
-                            },
-
-                            {
-                                wrapper: 'horizontalBootstrapLabel',
-                                templateOptions: {
-                                    label: 'Console'
-                                },
-                                fieldGroup: [
-                                    {
-                                        key: 'consolemin',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    },
-                                    {
-                                        type: 'duolabel'
-                                    },
-                                    {
-                                        key: 'consolemax',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    }
-                                ]
-                            },
-
-                            {
-                                wrapper: 'horizontalBootstrapLabel',
-                                templateOptions: {
-                                    label: 'PC'
-                                },
-                                fieldGroup: [
-                                    {
-                                        key: 'pcmin',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    },
-                                    {
-                                        type: 'duolabel'
-                                    },
-                                    {
-                                        key: 'pcmax',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    }
-                                ]
-                            },
-
-                            {
-                                wrapper: 'horizontalBootstrapLabel',
-                                templateOptions: {
-                                    label: 'XXX'
-                                },
-                                fieldGroup: [
-                                    {
-                                        key: 'xxxmin',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    },
-                                    {
-                                        type: 'duolabel'
-                                    },
-                                    {
-                                        key: 'xxxmax',
-                                        type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                    }
+                        },
+                        {
+                            key: 'cacheType',
+                            hideExpression: '!model.enableCache',
+                            type: 'horizontalSelect',
+                            templateOptions: {
+                                type: 'select',
+                                label: 'Type',
+                                options: [
+                                    {name: 'Memory only', value: 'memory'},
+                                    {name: 'File sytem', value: 'file'}
                                 ]
                             }
-                        ]
-                    }
+                        },
+                        {
+                            key: 'cacheTimeout',
+                            hideExpression: '!model.enableCache',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'number',
+                                label: 'Cache timeout',
+                                help: 'Time after which cache entries will be discarded',
+                                addonRight: {
+                                    text: 'minutes'
+                                }
+                            }
+                        },
+                        {
+                            key: 'cachethreshold',
+                            hideExpression: '!model.enableCache',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'number',
+                                label: 'Cache threshold',
+                                help: 'Max amount of items held in cache',
+                                addonRight: {
+                                    text: 'items'
+                                }
+                            }
+                        },
+                        {
+                            key: 'cacheFolder',
+                            hideExpression: '!model.enableCache || model.cacheType == "memory"',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Cache folder'
+                            }
+                        }
 
-                ]
-            }
+                    ]
+                },
 
-        ],
+                {
+                    wrapper: 'fieldset',
+                    key: 'logging',
+                    templateOptions: {label: 'Logging'},
+                    fieldGroup: [
+                        {
+                            key: 'logfile-level',
+                            type: 'horizontalSelect',
+                            templateOptions: {
+                                type: 'select',
+                                label: 'Logfile level',
+                                options: [
+                                    {name: 'Critical', value: 'CRITICAL'},
+                                    {name: 'Error', value: 'ERROR'},
+                                    {name: 'Warning', value: 'WARNING'},
+                                    {name: 'Debug', value: 'DEBUG'},
+                                    {name: 'Info', value: 'INFO'}
+                                ]
+                            }
+                        },
+                        {
+                            key: 'logfile-filename',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Log file'
+                            }
+                        },
+                        {
+                            key: 'consolelevel',
+                            type: 'horizontalSelect',
+                            templateOptions: {
+                                type: 'select',
+                                label: 'Console log level',
+                                options: [
+                                    {name: 'Critical', value: 'CRITICAL'},
+                                    {name: 'Error', value: 'ERROR'},
+                                    {name: 'Warning', value: 'WARNING'},
+                                    {name: 'Info', value: 'INFO'},
+                                    {name: 'Debug', value: 'DEBUG'}
+                                ]
+                            }
+                        }
 
-        downloader: [
-            {
-                key: 'downloader',
-                type: 'horizontalSelect',
-                templateOptions: {
-                    type: 'select',
-                    label: 'Downloader',
-                    options: [
-                        {name: 'None', value: 'none'},
-                        {name: 'NZBGet', value: 'nzbget'},
-                        {name: 'SABnzbd', value: 'sabnzbd'}
+
+                    ]
+                },
+                {
+                    wrapper: 'fieldset',
+                    templateOptions: {label: 'Other'},
+                    fieldGroup: [
+                        {
+                            key: 'debug',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Enable debugging',
+                                help: "Only do this if you know what and why you're doing it"
+                            }
+                        },
+                        {
+                            key: 'runThreaded',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Run threaded server',
+                                help: 'Requires restart. Experimental. Please report your experiences.'
+                            }
+                        },
+                        {
+                            key: 'startupBrowser',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Open browser on startup'
+                            }
+                        },
+                        {
+                            key: 'branch',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Repository branch',
+                                help: 'Stay with master...'
+                            }
+                        }
                     ]
                 }
-            },
-            {
-                key: 'nzbaccesstype',
-                type: 'horizontalSelect',
-                templateOptions: {
-                    type: 'select',
-                    label: 'NZB access type',
-                    options: [
-                        {name: 'Proxy NZBs from indexer', value: 'serve'},
-                        {name: 'Redirect to the indexer', value: 'redirect'},
-                        {name: 'Use direct links', value: 'direct'}
-                    ],
-                    help: "How external access to NZBs is provided. Redirecting is recommended."
-                }
-            },
-            {
-                key: 'nzbAddingType',
-                type: 'horizontalSelect',
-                templateOptions: {
-                    type: 'select',
-                    label: 'NZB adding type',
-                    options: [
-                        {name: 'Send link', value: 'link'},
-                        {name: 'Upload NZB', value: 'nzb'}
-                    ],
-                    help: "How NZBs are added to the downloader, either by sending a link to the NZB or by uploading the NZB data"
-                }
-            },
-            {
-                wrapper: 'fieldset',
-                key: 'nzbget',
-                hideExpression: 'model.downloader!="nzbget"',
-                templateOptions: {label: 'NZBGet'},
-                fieldGroup: [
-                    {
-                        key: 'host',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Host'
-                        }
+            ],
+
+            searching: [
+                {
+                    wrapper: 'fieldset',
+                    templateOptions: {
+                        label: 'Indexer access'
                     },
-                    {
-                        key: 'port',
+                    fieldGroup: [
+                        {
+                            key: 'timeout',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'number',
+                                label: 'Timeout when accessing indexers',
+                                addonRight: {
+                                    text: 'seconds'
+                                }
+                            }
+                        },
+                        {
+                            key: 'ignoreTemporarilyDisabled',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Ignore temporarily disabled',
+                                help: "If enabled access to indexers will never be paused after an error occurred"
+                            }
+                        },
+                        {
+                            key: 'ignorePassworded',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Ignore passworded releases',
+                                help: "Not all indexers provide this information"
+                            }
+                        },
+
+
+                        {
+                            key: 'generate_queries',
+                            type: 'horizontalMultiselect',
+                            templateOptions: {
+                                label: 'Generate queries',
+                                options: [
+                                    {label: 'Internal searches', id: 'internal'},
+                                    {label: 'API searches', id: 'external'}
+                                ],
+                                help: "Generate queries for indexers which do not support ID based searches"
+                            }
+                        },
+                        {
+                            key: 'userAgent',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'User agent'
+                            }
+                        }
+                    ]
+                },
+                {
+                    wrapper: 'fieldset',
+                    templateOptions: {
+                        label: 'Result processing'
+                    },
+                    fieldGroup: [
+                        {
+                            key: 'htmlParser',
+                            type: 'horizontalSelect',
+                            templateOptions: {
+                                type: 'select',
+                                label: 'Type',
+                                options: [
+                                    {name: 'Default BS (slow)', value: 'html.parser'},
+                                    {name: 'LXML (faster, needs to be installed separately)', value: 'lxml'}
+                                ]
+                            }
+                        },
+                        {
+                            key: 'duplicateSizeThresholdInPercent',
+                            type: 'horizontalPercentInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Duplicate size threshold',
+                                addonRight: {
+                                    text: '%'
+                                }
+
+                            }
+                        },
+                        {
+                            key: 'duplicateAgeThreshold',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'number',
+                                label: 'Duplicate age threshold',
+                                addonRight: {
+                                    text: 'seconds'
+                                }
+                            }
+                        },
+                        {
+                            key: 'removeDuplicatesExternal',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Remove API duplicates',
+                                help: 'Remove duplicates when searching via API'
+                            }
+                        }
+                    ]
+                },
+
+                {
+                    wrapper: 'fieldset',
+                    key: 'categorysizes',
+                    templateOptions: {label: 'Category sizes'},
+                    fieldGroup: [
+
+                        {
+                            key: 'enable_category_sizes',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Category sizes',
+                                help: "Preset min and max sizes depending on the selected category"
+                            }
+                        },
+                        {
+                            wrapper: 'logicalGroup',
+                            hideExpression: '!model.enable_category_sizes',
+                            fieldGroup: [
+                                {
+                                    wrapper: 'horizontalBootstrapLabel',
+                                    templateOptions: {
+                                        label: 'Movies'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'moviesmin',
+                                            type: 'duoSetting',
+                                            templateOptions: {
+                                                addonRight: {
+                                                    text: 'MB'
+                                                }
+                                            }
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'moviesmax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                },
+                                {
+                                    wrapper: 'horizontalBootstrapLabel',
+                                    templateOptions: {
+                                        label: 'Movies HD'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'movieshdmin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'movieshdmax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                },
+                                {
+                                    wrapper: 'horizontalBootstrapLabel',
+                                    templateOptions: {
+                                        label: 'Movies SD'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'moviessdmin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'movieshdmin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                },
+
+                                {
+                                    wrapper: 'horizontalBootstrapLabel',
+                                    templateOptions: {
+                                        label: 'TV'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'tvmin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'tvmax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                },
+
+                                {
+                                    wrapper: 'horizontalBootstrapLabel',
+                                    templateOptions: {
+                                        label: 'TV HD'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'tvhdmin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'tvhdmax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                },
+
+                                {
+                                    wrapper: 'horizontalBootstrapLabel',
+                                    templateOptions: {
+                                        label: 'TV SD'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'tvsdmin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'tvsdmax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                },
+
+                                {
+                                    wrapper: 'horizontalBootstrapLabel',
+                                    templateOptions: {
+                                        label: 'Audio'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'audiomin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'audiomax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                },
+
+                                {
+                                    wrapper: 'horizontalBootstrapLabel',
+                                    templateOptions: {
+                                        label: 'Audio FLAC'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'flacmin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'flacmax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                },
+
+                                {
+                                    wrapper: 'horizontalBootstrapLabel',
+                                    templateOptions: {
+                                        label: 'Audio MP3'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'mp3min',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'mp3max',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                },
+
+                                {
+                                    wrapper: 'horizontalBootstrapLabel',
+                                    templateOptions: {
+                                        label: 'Console'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'consolemin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'consolemax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                },
+
+                                {
+                                    wrapper: 'horizontalBootstrapLabel',
+                                    templateOptions: {
+                                        label: 'PC'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'pcmin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'pcmax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                },
+
+                                {
+                                    wrapper: 'horizontalBootstrapLabel',
+                                    templateOptions: {
+                                        label: 'XXX'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'xxxmin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'xxxmax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+
+                    ]
+                }
+
+            ],
+
+            downloader: [
+                {
+                    key: 'downloader',
+                    type: 'horizontalSelect',
+                    templateOptions: {
+                        type: 'select',
+                        label: 'Downloader',
+                        options: [
+                            {name: 'None', value: 'none'},
+                            {name: 'NZBGet', value: 'nzbget'},
+                            {name: 'SABnzbd', value: 'sabnzbd'}
+                        ]
+                    }
+                },
+                {
+                    key: 'nzbaccesstype',
+                    type: 'horizontalSelect',
+                    templateOptions: {
+                        type: 'select',
+                        label: 'NZB access type',
+                        options: [
+                            {name: 'Proxy NZBs from indexer', value: 'serve'},
+                            {name: 'Redirect to the indexer', value: 'redirect'},
+                            {name: 'Use direct links', value: 'direct'}
+                        ],
+                        help: "How external access to NZBs is provided. Redirecting is recommended."
+                    }
+                },
+                {
+                    key: 'nzbAddingType',
+                    type: 'horizontalSelect',
+                    templateOptions: {
+                        type: 'select',
+                        label: 'NZB adding type',
+                        options: [
+                            {name: 'Send link', value: 'link'},
+                            {name: 'Upload NZB', value: 'nzb'}
+                        ],
+                        help: "How NZBs are added to the downloader, either by sending a link to the NZB or by uploading the NZB data"
+                    }
+                },
+                {
+                    wrapper: 'fieldset',
+                    key: 'nzbget',
+                    hideExpression: 'model.downloader!="nzbget"',
+                    templateOptions: {label: 'NZBGet'},
+                    fieldGroup: [
+                        {
+                            key: 'host',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Host'
+                            }
+                        },
+                        {
+                            key: 'port',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'number',
+                                label: 'Port',
+                                placeholder: '5050'
+                            }
+                        },
+                        {
+                            key: 'ssl',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Use SSL'
+                            }
+                        },
+                        {
+                            key: 'username',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Username'
+                            }
+                        },
+                        {
+                            key: 'password',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'password',
+                                label: 'Password'
+                            }
+                        },
+                        {
+                            key: 'defaultCategory',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Default category',
+                                help: 'When adding NZBs this category will be used instead of asking for the category'
+                            }
+                        },
+                        {
+                            type: 'horizontalTestConnection',
+                            templateOptions: {
+                                label: 'Test connection',
+                                testType: 'downloader',
+                                downloader: 'nzbget'
+                            }
+                        }
+
+
+                    ]
+                },
+                {
+                    wrapper: 'fieldset',
+                    key: 'sabnzbd',
+                    hideExpression: 'model.downloader!="sabnzbd"',
+                    templateOptions: {label: 'SABnzbd'},
+                    fieldGroup: [
+                        {
+                            key: 'url',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'URL'
+                            }
+                        },
+                        {
+                            key: 'username',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Username',
+                                help: 'Usually not needed when an API key is used'
+                            }
+                        },
+                        {
+                            key: 'password',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'password',
+                                label: 'Password',
+                                help: 'Usually not needed when an API key is used'
+                            }
+                        },
+                        {
+                            key: 'apikey',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'API Key'
+                            }
+                        },
+                        {
+                            key: 'defaultCategory',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Default category',
+                                help: 'When adding NZBs this category will be used instead of asking for the category'
+                            }
+                        },
+                        {
+                            type: 'horizontalTestConnection',
+                            templateOptions: {
+                                label: 'Test connection',
+                                testType: 'downloader',
+                                downloader: 'sabnzbd'
+                            }
+                        }
+
+
+                    ]
+                }
+            ],
+
+            indexers: [
+                {
+                    wrapper: 'fieldset',
+                    key: 'Binsearch',
+                    templateOptions: {label: 'Binsearch'},
+                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "binsearch", true)
+                },
+                {
+                    wrapper: 'fieldset',
+                    key: 'NZBClub',
+                    templateOptions: {label: 'NZBClub'},
+                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbclub", true)
+                },
+                {
+                    wrapper: 'fieldset',
+                    key: 'NZBIndex',
+                    templateOptions: {label: 'NZBIndex'},
+                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbindex", true).concat([{
+                        key: 'generalMinSize',
                         type: 'horizontalInput',
+                        hideExpression: '!model.enabled',
                         templateOptions: {
                             type: 'number',
-                            label: 'Port',
-                            placeholder: '5050'
+                            label: 'Min size',
+                            help: 'NZBIndex returns a lot of crap with small file sizes. Set this value and all smaller results will be filtered out no matter the category'
                         }
-                    },
-                    {
-                        key: 'ssl',
-                        type: 'horizontalSwitch',
-                        templateOptions: {
-                            type: 'switch',
-                            label: 'Use SSL'
-                        }
-                    },
-                    {
-                        key: 'username',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Username'
-                        }
-                    },
-                    {
-                        key: 'password',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'password',
-                            label: 'Password'
-                        }
-                    },
-                    {
-                        key: 'defaultCategory',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Default category',
-                            help: 'When adding NZBs this category will be used instead of asking for the category'
-                        }
-                    },
-                    {
-                        type: 'horizontalTestConnection',
-                        templateOptions: {
-                            label: 'Test connection',
-                            testType: 'downloader',
-                            downloader: 'nzbget'
-                        }
-                    }
+                    }])
+                },
+                {
+                    wrapper: 'fieldset',
+                    key: 'omgwtfnzbs',
+                    templateOptions: {label: 'omgwtfnzbs.org'},
+                    fieldGroup: getBasicIndexerFieldset(false, false, true, true, false, true, 'omgwtf', true)
+                },
+                {
+                    wrapper: 'fieldset',
+                    key: 'Womble',
+                    templateOptions: {label: 'Womble'},
+                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "womble", false)
+                },
 
 
-                ]
-            },
-            {
-                wrapper: 'fieldset',
-                key: 'sabnzbd',
-                hideExpression: 'model.downloader!="sabnzbd"',
-                templateOptions: {label: 'SABnzbd'},
-                fieldGroup: [
-                    {
-                        key: 'url',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'URL'
-                        }
-                    },
-                    {
-                        key: 'username',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Username',
-                            help: 'Usually not needed when an API key is used'
-                        }
-                    },
-                    {
-                        key: 'password',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'password',
-                            label: 'Password',
-                            help: 'Usually not needed when an API key is used'
-                        }
-                    },
-                    {
-                        key: 'apikey',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'API Key'
-                        }
-                    },
-                    {
-                        key: 'defaultCategory',
-                        type: 'horizontalInput',
-                        templateOptions: {
-                            type: 'text',
-                            label: 'Default category',
-                            help: 'When adding NZBs this category will be used instead of asking for the category'
-                        }
-                    },
-                    {
-                        type: 'horizontalTestConnection',
-                        templateOptions: {
-                            label: 'Test connection',
-                            testType: 'downloader',
-                            downloader: 'sabnzbd'
-                        }
-                    }
+                getNewznabFieldset(1),
+                getNewznabFieldset(2),
+                getNewznabFieldset(3),
+                getNewznabFieldset(4),
+                getNewznabFieldset(5),
+                getNewznabFieldset(6),
+                getNewznabFieldset(7),
+                getNewznabFieldset(8),
+                getNewznabFieldset(9),
+                getNewznabFieldset(10),
+                getNewznabFieldset(11),
+                getNewznabFieldset(12),
+                getNewznabFieldset(13),
+                getNewznabFieldset(14),
+                getNewznabFieldset(15),
+                getNewznabFieldset(16),
+                getNewznabFieldset(17),
+                getNewznabFieldset(18),
+                getNewznabFieldset(19),
+                getNewznabFieldset(20),
+                getNewznabFieldset(21),
+                getNewznabFieldset(22),
+                getNewznabFieldset(23),
+                getNewznabFieldset(24),
+                getNewznabFieldset(25),
+                getNewznabFieldset(26),
+                getNewznabFieldset(27),
+                getNewznabFieldset(28),
+                getNewznabFieldset(29),
+                getNewznabFieldset(30),
+                getNewznabFieldset(31),
+                getNewznabFieldset(32),
+                getNewznabFieldset(33),
+                getNewznabFieldset(34),
+                getNewznabFieldset(35),
+                getNewznabFieldset(36),
+                getNewznabFieldset(37),
+                getNewznabFieldset(38),
+                getNewznabFieldset(39),
+                getNewznabFieldset(40)
 
 
-                ]
-            }
-        ],
+            ],
 
-        indexers: [
-            {
-                wrapper: 'fieldset',
-                key: 'Binsearch',
-                templateOptions: {label: 'Binsearch'},
-                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "binsearch", true)
-            },
-            {
-                wrapper: 'fieldset',
-                key: 'NZBClub',
-                templateOptions: {label: 'NZBClub'},
-                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbclub", true)
-            },
-            {
-                wrapper: 'fieldset',
-                key: 'NZBIndex',
-                templateOptions: {label: 'NZBIndex'},
-                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbindex", true).concat([{
-                    key: 'generalMinSize',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
+            system: [
+                {
+                    key: 'shutdown',
+                    type: 'shutdown',
                     templateOptions: {
-                        type: 'number',
-                        label: 'Min size',
-                        help: 'NZBIndex returns a lot of crap with small file sizes. Set this value and all smaller results will be filtered out no matter the category'
+                        type: 'button',
+                        label: 'Shutdown'
                     }
-                }])
-            },
-            {
-                wrapper: 'fieldset',
-                key: 'omgwtfnzbs',
-                templateOptions: {label: 'omgwtfnzbs.org'},
-                fieldGroup: getBasicIndexerFieldset(false, false, true, true, false, true, 'omgwtf', true)
-            },
-            {
-                wrapper: 'fieldset',
-                key: 'Womble',
-                templateOptions: {label: 'Womble'},
-                fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "womble", false)
-            },
-
-            
-            getNewznabFieldset(1),
-            getNewznabFieldset(2),
-            getNewznabFieldset(3),
-            getNewznabFieldset(4),
-            getNewznabFieldset(5),
-            getNewznabFieldset(6),
-            getNewznabFieldset(7),
-            getNewznabFieldset(8),
-            getNewznabFieldset(9),
-            getNewznabFieldset(10),
-            getNewznabFieldset(11),
-            getNewznabFieldset(12),
-            getNewznabFieldset(13),
-            getNewznabFieldset(14),
-            getNewznabFieldset(15),
-            getNewznabFieldset(16),
-            getNewznabFieldset(17),
-            getNewznabFieldset(18),
-            getNewznabFieldset(19),
-            getNewznabFieldset(20),
-            getNewznabFieldset(21),
-            getNewznabFieldset(22),
-            getNewznabFieldset(23),
-            getNewznabFieldset(24),
-            getNewznabFieldset(25),
-            getNewznabFieldset(26),
-            getNewznabFieldset(27),
-            getNewznabFieldset(28),
-            getNewznabFieldset(29),
-            getNewznabFieldset(30),
-            getNewznabFieldset(31),
-            getNewznabFieldset(32),
-            getNewznabFieldset(33),
-            getNewznabFieldset(34),
-            getNewznabFieldset(35),
-            getNewznabFieldset(36),
-            getNewznabFieldset(37),
-            getNewznabFieldset(38),
-            getNewznabFieldset(39),
-            getNewznabFieldset(40)
-
-
-        ],
-
-        system: [
-            {
-                key: 'shutdown',
-                type: 'shutdown',
-                templateOptions: {
-                    type: 'button',
-                    label: 'Shutdown'
+                },
+                {
+                    key: 'restart',
+                    type: 'restart',
+                    templateOptions: {
+                        type: 'button',
+                        label: 'Restart'
+                    }
                 }
-            },
-            {
-                key: 'restart',
-                type: 'restart',
-                templateOptions: {
-                    type: 'button',
-                    label: 'Restart'
-                }
-            }
-        ]
+            ]
 
 
-    };
+        };
+        
+        
 
-    $scope.tabs = [
+    }
+
+}
+angular
+    .module('nzbhydraApp')
+    .factory('ConfigModel', function () {
+        return {};
+    });
+
+angular
+    .module('nzbhydraApp')
+    .controller('ConfigController', ConfigController);
+
+function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, $state) {
+    $scope.config = config;
+    $scope.submit = submit;
+
+    function submit(form) {
+        ConfigService.set($scope.config);
+        ConfigService.invalidateSafe();
+        form.$setPristine();
+        CategoriesService.invalidate();
+    }
+
+    ConfigModel = config;
+
+    $scope.fields = ConfigFields.getFields();
+
+    $scope.formTabs = [
         {
             name: 'Main',
-            model: $scope.config.main,
-            fields: $scope.fields.main,
-            active: true
+            model: ConfigModel.main,
+            fields: $scope.fields.main
         },
         {
             name: 'Searching',
-            model: $scope.config.searching,
-            fields: $scope.fields.searching,
-            active: false
+            model: ConfigModel.searching,
+            fields: $scope.fields.searching
         },
         {
             name: 'Downloader',
-            model: $scope.config.downloader,
-            fields: $scope.fields.downloader,
-            active: false
+            model: ConfigModel.downloader,
+            fields: $scope.fields.downloader
         },
         {
             name: 'Indexers',
-            model: $scope.config.indexers,
-            fields: $scope.fields.indexers,
-            active: false
+            model: ConfigModel.indexers,
+            fields: $scope.fields.indexers
         },
         {
             name: 'System',
-            model: $scope.config.system,
-            fields: $scope.fields.system,
-            active: false
+            model: ConfigModel.system,
+            fields: $scope.fields.system
         }
     ];
 
+    $scope.allTabs = [
+        {
+            active: false,
+            state: 'config'
+        },
+        {
+            active: false,
+            state: 'config.searching'
+        },
+        {
+            active: false,
+            state: 'config.downloader'
+        },
+        {
+            active: false,
+            state: 'config.indexers'
+        },
+        {
+            active: false,
+            state: 'config.system'
+        },
+        {
+            active: false,
+            state: 'config.log'
+        }
+    ];
+
+
+    for (var i = 0; i < $scope.allTabs.length; i++) {
+        if ($state.is($scope.allTabs[i].state)) {
+            $scope.allTabs[i].active = true;
+        }
+    }
 
     $scope.isSavingNeeded = function (form) {
         return form.$dirty && !form.$submitted;
     };
 
-    $scope.downloadLog = function () {
-        var myInjector = angular.injector(["ng"]);
-        var $http = myInjector.get("$http");
-        var $sce = myInjector.get("$sce");
-        $http.get("internalapi/getlogs").success(function (data) {
-            $scope.log = $sce.trustAsHtml(data.log);
-            $scope.$digest();
-        });
+    $scope.downloadLog = function() {
+        if (angular.isUndefined($scope.log)) {
+            console.log("Downloading log");
+            var myInjector = angular.injector(["ng"]);
+            var $http = myInjector.get("$http");
+            var $sce = myInjector.get("$sce");
+            $http.get("internalapi/getlogs").success(function (data) {
+                $scope.log = $sce.trustAsHtml(data.log);
+                $scope.$digest();
+            });
+        }
+    };
 
+    $scope.goToConfigState = function (index) {
+        $state.go($scope.allTabs[index].state);
+        if (index == 5) {
+            $scope.downloadLog();
+        }
     }
 }
-ConfigController.$inject = ["$scope", "ConfigService", "config", "CategoriesService"];
+ConfigController.$inject = ["$scope", "ConfigService", "config", "CategoriesService", "ConfigFields", "ConfigModel", "$state"];
 
 
 

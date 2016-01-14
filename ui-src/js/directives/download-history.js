@@ -31,7 +31,6 @@ function downloadHistory() {
             $http.get("internalapi/getnzbdownloads", {params:{page: pageNumber, limit: $scope.limit, type: $scope.type}}).success(function (response) {
                 $scope.nzbDownloads = response.nzbDownloads;
                 $scope.totalDownloads = response.totalDownloads;
-                console.log($scope.nzbDownloads);
             });
         }
 

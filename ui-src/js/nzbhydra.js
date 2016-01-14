@@ -35,12 +35,92 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                 }]
             }
         })
+        .state("config.searching", {
+            url: "/searching",
+            templateUrl: "static/html/states/config.html",
+            controller: "ConfigController",
+            resolve: {
+                config: ['ConfigService', function (ConfigService) {
+                    return ConfigService.get();
+                }]
+            }
+        })
+        .state("config.downloader", {
+            url: "/downloader",
+            templateUrl: "static/html/states/config.html",
+            controller: "ConfigController",
+            resolve: {
+                config: ['ConfigService', function (ConfigService) {
+                    return ConfigService.get();
+                }]
+            }
+        })
+        .state("config.indexers", {
+            url: "/indexers",
+            templateUrl: "static/html/states/config.html",
+            controller: "ConfigController",
+            resolve: {
+                config: ['ConfigService', function (ConfigService) {
+                    return ConfigService.get();
+                }]
+            }
+        })
+        .state("config.system", {
+            url: "/system",
+            templateUrl: "static/html/states/config.html",
+            controller: "ConfigController",
+            resolve: {
+                config: ['ConfigService', function (ConfigService) {
+                    return ConfigService.get();
+                }]
+            }
+        })
+        .state("config.log", {
+            url: "/log",
+            templateUrl: "static/html/states/config.html",
+            controller: "ConfigController",
+            resolve: {
+                config: ['ConfigService', function (ConfigService) {
+                    return ConfigService.get();
+                }]
+            }
+        })
         .state("stats", {
             url: "/stats",
             templateUrl: "static/html/states/stats.html",
             controller: "StatsController",
             resolve: {
                 stats: ['StatsService', function(StatsService) {
+                    return StatsService.get();
+                }]
+            }
+        })
+        .state("stats.indexers", {
+            url: "/indexers",
+            templateUrl: "static/html/states/stats.html",
+            controller: "StatsController",
+            resolve: {
+                stats: ['StatsService', function (StatsService) {
+                    return StatsService.get();
+                }]
+            }
+        })
+        .state("stats.searches", {
+            url: "/searches",
+            templateUrl: "static/html/states/stats.html",
+            controller: "StatsController",
+            resolve: {
+                stats: ['StatsService', function (StatsService) {
+                    return StatsService.get();
+                }]
+            }
+        })
+        .state("stats.downloads", {
+            url: "/downloads",
+            templateUrl: "static/html/states/stats.html",
+            controller: "StatsController",
+            resolve: {
+                stats: ['StatsService', function (StatsService) {
                     return StatsService.get();
                 }]
             }

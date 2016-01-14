@@ -40,8 +40,6 @@ function searchResult() {
         $scope.otherTitleRowsToShow = otherTitleRowsToShow;
         function otherTitleRowsToShow() {
             if ($scope.titleGroup.length > 1 && $scope.titleGroupExpanded) {
-                console.log("Other titles to show:");
-                console.log($scope.titleGroup.slice(1));
                 return $scope.titleGroup.slice(1);
             } else {
                 return [];
