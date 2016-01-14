@@ -70,8 +70,8 @@ def setup_custom_logger(name):
     logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
 
     
-    
     return logger
+
 
 def getLogs():
     logRe = re.compile(r".*\.log(\.\d+)?")
@@ -80,7 +80,7 @@ def getLogs():
     logfile = config.mainSettings.logging.logfilename.get()
     if exists(logfile):
         logger.debug("Reading log file %s" % logfile)
-        with open(logfile, "r") as logFile:
+        with open(logfile, encoding='utf-8') as logFile:
             log = cgi.escape(logFile.read())
     else:
         logger.debug("Configured log file %s was not found" % logfile)
