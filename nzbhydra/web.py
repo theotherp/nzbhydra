@@ -58,20 +58,13 @@ class ReverseProxied(object):
         self.app = app
 
     def __call__(self, environ, start_response):
-        old_path_info = environ["PATH_INFO"]
-        path_info = environ['PATH_INFO']
-
-        environ["URL_BASE"] = old_path_info
+        environ["MY_URL_BASE"] = "/"
         if config.mainSettings.baseUrl.get() is not None and config.mainSettings.baseUrl.get() != "":
-            baseUrlSetting = config.mainSettings.baseUrl.get()
-            f = furl(baseUrlSetting)
-            baseUrl = str(f.path)
-            if baseUrl.endswith("/"):
-                baseUrl = baseUrl[:len(baseUrl) - 1]
-            if path_info.startswith(baseUrl):
-                path_info = path_info[len(baseUrl):]
-            environ["PATH_INFO"] = path_info
-
+            script_name = str(furl(config.mainSettings.baseUrl.get()).path)
+            if environ['PATH_INFO'].startswith(script_name):
+                environ["MY_URL_BASE"] = script_name + "/"
+                environ['PATH_INFO'] = environ['PATH_INFO'][len(script_name):]
+            
         return self.app(environ, start_response)
 
 
@@ -238,9 +231,10 @@ def requires_stats_auth(f):
 @requires_auth
 def base(path):
     logger.debug("Sending index.html")
-    # We build a protocol agnostic base href using the host and url base. This way we should be able to access the site directly and from behind a proxy without having to do any
-    # further configuration or setting any extra headers
-    host_url = "//" + request.host + request.environ['URL_BASE']
+
+    host_url = "//" + request.host + request.environ['MY_URL_BASE']
+    #host_url = "http://127.0.0.1:5050/"
+    
     return render_template("index.html", host_url=host_url, isAdmin=maySeeAdminArea())
 
 
