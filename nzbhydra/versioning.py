@@ -52,11 +52,11 @@ def get_current_version():
 
 
 def is_new_version_available():
-    rep_version, _ = get_rep_version()
+    rep_version, rep_version_readable = get_rep_version()
     current_version, _ = get_current_version()
     try:
         if rep_version is not None and current_version is not None:
-            return rep_version > current_version, rep_version
+            return rep_version > current_version, rep_version_readable
     except Exception as e:
         logger.error("Error while comparion versions: %s" % e)
         return False, None
