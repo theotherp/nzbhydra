@@ -99,7 +99,9 @@ def run():
     parser.add_argument('--port', action='store', help='Port to run on', type=int)
     parser.add_argument('--nobrowser', action='store_true', help='Don\'t open URL on startup', default=False)
     parser.add_argument('--daemon', action='store_true', help='Run as daemon. *nix only', default=False)
+    parser.add_argument('--disablerestarter', action='store_true', help='Disable restart mechanism', default=False)
     parser.add_argument('--startinsubprocess', action='store_true', help=argparse.SUPPRESS, default=False)
+    
     
     args = parser.parse_args()
     
@@ -154,7 +156,10 @@ def run():
         logger.exception("Fatal error occurred")
 
 if __name__ == '__main__':
-    if "--startinsubprocess" not in sys.argv[1:]:
+    if "--disablerestarter" in sys.argv[1:]:
+        print("Starting main program without restarter")
+        run()
+    elif "--startinsubprocess" not in sys.argv[1:]:
         print("Initial start. Starting subprocess in loop")
         retcode = 3
         while retcode == 3:
