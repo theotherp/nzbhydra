@@ -59,10 +59,13 @@ class ReverseProxied(object):
 
     def __call__(self, environ, start_response):
         environ["MY_URL_BASE"] = "/"
-        if config.mainSettings.baseUrl.get() is not None and config.mainSettings.baseUrl.get() != "":
-            script_name = str(furl(config.mainSettings.baseUrl.get()).path)
+        base_url = config.mainSettings.baseUrl.get()
+        if base_url.endswith("/"):
+            base_url = base_url[:-1]
+        if base_url is not None and base_url != "":
+            script_name = str(furl(base_url).path)
             if environ['PATH_INFO'].startswith(script_name):
-                environ["MY_URL_BASE"] = script_name + "/"
+                environ["MY_URL_BASE"] = script_name + "/" 
                 environ['PATH_INFO'] = environ['PATH_INFO'][len(script_name):]
             
         return self.app(environ, start_response)
@@ -231,10 +234,7 @@ def requires_stats_auth(f):
 @requires_auth
 def base(path):
     logger.debug("Sending index.html")
-
-    host_url = "//" + request.host + request.environ['MY_URL_BASE']
-    #host_url = "http://127.0.0.1:5050/"
-    
+    host_url = "//" + request.host + request.environ['MY_URL_BASE']    
     return render_template("index.html", host_url=host_url, isAdmin=maySeeAdminArea())
 
 
