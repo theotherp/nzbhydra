@@ -1069,8 +1069,6 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
         }
     }
 
-    console.log("Start of search controller");
-
     //Fill the form with the search values we got from the state params (so that their values are the same as in the current url)
     $scope.mode = $stateParams.mode;
     
