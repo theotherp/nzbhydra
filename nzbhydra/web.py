@@ -60,7 +60,7 @@ class ReverseProxied(object):
     def __call__(self, environ, start_response):
         environ["MY_URL_BASE"] = "/"
         base_url = config.mainSettings.baseUrl.get()
-        if base_url.endswith("/"):
+        if base_url is not None and base_url.endswith("/"):
             base_url = base_url[:-1]
         if base_url is not None and base_url != "":
             script_name = str(furl(base_url).path)

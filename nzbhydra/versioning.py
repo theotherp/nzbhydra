@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from future import standard_library
 
-standard_library.install_aliases()
+#standard_library.install_aliases()
 from builtins import *
 import logging
 
