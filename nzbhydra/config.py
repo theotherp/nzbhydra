@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from future import standard_library
 
-standard_library.install_aliases()
+#standard_library.install_aliases()
 from builtins import *
 from enum import Enum
 import json
@@ -365,6 +365,7 @@ class MainSettings(Category):
         self.sslkey = Setting(self, name="sslkey", default="nzbhydra.key", valuetype=str)
 
         self.debug = Setting(self, name="debug", default=False, valuetype=bool)
+        self.flaskReloader = Setting(self, name="flaskReloader", default=False, valuetype=bool)
 
         self.branch = Setting(self, name="branch", default="master", valuetype=str)
 

@@ -811,26 +811,30 @@ def internalapi_getcategories():
         return jsonify({"success": False, "message": e.message})
 
 
-def restart():
-    sleep(1)
+def restart(func=None):
     logger.info("Restarting now")
-    os._exit(3)
+    logger.debug("Setting env variable RESTART to 1")
+    os.environ["RESTART"] = "1"
+    logger.debug("Sending shutdown signal to server")
+    func()
 
 
 @app.route("/internalapi/restart")
 @requires_admin_auth
 def internalapi_restart():
     logger.info("User requested to restart. Sending restart command in 1 second")
-    thread = threading.Thread(target=restart)
+    func = request.environ.get('werkzeug.server.shutdown')
+    thread = threading.Thread(target=restart, args=(func,))
     thread.daemon = True
     thread.start()
     return "Restarting"
 
 
 def shutdown():
+    logger.debug("Sending shutdown signal to server")
     sleep(1)
-    print("Exiting")
     os._exit(0)
+    
 
 
 @app.route("/internalapi/shutdown")
@@ -864,9 +868,9 @@ def run(host, port, basepath):
     for handler in logger.handlers:
         app.logger.addHandler(handler)
     if context is None:
-        app.run(host=host, port=port, debug=config.mainSettings.debug.get(), threaded=config.mainSettings.runThreaded.get())
+        app.run(host=host, port=port, debug=config.mainSettings.debug.get(), threaded=config.mainSettings.runThreaded.get(), use_reloader=config.mainSettings.flaskReloader.get())
     else:
-        app.run(host=host, port=port, debug=config.mainSettings.debug.get(), ssl_context=context, threaded=config.mainSettings.runThreaded.get())
+        app.run(host=host, port=port, debug=config.mainSettings.debug.get(), ssl_context=context, threaded=config.mainSettings.runThreaded.get(), use_reloader=config.mainSettings.flaskReloader.get())
 
 
 def configure_cache():

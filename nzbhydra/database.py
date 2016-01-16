@@ -19,6 +19,7 @@ logger = logging.getLogger('root')
 db = SqliteExtDatabase(None, threadlocals=True, journal_mode="WAL")
 
 
+
 class JSONField(TextField):
     db_field = "text"
 

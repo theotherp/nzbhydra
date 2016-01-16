@@ -99,11 +99,8 @@ def run():
     parser.add_argument('--port', action='store', help='Port to run on', type=int)
     parser.add_argument('--nobrowser', action='store_true', help='Don\'t open URL on startup', default=False)
     parser.add_argument('--daemon', action='store_true', help='Run as daemon. *nix only', default=False)
-    parser.add_argument('--disablerestarter', action='store_true', help='Disable restart mechanism', default=False)
-    parser.add_argument('--startinsubprocess', action='store_true', help=argparse.SUPPRESS, default=False)
     
-    
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
     
     parser.print_help()
     
@@ -154,26 +151,21 @@ def run():
         web.run(host, port, basepath)
     except Exception:
         logger.exception("Fatal error occurred")
+    
 
 if __name__ == '__main__':
-    if "--disablerestarter" in sys.argv[1:]:
-        print("Starting main program without restarter")
         run()
-    elif "--startinsubprocess" not in sys.argv[1:]:
-        print("Initial start. Starting subprocess in loop")
-        retcode = 3
-        while retcode == 3:
+        if "RESTART" in os.environ.keys() and os.environ["RESTART"] == "1":
+            os.environ["RESTART"] = "0"
+            
+            if os.path.exists("nzbhydra.pid"):
+                logger.debug("Removing old PID file")
+                os.remove("nzbhydra.pid")
+            
             args = [sys.executable]
             args.extend(sys.argv)
-            args.append("--startinsubprocess")
-            retcode = subprocess.call(args)
-            if retcode == 3:
-                print("Subprocess returned with code 3. Restarting program")
-            else:
-                print("Subprocess returned with code %d. Exiting." % retcode)
-    else:
-        print("Starting main program")
-        run()
+            logger.info("Restarting process after shutdown: " + " ".join(args))
+            subprocess.Popen(args, cwd=os.getcwd())
     
     
     
