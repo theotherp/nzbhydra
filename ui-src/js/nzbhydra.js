@@ -176,20 +176,6 @@ nzbhydraapp.directive('ngEnter', function () {
     };
 });
 
-nzbhydraapp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, nfo) {
-
-    $scope.nfo = nfo;
-
-
-    $scope.ok = function () {
-        $modalInstance.close($scope.selected.item);
-    };
-
-    $scope.cancel = function () {
-        $modalInstance.dismiss();
-    };
-});
-
 
 nzbhydraapp.filter('nzblink', function () {
     return function (resultItem) {
@@ -209,6 +195,10 @@ nzbhydraapp.factory('focus', function ($rootScope, $timeout) {
             $rootScope.$broadcast('focusOn', name);
         });
     }
+});
+
+nzbhydraapp.filter('unsafe', function ($sce) {
+    return $sce.trustAsHtml;
 });
 
 

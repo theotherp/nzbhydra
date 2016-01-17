@@ -176,20 +176,6 @@ nzbhydraapp.directive('ngEnter', function () {
     };
 });
 
-nzbhydraapp.controller('ModalInstanceCtrl', ["$scope", "$modalInstance", "nfo", function ($scope, $modalInstance, nfo) {
-
-    $scope.nfo = nfo;
-
-
-    $scope.ok = function () {
-        $modalInstance.close($scope.selected.item);
-    };
-
-    $scope.cancel = function () {
-        $modalInstance.dismiss();
-    };
-}]);
-
 
 nzbhydraapp.filter('nzblink', function () {
     return function (resultItem) {
@@ -209,6 +195,10 @@ nzbhydraapp.factory('focus', ["$rootScope", "$timeout", function ($rootScope, $t
             $rootScope.$broadcast('focusOn', name);
         });
     }
+}]);
+
+nzbhydraapp.filter('unsafe', ["$sce", function ($sce) {
+    return $sce.trustAsHtml;
 }]);
 
 
@@ -324,8 +314,8 @@ function otherColumns($http, $templateCache, $compile) {
 
         function openModal(size, nfo) {
             var modalInstance = $uibModal.open({
-                template: '<pre style="text-align:left"><span ng-bind-html="nfo"></span></pre>',
-                controller: 'ModalInstanceCtrl',
+                template: '<pre class="nfo"><span ng-bind-html="nfo"></span></pre>',
+                controller: 'NfoModalInstanceCtrl',
                 size: size,
                 resolve: {
                     nfo: function () {
@@ -338,9 +328,26 @@ function otherColumns($http, $templateCache, $compile) {
         }
 
     }
-
 }
 otherColumns.$inject = ["$http", "$templateCache", "$compile"];
+
+angular
+    .module('nzbhydraApp')
+    .controller('NfoModalInstanceCtrl', NfoModalInstanceCtrl);
+
+function NfoModalInstanceCtrl($scope, $modalInstance, nfo) {
+
+    $scope.nfo = nfo;
+
+    $scope.ok = function () {
+        $modalInstance.close($scope.selected.item);
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss();
+    };
+}
+NfoModalInstanceCtrl.$inject = ["$scope", "$modalInstance", "nfo"];
 angular
     .module('nzbhydraApp')
     .directive('searchHistory', searchHistory);
@@ -824,7 +831,7 @@ angular
     .controller('SearchResultsController', SearchResultsController);
 
 //SearchResultsController.$inject = ['blockUi'];
-function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService, $http, $uibModal, $sce, growl, NzbDownloadService) {
+function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService,growl, NzbDownloadService) {
 
     $scope.sortPredicate = "epoch";
     $scope.sortReversed = true;
@@ -1048,15 +1055,13 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     }
 
 }
-SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "SearchService", "$http", "$uibModal", "$sce", "growl", "NzbDownloadService"];
+SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "SearchService", "growl", "NzbDownloadService"];
 angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
 
-
-SearchController.$inject = ['$scope', '$http', '$stateParams', '$uibModal', '$sce', '$state', 'SearchService', 'focus', 'ConfigService', 'blockUI', 'growl'];
-function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, SearchService, focus, ConfigService, blockUI, growl) {
-
+function SearchController($scope, $http, $stateParams, $state, SearchService, focus, ConfigService, blockUI) {
+    
     function getNumberOrUndefined(number) {
         if (_.isUndefined(number) || _.isNaN(number) || number == "") {
             return undefined;
@@ -1294,6 +1299,7 @@ function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, 
 
 
 }
+SearchController.$inject = ["$scope", "$http", "$stateParams", "$state", "SearchService", "focus", "ConfigService", "blockUI"];
 
 angular
     .module('nzbhydraApp')
@@ -1377,6 +1383,70 @@ function NzbDownloadService($http, ConfigService, CategoriesService) {
 }
 NzbDownloadService.$inject = ["$http", "ConfigService", "CategoriesService"];
 
+
+angular
+    .module('nzbhydraApp')
+    .factory('ModalService', ModalService);
+
+function ModalService($uibModal) {
+    
+    return {
+        open: openModal
+    };
+    
+    function openModal(headline, message, ok, cancel) {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'static/html/modal.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'md',
+            resolve: {
+                headline: function () {
+                    return headline
+                },
+                message: function(){ return message},
+                ok: function() {
+                    return ok;
+                },
+                cancel: function() {
+                    return cancel;
+                }
+            }
+        });
+
+        modalInstance.result.then(function() {
+            
+        }, function() {
+            cancel();
+        });
+    }
+    
+}
+ModalService.$inject = ["$uibModal"];
+
+angular
+    .module('nzbhydraApp')
+    .controller('ModalInstanceCtrl', ModalInstanceCtrl);
+
+function ModalInstanceCtrl($scope, $uibModalInstance, headline, message, ok, cancel) {
+
+    $scope.message = message;
+    $scope.headline = headline;
+
+    $scope.ok = function () {
+        $uibModalInstance.close();
+        if(!angular.isUndefined(ok)) {
+            ok();
+        }
+    };
+
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss();
+        if (!angular.isUndefined(cancel)) {
+            cancel();
+        }
+    };
+}
+ModalInstanceCtrl.$inject = ["$scope", "$uibModalInstance", "headline", "message", "ok", "cancel"];
 
 angular
     .module('nzbhydraApp')
@@ -2007,9 +2077,24 @@ angular
 
 function ConfigFields() {
     
+    var restartWatcher;
+    
     return {
-        getFields: getFields
+        getFields: getFields,
+        setRestartWatcher: setRestartWatcher
     };
+    
+    function setRestartWatcher(restartWatcherFunction) {
+        restartWatcher = restartWatcherFunction;
+    }
+    
+    
+    
+    function restartListener(field, newValue, oldValue) {
+        if (newValue != oldValue) {
+            restartWatcher();
+        }
+    }
 
     function getBasicIndexerFieldset(showName, host, apikey, username, searchIds, testConnection, testtype, showpreselect, showCheckCaps) {
         var fieldset = [];
@@ -2233,6 +2318,9 @@ function ConfigFields() {
                                 label: 'Host',
                                 placeholder: 'IPv4 address to bind to',
                                 help: 'Requires restart'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {
@@ -2243,6 +2331,9 @@ function ConfigFields() {
                                 label: 'Port',
                                 placeholder: '5050',
                                 help: 'Requires restart'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {
@@ -2251,8 +2342,8 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'text',
                                 label: 'Base URL',
-                                placeholder: 'http://127.0.0.1:5075/',
-                                help: 'Set if the external URL is different from the local URL (must end with \"/\)"'
+                                placeholder: 'http://127.0.0.1:5075',
+                                help: 'Set if the external URL is different from the local URL'
                             }
                         },
                         {
@@ -2262,6 +2353,9 @@ function ConfigFields() {
                                 type: 'switch',
                                 label: 'Use SSL',
                                 help: 'Requires restart'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {
@@ -2273,6 +2367,9 @@ function ConfigFields() {
                                 label: 'SSL certificate file',
                                 required: true,
                                 help: 'Requires restart'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {
@@ -2284,6 +2381,9 @@ function ConfigFields() {
                                 label: 'SSL key file',
                                 required: true,
                                 help: 'Requires restart'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         }
 
@@ -2464,6 +2564,9 @@ function ConfigFields() {
                                     {name: 'Debug', value: 'DEBUG'},
                                     {name: 'Info', value: 'INFO'}
                                 ]
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {
@@ -2472,6 +2575,9 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'text',
                                 label: 'Log file'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {
@@ -2487,6 +2593,9 @@ function ConfigFields() {
                                     {name: 'Info', value: 'INFO'},
                                     {name: 'Debug', value: 'DEBUG'}
                                 ]
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         }
 
@@ -2513,6 +2622,9 @@ function ConfigFields() {
                                 type: 'switch',
                                 label: 'Run threaded server',
                                 help: 'Requires restart. Experimental. Please report your experiences.'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {
@@ -3211,17 +3323,48 @@ angular
 
 angular
     .module('nzbhydraApp')
+    .factory('ConfigWatcher', function () {
+        var $scope;
+        
+        return {
+            watch: watch
+        };
+        
+        function watch(scope) {
+            $scope = scope;
+            $scope.$watchGroup(["config.main.host"], function () {
+                console.log("Restart needed");
+            }, true);
+        }
+    });
+
+
+angular
+    .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
 
-function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, $state) {
+function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state) {
     $scope.config = config;
     $scope.submit = submit;
+    
+    $scope.restartRequired = false;
+    
+    ConfigFields.setRestartWatcher(function() {
+        $scope.restartRequired = true;
+    });
 
     function submit(form) {
         ConfigService.set($scope.config);
         ConfigService.invalidateSafe();
         form.$setPristine();
         CategoriesService.invalidate();
+        if ($scope.restartRequired) {
+            ModalService.open("Restart required", "The changes you have made may require a restart to be effective.<br>Do you want to restart now?", function () {
+                RestartService.restart();
+            }, function() {
+                $scope.restartRequired = false;
+            });
+        }
     }
 
     ConfigModel = config;
@@ -3312,9 +3455,10 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
         if (index == 5) {
             $scope.downloadLog();
         }
-    }
+    };
+    
 }
-ConfigController.$inject = ["$scope", "ConfigService", "config", "CategoriesService", "ConfigFields", "ConfigModel", "$state"];
+ConfigController.$inject = ["$scope", "ConfigService", "config", "CategoriesService", "ConfigFields", "ConfigModel", "ModalService", "RestartService", "$state"];
 
 
 

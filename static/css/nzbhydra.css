@@ -7320,5 +7320,10 @@ a.disabled:hover {
   background-color: white;
   color: #00640e;
 }
+.nfo {
+  background-color: transparent;
+  border-width: 0;
+  text-align: left;
+}
 
 /*# sourceMappingURL=nzbhydra.css.map */

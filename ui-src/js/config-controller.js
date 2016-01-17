@@ -6,17 +6,48 @@ angular
 
 angular
     .module('nzbhydraApp')
+    .factory('ConfigWatcher', function () {
+        var $scope;
+        
+        return {
+            watch: watch
+        };
+        
+        function watch(scope) {
+            $scope = scope;
+            $scope.$watchGroup(["config.main.host"], function () {
+                console.log("Restart needed");
+            }, true);
+        }
+    });
+
+
+angular
+    .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
 
-function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, $state) {
+function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state) {
     $scope.config = config;
     $scope.submit = submit;
+    
+    $scope.restartRequired = false;
+    
+    ConfigFields.setRestartWatcher(function() {
+        $scope.restartRequired = true;
+    });
 
     function submit(form) {
         ConfigService.set($scope.config);
         ConfigService.invalidateSafe();
         form.$setPristine();
         CategoriesService.invalidate();
+        if ($scope.restartRequired) {
+            ModalService.open("Restart required", "The changes you have made may require a restart to be effective.<br>Do you want to restart now?", function () {
+                RestartService.restart();
+            }, function() {
+                $scope.restartRequired = false;
+            });
+        }
     }
 
     ConfigModel = config;
@@ -107,7 +138,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
         if (index == 5) {
             $scope.downloadLog();
         }
-    }
+    };
+    
 }
 
 

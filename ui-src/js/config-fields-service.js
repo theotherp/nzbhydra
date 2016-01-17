@@ -4,9 +4,24 @@ angular
 
 function ConfigFields() {
     
+    var restartWatcher;
+    
     return {
-        getFields: getFields
+        getFields: getFields,
+        setRestartWatcher: setRestartWatcher
     };
+    
+    function setRestartWatcher(restartWatcherFunction) {
+        restartWatcher = restartWatcherFunction;
+    }
+    
+    
+    
+    function restartListener(field, newValue, oldValue) {
+        if (newValue != oldValue) {
+            restartWatcher();
+        }
+    }
 
     function getBasicIndexerFieldset(showName, host, apikey, username, searchIds, testConnection, testtype, showpreselect, showCheckCaps) {
         var fieldset = [];
@@ -230,6 +245,9 @@ function ConfigFields() {
                                 label: 'Host',
                                 placeholder: 'IPv4 address to bind to',
                                 help: 'Requires restart'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {
@@ -240,6 +258,9 @@ function ConfigFields() {
                                 label: 'Port',
                                 placeholder: '5050',
                                 help: 'Requires restart'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {
@@ -248,8 +269,8 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'text',
                                 label: 'Base URL',
-                                placeholder: 'http://127.0.0.1:5075/',
-                                help: 'Set if the external URL is different from the local URL (must end with \"/\)"'
+                                placeholder: 'http://127.0.0.1:5075',
+                                help: 'Set if the external URL is different from the local URL'
                             }
                         },
                         {
@@ -259,6 +280,9 @@ function ConfigFields() {
                                 type: 'switch',
                                 label: 'Use SSL',
                                 help: 'Requires restart'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {
@@ -270,6 +294,9 @@ function ConfigFields() {
                                 label: 'SSL certificate file',
                                 required: true,
                                 help: 'Requires restart'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {
@@ -281,6 +308,9 @@ function ConfigFields() {
                                 label: 'SSL key file',
                                 required: true,
                                 help: 'Requires restart'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         }
 
@@ -461,6 +491,9 @@ function ConfigFields() {
                                     {name: 'Debug', value: 'DEBUG'},
                                     {name: 'Info', value: 'INFO'}
                                 ]
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {
@@ -469,6 +502,9 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'text',
                                 label: 'Log file'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {
@@ -484,6 +520,9 @@ function ConfigFields() {
                                     {name: 'Info', value: 'INFO'},
                                     {name: 'Debug', value: 'DEBUG'}
                                 ]
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         }
 
@@ -510,6 +549,9 @@ function ConfigFields() {
                                 type: 'switch',
                                 label: 'Run threaded server',
                                 help: 'Requires restart. Experimental. Please report your experiences.'
+                            },
+                            watcher: {
+                                listener: restartListener
                             }
                         },
                         {

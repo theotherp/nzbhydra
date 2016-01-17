@@ -2,10 +2,8 @@ angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
 
-
-SearchController.$inject = ['$scope', '$http', '$stateParams', '$uibModal', '$sce', '$state', 'SearchService', 'focus', 'ConfigService', 'blockUI', 'growl'];
-function SearchController($scope, $http, $stateParams, $uibModal, $sce, $state, SearchService, focus, ConfigService, blockUI, growl) {
-
+function SearchController($scope, $http, $stateParams, $state, SearchService, focus, ConfigService, blockUI) {
+    
     function getNumberOrUndefined(number) {
         if (_.isUndefined(number) || _.isNaN(number) || number == "") {
             return undefined;

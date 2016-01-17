@@ -45,8 +45,8 @@ function otherColumns($http, $templateCache, $compile) {
 
         function openModal(size, nfo) {
             var modalInstance = $uibModal.open({
-                template: '<pre style="text-align:left"><span ng-bind-html="nfo"></span></pre>',
-                controller: 'ModalInstanceCtrl',
+                template: '<pre class="nfo"><span ng-bind-html="nfo"></span></pre>',
+                controller: 'NfoModalInstanceCtrl',
                 size: size,
                 resolve: {
                     nfo: function () {
@@ -59,5 +59,21 @@ function otherColumns($http, $templateCache, $compile) {
         }
 
     }
+}
 
+angular
+    .module('nzbhydraApp')
+    .controller('NfoModalInstanceCtrl', NfoModalInstanceCtrl);
+
+function NfoModalInstanceCtrl($scope, $modalInstance, nfo) {
+
+    $scope.nfo = nfo;
+
+    $scope.ok = function () {
+        $modalInstance.close($scope.selected.item);
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss();
+    };
 }

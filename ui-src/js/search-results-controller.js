@@ -3,7 +3,7 @@ angular
     .controller('SearchResultsController', SearchResultsController);
 
 //SearchResultsController.$inject = ['blockUi'];
-function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService, $http, $uibModal, $sce, growl, NzbDownloadService) {
+function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService,growl, NzbDownloadService) {
 
     $scope.sortPredicate = "epoch";
     $scope.sortReversed = true;
