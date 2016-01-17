@@ -368,7 +368,6 @@ angular
 
         formlyConfigProvider.setType({
             name: 'ui-select-multiple',
-            extends: 'select',
             defaultOptions: {
                 templateOptions: {
                     optionsAttr: 'bs-options',
