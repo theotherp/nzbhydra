@@ -16,6 +16,9 @@ repository_url = "https://github.com/theotherp/nzbhydra"
 
 logger = logging.getLogger('root')
 
+currentVersion = None
+currentVersionText = None
+
 
 def versiontuple(v):
     filled = []
@@ -42,13 +45,19 @@ def get_rep_version():
 
 
 def get_current_version():
-    try:
-        with open("version.txt", "r") as f:
-            version = f.read()
-        return versiontuple(version), version
-    except Exception as e:
-        logger.error("Unable to open version.txt: %s" % e)
-        return None, None
+    global currentVersion
+    global currentVersionText
+    if currentVersion is None:
+        try:
+            with open("version.txt", "r") as f:
+                version = f.read()
+            currentVersion = versiontuple(version)
+            currentVersionText = version
+            return currentVersion, currentVersionText
+        except Exception as e:
+            logger.error("Unable to open version.txt: %s" % e)
+            return None, None
+    return currentVersion, currentVersionText
 
 
 def is_new_version_available():

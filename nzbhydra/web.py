@@ -30,7 +30,7 @@ from functools import wraps
 from pprint import pprint
 from time import sleep
 from arrow import Arrow
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, url_for
 from flask import redirect, make_response
 from flask_cache import Cache
 from flask.json import JSONEncoder
@@ -235,7 +235,8 @@ def requires_stats_auth(f):
 def base(path):
     logger.debug("Sending index.html")
     host_url = "//" + request.host + request.environ['MY_URL_BASE']    
-    return render_template("index.html", host_url=host_url, isAdmin=maySeeAdminArea())
+    _, currentVersion = get_current_version()
+    return render_template("index.html", host_url=host_url, isAdmin=maySeeAdminArea(), cacheBuster=("?v=" + currentVersion) if currentVersion is not None else "")
 
 
 def render_search_results_for_api(search_results, total, offset):
