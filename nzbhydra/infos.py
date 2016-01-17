@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import arrow
 from future import standard_library
 from peewee import IntegrityError
 from requests import RequestException
@@ -68,7 +69,10 @@ def find_movie_ids(input):
     results = search.movie(query=input)["results"]
     infos = []
     for s in results:
-        result = {"label": s["title"], "value": s["id"]}
+        title = s["title"]
+        if "release_date" in s.keys() and s["release_date"] != "":
+            title = "%s (%s)" % (title, arrow.get(s["release_date"]).year)
+        result = {"label": title, "value": s["id"], "title": s["title"]}
         if "poster_path" in s and s["poster_path"]:
             result["poster"] = base_url + poster_size + s["poster_path"]
             infos.append(result)
@@ -106,7 +110,7 @@ def find_series_ids(input):
         if result["externals"]["thetvdb"] is None:
             logger.info("Did not find TVDB ID for %s. Will skip this result." % result["name"])
             continue
-        info = {"label": result["name"], "value": str(result["externals"]["thetvdb"])}
+        info = {"label": result["name"], "value": str(result["externals"]["thetvdb"]), "title": result["name"]}
         try:
             info["poster"] = result["image"]["medium"]
         except:

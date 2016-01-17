@@ -397,9 +397,8 @@ def internalapi_search(args):
         type = "ebook"
     else:
         type = "general"
-    if args["indexers"] is not None:
-        args["indexers"] = urllib.unquote(args["indexers"])
-    search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=args["indexers"])
+    indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None
+    search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=indexers)
     return cached_search(search_request)
 
 
@@ -424,7 +423,9 @@ internalapi_moviesearch_args = {
 @use_args(internalapi_moviesearch_args, locations=['querystring'])
 def internalapi_moviesearch(args):
     logger.debug("Movie search request with args %s" % args)
-    search_request = SearchRequest(type="movie", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=urllib.unquote(args["indexers"]))
+    indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None
+    search_request = SearchRequest(type="movie", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=indexers)
+    
     if args["imdbid"]:
         search_request.identifier_key = "imdbid"
         search_request.identifier_value = args["imdbid"]

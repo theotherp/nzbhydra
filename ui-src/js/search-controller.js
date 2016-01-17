@@ -179,7 +179,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
     $scope.selectAutocompleteItem = function ($item) {
         $scope.selectedItem = $item;
-        $scope.title = $item.label;
+        $scope.title = $item.title;
         if ($scope.category.indexOf("Movies") > -1) {
             $scope.tmdbid = $item.value;
         } else if ($scope.category.indexOf("TV") > -1) {
