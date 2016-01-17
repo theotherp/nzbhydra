@@ -388,7 +388,7 @@ class NewzNab(SearchModule):
                     entry.poster = attribute_value
                 elif attribute_name == "info":
                     entry.details_link = attribute_value
-                elif attribute_name == "password" and attribute_value != "1":
+                elif attribute_name == "password" and attribute_value != "0":
                     entry.passworded = True
                 elif attribute_name == "group" and attribute_value != "not available":
                     entry.group = attribute_value
