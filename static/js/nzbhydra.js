@@ -1050,7 +1050,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         }
     }
     
-    $scope.inverseSelection = function inverseSelection() {
+    $scope.invertSelection = function invertSelection() {
         $scope.selected = _.difference($scope.results, $scope.selected);
     }
 
@@ -1630,7 +1630,7 @@ angular
             ].join(' '),
             controller: function ($scope) {
                 $scope.generate = function () {
-                    $scope.model[$scope.options.key] = Array(31).join((Math.random().toString(36) + '00000000000000000').slice(2, 18)).slice(0, 30);
+                    $scope.model[$scope.options.key] = (Math.random() * 1e32).toString(36);
                 }
             }
         });

@@ -222,7 +222,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
         }
     }
     
-    $scope.inverseSelection = function inverseSelection() {
+    $scope.invertSelection = function invertSelection() {
         $scope.selected = _.difference($scope.results, $scope.selected);
     }
 

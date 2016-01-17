@@ -7325,5 +7325,12 @@ a.disabled:hover {
   border-width: 0;
   text-align: left;
 }
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
 
 /*# sourceMappingURL=nzbhydra.css.map */
