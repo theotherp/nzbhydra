@@ -51,7 +51,8 @@ class TestInfos(unittest.TestCase):
         infos = find_movie_ids("xyz")
         self.assertEqual(5, len(infos))
         first = infos[0]
-        self.assertEqual("American Beauty", first["label"])
+        self.assertEqual("American Beauty", first["title"])
+        self.assertEqual("American Beauty (1999)", first["label"])
         self.assertEqual(u'http://base.com/w92/or1MP8BZIAjqWYxPdPX724ydKar.jpg', first["poster"])
         self.assertEqual(14, first["value"])
 
