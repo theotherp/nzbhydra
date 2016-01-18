@@ -30,9 +30,11 @@ categories = {'All': {"pretty": "All", "index": 0},
               'Audio': {"pretty": "Audio", "index": 7},
               'Audio FLAC': {"pretty": "Audio FLAC", "index": 8},
               'Audio MP3': {"pretty": "Audio MP3", "index": 9},
+              'Audiobook': {"pretty": "Audiobook", "index": 14},
               'Console': {"pretty": "Console", "index": 10},
               'PC': {"pretty": "PC", "index": 11},
-              'XXX': {"pretty": "XXX", "index": 12}
+              'XXX': {"pretty": "XXX", "index": 12},
+              'Ebook': {"pretty": "XXX", "index": 13}
               }
 
 logger = logging.getLogger('root')

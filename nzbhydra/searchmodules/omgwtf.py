@@ -41,6 +41,7 @@ categories_to_omgwtf = {
     'Audio': ["3", "7", "8", "22"],
     'Audio FLAC': ["22"],
     'Audio MP3': ["7"],
+    'Audiobook': ["29"],
     'Console': ["14"],
     'PC': ["1", "12"],
     'XXX': ["23", "24", "25", "26", "27", "28"],
@@ -77,6 +78,7 @@ omgwtf_to_categories = {
     "26": "XXX",
     "27": "XXX",
     "28": "XXX",
+    "29": "Audiobook",
 }
 
 newznab_to_omgwtf = {
@@ -86,8 +88,9 @@ newznab_to_omgwtf = {
     '5000': ["19", "20", "21"],
     '5030': ["19"],
     '5040': ["20"],
-    '3000': ["3", "7", "8", "22"],
+    '3000': ["3", "7", "8", "22", "29"],
     '3040': ["22"],
+    '3030': ["29"],
     '3010': ["7"],
     '1000': ["14"],
     '4000': ["1", "12"],
@@ -213,8 +216,14 @@ class OmgWtf(SearchModule):
         # overwrite for special handling, e.g. cookies
         return requests.get(query, timeout=timeout, verify=False)
 
-
     def get_ebook_urls(self, search_request):
+        if search_request.category is None:
+            search_request.category = "Ebook"
+        return self.get_search_urls(search_request)
+
+    def get_audiobook_urls(self, search_request):
+        if search_request.category is None:
+            search_request.category = "Audiobook"
         return self.get_search_urls(search_request)
 
     def process_query_result(self, xml_response, maxResults=None):

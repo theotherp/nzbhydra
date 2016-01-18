@@ -43,10 +43,12 @@ categories_to_newznab = {
     'Audio': [3000],
     'Audio FLAC': [3040],
     'Audio MP3': [3010],
+    'Audiobook': [3030],
     'Console': [1000],
     'PC': [4000],
     'XXX': [6000],
-    'Other': [7000]
+    'Other': [7000],
+    'Ebook': [7020]
 }
 
 
@@ -330,7 +332,13 @@ class NewzNab(SearchModule):
         return [url.url]
 
     def get_ebook_urls(self, search_request):
-        search_request.query += " ebook|mobi|pdf|epub"
+        if search_request.category is None:
+            search_request.category = "Ebook"
+        return self.get_search_urls(search_request)
+
+    def get_audiobook_urls(self, search_request):
+        if search_request.category is None:
+            search_request.category = "Audiobook"
         return self.get_search_urls(search_request)
 
     def get_details_link(self, guid):

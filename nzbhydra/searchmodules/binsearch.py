@@ -96,6 +96,9 @@ class Binsearch(SearchModule):
         search_request.query = query + " epub"
         urls.extend(self.get_search_urls(search_request))
         return urls
+
+    def get_audiobook_urls(self, search_request):
+        return self.get_search_urls(search_request)
         
     
     def get_details_link(self, guid):

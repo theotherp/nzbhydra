@@ -68,6 +68,9 @@ class NzbClub(SearchModule):
         query = search_request.query
         search_request.query = "%s ebook or %s mobi or %s pdf or %s epub" % (query, query, query, query)
         return self.get_search_urls(search_request)
+
+    def get_audiobook_urls(self, search_request):
+        return self.get_search_urls(search_request)
     
     def get_details_link(self, guid):
         f = furl(self.host)

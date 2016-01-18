@@ -431,6 +431,9 @@ class CategorySizeSettings(Category):
         self.audiomp3min = Setting(self, name="mp3min", default=1, valuetype=int)
         self.audiomp3max = Setting(self, name="mp3max", default=500, valuetype=int)
 
+        self.audiobookMin = Setting(self, name="audioookmin", default=50, valuetype=int)
+        self.audiobookMax = Setting(self, name="audiobookmax", default=1000, valuetype=int)
+
         self.consolemin = Setting(self, name="consolemin", default=100, valuetype=int)
         self.consolemax = Setting(self, name="consolemax", default=40000, valuetype=int)
 
@@ -442,6 +445,8 @@ class CategorySizeSettings(Category):
 
         self.ebookmin = Setting(self, name="ebookmin", default=None, valuetype=int)
         self.ebookmax = Setting(self, name="ebookmax", default=100, valuetype=int)
+
+        
 
 
 class SearchingSettings(Category):

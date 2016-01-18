@@ -396,6 +396,8 @@ def internalapi_search(args):
     logger.debug("Search request with args %s" % args)
     if args["category"].lower() == "ebook":
         type = "ebook"
+    elif args["category"].lower() == "audiobook":
+        type = "audiobook"
     else:
         type = "general"
     indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None

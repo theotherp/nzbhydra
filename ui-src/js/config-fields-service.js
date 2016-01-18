@@ -893,6 +893,26 @@ function ConfigFields() {
                                 {
                                     wrapper: 'horizontalBootstrapLabel',
                                     templateOptions: {
+                                        label: 'Audiobook'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'audiobookmin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'audiobookmax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                },
+
+                                {
+                                    wrapper: 'horizontalBootstrapLabel',
+                                    templateOptions: {
                                         label: 'Console'
                                     },
                                     fieldGroup: [
