@@ -90,7 +90,7 @@ def tmdbid_to_imdbid(tmdbid):
 
 def imdbid_to_tmdbid(imdbid):
     logger.info("Querying TMDB for IMDB id %s" % imdbid)
-    movie = tmdbsimple.Find(imdbid)
+    movie = tmdbsimple.Find("tt" + imdbid)
     response = movie.info(external_source="imdb_id")
     movie_results_ = response["movie_results"]
     if len(movie_results_) != 1:
