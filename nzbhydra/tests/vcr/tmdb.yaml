@@ -1,0 +1,176 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [close]
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+    method: GET
+    uri: https://api.themoviedb.org/3/find/tt0169547?external_source=imdb_id&api_key=4df99d58875c2d01fc04936759fea56f
+  response:
+    body: {string: !!python/unicode '{"movie_results":[{"adult":false,"backdrop_path":"/z5J18ByLeOZ68iORfMXmxeFuwyL.jpg","genre_ids":[18],"id":14,"original_language":"en","original_title":"American
+        Beauty","overview":"Lester Burnham, a depressed suburban father in a mid-life
+        crisis, decides to turn his hectic life around after developing an infatuation
+        with his daughter''s attractive friend.","release_date":"1999-09-15","poster_path":"/or1MP8BZIAjqWYxPdPX724ydKar.jpg","popularity":4.011249,"title":"American
+        Beauty","video":false,"vote_average":7.5,"vote_count":1173}],"person_results":[],"tv_results":[],"tv_episode_results":[],"tv_season_results":[]}'}
+    headers:
+      access-control-allow-origin: ['*']
+      cache-control: ['public, max-age=21600']
+      connection: [Close]
+      content-length: ['619']
+      content-type: [application/json;charset=utf-8]
+      date: ['Tue, 19 Jan 2016 17:48:15 GMT']
+      etag: ['"31109b83ddd56d34a2b3e29696b3da3a"']
+      server: [openresty]
+      status: [200 OK]
+      x-memc: [HIT]
+      x-memc-age: ['8329']
+      x-memc-expires: ['13271']
+      x-memc-key: [21fcb46219f7753dca5aeb1372ccae29]
+      x-ratelimit-limit: ['40']
+      x-ratelimit-remaining: ['39']
+      x-ratelimit-reset: ['1453225705']
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [close]
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+    method: GET
+    uri: https://api.themoviedb.org/3/movie/14?api_key=4df99d58875c2d01fc04936759fea56f
+  response:
+    body: {string: !!python/unicode '{"adult":false,"backdrop_path":"/z5J18ByLeOZ68iORfMXmxeFuwyL.jpg","belongs_to_collection":null,"budget":15000000,"genres":[{"id":18,"name":"Drama"}],"homepage":"http://www.dreamworks.com/ab/","id":14,"imdb_id":"tt0169547","original_language":"en","original_title":"American
+        Beauty","overview":"Lester Burnham, a depressed suburban father in a mid-life
+        crisis, decides to turn his hectic life around after developing an infatuation
+        with his daughter''s attractive friend.","popularity":3.011249,"poster_path":"/or1MP8BZIAjqWYxPdPX724ydKar.jpg","production_companies":[{"name":"DreamWorks
+        SKG","id":27},{"name":"Jinks/Cohen Company","id":2721}],"production_countries":[{"iso_3166_1":"US","name":"United
+        States of America"}],"release_date":"1999-09-15","revenue":356296601,"runtime":122,"spoken_languages":[{"iso_639_1":"en","name":"English"}],"status":"Released","tagline":"Look
+        closer.","title":"American Beauty","video":false,"vote_average":7.5,"vote_count":1173}'}
+    headers:
+      access-control-allow-origin: ['*']
+      cache-control: ['public, max-age=28800']
+      connection: [Close]
+      content-length: ['962']
+      content-type: [application/json;charset=utf-8]
+      date: ['Tue, 19 Jan 2016 17:48:15 GMT']
+      etag: ['"7ef64c195d77ce20d46d810390e41987"']
+      server: [openresty]
+      status: [200 OK]
+      x-memc: [HIT]
+      x-memc-age: ['5965']
+      x-memc-expires: ['22835']
+      x-memc-key: [b336e02eb982583b95484efd49373be3]
+      x-ratelimit-limit: ['40']
+      x-ratelimit-remaining: ['38']
+      x-ratelimit-reset: ['1453225705']
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [close]
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+    method: GET
+    uri: https://api.themoviedb.org/3/configuration?api_key=4df99d58875c2d01fc04936759fea56f
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3VS0W7bMAz8Fz0HTdcmW5dfGQaBthhbiCwJFOUgLfrvExmnddbtieT5eKTOfDN+
+        ggGLObyZDgraSsEczMicD9utfnvgyXUPiYYtb/PWbEzBvhLav+jlv/wO+pOjlG3xrzLplzk/Pz62
+        D+cfLxq+PWlM5AcfIZjfGxPSkFb83V54P5+Uvd9peFFsUdprWCvkVBhppfHP7p2C1+5lnTsRSkcf
+        8Msm1/bx+7O0rxsK+xC+Dl3v+kl/35h+hDigPeFF+eBq4MYBT9YBo6ShJHuK6RwtFK3bsyKwn9Gy
+        54ACdj4NBHm8aE48OtC0ugFFr4eiAYn90fetO0Xpa+MJevEpwqRKPWGb62wn/a04t+AatChi9iU5
+        2WvJbKxTh7QCqMa22CScIyHqmXi3riYtB4xIzQbNSIcPFQvbwkBSjWnC3A6qpcuRSuK6q1poxtUF
+        leUlIJ8TnczNY9unGplk75vp+s51rRYKMCPNXp+bgVhUc4AebTpadVSBxPKr2hCnBEqu9uJlm6Sm
+        3CFThuh1vztYVrrChAGbH9d0xlhFotm3uFfaxxQ/kk+nl5pwqAEUyOmE0a4taSZylYRhCD6K3u2p
+        TBBL+LgBnm+W8kyte8kvWbizd5husbST/QP844lDMQQAAA==
+    headers:
+      access-control-allow-origin: ['*']
+      cache-control: ['public, max-age=36000']
+      connection: [Close]
+      content-encoding: [gzip]
+      content-length: ['490']
+      content-type: [application/json;charset=utf-8]
+      date: ['Tue, 19 Jan 2016 17:49:09 GMT']
+      etag: [W/"acd3a349fca1f788ac931639278ad061"]
+      server: [openresty]
+      status: [200 OK]
+      vary: [Accept-Encoding]
+      x-ratelimit-limit: ['40']
+      x-ratelimit-remaining: ['39']
+      x-ratelimit-reset: ['1453225759']
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [close]
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+    method: GET
+    uri: https://api.themoviedb.org/3/search/movie?query=American+Beauty&api_key=4df99d58875c2d01fc04936759fea56f
+  response:
+    body:
+      string: !!binary |
+        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
+        XBQAAA==
+    headers:
+      access-control-allow-origin: ['*']
+      cache-control: ['public, max-age=21600']
+      connection: [Close]
+      content-encoding: [gzip]
+      content-length: ['2170']
+      content-type: [application/json;charset=utf-8]
+      date: ['Tue, 19 Jan 2016 17:49:10 GMT']
+      server: [openresty]
+      vary: [Accept-Encoding]
+      x-ratelimit-limit: ['40']
+      x-ratelimit-remaining: ['38']
+      x-ratelimit-reset: ['1453225759']
+    status: {code: 200, message: OK}
+version: 1

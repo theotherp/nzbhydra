@@ -1,0 +1,41 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+    method: GET
+    uri: http://www.omdbapi.com/?i=tt0169547&plot=short&r=json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAzRRTXPTQAz9Kxod4LJ1kpZ0SE7YtDAMOO0kpmm4dBRbttXacmdXbhL488yG4aan
+        r/ee9AcLsY5xiWnPXkpSyJhGO6HDHZPHJc4WiwU6XJNxhUtcx5g7pnCG0xnclQb/m0Y16eO62eUl
+        9KLo8Curj5kbTz05WA89acno8EY8lzZEjg31kLNWHNDh1otxzKZdlENdhw7T2Blwid/5TRQ2r1Ty
+        yUGqymYMGato46BoB0+QiS9bB1sOsWAdRzv33WBxKQQ+jtR1J6j9GMxHXxDG/ej3pFCTteyhpQAE
+        vVQXndQMpZcgAag29rDncuhFGxCtycbz/EGshVYCVDQ2rbF/H2DPwaD2wlol6PAHaTNSE09xq00n
+        oUWHn4dRzZ9wiT83abR5IF9Fm9tBYQ53oSQfEkh1OMuaTa/gIBrgHSyuQaMMMhk0RIL7Ify7W2v2
+        upxMhJKeK6EL6at9Ug79RHpqOEzySf4wz/Ln/MOq+DZf/d6dVhF384w008eXL/araA6r4uW4KnbH
+        vLj9lDw9zJ42j1fTafL82qDDnI1COZwf+/EaHUaONZn8XV46SETPBCoUll+SCvKOubmxjomhIVTU
+        00XJSqmkxMDQzNLUxFxJRymksgBkUm5+WWYqOH0VF+TnFYOEQopKU5VqAaX69j2nAgAA
+    headers:
+      access-control-allow-origin: ['*']
+      cache-control: ['public, max-age=14400']
+      cf-cache-status: [HIT]
+      cf-ray: [26745ead2c673d5b-CPH]
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-type: [application/json; charset=utf-8]
+      date: ['Tue, 19 Jan 2016 17:48:19 GMT']
+      expires: ['Tue, 19 Jan 2016 21:48:19 GMT']
+      last-modified: ['Tue, 19 Jan 2016 17:43:32 GMT']
+      server: [cloudflare-nginx]
+      set-cookie: ['__cfduid=d02072404142aa35b7bda10a81c58a59e1453225699; expires=Wed,
+          18-Jan-17 17:48:19 GMT; path=/; domain=.omdbapi.com; HttpOnly']
+      vary: [Accept-Encoding]
+      x-aspnet-version: [4.0.30319]
+      x-powered-by: [ASP.NET]
+    status: {code: 200, message: OK}
+version: 1
