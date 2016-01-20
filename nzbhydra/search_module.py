@@ -158,6 +158,12 @@ class SearchModule(object):
         #Allows the implementations to check against one general rule if the search result is ok or shall be discarded
         if config.searchingSettings.ignorePassworded.get() and nzbSearchResult.passworded:
             return False, "Passworded results shall be ignored"
+        if config.searchingSettings.ignoreWords.get():
+            ignoreWords = config.searchingSettings.ignoreWords.get().split(",")
+            for word in ignoreWords:
+                word = word.strip().lower()
+                if word in nzbSearchResult.title.lower():
+                    return False, '"%s" is in the list of ignored words' % word
         return True, None
         
 

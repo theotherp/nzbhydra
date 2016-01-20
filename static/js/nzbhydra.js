@@ -2684,6 +2684,17 @@ function ConfigFields() {
                             }
                         },
 
+                        {
+                            key: 'ignoreWords',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Ignore results with ...',
+                                placeholder: 'separate, with, commas, like, this',
+                                help: "Results with any of these words in the title will be ignored"
+                            }
+                        },
+
 
                         {
                             key: 'generate_queries',

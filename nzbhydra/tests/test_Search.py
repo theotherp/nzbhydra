@@ -47,7 +47,7 @@ class SearchTests(unittest.TestCase):
             setting.host.set(indexerHost)
             print("Configured " + setting.name.get() + " with host " + setting.host.get())
 
-    def prepareSearchMocks(self, rsps, indexerCount=2, resultsPerIndexers=1, newznabItems=None):
+    def prepareSearchMocks(self, rsps, indexerCount=2, resultsPerIndexers=1, newznabItems=None, title="newznab%dresult%d.title"):
         testData = []
         self.prepareIndexers(indexerCount)
 
@@ -56,7 +56,7 @@ class SearchTests(unittest.TestCase):
             if newznabItems is not None:
                 indexerNewznabItems = newznabItems[i - 1]
             else:
-                indexerNewznabItems = [mockbuilder.buildNewznabItem("newznab%dresult%d.title" % (i, j), "newznab%dresult%d.guid" % (i, j), "newznab%dresult%d.link" % (i, j), arrow.get(0).format("ddd, DD MMM YYYY HH:mm:ss Z"), "newznab%dresult%d.description" % (i, j), 1000, "newznab%d" % i, None) for
+                indexerNewznabItems = [mockbuilder.buildNewznabItem(title % (i, j), "newznab%dresult%d.guid" % (i, j), "newznab%dresult%d.link" % (i, j), arrow.get(0).format("ddd, DD MMM YYYY HH:mm:ss Z"), "newznab%dresult%d.description" % (i, j), 1000, "newznab%d" % i, None) for
                                        j in
                                        range(1, resultsPerIndexers + 1)]
             xml = mockbuilder.buildNewznabResponse("newznab%dResponse" % i, indexerNewznabItems, 0, len(indexerNewznabItems))
@@ -597,3 +597,41 @@ class SearchTests(unittest.TestCase):
             results = result["results"]
             self.assertEqual(20, len(results))
 
+
+    @responses.activate
+    def testIgnoreWords(self):
+        with responses.RequestsMock() as rsps:
+            self.prepareSearchMocks(rsps, 2, 2)
+            config.searchingSettings.ignoreWords.set("newznab1")
+            searchRequest = SearchRequest(type="search")
+            result = search.search(True, searchRequest)
+            config.searchingSettings.ignoreWords.set(None)
+            results = result["results"]
+            self.assertEqual(2, len(results))
+        
+        with responses.RequestsMock() as rsps:
+            self.prepareSearchMocks(rsps, 2, 2)
+            config.searchingSettings.ignoreWords.set("newznab1, something, else")
+            searchRequest = SearchRequest(type="search")
+            result = search.search(True, searchRequest)
+            config.searchingSettings.ignoreWords.set(None)
+            results = result["results"]
+            self.assertEqual(2, len(results))
+
+        with responses.RequestsMock() as rsps:
+            self.prepareSearchMocks(rsps, 2, 2)
+            config.searchingSettings.ignoreWords.set("newznab1, newznab2")
+            searchRequest = SearchRequest(type="search")
+            result = search.search(True, searchRequest)
+            config.searchingSettings.ignoreWords.set(None)
+            results = result["results"]
+            self.assertEqual(0, len(results))
+
+        with responses.RequestsMock() as rsps:
+            self.prepareSearchMocks(rsps, 2, 2, "newznab %d result%d.title")
+            config.searchingSettings.ignoreWords.set("newznab 1, newznab 2") #Ignore both
+            searchRequest = SearchRequest(type="search")
+            result = search.search(True, searchRequest)
+            config.searchingSettings.ignoreWords.set(None)
+            results = result["results"]
+            self.assertEqual(0, len(results))
