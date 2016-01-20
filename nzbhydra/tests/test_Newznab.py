@@ -216,7 +216,7 @@ class NewznabTests(UrlTestCase):
         searchRequest = SearchRequest(query="novel")
         urls = self.n1.get_ebook_urls(searchRequest)
         self.assertEqual(1, len(urls))
-        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&limit=100&t=search&extended=1&offset=0&q=novel+ebook%7Cmobi%7Cpdf%7Cepub", urls[0])
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&cat=7020&limit=100&t=search&extended=1&offset=0&q=novel+ebook%7Cmobi%7Cpdf%7Cepub", urls[0])
 
     def testGetMovieSearchUrls(self):
         config.indexerSettings.newznab1.search_ids.set(["imdbid"])

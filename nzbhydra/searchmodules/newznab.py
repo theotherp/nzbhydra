@@ -334,6 +334,7 @@ class NewzNab(SearchModule):
     def get_ebook_urls(self, search_request):
         if search_request.category is None:
             search_request.category = "Ebook"
+        search_request.query += " ebook|mobi|pdf|epub"
         return self.get_search_urls(search_request)
 
     def get_audiobook_urls(self, search_request):
