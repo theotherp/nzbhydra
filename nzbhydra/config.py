@@ -381,6 +381,7 @@ class MainSettings(Category):
         self.host = Setting(self, name="host", default="0.0.0.0", valuetype=str)
         self.port = Setting(self, name="port", default=5075, valuetype=int)
         self.externalUrl = Setting(self, name="externalUrl", default=None, valuetype=str)
+        self.useLocalUrlForApiAccess = Setting(self, name="useLocalUrlForApiAccess", default=True, valuetype=bool)
         self.urlBase = Setting(self, name="urlBase", default=None, valuetype=str)
         self.startup_browser = Setting(self, name="startupBrowser", default=True, valuetype=bool)
         self.runThreaded = Setting(self, name="runThreaded", default=False, valuetype=bool)

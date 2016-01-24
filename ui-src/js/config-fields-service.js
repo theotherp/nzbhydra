@@ -280,7 +280,17 @@ function ConfigFields() {
                                 type: 'text',
                                 label: 'External URL',
                                 placeholder: 'https://www.somedomain.com/nzbhydra/',
-                                help: 'Links in the API results will refer to this URL instead of the local one.'
+                                help: 'Set to the full external URL so machines outside can use the generated NZB links.'
+                            }
+                        },
+                        {
+                            key: 'useLocalUrlForApiAccess',
+                            type: 'horizontalSwitch',
+                            hideExpression: '!model.externalUrl',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Use local address in API results',
+                                help: 'Disable to make API results use the external URL in NZB links.'
                             }
                         },
                         {

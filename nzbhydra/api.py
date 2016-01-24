@@ -94,11 +94,11 @@ def get_root_url():
     return request.url_root
 
 
-def get_nzb_link_and_guid(indexer, guid, searchid, title):
+def get_nzb_link_and_guid(indexer, guid, searchid, title, external):
     data_getnzb = {"indexer": indexer, "guid": guid, "searchid": searchid, "title": title}
-    baseUrl = config.mainSettings.externalUrl.get_with_default(None)
-    if baseUrl is not None and baseUrl != "":
-        f = furl(baseUrl)
+    externalUrl = config.mainSettings.externalUrl.get_with_default(None)
+    if externalUrl and not(external and config.mainSettings.useLocalUrlForApiAccess.get()):
+        f = furl(externalUrl)
     else:
         f = furl(get_root_url())
     f.path.add("api")
@@ -112,11 +112,11 @@ def get_nzb_link_and_guid(indexer, guid, searchid, title):
     return f.url, guid_rison
 
 
-def transform_results(results, dbsearch):
+def transform_results(results, dbsearch, external):
     transformed = []
     for i in results:
         i.dbsearchid = dbsearch
-        nzb_link, guid_json = get_nzb_link_and_guid(i.indexer, i.guid, dbsearch, i.title)
+        nzb_link, guid_json = get_nzb_link_and_guid(i.indexer, i.guid, dbsearch, i.title, external)
         i.link = nzb_link
         i.indexerguid = i.guid  # Save the indexer's original GUID so that we can send it later from the GUI to identify the result
         i.guid = nzb_link  # For now it's the same as the link to the NZB, later we might link to a details page that at the least redirects to the original indexer's page
@@ -149,7 +149,7 @@ def sizeof_fmt(num, suffix='B'):
 
 
 def process_for_external_api(results):
-    results = transform_results(results["results"], results["dbsearchid"])
+    results = transform_results(results["results"], results["dbsearchid"], True)
     return results
 
 
@@ -165,7 +165,7 @@ def process_for_internal_api(search_result):
         indexer_search_info["has_more"] = indexer_info["has_more"]
         indexersearchdbentries.append(indexer_search_info)
 
-    nzbsearchresults = transform_results(nzbsearchresults, search_result["dbsearchid"])
+    nzbsearchresults = transform_results(nzbsearchresults, search_result["dbsearchid"], False)
     nzbsearchresults = serialize_nzb_search_result(nzbsearchresults)
 
     return {"results": nzbsearchresults, "indexersearches": indexersearchdbentries, "searchentryid": search_result["dbsearchid"], "total": search_result["total"]}
