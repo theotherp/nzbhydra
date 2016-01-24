@@ -16,33 +16,6 @@ class TestInfos(unittest.TestCase):
     
     @pytest.fixture
     def setUp(self):
-        # tmdbConfigPatcher = mock.patch("tmdbsimple.Configuration.info")
-        # configMock = tmdbConfigPatcher.start()
-        # configMock.return_value = {"images": {"secure_base_url": "http://base.com/", "poster_sizes": ["w92"]}}
-        # 
-        # tmdbSearchPatcher = mock.patch("tmdbsimple.Search.movie")
-        # self.searchMock = tmdbSearchPatcher.start()
-        # with open("mock/tmdb_search_response.json") as f:
-        #     self.searchMock.return_value = {"results": json.load(f)}
-        # 
-        # tmdbFindPatcher = mock.patch("tmdbsimple.Find.info")
-        # self.findMock = tmdbFindPatcher.start()
-        # with open("mock/tmdb_imdbidsearch_response.json") as f:
-        #     self.findMock.return_value = json.load(f)
-        # 
-        # tmdbMoviesPatcher = mock.patch("tmdbsimple.Movies.info")
-        # self.moviesMock = tmdbMoviesPatcher.start()
-        # with open("mock/tmdb_movies_response.json") as f:
-        #     self.moviesMock.return_value = json.load(f)
-        #     
-        # with open("mock/tvmaze_search_response.json") as f:
-        #     self.tvmazeSearchResponse = f.read()
-        # with open("mock/tvmaze_show_response.json") as f:
-        #     self.tvmazeShowResponse = f.read()
-        # with open("mock/omdb_id_response.json") as f:
-        #     self.omdbIdResponse = f.read()
-                   
-
         init_db("tests.db")
         TvIdCache().delete().execute()
 

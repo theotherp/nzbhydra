@@ -96,7 +96,7 @@ def get_root_url():
 
 def get_nzb_link_and_guid(indexer, guid, searchid, title):
     data_getnzb = {"indexer": indexer, "guid": guid, "searchid": searchid, "title": title}
-    baseUrl = config.mainSettings.baseUrl.get_with_default(None)
+    baseUrl = config.mainSettings.externalUrl.get_with_default(None)
     if baseUrl is not None and baseUrl != "":
         f = furl(baseUrl)
     else:

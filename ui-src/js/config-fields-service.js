@@ -264,13 +264,23 @@ function ConfigFields() {
                             }
                         },
                         {
-                            key: 'baseUrl',
+                            key: 'urlBase',
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
-                                label: 'Base URL',
-                                placeholder: 'http://127.0.0.1:5075',
-                                help: 'Set if the external URL is different from the local URL'
+                                label: 'URL base',
+                                placeholder: '/nzbhydra',
+                                help: 'Set when using an external proxy'
+                            }
+                        },
+                        {
+                            key: 'externalUrl',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'External URL',
+                                placeholder: 'https://www.somedomain.com/nzbhydra/',
+                                help: 'Links in the API results will refer to this URL instead of the local one.'
                             }
                         },
                         {

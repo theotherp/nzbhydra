@@ -59,7 +59,7 @@ class ReverseProxied(object):
 
     def __call__(self, environ, start_response):
         environ["MY_URL_BASE"] = "/"
-        base_url = config.mainSettings.baseUrl.get()
+        base_url = config.mainSettings.urlBase.get()
         if base_url is not None and base_url.endswith("/"):
             base_url = base_url[:-1]
         if base_url is not None and base_url != "":

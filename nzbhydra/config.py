@@ -3,6 +3,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import traceback
+
+import arrow
+import shutil
 from future import standard_library
 
 #standard_library.install_aliases()
@@ -239,47 +243,76 @@ def update(d, u, level):
     return d
 
 
-def migrate(cfg):
-    # CAUTION: Don't forget to increase the default value for configVersion
-    try:
-        version = cfg["main"]["configVersion"]
-        if version == 1:
-            addLogMessage(20, "Migrating config to version 2")
-            # Migrate sabnzbd setting
-            sabnzbd = cfg["downloader"]["sabnzbd"]
-            if sabnzbd["host"] and sabnzbd["port"]:
-                addLogMessage(20, "Migrating sabnzbd settings")
-                f = furl()
-                f.host = sabnzbd["host"]
-                f.port = sabnzbd["port"]
-                f.scheme = "https" if sabnzbd["ssl"] else "http"
-                f.path = "/sabnzbd/"
-                cfg["downloader"]["sabnzbd"]["url"] = f.url
-                addLogMessage(20, "Built sabnzbd URL: %s" % f.url)
-            elif cfg["downloader"]["downloader"] == "sabnzbd":
-                addLogMessage(30, "Unable to migrate from incomplete sabnzbd settings. Please set the sabnzbd URL manually")
-            addLogMessage(20, "Migration of config to version 2 finished")
-            cfg["main"]["configVersion"] = 2
-        if version == 2:
-            addLogMessage(20, "Migrating config to version 3")
-            addLogMessage(20, "Updating NZBClub host to https://www.nzbclub.com")
-            cfg["indexers"]["NZBClub"]["host"] = "https://www.nzbclub.com"
-            addLogMessage(20, "Migration of config to version 3 finished")
-            cfg["main"]["configVersion"] = 3
-    except Exception as e:
-        addLogMessage(40, "Error while trying to migrate config: %s" % str(e))
+def migrate(settingsFilename):
+    with open(settingsFilename) as settingsFile:
+        config = json.load(settingsFile)
+        # CAUTION: Don't forget to increase the default value for configVersion
+        version = config["main"]["configVersion"]
+        if version < mainSettings.configVersion.get():
+            addLogMessage(20, "Migrating config")
+            backupFilename = "%s.%s.bak" % (settingsFilename, arrow.get().format("YYYY-MM-DD"))
+            addLogMessage(20, "Copying backup of settings to %s" % backupFilename)
+            shutil.copy(settingsFilename, backupFilename)
+            
+            if version == 1:
+                addLogMessage(20, "Migrating config to version 2")
+                # Migrate sabnzbd setting
+                sabnzbd = config["downloader"]["sabnzbd"]
+                if sabnzbd["host"] and sabnzbd["port"]:
+                    addLogMessage(20, "Migrating sabnzbd settings")
+                    f = furl()
+                    f.host = sabnzbd["host"]
+                    f.port = sabnzbd["port"]
+                    f.scheme = "https" if sabnzbd["ssl"] else "http"
+                    f.path = "/sabnzbd/"
+                    config["downloader"]["sabnzbd"]["url"] = f.url
+                    addLogMessage(20, "Built sabnzbd URL: %s" % f.url)
+                elif config["downloader"]["downloader"] == "sabnzbd":
+                    addLogMessage(30, "Unable to migrate from incomplete sabnzbd settings. Please set the sabnzbd URL manually")
+                addLogMessage(20, "Migration of config to version 2 finished")
+                config["main"]["configVersion"] = 2
+            if version == 2:
+                addLogMessage(20, "Migrating config to version 3")
+                addLogMessage(20, "Updating NZBClub host to https://www.nzbclub.com")
+                config["indexers"]["NZBClub"]["host"] = "https://www.nzbclub.com"
+                addLogMessage(20, "Migration of config to version 3 finished")
+                config["main"]["configVersion"] = 3
+            if version == 3:
+                addLogMessage(20, "Migrating config to version 4")
+                addLogMessage(20, "Converting Base URL to URL base and external URL")
+                baseUrl = config["main"]["baseUrl"]
+                if baseUrl is not None and baseUrl != "":
+                    f = furl(config["main"]["baseUrl"])
+                    if f.path != "/":
+                        config["main"]["urlBase"] = str(f.path)
+                        if config["main"]["urlBase"].endswith("/"):
+                            config["main"]["urlBase"] = config["main"]["urlBase"][:-1]
+                    else:
+                        config["main"]["urlBase"] = None
+                    config["main"]["externalUrl"] = f.url
+                    if config["main"]["externalUrl"].endswith("/"):
+                        config["main"]["externalUrl"] = config["main"]["externalUrl"][:-1]
+                    addLogMessage(20, "Setting URL base to %s and external URL to %s" % (config["main"]["urlBase"], config["main"]["externalUrl"]))
+                else:
+                    config["main"]["urlBase"] = None
+                    config["main"]["externalUrl"] = None
+                config["main"].pop("baseUrl")
+                addLogMessage(20, "Migration of config to version 4 finished")
+                config["main"]["configVersion"] = 4
+    
+        return config
 
 
 def load(filename):
     global cfg
     global config_file
     config_file = filename
-    if os.path.exists(filename):
-        with open(filename) as f:
-            loaded_config = json.load(f)
-            migrate(loaded_config)
-            cfg = update(cfg, loaded_config, level="root")
-            pass
+    if os.path.exists(filename):            
+        try:
+            migratedConfig = migrate(filename)
+            cfg = update(cfg, migratedConfig, level="root")
+        except Exception:
+            addLogMessage(30, "An error occurred while migrating the settings: %s" % traceback.format_exc())
 
 
 def import_config_data(data):
@@ -347,7 +380,8 @@ class MainSettings(Category):
         super(MainSettings, self).__init__(config_root, "main", "Main")
         self.host = Setting(self, name="host", default="0.0.0.0", valuetype=str)
         self.port = Setting(self, name="port", default=5075, valuetype=int)
-        self.baseUrl = Setting(self, name="baseUrl", default=None, valuetype=str)
+        self.externalUrl = Setting(self, name="externalUrl", default=None, valuetype=str)
+        self.urlBase = Setting(self, name="urlBase", default=None, valuetype=str)
         self.startup_browser = Setting(self, name="startupBrowser", default=True, valuetype=bool)
         self.runThreaded = Setting(self, name="runThreaded", default=False, valuetype=bool)
 
@@ -380,7 +414,7 @@ class MainSettings(Category):
 
         # Not a config setting but the version of the config file. Useful when we may need to migrate the config later and want
         # to find out which version is used.
-        self.configVersion = Setting(self, name="configVersion", default=3, valuetype=int)
+        self.configVersion = Setting(self, name="configVersion", default=4, valuetype=int)
 
 
 mainSettings = MainSettings()

@@ -134,8 +134,8 @@ def run():
         port = config.mainSettings.port.get() if args.port is None else args.port
     
         logger.info("Starting web app on %s:%d" % (host, port))
-        if config.mainSettings.baseUrl.get() is not None and config.mainSettings.baseUrl.get() != "":
-            f = furl(config.mainSettings.baseUrl.get())
+        if config.mainSettings.externalUrl.get() is not None and config.mainSettings.externalUrl.get() != "":
+            f = furl(config.mainSettings.externalUrl.get())
         else:
             f = furl()
             f.host = "127.0.0.1"
