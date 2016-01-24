@@ -578,7 +578,7 @@ def internalapi_addnzb(args):
         if config.downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.direct.name:
             link, _, _ = get_indexer_nzb_link(item["indexer"], indexerguid, title, dbsearchid, "direct", True)
         else:
-            link, _ = get_nzb_link_and_guid(indexer, indexerguid, dbsearchid, title)
+            link, _ = get_nzb_link_and_guid(indexer, indexerguid, dbsearchid, title, False)
 
         if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
             add_success = downloader.add_link(link, title, category)
