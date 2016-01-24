@@ -416,6 +416,8 @@ class MainSettings(Category):
         # Not a config setting but the version of the config file. Useful when we may need to migrate the config later and want
         # to find out which version is used.
         self.configVersion = Setting(self, name="configVersion", default=4, valuetype=int)
+        self.repositoryBase = Setting(self, name="repositoryBase", default="https://github.com/theotherp/nzbhydra", valuetype=str)
+        
 
 
 mainSettings = MainSettings()

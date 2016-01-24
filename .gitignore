@@ -25,3 +25,4 @@ realsettingsmockproviders.cfg
 /libs/**/testsuite/**
 *.log
 **/*.cpython-34.pyc
+*buildTestDist.cmd*

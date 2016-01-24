@@ -1,9 +1,12 @@
+import glob
 import subprocess
 from os.path import dirname, abspath
 import os
 import sys
 import argparse
 import webbrowser
+
+import shutil
 
 
 def getBasePath():
@@ -131,6 +134,14 @@ def run():
         if config.mainSettings.debug.get():
             logger.info("Debug mode enabled")
             
+        #Clean up any "old" files from last update
+        oldfiles = glob.glob("*.updated")
+        if len(oldfiles) > 0:
+            logger.info("Deleting %d old files remaining from update" % len(oldfiles))
+            for filename in oldfiles:
+                logger.debug("Deleting %s" % filename)
+                os.remove(filename)
+            
         host = config.mainSettings.host.get() if args.host is None else args.host
         port = config.mainSettings.port.get() if args.port is None else args.port
     
@@ -148,7 +159,6 @@ def run():
             else:
                 logger.info("Opening browser to %s" % f.url)
                 webbrowser.open_new(f.url)
-                
         else:
             logger.info("Go to %s for the frontend" % f.url)
         
