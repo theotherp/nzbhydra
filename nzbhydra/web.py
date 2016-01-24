@@ -859,7 +859,8 @@ def internalapi_update():
     if not updated:
         return jsonify({"success": False})
     logger.info("Will send restart command in 1 second")
-    thread = threading.Thread(target=restart)
+    func = request.environ.get('werkzeug.server.shutdown')
+    thread = threading.Thread(target=restart, args=(func,))
     thread.daemon = True
     thread.start()
     return jsonify({"success": True})

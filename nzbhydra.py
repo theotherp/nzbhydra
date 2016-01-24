@@ -99,6 +99,7 @@ def run():
     parser.add_argument('--port', action='store', help='Port to run on', type=int)
     parser.add_argument('--nobrowser', action='store_true', help='Don\'t open URL on startup', default=False)
     parser.add_argument('--daemon', action='store_true', help='Run as daemon. *nix only', default=False)
+    parser.add_argument('--restarted', action='store_true', help=argparse.SUPPRESS, default=False)
     
     args, unknown = parser.parse_known_args()
     
@@ -142,8 +143,12 @@ def run():
             f.port = port
             f.scheme = "https" if config.mainSettings.ssl.get() else "http"
         if not args.nobrowser and config.mainSettings.startup_browser.get():
-            logger.info("Opening browser to %s" % f.url)
-            webbrowser.open_new(f.url)
+            if args.restarted:
+                logger.info("Not opening the browser after restart")
+            else:
+                logger.info("Opening browser to %s" % f.url)
+                webbrowser.open_new(f.url)
+                
         else:
             logger.info("Go to %s for the frontend" % f.url)
         
@@ -156,16 +161,21 @@ def run():
 if __name__ == '__main__':
         run()
         if "RESTART" in os.environ.keys() and os.environ["RESTART"] == "1":
-            os.environ["RESTART"] = "0"
-            
-            if os.path.exists("nzbhydra.pid"):
-                logger.debug("Removing old PID file")
-                os.remove("nzbhydra.pid")
-            
-            args = [sys.executable]
-            args.extend(sys.argv)
-            logger.info("Restarting process after shutdown: " + " ".join(args))
-            subprocess.Popen(args, cwd=os.getcwd())
+            if "y" in os.environ.keys():
+                sys.exit(-1)
+            else:
+                os.environ["RESTART"] = "0"       
+                if os.path.exists("nzbhydra.pid"):
+                    logger.debug("Removing old PID file")
+                    os.remove("nzbhydra.pid")
+                
+                args = [sys.executable]
+                args.extend(sys.argv)
+                if "--restarted" not in args:
+                    logger.debug("Setting restarted flag in command line")
+                    args.append("--restarted")
+                logger.info("Restarting process after shutdown: " + " ".join(args))
+                subprocess.Popen(args, cwd=os.getcwd())
     
     
     

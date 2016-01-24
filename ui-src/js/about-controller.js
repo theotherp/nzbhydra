@@ -10,7 +10,6 @@ function AboutController($scope, versionsPromise, UpdateService) {
 
     $scope.update = function () {
         UpdateService.update();
-    
     }
 
 }

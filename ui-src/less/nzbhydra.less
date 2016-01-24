@@ -9,6 +9,25 @@ body {
   background: @body-bg;
 }
 
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  /* Negative indent footer by it's height */
+  margin: 0 auto -50px;
+}
+
+/* Set the fixed height of the footer here */
+#push,
+#footer {
+  height: 50px;
+}
+
+#footer {
+  background-color: @brand-primary;
+  color: white;
+}
+
 /* ------ featurette */
 .featurette {
   display: table;
@@ -519,3 +538,5 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
+
+

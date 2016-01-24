@@ -656,6 +656,26 @@ UpdateService.$inject = ["$http", "growl", "blockUI", "RestartService"];
 
 angular
     .module('nzbhydraApp')
+    .controller('UpdateFooterController', UpdateFooterController);
+
+function UpdateFooterController($scope, $http, UpdateService) {
+    
+    $http.get("internalapi/get_versions").then(function(data) {
+        console.log(data);
+        $scope.currentVersion = data.data.currentVersion;
+        $scope.repVersion = data.data.repVersion;
+        $scope.updateAvailable = data.data.updateAvailable;
+    });
+
+    $scope.update = function () {
+        UpdateService.update();
+    }
+
+}
+UpdateFooterController.$inject = ["$scope", "$http", "UpdateService"];
+
+angular
+    .module('nzbhydraApp')
     .factory('StatsService', StatsService);
 
 function StatsService($http) {
@@ -3607,7 +3627,6 @@ function AboutController($scope, versionsPromise, UpdateService) {
 
     $scope.update = function () {
         UpdateService.update();
-    
     }
 
 }

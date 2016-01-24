@@ -26,7 +26,7 @@ def update():
         logger.debug("%s exists. Assuming this is a git clone" % gitSubFolder)
         return GitUpdateManager().update()
     else:
-        logger.debug("This seems to be a source installation as not .git subfolder was found")
+        logger.debug("This seems to be a source installation as no .git subfolder was found")
         return SourceUpdateManager().update()
     
 
