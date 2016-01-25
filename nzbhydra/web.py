@@ -8,10 +8,11 @@ import logging
 import os
 import urlparse
 
+import arrow
 import rison
+from werkzeug.contrib.fixers import ProxyFix
 
 from nzbhydra.searchmodules import omgwtf
-from nzbhydra.update import SourceUpdateManager
 
 sslImported = True
 try:
@@ -26,11 +27,11 @@ from peewee import fn
 from nzbhydra.exceptions import DownloaderException, IndexerResultParsingException
 
 # standard_library.install_aliases()
-from functools import wraps
+from functools import update_wrapper
 from pprint import pprint
 from time import sleep
 from arrow import Arrow
-from flask import Flask, render_template, request, jsonify, Response, url_for
+from flask import Flask, render_template, request, jsonify, Response
 from flask import redirect, make_response
 from flask_cache import Cache
 from flask.json import JSONEncoder
@@ -65,9 +66,9 @@ class ReverseProxied(object):
         if base_url is not None and base_url != "":
             script_name = str(furl(base_url).path)
             if environ['PATH_INFO'].startswith(script_name):
-                environ["MY_URL_BASE"] = script_name + "/" 
+                environ["MY_URL_BASE"] = script_name + "/"
                 environ['PATH_INFO'] = environ['PATH_INFO'][len(script_name):]
-            
+
         return self.app(environ, start_response)
 
 
@@ -82,6 +83,16 @@ Session(app)
 search_cache = Cache()
 internal_cache = Cache(app, config={'CACHE_TYPE': "simple",  # Cache for internal data like settings, form, schema, etc. which will be invalidated on request
                                     "CACHE_DEFAULT_TIMEOUT": 60 * 30})
+proxyFix = ProxyFix(app)
+
+failedLogins = {}
+
+
+def getIp():
+    if not request.headers.getlist("X-Forwarded-For"):
+        return request.remote_addr
+    else:
+        return proxyFix.get_remote_addr(request.headers.getlist("X-Forwarded-For"))
 
 
 def make_request_cache_key(*args, **kwargs):
@@ -151,6 +162,37 @@ def handle_bad_request(err):
 
 
 def authenticate():
+    global failedLogins
+    ip = getIp()
+    if ip in failedLogins.keys():
+        lastFailedLogin = failedLogins[ip]["lastFailedLogin"]
+        lastFailedLoginFormatted = lastFailedLogin.format("YYYY-MM-DD HH:mm:ss")
+        failedLoginCounter = failedLogins[ip]["failedLoginCounter"]
+        lastTriedUsername = failedLogins[ip]["lastTriedUsername"]
+        lastTriedPassword = failedLogins[ip]["lastTriedPassword"]
+        secondsSinceLastFailedLogin = (arrow.utcnow() - lastFailedLogin).seconds
+        waitFor = 2 * failedLoginCounter
+        failedLogins[ip]["lastFailedLogin"] = arrow.utcnow()
+        failedLogins[ip]["lastTriedUsername"] = request.authorization.username if request.authorization is not None else None
+        failedLogins[ip]["lastTriedPassword"] = request.authorization.password if request.authorization is not None else None
+
+        if secondsSinceLastFailedLogin < waitFor:
+            if request.authorization is None or (lastTriedUsername == request.authorization.username and lastTriedPassword == request.authorization.password):
+                # We don't log this and don't increase the counter, it happens when the user reloads the page waiting for the counter to go down, so we don't change the lastFailedLogin (well, we set it back)
+                failedLogins[ip]["lastFailedLogin"] = lastFailedLogin
+                return Response("Please wait %d seconds until you try to authenticate again" % (waitFor - secondsSinceLastFailedLogin), 429)
+            logger.warn("IP %s failed to authenticate. The last time was at %s. This was his %d. failed login attempt" % (ip, lastFailedLoginFormatted, failedLoginCounter))
+            failedLogins[ip]["failedLoginCounter"] = failedLoginCounter + 1
+            return Response("Please wait %d seconds until you try to authenticate again" % (waitFor - secondsSinceLastFailedLogin), 429)
+        else:
+            logger.warn("IP %s failed to authenticate. The last time was at %s. This was his %d. failed login attempt" % (ip, lastFailedLoginFormatted, failedLoginCounter))
+            failedLogins[ip]["failedLoginCounter"] = failedLoginCounter + 1
+
+    else:
+        #This isn't actually a failed try. The first time the auth just isn't filled and the user is asked for auth. There might be other cases (brute force using http://user:pass@... but we just ignore that the first time
+        failedLogins[ip] = {"lastFailedLogin": arrow.utcnow(), "failedLoginCounter": 1, "lastTriedUsername": request.authorization.username if request.authorization is not None else None, "lastTriedPassword": request.authorization.password if request.authorization is not None else None
+                            }
+
     return Response(
             'Could not verify your access level for that URL. You have to login with proper credentials', 401,
             {'WWW-Authenticate': 'Basic realm="Login Required"'})
@@ -175,66 +217,50 @@ def isLoggedIn():
     return auth and (auth.username == config.get(mainSettings.username) and auth.password == config.get(mainSettings.password))
 
 
-def requires_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if not mainSettings.enableAuth.get():
-            return f(*args, **kwargs)
-        if isLoggedIn() or (config.mainSettings.enableAdminAuth.get() and isAdminLoggedIn()):
-            return f(*args, **kwargs)
-        return authenticate()
-
-    return decorated
-
-
-def requires_admin_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        # This could probably be simplified but I feel too dumb right now
-        # If admin is enabled we need an admin logged in
-        # If admin is not enabled but normal auth is enabled we need a normal user
-        # In all other cases we don't care about the user
-        if config.mainSettings.enableAdminAuth.get():
-            if not isAdminLoggedIn():
-                return authenticate()
-            else:
-                return f(*args, **kwargs)
-        if mainSettings.enableAuth.get():
-            if isLoggedIn():
-                return f(*args, **kwargs)
-            else:
-                return authenticate()
-        else:
-            return f(*args, **kwargs)
-
-    return decorated
+def isAllowed(authType):
+    allowed = False
+    if isAdminLoggedIn():
+        allowed = True
+    if not mainSettings.enableAdminAuth.get():
+        mainSettings.enableAdminAuthForStats.set(False)
+    if not allowed and authType == "main":
+        if not mainSettings.enableAuth.get() or isLoggedIn():
+            allowed = True
+    if not allowed and authType == "stats":
+        if config.mainSettings.enableAdminAuthForStats.get() and isAdminLoggedIn():
+            allowed = True
+        if (not mainSettings.enableAuth.get() or (mainSettings.enableAuth.get() and isLoggedIn())) and not config.mainSettings.enableAdminAuthForStats.get():
+            allowed = True
+    if not allowed and authType == "admin":
+        if not config.mainSettings.enableAdminAuth.get() and not (mainSettings.enableAuth.get() and not isLoggedIn()):
+            allowed = True
+    return allowed
 
 
-def requires_stats_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if config.mainSettings.enableAdminAuth.get() and config.mainSettings.enableAdminAuthForStats.get():
-            if not isAdminLoggedIn():
-                return authenticate()
-            else:
-                return f(*args, **kwargs)
-        if mainSettings.enableAuth.get():
-            if isLoggedIn():
+def requires_auth(authType):
+    def decorator(f):
+        def wrapped_function(*args, **kwargs):
+            allowed = isAllowed(authType)
+            if allowed:
+                try:
+                    failedLogins.pop(getIp())
+                except KeyError:
+                    pass
                 return f(*args, **kwargs)
             else:
                 return authenticate()
-        else:
-            return f(*args, **kwargs)
 
-    return decorated
+        return update_wrapper(wrapped_function, f)
+
+    return decorator
 
 
 @app.route('/<path:path>')
 @app.route('/', defaults={"path": None})
-@requires_auth
+@requires_auth("main")
 def base(path):
     logger.debug("Sending index.html")
-    host_url = "//" + request.host + request.environ['MY_URL_BASE']    
+    host_url = "//" + request.host + request.environ['MY_URL_BASE']
     _, currentVersion = get_current_version()
     return render_template("index.html", host_url=host_url, isAdmin=maySeeAdminArea(), cacheBuster=("?v=" + currentVersion) if currentVersion is not None else "")
 
@@ -346,11 +372,12 @@ def api_search(args):
     response.headers["Content-Type"] = "application/xml"
     return content
 
+
 api_search.make_cache_key = make_request_cache_key
 
 
 @app.route("/details/<path:guid>")
-@requires_auth
+@requires_auth("main")
 def get_details(guid):
     # GUID is not the GUID-item from the RSS but the newznab GUID which in our case is just a rison string 
     d = rison.loads(urlparse.unquote(guid))
@@ -390,7 +417,7 @@ internalapi_search_args = {
 
 
 @app.route('/internalapi/search')
-@requires_auth
+@requires_auth("main")
 @use_args(internalapi_search_args, locations=['querystring'])
 def internalapi_search(args):
     logger.debug("Search request with args %s" % args)
@@ -422,13 +449,13 @@ internalapi_moviesearch_args = {
 
 
 @app.route('/internalapi/moviesearch')
-@requires_auth
+@requires_auth("main")
 @use_args(internalapi_moviesearch_args, locations=['querystring'])
 def internalapi_moviesearch(args):
     logger.debug("Movie search request with args %s" % args)
     indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None
     search_request = SearchRequest(type="movie", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=indexers)
-    
+
     if args["imdbid"]:
         search_request.identifier_key = "imdbid"
         search_request.identifier_value = args["imdbid"]
@@ -462,7 +489,7 @@ internalapi_tvsearch_args = {
 
 
 @app.route('/internalapi/tvsearch')
-@requires_auth
+@requires_auth("main")
 @use_args(internalapi_tvsearch_args, locations=['querystring'])
 def internalapi_tvsearch(args):
     logger.debug("TV search request with args %s" % args)
@@ -485,7 +512,7 @@ internalapi_autocomplete_args = {
 
 
 @app.route('/internalapi/autocomplete')
-@requires_auth
+@requires_auth("main")
 @use_args(internalapi_autocomplete_args, locations=['querystring'])
 @search_cache.memoize()
 def internalapi_autocomplete(args):
@@ -498,6 +525,8 @@ def internalapi_autocomplete(args):
         return jsonify({"results": results})
     else:
         return "No results", 500
+
+
 internalapi_autocomplete.make_cache_key = make_request_cache_key
 
 internalapi__getnfo_args = {
@@ -507,13 +536,14 @@ internalapi__getnfo_args = {
 
 
 @app.route('/internalapi/getnfo')
-@requires_auth
+@requires_auth("main")
 @use_args(internalapi__getnfo_args, locations=['querystring'])
 @search_cache.memoize()
 def internalapi_getnfo(args):
     logger.debug("Get NFO request with args %s" % args)
     nfo = get_nfo(args["indexer"], args["guid"])
     return jsonify(nfo)
+
 
 internalapi_getnfo.make_cache_key = make_request_cache_key
 
@@ -527,7 +557,7 @@ internalapi__getnzb_args = {
 
 
 @app.route('/internalapi/getnzb')
-@requires_auth
+@requires_auth("main")
 @use_args(internalapi__getnzb_args, locations=['querystring'])
 def internalapi_getnzb(args):
     logger.debug("Get NZB request with args %s" % args)
@@ -556,7 +586,7 @@ internalapi__addnzb_args = {
 
 
 @app.route('/internalapi/addnzbs', methods=['GET', 'PUT'])
-@requires_auth
+@requires_auth("main")
 @use_args(internalapi__addnzb_args)
 def internalapi_addnzb(args):
     logger.debug("Add NZB request with args %s" % args)
@@ -611,7 +641,7 @@ internalapi__testdownloader_args = {
 
 @app.route('/internalapi/test_downloader')
 @use_args(internalapi__testdownloader_args)
-@requires_auth
+@requires_auth("main")
 def internalapi_testdownloader(args):
     logger.debug("Testing connection to downloader %s" % args["name"])
     if args["name"] == "nzbget":
@@ -635,7 +665,7 @@ internalapi__testnewznab_args = {
 
 @app.route('/internalapi/test_newznab')
 @use_args(internalapi__testnewznab_args)
-@requires_auth
+@requires_auth("main")
 def internalapi_testnewznab(args):
     success, message = test_connection(args["host"], args["apikey"])
     return jsonify({"result": success, "message": message})
@@ -649,7 +679,7 @@ internalapi__testomgwtf_args = {
 
 @app.route('/internalapi/test_omgwtf')
 @use_args(internalapi__testomgwtf_args)
-@requires_auth
+@requires_auth("main")
 def internalapi_testomgwtf(args):
     success, message = omgwtf.test_connection(args["apikey"], args["username"])
     return jsonify({"result": success, "message": message})
@@ -664,7 +694,7 @@ internalapi_testcaps_args = {
 
 @app.route('/internalapi/test_caps')
 @use_args(internalapi_testcaps_args)
-@requires_admin_auth
+@requires_auth("admin")
 def internalapi_testcaps(args):
     indexer = urlparse.unquote(args["indexer"])
     apikey = args["apikey"]
@@ -680,7 +710,7 @@ def internalapi_testcaps(args):
 
 
 @app.route('/internalapi/getstats')
-@requires_stats_auth
+@requires_auth("stats")
 def internalapi_getstats():
     logger.debug("Get stats")
     return jsonify({"avgResponseTimes": get_avg_indexer_response_times(),
@@ -689,7 +719,7 @@ def internalapi_getstats():
 
 
 @app.route('/internalapi/getindexerstatuses')
-@requires_stats_auth
+@requires_auth("stats")
 def internalapi_getindexerstatuses():
     logger.debug("Get indexer statuses")
     return jsonify({"indexerStatuses": get_indexer_statuses()})
@@ -703,7 +733,7 @@ internalapi__getnzbdownloads_args = {
 
 
 @app.route('/internalapi/getnzbdownloads')
-@requires_stats_auth
+@requires_auth("stats")
 @use_args(internalapi__getnzbdownloads_args)
 def internalapi_getnzb_downloads(args):
     logger.debug("Get NZB downloads")
@@ -718,7 +748,7 @@ internalapi__getsearchrequests_args = {
 
 
 @app.route('/internalapi/getsearchrequests')
-@requires_stats_auth
+@requires_auth("stats")
 @use_args(internalapi__getsearchrequests_args)
 def internalapi_search_requests(args):
     logger.debug("Get search requests")
@@ -731,7 +761,7 @@ internalapi__enableindexer_args = {
 
 
 @app.route('/internalapi/enableindexer')
-@requires_stats_auth
+@requires_auth("stats")
 @use_args(internalapi__enableindexer_args)
 def internalapi_enable_indexer(args):
     logger.debug("Enabling indexer %s" % args["name"])
@@ -744,7 +774,7 @@ def internalapi_enable_indexer(args):
 
 
 @app.route('/internalapi/setsettings', methods=["PUT"])
-@requires_admin_auth
+@requires_auth("admin")
 def internalapi_setsettings():
     logger.debug("Set settings request")
     try:
@@ -761,7 +791,7 @@ def internalapi_setsettings():
 
 
 @app.route('/internalapi/getconfig')
-@requires_admin_auth
+@requires_auth("admin")
 @internal_cache.memoize()
 def internalapi_getconfig():
     logger.debug("Get config request")
@@ -769,7 +799,7 @@ def internalapi_getconfig():
 
 
 @app.route('/internalapi/getsafeconfig')
-@requires_auth
+@requires_auth("main")
 @internal_cache.memoize()
 def internalapi_getsafeconfig():
     logger.debug("Get safe config request")
@@ -777,14 +807,14 @@ def internalapi_getsafeconfig():
 
 
 @app.route('/internalapi/mayseeadminarea')
-@requires_auth
+@requires_auth("main")
 def internalapi_maySeeAdminArea():
     logger.debug("Get isAdminLoggedIn request")
     return jsonify({"maySeeAdminArea": maySeeAdminArea()})
 
 
 @app.route('/internalapi/get_versions')
-@requires_auth
+@requires_auth("main")
 def internalapi_getversions():
     logger.debug("Get versions request")
     _, current_version = get_current_version()
@@ -793,7 +823,7 @@ def internalapi_getversions():
 
 
 @app.route('/internalapi/getlogs')
-@requires_admin_auth
+@requires_auth("admin")
 def internalapi_getlogs():
     logger.debug("Get logs request")
     logs = getLogs()
@@ -801,7 +831,7 @@ def internalapi_getlogs():
 
 
 @app.route('/internalapi/getcategories')
-@requires_auth
+@requires_auth("main")
 def internalapi_getcategories():
     logger.debug("Get categories request")
     categories = []
@@ -824,7 +854,7 @@ def restart(func=None):
 
 
 @app.route("/internalapi/restart")
-@requires_admin_auth
+@requires_auth("admin")
 def internalapi_restart():
     logger.info("User requested to restart. Sending restart command in 1 second")
     func = request.environ.get('werkzeug.server.shutdown')
@@ -838,11 +868,10 @@ def shutdown():
     logger.debug("Sending shutdown signal to server")
     sleep(1)
     os._exit(0)
-    
 
 
 @app.route("/internalapi/shutdown")
-@requires_admin_auth
+@requires_auth("admin")
 def internalapi_shutdown():
     logger.info("Shutting down due to external request")
     thread = threading.Thread(target=shutdown)
@@ -852,7 +881,7 @@ def internalapi_shutdown():
 
 
 @app.route("/internalapi/update")
-@requires_admin_auth
+@requires_auth("admin")
 def internalapi_update():
     logger.info("Starting update")
     updated = update.update()
