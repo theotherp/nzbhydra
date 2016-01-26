@@ -331,8 +331,7 @@ def import_config_data(data):
 def save(filename):
     global cfg
     with open(filename, "w", encoding="utf-8") as f:
-        # json.dump(cfg, f, indent=4)
-        f.write(unicode(json.dumps(cfg, ensure_ascii=False, indent=4)))
+        f.write(json.dumps(cfg, ensure_ascii=False, indent=4, sort_keys=True))
 
 
 def get(setting):
