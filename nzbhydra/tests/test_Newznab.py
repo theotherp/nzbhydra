@@ -60,6 +60,24 @@ class NewznabTests(UrlTestCase):
         #Don't use "not available" as group
         self.assertIsNone(entries[2].group)
 
+    @freeze_time("2016-01-30 18:00:00", tz_offset=-4)
+    def testParseSpotwebSearchResult(self):
+        # nzbsorg
+        with open("mock/spotweb_q_testtitle_3results.xml") as f:
+            entries = self.n1.process_query_result(f.read(), "aquery").entries
+        self.assertEqual(3, len(entries))
+
+        self.assertEqual(entries[0].title, "testtitle1")
+        assert entries[0].size == 3960401206
+        assert entries[0].guid == "ESOSxziB5WAYyalVgTP8M@spot.net"
+        self.assertEqual(entries[0].age_days, 5)
+        self.assertEqual(entries[0].epoch, 1453663845)
+        self.assertEqual(entries[0].pubdate_utc, "2016-01-24T19:30:45+00:00")
+        self.assertEqual(entries[0].poster, "SluweSjakie@spot.net")
+        self.assertIsNone(entries[0].group)
+
+        
+
     @freeze_time("2016-01-11 18:00:00", tz_offset=0)
     def testPirateNzbParseSearchResult(self):
         # nzbsorg

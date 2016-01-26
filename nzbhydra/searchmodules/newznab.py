@@ -353,7 +353,7 @@ class NewzNab(SearchModule):
 
         entries = []
         grouppattern = re.compile(r"Group:</b> ?([\w\.]+)<br ?/>")
-        guidpattern = re.compile(r"(.*/)?([a-zA-Z0-9]+)")
+        guidpattern = re.compile(r"(.*/)?([a-zA-Z0-9@\.]+)")
 
         try:
             tree = ET.fromstring(xml_response)
@@ -374,11 +374,13 @@ class NewzNab(SearchModule):
             if m:
                 entry.guid = m.group(2)
 
-            description = item.find("description").text
-            if description is not None and "Group:" in description:  # DogNZB has the group in its description
-                m = grouppattern.search(description)
-                if m and m.group(1) != "not available":
-                    entry.group = m.group(1)
+            description = item.find("description")
+            if description is not None:
+                description = description.text
+                if description is not None and "Group:" in description:  # DogNZB has the group in its description
+                    m = grouppattern.search(description)
+                    if m and m.group(1) != "not available":
+                        entry.group = m.group(1)
 
             categories = []
             for i in item.findall("./newznab:attr", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}):

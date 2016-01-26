@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/">
+    <channel>
+        <atom:link href="http://192.168.1.22:2080/spotweb/api" rel="self" type="application/rss+xml"/>
+        <title>Spotweb Index</title>
+        <description>Spotweb Index API Results</description>
+        <link>http://192.168.1.22:2080/spotweb/</link>
+        <language>en-gb</language>
+        <webMaster>****userid*****</webMaster>
+        <category/>
+        <image>
+            <url>http://192.168.1.22:2080/spotweb/images/spotnet.gif</url>
+            <title>Spotweb Index</title>
+            <link>http://192.168.1.22:2080/spotweb/</link>
+            <description>SpotWeb Index API Results</description>
+        </image>
+        <newznab:response offset="0" total="7"/>
+        <item>
+            <title>testtitle1</title>
+            <guid isPermaLink="false">ESOSxziB5WAYyalVgTP8M@spot.net</guid>
+            <link>http://192.168.1.22:2080/spotweb/api?t=g&amp;id=ESOSxziB5WAYyalVgTP8M@spot.net&amp;apikey=****APIKEY*****</link>
+            <pubDate>Sun, 24 Jan 2016 19:30:45 +0000</pubDate>
+            <category>Image &gt; DivX</category>
+            <enclosure url="http://192.168.1.22:2080/spotweb/api?t=g&amp;id=ESOSxziB5WAYyalVgTP8M@spot.net&amp;apikey=****APIKEY*****" length="3960401206" type="application/x-nzb"/>
+            <newznab:attr name="category" value="2000"/>
+            <newznab:attr name="category" value="2030"/>
+            <newznab:attr name="subs" value="dutch"/>
+            <newznab:attr name="size" value="3960401206"/>
+            <newznab:attr name="poster" value="SluweSjakie@spot.net"/>
+            <newznab:attr name="comments" value="8"/>
+        </item>
+        <item>
+            <title>title2</title>
+            <guid isPermaLink="false">Hv5ntZ7sSiguRF8VQaZqE@spot.net</guid>
+            <link>http://192.168.1.22:2080/spotweb/api?t=g&amp;id=Hv5ntZ7sSiguRF8VQaZqE@spot.net&amp;apikey=****APIKEY*****</link>
+            <pubDate>Sat, 13 Jun 2015 11:19:30 +0000</pubDate>
+            <category>Image &gt; DVD5</category>
+            <enclosure url="http://192.168.1.22:2080/spotweb/api?t=g&amp;id=Hv5ntZ7sSiguRF8VQaZqE@spot.net&amp;apikey=****APIKEY*****" length="4150462317" type="application/x-nzb"/>
+            <newznab:attr name="category" value="2000"/>
+            <newznab:attr name="category" value="2030"/>
+            <newznab:attr name="subs" value="dutch"/>
+            <newznab:attr name="size" value="4150462317"/>
+            <newznab:attr name="poster" value="SluweSjakie@spot.net"/>
+            <newznab:attr name="comments" value="14"/>
+        </item>
+        <item>
+            <title>title3</title>
+            <guid isPermaLink="false">xcZExvQj3W43BB8VQGmZn@spot.net</guid>
+            <link>http://192.168.1.22:2080/spotweb/api?t=g&amp;id=xcZExvQj3W43BB8VQGmZn@spot.net&amp;apikey=****APIKEY*****</link>
+            <pubDate>Sat, 13 Jun 2015 11:15:49 +0000</pubDate>
+            <category>Image &gt; DivX</category>
+            <enclosure url="http://192.168.1.22:2080/spotweb/api?t=g&amp;id=xcZExvQj3W43BB8VQGmZn@spot.net&amp;apikey=****APIKEY*****" length="2030305569" type="application/x-nzb"/>
+            <newznab:attr name="category" value="2000"/>
+            <newznab:attr name="category" value="2030"/>
+            <newznab:attr name="subs" value="dutch"/>
+            <newznab:attr name="size" value="2030305569"/>
+            <newznab:attr name="poster" value="SluweSjakie@spot.net"/>
+            <newznab:attr name="comments" value="3"/>
+        </item>
+        
+    </channel>
+</rss>
