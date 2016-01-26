@@ -299,6 +299,12 @@ def migrate(settingsFilename):
                 config["main"].pop("baseUrl")
                 addLogMessage(20, "Migration of config to version 4 finished")
                 config["main"]["configVersion"] = 4
+            if version == 4:
+                addLogMessage(20, "Migrating config to version 5")
+                addLogMessage(20, "Converting repository base URL")
+                if "repositoryBase" in config["main"].keys():
+                    config["main"]["repositoryBase"] = "https://github.com/theotherp" 
+                addLogMessage(20, "Migration of config to version 5 finished")
     
         return config
 
@@ -415,8 +421,8 @@ class MainSettings(Category):
 
         # Not a config setting but the version of the config file. Useful when we may need to migrate the config later and want
         # to find out which version is used.
-        self.configVersion = Setting(self, name="configVersion", default=4, valuetype=int)
-        self.repositoryBase = Setting(self, name="repositoryBase", default="https://github.com/theotherp/nzbhydra", valuetype=str)
+        self.configVersion = Setting(self, name="configVersion", default=5, valuetype=int)
+        self.repositoryBase = Setting(self, name="repositoryBase", default="https://github.com/theotherp", valuetype=str)
         
 
 

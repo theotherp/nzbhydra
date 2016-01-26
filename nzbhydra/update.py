@@ -10,36 +10,107 @@ import shutil
 import subprocess
 import urllib
 import tarfile
+import requests
 
 from nzbhydra import config
+from furl import furl
 
 logger = logging.getLogger('root')
 
+currentVersion = None
+currentVersionText = None
 
-def update():
+
+def versiontuple(v):
+    filled = []
+    for point in v.split("."):
+        filled.append(point.zfill(8))
+    return tuple(filled)
+
+
+def check_for_new_version():
+    new_version_available, new_version = is_new_version_available()
+    if new_version_available:
+        logger.info(("New version %s available at %s" % (new_version, config.mainSettings.repositoryBase.get())))
+
+
+def get_rep_version():
+    return getUpdateManager().getLatestVersionFromRepository()
+
+
+def get_current_version():
+    global currentVersion
+    global currentVersionText
+    if currentVersion is None:
+        try:
+            with open("version.txt", "r") as f:
+                version = f.read()
+            currentVersion = versiontuple(version)
+            currentVersionText = version
+            return currentVersion, currentVersionText
+        except Exception as e:
+            logger.error("Unable to open version.txt: %s" % e)
+            return None, None
+    return currentVersion, currentVersionText
+
+
+def is_new_version_available():
+    rep_version, rep_version_readable = get_rep_version()
+    current_version, _ = get_current_version()
+    try:
+        if rep_version is not None and current_version is not None:
+            return rep_version > current_version, rep_version_readable
+    except Exception as e:
+        logger.error("Error while comparion versions: %s" % e)
+        return False, None
+    return False, None
+
+
+def getUpdateManager():
     main_dir = os.path.dirname(os.path.dirname(__file__))
-    #Hacky way of finding out if the installation is a git clone
+    # Hacky way of finding out if the installation is a git clone
     nzbhydraexe = os.path.join(main_dir, "nzbhydra.exe")
     if os.path.exists(nzbhydraexe):
         logger.debug("%s exists. Assuming this is a windows release" % nzbhydraexe)
-        return WindowsUpdateManager().update()
+        return WindowsUpdateManager()
     gitSubFolder = os.path.join(main_dir, ".git")
     if os.path.exists(gitSubFolder):
         logger.debug("%s exists. Assuming this is a git clone" % gitSubFolder)
-        return GitUpdateManager().update()
+        return GitUpdateManager()
     else:
         logger.debug("This seems to be a source installation as no .git subfolder was found")
-        return SourceUpdateManager().update()
+        return SourceUpdateManager()
+
+
+def update():
+    return getUpdateManager().update()
     
 
 class UpdateManager():
     pass
 
+    def getLatestVersionFromRepository(self):
+        try:
+            url = furl(self.repositoryBase)
+            url.host = "raw.%s" % url.host
+            url.path.add(self.repository)
+            url.path.add(self.branch)
+            url.path.add("version.txt")
+            logger.debug("Loading repository version from %s" % url)
+            r = requests.get(url, verify=False)
+            r.raise_for_status()
+            return versiontuple(r.text), r.text
+        except requests.RequestException as e:
+            logger.error("Error downloading version.txt from %s to check new updates: %s" % (url if url is not None else " Github", e))
+            return None, None
+
 
 class GitUpdateManager(UpdateManager):
     def __init__(self):
-        self.main_dir = os.path.dirname(os.path.dirname(__file__))
+        self.repositoryBase = config.mainSettings.repositoryBase.get()
+        self.repository = "nzbhydra"
         self.branch = config.mainSettings.branch.get()
+        self.main_dir = os.path.dirname(os.path.dirname(__file__))
         self._git_path = self._find_working_git()   
 
     def _find_working_git(self):
@@ -142,14 +213,19 @@ class GitUpdateManager(UpdateManager):
 
 class SourceUpdateManager(UpdateManager):
     def __init__(self):
+        self.repositoryBase = config.mainSettings.repositoryBase.get()
+        self.repository = "nzbhydra"
         self.branch = config.mainSettings.branch.get()    
 
     def update(self):
         """
         Downloads the latest source tarball from github and installs it over the existing version.
         """
-        base_url = config.mainSettings.repositoryBase.get()
-        tar_download_url = base_url + '/tarball/' + self.branch
+        base_url = furl(self.repositoryBase)
+        base_url.path.add(self.repository)
+        base_url.path.add("tarball")
+        base_url.path.add(self.branch)
+        tar_download_url = base_url.url
         main_dir = os.path.dirname(os.path.dirname(__file__))
 
         try:
@@ -215,15 +291,19 @@ class SourceUpdateManager(UpdateManager):
 
 class WindowsUpdateManager(SourceUpdateManager):
     def __init__(self):
-        
-        self.branch = "releases"
+        self.repositoryBase = config.mainSettings.repositoryBase.get()
+        self.repository = "nzbhydra-windows-releases"
+        self.branch = config.mainSettings.branch.get()
 
     def update(self):
         """
         Downloads the latest source tarball from github and installs it over the existing version.
         """
-        base_url = config.mainSettings.repositoryBase.get()
-        tar_download_url = base_url + '/tarball/' + self.branch
+        base_url = furl(self.repositoryBase)
+        base_url.path.add(self.repository)
+        base_url.path.add("tarball")
+        base_url.path.add(self.branch)
+        tar_download_url = base_url.url
         main_dir = os.path.dirname(os.path.dirname(__file__))
 
         try:
@@ -267,28 +347,31 @@ class WindowsUpdateManager(SourceUpdateManager):
                 return False
             content_dir = os.path.join(update_dir, update_dir_contents[0])
             
+            dontUpdateThese = []#("msvcm90.dll", "msvcr90.dll", "msvcm90.dll")
             #rename exes, pyd and dll files so they can be overwritten
             filesToRename = []
-            for filename in os.listdir(main_dir):
-                if filename.endswith(".pyd") or filename.endswith(".dll") or filename.endswith(".exe"):
+            for filename in os.listdir(main_dir):         
+                if (filename.endswith(".pyd") or filename.endswith(".dll") or filename.endswith(".exe")) and filename not in dontUpdateThese:
                     filesToRename.append((filename, filename + ".updated"))
             logger.info("Renaming %d files so they can be overwritten" % len(filesToRename))
             for toRename in filesToRename:
                 logger.debug("Renaming %s to %s" % (toRename[0], toRename[1]))
-                shutil.move(toRename[0], toRename[1])
-            
+                shutil.move(toRename[0], toRename[1])      
 
             # walk temp folder and move files to main folder
             logger.info(u"Moving files from " + content_dir + " to " + main_dir)
             for dirname, dirnames, filenames in os.walk(content_dir):
                 dirname = dirname[len(content_dir) + 1:]
                 for curfile in filenames:
-                    old_path = os.path.join(content_dir, dirname, curfile)
-                    new_path = os.path.join(main_dir, dirname, curfile)
-
-                    if os.path.isfile(new_path):
-                        os.remove(new_path)
-                    os.renames(old_path, new_path)
+                    if curfile not in dontUpdateThese:
+                        old_path = os.path.join(content_dir, dirname, curfile)
+                        new_path = os.path.join(main_dir, dirname, curfile)
+                        logger.debug("Updating %s" % curfile)
+                        if os.path.isfile(new_path):
+                            os.remove(new_path)
+                        os.renames(old_path, new_path)
+                    else:
+                        logger.debug("Skipping %s" % curfile)
 
         except Exception as e:
             logger.error(u"Error while trying to update: " + str(e))

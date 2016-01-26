@@ -34,7 +34,7 @@ from nzbhydra import indexers
 from nzbhydra import database
 from nzbhydra import web
 import nzbhydra.config as config
-from nzbhydra.versioning import check_for_new_version
+from nzbhydra.update import check_for_new_version
 
 import requests
 requests.packages.urllib3.disable_warnings()
@@ -139,8 +139,14 @@ def run():
         if len(oldfiles) > 0:
             logger.info("Deleting %d old files remaining from update" % len(oldfiles))
             for filename in oldfiles:
-                logger.debug("Deleting %s" % filename)
-                os.remove(filename)
+                try:
+                    if "hydratray" not in filename:
+                        logger.debug("Deleting %s" % filename)
+                        os.remove(filename)
+                    else:
+                        logger.debug("Not deleting %s because it's still running. TrayHelper will restart itself" % filename)
+                except Exception:
+                    logger.warn("Unable to delete old file %s. Please delete manually" % filename)
             
         host = config.mainSettings.host.get() if args.host is None else args.host
         port = config.mainSettings.port.get() if args.port is None else args.port
@@ -171,9 +177,17 @@ def run():
 if __name__ == '__main__':
         run()
         if "RESTART" in os.environ.keys() and os.environ["RESTART"] == "1":
-            if "y" in os.environ.keys():
-                sys.exit(-1)
+            if "STARTEDBYTRAYHELPER" in os.environ.keys():
+                # We don't restart ourself but use a special return code so we are restarted by the tray tool
+                logger.info("Shutting down so we can be restarted by tray tool")
+                if "AFTERUPDATE" in os.environ.keys():
+                    logger.debug("Shutting down with return code -1 to signal tray helper that it should also restart itself")
+                    os._exit(-1)
+                else:
+                    logger.debug("Shutting down with return code -2 to signal tray helper that it should only restart NZBHydra")
+                    os._exit(-2)
             else:
+                #Otherwise we handle the restart ourself
                 os.environ["RESTART"] = "0"       
                 if os.path.exists("nzbhydra.pid"):
                     logger.debug("Removing old PID file")
@@ -186,6 +200,7 @@ if __name__ == '__main__':
                     args.append("--restarted")
                 logger.info("Restarting process after shutdown: " + " ".join(args))
                 subprocess.Popen(args, cwd=os.getcwd())
+                
     
     
     

@@ -48,10 +48,10 @@ from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
 from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses
-from nzbhydra.versioning import get_rep_version, get_current_version
+from nzbhydra.update import get_rep_version, get_current_version, update
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import getLogs
-from nzbhydra import update
+
 
 
 class ReverseProxied(object):
@@ -236,9 +236,13 @@ def isAllowed(authType):
     return allowed
 
 
-def requires_auth(authType):
+def requires_auth(authType, allowWithSecretKey=False):
     def decorator(f):
         def wrapped_function(*args, **kwargs):
+            if allowWithSecretKey and "SECRETACCESSKEY" in os.environ.keys():
+                if "secretaccesskey" in request.args and request.args.get("secretaccesskey").lower() == os.environ["SECRETACCESSKEY"].lower():
+                    logger.debug("Access granted by secret access key")
+                    return f(*args, **kwargs)
             allowed = isAllowed(authType)
             if allowed:
                 try:
@@ -844,20 +848,23 @@ def internalapi_getcategories():
         return jsonify({"success": False, "message": e.message})
 
 
-def restart(func=None):
+def restart(func=None, afterUpdate=False):
     logger.info("Restarting now")
     logger.debug("Setting env variable RESTART to 1")
     os.environ["RESTART"] = "1"
+    if afterUpdate:
+        logger.debug("Setting env variable AFTERUPDATE to 1")
+        os.environ["AFTERUPDATE"] = "1"
     logger.debug("Sending shutdown signal to server")
     func()
 
 
 @app.route("/internalapi/restart")
-@requires_auth("admin")
+@requires_auth("admin", True)
 def internalapi_restart():
     logger.info("User requested to restart. Sending restart command in 1 second")
     func = request.environ.get('werkzeug.server.shutdown')
-    thread = threading.Thread(target=restart, args=(func,))
+    thread = threading.Thread(target=restart, args=(func,False))
     thread.daemon = True
     thread.start()
     return "Restarting"
@@ -870,7 +877,7 @@ def shutdown():
 
 
 @app.route("/internalapi/shutdown")
-@requires_auth("admin")
+@requires_auth("admin", True)
 def internalapi_shutdown():
     logger.info("Shutting down due to external request")
     thread = threading.Thread(target=shutdown)
@@ -883,12 +890,12 @@ def internalapi_shutdown():
 @requires_auth("admin")
 def internalapi_update():
     logger.info("Starting update")
-    updated = update.update()
+    updated = update()
     if not updated:
         return jsonify({"success": False})
     logger.info("Will send restart command in 1 second")
     func = request.environ.get('werkzeug.server.shutdown')
-    thread = threading.Thread(target=restart, args=(func,))
+    thread = threading.Thread(target=restart, args=(func, True))
     thread.daemon = True
     thread.start()
     return jsonify({"success": True})

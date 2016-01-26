@@ -75,7 +75,6 @@ class NewznabTests(UrlTestCase):
         self.assertEqual(entries[0].pubdate_utc, "2016-01-24T19:30:45+00:00")
         self.assertEqual(entries[0].poster, "SluweSjakie@spot.net")
         self.assertIsNone(entries[0].group)
-
         
 
     @freeze_time("2016-01-11 18:00:00", tz_offset=0)
