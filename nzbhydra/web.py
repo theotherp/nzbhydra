@@ -129,13 +129,12 @@ def _db_disconnect(esc):
 
 @app.after_request
 def disable_caching(response):
-    if mainSettings.debug:
-        # Disable browser caching for development so resources are always served fresh :-)
+    if mainSettings.debug.get():
         response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Epires'] = '0'
-        return response
+    return response
 
 
 @app.errorhandler(Exception)
