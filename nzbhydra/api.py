@@ -94,19 +94,16 @@ def get_root_url():
     return request.url_root
 
 
-def get_nzb_link_and_guid(indexer, guid, searchid, title, external):
-    data_getnzb = {"indexer": indexer, "guid": guid, "searchid": searchid, "title": title}
+def get_nzb_link_and_guid(indexer, indexerguid, searchid, title, external):
+    data_getnzb = {"indexer": indexer, "indexerguid": indexerguid, "searchid": searchid, "title": title}
     externalUrl = config.mainSettings.externalUrl.get_with_default(None)
     if externalUrl and not(external and config.mainSettings.useLocalUrlForApiAccess.get()):
         f = furl(externalUrl)
     else:
         f = furl(get_root_url())
-    f.path.add("api")
     guid_rison = rison.dumps(data_getnzb)
-    args = {"t": "get", "id": guid_rison}
-    apikey = config.mainSettings.apikey.get_with_default(None)
-    if apikey is not None:
-        args["apikey"] = apikey
+    args = {"id": guid_rison}
+    f.path.add("getnzb")
     f.set(args=args)
     
     return f.url, guid_rison
@@ -119,7 +116,7 @@ def transform_results(results, dbsearch, external):
         nzb_link, guid_json = get_nzb_link_and_guid(i.indexer, i.guid, dbsearch, i.title, external)
         i.link = nzb_link
         i.indexerguid = i.guid  # Save the indexer's original GUID so that we can send it later from the GUI to identify the result
-        i.guid = nzb_link  # For now it's the same as the link to the NZB, later we might link to a details page that at the least redirects to the original indexer's page
+        i.guid = guid_json
 
         # Add our internal guid (like the link above but only the identifying part) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
         has_guid = False
@@ -196,7 +193,7 @@ def get_details_link(indexer_name, guid):
         return None
     
 
-def get_indexer_nzb_link(indexer_name, guid, title, searchid, mode, log_api_access):
+def get_indexer_nzb_link(indexer_name, indexerguid, title, searchid, mode, log_api_access):
     """
     Build a link that leads to the actual NZB of the indexer using the given informations. We log this as indexer API access and NZB download because this is only called
     when the NZB will be actually downloaded later (by us or a downloader) 
@@ -204,13 +201,13 @@ def get_indexer_nzb_link(indexer_name, guid, title, searchid, mode, log_api_acce
     """
     for p in indexers.enabled_indexers:
         if p.name.strip() == indexer_name.strip():
-            link = p.get_nzb_link(guid, title)
+            link = p.get_nzb_link(indexerguid, title)
 
             # Log to database
             indexer = Indexer.get(fn.lower(Indexer.name) == indexer_name.lower())
             papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, response_successful=None, indexer_search=searchid) if log_api_access else None
             papiaccess.save()
-            pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode=mode, title=title, guid=guid)
+            pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode=mode, title=title, guid=indexerguid)
             pnzbdl.save()
 
             return link, papiaccess, pnzbdl
@@ -223,8 +220,8 @@ def get_indexer_nzb_link(indexer_name, guid, title, searchid, mode, log_api_acce
 IndexerNzbDownloadResult = namedtuple("IndexerNzbDownload", "content headers")
 
 
-def download_nzb_and_log(indexer_name, provider_guid, title, searchid):
-    link, papiaccess, _ = get_indexer_nzb_link(indexer_name, provider_guid, title, searchid, "serve", True)
+def download_nzb_and_log(indexer_name, indexerguid, title, searchid):
+    link, papiaccess, _ = get_indexer_nzb_link(indexer_name, indexerguid, title, searchid, "serve", True)
     for p in indexers.enabled_indexers:
         if p.name == indexer_name:
             try:

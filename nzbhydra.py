@@ -168,7 +168,6 @@ def run():
         else:
             logger.info("Go to %s for the frontend" % f.url)
         
-        check_for_new_version()
         web.run(host, port, basepath)
     except Exception:
         logger.exception("Fatal error occurred")

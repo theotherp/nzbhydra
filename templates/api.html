@@ -12,7 +12,7 @@
         {% for row in items -%}
             <item>
                 <title>{{ row['title'] }}</title>
-                <guid isPermaLink="true">{{ row['link'] }}</guid>
+                <guid isPermaLink="false">{{ row['guid'] }}</guid>
                 <link>{{ row['link'] }}</link>
                 <comments>{{ row['details_link'] }}</comments>
                 <pubDate>{{ row['pubDate'] }}</pubDate>

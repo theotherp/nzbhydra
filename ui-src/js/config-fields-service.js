@@ -1030,8 +1030,7 @@ function ConfigFields() {
                         label: 'NZB access type',
                         options: [
                             {name: 'Proxy NZBs from indexer', value: 'serve'},
-                            {name: 'Redirect to the indexer', value: 'redirect'},
-                            {name: 'Use direct links', value: 'direct'}
+                            {name: 'Redirect to the indexer', value: 'redirect'}
                         ],
                         help: "How external access to NZBs is provided. Redirecting is recommended."
                     }

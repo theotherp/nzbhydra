@@ -326,7 +326,7 @@ def api(args):
             args["id"] = idDic["id"][0]
             logger.debug("Query ID was not properly parsed. Converted it to %s" % args["id"])
         else:
-            # The other if path will unquote the id with parse_qs unqotes so we do it here do
+            # The other if path will unquote the id with parse_qs unqotes so we do it here too
             args["id"] = urlparse.unquote(args["id"])
 
     if args["q"] is not None and args["q"] != "":
@@ -339,7 +339,7 @@ def api(args):
     elif args["t"] == "get":
         args = rison.loads(args["id"])
         logger.info("API request to download %s from %s" % (args["title"], args["indexer"]))
-        return extract_nzb_infos_and_return_response(args["indexer"], args["guid"], args["title"], args["searchid"])
+        return extract_nzb_infos_and_return_response(args["indexer"], args["indexerguid"], args["title"], args["searchid"])
     elif args["t"] == "caps":
         xml = render_template("caps.html")
         return Response(xml, mimetype="text/xml")
@@ -378,7 +378,6 @@ def api_search(args):
 
 api_search.make_cache_key = make_request_cache_key
 
-
 @app.route("/details/<path:guid>")
 @requires_auth("main")
 def get_details(guid):
@@ -388,6 +387,21 @@ def get_details(guid):
     if details_link:
         return redirect(details_link)
     return "Unable to find details", 500
+
+
+getnzb_args = {
+    "id": fields.String(missing=None)
+}
+
+
+@app.route('/getnzb')
+@requires_auth("main")
+@use_args(getnzb_args, locations=['querystring'])
+def getnzb(args):
+    logger.debug("Get NZB request with args %s" % args)
+    args = rison.loads(args["id"])
+    logger.info("API request to download %s from %s" % (args["title"], args["indexer"]))
+    return extract_nzb_infos_and_return_response(args["indexer"], args["indexerguid"], args["title"], args["searchid"])
 
 
 def process_and_jsonify_for_internalapi(results):
@@ -551,7 +565,6 @@ def internalapi_getnfo(args):
 internalapi_getnfo.make_cache_key = make_request_cache_key
 
 internalapi__getnzb_args = {
-    "input": fields.String(missing=None),
     "guid": fields.String(missing=None),
     "indexer": fields.String(missing=None),
     "searchid": fields.String(missing=None),
@@ -563,23 +576,23 @@ internalapi__getnzb_args = {
 @requires_auth("main")
 @use_args(internalapi__getnzb_args, locations=['querystring'])
 def internalapi_getnzb(args):
-    logger.debug("Get NZB request with args %s" % args)
-    return extract_nzb_infos_and_return_response(args["indexer"], args["guid"], args["title"], args["searchid"])
+    logger.debug("Get internal NZB request with args %s" % args)
+    return extract_nzb_infos_and_return_response(args["indexer"], args["indexerguid"], args["title"], args["searchid"])
 
 
-def extract_nzb_infos_and_return_response(indexer, guid, title, searchid):
+def extract_nzb_infos_and_return_response(indexer, indexerguid, title, searchid):
     if downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.redirect.name:
-        link, _, _ = get_indexer_nzb_link(indexer, guid, title, searchid, "redirect", True)
+        link, _, _ = get_indexer_nzb_link(indexer, indexerguid, title, searchid, "redirect", True)
         if link is not None:
             logger.info("Redirecting to %s" % link)
             return redirect(link)
         else:
             return "Unable to build link to NZB", 404
     elif downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.serve.name:
-        return get_nzb_response(indexer, guid, title, searchid)
+        return get_nzb_response(indexer, indexerguid, title, searchid)
     else:
         logger.error("Invalid value of %s" % downloaderSettings.nzbaccesstype)
-        return "downloader.add_type has wrong value", 500  # "direct" would never end up here, so it must be a wrong value
+        return "downloader.add_type has wrong value: %s" % downloaderSettings.nzbaccesstype, 500
 
 
 internalapi__addnzb_args = {
@@ -608,10 +621,7 @@ def internalapi_addnzb(args):
         indexer = item["indexer"]
         category = args["category"]
         dbsearchid = item["dbsearchid"]
-        if config.downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.direct.name:
-            link, _, _ = get_indexer_nzb_link(item["indexer"], indexerguid, title, dbsearchid, "direct", True)
-        else:
-            link, _ = get_nzb_link_and_guid(indexer, indexerguid, dbsearchid, title, False)
+        link, _ = get_nzb_link_and_guid(indexer, indexerguid, dbsearchid, title, False)
 
         if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
             add_success = downloader.add_link(link, title, category)

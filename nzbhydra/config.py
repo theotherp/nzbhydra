@@ -305,6 +305,14 @@ def migrate(settingsFilename):
                 if "repositoryBase" in config["main"].keys():
                     config["main"]["repositoryBase"] = "https://github.com/theotherp" 
                 addLogMessage(20, "Migration of config to version 5 finished")
+                config["main"]["configVersion"] = 5
+            if version == 5:
+                addLogMessage(20, "Migrating config to version 6")
+                if config["downloader"]["nzbAddingType"] == "direct":
+                    addLogMessage(20, 'Removing legacy setting for NZB access "direct" and setting it to redirect. Sorry.')
+                    config["main"]["nzbAddingType"] = "redirect"
+                addLogMessage(20, "Migration of config to version 6 finished")
+                config["main"]["configVersion"] = 6
     
         return config
 
@@ -420,7 +428,7 @@ class MainSettings(Category):
 
         # Not a config setting but the version of the config file. Useful when we may need to migrate the config later and want
         # to find out which version is used.
-        self.configVersion = Setting(self, name="configVersion", default=5, valuetype=int)
+        self.configVersion = Setting(self, name="configVersion", default=6, valuetype=int)
         self.repositoryBase = Setting(self, name="repositoryBase", default="https://github.com/theotherp", valuetype=str)
         
 
@@ -520,7 +528,6 @@ searchingSettings = SearchingSettings()
 class NzbAccessTypeSelection(object):
     serve = SelectOption("serve", "Proxy the NZBs from the indexer")
     redirect = SelectOption("redirect", "Redirect to the indexer")
-    direct = SelectOption("direct", "Use direct links to the indexer")
 
 
 class NzbAddingTypeSelection(object):
@@ -537,7 +544,7 @@ class DownloaderSelection(object):
 class DownloaderSettings(Category):
     def __init__(self):
         super(DownloaderSettings, self).__init__(config_root, "downloader", "Downloader")
-        self.nzbaccesstype = SelectionSetting(self, name="nzbaccesstype", default=NzbAccessTypeSelection.redirect, valuetype=str, options=[NzbAccessTypeSelection.direct, NzbAccessTypeSelection.redirect, NzbAccessTypeSelection.serve])
+        self.nzbaccesstype = SelectionSetting(self, name="nzbaccesstype", default=NzbAccessTypeSelection.redirect, valuetype=str, options=[NzbAccessTypeSelection.redirect, NzbAccessTypeSelection.serve])
         self.nzbAddingType = SelectionSetting(self, name="nzbAddingType", default=NzbAddingTypeSelection.link, valuetype=str, options=[NzbAddingTypeSelection.link, NzbAddingTypeSelection.nzb])
         self.downloader = SelectionSetting(self, name="downloader", default=DownloaderSelection.none, valuetype=str, options=[DownloaderSelection.nzbget, DownloaderSelection.sabnzbd])
 

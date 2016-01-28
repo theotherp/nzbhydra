@@ -91,7 +91,8 @@ Any pull requests are also welcome, but I feel I and the program would mostly pr
 Send me an email at TheOtherP@gmx.de or a PM at https://www.reddit.com/user/TheOtherP
 
 ### Donate ###
-If you like to help me with any running or upcoming costs you're welcome to send money to my bitcoin: 13x4cfm5BNzedsSqdPcexUhAF3cP8LYrsk 
+If you like to help me with any running or upcoming costs you're welcome to send money to my bitcoin: 13x4cfm5BNzedsSqdPcexUhAF3cP8LYrsk
+Or send me an appreciation mail and give the money to someone who needs it, like [Doctors without borders](https://donate.doctorswithoutborders.org/onetime.cfm)
 
 ### License ###
    Licensed under the Apache License, Version 2.0 (the "License");
