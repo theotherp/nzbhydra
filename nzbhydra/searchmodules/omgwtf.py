@@ -249,7 +249,7 @@ class OmgWtf(SearchModule):
             has_more = current_page < total_pages
             for item in tree.find("search_req").findall("post"):
                 entry = self.create_nzb_search_result()
-                entry.guid = item.find("nzbid").text
+                entry.indexerguid = item.find("nzbid").text
                 entry.title = item.find("release").text
                 entry.group = item.find("group").text
                 entry.link = item.find("getnzb").text
@@ -274,12 +274,12 @@ class OmgWtf(SearchModule):
             regexGroup = re.compile(r".*Group:<\/b> ([\w\.\-]+)<br \/>.*")
             for item in tree.find("channel").findall("item"):
                 entry = self.create_nzb_search_result()
-                guid = item.find("guid").text
-                m = regexGuid.match(guid)
+                indexerguid = item.find("guid").text
+                m = regexGuid.match(indexerguid)
                 if m:
-                    entry.guid = m.group(1)
+                    entry.indexerguid = m.group(1)
                 else:
-                    self.warn("Unable to find GUID in " + guid)
+                    self.warn("Unable to find GUID in " + indexerguid)
                     continue
                 entry.title = item.find("title").text
                 description = item.find("description").text

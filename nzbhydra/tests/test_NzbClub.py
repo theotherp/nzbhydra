@@ -49,7 +49,7 @@ class NzbclubTests(unittest.TestCase):
             self.assertEqual('testtitle1', entries[0].title)
             self.assertEqual("http://www.nzbclub.com/nzb_get/60269450/testtitle1.nzb", entries[0].link)
             self.assertEqual(1075514926, entries[0].size)
-            self.assertEqual("60269450", entries[0].guid)
+            self.assertEqual("60269450", entries[0].indexerguid)
             self.assertEqual(1443019463, entries[0].epoch)
             self.assertEqual("2015-09-23T09:44:23-05:00", entries[0].pubdate_utc)
             self.assertEqual("Wed, 23 Sep 2015 09:44:23 -0500", entries[0].pubDate)

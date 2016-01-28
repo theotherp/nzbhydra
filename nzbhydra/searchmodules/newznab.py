@@ -368,11 +368,11 @@ class NewzNab(SearchModule):
             entry.link = item.find("link").text
             entry.attributes = []
             entry.pubDate = item.find("pubDate").text
-            entry.guid = item.find("guid").text
+            entry.indexerguid = item.find("guid").text
             entry.has_nfo = NzbSearchResult.HAS_NFO_MAYBE
-            m = guidpattern.search(entry.guid)
+            m = guidpattern.search(entry.indexerguid)
             if m:
-                entry.guid = m.group(2)
+                entry.indexerguid = m.group(2)
 
             description = item.find("description")
             if description is not None:
@@ -389,7 +389,7 @@ class NewzNab(SearchModule):
                 if attribute_name == "size":
                     entry.size = int(attribute_value)
                 elif attribute_name == "guid":
-                    entry.guid = attribute_value
+                    entry.indexerguid = attribute_value
                 elif attribute_name == "category" and attribute_value != "":
                     try:
                         categories.append(int(attribute_value))
@@ -408,7 +408,7 @@ class NewzNab(SearchModule):
                 # Store all the extra attributes, we will return them later for external apis
                 entry.attributes.append({"name": attribute_name, "value": attribute_value})
             if entry.details_link is None:
-                entry.details_link = self.get_details_link(entry.guid)
+                entry.details_link = self.get_details_link(entry.indexerguid)
 
             if usenetdate is None:
                 # Not provided by attributes, use pubDate instead

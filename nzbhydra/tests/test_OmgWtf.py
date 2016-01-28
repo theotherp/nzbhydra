@@ -110,7 +110,7 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual('atvshow.S02E09.720p.HDTV.DD5.1.x264-NTb', entries[0].title)
             self.assertEqual("https://api.omgwtfnzbs.org/nzb/?id=x30FI&user=auser&api=apikey", entries[0].link)
             self.assertEqual(2396942366, entries[0].size)
-            self.assertEqual("x30FI", entries[0].guid)
+            self.assertEqual("x30FI", entries[0].indexerguid)
             self.assertEqual(1449855118, entries[0].epoch)
             self.assertEqual("2015-12-11T17:31:58+00:00", entries[0].pubdate_utc)
             self.assertEqual(18, entries[0].age_days)

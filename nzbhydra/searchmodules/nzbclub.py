@@ -114,7 +114,7 @@ class NzbClub(SearchModule):
             entry.category = "N/A"
             entry.details_link = elem.find("link").text
 
-            entry.guid = elem.find("guid").text[-8:] #GUID looks like "http://www.nzbclub.com/nzb_view58556415" of which we only want the last part
+            entry.indexerguid = elem.find("guid").text[-8:] #GUID looks like "http://www.nzbclub.com/nzb_view58556415" of which we only want the last part
             
             description = elem.find("description").text
             description = urlparse.unquote(description).replace("+", " ")

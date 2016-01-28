@@ -3,6 +3,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from random import shuffle
+
 import pytest
 from future import standard_library
 
@@ -289,12 +291,12 @@ class SearchTests(unittest.TestCase):
         config.searchingSettings.duplicateAgeThreshold.set(3600)
         config.searchingSettings.duplicateSizeThresholdInPercent.set(0.1)
     
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1")
-        result2 = NzbSearchResult(title="Title2", epoch=0, size=1, indexer="2", guid="2")
-        result3 = NzbSearchResult(title="Title2", epoch=0, size=1, indexer="3", guid="3")
-        result4 = NzbSearchResult(title="Title3", epoch=0, size=1, indexer="4", guid="4")
-        result5 = NzbSearchResult(title="TITLE1", epoch=0, size=1, indexer="5", guid="5")
-        result6 = NzbSearchResult(title="Title4", epoch=0, size=1, indexer="6", guid="6")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1")
+        result2 = NzbSearchResult(title="Title2", epoch=0, size=1, indexer="2", indexerguid="2")
+        result3 = NzbSearchResult(title="Title2", epoch=0, size=1, indexer="3", indexerguid="3")
+        result4 = NzbSearchResult(title="Title3", epoch=0, size=1, indexer="4", indexerguid="4")
+        result5 = NzbSearchResult(title="TITLE1", epoch=0, size=1, indexer="5", indexerguid="5")
+        result6 = NzbSearchResult(title="Title4", epoch=0, size=1, indexer="6", indexerguid="6")
         results = search.find_duplicates([result1, result2, result3, result4, result5, result6])
         self.assertEqual(4, len(results))
         self.assertEqual(2, len(results[0]))
@@ -302,20 +304,20 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(1, len(results[2]))
         self.assertEqual(1, len(results[3]))
     
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1")
-        result2 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="2", guid="2")
-        result3 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="3", guid="3")
-        result4 = NzbSearchResult(title="Title1", epoch=100000000, size=1, indexer="4", guid="4")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1")
+        result2 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="2", indexerguid="2")
+        result3 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="3", indexerguid="3")
+        result4 = NzbSearchResult(title="Title1", epoch=100000000, size=1, indexer="4", indexerguid="4")
         results = search.find_duplicates([result1, result2, result3, result4])
         self.assertEqual(2, len(results))
         self.assertEqual(3, len(results[0]))
         self.assertEqual(1, len(results[1]))
     
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1a", guid="1", pubdate_utc=arrow.get(0).format('YYYY-MM-DD HH:mm:ss ZZ'))
-        result2 = NzbSearchResult(title="Title1", epoch=10000000, size=1, indexer="2a", guid="2", pubdate_utc=arrow.get(10000000).format('YYYY-MM-DD HH:mm:ss ZZ'))
-        result3 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1b", guid="3", pubdate_utc=arrow.get(10000000).format('YYYY-MM-DD HH:mm:ss ZZ'))
-        result4 = NzbSearchResult(title="Title1", epoch=10000000, size=1, indexer="2b", guid="4", pubdate_utc=arrow.get(10000000).format('YYYY-MM-DD HH:mm:ss ZZ'))
-        result5 = NzbSearchResult(title="Title1", epoch=1000000000, size=1, indexer="3", guid="5", pubdate_utc=arrow.get(1000000000).format('YYYY-MM-DD HH:mm:ss ZZ'))
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1a", indexerguid="1", pubdate_utc=arrow.get(0).format('YYYY-MM-DD HH:mm:ss ZZ'))
+        result2 = NzbSearchResult(title="Title1", epoch=10000000, size=1, indexer="2a", indexerguid="2", pubdate_utc=arrow.get(10000000).format('YYYY-MM-DD HH:mm:ss ZZ'))
+        result3 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1b", indexerguid="3", pubdate_utc=arrow.get(10000000).format('YYYY-MM-DD HH:mm:ss ZZ'))
+        result4 = NzbSearchResult(title="Title1", epoch=10000000, size=1, indexer="2b", indexerguid="4", pubdate_utc=arrow.get(10000000).format('YYYY-MM-DD HH:mm:ss ZZ'))
+        result5 = NzbSearchResult(title="Title1", epoch=1000000000, size=1, indexer="3", indexerguid="5", pubdate_utc=arrow.get(1000000000).format('YYYY-MM-DD HH:mm:ss ZZ'))
         results = search.find_duplicates([result1, result2, result3, result4, result5])
         results = sorted(results, key=lambda x: len(x), reverse=True)
         self.assertEqual(3, len(results))
@@ -323,48 +325,48 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(2, len(results[1]))
         self.assertEqual(1, len(results[2]))
     
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1")
-        result2 = NzbSearchResult(title="Title1", epoch=100000000, size=1, indexer="2", guid="2")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1")
+        result2 = NzbSearchResult(title="Title1", epoch=100000000, size=1, indexer="2", indexerguid="2")
         results = search.find_duplicates([result1, result2])
         results = sorted(results, key=lambda x: len(x), reverse=True)
         self.assertEqual(2, len(results))
         self.assertEqual(1, len(results[0]))
         self.assertEqual(1, len(results[1]))
     
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1")
-        result2 = NzbSearchResult(title="Title1", epoch=1, size=100000000, indexer="2", guid="2")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1")
+        result2 = NzbSearchResult(title="Title1", epoch=1, size=100000000, indexer="2", indexerguid="2")
         results = search.find_duplicates([result1, result2])
         self.assertEqual(2, len(results))
         self.assertEqual(1, len(results[0]))
         self.assertEqual(1, len(results[1]))
     
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1")
-        result2 = NzbSearchResult(title="Title1", epoch=1, size=1, indexer="2", guid="2")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1")
+        result2 = NzbSearchResult(title="Title1", epoch=1, size=1, indexer="2", indexerguid="2")
         results = search.find_duplicates([result1, result2])
         self.assertEqual(1, len(results))
         self.assertEqual(2, len(results[0]))
     
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1")
-        result2 = NzbSearchResult(title="Title1", epoch=30 * 1000 * 60, size=1, indexer="2", guid="2")
-        result3 = NzbSearchResult(title="Title1", epoch=60 * 1000 * 60, size=1, indexer="2", guid="3")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1")
+        result2 = NzbSearchResult(title="Title1", epoch=30 * 1000 * 60, size=1, indexer="2", indexerguid="2")
+        result3 = NzbSearchResult(title="Title1", epoch=60 * 1000 * 60, size=1, indexer="2", indexerguid="3")
         results = search.find_duplicates([result1, result2, result3])
         self.assertEqual(3, len(results))
         self.assertEqual(1, len(results[0]))
         self.assertEqual(1, len(results[1]))
         self.assertEqual(1, len(results[2]))
     
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1")
-        result2 = NzbSearchResult(title="Title2", epoch=1000000, size=1, indexer="2", guid="2")
-        result3 = NzbSearchResult(title="Title3", epoch=5000000, size=1, indexer="2", guid="3")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1")
+        result2 = NzbSearchResult(title="Title2", epoch=1000000, size=1, indexer="2", indexerguid="2")
+        result3 = NzbSearchResult(title="Title3", epoch=5000000, size=1, indexer="2", indexerguid="3")
         results = search.find_duplicates([result1, result2, result3])
         self.assertEqual(3, len(results))
         self.assertEqual(1, len(results[0]))
         self.assertEqual(1, len(results[1]))
         self.assertEqual(1, len(results[2]))
     
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1")
-        result2 = NzbSearchResult(title="Title2", epoch=0, size=1, indexer="2", guid="2")
-        result3 = NzbSearchResult(title="Title3", epoch=0, size=1, indexer="2", guid="3")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1")
+        result2 = NzbSearchResult(title="Title2", epoch=0, size=1, indexer="2", indexerguid="2")
+        result3 = NzbSearchResult(title="Title3", epoch=0, size=1, indexer="2", indexerguid="3")
         results = search.find_duplicates([result1, result2, result3])
         self.assertEqual(3, len(results))
         self.assertEqual(1, len(results[0]))
@@ -372,46 +374,46 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(1, len(results[2]))
     
         # Same poster and group posted inside of 24 hours
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1", poster="postera", group="groupa")
-        result2 = NzbSearchResult(title="Title1", epoch=60 * 60 * 4, size=1, indexer="2", guid="2", poster="postera", group="groupa")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1", poster="postera", group="groupa")
+        result2 = NzbSearchResult(title="Title1", epoch=60 * 60 * 4, size=1, indexer="2", indexerguid="2", poster="postera", group="groupa")
         results = search.find_duplicates([result1, result2])
         self.assertEqual(1, len(results))
         self.assertEqual(2, len(results[0]))
     
         # Same poster and group posted outside of 24 hours
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1", poster="postera", group="groupa")
-        result2 = NzbSearchResult(title="Title1", epoch=1000 * 60 * 25, size=1, indexer="2", guid="2", poster="postera", group="groupa")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1", poster="postera", group="groupa")
+        result2 = NzbSearchResult(title="Title1", epoch=1000 * 60 * 25, size=1, indexer="2", indexerguid="2", poster="postera", group="groupa")
         results = search.find_duplicates([result1, result2])
         self.assertEqual(2, len(results))
     
         # Same size and age and group but different posters (very unlikely) 
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1", poster="postera", group="groupa")
-        result2 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="2", guid="2", poster="posterb", group="groupa")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1", poster="postera", group="groupa")
+        result2 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="2", indexerguid="2", poster="posterb", group="groupa")
         results = search.find_duplicates([result1, result2])
         self.assertEqual(2, len(results))
     
         # Same size and age and poster but different groups (very unlikely) 
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1", poster="postera", group="groupa")
-        result2 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="2", guid="2", poster="postera", group="groupb")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1", poster="postera", group="groupa")
+        result2 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="2", indexerguid="2", poster="postera", group="groupb")
         results = search.find_duplicates([result1, result2])
         self.assertEqual(2, len(results))
     
         # Same size and age and poster but unknown group inside of 3 hours 
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1", poster="postera")
-        result2 = NzbSearchResult(title="Title1", epoch=60 * 60 * 2, size=1, indexer="2", guid="2", poster="postera", group="groupb")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1", poster="postera")
+        result2 = NzbSearchResult(title="Title1", epoch=60 * 60 * 2, size=1, indexer="2", indexerguid="2", poster="postera", group="groupb")
         results = search.find_duplicates([result1, result2])
         self.assertEqual(1, len(results))
     
         # Same size and age and poster but unknown group outside of 3 hours 
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1", poster="postera")
-        result2 = NzbSearchResult(title="Title1", epoch=60 * 60 * 4, size=1, indexer="2", guid="2", poster="postera", group="groupb")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1", poster="postera")
+        result2 = NzbSearchResult(title="Title1", epoch=60 * 60 * 4, size=1, indexer="2", indexerguid="2", poster="postera", group="groupb")
         results = search.find_duplicates([result1, result2])
         self.assertEqual(2, len(results))
     
     def testFindDuplicatesNew(self):
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", guid="1", poster="postera", group="groupa")
-        result2 = NzbSearchResult(title="Title1", epoch=0, size=2, indexer="2", guid="2", poster="postera", group="groupb")
-        result3 = NzbSearchResult(title="Title1", epoch=0, size=3, indexer="3", guid="3", poster="postera", group="groupb")
+        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1", poster="postera", group="groupa")
+        result2 = NzbSearchResult(title="Title1", epoch=0, size=2, indexer="2", indexerguid="2", poster="postera", group="groupb")
+        result3 = NzbSearchResult(title="Title1", epoch=0, size=3, indexer="3", indexerguid="3", poster="postera", group="groupb")
         results = search.find_duplicates([result1, result2, result3])
         self.assertEqual(3, len(results))
     
@@ -520,7 +522,7 @@ class SearchTests(unittest.TestCase):
             self.assertEqual("title5", results[2].title)
             self.assertEqual("title1", results[3].title)
             self.assertEqual("title2", results[4].title)
-
+    
     @responses.activate
     @pytest.mark.current
     @freeze_time("2015-10-12 18:00:00", tz_offset=0)
@@ -530,14 +532,14 @@ class SearchTests(unittest.TestCase):
                 [mockbuilder.buildNewznabItem(title="title1", pubdate=arrow.get(1000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab1")],
                 [mockbuilder.buildNewznabItem(title="title2", pubdate=arrow.get(1000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab2")]
             ]
-
+    
             self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
             #Make the second access unsuccessful
             rsps._urls.pop(1)
             rsps.add(responses.GET, r".*",
                      body="an error message", status=500,
                      content_type='application/x-html')
-
+    
             searchRequest = SearchRequest(type="search", query="aquery", category="acategory", identifier_key="imdbid", identifier_value="animdbid", season=1, episode=2, indexers="newznab1|newznab2")
             result = search.search(True, searchRequest)
             results = result["results"]
@@ -557,7 +559,7 @@ class SearchTests(unittest.TestCase):
             indexerSearch1 = IndexerSearch.get(IndexerSearch.indexer == Indexer.get(Indexer.name == "newznab1"))
             self.assertEqual(indexerSearch1.search, dbSearch)
             self.assertEqual(18, indexerSearch1.time.hour)
-
+    
             indexerSearch2 = IndexerSearch.get(IndexerSearch.indexer == Indexer.get(Indexer.name == "newznab2"))
             self.assertEqual(indexerSearch2.search, dbSearch)
             self.assertEqual(18, indexerSearch2.time.hour)
@@ -572,7 +574,7 @@ class SearchTests(unittest.TestCase):
             self.assertTrue(indexerApiAccess1.response_successful)
             self.assertEqual(0, indexerApiAccess1.response_time)
             self.assertIsNone(indexerApiAccess1.error)
-
+    
             indexerApiAccess2 = IndexerApiAccess.get(IndexerApiAccess.indexer == Indexer.get(Indexer.name == "newznab2"))
             self.assertEqual(indexerSearch2, indexerApiAccess2.indexer_search)
             self.assertEqual(18, indexerApiAccess2.time.hour)
@@ -585,7 +587,7 @@ class SearchTests(unittest.TestCase):
             indexerStatus2 = IndexerStatus.get(IndexerStatus.indexer == Indexer.get(Indexer.name == "newznab2"))
             self.assertEqual(1, indexerStatus2.level)
             self.assertTrue("Connection refused" in indexerStatus2.reason)
-
+    
     @responses.activate
     @pytest.mark.current
     def test20Searches(self):
@@ -596,8 +598,8 @@ class SearchTests(unittest.TestCase):
             result = search.search(True, searchRequest)
             results = result["results"]
             self.assertEqual(20, len(results))
-
-
+    
+    
     @responses.activate
     def testIgnoreWords(self):
         with responses.RequestsMock() as rsps:
@@ -617,7 +619,7 @@ class SearchTests(unittest.TestCase):
             config.searchingSettings.ignoreWords.set(None)
             results = result["results"]
             self.assertEqual(2, len(results))
-
+    
         with responses.RequestsMock() as rsps:
             self.prepareSearchMocks(rsps, 2, 2)
             config.searchingSettings.ignoreWords.set("newznab1, newznab2")
@@ -626,7 +628,7 @@ class SearchTests(unittest.TestCase):
             config.searchingSettings.ignoreWords.set(None)
             results = result["results"]
             self.assertEqual(0, len(results))
-
+    
         with responses.RequestsMock() as rsps:
             self.prepareSearchMocks(rsps, 2, 2, "newznab %d result%d.title")
             config.searchingSettings.ignoreWords.set("newznab 1, newznab 2") #Ignore both
@@ -635,3 +637,25 @@ class SearchTests(unittest.TestCase):
             config.searchingSettings.ignoreWords.set(None)
             results = result["results"]
             self.assertEqual(0, len(results))
+
+    def testFindDuplicatesWithDD(self):
+        import jsonpickle
+        results = jsonpickle.decode(
+                '[{"age_precise": true, "age_days": 5, "indexerscore": 10, "indexer": "DogNZB", "guid": null, "supports_queries": true, "dbsearchid": null, "py/object": "nzbhydra.nzb_search_result.NzbSearchResult", "group": "alt.binaries.hdtv.x264", "pubDate": "Sat, 23 Jan 2016 11:08:46 -0600", "title": "Duck.Dynasty.S09E02.720p.HDTV.x264-AAF", "pubdate_utc": {"py/object": "future.types.newstr.newstr", "py/newargs": {"py/tuple": ["2016-01-23T11:08:46-06:00"]}}, "comments": null, "epoch": 1453568926, "size": {"py/object": "future.types.newint.newint", "py/newargs": {"py/tuple": [708754823]}}, "category": "TV HD", "hash": -958854479, "description": null, "poster": null, "search_types": [], "link": "https://dognzb.cr/fetch/634c0a68d89548be7778e8eea43a949e/apikey", "attributes": [{"name": "category", "value": "5000"}, {"name": "category", "value": "5040"}, {"name": "size", "value": "708754823"}, {"name": "grabs", "value": "9"}, {"name": "guid", "value": "634c0a68d89548be7778e8eea43a949e"}, {"name": "info", "value": "https://dognzb.cr/details/634c0a68d89548be7778e8eea43a949e"}, {"name": "comments", "value": "0"}, {"name": "tvdbid", "value": "256825"}, {"name": "rageid", "value": "30870"}, {"name": "season", "value": "S09"}, {"name": "episode", "value": "E02"}, {"name": "tvtitle", "value": "Duck Dynasty"}, {"name": "rating", "value": "63"}, {"name": "genre", "value": "Reality"}], "precise_date": true, "search_ids": [], "indexerguid": "634c0a68d89548be7778e8eea43a949e", "details_link": "https://dognzb.cr/details/634c0a68d89548be7778e8eea43a949e", "passworded": false, "has_nfo": 2}, {"age_precise": true, "age_days": 5, "indexerscore": 10, "indexer": "DogNZB", "guid": null, "supports_queries": true, "dbsearchid": null, "py/object": "nzbhydra.nzb_search_result.NzbSearchResult", "group": "alt.binaries.hdtv.x264", "pubDate": "Sat, 23 Jan 2016 11:06:56 -0600", "title": "Duck.Dynasty.S09E02.720p.HDTV.x264-AAF", "pubdate_utc": {"py/object": "future.types.newstr.newstr", "py/newargs": {"py/tuple": ["2016-01-23T11:06:56-06:00"]}}, "comments": null, "epoch": 1453568816, "size": {"py/object": "future.types.newint.newint", "py/newargs": {"py/tuple": [708766534]}}, "category": "TV HD", "hash": -958854479, "description": null, "poster": null, "search_types": [], "link": "https://dognzb.cr/fetch/634c329e9cbbe405668f25a9e893e5a1/apikey", "attributes": [{"name": "category", "value": "5000"}, {"name": "category", "value": "5040"}, {"name": "size", "value": "708766534"}, {"name": "grabs", "value": "5"}, {"name": "guid", "value": "634c329e9cbbe405668f25a9e893e5a1"}, {"name": "info", "value": "https://dognzb.cr/details/634c329e9cbbe405668f25a9e893e5a1"}, {"name": "comments", "value": "0"}, {"name": "tvdbid", "value": "256825"}, {"name": "rageid", "value": "30870"}, {"name": "season", "value": "S09"}, {"name": "episode", "value": "E02"}, {"name": "tvtitle", "value": "Duck Dynasty"}, {"name": "rating", "value": "63"}, {"name": "genre", "value": "Reality"}], "precise_date": true, "search_ids": [], "indexerguid": "634c329e9cbbe405668f25a9e893e5a1", "details_link": "https://dognzb.cr/details/634c329e9cbbe405668f25a9e893e5a1", "passworded": false, "has_nfo": 2}, {"age_precise": true, "age_days": 5, "indexerscore": 10, "indexer": "DogNZB", "guid": null, "supports_queries": true, "dbsearchid": null, "py/object": "nzbhydra.nzb_search_result.NzbSearchResult", "group": "alt.binaries.misc", "pubDate": "Sat, 23 Jan 2016 10:53:08 -0600", "title": "Duck.Dynasty.S09E02.720p.HDTV.x264-AAF", "pubdate_utc": {"py/object": "future.types.newstr.newstr", "py/newargs": {"py/tuple": ["2016-01-23T10:53:08-06:00"]}}, "comments": null, "epoch": 1453567988, "size": {"py/object": "future.types.newint.newint", "py/newargs": {"py/tuple": [708817306]}}, "category": "TV HD", "hash": -958854479, "description": null, "poster": null, "search_types": [], "link": "https://dognzb.cr/fetch/5a2d7b27b157293ebc3ce25ee3ece9ae/apikey", "attributes": [{"name": "category", "value": "5000"}, {"name": "category", "value": "5040"}, {"name": "size", "value": "708817306"}, {"name": "grabs", "value": "10"}, {"name": "guid", "value": "5a2d7b27b157293ebc3ce25ee3ece9ae"}, {"name": "info", "value": "https://dognzb.cr/details/5a2d7b27b157293ebc3ce25ee3ece9ae"}, {"name": "comments", "value": "0"}, {"name": "tvdbid", "value": "256825"}, {"name": "rageid", "value": "30870"}, {"name": "season", "value": "S09"}, {"name": "episode", "value": "E02"}, {"name": "tvtitle", "value": "Duck Dynasty"}, {"name": "rating", "value": "63"}, {"name": "genre", "value": "Reality"}], "precise_date": true, "search_ids": [], "indexerguid": "5a2d7b27b157293ebc3ce25ee3ece9ae", "details_link": "https://dognzb.cr/details/5a2d7b27b157293ebc3ce25ee3ece9ae", "passworded": false, "has_nfo": 2}, {"age_precise": true, "age_days": 5, "indexerscore": 10, "indexer": "DogNZB", "guid": null, "supports_queries": true, "dbsearchid": null, "py/object": "nzbhydra.nzb_search_result.NzbSearchResult", "group": "alt.binaries.misc", "pubDate": "Sat, 23 Jan 2016 10:47:19 -0600", "title": "Duck.Dynasty.S09E02.720p.HDTV.x264-AAF", "pubdate_utc": {"py/object": "future.types.newstr.newstr", "py/newargs": {"py/tuple": ["2016-01-23T10:47:19-06:00"]}}, "comments": null, "epoch": 1453567639, "size": {"py/object": "future.types.newint.newint", "py/newargs": {"py/tuple": [708029193]}}, "category": "TV HD", "hash": -958854479, "description": null, "poster": null, "search_types": [], "link": "https://dognzb.cr/fetch/62826294c691d71331f5f5a2f7c97fab/apikey", "attributes": [{"name": "category", "value": "5000"}, {"name": "category", "value": "5040"}, {"name": "size", "value": "708029193"}, {"name": "grabs", "value": "4"}, {"name": "guid", "value": "62826294c691d71331f5f5a2f7c97fab"}, {"name": "info", "value": "https://dognzb.cr/details/62826294c691d71331f5f5a2f7c97fab"}, {"name": "comments", "value": "0"}, {"name": "tvdbid", "value": "256825"}, {"name": "rageid", "value": "30870"}, {"name": "season", "value": "S09"}, {"name": "episode", "value": "E02"}, {"name": "tvtitle", "value": "Duck Dynasty"}, {"name": "rating", "value": "63"}, {"name": "genre", "value": "Reality"}], "precise_date": true, "search_ids": [], "indexerguid": "62826294c691d71331f5f5a2f7c97fab", "details_link": "https://dognzb.cr/details/62826294c691d71331f5f5a2f7c97fab", "passworded": false, "has_nfo": 2}, {"age_precise": true, "age_days": 5, "indexerscore": 10, "indexer": "DogNZB", "guid": null, "supports_queries": true, "dbsearchid": null, "py/object": "nzbhydra.nzb_search_result.NzbSearchResult", "group": "alt.binaries.boneless", "pubDate": "Sat, 23 Jan 2016 10:34:53 -0600", "title": "Duck.Dynasty.S09E02.720p.HDTV.x264-aAF", "pubdate_utc": {"py/object": "future.types.newstr.newstr", "py/newargs": {"py/tuple": ["2016-01-23T10:34:53-06:00"]}}, "comments": null, "epoch": 1453566893, "size": {"py/object": "future.types.newint.newint", "py/newargs": {"py/tuple": [707518680]}}, "category": "TV HD", "hash": -958854479, "description": null, "poster": null, "search_types": [], "link": "https://dognzb.cr/fetch/596a884fae6c619ed9451f494dbcdc0f/apikey", "attributes": [{"name": "category", "value": "5000"}, {"name": "category", "value": "5040"}, {"name": "size", "value": "707518680"}, {"name": "grabs", "value": "15"}, {"name": "guid", "value": "596a884fae6c619ed9451f494dbcdc0f"}, {"name": "info", "value": "https://dognzb.cr/details/596a884fae6c619ed9451f494dbcdc0f"}, {"name": "comments", "value": "0"}, {"name": "tvdbid", "value": "256825"}, {"name": "rageid", "value": "30870"}, {"name": "season", "value": "S09"}, {"name": "episode", "value": "E02"}, {"name": "tvtitle", "value": "Duck Dynasty"}, {"name": "rating", "value": "63"}, {"name": "genre", "value": "Reality"}], "precise_date": true, "search_ids": [], "indexerguid": "596a884fae6c619ed9451f494dbcdc0f", "details_link": "https://dognzb.cr/details/596a884fae6c619ed9451f494dbcdc0f", "passworded": false, "has_nfo": 2}, {"age_precise": true, "age_days": 5, "indexerscore": 10, "indexer": "DogNZB", "guid": null, "supports_queries": true, "dbsearchid": null, "py/object": "nzbhydra.nzb_search_result.NzbSearchResult", "group": "alt.binaries.teevee", "pubDate": "Sat, 23 Jan 2016 10:32:51 -0600", "title": "Duck.Dynasty.S09E02.720p.HDTV.x264-aAF", "pubdate_utc": {"py/object": "future.types.newstr.newstr", "py/newargs": {"py/tuple": ["2016-01-23T10:32:51-06:00"]}}, "comments": null, "epoch": 1453566771, "size": {"py/object": "future.types.newint.newint", "py/newargs": {"py/tuple": [746142045]}}, "category": "TV HD", "hash": -958854479, "description": null, "poster": null, "search_types": [], "link": "https://dognzb.cr/fetch/59adfcfcf37d547edd950c9fbb0c1ce6/apikey", "attributes": [{"name": "category", "value": "5000"}, {"name": "category", "value": "5040"}, {"name": "size", "value": "746142045"}, {"name": "grabs", "value": "18"}, {"name": "guid", "value": "59adfcfcf37d547edd950c9fbb0c1ce6"}, {"name": "info", "value": "https://dognzb.cr/details/59adfcfcf37d547edd950c9fbb0c1ce6"}, {"name": "comments", "value": "0"}, {"name": "tvdbid", "value": "256825"}, {"name": "rageid", "value": "30870"}, {"name": "season", "value": "S09"}, {"name": "episode", "value": "E02"}, {"name": "tvtitle", "value": "Duck Dynasty"}, {"name": "rating", "value": "63"}, {"name": "genre", "value": "Reality"}], "precise_date": true, "search_ids": [], "indexerguid": "59adfcfcf37d547edd950c9fbb0c1ce6", "details_link": "https://dognzb.cr/details/59adfcfcf37d547edd950c9fbb0c1ce6", "passworded": false, "has_nfo": 2}, {"age_precise": true, "age_days": 5, "indexerscore": 10, "indexer": "DogNZB", "guid": null, "supports_queries": true, "dbsearchid": null, "py/object": "nzbhydra.nzb_search_result.NzbSearchResult", "group": "alt.binaries.teevee", "pubDate": "Sat, 23 Jan 2016 10:32:13 -0600", "title": "Duck.Dynasty.S09E02.HDTV.x264-aAF", "pubdate_utc": {"py/object": "future.types.newstr.newstr", "py/newargs": {"py/tuple": ["2016-01-23T10:32:13-06:00"]}}, "comments": null, "epoch": 1453566733, "size": {"py/object": "future.types.newint.newint", "py/newargs": {"py/tuple": [261743919]}}, "category": "TV SD", "hash": -958854479, "description": null, "poster": null, "search_types": [], "link": "https://dognzb.cr/fetch/59adba189d51a27c8e9751dbd7022d43/apikey", "attributes": [{"name": "category", "value": "5000"}, {"name": "category", "value": "5030"}, {"name": "size", "value": "261743919"}, {"name": "grabs", "value": "46"}, {"name": "guid", "value": "59adba189d51a27c8e9751dbd7022d43"}, {"name": "info", "value": "https://dognzb.cr/details/59adba189d51a27c8e9751dbd7022d43"}, {"name": "comments", "value": "0"}, {"name": "tvdbid", "value": "256825"}, {"name": "rageid", "value": "30870"}, {"name": "season", "value": "S09"}, {"name": "episode", "value": "E02"}, {"name": "tvtitle", "value": "Duck Dynasty"}, {"name": "rating", "value": "63"}, {"name": "genre", "value": "Reality"}], "precise_date": true, "search_ids": [], "indexerguid": "59adba189d51a27c8e9751dbd7022d43", "details_link": "https://dognzb.cr/details/59adba189d51a27c8e9751dbd7022d43", "passworded": false, "has_nfo": 2}, {"age_precise": true, "age_days": 8, "indexerscore": 10, "indexer": "DogNZB", "guid": null, "supports_queries": true, "dbsearchid": null, "py/object": "nzbhydra.nzb_search_result.NzbSearchResult", "group": "alt.binaries.boneless", "pubDate": "Wed, 20 Jan 2016 09:59:50 -0600", "title": "Duck.Dynasty.S09E02.Flock.And.Key.REPACK.720p.AE.WEBRip.AAC2.0.H.264-BTW", "pubdate_utc": {"py/object": "future.types.newstr.newstr", "py/newargs": {"py/tuple": ["2016-01-20T09:59:50-06:00"]}}, "comments": null, "epoch": 1453305590, "size": {"py/object": "future.types.newint.newint", "py/newargs": {"py/tuple": [479760097]}}, "category": "TV HD", "hash": -958854479, "description": null, "poster": null, "search_types": [], "link": "https://dognzb.cr/fetch/cc9365e19cc0963b48725e44ac4799ce/apikey", "attributes": [{"name": "category", "value": "5000"}, {"name": "category", "value": "5040"}, {"name": "size", "value": "479760097"}, {"name": "grabs", "value": "49"}, {"name": "guid", "value": "cc9365e19cc0963b48725e44ac4799ce"}, {"name": "info", "value": "https://dognzb.cr/details/cc9365e19cc0963b48725e44ac4799ce"}, {"name": "comments", "value": "0"}, {"name": "tvdbid", "value": "256825"}, {"name": "rageid", "value": "30870"}, {"name": "season", "value": "S09"}, {"name": "episode", "value": "E02"}, {"name": "tvtitle", "value": "Duck Dynasty"}, {"name": "rating", "value": "63"}, {"name": "genre", "value": "Reality"}], "precise_date": true, "search_ids": [], "indexerguid": "cc9365e19cc0963b48725e44ac4799ce", "details_link": "https://dognzb.cr/details/cc9365e19cc0963b48725e44ac4799ce", "passworded": false, "has_nfo": 2}, {"age_precise": true, "age_days": 13, "indexerscore": 10, "indexer": "DogNZB", "guid": null, "supports_queries": true, "dbsearchid": null, "py/object": "nzbhydra.nzb_search_result.NzbSearchResult", "group": "alt.binaries.boneless", "pubDate": "Fri, 15 Jan 2016 09:29:10 -0600", "title": "Duck.Dynasty.S09E02.Flock.And.Key.720p.AE.WEBRip.AAC2.0.H.264-BTW", "pubdate_utc": {"py/object": "future.types.newstr.newstr", "py/newargs": {"py/tuple": ["2016-01-15T09:29:10-06:00"]}}, "comments": null, "epoch": 1452871750, "size": {"py/object": "future.types.newint.newint", "py/newargs": {"py/tuple": [467457289]}}, "category": "TV HD", "hash": -958854479, "description": null, "poster": null, "search_types": [], "link": "https://dognzb.cr/fetch/bb0ff779cffb5c47e72bdfbb977811f2/apikey", "attributes": [{"name": "category", "value": "5000"}, {"name": "category", "value": "5040"}, {"name": "size", "value": "467457289"}, {"name": "grabs", "value": "502"}, {"name": "guid", "value": "bb0ff779cffb5c47e72bdfbb977811f2"}, {"name": "info", "value": "https://dognzb.cr/details/bb0ff779cffb5c47e72bdfbb977811f2"}, {"name": "comments", "value": "0"}, {"name": "tvdbid", "value": "256825"}, {"name": "rageid", "value": "30870"}, {"name": "season", "value": "S09"}, {"name": "episode", "value": "E02"}, {"name": "tvtitle", "value": "Duck Dynasty"}, {"name": "rating", "value": "63"}, {"name": "genre", "value": "Reality"}], "precise_date": true, "search_ids": [], "indexerguid": "bb0ff779cffb5c47e72bdfbb977811f2", "details_link": "https://dognzb.cr/details/bb0ff779cffb5c47e72bdfbb977811f2", "passworded": false, "has_nfo": 2}, {"age_precise": true, "age_days": 5, "indexerscore": 9, "indexer": "https://api.nzb.su", "guid": null, "supports_queries": true, "dbsearchid": null, "py/object": "nzbhydra.nzb_search_result.NzbSearchResult", "group": null, "pubDate": "Sat, 23 Jan 2016 12:15:16 -0500", "title": "Duck.Dynasty.S09E02.720p.HDTV.x264-AAF", "pubdate_utc": {"py/object": "future.types.newstr.newstr", "py/newargs": {"py/tuple": ["2016-01-23T11:53:08-05:00"]}}, "comments": null, "epoch": 1453567988, "size": {"py/object": "future.types.newint.newint", "py/newargs": {"py/tuple": [708817306]}}, "category": "TV HD", "hash": -958854479, "description": null, "poster": "sam7462672 <sam7462672@misc.my>", "search_types": [], "link": "https://api.nzb.su/getnzb/607ff20c82d7212f30e1e93153da386b.nzb&i=905&r=apikey", "attributes": [{"name": "category", "value": "5000"}, {"name": "category", "value": "5040"}, {"name": "size", "value": "708817306"}, {"name": "guid", "value": "607ff20c82d7212f30e1e93153da386b"}, {"name": "files", "value": "49"}, {"name": "poster", "value": "sam7462672 <sam7462672@misc.my>"}, {"name": "season", "value": "S09"}, {"name": "episode", "value": "E02"}, {"name": "rageid", "value": "30870"}, {"name": "grabs", "value": "67"}, {"name": "comments", "value": "0"}, {"name": "password", "value": "0"}, {"name": "usenetdate", "value": "Sat, 23 Jan 2016 11:53:08 -0500"}, {"name": "group", "value": "not available"}], "precise_date": true, "search_ids": [], "indexerguid": "607ff20c82d7212f30e1e93153da386b", "details_link": "https://api.nzb.su/details/607ff20c82d7212f30e1e93153da386b", "passworded": false, "has_nfo": 2}, {"age_precise": true, "age_days": 5, "indexerscore": 9, "indexer": "https://api.nzb.su", "guid": null, "supports_queries": true, "dbsearchid": null, "py/object": "nzbhydra.nzb_search_result.NzbSearchResult", "group": null, "pubDate": "Sat, 23 Jan 2016 15:05:47 -0500", "title": "Duck.Dynasty.S09E02.720p.HDTV.x264-AAF", "pubdate_utc": {"py/object": "future.types.newstr.newstr", "py/newargs": {"py/tuple": ["2016-01-23T11:47:19-05:00"]}}, "comments": null, "epoch": 1453567639, "size": {"py/object": "future.types.newint.newint", "py/newargs": {"py/tuple": [707925918]}}, "category": "TV HD", "hash": -958854479, "description": null, "poster": "sam7462672 <sam7462672@misc.my>", "search_types": [], "link": "https://api.nzb.su/getnzb/9bfe6e0508f267a9997d3a05a08b6e87.nzb&i=905&r=apikey", "attributes": [{"name": "category", "value": "5000"}, {"name": "category", "value": "5040"}, {"name": "size", "value": "707925918"}, {"name": "guid", "value": "9bfe6e0508f267a9997d3a05a08b6e87"}, {"name": "files", "value": "49"}, {"name": "poster", "value": "sam7462672 <sam7462672@misc.my>"}, {"name": "season", "value": "S09"}, {"name": "episode", "value": "E02"}, {"name": "rageid", "value": "30870"}, {"name": "grabs", "value": "10"}, {"name": "comments", "value": "0"}, {"name": "password", "value": "0"}, {"name": "usenetdate", "value": "Sat, 23 Jan 2016 11:47:19 -0500"}, {"name": "group", "value": "not available"}], "precise_date": true, "search_ids": [], "indexerguid": "9bfe6e0508f267a9997d3a05a08b6e87", "details_link": "https://api.nzb.su/details/9bfe6e0508f267a9997d3a05a08b6e87", "passworded": false, "has_nfo": 2}, {"age_precise": true, "age_days": 5, "indexerscore": 9, "indexer": "https://api.nzb.su", "guid": null, "supports_queries": true, "dbsearchid": null, "py/object": "nzbhydra.nzb_search_result.NzbSearchResult", "group": null, "pubDate": "Sat, 23 Jan 2016 11:46:11 -0500", "title": "Duck.Dynasty.S09E02.720p.HDTV.x264-aAF", "pubdate_utc": {"py/object": "future.types.newstr.newstr", "py/newargs": {"py/tuple": ["2016-01-23T11:32:51-05:00"]}}, "comments": null, "epoch": 1453566771, "size": {"py/object": "future.types.newint.newint", "py/newargs": {"py/tuple": [746142045]}}, "category": "TV HD", "hash": -958854479, "description": null, "poster": "r@ndom.tv (r@ndom)", "search_types": [], "link": "https://api.nzb.su/getnzb/ba9ee73da913a6c1394e8c8672f70be2.nzb&i=905&r=apikey", "attributes": [{"name": "category", "value": "5000"}, {"name": "category", "value": "5040"}, {"name": "size", "value": "746142045"}, {"name": "guid", "value": "ba9ee73da913a6c1394e8c8672f70be2"}, {"name": "files", "value": "32"}, {"name": "poster", "value": "r@ndom.tv (r@ndom)"}, {"name": "season", "value": "S09"}, {"name": "episode", "value": "E02"}, {"name": "rageid", "value": "30870"}, {"name": "grabs", "value": "86"}, {"name": "comments", "value": "0"}, {"name": "password", "value": "0"}, {"name": "usenetdate", "value": "Sat, 23 Jan 2016 11:32:51 -0500"}, {"name": "group", "value": "not available"}], "precise_date": true, "search_ids": [], "indexerguid": "ba9ee73da913a6c1394e8c8672f70be2", "details_link": "https://api.nzb.su/details/ba9ee73da913a6c1394e8c8672f70be2", "passworded": false, "has_nfo": 2}, {"age_precise": true, "age_days": 5, "indexerscore": 9, "indexer": "https://api.nzb.su", "guid": null, "supports_queries": true, "dbsearchid": null, "py/object": "nzbhydra.nzb_search_result.NzbSearchResult", "group": null, "pubDate": "Sat, 23 Jan 2016 11:46:11 -0500", "title": "Duck.Dynasty.S09E02.HDTV.x264-aAF", "pubdate_utc": {"py/object": "future.types.newstr.newstr", "py/newargs": {"py/tuple": ["2016-01-23T11:32:13-05:00"]}}, "comments": null, "epoch": 1453566733, "size": {"py/object": "future.types.newint.newint", "py/newargs": {"py/tuple": [261743919]}}, "category": "TV SD", "hash": -958854479, "description": null, "poster": "provide@4u.net (yeahsure)", "search_types": [], "link": "https://api.nzb.su/getnzb/65406ecbc72254946f5fb6bdd376d3e1.nzb&i=905&r=apikey", "attributes": [{"name": "category", "value": "5000"}, {"name": "category", "value": "5030"}, {"name": "size", "value": "261743919"}, {"name": "guid", "value": "65406ecbc72254946f5fb6bdd376d3e1"}, {"name": "files", "value": "28"}, {"name": "poster", "value": "provide@4u.net (yeahsure)"}, {"name": "season", "value": "S09"}, {"name": "episode", "value": "E02"}, {"name": "rageid", "value": "30870"}, {"name": "grabs", "value": "75"}, {"name": "comments", "value": "0"}, {"name": "password", "value": "0"}, {"name": "usenetdate", "value": "Sat, 23 Jan 2016 11:32:13 -0500"}, {"name": "group", "value": "not available"}], "precise_date": true, "search_ids": [], "indexerguid": "65406ecbc72254946f5fb6bdd376d3e1", "details_link": "https://api.nzb.su/details/65406ecbc72254946f5fb6bdd376d3e1", "passworded": false, "has_nfo": 2}]')
+
+        shuffle(results)
+        a = search.find_duplicates(results)
+        assert 6 == len(a)
+        shuffle(results)
+        a = search.find_duplicates(results)
+        assert 6 == len(a)
+        shuffle(results)
+        a = search.find_duplicates(results)
+        assert 6 == len(a)
+        shuffle(results)
+        a = search.find_duplicates(results)
+        assert 6 == len(a)
+        shuffle(results)
+        a = search.find_duplicates(results)
+        assert 6 == len(a)
+        print(a)

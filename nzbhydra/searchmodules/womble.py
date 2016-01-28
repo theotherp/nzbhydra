@@ -100,7 +100,7 @@ class Womble(SearchModule):
                 entry.category = "N/A" #undefined
                 
             
-            entry.guid = elem.find("guid").text[30:] #39a/The.Almighty.Johnsons.S03E06.720p.BluRay.x264-YELLOWBiRD.nzb is the GUID, only the 39a doesn't work
+            entry.indexerguid = elem.find("guid").text[30:] #39a/The.Almighty.Johnsons.S03E06.720p.BluRay.x264-YELLOWBiRD.nzb is the GUID, only the 39a doesn't work
             
             pubdate = arrow.get(pubdate.text, 'M/D/YYYY h:mm:ss A')
             entry.epoch = pubdate.timestamp

@@ -54,11 +54,11 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual("http://www.newshost.co.za/nzb/79d/testtitle1.nzb", entries[0].link)
             self.assertEqual(336592896, entries[0].size)
             self.assertEqual("TV SD", entries[0].category)
-            self.assertEqual("79d/testtitle1.nzb", entries[0].guid)
+            self.assertEqual("79d/testtitle1.nzb", entries[0].indexerguid)
             self.assertEqual(1442790103, entries[0].epoch)
             self.assertEqual("2015-09-20T23:01:43+00:00", entries[0].pubdate_utc)
             self.assertEqual(0, entries[0].age_days)
-            self.assertEqual("79d/testtitle1.nzb", entries[0].guid)
+            self.assertEqual("79d/testtitle1.nzb", entries[0].indexerguid)
             
     
     def testGetNzbLink(self):

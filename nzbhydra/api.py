@@ -2,6 +2,9 @@ from __future__ import division
 from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import absolute_import
+
+import copy
+
 from builtins import range
 from builtins import str
 from builtins import *
@@ -111,11 +114,11 @@ def get_nzb_link_and_guid(indexer, indexerguid, searchid, title, external):
 
 def transform_results(results, dbsearch, external):
     transformed = []
-    for i in results:
+    for j in results:
+        i = copy.copy(j)
         i.dbsearchid = dbsearch
-        nzb_link, guid_json = get_nzb_link_and_guid(i.indexer, i.guid, dbsearch, i.title, external)
+        nzb_link, guid_json = get_nzb_link_and_guid(i.indexer, i.indexerguid, dbsearch, i.title, external)
         i.link = nzb_link
-        i.indexerguid = i.guid  # Save the indexer's original GUID so that we can send it later from the GUI to identify the result
         i.guid = guid_json
 
         # Add our internal guid (like the link above but only the identifying part) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
@@ -133,7 +136,8 @@ def transform_results(results, dbsearch, external):
         if not has_size:
             i.attributes.append({"name": "size", "value": i.size})  # If it wasn't set before now it is (for results from newznab-indexers)
         transformed.append(i)
-
+        
+    
     return transformed
 
 

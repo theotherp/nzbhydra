@@ -50,7 +50,7 @@ class TestBinsearch(unittest.TestCase):
             self.assertEqual('testtitle1.TrueFrench.1080p.X264.AC3.5.1-JKF.mkv', entries[0].title)
             self.assertEqual("https://www.binsearch.info/fcgi/nzb.fcgi?q=176073735", entries[0].link)
             self.assertEqual(13110387671, entries[0].size)
-            self.assertEqual("176073735", entries[0].guid)
+            self.assertEqual("176073735", entries[0].indexerguid)
             self.assertEqual(1443312000, entries[0].epoch)
             self.assertEqual("2015-09-27T00:00:00+00:00", entries[0].pubdate_utc)
             self.assertEqual("Sun, 27 Sep 2015 00:00:00 -0000", entries[0].pubDate)

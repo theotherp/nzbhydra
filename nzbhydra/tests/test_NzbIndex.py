@@ -46,7 +46,7 @@ class NzbIndexTests(unittest.TestCase):
         with open("mock/nzbindex--q-testtitle.html") as f:
             processing_result = w.process_query_result(f.read(), "aquery")
             entries = processing_result.entries
-            self.assertEqual('114143855', entries[0].guid)
+            self.assertEqual('114143855', entries[0].indexerguid)
             self.assertEqual('testtitle1', entries[0].title)
             self.assertFalse(entries[0].has_nfo)
             self.assertEqual('bowibow@gmail.com (senior)', entries[0].poster)

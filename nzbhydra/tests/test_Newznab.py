@@ -42,7 +42,7 @@ class NewznabTests(UrlTestCase):
 
         self.assertEqual(entries[0].title, "testtitle1")
         assert entries[0].size == 2893890900
-        assert entries[0].guid == "eff551fbdb69d6777d5030c209ee5d4b"
+        assert entries[0].indexerguid == "eff551fbdb69d6777d5030c209ee5d4b"
         self.assertEqual(entries[0].age_days, 1)
         self.assertEqual(entries[0].epoch, 1444584857)
         self.assertEqual(entries[0].pubdate_utc, "2015-10-11T17:34:17+00:00")
@@ -69,7 +69,7 @@ class NewznabTests(UrlTestCase):
 
         self.assertEqual(entries[0].title, "testtitle1")
         assert entries[0].size == 3960401206
-        assert entries[0].guid == "ESOSxziB5WAYyalVgTP8M@spot.net"
+        assert entries[0].indexerguid == "ESOSxziB5WAYyalVgTP8M@spot.net"
         self.assertEqual(entries[0].age_days, 5)
         self.assertEqual(entries[0].epoch, 1453663845)
         self.assertEqual(entries[0].pubdate_utc, "2016-01-24T19:30:45+00:00")
@@ -86,7 +86,7 @@ class NewznabTests(UrlTestCase):
 
         self.assertEqual(entries[0].title, "title1")
         assert entries[0].size == 954926472
-        assert entries[0].guid == "d4776501c2b409c41f0649afc1e2d6d3f033119e"
+        assert entries[0].indexerguid == "d4776501c2b409c41f0649afc1e2d6d3f033119e"
         self.assertEqual(entries[0].age_days, 323)
         self.assertEqual(entries[0].epoch, 1424552357)
         self.assertEqual(entries[0].pubdate_utc, "2015-02-21T20:59:17+00:00")

@@ -46,10 +46,10 @@ class NzbSearchResult(object):
         
 
     def __repr__(self):
-        return "Title: {}. PubDate: {}. Size: {}. Indexer: {}".format(self.title, self.pubdate_utc, self.size, self.indexer)
+        return "Title: {}. Size: {}. Indexer: {}".format(self.title, self.size, self.indexer)
     
     def __eq__(self, other_nzb_search_result):
-        return self.title == other_nzb_search_result.title and self.link == other_nzb_search_result.link and self.indexer == other_nzb_search_result.indexer and self.guid == other_nzb_search_result.guid
+        return self.title == other_nzb_search_result.title and self.link == other_nzb_search_result.link and self.indexer == other_nzb_search_result.indexer and self.indexerguid == other_nzb_search_result.indexerguid
     
     def __hash__(self):
-        return hash(self.title) ^ hash(self.indexer) ^ hash(self.guid)
+        return hash(self.title) ^ hash(self.indexer) ^ hash(self.indexerguid)

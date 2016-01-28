@@ -415,6 +415,7 @@ def process_and_jsonify_for_internalapi(results):
 @search_cache.memoize(unless=not config.mainSettings.cache_enabled.get())
 def cached_search(search_request):
     results = search.search(True, search_request)
+    logger.debug("cached_search %s" % results)
     return process_and_jsonify_for_internalapi(results)
 
 

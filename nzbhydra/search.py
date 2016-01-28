@@ -209,6 +209,7 @@ def search(internal, search_request):
                         # We give each group of results a unique value by which they can be identified later
                         i.hash = hash(group[0].guid)
                         allresults.append(i)
+                    
                 else:
                     # We sort by age first and then by indexerscore so the newest result with the highest indexer score is chosen
                     group = sorted(group, key=lambda x: x.epoch, reverse=True)
@@ -275,7 +276,8 @@ def start_search_futures(indexers_and_search_requests):
 
 
 def find_duplicates(results):
-    sorted_results = sorted(results, key=lambda x: re.sub(r"[ \.\-_]", "", x.title.lower()))
+    sorted_results = sorted(results, key=lambda x: x.pubdate_utc, reverse=True)
+    sorted_results = sorted(sorted_results, key=lambda x: re.sub(r"[ \.\-_]", "", x.title.lower()))
     grouped_by_title = groupby(sorted_results, key=lambda x: re.sub(r"[ \.\-_]", "", x.title.lower()))
     grouped_by_sameness = []
     for key, group in grouped_by_title:
@@ -294,14 +296,20 @@ def find_duplicates(results):
                     results_to_sets[a].add(b)
                     results_to_sets[b] = results_to_sets[a]
                 else:
+                    if b in results_to_sets.keys():
+                        pass
                     if b not in results_to_sets.keys():
                         results_to_sets[b] = {b}
+                    else:
+                        pass
 
         duplicate_groups = []
         for x in results_to_sets.values():
             if x not in duplicate_groups:
                 duplicate_groups.append(x)
         grouped_by_sameness.extend([list(x) for x in duplicate_groups])
+    
+
     return grouped_by_sameness
 
 

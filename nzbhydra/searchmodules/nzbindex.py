@@ -120,7 +120,7 @@ class NzbIndex(SearchModule):
                 continue
             entry = self.create_nzb_search_result()
 
-            entry.guid = row.find("input")["value"]
+            entry.indexerguid = row.find("input")["value"]
 
             infotd = tds[1]
 
