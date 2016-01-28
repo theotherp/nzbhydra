@@ -48,7 +48,7 @@ from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
 from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses
-from nzbhydra.update import get_rep_version, get_current_version, update
+from nzbhydra.update import get_rep_version, get_current_version, update, getChangelog
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import getLogs
 
@@ -832,7 +832,14 @@ def internalapi_getversions():
     logger.debug("Get versions request")
     _, current_version = get_current_version()
     _, rep_version = get_rep_version()
-    return jsonify({"currentVersion": str(current_version), "repVersion": str(rep_version), "updateAvailable": rep_version > current_version})
+    
+    versionsInfo = {"currentVersion": str(current_version), "repVersion": str(rep_version), "updateAvailable": rep_version > current_version}
+    
+    if rep_version > current_version:
+        changelog = getChangelog(current_version)
+        versionsInfo["changelog"] = changelog
+
+    return jsonify(versionsInfo)
 
 
 @app.route('/internalapi/getlogs')

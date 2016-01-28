@@ -19,6 +19,7 @@ logger = logging.getLogger('root')
 
 currentVersion = None
 currentVersionText = None
+updateManager = None
 
 
 def versiontuple(v):
@@ -66,20 +67,67 @@ def is_new_version_available():
     return False, None
 
 
-def getUpdateManager():
+
+def getChangelog(currentVersion):
+    changelog = getUpdateManager().getChangelogFromRepository()
+    if changelog is None:
+        return []
+    lines = changelog.split("\n")
+    return getChangesSince(lines, currentVersion)
+
+def getLocalChangelog():
     main_dir = os.path.dirname(os.path.dirname(__file__))
-    # Hacky way of finding out if the installation is a git clone
-    nzbhydraexe = os.path.join(main_dir, "nzbhydra.exe")
-    if os.path.exists(nzbhydraexe):
-        logger.debug("%s exists. Assuming this is a windows release" % nzbhydraexe)
-        return WindowsUpdateManager()
-    gitSubFolder = os.path.join(main_dir, ".git")
-    if os.path.exists(gitSubFolder):
-        logger.debug("%s exists. Assuming this is a git clone" % gitSubFolder)
-        return GitUpdateManager()
+    changelogMd = os.path.join(main_dir, "changelog.md")
+    try:
+        with open(changelogMd, "r") as f:
+            lines = f.read().splitlines()
+        return getChangesSince(lines)
+    except Exception :
+        logger.exception("Unable to read local changelog")
+        return []
+
+
+def getChangesSince(lines, oldVersion=None):
+    changes = []
+    version = None
+    versionChanges = []
+    
+    lines = lines[lines.index("----------") + 1:]
+    for line in lines:
+        if line.startswith("###"):
+            if version is not None:
+                changes.append({"version": version, "changes": versionChanges})
+            version = line[4:]
+            versionChanges = []
+            if oldVersion is not None:
+                oldVersionString = ("### %s" % oldVersion).strip()
+                if line == oldVersionString:
+                    break
+        else:
+            if line != "":
+                versionChanges.append(line)
     else:
-        logger.debug("This seems to be a source installation as no .git subfolder was found")
-        return SourceUpdateManager()
+        changes.append({"version": version, "changes": versionChanges})
+    return changes
+
+
+
+def getUpdateManager():
+    global updateManager
+    if updateManager is None:
+        main_dir = os.path.dirname(os.path.dirname(__file__))
+        # Hacky way of finding out if the installation is a git clone
+        nzbhydraexe = os.path.join(main_dir, "nzbhydra.exe")
+        if os.path.exists(nzbhydraexe):
+            logger.debug("%s exists. Assuming this is a windows release" % nzbhydraexe)
+            updateManager = WindowsUpdateManager()
+        elif os.path.exists(os.path.join(main_dir, ".git")):
+            logger.debug("%s exists. Assuming this is a git clone" % os.path.join(main_dir, ".git"))
+            updateManager = GitUpdateManager()
+        else:
+            logger.debug("This seems to be a source installation as no .git subfolder was found")
+            updateManager = SourceUpdateManager()
+    return updateManager
 
 
 def update():
@@ -103,6 +151,21 @@ class UpdateManager():
         except requests.RequestException as e:
             logger.error("Error downloading version.txt from %s to check new updates: %s" % (url if url is not None else " Github", e))
             return None, None
+
+    def getChangelogFromRepository(self):
+        try:
+            url = furl(self.repositoryBase)
+            url.host = "raw.%s" % url.host
+            url.path.add(self.repository)
+            url.path.add(self.branch)
+            url.path.add("changelog.md")
+            logger.debug("Loading changelog from %s" % url)
+            r = requests.get(url, verify=False)
+            r.raise_for_status()
+            return r.text
+        except requests.RequestException as e:
+            logger.error("Error downloading changelog.md from %s to check new updates: %s" % (url if url is not None else " Github", e))
+            return None
 
 
 class GitUpdateManager(UpdateManager):

@@ -1,4 +1,6 @@
 import unittest
+from nzbhydra.update import getChangesSince, getLocalChangelog
+
 
 class TestVersioning(unittest.TestCase):
     
@@ -8,7 +10,7 @@ class TestVersioning(unittest.TestCase):
             filled.append(point.zfill(8))
         return tuple(filled)
 
-    def testFindMovieIds(self):
+    def testCompareVersions(self):
         a = self.versiontuple("0.0.1a15")
         b = self.versiontuple("0.0.1b15")
         c = self.versiontuple("0.0.2a15")
@@ -27,4 +29,7 @@ class TestVersioning(unittest.TestCase):
         assert g < h
         assert h < i
 
-            
+    
+    def testGetChangelog(self):
+        a = getLocalChangelog()
+        print(a)

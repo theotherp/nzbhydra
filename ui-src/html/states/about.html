@@ -4,16 +4,18 @@ Current version: {{ currentVersion }}
 <br>
 Latest version: {{ repVersion }}
 <br>
-<h4 ng-if="updateAvailable">Considering we're still in alpha you might want to do a backup of your .cfg and .db files first.</h4>
-<button ng-if="updateAvailable" class="btn btn-default" type="button" ng-click="update()">Update!</button>
+<span ng-if="updateAvailable">
+<h4>Considering we're still in alpha you might want to do a backup of your .cfg and .db files first.</h4>
+    <button class="btn btn-default" type="button" ng-click="showChangelog()">Show changelog!</button>
+<button class="btn btn-default" type="button" ng-click="update()">Update!</button>
+</span>
 <span ng-if="!updateAvailable">You're up to date!</span>
 
 
-<br>
+<br><br><br>
 Sources: <a href="https://github.com/theotherp/nzbhydra" target="_blank">https://github.com/theotherp/nzbhydra</a>
 <br><br>
-Donations welcome.
-<br>Bitcoin: 13x4cfm5BNzedsSqdPcexUhAF3cP8LYrsk
+Currently I don't take donations, thank you. Send me an appreciation email and <a href="https://donate.doctorswithoutborders.org/onetime.cfm">give the money to people who need it more than me</a>.
 
 <br><br>
 Licensed under the Apache License, Version 2.0 (the "License");

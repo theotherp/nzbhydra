@@ -1,7 +1,7 @@
 var HEADER_NAME = 'MyApp-Handle-Errors-Generically';
 var specificallyHandleInProgress = false;
 
-nzbhydraapp.factory('RequestsErrorHandler',  function ($q, growl, blockUI, modalService) {
+nzbhydraapp.factory('RequestsErrorHandler',  function ($q, growl, blockUI, GeneralModalService) {
     return {
         // --- The user's API for claiming responsiblity for requests ---
         specificallyHandled: function (specificallyHandledBlock) {
@@ -24,7 +24,7 @@ nzbhydraapp.factory('RequestsErrorHandler',  function ($q, growl, blockUI, modal
                 if (rejection.data) {
                     message += "<br><br>" + rejection.data;
                 }
-                modalService.open(message);
+                GeneralModalService.open(message);
 
             }
 

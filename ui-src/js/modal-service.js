@@ -1,20 +1,43 @@
 angular
     .module('nzbhydraApp')
-    .service('modalService', modalService);
+    .service('GeneralModalService', GeneralModalService);
 
-function modalService() {
-    this.open = function (msg) {
+function GeneralModalService() {
+    
+    
+    this.open = function (msg, template, templateUrl, size, data) {
         
-        //Prevent cirtcular dependency
+        //Prevent circular dependency
         var myInjector = angular.injector(["ng", "ui.bootstrap"]);
         var $uibModal = myInjector.get("$uibModal");
-
-        var modalInstance = $uibModal.open({
-            template: '<pre>' + msg + '</pre>',
-            size: "lg"
-        });
+        var params = {};
+        
+        if(angular.isUndefined(size)) {
+            params["size"] = size;
+        }
+        if (angular.isUndefined(template)) {
+            if (angular.isUndefined(templateUrl)) {
+                params["template"] = '<pre>' + msg + '</pre>';
+            } else {
+                params["templateUrl"] = templateUrl;
+            }
+        } else {
+            params["template"] = template;
+        }
+        params["resolve"] = 
+        {
+            data: function () {
+                console.log(data);
+                return data;
+            }
+        };
+        console.log(params);
+        
+        var modalInstance = $uibModal.open(params);
 
         modalInstance.result.then();
 
     };
+    
+   
 }

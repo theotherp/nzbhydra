@@ -129,12 +129,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
         .state("about", {
             url: "/about",
             templateUrl: "static/html/states/about.html",
-            controller: "AboutController",
-            resolve: {
-                versionsPromise: ['$http', function ($http) {
-                    return $http.get("internalapi/get_versions");
-                }]
-            }
+            controller: "AboutController"
         })
         .state("search", {
             url: "/:search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid&indexers",
@@ -633,8 +628,53 @@ angular
 function UpdateService($http, growl, blockUI, RestartService) {
     
     return {
-        update: update
+        update: update,
+        showChanges: showChanges,
+        getVersions: getVersions
     };
+    
+    var currentVersion;
+    var repVersion;
+    var updateAvailable;
+    var changelog;
+    
+    function getVersions() {
+        return $http.get("internalapi/get_versions").then(function (data) {
+            
+            currentVersion = data.data.currentVersion;
+            repVersion = data.data.repVersion;
+            updateAvailable = data.data.updateAvailable;
+            changelog = data.data.changelog;
+            return data;
+        });
+    }
+
+    function showChanges() {
+
+        var myInjector = angular.injector(["ng", "ui.bootstrap"]);
+        var $uibModal = myInjector.get("$uibModal");
+        var params = {
+            size: "lg",
+            templateUrl: "static/html/changelog.html",
+            resolve: {
+                changelog: function () {
+                    return changelog;
+                }
+            },
+            controller: function ($scope, $uibModalInstance, changelog) {
+                $scope.changelog = changelog;
+                $scope.ok = function () {
+                    $uibModalInstance.dismiss();
+                };
+            }
+        };
+
+        var modalInstance = $uibModal.open(params);
+
+        modalInstance.result.then();
+    }
+    
+    
 
     function update() {
         blockUI.start("Updating. Please stand by...");
@@ -658,21 +698,26 @@ angular
     .module('nzbhydraApp')
     .controller('UpdateFooterController', UpdateFooterController);
 
-function UpdateFooterController($scope, $http, UpdateService) {
-    
-    $http.get("internalapi/get_versions").then(function(data) {
-        console.log(data);
+function UpdateFooterController($scope, UpdateService) {
+
+    UpdateService.getVersions().then(function(data) {
         $scope.currentVersion = data.data.currentVersion;
         $scope.repVersion = data.data.repVersion;
         $scope.updateAvailable = data.data.updateAvailable;
+        $scope.changelog = data.data.changelog; 
     });
+    
 
     $scope.update = function () {
         UpdateService.update();
+    };
+
+    $scope.showChangelog = function () {
+        UpdateService.showChanges($scope.changelog);
     }
 
 }
-UpdateFooterController.$inject = ["$scope", "$http", "UpdateService"];
+UpdateFooterController.$inject = ["$scope", "UpdateService"];
 
 angular
     .module('nzbhydraApp')
@@ -1470,28 +1515,51 @@ ModalInstanceCtrl.$inject = ["$scope", "$uibModalInstance", "headline", "message
 
 angular
     .module('nzbhydraApp')
-    .service('modalService', modalService);
+    .service('GeneralModalService', GeneralModalService);
 
-function modalService() {
-    this.open = function (msg) {
+function GeneralModalService() {
+    
+    
+    this.open = function (msg, template, templateUrl, size, data) {
         
-        //Prevent cirtcular dependency
+        //Prevent circular dependency
         var myInjector = angular.injector(["ng", "ui.bootstrap"]);
         var $uibModal = myInjector.get("$uibModal");
-
-        var modalInstance = $uibModal.open({
-            template: '<pre>' + msg + '</pre>',
-            size: "lg"
-        });
+        var params = {};
+        
+        if(angular.isUndefined(size)) {
+            params["size"] = size;
+        }
+        if (angular.isUndefined(template)) {
+            if (angular.isUndefined(templateUrl)) {
+                params["template"] = '<pre>' + msg + '</pre>';
+            } else {
+                params["templateUrl"] = templateUrl;
+            }
+        } else {
+            params["template"] = template;
+        }
+        params["resolve"] = 
+        {
+            data: function () {
+                console.log(data);
+                return data;
+            }
+        };
+        console.log(params);
+        
+        var modalInstance = $uibModal.open(params);
 
         modalInstance.result.then();
 
     };
+    
+   
 }
 var HEADER_NAME = 'MyApp-Handle-Errors-Generically';
 var specificallyHandleInProgress = false;
 
-nzbhydraapp.factory('RequestsErrorHandler',  ["$q", "growl", "blockUI", "modalService", function ($q, growl, blockUI, modalService) {
+nzbhydraapp.factory('RequestsErrorHandler',  ["$q", "growl", "blockUI", "GeneralModalService", function ($q, growl, blockUI, GeneralModalService) {
     return {
         // --- The user's API for claiming responsiblity for requests ---
         specificallyHandled: function (specificallyHandledBlock) {
@@ -1514,7 +1582,7 @@ nzbhydraapp.factory('RequestsErrorHandler',  ["$q", "growl", "blockUI", "modalSe
                 if (rejection.data) {
                     message += "<br><br>" + rejection.data;
                 }
-                modalService.open(message);
+                GeneralModalService.open(message);
 
             }
 
@@ -3618,17 +3686,24 @@ angular
     .module('nzbhydraApp')
     .controller('AboutController', AboutController);
 
-function AboutController($scope, versionsPromise, UpdateService) {
+function AboutController($scope, UpdateService) {
 
-    $scope.currentVersion = versionsPromise.data.currentVersion;
-    $scope.repVersion = versionsPromise.data.repVersion;
-    $scope.updateAvailable = versionsPromise.data.updateAvailable;
+    UpdateService.getVersions().then(function (data) {
+        $scope.currentVersion = data.data.currentVersion;
+        $scope.repVersion = data.data.repVersion;
+        $scope.updateAvailable = data.data.updateAvailable;
+        $scope.changelog = data.data.changelog;
+    });
 
     $scope.update = function () {
         UpdateService.update();
+    };
+    
+    $scope.showChangelog = function() {
+        UpdateService.showChanges($scope.changelog);
     }
 
 }
-AboutController.$inject = ["$scope", "versionsPromise", "UpdateService"];
+AboutController.$inject = ["$scope", "UpdateService"];
 
 //# sourceMappingURL=nzbhydra.js.map

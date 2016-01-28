@@ -129,12 +129,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         .state("about", {
             url: "/about",
             templateUrl: "static/html/states/about.html",
-            controller: "AboutController",
-            resolve: {
-                versionsPromise: ['$http', function ($http) {
-                    return $http.get("internalapi/get_versions");
-                }]
-            }
+            controller: "AboutController"
         })
         .state("search", {
             url: "/:search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid&indexers",

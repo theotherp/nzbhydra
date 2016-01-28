@@ -2,14 +2,21 @@ angular
     .module('nzbhydraApp')
     .controller('AboutController', AboutController);
 
-function AboutController($scope, versionsPromise, UpdateService) {
+function AboutController($scope, UpdateService) {
 
-    $scope.currentVersion = versionsPromise.data.currentVersion;
-    $scope.repVersion = versionsPromise.data.repVersion;
-    $scope.updateAvailable = versionsPromise.data.updateAvailable;
+    UpdateService.getVersions().then(function (data) {
+        $scope.currentVersion = data.data.currentVersion;
+        $scope.repVersion = data.data.repVersion;
+        $scope.updateAvailable = data.data.updateAvailable;
+        $scope.changelog = data.data.changelog;
+    });
 
     $scope.update = function () {
         UpdateService.update();
+    };
+    
+    $scope.showChangelog = function() {
+        UpdateService.showChanges($scope.changelog);
     }
 
 }
