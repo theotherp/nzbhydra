@@ -254,7 +254,7 @@ def migrate(settingsFilename):
             addLogMessage(20, "Copying backup of settings to %s" % backupFilename)
             shutil.copy(settingsFilename, backupFilename)
             
-            if version == 1:
+            if config["main"]["configVersion"] == 1:
                 addLogMessage(20, "Migrating config to version 2")
                 # Migrate sabnzbd setting
                 sabnzbd = config["downloader"]["sabnzbd"]
@@ -271,13 +271,13 @@ def migrate(settingsFilename):
                     addLogMessage(30, "Unable to migrate from incomplete sabnzbd settings. Please set the sabnzbd URL manually")
                 addLogMessage(20, "Migration of config to version 2 finished")
                 config["main"]["configVersion"] = 2
-            if version == 2:
+            if config["main"]["configVersion"] == 2:
                 addLogMessage(20, "Migrating config to version 3")
                 addLogMessage(20, "Updating NZBClub host to https://www.nzbclub.com")
                 config["indexers"]["NZBClub"]["host"] = "https://www.nzbclub.com"
                 addLogMessage(20, "Migration of config to version 3 finished")
                 config["main"]["configVersion"] = 3
-            if version == 3:
+            if config["main"]["configVersion"] == 3:
                 addLogMessage(20, "Migrating config to version 4")
                 addLogMessage(20, "Converting Base URL to URL base and external URL")
                 baseUrl = config["main"]["baseUrl"]
@@ -299,14 +299,14 @@ def migrate(settingsFilename):
                 config["main"].pop("baseUrl")
                 addLogMessage(20, "Migration of config to version 4 finished")
                 config["main"]["configVersion"] = 4
-            if version == 4:
+            if config["main"]["configVersion"] == 4:
                 addLogMessage(20, "Migrating config to version 5")
                 addLogMessage(20, "Converting repository base URL")
                 if "repositoryBase" in config["main"].keys():
                     config["main"]["repositoryBase"] = "https://github.com/theotherp" 
                 addLogMessage(20, "Migration of config to version 5 finished")
                 config["main"]["configVersion"] = 5
-            if version == 5:
+            if config["main"]["configVersion"] == 5:
                 addLogMessage(20, "Migrating config to version 6")
                 if config["downloader"]["nzbAddingType"] == "direct":
                     addLogMessage(20, 'Removing legacy setting for NZB access "direct" and setting it to redirect. Sorry.')
