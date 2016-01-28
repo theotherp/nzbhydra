@@ -2748,7 +2748,7 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'text',
                                 label: 'Repository branch',
-                                help: 'Stay with master...'
+                                help: 'Stay on master. Seriously...'
                             }
                         }
                     ]
