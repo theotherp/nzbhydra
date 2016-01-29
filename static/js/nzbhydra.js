@@ -625,7 +625,12 @@ angular
     .module('nzbhydraApp')
     .factory('UpdateService', UpdateService);
 
-function UpdateService($http, growl, blockUI, RestartService) {
+function UpdateService($http, $sce, growl, blockUI, RestartService) {
+
+    var currentVersion;
+    var repVersion;
+    var updateAvailable;
+    var changelog;
     
     return {
         update: update,
@@ -633,10 +638,7 @@ function UpdateService($http, growl, blockUI, RestartService) {
         getVersions: getVersions
     };
     
-    var currentVersion;
-    var repVersion;
-    var updateAvailable;
-    var changelog;
+    
     
     function getVersions() {
         return $http.get("internalapi/get_versions").then(function (data) {
@@ -661,8 +663,13 @@ function UpdateService($http, growl, blockUI, RestartService) {
                     return changelog;
                 }
             },
-            controller: function ($scope, $uibModalInstance, changelog) {
+            controller: function ($scope, $sce, $uibModalInstance, changelog) {
+                //I fucking hate that untrusted HTML shit
+                changelog = _.map(changelog, function (v) {
+                    return {version: v.version, changes: $sce.trustAsHtml(v.changes)};
+                });
                 $scope.changelog = changelog;
+                console.log(changelog);
                 $scope.ok = function () {
                     $uibModalInstance.dismiss();
                 };
@@ -692,7 +699,8 @@ function UpdateService($http, growl, blockUI, RestartService) {
             });
     }
 }
-UpdateService.$inject = ["$http", "growl", "blockUI", "RestartService"];
+UpdateService.$inject = ["$http", "$sce", "growl", "blockUI", "RestartService"];
+
 
 angular
     .module('nzbhydraApp')
@@ -2073,13 +2081,13 @@ filters.filter('bytes', function() {
 	}
 });
 
-
-filters.filter('unsafe', ['$sce', function ($sce) {
-	return $sce.trustAsHtml;
-}]);
-
-
-
+filters.filter('unsafe', 
+	["$sce", function ($sce) {
+		return function (value, type) {
+			return $sce.trustAs(type || 'html', text);
+		};
+	}]
+);
 angular
     .module('nzbhydraApp')
     .factory('ConfigService', ConfigService);

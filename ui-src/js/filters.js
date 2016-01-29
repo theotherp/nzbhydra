@@ -11,9 +11,10 @@ filters.filter('bytes', function() {
 	}
 });
 
-
-filters.filter('unsafe', ['$sce', function ($sce) {
-	return $sce.trustAsHtml;
-}]);
-
-
+filters.filter('unsafe', 
+	function ($sce) {
+		return function (value, type) {
+			return $sce.trustAs(type || 'html', text);
+		};
+	}
+);

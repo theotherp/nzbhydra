@@ -2,7 +2,12 @@ angular
     .module('nzbhydraApp')
     .factory('UpdateService', UpdateService);
 
-function UpdateService($http, growl, blockUI, RestartService) {
+function UpdateService($http, $sce, growl, blockUI, RestartService) {
+
+    var currentVersion;
+    var repVersion;
+    var updateAvailable;
+    var changelog;
     
     return {
         update: update,
@@ -10,10 +15,7 @@ function UpdateService($http, growl, blockUI, RestartService) {
         getVersions: getVersions
     };
     
-    var currentVersion;
-    var repVersion;
-    var updateAvailable;
-    var changelog;
+    
     
     function getVersions() {
         return $http.get("internalapi/get_versions").then(function (data) {
@@ -38,8 +40,13 @@ function UpdateService($http, growl, blockUI, RestartService) {
                     return changelog;
                 }
             },
-            controller: function ($scope, $uibModalInstance, changelog) {
+            controller: function ($scope, $sce, $uibModalInstance, changelog) {
+                //I fucking hate that untrusted HTML shit
+                changelog = _.map(changelog, function (v) {
+                    return {version: v.version, changes: $sce.trustAsHtml(v.changes)};
+                });
                 $scope.changelog = changelog;
+                console.log(changelog);
                 $scope.ok = function () {
                     $uibModalInstance.dismiss();
                 };
@@ -69,3 +76,4 @@ function UpdateService($http, growl, blockUI, RestartService) {
             });
     }
 }
+

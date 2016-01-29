@@ -10,6 +10,8 @@ import shutil
 import subprocess
 import urllib
 import tarfile
+
+import markdown
 import requests
 
 from nzbhydra import config
@@ -96,7 +98,7 @@ def getChangesSince(lines, oldVersion=None):
     for line in lines:
         if line.startswith("###"):
             if version is not None:
-                changes.append({"version": version, "changes": versionChanges})
+                changes.append({"version": version, "changes": markdown.markdown("\n".join(versionChanges), output_format="html", extensions=['markdown.extensions.nl2br'])})
             version = line[4:]
             versionChanges = []
             if oldVersion is not None:
@@ -107,7 +109,7 @@ def getChangesSince(lines, oldVersion=None):
             if line != "":
                 versionChanges.append(line)
     else:
-        changes.append({"version": version, "changes": versionChanges})
+        changes.append({"version": version, "changes": markdown.markdown("\n".join(versionChanges), output_format="html", extensions=['markdown.extensions.nl2br'])})
     return changes
 
 
