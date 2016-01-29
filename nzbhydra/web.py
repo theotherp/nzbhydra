@@ -401,7 +401,7 @@ def getnzb(args):
     logger.debug("Get NZB request with args %s" % args)
     args = rison.loads(args["id"])
     logger.info("API request to download %s from %s" % (args["title"], args["indexer"]))
-    return extract_nzb_infos_and_return_response(args["indexer"], args["indexerguid"], args["title"], args["searchid"])
+    return extract_nzb_infos_and_return_response(args["indexer"], args["guid"], args["title"], args["searchid"])
 
 
 def process_and_jsonify_for_internalapi(results):
