@@ -276,39 +276,30 @@ def start_search_futures(indexers_and_search_requests):
 
 
 def find_duplicates(results):
+    #We need to sort by age first, then by title and then group by title
     sorted_results = sorted(results, key=lambda x: x.pubdate_utc, reverse=True)
     sorted_results = sorted(sorted_results, key=lambda x: re.sub(r"[ \.\-_]", "", x.title.lower()))
     grouped_by_title = groupby(sorted_results, key=lambda x: re.sub(r"[ \.\-_]", "", x.title.lower()))
     grouped_by_sameness = []
-    for key, group in grouped_by_title:
-        results_to_sets = {}
-        group = list(group)
-        for i in range(0, len(group)):
-            a = group[i]
-            if a not in results_to_sets.keys():
-                results_to_sets[a] = {a}
-            for j in range(i + 1, len(group)):
-                b = group[j]
-                same = a.indexer != b.indexer
-                same = same and test_for_duplicate_age(a, b)
-                same = same and test_for_duplicate_size(a, b)
-                if same:
-                    results_to_sets[a].add(b)
-                    results_to_sets[b] = results_to_sets[a]
-                else:
-                    if b in results_to_sets.keys():
-                        pass
-                    if b not in results_to_sets.keys():
-                        results_to_sets[b] = {b}
-                    else:
-                        pass
-
-        duplicate_groups = []
-        for x in results_to_sets.values():
-            if x not in duplicate_groups:
-                duplicate_groups.append(x)
-        grouped_by_sameness.extend([list(x) for x in duplicate_groups])
-    
+    for title, titleGroup in grouped_by_title:
+        titleGroup = list(titleGroup)
+        grouped = [titleGroup[:1]]
+        for i in titleGroup[1:]:
+            foundGroup = False
+            for group in grouped:
+                for other in group:
+                    same = i.indexer != other.indexer
+                    same = same and test_for_duplicate_age(i, other)
+                    same = same and test_for_duplicate_size(i, other)
+                    if same:
+                        foundGroup = True
+                        group.append(i)
+                        break
+                if foundGroup:
+                    break
+            if not foundGroup:
+                grouped.append([i])
+        grouped_by_sameness.extend(grouped)    
 
     return grouped_by_sameness
 
