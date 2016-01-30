@@ -12,7 +12,7 @@ from builtins import *
 import os
 import shutil
 from nzbhydra import config
-from nzbhydra.config import mainSettings, indexerSettings, migrate
+from nzbhydra.config import migrate
 
 print("Loading config from testsettings.cfg")
 
@@ -54,59 +54,56 @@ class TestInfos(unittest.TestCase):
     #     assert indexerSettings.newznab1.host.get() == "http://127.0.0.1"
 
     def testMigration(self):
+        testCfg = {
+            "main":
+                {
+                    "configVersion": 3,
+                    u"baseUrl": u"https://www.somedomain.com/nzbhydra"
+
+                },
+            "downloader": {
+                "nzbAddingType": "redirect"
+            }}
+
         with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = {
-                u"main":
-                    {
-                        u"configVersion": 3,
-                        u"baseUrl": u"https://www.somedomain.com/nzbhydra"
-                
-                    }
-            }
+            cfg = testCfg
+            cfg["main"]["baseUrl"] = u"https://www.somedomain.com/nzbhydra"
             json.dump(cfg, settingsfile)
         cfg = migrate("testsettings.cfg")
         self.assertEqual(cfg["main"]["externalUrl"], "https://www.somedomain.com/nzbhydra")
         self.assertEqual(cfg["main"]["urlBase"], "/nzbhydra")
 
         with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = {
-                "main":
-                    {
-                        "configVersion": 3,
-                        "baseUrl": "https://127.0.0.1/nzbhydra/"
-            
-                    }}
+            cfg = testCfg
+            cfg["main"]["baseUrl"] = u"https://127.0.0.1/nzbhydra/"
             json.dump(cfg, settingsfile)
         cfg = migrate("testsettings.cfg")
         self.assertEqual(cfg["main"]["externalUrl"], "https://127.0.0.1/nzbhydra")
         self.assertEqual(cfg["main"]["urlBase"], "/nzbhydra")
 
         with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = {
-                "main":
-                    {
-                        "configVersion": 3,
-                        "baseUrl": "https://www.somedomain.com/"
-            
-                    }}
+            cfg = testCfg
+            cfg["main"]["baseUrl"] = u"https://www.somedomain.com/"
             json.dump(cfg, settingsfile)
         cfg = migrate("testsettings.cfg")
         self.assertEqual(cfg["main"]["externalUrl"], "https://www.somedomain.com")
         self.assertIsNone(cfg["main"]["urlBase"])
 
         with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = {
-                "main":
-                    {
-                        "configVersion": 3,
-                        "baseUrl": None
-            
-                    }}
+            cfg = testCfg
+            cfg["main"]["baseUrl"] = None
             json.dump(cfg, settingsfile)
         cfg = migrate("testsettings.cfg")
         self.assertIsNone(cfg["main"]["externalUrl"])
         self.assertIsNone(cfg["main"]["urlBase"])
-        
+
+        with open("testsettings.cfg", "wb") as settingsfile:
+            cfg = testCfg
+            cfg["main"]["nzbAddingType"] = "direct"
+            json.dump(cfg, settingsfile)
+        cfg = migrate("testsettings.cfg")
+        self.assertEqual("redirect", cfg["downloader"]["nzbAddingType"])
+
 
         # 
         # 
