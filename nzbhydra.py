@@ -6,9 +6,6 @@ import sys
 import argparse
 import webbrowser
 
-import shutil
-
-
 def getBasePath():
     try:
         basepath = dirname(abspath(__file__))
@@ -34,19 +31,12 @@ from nzbhydra import indexers
 from nzbhydra import database
 from nzbhydra import web
 import nzbhydra.config as config
-from nzbhydra.update import check_for_new_version
 
 import requests
 requests.packages.urllib3.disable_warnings()
 logger = None
 
-
-def daemonize():
-    """
-    Fork off as a daemon. Taken directly from sickbeard
-    """
-
-    # pylint: disable=E1101
+def daemonize(pidfile):
     # Make a non-session-leader child process
     try:
         pid = os.fork()  # @UndefinedVariable - only available in UNIX
@@ -74,9 +64,8 @@ def daemonize():
     # Write pid
     
     pid = str(os.getpid())
-    #print(u"Writing PID: " + pid + " to nzbhydra.pid")
     try:
-        file("nzbhydra.pid", 'w').write("%s\n" % pid)
+        file(pidfile, 'w').write("%s\n" % pid)
     except IOError as e:
         print(u"Unable to write PID file: nzbhydra.pid. Error: " + str(e.strerror) + " [" + str(e.errno) + "]")
 
@@ -93,34 +82,22 @@ def daemonize():
     os.dup2(stderr.fileno(), sys.stderr.fileno())
 
 
-def run():
+def run(arguments):
     global logger
-    parser = argparse.ArgumentParser(description='NZBHydra')
-    parser.add_argument('--config', action='store', help='Settings file to load', default="settings.cfg")
-    parser.add_argument('--database', action='store', help='Database file to load', default="nzbhydra.db")
-    parser.add_argument('--host', action='store', help='Host to run on')
-    parser.add_argument('--port', action='store', help='Port to run on', type=int)
-    parser.add_argument('--nobrowser', action='store_true', help='Don\'t open URL on startup', default=False)
-    parser.add_argument('--daemon', action='store_true', help='Run as daemon. *nix only', default=False)
-    parser.add_argument('--restarted', action='store_true', help=argparse.SUPPRESS, default=False)
     
-    args, unknown = parser.parse_known_args()
-    
-    parser.print_help()
-    
-    settings_file = args.config
-    database_file = args.database
+    settings_file = arguments.config
+    database_file = arguments.database
 
     print("Loading settings from %s" % settings_file)
     config.load(settings_file)
     config.save(settings_file)  # Write any new settings back to the file
-    logger = log.setup_custom_logger('root')
+    logger = log.setup_custom_logger('root', arguments.logfile)
     try:
         logger.info("Started")
 
-        if args.daemon:
+        if arguments.daemon:
             logger.info("Daemonizing...")
-            daemonize()
+            daemonize(arguments.pidfile)
         
         config.logLogMessages()
         logger.info("Loading database file %s" % database_file)
@@ -148,8 +125,8 @@ def run():
                 except Exception:
                     logger.warn("Unable to delete old file %s. Please delete manually" % filename)
             
-        host = config.mainSettings.host.get() if args.host is None else args.host
-        port = config.mainSettings.port.get() if args.port is None else args.port
+        host = config.mainSettings.host.get() if arguments.host is None else arguments.host
+        port = config.mainSettings.port.get() if arguments.port is None else arguments.port
     
         logger.info("Starting web app on %s:%d" % (host, port))
         if config.mainSettings.externalUrl.get() is not None and config.mainSettings.externalUrl.get() != "":
@@ -159,8 +136,8 @@ def run():
             f.host = "127.0.0.1"
             f.port = port
             f.scheme = "https" if config.mainSettings.ssl.get() else "http"
-        if not args.nobrowser and config.mainSettings.startup_browser.get():
-            if args.restarted:
+        if not arguments.nobrowser and config.mainSettings.startup_browser.get():
+            if arguments.restarted:
                 logger.info("Not opening the browser after restart")
             else:
                 logger.info("Opening browser to %s" % f.url)
@@ -174,33 +151,43 @@ def run():
     
 
 if __name__ == '__main__':
-        run()
-        if "RESTART" in os.environ.keys() and os.environ["RESTART"] == "1":
-            if "STARTEDBYTRAYHELPER" in os.environ.keys():
-                # We don't restart ourself but use a special return code so we are restarted by the tray tool
-                logger.info("Shutting down so we can be restarted by tray tool")
-                if "AFTERUPDATE" in os.environ.keys():
-                    logger.debug("Shutting down with return code -1 to signal tray helper that it should also restart itself")
-                    os._exit(-1)
-                else:
-                    logger.debug("Shutting down with return code -2 to signal tray helper that it should only restart NZBHydra")
-                    os._exit(-2)
+    parser = argparse.ArgumentParser(description='NZBHydra')
+    parser.add_argument('--config', action='store', help='Settings file to load', default="settings.cfg")
+    parser.add_argument('--database', action='store', help='Database file to load', default="nzbhydra.db")
+    parser.add_argument('--logfile', action='store', help='Log file. If set overwrites config value', default=None)
+    parser.add_argument('--host', action='store', help='Host to run on')
+    parser.add_argument('--port', action='store', help='Port to run on', type=int)
+    parser.add_argument('--nobrowser', action='store_true', help='Don\'t open URL on startup', default=False)
+    parser.add_argument('--daemon', action='store_true', help='Run as daemon. *nix only', default=False)
+    parser.add_argument('--pidfile', action='store', help='PID file. Only relevant with daemon argument', default="nzbhydra.pid")
+    parser.add_argument('--restarted', action='store_true', help=argparse.SUPPRESS, default=False)
+
+    args, unknown = parser.parse_known_args()
+
+    parser.print_help()
+    
+    run(args)
+    if "RESTART" in os.environ.keys() and os.environ["RESTART"] == "1":
+        if "STARTEDBYTRAYHELPER" in os.environ.keys():
+            # We don't restart ourself but use a special return code so we are restarted by the tray tool
+            logger.info("Shutting down so we can be restarted by tray tool")
+            if "AFTERUPDATE" in os.environ.keys():
+                logger.debug("Shutting down with return code -1 to signal tray helper that it should also restart itself")
+                os._exit(-1)
             else:
-                #Otherwise we handle the restart ourself
-                os.environ["RESTART"] = "0"       
-                if os.path.exists("nzbhydra.pid"):
-                    logger.debug("Removing old PID file")
-                    os.remove("nzbhydra.pid")
-                
-                args = [sys.executable]
-                args.extend(sys.argv)
-                if "--restarted" not in args:
-                    logger.debug("Setting restarted flag in command line")
-                    args.append("--restarted")
-                logger.info("Restarting process after shutdown: " + " ".join(args))
-                subprocess.Popen(args, cwd=os.getcwd())
-                
-    
-    
-    
-    
+                logger.debug("Shutting down with return code -2 to signal tray helper that it should only restart NZBHydra")
+                os._exit(-2)
+        else:
+            #Otherwise we handle the restart ourself
+            os.environ["RESTART"] = "0"       
+            if os.path.exists(args.pidfile):
+                logger.debug("Removing old PID file %s" % args.pidfile)
+                os.remove(args.pidfile)
+            
+            args = [sys.executable]
+            args.extend(sys.argv)
+            if "--restarted" not in args:
+                logger.debug("Setting restarted flag in command line")
+                args.append("--restarted")
+            logger.info("Restarting process after shutdown: " + " ".join(args))
+            subprocess.Popen(args, cwd=os.getcwd())

@@ -43,14 +43,16 @@ class SensitiveDataFilter(logging.Filter):
         record.msg = msg
         return True
 
-def setup_custom_logger(name):
+
+def setup_custom_logger(name, logfile=None):
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
 
     stream_handler = logging.StreamHandler(sys.stdout)
     stream_handler.setLevel(mainSettings.logging.consolelevel.get())
     stream_handler.setFormatter(formatter)
     
-    file_handler = RotatingFileHandler(filename=mainSettings.logging.logfilename.get(), maxBytes=1000000, backupCount=25)
+    
+    file_handler = RotatingFileHandler(filename=mainSettings.logging.logfilename.get() if logfile is None else logfile, maxBytes=1000000, backupCount=25)
     file_handler.setLevel(mainSettings.logging.logfilelevel.get())
     file_handler.setFormatter(formatter)
 
