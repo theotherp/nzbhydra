@@ -31,20 +31,28 @@
                            uib-tooltip="Uncheck to hide results from this indexer"
                            tooltip-placement="top"
                            tooltip-trigger="mouseenter"
-                            />{{ ps.indexer }}
+                    />{{ ps.indexer }}
                 </td>
                 <td class="text-left">
-                    <span ng-if="!ps.total_known && ps.total > 0">&gt;</span>{{ ps.total }}
+                    <span ng-if="ps.did_search">
+                        <span ng-if="!ps.total_known && ps.total > 0">&gt;</span>{{ ps.total }}
+                    </span>
                 </td>
                 <td class="text-left">
-                    {{ ps.averageResponseTime }}ms
+                    <span ng-if="ps.did_search">
+                        {{ ps.averageResponseTime }}ms
+                    </span>
                 </td>
                 <td class="text-left">
-                    <span class="glyphicon" ng-class="{'glyphicon-ok' : ps.successful, 'glyphicon-remove' : !ps.successful}"></span>
-                    <span ng-repeat="apiaccess in ps.api_accesses">
-                        <span ng-if="$index == 0">{{ apiaccess.error }}</span>
-                        <div ng-if="$index > 0">{{ apiaccess.error }}</div>
-                        
+                    <span ng-if="ps.did_search">
+                        <span class="glyphicon" ng-class="{'glyphicon-ok' : ps.successful, 'glyphicon-remove' : !ps.successful}"></span>
+                        <span ng-repeat="apiaccess in ps.api_accesses">
+                            <span ng-if="$index == 0">{{ apiaccess.error }}</span>
+                            <div ng-if="$index > 0">{{ apiaccess.error }}</div>
+                        </span>
+                    </span>
+                    <span ng-if="!ps.did_search">
+                        Did not search.
                     </span>
                 </td>
             </tr>
@@ -77,7 +85,7 @@
             <th class="col-md-12 cursor-default search-results-cell">
                 <input type="checkbox" ng-click="invertSelection()" display="float:left; width:1%" uib-tooltip="Invert selection." tooltip-placement="top" tooltip-trigger="mouseenter"/>
                 
-                <span ng-click="setSorting('title', false)" style="vertical-align: top; float:right; width:98%"  >
+                <span ng-click="setSorting('title', false)" style="vertical-align: top; float:right; width:98%">
                 Title <span ng-show="predicate=='title'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
                     </span>
             </th>

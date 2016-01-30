@@ -24,7 +24,7 @@ from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, In
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAuthException, IndexerAccessException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
-QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "results indexerSearchEntry indexerApiAccessEntry indexerStatus total loaded_results total_known has_more")
+QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "didsearch results indexerSearchEntry indexerApiAccessEntry indexerStatus total loaded_results total_known has_more")
 IndexerProcessingResult = collections.namedtuple("IndexerProcessingResult", "entries queries total total_known has_more")
 
 
@@ -110,7 +110,6 @@ class SearchModule(object):
             else:
                 # Just show all the latest movie releases
                 urls = self.get_moviesearch_urls(search_request)
-            return self.execute_queries(urls)
         elif search_request.type == "ebook":
             urls = self.get_ebook_urls(search_request)
         elif search_request.type == "audiobook":
@@ -257,9 +256,13 @@ class SearchModule(object):
         return []
 
     def execute_queries(self, queries):
+        if len(queries) == 0:
+            return QueriesExecutionResult(didsearch=False, results=[], indexerSearchEntry=None, indexerApiAccessEntry=None, indexerStatus=None, total=0, loaded_results=0, total_known=True, has_more=False)
         results = []
         executed_queries = set()
         psearch = IndexerSearch(indexer=self.indexer)
+        papiaccess = None
+        indexerStatus = None
         #psearch.save()
         total_results = 0
         total_known = False
@@ -320,7 +323,7 @@ class SearchModule(object):
                     self.logger.error("Unable to save API response to database")
                 psearch.results = total_results
                 #psearch.save()
-        return QueriesExecutionResult(results=results, indexerSearchEntry=psearch, indexerApiAccessEntry=papiaccess, indexerStatus=indexerStatus, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)
+        return QueriesExecutionResult(didsearch= True, results=results, indexerSearchEntry=psearch, indexerApiAccessEntry=papiaccess, indexerStatus=indexerStatus, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)
 
     def debug(self, msg, *args, **kwargs):
         self.logger.debug("%s: %s" % (self.name, msg), *args, **kwargs)

@@ -888,10 +888,12 @@ function SearchService($http) {
         //Sum up response times of indexers from individual api accesses
         //TODO: Move this to search result controller because we need to update it every time we loaded more results
         _.each(indexersearches, function (ps) {
-            ps.averageResponseTime = _.reduce(ps.api_accesses, function (memo, rp) {
-                return memo + rp.response_time;
-            }, 0);
-            ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
+            if (ps.did_search) {
+                ps.averageResponseTime = _.reduce(ps.api_accesses, function (memo, rp) {
+                    return memo + rp.response_time;
+                }, 0);
+                ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
+            }
         });
         
 

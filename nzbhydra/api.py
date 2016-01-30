@@ -89,6 +89,7 @@ class IndexerSearchSchema(Schema):
     time = fields.DateTime()
     successful = fields.Boolean()
     results = fields.Integer()
+    did_search = fields.Boolean()
 
     api_accesses = fields.Nested(IndexerApiAccessSchema, many=True)
 
@@ -169,6 +170,8 @@ def process_for_internal_api(search_result):
         indexer_search_info["offset"] = search_result["indexer_infos"][indexer]["search_request"].offset
         indexer_search_info["total_known"] = indexer_info["total_known"]
         indexer_search_info["has_more"] = indexer_info["has_more"]
+        indexer_search_info["did_search"] = indexer_info["did_search"]
+        indexer_search_info["indexer"] = indexer_info["indexer"]
         indexersearchdbentries.append(indexer_search_info)
 
     nzbsearchresults = transform_results(nzbsearchresults, search_result["dbsearchid"], False)

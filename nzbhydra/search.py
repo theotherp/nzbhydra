@@ -184,7 +184,7 @@ def search(internal, search_request):
         for indexer, queries_execution_result in result["results"].items():
             search_results.extend(queries_execution_result.results)
             logger.debug("%s returned %d results" % (indexer, len(queries_execution_result.results)))
-            cache_entry["indexer_infos"][indexer].update({"search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known, "indexer_search": queries_execution_result.indexerSearchEntry})
+            cache_entry["indexer_infos"][indexer].update({"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known, "indexer_search": queries_execution_result.indexerSearchEntry})
             if queries_execution_result.has_more:
                 indexers_to_call.append(indexer)
                 logger.debug("%s still has more results so we could use it the next round" % indexer)
@@ -239,12 +239,13 @@ def search(internal, search_request):
 def search_and_handle_db(dbsearch, indexers_and_search_requests):
     results_by_indexer = start_search_futures(indexers_and_search_requests)
     dbsearch.save()
-    for i in results_by_indexer.values():
-        indexersearchentry = i.indexerSearchEntry
-        indexersearchentry.search = dbsearch
-        indexersearchentry.save()
-        i.indexerApiAccessEntry.save()
-        i.indexerStatus.save()
+    for indexer, result in results_by_indexer.items():
+        if result.didsearch:
+            indexersearchentry = result.indexerSearchEntry
+            indexersearchentry.search = dbsearch
+            indexersearchentry.save()
+            result.indexerApiAccessEntry.save()
+            result.indexerStatus.save()
         
     logger.debug("Returning search results now")
     return {"results": results_by_indexer, "dbsearch": dbsearch}
