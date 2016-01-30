@@ -236,13 +236,16 @@ def isAllowed(authType):
     return allowed
 
 
-def requires_auth(authType, allowWithSecretKey=False):
+def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
     def decorator(f):
         def wrapped_function(*args, **kwargs):
             if allowWithSecretKey and "SECRETACCESSKEY" in os.environ.keys():
                 if "secretaccesskey" in request.args and request.args.get("secretaccesskey").lower() == os.environ["SECRETACCESSKEY"].lower():
                     logger.debug("Access granted by secret access key")
                     return f(*args, **kwargs)
+            if allowWithApiKey and "apikey" in request.args and request.args.get("apikey") == config.mainSettings.apikey.get():
+                logger.debug("Access granted by API key")
+                return f(*args, **kwargs)
             allowed = isAllowed(authType)
             if allowed:
                 try:
@@ -270,7 +273,7 @@ def base(path):
 
 def render_search_results_for_api(search_results, total, offset):
     xml = render_template("api.html", channel={}, items=search_results, total=total, offset=offset)
-    return Response(xml, mimetype="text/xml")
+    return Response(xml, mimetype="application/rss+xml, application/xml, text/xml")
 
 
 externalapi_args = {
@@ -395,13 +398,13 @@ getnzb_args = {
 
 
 @app.route('/getnzb')
-@requires_auth("main")
+@requires_auth("main", allowWithApiKey=True)
 @use_args(getnzb_args, locations=['querystring'])
 def getnzb(args):
     logger.debug("Get NZB request with args %s" % args)
     args = rison.loads(args["id"])
     logger.info("API request to download %s from %s" % (args["title"], args["indexer"]))
-    return extract_nzb_infos_and_return_response(args["indexer"], args["guid"], args["title"], args["searchid"])
+    return extract_nzb_infos_and_return_response(args["indexer"], args["indexerguid"], args["title"], args["searchid"])
 
 
 def process_and_jsonify_for_internalapi(results):
@@ -415,7 +418,6 @@ def process_and_jsonify_for_internalapi(results):
 @search_cache.memoize(unless=not config.mainSettings.cache_enabled.get())
 def cached_search(search_request):
     results = search.search(True, search_request)
-    logger.debug("cached_search %s" % results)
     return process_and_jsonify_for_internalapi(results)
 
 

@@ -72,7 +72,7 @@ def url_normalize(url):
             if not VALID_DOMAIN.match(hostname):
                 return None
 
-        except:
+        except Exception as e:
             return None
 
         netloc = hostname

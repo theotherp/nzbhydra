@@ -29,34 +29,50 @@ class TestApi(UrlTestCase):
         app = flask.Flask(__name__)
 
         with app.test_request_context('/'):
-            #With external URL
-            config.mainSettings.externalUrl.set("https://127.0.0.1/nzbhydra")
             
+            #With external URL
+            config.mainSettings.externalUrl.set("https://192.168.1.1/nzbhydra")
             config.mainSettings.useLocalUrlForApiAccess.set(False)
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", True)
-            self.assertUrlEqual(link, "https://127.0.0.1/nzbhydra/api?apikey=apikey&id=%28guid%3Aguid%2Cindexer%3Aindexer%2Csearchid%3A1%2Ctitle%3Atitle%29&t=get")
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", False)
-            self.assertUrlEqual(link, "https://127.0.0.1/nzbhydra/api?apikey=apikey&id=%28guid%3Aguid%2Cindexer%3Aindexer%2Csearchid%3A1%2Ctitle%3Atitle%29&t=get")
+            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=True)
+            self.assertApiUrl(link, shouldBeExternal=True, shouldbeLocal=False)
+            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=False)
+            self.assertApiUrl(link, shouldBeExternal=False, shouldbeLocal=False)
     
             config.mainSettings.useLocalUrlForApiAccess.set(True)
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", True)
-            self.assertUrlEqual(link, "http://localhost/api?apikey=apikey&id=%28guid%3Aguid%2Cindexer%3Aindexer%2Csearchid%3A1%2Ctitle%3Atitle%29&t=get")
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", False)
-            self.assertUrlEqual(link, "https://127.0.0.1/nzbhydra/api?apikey=apikey&id=%28guid%3Aguid%2Cindexer%3Aindexer%2Csearchid%3A1%2Ctitle%3Atitle%29&t=get")
+            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=True)
+            self.assertApiUrl(link, shouldBeExternal=True, shouldbeLocal=True)
+            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=False)
+            self.assertApiUrl(link, shouldBeExternal=False, shouldbeLocal=False)
 
             #Without external URL
             config.mainSettings.externalUrl.set(None)
 
             config.mainSettings.useLocalUrlForApiAccess.set(False)
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", True)
-            self.assertUrlEqual(link, "http://localhost/api?apikey=apikey&id=%28guid%3Aguid%2Cindexer%3Aindexer%2Csearchid%3A1%2Ctitle%3Atitle%29&t=get")
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", False)
-            self.assertUrlEqual(link, "http://localhost/api?apikey=apikey&id=%28guid%3Aguid%2Cindexer%3Aindexer%2Csearchid%3A1%2Ctitle%3Atitle%29&t=get")
+            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=True)
+            self.assertApiUrl(link, shouldBeExternal=True, shouldbeLocal=True)
+            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=False)
+            self.assertApiUrl(link, shouldBeExternal=False, shouldbeLocal=True)
 
             config.mainSettings.useLocalUrlForApiAccess.set(True)
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", True)
-            self.assertUrlEqual(link, "http://localhost/api?apikey=apikey&id=%28guid%3Aguid%2Cindexer%3Aindexer%2Csearchid%3A1%2Ctitle%3Atitle%29&t=get")
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", False)
-            self.assertUrlEqual(link, "http://localhost/api?apikey=apikey&id=%28guid%3Aguid%2Cindexer%3Aindexer%2Csearchid%3A1%2Ctitle%3Atitle%29&t=get")
+            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=True)
+            self.assertApiUrl(link, shouldBeExternal=True, shouldbeLocal=True)
+            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=False)
+            self.assertApiUrl(link, shouldBeExternal=False, shouldbeLocal=True)
+            
+    def assertApiUrl(self, url, shouldBeExternal, shouldbeLocal):
+        self.assertTrue("getnzb" in url, "Doesn't use getnzb")
+        if shouldBeExternal:
+            self.assertTrue("apikey" in url, "Doesn't use API key")
+            if shouldbeLocal:
+                self.assertTrue("localhost" in url, "Uses API key but not local")
+            else:
+                self.assertTrue("192.168.1.1" in url, "Uses API key but not external IP")
+        else:
+            self.assertFalse("apikey" in url, "Exposes API key")
+            if shouldbeLocal:
+                self.assertTrue("localhost" in url, "Uses getnzb but not local")
+            else:
+                self.assertTrue("192.168.1.1" in url, "Uses getnzb but not external IP")
+           
         
         
