@@ -134,6 +134,9 @@ def disable_caching(response):
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Epires'] = '0'
+    else:
+        response.headers['Epires'] = '31104000'
+        response.headers['Cache-Control'] = 'public, max-age=31104000'
     return response
 
 

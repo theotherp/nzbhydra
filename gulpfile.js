@@ -17,10 +17,13 @@ var newer = require('gulp-newer');
 var git = require('gulp-git');
 var runSequence = require('run-sequence');
 var print = require('gulp-print');
+var RevAll = require('gulp-rev-all');
+var rename = require("gulp-rename");
+var clean = require('gulp-clean');
 
 
 gulp.task('vendor-scripts', function () {
-    var dest = 'static/js';
+    var dest = '.tmp/static/js';
     return gulp.src(wiredep().js)
         .pipe(sourcemaps.init())
         .pipe(concat('alllibs.js'))
@@ -31,7 +34,7 @@ gulp.task('vendor-scripts', function () {
 });
 
 gulp.task('vendor-css', function () {
-    var dest = 'static/css';
+    var dest = '.tmp/static/css';
     return gulp.src(wiredep().css)
         .pipe(sourcemaps.init())
         .pipe(concat('alllibs.css'))
@@ -42,7 +45,7 @@ gulp.task('vendor-css', function () {
 });
 
 gulp.task('scripts', function () {
-    var dest = 'static/js';
+    var dest = '.tmp/static/js';
     return gulp.src("ui-src/js/**/*.js")
         .pipe(ngAnnotate())
         .on('error', swallowError)
@@ -59,7 +62,7 @@ gulp.task('scripts', function () {
 });
 
 gulp.task('less', function () {
-    var dest = 'static/css';
+    var dest = '.tmp/static/css';
     gulp.src('ui-src/less/nzbhydra.less')
         .pipe(sourcemaps.init())
         .pipe(newer(dest))
@@ -70,20 +73,25 @@ gulp.task('less', function () {
 });
 
 gulp.task('copy-assets', function () {
-    var fontDest = 'static/fonts';
+    var fontDest = '.tmp/static/fonts';
     var fonts = gulp.src("bower_components/bootstrap/fonts/*")
         .pipe(changed(fontDest))
         .pipe(gulp.dest(fontDest));
 
-    var imgDest = 'static/img';
+    var imgDest = '.tmp/static/img';
     var img = gulp.src("ui-src/img/**/*")
         .pipe(changed(imgDest))
         .pipe(gulp.dest(imgDest));
 
-    var htmlDest = 'static/html';
+    var htmlDest = '.tmp/static/html';
     var html = gulp.src(["ui-src/html/**/*", "bower_components/angularUtils-pagination/dirPagination.tpl.html"])
         .pipe(changed(htmlDest))
         .pipe(gulp.dest(htmlDest));
+
+    var htmlIndex = '.tmp/';
+    var html = gulp.src("ui-src/index.html")
+        .pipe(changed(htmlIndex))
+        .pipe(gulp.dest(htmlIndex));
 
     return merge(img, html, fonts);
 
@@ -94,11 +102,16 @@ gulp.task('add', function () {
         .pipe(git.add());
 });
 
-gulp.task('index', ['scripts', 'less', 'vendor-scripts', 'vendor-css', 'copy-assets'], function () {
-    return gulp.src('ui-src/index.html')
+gulp.task('revision', ['scripts', 'less', 'vendor-scripts', 'vendor-css', 'copy-assets'], function () {
+
+    var revAll = new RevAll({dontRenameFile: [/^\/favicon.ico$/g, /^\/index.html/g]});
+    return gulp.src(".tmp/**", { base:".tmp"}).pipe(revAll.revision()).pipe(gulp.dest(""), {cwd:"static", base:"static"});
+});
+
+gulp.task('index', ['revision'], function () {
+    return gulp.src('index.html')
         .pipe(gulp.dest('templates'))
-        .pipe(livereload())
-        .add;
+        .pipe(livereload());
 });
 
 gulp.task('updateAdd', function () {
