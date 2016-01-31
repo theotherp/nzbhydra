@@ -99,7 +99,7 @@ gulp.task('copy-assets', function () {
 
 gulp.task('add', function () {
     return gulp.src('static/*')
-        .pipe(git.add());
+        .pipe(git.add({args: '--all'}));
 });
 
 gulp.task('clean-static', function () {
@@ -145,5 +145,5 @@ function swallowError(error) {
 
 gulp.task('default', function () {
     livereload.listen();
-    gulp.watch(['ui-src/**/*'], ['index']);
+    gulp.watch(['ui-src/**/*'], ['index', 'add']);
 });
