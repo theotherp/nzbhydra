@@ -74,11 +74,6 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             name: 'Indexers',
             model: ConfigModel.indexers,
             fields: $scope.fields.indexers
-        },
-        {
-            name: 'System',
-            model: ConfigModel.system,
-            fields: $scope.fields.system
         }
     ];
 
@@ -98,14 +93,6 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
         {
             active: false,
             state: 'config.indexers'
-        },
-        {
-            active: false,
-            state: 'config.system'
-        },
-        {
-            active: false,
-            state: 'config.log'
         }
     ];
 
@@ -118,19 +105,6 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
 
     $scope.isSavingNeeded = function (form) {
         return form.$dirty && !form.$submitted;
-    };
-
-    $scope.downloadLog = function() {
-        if (angular.isUndefined($scope.log)) {
-            console.log("Downloading log");
-            var myInjector = angular.injector(["ng"]);
-            var $http = myInjector.get("$http");
-            var $sce = myInjector.get("$sce");
-            $http.get("internalapi/getlogs").success(function (data) {
-                $scope.log = $sce.trustAsHtml(data.log);
-                $scope.$digest();
-            });
-        }
     };
 
     $scope.goToConfigState = function (index) {

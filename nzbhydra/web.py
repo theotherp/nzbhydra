@@ -48,7 +48,7 @@ from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
 from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses
-from nzbhydra.update import get_rep_version, get_current_version, update, getChangelog
+from nzbhydra.update import get_rep_version, get_current_version, update, getChangelog, getVersionHistory
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import getLogs
 
@@ -830,6 +830,30 @@ def internalapi_getsafeconfig():
 def internalapi_maySeeAdminArea():
     logger.debug("Get isAdminLoggedIn request")
     return jsonify({"maySeeAdminArea": maySeeAdminArea()})
+
+
+@app.route('/internalapi/askforadmin')
+@requires_auth("admin")
+def internalapi_askforadmin():
+    logger.debug("Get askforadmin request")
+    return "Ok... or not"
+
+
+@app.route('/internalapi/get_version_history')
+@requires_auth("main")
+def internalapi_getversionhistory():
+    logger.debug("Get local changelog request")
+    versionHistory = getVersionHistory()
+    return jsonify({"versionHistory": versionHistory})
+
+
+@app.route('/internalapi/get_changelog')
+@requires_auth("main")
+def internalapi_getchangelog():
+    logger.debug("Get changelog request")
+    _, current_version = get_current_version()
+    changelog = getChangelog(current_version)
+    return jsonify({"changelog": changelog})
 
 
 @app.route('/internalapi/get_versions')

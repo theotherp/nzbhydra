@@ -40,7 +40,6 @@ function StatsController($scope, stats, $state) {
 
     $scope.goToState = function (index) {
         $state.go($scope.tabs[index].state);
-        
     }
 
 

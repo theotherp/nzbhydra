@@ -2,28 +2,43 @@ angular
     .module('nzbhydraApp')
     .factory('UpdateService', UpdateService);
 
-function UpdateService($http, $sce, growl, blockUI, RestartService) {
+function UpdateService($http, growl, blockUI, RestartService) {
 
     var currentVersion;
     var repVersion;
     var updateAvailable;
     var changelog;
+    var versionHistory;
     
     return {
         update: update,
         showChanges: showChanges,
-        getVersions: getVersions
+        getVersions: getVersions,
+        getChangelog: getChangelog,
+        getVersionHistory: getVersionHistory
     };
     
     
     
     function getVersions() {
         return $http.get("internalapi/get_versions").then(function (data) {
-            
             currentVersion = data.data.currentVersion;
             repVersion = data.data.repVersion;
             updateAvailable = data.data.updateAvailable;
+            return data;
+        });
+    }
+
+    function getChangelog() {
+        return $http.get("internalapi/get_changelog").then(function (data) {
             changelog = data.data.changelog;
+            return data;
+        });
+    }
+    
+    function getVersionHistory() {
+        return $http.get("internalapi/get_version_history").then(function (data) {
+            versionHistory = data.data.versionHistory;
             return data;
         });
     }
@@ -42,9 +57,7 @@ function UpdateService($http, $sce, growl, blockUI, RestartService) {
             },
             controller: function ($scope, $sce, $uibModalInstance, changelog) {
                 //I fucking hate that untrusted HTML shit
-                changelog = _.map(changelog, function (v) {
-                    return {version: v.version, changes: $sce.trustAsHtml(v.changes)};
-                });
+                changelog = $sce.trustAsHtml(changelog);
                 $scope.changelog = changelog;
                 console.log(changelog);
                 $scope.ok = function () {

@@ -4,6 +4,8 @@ angular
 
 function UpdateFooterController($scope, UpdateService) {
 
+    $scope.updateAvailable = false;
+    
     UpdateService.getVersions().then(function(data) {
         $scope.currentVersion = data.data.currentVersion;
         $scope.repVersion = data.data.repVersion;

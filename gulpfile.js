@@ -98,7 +98,7 @@ gulp.task('copy-assets', function () {
 });
 
 gulp.task('add', function () {
-    return gulp.src('static/**')
+    return gulp.src('static/*')
         .pipe(git.add());
 });
 
@@ -137,10 +137,6 @@ gulp.task('index', function () {
     runSequence(['clean-static', 'clean-tmp'], 'revision', 'move-indexhtml', 'clean-indexhtml', 'reload');
 });
 
-gulp.task('updateAdd', function () {
-    runSequence('index', 'add');
-});
-
 function swallowError(error) {
     console.log(error.toString());
     this.emit('end');
@@ -149,5 +145,5 @@ function swallowError(error) {
 
 gulp.task('default', function () {
     livereload.listen();
-    gulp.watch(['ui-src/**/*'], ['updateAdd']);
+    gulp.watch(['ui-src/**/*'], ['index']);
 });

@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
-    <link href="static/css/alllibs.css{{ cacheBuster }}" rel="stylesheet">
-    <link href="static/css/nzbhydra.css{{ cacheBuster }}" rel="stylesheet">
+    <link href="static/css/alllibs.css" rel="stylesheet">
+    <link href="static/css/nzbhydra.css" rel="stylesheet">
     <link rel="shortcut icon" href="static/img/favicon.ico">
 
 </head>
@@ -24,7 +24,7 @@
                     <li ui-sref-active="active"><a ui-sref="search" ui-sref-opts="{inherit: false}">Search</a></li>
                     <li ui-sref-active="active"><a ui-sref="stats">History & Stats</a></li>
                     <li ui-sref-active="active"><a ui-sref="config">Config</a></li>
-                    <li ui-sref-active="active"><a ui-sref="about">About</a></li>
+                    <li ui-sref-active="active"><a ui-sref="system">System</a></li>
                 </ul>
 
             </div>
@@ -41,7 +41,7 @@
 </div>
 
 <span ng-controller="UpdateFooterController">
-    <div id="footer" ng-if="updateAvailable">
+    <div id="footer" ng-if="updateAvailable" ng-cloak>
         <div class="container">
             Yay, there's an update available. Your version: <span ng-bind-html="currentVersion"></span>. Latest version: <span ng-bind-html="repVersion"></span>.
             <button class="btn btn-default" type="button" ng-click="showChangelog()" style="margin-top: 5px;">See what's new!</button>
@@ -52,8 +52,8 @@
 </span>
 </body>
 
-<script src="static/js/alllibs.js{{ cacheBuster }}"></script>
-<script src="static/js/nzbhydra.js{{ cacheBuster }}"></script>
+<script src="static/js/alllibs.js"></script>
+<script src="static/js/nzbhydra.js"></script>
 
 
 </html>

@@ -1,15 +1,8 @@
 <div class="modal-header">
-    <h3 class="modal-title">{{ headline }}</h3>
+    <h3 class="modal-title">Change log</h3>
 </div>
 <div class="modal-body" style="text-align: left">
-    <span ng-repeat="version in changelog">
-        <h3>{{ version.version }}</h3>
-        
-            <span ng-bind-html="version.changes"></span>
-        
-        
-    </span>
-
+    <span ng-bind-html="changelog"></span>
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" type="button" ng-click="ok()">Great!</button>

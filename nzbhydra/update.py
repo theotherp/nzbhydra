@@ -74,43 +74,29 @@ def getChangelog(currentVersion):
     changelog = getUpdateManager().getChangelogFromRepository()
     if changelog is None:
         return []
-    lines = changelog.split("\n")
-    return getChangesSince(lines, currentVersion)
+    return getChangesSince(changelog, currentVersion)
 
-def getLocalChangelog():
+
+def getVersionHistory():
     main_dir = os.path.dirname(os.path.dirname(__file__))
     changelogMd = os.path.join(main_dir, "changelog.md")
     try:
         with open(changelogMd, "r") as f:
-            lines = f.read().splitlines()
-        return getChangesSince(lines)
-    except Exception :
+            changelog = f.read()
+        return getChangesSince(changelog)
+    except Exception:
         logger.exception("Unable to read local changelog")
-        return []
+        return None
 
 
-def getChangesSince(lines, oldVersion=None):
-    changes = []
-    version = None
-    versionChanges = []
+def getChangesSince(changelog, oldVersion=None):
+    start = changelog.index("----------") + 11
+    changelog = changelog[start:]
+    if oldVersion:
+        end = changelog.index(("### %s" % oldVersion).strip())
+        changelog = changelog[:end]
     
-    lines = lines[lines.index("----------") + 1:]
-    for line in lines:
-        if line.startswith("###"):
-            if version is not None:
-                changes.append({"version": version, "changes": markdown.markdown("\n".join(versionChanges), output_format="html", extensions=['markdown.extensions.nl2br'])})
-            version = line[4:]
-            versionChanges = []
-            if oldVersion is not None:
-                oldVersionString = ("### %s" % oldVersion).strip()
-                if line == oldVersionString:
-                    break
-        else:
-            if line != "":
-                versionChanges.append(line)
-    else:
-        changes.append({"version": version, "changes": markdown.markdown("\n".join(versionChanges), output_format="html", extensions=['markdown.extensions.nl2br'])})
-    return changes
+    return markdown.markdown(changelog, output_format="html", extensions=['markdown.extensions.nl2br'])
 
 
 

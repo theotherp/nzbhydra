@@ -1,7 +1,5 @@
+import os
 import unittest
-from nzbhydra.update import getChangesSince, getLocalChangelog
-
-
 class TestVersioning(unittest.TestCase):
     
     def versiontuple(self, v):
@@ -30,6 +28,17 @@ class TestVersioning(unittest.TestCase):
         assert h < i
 
     
-    def testGetChangelog(self):
-        a = getLocalChangelog()
-        print(a)
+    def testThatVersionAndChangelogContainSameVersion(self):
+        main_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        changelogMd = os.path.join(main_dir, "changelog.md")
+        with open(changelogMd, "r") as f:
+            changelog = f.read()
+        versionTxt = os.path.join(main_dir, "version.txt")
+        with open(versionTxt, "r") as f:
+            version = f.read()
+        versionInChangelog = changelog[changelog.index("###"):changelog.index("###") + 20]
+        #Very crude but hey, it works
+        assert version in versionInChangelog
+        
+        
+    

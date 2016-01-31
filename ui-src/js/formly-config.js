@@ -68,44 +68,6 @@ angular
             }
         });
 
-
-        formlyConfigProvider.setType({
-            name: 'shutdown',
-            template: [
-                '<button class="btn btn-default" type="button" ng-click="shutdown()">Shutdown</button>'
-            ].join(' '),
-            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError'],
-            controller: function ($http, $scope, growl) {
-                $scope.shutdown = function () {
-                    $http.get("internalapi/shutdown").then(function () {
-                            growl.info("Shutdown initiated. Cya!");
-                        },
-                        function () {
-                            growl.info("Unable to send shutdown command.");
-                        })
-                }
-            }
-        });
-
-        formlyConfigProvider.setType({
-            name: 'restart',
-            template: [
-                '<button class="btn btn-default" type="button" ng-click="restart()">Restart</button>'
-            ].join(' '),
-            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError'],
-            controller: function ($http, $scope, growl, RestartService) {
-                $scope.restart = function () {
-                    $http.get("internalapi/restart").then(function () {
-                            RestartService.restart();
-                        },
-                        function () {
-                            growl.info("Unable to send restart command.");
-                        })
-                }
-            }
-        });
-
-
         formlyConfigProvider.setType({
             name: 'testConnection',
             templateUrl: 'button-test-connection.html',
