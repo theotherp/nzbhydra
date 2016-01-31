@@ -102,16 +102,39 @@ gulp.task('add', function () {
         .pipe(git.add());
 });
 
+gulp.task('clean-static', function () {
+    return gulp.src('static', {read: false})
+        .pipe(clean());
+});
+
+gulp.task('clean-tmp', function () {
+    return gulp.src('.tmp', {read: false})
+        .pipe(clean());
+});
+
+gulp.task('move-indexhtml', function () {
+    return gulp.src('index.html')
+        .pipe(gulp.dest('templates'));
+});
+
+gulp.task('clean-indexhtml', function () {
+    return gulp.src('index.html*', {read: false})
+        .pipe(clean());
+});
+
 gulp.task('revision', ['scripts', 'less', 'vendor-scripts', 'vendor-css', 'copy-assets'], function () {
 
     var revAll = new RevAll({dontRenameFile: [/^\/favicon.ico$/g, /^\/index.html/g]});
     return gulp.src(".tmp/**", { base:".tmp"}).pipe(revAll.revision()).pipe(gulp.dest(""), {cwd:"static", base:"static"});
 });
 
-gulp.task('index', ['revision'], function () {
-    return gulp.src('index.html')
-        .pipe(gulp.dest('templates'))
+gulp.task('reload', function () {
+    return gulp.src('templates/index.html')
         .pipe(livereload());
+});
+
+gulp.task('index', function () {
+    runSequence(['clean-static', 'clean-tmp'], 'revision', 'move-indexhtml', 'clean-indexhtml', 'reload');
 });
 
 gulp.task('updateAdd', function () {
