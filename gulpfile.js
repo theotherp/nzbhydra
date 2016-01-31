@@ -29,7 +29,7 @@ gulp.task('vendor-scripts', function () {
         .pipe(concat('alllibs.js'))
         .pipe(changed(dest))//Important: Put behind concat, otherwise it will always think the sources changed
         //.pipe(uglify())
-        .pipe(sourcemaps.write("."))
+        .pipe(sourcemaps.write("./"))
         .pipe(gulp.dest(dest));
 });
 

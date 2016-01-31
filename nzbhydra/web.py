@@ -9,6 +9,7 @@ import os
 import urlparse
 
 import arrow
+import datetime
 import rison
 from werkzeug.contrib.fixers import ProxyFix
 
@@ -130,13 +131,17 @@ def _db_disconnect(esc):
 @app.after_request
 def disable_caching(response):
     if mainSettings.debug.get() or "/static" not in request.path: #Prevent caching of control URLs
-        response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
-        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Epires'] = '0'
+        response.cache_control.private = True
+        response.cache_control.max_age = 0
+        response.cache_control.s_max_age = 0
+        response.cache_control.must_revalidate = True
+        response.cache_control.no_cache = True
+        response.cache_control.no_store = True
+        response.headers["Expires"] = datetime.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
     else:
-        response.headers['Epires'] = '31104000'
-        response.headers['Cache-Control'] = 'public, max-age=31104000'
+        response.cache_control.max_age = 31104000
+        response.cache_control.s_maxage = 31104000
+        response.headers["Expires"] = (datetime.datetime.utcnow() + datetime.timedelta(500)).strftime("%a, %d %b %Y %H:%M:%S GMT")
     return response
 
 
