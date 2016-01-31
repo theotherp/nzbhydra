@@ -26,7 +26,7 @@ function SystemController($scope, $state, growl, RestartService, NzbHydraControl
         },
         {
             active: false,
-            state: 'system.control'
+            state: 'system.updates'
         },
         {
             active: false,

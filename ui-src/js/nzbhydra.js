@@ -136,8 +136,8 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                 }]
             }
         })
-        .state("system.control", {
-            url: "/control",
+        .state("system.updates", {
+            url: "/updates",
             templateUrl: "static/html/states/system.html",
             controller: "SystemController",
             resolve: {
