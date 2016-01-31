@@ -134,7 +134,7 @@ gulp.task('reload', function () {
 });
 
 gulp.task('index', function () {
-    runSequence(['clean-static', 'clean-tmp'], 'revision', 'move-indexhtml', 'clean-indexhtml', 'reload');
+    runSequence(['clean-static', 'clean-tmp'], 'revision', 'move-indexhtml', 'clean-indexhtml', 'reload', 'add');
 });
 
 function swallowError(error) {
@@ -145,5 +145,5 @@ function swallowError(error) {
 
 gulp.task('default', function () {
     livereload.listen();
-    gulp.watch(['ui-src/**/*'], ['index', 'add']);
+    gulp.watch(['ui-src/**/*'], ['index']);
 });

@@ -174,13 +174,11 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
     ;
 
     $locationProvider.html5Mode(true);
-
 });
 
 nzbhydraapp.config(function (paginationTemplateProvider) {
     paginationTemplateProvider.setPath('static/html/dirPagination.tpl.html');
 });
-
 
 nzbhydraapp.config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {
     cfpLoadingBarProvider.latencyThreshold = 100;
@@ -205,7 +203,6 @@ nzbhydraapp.directive('ngEnter', function () {
         });
     };
 });
-
 
 nzbhydraapp.filter('nzblink', function () {
     return function (resultItem) {
