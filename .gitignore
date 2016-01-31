@@ -1,5 +1,4 @@
 /.vagrant
-/index.html
 /.tmp
 /dist
 /build
@@ -10,11 +9,10 @@
 /nzbhydra/tests/playground.py
 /node_modules
 /bower_components
-*.db*
-*.db.*
-*.cfg
-*.iml
-realsettingsmockproviders.cfg
+/*.db*
+/*.db.*
+/*.cfg
+/*.iml
 /tests/mock/xml/*
 /tests/mock/nzbclubrss_q_avengers.xml
 /tests/mock/*.xml
@@ -26,6 +24,5 @@ realsettingsmockproviders.cfg
 /libs/**/tests/**
 /libs/**/test/**
 /libs/**/testsuite/**
-*.log
-**/*.cpython-34.pyc
+/*.log
 *buildTestDist.cmd*
