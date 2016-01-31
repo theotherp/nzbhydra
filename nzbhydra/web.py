@@ -129,9 +129,9 @@ def _db_disconnect(esc):
 
 @app.after_request
 def disable_caching(response):
-    if mainSettings.debug.get():
+    if mainSettings.debug.get() or "/static" not in request.path: #Prevent caching of control URLs
         response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
-        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Epires'] = '0'
     else:
