@@ -1,4 +1,5 @@
 /.vagrant
+/vagrantfile
 /.tmp
 /dist
 /build
@@ -10,14 +11,12 @@
 /node_modules
 /bower_components
 /*.db*
-/*.db.*
 /*.cfg
-/*.iml
-/tests/mock/xml/*
-/tests/mock/nzbclubrss_q_avengers.xml
-/tests/mock/*.xml
-/tests/mock/*.json
-/tests/mock/*.html
+/*.bak
+/nzbhydra/tests/*.db
+/nzbhydra/tests/*.cfg
+/nzbhydra/tests/*.log
+/nzbhydra/tests/*.bak
 /nzbhydra_virtualenv
 **/*.pyc
 /libs/**/__pycache__
