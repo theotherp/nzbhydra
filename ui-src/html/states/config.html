@@ -5,10 +5,6 @@
                 <formly-form model="tab.model" fields="tab.fields" ng-if="allTabs[$index].active">
                 </formly-form>
             </uib-tab>
-            <uib-tab heading="Current log" select="goToConfigState(5)">
-                <pre ng-bind-html="log" style="text-align: left"></pre>
-                
-            </uib-tab>
             <li style="position: absolute; right:0px; ">
                 <button ng-disabled="form.$invalid" type="submit" class="btn config-submit" ng-class="{'btn-info': isSavingNeeded(form), 'pulse2': isSavingNeeded(form), 'btn-success': !isSavingNeeded(form)}">Save</button>
             </li>
@@ -31,9 +27,11 @@
     <span style="text-align: left;"><button class="btn btn-default" id="button-test-connection-{{ formId }}" type="button" ng-click="testConnection()"><span class="glyphicon glyphicon-refresh"></span></button> <span id="message-test-connection-{{ formId }}"></span></span>
 </script>
 
+
 <script type="text/ng-template" id="button-check-caps.html">
     <span style="text-align: left;"><button class="btn btn-default" id="button-check-caps-{{ formId }}" type="button" ng-click="checkCaps()"><span class="glyphicon glyphicon-refresh"></span></button> <span id="message-check-caps-{{ formId }}"></span></span>
 </script>
+
 
 <script type="text/ng-template" id="newznab-preset.html">
     <ui-select ng-model="selectedpreset" theme="bootstrap" on-select="selectPreset($item, $model)" search-enabled="false">

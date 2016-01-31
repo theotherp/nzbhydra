@@ -10,7 +10,11 @@ function UpdateFooterController($scope, UpdateService) {
         $scope.currentVersion = data.data.currentVersion;
         $scope.repVersion = data.data.repVersion;
         $scope.updateAvailable = data.data.updateAvailable;
-        $scope.changelog = data.data.changelog; 
+        if ($scope.repVersion > $scope.currentVersion) {
+            UpdateService.getChangelog().then(function (data) {
+                $scope.changelog = data.data.changelog;
+            })
+        } 
     });
     
 

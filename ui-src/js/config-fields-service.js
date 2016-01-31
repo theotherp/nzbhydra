@@ -1263,26 +1263,9 @@ function ConfigFields() {
                 getNewznabFieldset(40)
 
 
-            ],
-
-            system: [
-                {
-                    key: 'shutdown',
-                    type: 'shutdown',
-                    templateOptions: {
-                        type: 'button',
-                        label: 'Shutdown'
-                    }
-                },
-                {
-                    key: 'restart',
-                    type: 'restart',
-                    templateOptions: {
-                        type: 'button',
-                        label: 'Restart'
-                    }
-                }
             ]
+
+            
 
 
         };

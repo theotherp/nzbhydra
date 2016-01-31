@@ -71,13 +71,12 @@ function UpdateService($http, growl, blockUI, RestartService) {
         modalInstance.result.then();
     }
     
-    
 
     function update() {
         blockUI.start("Updating. Please stand by...");
         $http.get("internalapi/update").then(function (data) {
                 if (data.data.success) {
-                    RestartService.restart("Update complete.");
+                    RestartService.countdownAndReload("Update complete.");
                 } else {
                     blockUI.reset();
                     growl.info("An error occurred while updating. Please check the logs.");

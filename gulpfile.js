@@ -84,7 +84,7 @@ gulp.task('copy-assets', function () {
         .pipe(gulp.dest(imgDest));
 
     var htmlDest = '.tmp/static/html';
-    var html = gulp.src(["ui-src/html/**/*", "bower_components/angularUtils-pagination/dirPagination.tpl.html"])
+    var html = gulp.src("ui-src/html/**/*")
         .pipe(changed(htmlDest))
         .pipe(gulp.dest(htmlDest));
 

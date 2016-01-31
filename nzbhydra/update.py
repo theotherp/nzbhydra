@@ -73,7 +73,7 @@ def is_new_version_available():
 def getChangelog(currentVersion):
     changelog = getUpdateManager().getChangelogFromRepository()
     if changelog is None:
-        return []
+        return None
     return getChangesSince(changelog, currentVersion)
 
 
@@ -93,8 +93,11 @@ def getChangesSince(changelog, oldVersion=None):
     start = changelog.index("----------") + 11
     changelog = changelog[start:]
     if oldVersion:
-        end = changelog.index(("### %s" % oldVersion).strip())
-        changelog = changelog[:end]
+        try:
+            end = changelog.index(("### %s" % oldVersion).strip())
+            changelog = changelog[:end]
+        except ValueError:
+            logger.exception("Err while finding current version in changelog. Will return the whole changelog")
     
     return markdown.markdown(changelog, output_format="html", extensions=['markdown.extensions.nl2br'])
 
@@ -320,6 +323,12 @@ class SourceUpdateManager(UpdateManager):
                 return False
             content_dir = os.path.join(update_dir, update_dir_contents[0])
 
+            static_dir = os.path.join(main_dir, 'static')
+
+            if os.path.isdir(static_dir):
+                logger.info(u"Clearing out static folder " + static_dir + " before extracting")
+                shutil.rmtree(static_dir)
+
             # walk temp folder and move files to main folder
             logger.info(u"Moving files from " + content_dir + " to " + main_dir)
             for dirname, dirnames, filenames in os.walk(content_dir):
@@ -380,6 +389,12 @@ class WindowsUpdateManager(SourceUpdateManager):
             if not tarfile.is_tarfile(tar_download_path):
                 logger.error(u"Retrieved version from " + tar_download_url + " is corrupt, can't update")
                 return False
+
+            static_dir = os.path.join(main_dir, 'static')
+
+            if os.path.isdir(static_dir):
+                logger.info(u"Clearing out static folder " + static_dir + " before extracting")
+                shutil.rmtree(static_dir)
 
             # extract to sb-update dir
             logger.info(u"Extracting update file " + tar_download_path)
