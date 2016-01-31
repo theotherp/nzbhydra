@@ -215,7 +215,6 @@ nzbhydraapp.filter('nzblink', function () {
     }
 });
 
-
 nzbhydraapp.factory('focus', function ($rootScope, $timeout) {
     return function (name) {
         $timeout(function () {
