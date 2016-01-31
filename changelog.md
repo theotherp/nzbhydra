@@ -28,7 +28,11 @@ First version with changelog
 
 Split settings for base URL and external URL in two. Added option to use local URL for search results.
  
-Show notification when update is available. 
+Show notification when update is available.
+
+Prepared for windows release. Expect it in the next week or so.
+
+Spotweb results should now be parsed properly.
 
 ### 0.0.1a56
 Last version without changelog
