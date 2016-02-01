@@ -277,13 +277,13 @@ def start_search_futures(indexers_and_search_requests):
 
 
 def find_duplicates(results):
-    #We need to sort by age first, then by title and then group by title
-    sorted_results = sorted(results, key=lambda x: x.pubdate_utc, reverse=True)
-    sorted_results = sorted(sorted_results, key=lambda x: re.sub(r"[ \.\-_]", "", x.title.lower()))
+    #We group all results with the same title together (only those can be duplicates of each other)
+    sorted_results = sorted(results, key=lambda x: re.sub(r"[ \.\-_]", "", x.title.lower()))
     grouped_by_title = groupby(sorted_results, key=lambda x: re.sub(r"[ \.\-_]", "", x.title.lower()))
     grouped_by_sameness = []
     for title, titleGroup in grouped_by_title:
-        titleGroup = list(titleGroup)
+        #As we compare the results' size first we want to have the results sorted by that
+        titleGroup = sorted(list(titleGroup), key=lambda x: x.pubdate_utc, reverse=True)
         grouped = [titleGroup[:1]]
         for i in titleGroup[1:]:
             foundGroup = False

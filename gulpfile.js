@@ -124,7 +124,7 @@ gulp.task('clean-indexhtml', function () {
 
 gulp.task('revision', ['scripts', 'less', 'vendor-scripts', 'vendor-css', 'copy-assets'], function () {
 
-    var revAll = new RevAll({dontRenameFile: [/^\/favicon.ico$/g, /^\/index.html/g]});
+    var revAll = new RevAll({dontRenameFile: [/^\/favicon.ico$/g, /^\/index.html/g], dontSearchFile: ['alllibs.js']});
     return gulp.src(".tmp/**", { base:".tmp"}).pipe(revAll.revision()).pipe(gulp.dest(""), {cwd:"static", base:"static"});
 });
 

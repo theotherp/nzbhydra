@@ -228,7 +228,11 @@ def check_caps(host, apikey):
                         params.remove(x)         
                 result.extend(params)
                 logger.debug("Found supported movie IDs: %s" % params)
-            return result
+            can_handle = [y["id"] for y in toCheck]
+            result = [x for x in result if x in can_handle] #Only use those we can handle
+            result = set(result)  # Return a set because IMDB might be included for TV and movie search, for example
+            
+            return set(result)  
         
     except Exception as e:
         logger.error("Error getting or parsing caps XML. Will continue with brute force. Error message: %s" % e)
@@ -244,7 +248,7 @@ def check_caps(host, apikey):
             except Exception as e:
                 logger.error("An error occurred while trying to test the caps of host %s: %s" % (host, e))
                 raise IndexerResultParsingException("Unable to check caps: %s" % str(e), None)
-    return result
+    return set(result) 
 
 
 def _build_base_url(host, apikey, action, category, limit=None, offset=0):

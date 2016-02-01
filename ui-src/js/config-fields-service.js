@@ -197,7 +197,8 @@ function ConfigFields() {
                     type: 'horizontalCheckCaps',
                     hideExpression: '!model.enabled || !model.host || !model.apikey || !model.name',
                     templateOptions: {
-                        label: 'Check search types'
+                        label: 'Check search types',
+                        help: 'Find out what search types the indexer supports. It\'s recommended to do this for every new indexer.'
                     }
                 }
             )
