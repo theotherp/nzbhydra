@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a61
+Increase timeout for sabNZBd and add logging.
+
 ### 0.0.1a60
 Fixed bug with newznab search type detection where only a couple of results would be shown in some cases.
 

@@ -17,7 +17,7 @@ import socket
 import xmlrpc.client
 from furl import furl
 import requests
-from requests.exceptions import HTTPError, SSLError, ConnectionError
+from requests.exceptions import HTTPError, SSLError, ConnectionError, ReadTimeout
 from nzbhydra.config import sabnzbdSettings, nzbgetSettings
 
 
@@ -196,7 +196,7 @@ class Sabnzbd(Downloader):
         f = self.get_sab(url, apikey, username, password)
         f.add({"mode": "qstatus"})
         try:
-            r = requests.get(f.tostr(), verify=False, timeout=5)
+            r = requests.get(f.tostr(), verify=False, timeout=15)
             r.raise_for_status()
             if "state" in json.loads(r.text).keys():
                 self.logger.info('Connection test to sabnzbd successful')
@@ -205,7 +205,7 @@ class Sabnzbd(Downloader):
                 self.logger.info("Access to sabnzbd failed, probably due to wrong credentials")
                 return False, "Credentials wrong?"
 
-        except (SSLError, HTTPError, ConnectionError) as e:
+        except (SSLError, HTTPError, ConnectionError, ReadTimeout):
             self.logger.error("Error while trying to connect to sabnzbd: %s" % e)
             return False, "SABnzbd is not responding"
 
@@ -222,11 +222,11 @@ class Sabnzbd(Downloader):
         if category is not None:
             f.add({"cat": category})
         try:
-            r = requests.get(f.tostr(), verify=False, timeout=5)
+            r = requests.get(f.tostr(), verify=False, timeout=15)
             r.raise_for_status()
             return r.json()["status"]
-        except (SSLError, HTTPError, ConnectionError):
-            self.logger.exception("Error while trying to connect to sabnzbd")
+        except (SSLError, HTTPError, ConnectionError, ReadTimeout):
+            self.logger.exception("Error while trying to connect to sabnzbd using link %s" % link)
             return False
 
     def add_nzb(self, content, title, category):
@@ -243,10 +243,10 @@ class Sabnzbd(Downloader):
             f.add({"cat": category})
         try:
             files = {'nzbfile': (title, content)}
-            r = requests.post(f.tostr(), files=files, verify=False,timeout=5)
+            r = requests.post(f.tostr(), files=files, verify=False,timeout=15)
             r.raise_for_status()
             return r.json()["status"]
-        except (SSLError, HTTPError, ConnectionError):
+        except (SSLError, HTTPError, ConnectionError, ReadTimeout):
             self.logger.exception("Error while trying to connect to sabnzbd with URL %s" % f.url)
             return False
 
@@ -255,9 +255,9 @@ class Sabnzbd(Downloader):
         f = self.get_sab()
         f.add({"mode": "get_cats", "output": "json"})
         try:
-            r = requests.get(f.tostr(), verify=False, timeout=5)
+            r = requests.get(f.tostr(), verify=False, timeout=15)
             r.raise_for_status()
             return r.json()["categories"]
-        except (SSLError, HTTPError, ConnectionError):
+        except (SSLError, HTTPError, ConnectionError, ReadTimeout):
             self.logger.exception("Error while trying to connect to sabnzbd with URL %s" % f.url)
             raise DownloaderException("Unable to contact SabNZBd")
