@@ -328,16 +328,6 @@ def api(args):
     args["category"] = args["cat"]
     args["episode"] = args["ep"]
 
-    if args["id"] is not None:
-        # Sometimes the id is not parsed properly and contains other parts of the URL so we try to remove them here
-        idDic = urlparse.parse_qs(args["id"])
-        if "id" in idDic.keys():
-            args["id"] = idDic["id"][0]
-            logger.debug("Query ID was not properly parsed. Converted it to %s" % args["id"])
-        else:
-            # The other if path will unquote the id with parse_qs unqotes so we do it here too
-            args["id"] = urlparse.unquote(args["id"])
-
     if args["q"] is not None and args["q"] != "":
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
     if mainSettings.apikey.get_with_default(None) and ("apikey" not in args or args["apikey"] != mainSettings.apikey.get()):

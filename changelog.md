@@ -4,6 +4,8 @@
 ### 0.0.1a60
 Fixed bug with newznab search type detection where only a couple of results would be shown in some cases.
 
+Fixed bug where sending links to downloaders would fail with enabled auth.
+
 
 ### 0.0.1a59
 Completely rewrote duplicate detection. Fixes an ugly bug, should take 2/3 of the time and easier to fix or expand in the future.

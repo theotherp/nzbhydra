@@ -4,6 +4,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import traceback
+from contextlib import contextmanager
+from sets import Set
 
 import arrow
 import shutil
@@ -243,6 +245,19 @@ def update(d, u, level):
     return d
 
 
+@contextmanager
+def version_update(config, version):
+    addLogMessage(20, "Migrating config to version %d" % version)
+    try:
+        yield
+        config["main"]["configVersion"] = version
+        addLogMessage(20, "Migration of config to version %d finished" % version)
+    except Exception as e:
+        addLogMessage(30, "Exception while trying to migrate config: %s" % e)
+        raise
+        
+    
+
 def migrate(settingsFilename):
     with open(settingsFilename) as settingsFile:
         config = json.load(settingsFile)
@@ -253,67 +268,70 @@ def migrate(settingsFilename):
             backupFilename = "%s.%s.bak" % (settingsFilename, arrow.get().format("YYYY-MM-DD"))
             addLogMessage(20, "Copying backup of settings to %s" % backupFilename)
             shutil.copy(settingsFilename, backupFilename)
-            
-            if config["main"]["configVersion"] == 1:
-                addLogMessage(20, "Migrating config to version 2")
-                # Migrate sabnzbd setting
-                sabnzbd = config["downloader"]["sabnzbd"]
-                if sabnzbd["host"] and sabnzbd["port"]:
-                    addLogMessage(20, "Migrating sabnzbd settings")
-                    f = furl()
-                    f.host = sabnzbd["host"]
-                    f.port = sabnzbd["port"]
-                    f.scheme = "https" if sabnzbd["ssl"] else "http"
-                    f.path = "/sabnzbd/"
-                    config["downloader"]["sabnzbd"]["url"] = f.url
-                    addLogMessage(20, "Built sabnzbd URL: %s" % f.url)
-                elif config["downloader"]["downloader"] == "sabnzbd":
-                    addLogMessage(30, "Unable to migrate from incomplete sabnzbd settings. Please set the sabnzbd URL manually")
-                addLogMessage(20, "Migration of config to version 2 finished")
-                config["main"]["configVersion"] = 2
-            if config["main"]["configVersion"] == 2:
-                addLogMessage(20, "Migrating config to version 3")
-                addLogMessage(20, "Updating NZBClub host to https://www.nzbclub.com")
-                config["indexers"]["NZBClub"]["host"] = "https://www.nzbclub.com"
-                addLogMessage(20, "Migration of config to version 3 finished")
-                config["main"]["configVersion"] = 3
-            if config["main"]["configVersion"] == 3:
-                addLogMessage(20, "Migrating config to version 4")
-                addLogMessage(20, "Converting Base URL to URL base and external URL")
-                baseUrl = config["main"]["baseUrl"]
-                if baseUrl is not None and baseUrl != "":
-                    f = furl(config["main"]["baseUrl"])
-                    if f.path != "/":
-                        config["main"]["urlBase"] = str(f.path)
-                        if config["main"]["urlBase"].endswith("/"):
-                            config["main"]["urlBase"] = config["main"]["urlBase"][:-1]
-                    else:
-                        config["main"]["urlBase"] = None
-                    config["main"]["externalUrl"] = f.url
-                    if config["main"]["externalUrl"].endswith("/"):
-                        config["main"]["externalUrl"] = config["main"]["externalUrl"][:-1]
-                    addLogMessage(20, "Setting URL base to %s and external URL to %s" % (config["main"]["urlBase"], config["main"]["externalUrl"]))
-                else:
-                    config["main"]["urlBase"] = None
-                    config["main"]["externalUrl"] = None
-                config["main"].pop("baseUrl")
-                addLogMessage(20, "Migration of config to version 4 finished")
-                config["main"]["configVersion"] = 4
-            if config["main"]["configVersion"] == 4:
-                addLogMessage(20, "Migrating config to version 5")
-                addLogMessage(20, "Converting repository base URL")
-                if "repositoryBase" in config["main"].keys():
-                    config["main"]["repositoryBase"] = "https://github.com/theotherp" 
-                addLogMessage(20, "Migration of config to version 5 finished")
-                config["main"]["configVersion"] = 5
-            if config["main"]["configVersion"] == 5:
-                addLogMessage(20, "Migrating config to version 6")
-                if config["downloader"]["nzbAddingType"] == "direct":
-                    addLogMessage(20, 'Removing legacy setting for NZB access "direct" and setting it to redirect. Sorry.')
-                    config["main"]["nzbAddingType"] = "redirect"
-                addLogMessage(20, "Migration of config to version 6 finished")
-                config["main"]["configVersion"] = 6
-    
+            try:
+                if config["main"]["configVersion"] == 1:
+                    with version_update(config, 2):
+                        sabnzbd = config["downloader"]["sabnzbd"]
+                        if sabnzbd["host"] and sabnzbd["port"]:
+                            addLogMessage(20, "Migrating sabnzbd settings")
+                            f = furl()
+                            f.host = sabnzbd["host"]
+                            f.port = sabnzbd["port"]
+                            f.scheme = "https" if sabnzbd["ssl"] else "http"
+                            f.path = "/sabnzbd/"
+                            config["downloader"]["sabnzbd"]["url"] = f.url
+                            addLogMessage(20, "Built sabnzbd URL: %s" % f.url)
+                        elif config["downloader"]["downloader"] == "sabnzbd":
+                            addLogMessage(30, "Unable to migrate from incomplete sabnzbd settings. Please set the sabnzbd URL manually")
+                
+                if config["main"]["configVersion"] == 2:
+                    with version_update(config, 3):
+                        addLogMessage(20, "Updating NZBClub host to https://www.nzbclub.com")
+                        config["indexers"]["NZBClub"]["host"] = "https://www.nzbclub.com"
+
+                if config["main"]["configVersion"] == 3:
+                    with version_update(config, 4):
+                        addLogMessage(20, "Converting Base URL to URL base and external URL")
+                        baseUrl = config["main"]["baseUrl"]
+                        if baseUrl is not None and baseUrl != "":
+                            f = furl(config["main"]["baseUrl"])
+                            if f.path != "/":
+                                config["main"]["urlBase"] = str(f.path)
+                                if config["main"]["urlBase"].endswith("/"):
+                                    config["main"]["urlBase"] = config["main"]["urlBase"][:-1]
+                            else:
+                                config["main"]["urlBase"] = None
+                            config["main"]["externalUrl"] = f.url
+                            if config["main"]["externalUrl"].endswith("/"):
+                                config["main"]["externalUrl"] = config["main"]["externalUrl"][:-1]
+                            addLogMessage(20, "Setting URL base to %s and external URL to %s" % (config["main"]["urlBase"], config["main"]["externalUrl"]))
+                        else:
+                            config["main"]["urlBase"] = None
+                            config["main"]["externalUrl"] = None
+                        config["main"].pop("baseUrl")
+
+                if config["main"]["configVersion"] == 4:
+                    with version_update(config, 5):
+                        addLogMessage(20, "Converting repository base URL")
+                        if "repositoryBase" in config["main"].keys():
+                            config["main"]["repositoryBase"] = "https://github.com/theotherp"
+
+                if config["main"]["configVersion"] == 5:
+                    with version_update(config, 6):
+                        if config["downloader"]["nzbAddingType"] == "direct":
+                            addLogMessage(20, 'Removing legacy setting for NZB access "direct" and setting it to redirect. Sorry.')
+                            config["main"]["nzbAddingType"] = "redirect"
+
+                if config["main"]["configVersion"] == 6:
+                    with version_update(config, 7):
+                        for i in range(1, 41):
+                            indexer_cfg = config["indexers"]["newznab%d" % i]
+                            search_ids = indexer_cfg["search_ids"]
+                            indexer_cfg["search_ids"] = list(Set(search_ids))
+                            if len(search_ids) != len(indexer_cfg["search_ids"]):
+                                addLogMessage(20, "Removed duplicate search types from indexer %s" % indexer_cfg["name"])
+            except:
+                addLogMessage(30, "An error occurred while migrating the config file. A backup file of the original setttings was created: %s" % backupFilename)
         return config
 
 
@@ -428,7 +446,7 @@ class MainSettings(Category):
 
         # Not a config setting but the version of the config file. Useful when we may need to migrate the config later and want
         # to find out which version is used.
-        self.configVersion = Setting(self, name="configVersion", default=6, valuetype=int)
+        self.configVersion = Setting(self, name="configVersion", default=7, valuetype=int)
         self.repositoryBase = Setting(self, name="repositoryBase", default="https://github.com/theotherp", valuetype=str)
         
 
