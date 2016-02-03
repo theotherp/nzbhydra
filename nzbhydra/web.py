@@ -133,14 +133,12 @@ def disable_caching(response):
     if mainSettings.debug.get() or "/static" not in request.path: #Prevent caching of control URLs
         response.cache_control.private = True
         response.cache_control.max_age = 0
-        response.cache_control.s_max_age = 0
         response.cache_control.must_revalidate = True
         response.cache_control.no_cache = True
         response.cache_control.no_store = True
         response.headers["Expires"] = datetime.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
     else:
         response.cache_control.max_age = 31104000
-        response.cache_control.s_maxage = 31104000
         response.headers["Expires"] = (datetime.datetime.utcnow() + datetime.timedelta(500)).strftime("%a, %d %b %Y %H:%M:%S GMT")
     return response
 
@@ -632,7 +630,7 @@ def internalapi_addnzb(args):
         indexer = item["indexer"]
         category = args["category"]
         dbsearchid = item["dbsearchid"]
-        link, _ = get_nzb_link_and_guid(indexer, indexerguid, dbsearchid, title, False)
+        link, _ = get_nzb_link_and_guid(indexer, indexerguid, dbsearchid, title, True)
 
         if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
             add_success = downloader.add_link(link, title, category)
