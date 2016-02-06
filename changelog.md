@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a62
+Improved handling of failed logins.
+
 ### 0.0.1a61
 Increase timeout for sabNZBd and add logging.
 

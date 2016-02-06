@@ -167,37 +167,39 @@ def handle_bad_request(err):
 
 
 def authenticate():
-    global failedLogins
-    ip = getIp()
-    if ip in failedLogins.keys():
-        lastFailedLogin = failedLogins[ip]["lastFailedLogin"]
-        lastFailedLoginFormatted = lastFailedLogin.format("YYYY-MM-DD HH:mm:ss")
-        failedLoginCounter = failedLogins[ip]["failedLoginCounter"]
-        lastTriedUsername = failedLogins[ip]["lastTriedUsername"]
-        lastTriedPassword = failedLogins[ip]["lastTriedPassword"]
-        secondsSinceLastFailedLogin = (arrow.utcnow() - lastFailedLogin).seconds
-        waitFor = 2 * failedLoginCounter
-        failedLogins[ip]["lastFailedLogin"] = arrow.utcnow()
-        failedLogins[ip]["lastTriedUsername"] = request.authorization.username if request.authorization is not None else None
-        failedLogins[ip]["lastTriedPassword"] = request.authorization.password if request.authorization is not None else None
-
-        if secondsSinceLastFailedLogin < waitFor:
-            if request.authorization is None or (lastTriedUsername == request.authorization.username and lastTriedPassword == request.authorization.password):
-                # We don't log this and don't increase the counter, it happens when the user reloads the page waiting for the counter to go down, so we don't change the lastFailedLogin (well, we set it back)
-                failedLogins[ip]["lastFailedLogin"] = lastFailedLogin
+    # Only if the request actually contains auth data we consider this a login try
+    if request.authorization:
+        global failedLogins
+        ip = getIp()
+         
+        if ip in failedLogins.keys(): 
+            lastFailedLogin = failedLogins[ip]["lastFailedLogin"]
+            lastFailedLoginFormatted = lastFailedLogin.format("YYYY-MM-DD HH:mm:ss")
+            failedLoginCounter = failedLogins[ip]["failedLoginCounter"]
+            lastTriedUsername = failedLogins[ip]["lastTriedUsername"]
+            lastTriedPassword = failedLogins[ip]["lastTriedPassword"]
+            secondsSinceLastFailedLogin = (arrow.utcnow() - lastFailedLogin).seconds
+            waitFor = 2 * failedLoginCounter
+            failedLogins[ip]["lastFailedLogin"] = arrow.utcnow()
+            failedLogins[ip]["lastTriedUsername"] = request.authorization.username
+            failedLogins[ip]["lastTriedPassword"] = request.authorization.password
+    
+            if secondsSinceLastFailedLogin < waitFor:
+                if lastTriedUsername == request.authorization.username and lastTriedPassword == request.authorization.password:
+                    # We don't log this and don't increase the counter, it happens when the user reloads the page waiting for the counter to go down, so we don't change the lastFailedLogin (well, we set it back)
+                    failedLogins[ip]["lastFailedLogin"] = lastFailedLogin
+                    return Response("Please wait %d seconds until you try to authenticate again" % (waitFor - secondsSinceLastFailedLogin), 429)
+                failedLogins[ip]["failedLoginCounter"] = failedLoginCounter + 1
+                logger.warn("IP %s failed to authenticate. The last time was at %s. This was his %d. failed login attempt" % (ip, lastFailedLoginFormatted, failedLoginCounter + 1))
                 return Response("Please wait %d seconds until you try to authenticate again" % (waitFor - secondsSinceLastFailedLogin), 429)
-            logger.warn("IP %s failed to authenticate. The last time was at %s. This was his %d. failed login attempt" % (ip, lastFailedLoginFormatted, failedLoginCounter))
-            failedLogins[ip]["failedLoginCounter"] = failedLoginCounter + 1
-            return Response("Please wait %d seconds until you try to authenticate again" % (waitFor - secondsSinceLastFailedLogin), 429)
+            else:
+                failedLogins[ip]["failedLoginCounter"] = failedLoginCounter + 1
+                logger.warn("IP %s failed to authenticate. The last time was at %s. This was his %d. failed login attempt" % (ip, lastFailedLoginFormatted, failedLoginCounter + 1))
+    
         else:
-            logger.warn("IP %s failed to authenticate. The last time was at %s. This was his %d. failed login attempt" % (ip, lastFailedLoginFormatted, failedLoginCounter))
-            failedLogins[ip]["failedLoginCounter"] = failedLoginCounter + 1
-
-    else:
-        #This isn't actually a failed try. The first time the auth just isn't filled and the user is asked for auth. There might be other cases (brute force using http://user:pass@... but we just ignore that the first time
-        failedLogins[ip] = {"lastFailedLogin": arrow.utcnow(), "failedLoginCounter": 1, "lastTriedUsername": request.authorization.username if request.authorization is not None else None, "lastTriedPassword": request.authorization.password if request.authorization is not None else None
-                            }
-
+            logger.warn("IP %s failed to authenticate. This was his first failed login attempt" % ip)
+            failedLogins[ip] = {"lastFailedLogin": arrow.utcnow(), "failedLoginCounter": 1, "lastTriedUsername": request.authorization.username, "lastTriedPassword": request.authorization.password}
+    
     return Response(
             'Could not verify your access level for that URL. You have to login with proper credentials', 401,
             {'WWW-Authenticate': 'Basic realm="Login Required"'})
@@ -245,17 +247,23 @@ def isAllowed(authType):
 def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
     def decorator(f):
         def wrapped_function(*args, **kwargs):
+            allowed = False
             if allowWithSecretKey and "SECRETACCESSKEY" in os.environ.keys():
                 if "secretaccesskey" in request.args and request.args.get("secretaccesskey").lower() == os.environ["SECRETACCESSKEY"].lower():
                     logger.debug("Access granted by secret access key")
-                    return f(*args, **kwargs)
-            if allowWithApiKey and "apikey" in request.args and request.args.get("apikey") == config.mainSettings.apikey.get():
-                logger.debug("Access granted by API key")
-                return f(*args, **kwargs)
-            allowed = isAllowed(authType)
+                    allowed = True
+            elif allowWithApiKey and "apikey" in request.args:
+                if request.args.get("apikey") == config.mainSettings.apikey.get():
+                    logger.debug("Access granted by API key")
+                    allowed = True
+                else:
+                    logger.warn("API access qith invalid API key from %s" % getIp())
+            else:
+                allowed = isAllowed(authType)
             if allowed:
                 try:
                     failedLogins.pop(getIp())
+                    logger.info("Successful login from IP %s after failed login tries. Resetting failed login counter." % getIp())
                 except KeyError:
                     pass
                 return f(*args, **kwargs)
