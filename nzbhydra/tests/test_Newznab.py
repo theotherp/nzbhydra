@@ -300,7 +300,7 @@ class NewznabTests(UrlTestCase):
         self.assertEqual(0, len(urls))
     
     
-    def testCheckOut(self):
+    def testCheckAuth(self):
         body = '<?xml version="1.0" encoding="utf-8" ?><error code="100" description="Incorrect user credentials" />'
         with pytest.raises(Exception) as excinfo:
             self.n1.check_auth(body)
@@ -314,5 +314,5 @@ class NewznabTests(UrlTestCase):
         body = '<?xml version="1.0" encoding="utf-8" ?><error code="200" description="Missing parameter" />'
         with pytest.raises(Exception) as excinfo:
             self.n1.check_auth(body)
-        self.assertEqual("Unknown error while trying to access the indexer.", excinfo.value.message)
+        self.assertEqual("Unknown error while trying to access the indexer: Missing parameter", excinfo.value.message)
             
