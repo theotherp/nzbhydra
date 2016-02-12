@@ -2,7 +2,10 @@ angular
     .module('nzbhydraApp')
     .config(function config(formlyConfigProvider) {
         formlyConfigProvider.extras.removeChromeAutoComplete = true;
-
+        formlyConfigProvider.extras.explicitAsync = true;
+        formlyConfigProvider.disableWarnings = window.onProd;
+        
+        
         // set templates here
         formlyConfigProvider.setWrapper({
             name: 'horizontalBootstrapLabel',

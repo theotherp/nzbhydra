@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a63
+Fixed bug where searches with empty query parameters would be sent to indexers.
+
 ### 0.0.1a62
 Improved handling of failed logins.
 

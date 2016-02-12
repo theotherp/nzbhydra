@@ -95,7 +95,17 @@ def check_auth(body, indexer):
     if '<error code="910"' in body:
         raise IndexerAccessException("The API seems to be disabled for the moment.", indexer)
     if '<error code=' in body:
-        raise IndexerAccessException("Unknown error while trying to access the indexer.", indexer)
+        try:   
+            tree = ET.fromstring(body)
+            code = tree.attrib["code"]
+            description = tree.attrib["description"] 
+            logger.error("Indexer %s returned unknown error code %s with description: %s" % (indexer, code, description))
+            exception = IndexerAccessException("Unknown error while trying to access the indexer: %s" % description, indexer)
+        except Exception:
+            logger.error("Indexer %s returned an error page: %s" % (indexer, body))
+            exception = IndexerAccessException("Unknown error while trying to access the indexer.", indexer)
+        raise exception
+        
 
 
 def test_connection(host, apikey):
@@ -280,8 +290,8 @@ class NewzNab(SearchModule):
             url.query.add({"password": "0"})
         return url
 
-    def get_search_urls(self, search_request):
-        f = self.build_base_url("search", search_request.category, offset=search_request.offset)
+    def get_search_urls(self, search_request, search_type="search"):
+        f = self.build_base_url(search_type, search_request.category, offset=search_request.offset)
         if search_request.query:
             f = f.add({"q": search_request.query})
         if search_request.maxage:
@@ -293,7 +303,7 @@ class NewzNab(SearchModule):
             search_request.category = "TV"
 
         url = self.build_base_url("tvsearch", search_request.category, offset=search_request.offset)
-        if search_request.identifier_key is not None:
+        if search_request.identifier_key:
             canBeConverted, toType, id = infos.convertIdToAny(search_request.identifier_key, self.search_ids, search_request.identifier_value)
             if canBeConverted:
                 search_request.identifier_key = toType.replace("tvrage", "rid").replace("tvdb", "tvdbid")
@@ -303,11 +313,11 @@ class NewzNab(SearchModule):
                 return []
 
             url.add({search_request.identifier_key: search_request.identifier_value})
-        if search_request.episode is not None:
+        if search_request.episode:
             url.add({"ep": search_request.episode})
-        if search_request.season is not None:
+        if search_request.season:
             url.add({"season": search_request.season})
-        if search_request.query is not None and search_request.query != "":
+        if search_request.query:
             url.add({"q": search_request.query})
 
         return [url.url]
@@ -317,12 +327,12 @@ class NewzNab(SearchModule):
             search_request.category = "Movies"
         
         #A lot of indexers seem to disregard the "q" parameter for "movie" search, so if we have a query use regular search instead 
-        if search_request.query is not None:
+        if search_request.query:
             url = self.build_base_url("search", search_request.category, offset=search_request.offset)
             url.add({"q": search_request.query})
         else:
             url = self.build_base_url("movie", search_request.category, offset=search_request.offset)
-            if search_request.identifier_key is not None:
+            if search_request.identifier_key:
                 canBeConverted, toType, id = infos.convertIdToAny(search_request.identifier_key, self.search_ids, search_request.identifier_value)
                 if canBeConverted:
                     search_request.identifier_key = toType.replace("tvrage", "rid").replace("tvdb", "tvdbid").replace("imdb", "imdbid")
@@ -336,13 +346,13 @@ class NewzNab(SearchModule):
         return [url.url]
 
     def get_ebook_urls(self, search_request):
-        if search_request.category is None:
+        if not search_request.category:
             search_request.category = "Ebook"
         #search_request.query += " ebook|mobi|pdf|epub"
         return self.get_search_urls(search_request)
 
     def get_audiobook_urls(self, search_request):
-        if search_request.category is None:
+        if not search_request.category:
             search_request.category = "Audiobook"
         return self.get_search_urls(search_request)
 

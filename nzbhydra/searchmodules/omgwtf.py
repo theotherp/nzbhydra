@@ -167,7 +167,7 @@ class OmgWtf(SearchModule):
             return []
         f = self.build_base_url()
         cats = map_category(search_request.category)
-        if search_request.query is not None and search_request.query != "":
+        if search_request.query:
             #Query based XML search
             f.path.add("xml/")
             f = f.add({"search": search_request.query})
@@ -188,8 +188,8 @@ class OmgWtf(SearchModule):
         if search_request.category is None:
             search_request.category = "TV"
         #Should get most results, apparently there is no way of using "or" searches
-        if search_request.season is not None:
-            if search_request.episode is not None:
+        if search_request.season:
+            if search_request.episode:
                 search_request.query = "{0} s{1:02d}e{2:02d}".format(str(search_request.query), int(search_request.season), int(search_request.episode))
             else:
                 search_request.query = "{0} s{1:02d}".format(str(search_request.query), int(search_request.season))
@@ -199,7 +199,7 @@ class OmgWtf(SearchModule):
     def get_moviesearch_urls(self, search_request):
         if search_request.category is None:
             search_request.category = "Movies"
-        if search_request.identifier_key is not None:
+        if search_request.identifier_key:
             canBeConverted, toType, id = infos.convertIdToAny(search_request.identifier_key, ["imdb"], search_request.identifier_value)
             if canBeConverted:
                 search_request.query = "tt%s" % id
