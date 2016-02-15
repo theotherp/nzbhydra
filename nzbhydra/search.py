@@ -16,7 +16,6 @@ import copy
 import logging
 import arrow
 from requests_futures.sessions import FuturesSession
-from nzbhydra.config import searchingSettings
 from nzbhydra.database import IndexerStatus, Search
 from nzbhydra import config, indexers, infos
 
@@ -85,12 +84,12 @@ class SearchRequest(object):
 
 
 def canUseIdKey(indexer, key):
-    if key in indexer.settings.search_ids.get():
+    if key in indexer.settings.search_ids:
         return True
     # We might be able to convert them using TVMaze
-    if key == "tvdbid" and "rid" in indexer.settings.search_ids.get():
+    if key == "tvdbid" and "rid" in indexer.settings.search_ids:
         return True
-    if key == "rid" and "tvdbid" in indexer.settings.search_ids.get():
+    if key == "rid" and "tvdbid" in indexer.settings.search_ids:
         return True
 
 
@@ -99,13 +98,13 @@ def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selec
     selected_indexers = selected_indexers.split("|") if selected_indexers is not None else None
     with_query_generation = False
     for p in indexers.enabled_indexers:
-        if not p.settings.enabled.get():
+        if not p.settings.enabled:
             logger.debug("Did not pick %s because it is disabled" % p)
             continue
-        if internal and p.settings.accessType.get() == "external":
+        if internal and p.settings.accessType == "external":
             logger.debug("Did not pick %s because it is only enabled for external searches" % p)
             continue
-        if not internal and p.settings.accessType.get() == "internal":
+        if not internal and p.settings.accessType == "internal":
             logger.debug("Did not pick %s because it is only enabled for internal searches" % p)
             continue
         if selected_indexers and p.name not in selected_indexers:
@@ -113,7 +112,7 @@ def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selec
             continue
         try:
             status = p.indexer.status.get()
-            if status.disabled_until > arrow.utcnow() and not searchingSettings.ignore_disabled.get_with_default(False):
+            if status.disabled_until > arrow.utcnow() and not config.settings.searching.ignoreTemporarilyDisabled:
                 logger.info("Did not pick %s because it is disabled temporarily due to an error: %s" % (p, status.reason))
                 continue
         except IndexerStatus.DoesNotExist:
@@ -125,7 +124,7 @@ def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selec
         if not query_supplied and p.needs_queries and identifier_key is None:
             logger.debug("Did not pick %s because no query was supplied but the indexer needs queries" % p)
             continue
-        allow_query_generation = (config.InternalExternalSelection.internal.name in config.searchingSettings.generate_queries.get() and internal) or (config.InternalExternalSelection.external.name in config.searchingSettings.generate_queries.get() and not internal)
+        allow_query_generation = (config.InternalExternalSelection.internal in config.settings.searching.generate_queries and internal) or (config.InternalExternalSelection.external in config.settings.searching.generate_queries and not internal)
         if identifier_key is not None and not canUseIdKey(p, identifier_key):
             if not (allow_query_generation and p.generate_queries):
                 logger.debug("Did not pick %s because search will be done by an identifier and the indexer or system wide settings don't allow query generation" % p)
@@ -199,7 +198,7 @@ def search(internal, search_request):
                 cache_entry["total"] += 100
 
 
-        if internal or config.searchingSettings.removeDuplicatesExternal.get():
+        if internal or config.settings.searching.removeDuplicatesExternal:
             countBefore = len(search_results)
             grouped_by_sameness = find_duplicates(search_results)
             allresults = []
@@ -308,7 +307,7 @@ def find_duplicates(results):
 def test_for_duplicate_age(search_result_1, search_result_2):
     if search_result_1.epoch is None or search_result_2.epoch is None:
         return False
-    age_threshold = config.searchingSettings.duplicateAgeThreshold.get()
+    age_threshold = config.settings.searching.duplicateAgeThreshold
 
     group_known = search_result_1.group is not None and search_result_2.group is not None
     same_group = search_result_1.group == search_result_2.group
@@ -328,7 +327,7 @@ def test_for_duplicate_age(search_result_1, search_result_2):
 def test_for_duplicate_size(search_result_1, search_result_2):
     if not search_result_1.size or not search_result_2.size:
         return False
-    size_threshold = config.searchingSettings.duplicateSizeThresholdInPercent.get()
+    size_threshold = config.settings.searching.duplicateSizeThresholdInPercent
     size_difference = search_result_1.size - search_result_2.size
     size_average = (search_result_1.size + search_result_2.size) / 2
     size_difference_percent = abs(size_difference / size_average) * 100

@@ -26,10 +26,9 @@ class NzbclubTests(unittest.TestCase):
     @pytest.fixture
     def setUp(self):
         set_and_drop()
-        config.load("testsettings.cfg")
 
     def testUrlGeneration(self):
-        w = NzbClub(config.indexerSettings.nzbclub)
+        w = NzbClub(config.settings.indexers.nzbclub)
         self.args = SearchRequest(query="a showtitle", season=1, episode=2)
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
@@ -43,7 +42,7 @@ class NzbclubTests(unittest.TestCase):
 
     @freeze_time("2015-09-24 14:00:00", tz_offset=-4)
     def testProcess_results(self):
-        w = NzbClub(config.indexerSettings.nzbclub)
+        w = NzbClub(config.settings.indexers.nzbclub)
         with open("mock/nzbclub--q-testtitle.xml", encoding="latin-1") as f:
             entries = w.process_query_result(f.read(), "aquery").entries
             self.assertEqual('testtitle1', entries[0].title)
@@ -60,7 +59,7 @@ class NzbclubTests(unittest.TestCase):
 
     
     def testGetNzbLink(self):
-        n = NzbClub(config.indexerSettings.nzbclub)
+        n = NzbClub(config.settings.indexers.nzbclub)
         link = n.get_nzb_link("guid", "title")
         self.assertEqual("https://www.nzbclub.com/nzb_get/guid/title.nzb", link)
     

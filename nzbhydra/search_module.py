@@ -15,11 +15,9 @@ import logging
 import collections
 import arrow
 import requests
-from nzbhydra import database
 from peewee import fn
 from requests import RequestException
 from nzbhydra import config
-from nzbhydra.config import searchingSettings
 from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, Indexer
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAuthException, IndexerAccessException
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -48,23 +46,23 @@ class SearchModule(object):
 
     @property
     def indexer(self):
-        return Indexer.get(fn.lower(Indexer.name) == self.settings.name.get().lower())
+        return Indexer.get(fn.lower(Indexer.name) == self.settings.name.lower())
 
     @property
     def host(self):
-        return self.settings.host.get()
+        return self.settings.host
 
     @property
     def name(self):
-        return self.settings.name.get()
+        return self.settings.name
 
     @property
     def score(self):
-        return self.settings.score.get()
+        return self.settings.score
 
     @property
     def search_ids(self):
-        return self.settings.search_ids.get()        
+        return self.settings.search_ids        
 
     @property
     def generate_queries(self):
@@ -155,10 +153,10 @@ class SearchModule(object):
     
     def accept_result(self, nzbSearchResult):
         #Allows the implementations to check against one general rule if the search result is ok or shall be discarded
-        if config.searchingSettings.ignorePassworded.get() and nzbSearchResult.passworded:
+        if config.settings.searching.ignorePassworded and nzbSearchResult.passworded:
             return False, "Passworded results shall be ignored"
-        if config.searchingSettings.ignoreWords.get():
-            ignoreWords = config.searchingSettings.ignoreWords.get().split(",")
+        if config.settings.searching.ignoreWords:
+            ignoreWords = config.settings.searching.ignoreWords.split(",")
             for word in ignoreWords:
                 word = word.strip().lower()
                 if word in nzbSearchResult.title.lower():
@@ -216,12 +214,12 @@ class SearchModule(object):
     def get(self, url, timeout=None, cookies=None):
         # overwrite for special handling, e.g. cookies
         headers = {
-            'User-Agent': config.searchingSettings.user_agent.get()
+            'User-Agent': config.settings.searching.userAgent
         }
         if timeout is None:
-            timeout = self.settings.timeout.get()
+            timeout = self.settings.timeout
         if timeout is None:
-            timeout = config.searchingSettings.timeout.get()
+            timeout = config.settings.searching.timeout
         self.logger.debug("Requesting %s with timeout %d" % (url, timeout))
         return requests.get(url, timeout=timeout, verify=False, cookies=cookies, headers=headers)
 

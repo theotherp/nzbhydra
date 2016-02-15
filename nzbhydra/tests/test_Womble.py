@@ -25,8 +25,8 @@ class MyTestCase(unittest.TestCase):
     @pytest.fixture
     def setUp(self):
         set_and_drop()
-        config.load("testsettings.cfg")
-        self.womble = Womble(config.indexerSettings.womble)
+        config.settings.load("testsettings.cfg")
+        self.womble = Womble(config.settings.indexers.womble)
         
     def testGetTvRssUrls(self):
         searchRequest = SearchRequest(type="tv")

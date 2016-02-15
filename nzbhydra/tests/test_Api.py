@@ -23,7 +23,7 @@ class TestApi(UrlTestCase):
             os.remove("testsettings.cfg")
         shutil.copy("testsettings.cfg.orig", "testsettings.cfg")
         config.load("testsettings.cfg")
-        config.mainSettings.apikey.set("apikey")
+        config.settings.main.apikey = "apikey"
 
     def testGetNzbLinkAndGuidWithExternalUrlStuff(self):
         app = flask.Flask(__name__)
@@ -31,29 +31,29 @@ class TestApi(UrlTestCase):
         with app.test_request_context('/'):
             
             #With external URL
-            config.mainSettings.externalUrl.set("https://192.168.1.1/nzbhydra")
-            config.mainSettings.useLocalUrlForApiAccess.set(False)
+            config.settings.main.externalUrl = "https://192.168.1.1/nzbhydra"
+            config.settings.main.useLocalUrlForApiAccess = False
             link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=True)
             self.assertApiUrl(link, shouldBeExternal=True, shouldbeLocal=False)
             link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=False)
             self.assertApiUrl(link, shouldBeExternal=False, shouldbeLocal=False)
     
-            config.mainSettings.useLocalUrlForApiAccess.set(True)
+            config.settings.main.useLocalUrlForApiAccess = True
             link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=True)
             self.assertApiUrl(link, shouldBeExternal=True, shouldbeLocal=True)
             link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=False)
             self.assertApiUrl(link, shouldBeExternal=False, shouldbeLocal=False)
 
             #Without external URL
-            config.mainSettings.externalUrl.set(None)
+            config.settings.main.externalUrl = None
 
-            config.mainSettings.useLocalUrlForApiAccess.set(False)
+            config.settings.main.useLocalUrlForApiAccess = False
             link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=True)
             self.assertApiUrl(link, shouldBeExternal=True, shouldbeLocal=True)
             link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=False)
             self.assertApiUrl(link, shouldBeExternal=False, shouldbeLocal=True)
 
-            config.mainSettings.useLocalUrlForApiAccess.set(True)
+            config.settings.main.useLocalUrlForApiAccess = True
             link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=True)
             self.assertApiUrl(link, shouldBeExternal=True, shouldbeLocal=True)
             link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=False)

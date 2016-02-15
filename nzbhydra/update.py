@@ -34,7 +34,7 @@ def versiontuple(v):
 def check_for_new_version():
     new_version_available, new_version = is_new_version_available()
     if new_version_available:
-        logger.info(("New version %s available at %s" % (new_version, config.mainSettings.repositoryBase.get())))
+        logger.info(("New version %s available at %s" % (new_version, config.settings.main.repositoryBase)))
 
 
 def get_rep_version():
@@ -161,9 +161,9 @@ class UpdateManager():
 
 class GitUpdateManager(UpdateManager):
     def __init__(self):
-        self.repositoryBase = config.mainSettings.repositoryBase.get()
+        self.repositoryBase = config.settings.main.repositoryBase
         self.repository = "nzbhydra"
-        self.branch = config.mainSettings.branch.get()
+        self.branch = config.settings.main.branch
         self.main_dir = os.path.dirname(os.path.dirname(__file__))
         self._git_path = self._find_working_git()   
 
@@ -267,9 +267,9 @@ class GitUpdateManager(UpdateManager):
 
 class SourceUpdateManager(UpdateManager):
     def __init__(self):
-        self.repositoryBase = config.mainSettings.repositoryBase.get()
+        self.repositoryBase = config.settings.main.repositoryBase
         self.repository = "nzbhydra"
-        self.branch = config.mainSettings.branch.get()    
+        self.branch = config.settings.main.branch    
 
     def update(self):
         """
@@ -351,9 +351,9 @@ class SourceUpdateManager(UpdateManager):
 
 class WindowsUpdateManager(SourceUpdateManager):
     def __init__(self):
-        self.repositoryBase = config.mainSettings.repositoryBase.get()
+        self.repositoryBase = config.settings.main.repositoryBase
         self.repository = "nzbhydra-windows-releases"
-        self.branch = config.mainSettings.branch.get()
+        self.branch = config.settings.main.branch
 
     def update(self):
         """

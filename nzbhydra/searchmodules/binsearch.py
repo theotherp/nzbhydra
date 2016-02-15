@@ -17,7 +17,8 @@ import re
 import arrow
 from bs4 import BeautifulSoup
 from furl import furl
-from nzbhydra.config import IndexerBinsearchSettings, searchingSettings
+
+from nzbhydra import config
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -110,8 +111,8 @@ class Binsearch(SearchModule):
         self.debug("Started processing results")
         logger.info("Last results count %d" % self.last_results_count)
         entries = []
-        soup = BeautifulSoup(html, searchingSettings.htmlParser.get())
-        self.debug("Using HTML parser %s" % searchingSettings.htmlParser.get())
+        soup = BeautifulSoup(html, config.settings.searching.htmlParser)
+        self.debug("Using HTML parser %s" % config.settings.searching.htmlParser)
 
         main_table = soup.find('table', attrs={'id': 'r2'})
 

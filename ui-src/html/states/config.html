@@ -42,5 +42,30 @@
     </ui-select>
 </script>
 
-
-   
+<script type="text/ng-template" id="repeatSection.html">
+    <div>
+        <!--loop through each element in model array-->
+        <div class="{{ hideRepeat }}">
+            
+            
+                <div class="repeatsection" ng-repeat="element in model[options.key]" ng-init="fields = copyFields(to.fields)">
+                    <fieldset>
+                        <legend>{{ element.name ? element.name : "New indexer"}}</legend>
+                    <formly-form fields="fields"
+                                 model="element"
+                                 form="form">
+                    </formly-form>
+                    <div style="margin-bottom:20px;">
+                        <button type="button" class="btn btn-sm btn-danger" ng-click="model[options.key].splice($index, 1)">
+                            Remove {{ element.name }}
+                        </button>
+                    </div>
+                    
+                    </fieldset>
+                </div>
+            <hr>
+            <p class="AddNewButton">
+                <button type="button" class="btn btn-primary" ng-click="addNew()">{{ to.btnText }}</button>
+            </p>
+        </div>
+</script>

@@ -117,7 +117,7 @@ class Womble(SearchModule):
         return IndexerProcessingResult(entries=entries, queries=[], total_known=True, has_more=False, total=len(entries))
     
     def get_nzb_link(self, guid, title):
-        f = furl(self.settings.host.get())
+        f = furl(self.settings.host)
         f.path.add("nzb")
         f.path.add(guid)
         return f.tostr()

@@ -368,4 +368,48 @@ angular
             }
         });
 
+        formlyConfigProvider.setType({
+            name: 'repeatSection',
+            templateUrl: 'repeatSection.html',
+            controller: function ($scope) {
+                $scope.formOptions = {formState: $scope.formState};
+                $scope.addNew = addNew;
+
+                $scope.copyFields = copyFields;
+
+
+                function copyFields(fields) {
+                    fields = angular.copy(fields);
+                    return fields;
+                }
+
+                $scope.clear = function (field) {
+                    return _.mapObject(field, function (key, val) {
+                        if (typeof val === 'object') {
+                            console.log("object " + key);
+                            console.log(key);
+                            return $scope.clear(val);
+                        }
+                        console.log("other " + key);
+                        return undefined;
+
+                    });
+                };
+
+
+                function addNew() {
+                    $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
+                    var repeatsection = $scope.model[$scope.options.key];
+                    var lastSection = repeatsection[repeatsection.length - 1];
+                    var newsection = {};
+                    if (lastSection) {
+                        newsection = angular.copy($scope.options.templateOptions.defaultModel);                        
+                    }
+                    repeatsection.push(newsection);
+                }
+                
+            }
+        
+    });
+
     });

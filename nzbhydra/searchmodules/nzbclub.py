@@ -150,7 +150,7 @@ class NzbClub(SearchModule):
         return IndexerProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False) #No paging with RSS. Might need/want to change to HTML and BS
     
     def get_nfo(self, guid):
-        f = furl(self.settings.host.get())
+        f = furl(self.settings.host)
         f.path.add("api/NFO")
         f.path.segments.append(guid)
         r, papiaccess, _ = self.get_url_with_papi_access(f.tostr(), "nfo")
@@ -161,7 +161,7 @@ class NzbClub(SearchModule):
             return True, r.json()["Data"][0]["NFOContentData"], None
         
     def get_nzb_link(self, guid, title):
-        f = furl(self.settings.host.get())
+        f = furl(self.settings.host)
         f.path.add("nzb_get")
         f.path.add(guid)
         f.path.add(title + ".nzb")

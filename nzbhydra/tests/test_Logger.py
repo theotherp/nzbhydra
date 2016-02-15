@@ -2,11 +2,16 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+
+import pytest
 from future import standard_library
 #standard_library.install_aliases()
 from builtins import *
 import logging
 import unittest
+
+from nzbhydra.tests.db_prepare import set_and_drop
+
 
 class LoggingCaptor(logging.StreamHandler):
     def __init__(self):
@@ -20,11 +25,16 @@ class LoggingCaptor(logging.StreamHandler):
         self.messages.append(record.msg)
 
 class LoggingTests(unittest.TestCase):
+    
+    @pytest.fixture
+    def setUp(self):
+        set_and_drop()
+    
     def testThatSensitiveDataIsRemoved(self):
         from nzbhydra import config
-        config.mainSettings.apikey.set("testapikey")
-        config.mainSettings.username.set("asecretusername")
-        config.mainSettings.password.set("somepassword")
+        config.settings.main.apikey = "testapikey"
+        config.settings.main.username = "asecretusername"
+        config.settings.main.password = "somepassword"
  
         from nzbhydra.log import setup_custom_logger
         logger = setup_custom_logger("test")

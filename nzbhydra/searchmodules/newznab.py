@@ -115,9 +115,9 @@ def test_connection(host, apikey):
     f.query.add({"apikey": apikey, "t": "tvsearch"})
     try:
         headers = {
-            'User-Agent': config.searchingSettings.user_agent.get()
+            'User-Agent': config.settings.searching.userAgent
         }
-        r = requests.get(f.url, verify=False, headers=headers, timeout=config.searchingSettings.timeout.get())
+        r = requests.get(f.url, verify=False, headers=headers, timeout=config.settings.searching.timeout)
         r.raise_for_status()
         check_auth(r.text, None)
     except RequestException as e:
@@ -139,10 +139,10 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult):
         url = _build_base_url(host, apikey, t, None, 25)
         url.query.add({idkey: idvalue})
         headers = {
-            'User-Agent': config.searchingSettings.user_agent.get()
+            'User-Agent': config.settings.searching.userAgent
         }
         logger.debug("Requesting %s" % url)
-        r = requests.get(url, verify=False, timeout=config.searchingSettings.timeout.get(), headers=headers)
+        r = requests.get(url, verify=False, timeout=config.settings.searching.timeout, headers=headers)
         r.raise_for_status()
         titles = []
         tree = ET.fromstring(r.content)
@@ -210,10 +210,10 @@ def check_caps(host, apikey):
     try:
         url = _build_base_url(host, apikey, "caps", None)
         headers = {
-            'User-Agent': config.searchingSettings.user_agent.get()
+            'User-Agent': config.settings.searching.userAgent
         }
         logger.debug("Requesting %s" % url)
-        r = requests.get(url, verify=False, timeout=config.searchingSettings.timeout.get(), headers=headers)
+        r = requests.get(url, verify=False, timeout=config.settings.searching.timeout, headers=headers)
         r.raise_for_status()
         
         tree = ET.fromstring(r.content)
@@ -285,8 +285,8 @@ class NewzNab(SearchModule):
     
 
     def build_base_url(self, action, category, offset=0):
-        url = _build_base_url(self.settings.host.get(), self.settings.apikey.get(), action, category, self.limit, offset)
-        if config.searchingSettings.ignorePassworded.get():
+        url = _build_base_url(self.settings.host, self.settings.apikey, action, category, self.limit, offset)
+        if config.settings.searching.ignorePassworded:
             url.query.add({"password": "0"})
         return url
 
@@ -357,7 +357,7 @@ class NewzNab(SearchModule):
         return self.get_search_urls(search_request)
 
     def get_details_link(self, guid):
-        f = furl(self.settings.host.get())
+        f = furl(self.settings.host)
         f.path.add("details")
         f.path.add(guid)
         return f.url
@@ -468,9 +468,9 @@ class NewzNab(SearchModule):
 
     def get_nfo(self, guid):
         # try to get raw nfo. if it is xml the indexer doesn't actually return raw nfos (I'm looking at you, DOGNzb)
-        url = furl(self.settings.host.get())
+        url = furl(self.settings.host)
         url.path.add("api")
-        url.add({"apikey": self.settings.apikey.get(), "t": "getnfo", "o": "xml", "id": guid, "raw": "1"})
+        url.add({"apikey": self.settings.apikey, "t": "getnfo", "o": "xml", "id": guid, "raw": "1"})
 
         response, papiaccess, _ = self.get_url_with_papi_access(url, "nfo")
         if response is None:
@@ -493,9 +493,9 @@ class NewzNab(SearchModule):
         return True, nfo.decode("utf-8"), None  # No XML, we just hope it's the NFO
 
     def get_nzb_link(self, guid, title):
-        f = furl(self.settings.host.get())
+        f = furl(self.settings.host)
         f.path.add("api")
-        f.add({"t": "get", "apikey": self.settings.apikey.get(), "id": guid})
+        f.add({"t": "get", "apikey": self.settings.apikey, "id": guid})
         return f.tostr()
 
 

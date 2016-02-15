@@ -108,7 +108,7 @@ def run(arguments):
         database.db.init(database_file)
         indexers.read_indexers_from_config()
     
-        if config.mainSettings.debug.get():
+        if config.settings.main.debug:
             logger.info("Debug mode enabled")
             
         #Clean up any "old" files from last update
@@ -125,18 +125,18 @@ def run(arguments):
                 except Exception:
                     logger.warn("Unable to delete old file %s. Please delete manually" % filename)
             
-        host = config.mainSettings.host.get() if arguments.host is None else arguments.host
-        port = config.mainSettings.port.get() if arguments.port is None else arguments.port
+        host = config.settings.main.host if arguments.host is None else arguments.host
+        port = config.settings.main.port if arguments.port is None else arguments.port
     
         logger.info("Starting web app on %s:%d" % (host, port))
-        if config.mainSettings.externalUrl.get() is not None and config.mainSettings.externalUrl.get() != "":
-            f = furl(config.mainSettings.externalUrl.get())
+        if config.settings.main.externalUrl is not None and config.settings.main.externalUrl != "":
+            f = furl(config.settings.main.externalUrl)
         else:
             f = furl()
             f.host = "127.0.0.1"
             f.port = port
-            f.scheme = "https" if config.mainSettings.ssl.get() else "http"
-        if not arguments.nobrowser and config.mainSettings.startup_browser.get():
+            f.scheme = "https" if config.settings.main.ssl else "http"
+        if not arguments.nobrowser and config.settings.main.startupBrowser:
             if arguments.restarted:
                 logger.info("Not opening the browser after restart")
             else:

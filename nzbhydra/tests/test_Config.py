@@ -23,35 +23,35 @@ class TestInfos(unittest.TestCase):
         if os.path.exists("testsettings.cfg"):
             os.remove("testsettings.cfg")
         shutil.copy("testsettings.cfg.orig", "testsettings.cfg")
-        config.load("testsettings.cfg")
+        config.settings.load("testsettings.cfg")
 
     # def testThatGetAndSetWork(self):
     #     # Simple get and set
-    #     assert mainSettings.host.get() == "0.0.0.0"
+    #     assert mainSettings.host == "0.0.0.0"
     #     mainSettings.host.set("192.168.0.1")
-    #     assert mainSettings.host.get() == "192.168.0.1"
+    #     assert mainSettings.host == "192.168.0.1"
     #     mainSettings.host = "192.168.100.100"  # We can even set the value directly
-    #     assert mainSettings.host.get() == "192.168.100.100"
+    #     assert mainSettings.host == "192.168.100.100"
     #     mainSettings.host.set("127.0.0.1")  # Just set back
     # 
     #     # Setting in subcategory
-    #     assert mainSettings.logging.logfilelevel.get() == "INFO"
+    #     assert mainSettings.logging.logfilelevel == "INFO"
     # 
-    #     assert indexerSettings.binsearch.name.get() == "Binsearch"
+    #     assert indexer.binsearch.name == "Binsearch"
     # 
     # def testThatWritingSettingsWorks(self):
-    #     mainSettings.port.set(5053)
-    #     config.save("testsettings.cfg")
-    #     mainSettings.port.set(5054)  # Set to another port
-    #     config.load("testsettings.cfg")
-    #     assert mainSettings.port.get() == 5053
+    #     mainSettings.port = 5053
+    #     config.settings.save("testsettings.cfg")
+    #     mainSettings.port = 5054  # Set to another port
+    #     config.settings.load("testsettings.cfg")
+    #     assert mainSettings.port == 5053
     # 
     # def testNewznabIndexers(self):
-    #     indexerSettings.newznab1.host.set("http://127.0.0.1")
-    #     config.save("testsettings.cfg")
-    #     indexerSettings.newznab1.host.set("http://192.168.0.1")
-    #     config.load("testsettings.cfg")
-    #     assert indexerSettings.newznab1.host.get() == "http://127.0.0.1"
+    #     indexer.newznab1.host.set("http://127.0.0.1")
+    #     config.settings.save("testsettings.cfg")
+    #     indexer.newznab1.host.set("http://192.168.0.1")
+    #     config.settings.load("testsettings.cfg")
+    #     assert indexer.newznab1.host == "http://127.0.0.1"
 
     def testMigration(self):
         testCfg = {
@@ -108,18 +108,18 @@ class TestInfos(unittest.TestCase):
         # 
         # 
         # def testGetNewznabSettingById():
-        #     nsettings = config.get_newznab_setting_by_id(1)
-        #     config.set(nsettings.apikey, "123")
+        #     nsettings = config.settings.get_newznab_setting_by_id(1)
+        #     config.settings.set(nsettings.apikey, "123")
         # 
-        #     assert config.get_newznab_setting_by_id(1).apikey.get() == "123"
-        #     config.get_newznab_setting_by_id(1).apikey.set("456")
-        #     config.get(nsettings.apikey, "456")
+        #     assert config.settings.get_newznab_setting_by_id(1).apikey == "123"
+        #     config.settings.get_newznab_setting_by_id(1).apikey = "456"
+        #     config.settings.get(nsettings.apikey, "456")
         # 
         # 
         # def testGetAndSetSettingsAsDict():
-        #     config.set(mainSettings.host, "127.0.0.1")
+        #     config.settings.set(mainSettings.host, "127.0.0.1")
         # 
-        #     d = config.get_settings_as_dict_without_lists()
+        #     d = config.settings.get_settings_as_dict_without_lists()
         # 
         #     assert d["downloader"]["nzbaccesstype"] == "serve"
         # 
@@ -127,8 +127,8 @@ class TestInfos(unittest.TestCase):
         #     d["main"]["host"] = "192.168.0.1"
         #     d["downloader"]["nzbaccesstype"] = "nzb"
         #     
-        #     config.set_settings_from_dict(d)
-        #     assert config.get(mainSettings.host) == "192.168.0.1"
+        #     config.settings.set_settings_from_dict(d)
+        #     assert config.settings.get(mainSettings.host) == "192.168.0.1"
         #     assert d["downloader"]["nzbaccesstype"] == "nzb"
         # 
         #     #Just make sure we can dump it as json

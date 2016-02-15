@@ -18,7 +18,7 @@ import xmlrpc.client
 from furl import furl
 import requests
 from requests.exceptions import HTTPError, SSLError, ConnectionError, ReadTimeout
-from nzbhydra.config import sabnzbdSettings, nzbgetSettings
+from nzbhydra import config
 
 
 class Downloader(object):
@@ -38,15 +38,15 @@ class Nzbget(Downloader):
 
     def get_rpc(self, host=None, ssl=None, port=None, username=None, password=None):
         if host is None:
-            host = nzbgetSettings.host.get()
+            host = config.settings.downloader.nzbget.host
         if ssl is None:
-            ssl = nzbgetSettings.ssl.get()
+            ssl = config.settings.downloader.nzbget.ssl
         if port is None:
-            port = nzbgetSettings.port.get()
+            port = config.settings.downloader.nzbget.port
         if username is None:
-            username = nzbgetSettings.username.get()
+            username = config.settings.downloader.nzbget.username
         if password is None:
-            password = nzbgetSettings.password.get()
+            password = config.settings.downloader.nzbget.password
         f = furl()
         f.host = host
         f.username = username
@@ -172,13 +172,13 @@ class Sabnzbd(Downloader):
 
     def get_sab(self, url=None, apikey=None, username=None, password=None):
         if url is None:
-            url = sabnzbdSettings.url.get()
+            url = config.settings.downloader.sabnzbd.url
         if apikey is None:
-            apikey = sabnzbdSettings.apikey.get()
+            apikey = config.settings.downloader.sabnzbd.apikey
         if username is None:
-            username = sabnzbdSettings.username.get()
+            username = config.settings.downloader.sabnzbd.username
         if password is None:
-            password = sabnzbdSettings.password.get()
+            password = config.settings.downloader.sabnzbd.password
         f = furl(url)
         f.path.add("api")
         if apikey:

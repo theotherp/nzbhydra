@@ -1,6 +1,11 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a64
+Rewrote and simplified code for settings which finally allows using an unlimited amount of newznab indexers, along with better GUI handling of those.
+
+Removed caching of search results because it didn't really work and nobody uses it anyway. Therefore removed all cache related settings.
+
 ### 0.0.1a63
 Fixed bug where searches with empty query parameters would be sent to indexers.
 

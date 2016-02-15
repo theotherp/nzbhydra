@@ -16,10 +16,11 @@ from nzbhydra import config
 from nzbhydra.database import Indexer
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.binsearch import Binsearch
+from nzbhydra.tests.UrlTestCase import UrlTestCase
 from nzbhydra.tests.db_prepare import set_and_drop
 
 
-class TestBinsearch(unittest.TestCase):
+class TestBinsearch(UrlTestCase):
     
     @pytest.fixture
     def setUp(self):
@@ -27,7 +28,7 @@ class TestBinsearch(unittest.TestCase):
     
 
     def testUrlGeneration(self):
-        w = Binsearch(config.indexerSettings.binsearch)
+        w = Binsearch(config.settings.indexers.binsearch)
         self.args = SearchRequest(query="a showtitle", season=1, episode=2)
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(2, len(urls))
@@ -42,7 +43,7 @@ class TestBinsearch(unittest.TestCase):
 
     @freeze_time("2015-09-30 14:00:00", tz_offset=-4)
     def testProcess_results(self):
-        w = Binsearch(config.indexerSettings.binsearch)
+        w = Binsearch(config.settings.indexers.binsearch)
         with open("mock/binsearch--q-testtitle.html", encoding="latin-1") as f:
             body = f.read()
             result = w.process_query_result(body, "aquery")
@@ -58,12 +59,12 @@ class TestBinsearch(unittest.TestCase):
             self.assertFalse(entries[0].age_precise)
             self.assertEqual("Ramer@marmer.com (Clown_nez)", entries[0].poster)
             self.assertEqual("alt.binaries.movies.mkv", entries[0].group)
-            self.assertEqual("https://binsearch.info/?b=testtitle1.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250", entries[0].details_link)
+            self.assertUrlEqual("https://binsearch.info/?b=testtitle1.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250", entries[0].details_link)
             self.assertTrue(result.has_more)
             self.assertFalse(result.total_known)
         
     def testProcess_results_totalknown(self):
-        w = Binsearch(config.indexerSettings.binsearch)
+        w = Binsearch(config.settings.indexers.binsearch)
         with open("mock/binsearch--q-testtitle3results.html", encoding="latin-1") as f:
             body = f.read()
             result = w.process_query_result(body, "aquery")
@@ -71,7 +72,7 @@ class TestBinsearch(unittest.TestCase):
             self.assertEqual(3, result.total)  
                 
     def testGetNzbLink(self):
-        n = Binsearch(config.indexerSettings.binsearch)
+        n = Binsearch(config.settings.indexers.binsearch)
         link = n.get_nzb_link("guid", "title")
         assert "action=nzb" in link
         assert "guid=1" in link

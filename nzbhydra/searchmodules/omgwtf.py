@@ -22,7 +22,6 @@ from requests.exceptions import RequestException
 import requests
 from nzbhydra import config
 
-from nzbhydra.config import searchingSettings
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException, IndexerAuthException
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule, IndexerProcessingResult
@@ -125,14 +124,14 @@ def map_category(category):
 
 def test_connection(apikey, username):
     logger.info("Testing connection for omgwtfnzbs")
-    f = furl(config.indexerSettings.omgwtf.host.get())
+    f = furl(config.settings.indexers.omgwtfnzbs.host)
     f.path.add("xml")
     f = f.add({"api": apikey, "user": username})
     try:
         headers = {
-            'User-Agent': config.searchingSettings.user_agent.get()
+            'User-Agent': config.settings.searching.userAgent
         }
-        r = requests.get(f.url, verify=False, headers=headers, timeout=config.searchingSettings.timeout.get())
+        r = requests.get(f.url, verify=False, headers=headers, timeout=config.settings.searching.timeout)
         r.raise_for_status()
         if "your user/api information is incorrect" in r.text:
             raise IndexerAuthException("Wrong credentials", None)
@@ -159,7 +158,7 @@ class OmgWtf(SearchModule):
 
     def build_base_url(self):
         f = furl(self.host)
-        f = f.add({"api": config.indexerSettings.omgwtf.apikey.get(), "user": config.indexerSettings.omgwtf.username.get()})
+        f = f.add({"api": config.settings.indexers.omgwtfnzbs.apikey, "user": config.settings.indexers.omgwtfnzbs.username})
         return f
 
     def get_search_urls(self, search_request):
@@ -316,7 +315,7 @@ class OmgWtf(SearchModule):
     def get_nfo(self, guid):
         f = furl(self.host)
         f.path.add("nfo")
-        f = f.add({"id": guid, "api": config.indexerSettings.omgwtf.apikey.get(), "user": config.indexerSettings.omgwtf.username.get(), "send": "1"})
+        f = f.add({"id": guid, "api": config.settings.indexers.omgwtfnzbs.apikey, "user": config.settings.indexers.omgwtfnzbs.username, "send": "1"})
         r, papiaccess, _ = self.get_url_with_papi_access(f.tostr(), "nfo")
         return True, r.text, None
         
@@ -324,7 +323,7 @@ class OmgWtf(SearchModule):
     def get_nzb_link(self, guid, title):
         f = furl(self.host)
         f.path.add("nzb")
-        f = f.add({"id": guid, "api": config.indexerSettings.omgwtf.apikey.get(), "user": config.indexerSettings.omgwtf.username.get()})
+        f = f.add({"id": guid, "api": config.settings.indexers.omgwtfnzbs.apikey, "user": config.settings.indexers.omgwtfnzbs.username})
         return f.tostr()
 
     def check_auth(self, xml):

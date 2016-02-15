@@ -16,7 +16,6 @@ import re
 from os import listdir
 from os.path import isfile, join, exists, getmtime
 from nzbhydra import config
-from nzbhydra.config import MainSettings, mainSettings
 
 regexApikey = re.compile(r"(apikey|api)(=|:)[\w]+", re.I)
 regexApikeyRepr = re.compile(r"u'(apikey|api)': u'[\w]+'", re.I)
@@ -48,12 +47,12 @@ def setup_custom_logger(name, logfile=None):
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
 
     stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setLevel(mainSettings.logging.consolelevel.get())
+    stream_handler.setLevel(config.settings.main.logging.consolelevel)
     stream_handler.setFormatter(formatter)
     
     
-    file_handler = RotatingFileHandler(filename=mainSettings.logging.logfilename.get() if logfile is None else logfile, maxBytes=1000000, backupCount=25)
-    file_handler.setLevel(mainSettings.logging.logfilelevel.get())
+    file_handler = RotatingFileHandler(filename=config.settings.main.logging.logfilename if logfile is None else logfile, maxBytes=1000000, backupCount=25)
+    file_handler.setLevel(config.settings.main.logging.logfilelevel)
     file_handler.setFormatter(formatter)
 
     global logger
@@ -79,7 +78,7 @@ def getLogs():
     logRe = re.compile(r".*\.log(\.\d+)?")
     logFiles = [f for f in listdir(".") if isfile(f) and logRe.match(f)]
     logFiles = [{"name": f, "lastModified": getmtime(f)} for f in logFiles]
-    logfile = config.mainSettings.logging.logfilename.get()
+    logfile = config.settings.main.logging.logfilename
     if exists(logfile):
         logger.debug("Reading log file %s" % logfile)
         with open(logfile, encoding='utf-8') as logFile:

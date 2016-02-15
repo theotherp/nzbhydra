@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 from random import shuffle
 
 import pytest
+from bunch import Bunch
 from future import standard_library
 
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -38,16 +39,18 @@ logging.getLogger("root").setLevel("DEBUG")
 
 class SearchTests(unittest.TestCase):
     def prepareIndexers(self, indexerCount):
+        config.settings.indexers.newznab = []
         for i in range(1, indexerCount + 1):
-            # Configure indexer
-            indexerName = "newznab%d" % i
-            setting = getattr(config.indexerSettings, indexerName)
-            setting.name.set(indexerName)
-            setting.enabled.set(True)
-            setting.search_ids.set(["imdbid", "tvdbid", "rid"])
-            indexerHost = "http://www.newznab%d.com" % i
-            setting.host.set(indexerHost)
-            print("Configured " + setting.name.get() + " with host " + setting.host.get())
+            nn = Bunch()
+            nn.enabled = True
+            nn.name = "newznab%d" % i
+            nn.host = "http://www.newznab%d.com" % i
+            nn.apikey = "apikeyindexer.com"
+            nn.timeout = None
+            nn.score = 0
+            nn.accessType = "both"
+            nn.search_ids = ["imdbid", "tvdbid", "rid"]
+            config.settings.indexers.newznab.append(nn)
 
     def prepareSearchMocks(self, rsps, indexerCount=2, resultsPerIndexers=1, newznabItems=None, title="newznab%dresult%d.title"):
         testData = []
@@ -75,28 +78,33 @@ class SearchTests(unittest.TestCase):
     @pytest.fixture
     def setUp(self):
         set_and_drop()
-        # Indexer(module="newznab", name="newznab1", settings={"apikey": "apikeynzbsorg", "query_url": "http://127.0.0.1:5001/nzbsorg", "base_url": "http://127.0.0.1:5001/nzbsorg", "search_types": ["tv", "general", "movie"], "search_ids": ["imdbid", "tvdbid", "rid"]}).save()
-        # Indexer(module="newznab", name="newznab2", settings={"apikey": "apikeynewznab2", "query_url": "http://127.0.0.1:5001/newznab2", "base_url": "http://127.0.0.1:5001/newznab2", "search_types": ["tv", "general"], "search_ids": ["tvdbid", "rid"]}).save()
-        # Indexer(module="nzbclub", name="NZBClub", settings={"query_url": "http://127.0.0.1:5001/nzbclub", "base_url": "http://127.0.0.1:5001/nzbclub", "search_types": ["general", "tv", "movie"], "search_ids": [], "generate_queries": True}).save()
-        # Indexer(module="womble", name="womble", settings={"query_url": "http://www.newshost.co.za/rss", "base_url": "http://127.0.0.1:5001/womble", "search_types": ["tv"]}).save()
-        config.indexerSettings.binsearch.enabled.set(False)
-        config.indexerSettings.nzbindex.enabled.set(False)
-        config.indexerSettings.omgwtf.enabled.set(False)
-        config.indexerSettings.womble.enabled.set(False)
-        config.indexerSettings.nzbclub.enabled.set(False)
+        config.settings.indexers.binsearch.enabled = False
+        config.settings.indexers.nzbindex.enabled = False
+        config.settings.indexers.omgwtfnzbs.enabled = False
+        config.settings.indexers.womble.enabled = False
+        config.settings.indexers.nzbclub.enabled = False
 
-        # Disable all newznab indexers by default
-        for i in range(1, 21):
-            indexerName = "newznab%d" % i
-            getattr(config.indexerSettings, indexerName).enabled.set(False)
+        self.newznab1 = Bunch()
+        self.newznab1.enabled = True
+        self.newznab1.name = "newznab1"
+        self.newznab1.host = "https://indexer.com"
+        self.newznab1.apikey = "apikeyindexer.com"
+        self.newznab1.timeout = None
+        self.newznab1.score = 0
+        self.newznab1.accessType = "both"
+        self.newznab1.search_ids = ["imdbid", "rid", "tvdbid"]
 
-        config.indexerSettings.newznab1.name.set("newznab1")
-        config.indexerSettings.newznab1.enabled.set(True)
-        config.indexerSettings.newznab1.search_ids.set(["imdbid", "tvdbid", "rid"])
-
-        config.indexerSettings.newznab2.name.set("newznab2")
-        config.indexerSettings.newznab2.enabled.set(True)
-        config.indexerSettings.newznab2.search_ids.set(["tvdbid", "rid"])
+        self.newznab2 = Bunch()
+        self.newznab2.enabled = True
+        self.newznab2.name = "newznab2"
+        self.newznab2.host = "https://indexer.com"
+        self.newznab2.apikey = "apikeyindexer.com"
+        self.newznab2.timeout = None
+        self.newznab2.accessType = "both"
+        self.newznab2.score = 0
+        self.newznab2.search_ids = ["rid", "tvdbid"]
+        
+        config.settings.indexers.newznab = [self.newznab1, self.newznab2]
 
         self.oldExecute_search_queries = search.start_search_futures
         database.IndexerStatus.delete().execute()
@@ -106,10 +114,10 @@ class SearchTests(unittest.TestCase):
         search.start_search_futures = self.oldExecute_search_queries
 
     def test_pick_indexers(self):
-        config.searchingSettings.generate_queries.set([])
-        config.indexerSettings.womble.enabled.set(True)
-        config.indexerSettings.womble.accessType.set("both")
-        config.indexerSettings.nzbclub.enabled.set(True)
+        config.settings.searching.generate_queries= []
+        config.settings.indexers.womble.enabled = True
+        config.settings.indexers.womble.accessType = "both"
+        config.settings.indexers.nzbclub.enabled = True
         read_indexers_from_config()
     
         indexers = search.pick_indexers()
@@ -133,31 +141,31 @@ class SearchTests(unittest.TestCase):
         self.assertEqual("newznab1", indexers[0][0].name)
     
         # WIth query generation NZBClub should also be returned
-        config.searchingSettings.generate_queries.set([config.InternalExternalSelection.internal.name])
+        config.settings.searching.generate_queries = ["internal"]
         indexers = search.pick_indexers(identifier_key="tvdbid")
         self.assertEqual(3, len(indexers[0]))
-        self.assertEqual("NZBClub", indexers[0][0].name)
+        self.assertEqual("nzbclub", indexers[0][0].name)
         self.assertEqual("newznab1", indexers[0][1].name)
         self.assertEqual("newznab2", indexers[0][2].name)
         
         
         #Test picking depending on internal, external, both
-        config.indexerSettings.womble.enabled.set(False)
-        config.indexerSettings.nzbclub.enabled.set(False)
+        config.settings.indexers.womble.enabled = False
+        config.settings.indexers.nzbclub.enabled = False
 
-        config.indexerSettings.newznab2.accessType.set("both")
+        config.settings.indexers.newznab[1].accessType = "both"
         indexers = search.pick_indexers(internal=True)
         self.assertEqual(2, len(indexers[0]))
         indexers = search.pick_indexers(internal=False)
         self.assertEqual(2, len(indexers[0]))
 
-        config.indexerSettings.newznab2.accessType.set("external")
+        config.settings.indexers.newznab[1].accessType = "external"
         indexers = search.pick_indexers(internal=True)
         self.assertEqual(1, len(indexers[0]))
         indexers = search.pick_indexers(internal=False)
         self.assertEqual(2, len(indexers[0]))
 
-        config.indexerSettings.newznab2.accessType.set("internal")
+        config.settings.indexers.newznab[1].accessType = "internal"
         indexers = search.pick_indexers(internal=True)
         self.assertEqual(2, len(indexers[0]))
         indexers = search.pick_indexers(internal=False)
@@ -169,7 +177,7 @@ class SearchTests(unittest.TestCase):
         Indexer(module="newznab", name="newznab1").save()
         indexer_model = Indexer.get(Indexer.name == "newznab1")
         with freeze_time("2015-09-20 14:00:00", tz_offset=-4):
-            sm = search_module.SearchModule(config.indexerSettings.newznab1)
+            sm = search_module.SearchModule(self.newznab1)
             sm.handle_indexer_failure(indexer_model)
             # First error, so level 1
             self.assertEqual(1, indexer_model.status.get().level)
@@ -245,9 +253,9 @@ class SearchTests(unittest.TestCase):
             self.getMock("movie", category="2040", imdbid="0169547")  # moviesearch american beauty all hd
     
     def testTestForDuplicate(self):
-        config.searchingSettings.duplicateAgeThreshold.set(120)
-        age_threshold = config.searchingSettings.duplicateAgeThreshold.get()
-        config.searchingSettings.duplicateSizeThresholdInPercent.set(1)
+        config.settings.searching.duplicateAgeThreshold = 120
+        age_threshold = config.settings.searching.duplicateAgeThreshold
+        config.settings.searching.duplicateSizeThresholdInPercent = 1
     
         # same title, age and size
         result1 = NzbSearchResult(title="A title", epoch=0, size=1, indexer="a")
@@ -288,8 +296,8 @@ class SearchTests(unittest.TestCase):
         assert not search.test_for_duplicate_age(result1, result2)
     
     def testFindDuplicates(self):
-        config.searchingSettings.duplicateAgeThreshold.set(3600)
-        config.searchingSettings.duplicateSizeThresholdInPercent.set(0.1)
+        config.settings.searching.duplicateAgeThreshold = 3600
+        config.settings.searching.duplicateSizeThresholdInPercent = 0.1
     
         result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1")
         result2 = NzbSearchResult(title="Title2", epoch=0, size=1, indexer="2", indexerguid="2")
@@ -454,7 +462,7 @@ class SearchTests(unittest.TestCase):
     
     @responses.activate
     def testDuplicateRemovalForExternalApi(self):
-        config.searchingSettings.removeDuplicatesExternal.set(True)
+        config.settings.searching.removeDuplicatesExternal = True
         with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
             newznabItems = [
                 [mockbuilder.buildNewznabItem(title="title", pubdate=arrow.get(0000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab1")],
@@ -473,8 +481,8 @@ class SearchTests(unittest.TestCase):
             self.assertEqual("newznab3", results[0].indexer)            
     
             # Test that results from an indexer with a higher score are preferred
-            config.indexerSettings.newznab2.score.set(99)
             self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
+            config.settings.indexers.newznab[1].score = 99
             searchRequest = SearchRequest(type="search")
             result = search.search(False, searchRequest)
             results = result["results"]
@@ -604,37 +612,37 @@ class SearchTests(unittest.TestCase):
     def testIgnoreWords(self):
         with responses.RequestsMock() as rsps:
             self.prepareSearchMocks(rsps, 2, 2)
-            config.searchingSettings.ignoreWords.set("newznab1")
+            config.settings.searching.ignoreWords = "newznab1"
             searchRequest = SearchRequest(type="search")
             result = search.search(True, searchRequest)
-            config.searchingSettings.ignoreWords.set(None)
+            config.settings.searching.ignoreWords = None
             results = result["results"]
             self.assertEqual(2, len(results))
         
-        with responses.RequestsMock() as rsps:
+        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
             self.prepareSearchMocks(rsps, 2, 2)
-            config.searchingSettings.ignoreWords.set("newznab1, something, else")
+            config.settings.searching.ignoreWords= "newznab1, something, else"
             searchRequest = SearchRequest(type="search")
             result = search.search(True, searchRequest)
-            config.searchingSettings.ignoreWords.set(None)
+            config.settings.searching.ignoreWords = None
             results = result["results"]
             self.assertEqual(2, len(results))
     
-        with responses.RequestsMock() as rsps:
+        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
             self.prepareSearchMocks(rsps, 2, 2)
-            config.searchingSettings.ignoreWords.set("newznab1, newznab2")
+            config.settings.searching.ignoreWords= "newznab1, newznab2"
             searchRequest = SearchRequest(type="search")
             result = search.search(True, searchRequest)
-            config.searchingSettings.ignoreWords.set(None)
+            config.settings.searching.ignoreWords = None
             results = result["results"]
             self.assertEqual(0, len(results))
     
-        with responses.RequestsMock() as rsps:
+        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
             self.prepareSearchMocks(rsps, 2, 2, "newznab %d result%d.title")
-            config.searchingSettings.ignoreWords.set("newznab 1, newznab 2") #Ignore both
+            config.settings.searching.ignoreWords= "newznab 1, newznab 2" #Ignore both
             searchRequest = SearchRequest(type="search")
             result = search.search(True, searchRequest)
-            config.searchingSettings.ignoreWords.set(None)
+            config.settings.searching.ignoreWords = None
             results = result["results"]
             self.assertEqual(0, len(results))
 

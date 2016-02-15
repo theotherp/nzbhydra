@@ -194,7 +194,7 @@ def update_db(dbfile):
         logger.debug("Skipping creation of table VersionInfo because it already exists")
         pass
 
-    vi = VersionInfo().get()
+    vi = VersionInfo.get()
     if vi.version == 1:
         logger.info("Upgrading database to version 2")
         # Update from 1 to 2

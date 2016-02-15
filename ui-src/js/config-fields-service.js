@@ -3,20 +3,19 @@ angular
     .factory('ConfigFields', ConfigFields);
 
 function ConfigFields() {
-    
+
     var restartWatcher;
-    
+
     return {
         getFields: getFields,
         setRestartWatcher: setRestartWatcher
     };
-    
+
     function setRestartWatcher(restartWatcherFunction) {
         restartWatcher = restartWatcherFunction;
     }
-    
-    
-    
+
+
     function restartListener(field, newValue, oldValue) {
         if (newValue != oldValue) {
             restartWatcher();
@@ -40,6 +39,7 @@ function ConfigFields() {
                 {
                     key: 'name',
                     type: 'horizontalNewznabPreset',
+                    hideExpression: '!model.enabled',
                     templateOptions: {
                         label: 'Presets'
                     }
@@ -52,7 +52,7 @@ function ConfigFields() {
                 {
                     key: 'name',
                     type: 'horizontalInput',
-                    hideExpression: '!model.enabled && (model.name == "" || model.name == null)',  //Show if name is given to better identify the entries visually
+                    hideExpression: '!model.enabled',
                     templateOptions: {
                         type: 'text',
                         label: 'Name',
@@ -420,87 +420,14 @@ function ConfigFields() {
 
                     ]
                 },
-                {
-                    wrapper: 'fieldset',
-                    templateOptions: {label: 'Caching'},
-                    fieldGroup: [
-                        {
-                            key: 'enableCache',
-                            type: 'horizontalSwitch',
-                            templateOptions: {
-                                type: 'switch',
-                                label: 'Enable caching'
-                            }
-                        },
-                        {
-                            key: 'enableCacheForApi',
-                            hideExpression: '!model.enableCache',
-                            type: 'horizontalSwitch',
-                            templateOptions: {
-                                type: 'switch',
-                                label: 'Cache API search results',
-                                help: 'Enable to reduce load on indexers, disable for always newest results'
-                            }
-                        },
-                        {
-                            key: 'cacheType',
-                            hideExpression: '!model.enableCache',
-                            type: 'horizontalSelect',
-                            templateOptions: {
-                                type: 'select',
-                                label: 'Type',
-                                options: [
-                                    {name: 'Memory only', value: 'memory'},
-                                    {name: 'File sytem', value: 'file'}
-                                ]
-                            }
-                        },
-                        {
-                            key: 'cacheTimeout',
-                            hideExpression: '!model.enableCache',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'number',
-                                label: 'Cache timeout',
-                                help: 'Time after which cache entries will be discarded',
-                                addonRight: {
-                                    text: 'minutes'
-                                }
-                            }
-                        },
-                        {
-                            key: 'cachethreshold',
-                            hideExpression: '!model.enableCache',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'number',
-                                label: 'Cache threshold',
-                                help: 'Max amount of items held in cache',
-                                addonRight: {
-                                    text: 'items'
-                                }
-                            }
-                        },
-                        {
-                            key: 'cacheFolder',
-                            hideExpression: '!model.enableCache || model.cacheType == "memory"',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'Cache folder'
-                            }
-                        }
-
-                    ]
-                },
-
+                
                 {
                     wrapper: 'fieldset',
                     key: 'logging',
                     templateOptions: {label: 'Logging'},
                     fieldGroup: [
                         {
-                            key: 'logfile-level',
+                            key: 'logfilelevel',
                             type: 'horizontalSelect',
                             templateOptions: {
                                 type: 'select',
@@ -518,7 +445,7 @@ function ConfigFields() {
                             }
                         },
                         {
-                            key: 'logfile-filename',
+                            key: 'logfilename',
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
@@ -1183,19 +1110,19 @@ function ConfigFields() {
             indexers: [
                 {
                     wrapper: 'fieldset',
-                    key: 'Binsearch',
+                    key: 'binsearch',
                     templateOptions: {label: 'Binsearch'},
                     fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "binsearch", true)
                 },
                 {
                     wrapper: 'fieldset',
-                    key: 'NZBClub',
+                    key: 'nzbclub',
                     templateOptions: {label: 'NZBClub'},
                     fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbclub", true)
                 },
                 {
                     wrapper: 'fieldset',
-                    key: 'NZBIndex',
+                    key: 'nzbindex',
                     templateOptions: {label: 'NZBIndex'},
                     fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbindex", true).concat([{
                         key: 'generalMinSize',
@@ -1216,62 +1143,39 @@ function ConfigFields() {
                 },
                 {
                     wrapper: 'fieldset',
-                    key: 'Womble',
+                    key: 'womble',
                     templateOptions: {label: 'Womble'},
                     fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "womble", false)
                 },
 
+                {
+                    type: 'repeatSection',
+                    key: 'newznab',
+                    templateOptions: {
+                        btnText: 'Add new newznab indexer',
+                        fields: getBasicIndexerFieldset(true, true, true, false, true, true, 'newznab', true, true),
+                        defaultModel: {
+                            enabled: true,
+                            host: undefined,
+                            apikey: undefined,
+                            timeout: undefined,
+                            name: undefined,
+                            score: 0,
+                            preselect: true,
+                            accessType: "both",
+                            search_ids: ["imdbid", "rid", "tvdbid"]
+                        }
+                        
+                    }
 
-                getNewznabFieldset(1),
-                getNewznabFieldset(2),
-                getNewznabFieldset(3),
-                getNewznabFieldset(4),
-                getNewznabFieldset(5),
-                getNewznabFieldset(6),
-                getNewznabFieldset(7),
-                getNewznabFieldset(8),
-                getNewznabFieldset(9),
-                getNewznabFieldset(10),
-                getNewznabFieldset(11),
-                getNewznabFieldset(12),
-                getNewznabFieldset(13),
-                getNewznabFieldset(14),
-                getNewznabFieldset(15),
-                getNewznabFieldset(16),
-                getNewznabFieldset(17),
-                getNewznabFieldset(18),
-                getNewznabFieldset(19),
-                getNewznabFieldset(20),
-                getNewznabFieldset(21),
-                getNewznabFieldset(22),
-                getNewznabFieldset(23),
-                getNewznabFieldset(24),
-                getNewznabFieldset(25),
-                getNewznabFieldset(26),
-                getNewznabFieldset(27),
-                getNewznabFieldset(28),
-                getNewznabFieldset(29),
-                getNewznabFieldset(30),
-                getNewznabFieldset(31),
-                getNewznabFieldset(32),
-                getNewznabFieldset(33),
-                getNewznabFieldset(34),
-                getNewznabFieldset(35),
-                getNewznabFieldset(36),
-                getNewznabFieldset(37),
-                getNewznabFieldset(38),
-                getNewznabFieldset(39),
-                getNewznabFieldset(40)
+                }
 
 
             ]
 
-            
-
 
         };
-        
-        
+
 
     }
 

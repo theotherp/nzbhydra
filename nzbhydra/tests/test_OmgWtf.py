@@ -27,9 +27,7 @@ class MyTestCase(unittest.TestCase):
     @pytest.fixture
     def setUp(self):
         set_and_drop()
-        self.omgwtf = OmgWtf(config.indexerSettings.omgwtf)
-        config.indexerSettings.omgwtf.username.set("anuser")
-        config.indexerSettings.omgwtf.apikey.set("apikey")
+        self.omgwtf = OmgWtf(config.settings.indexers.omgwtfnzbs)
         
 
     def testUrlGeneration(self):

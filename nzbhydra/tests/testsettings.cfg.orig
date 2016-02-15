@@ -1,5 +1,5 @@
 {
-    "providers": {
+    "indexers": {
         "newznab1": {
             "host": "http://127.0.0.1",
             "search_ids": [
@@ -34,13 +34,13 @@
             "enabled": false
         },
         "binsearch": {
-            "host": "https://binsearch.com",
+            "host": "https://binsearch.info",
             "search_ids": [],
             "name": "binsearch",
             "enabled": true
         },
         "nzbclub": {
-            "host": "http://nzbclub.com",
+            "host": "https://www.nzbclub.com",
             "search_ids": [],
             "name": "nzbclub",
             "enabled": true
@@ -89,7 +89,20 @@
             "name": null,
             "apikey": null,
             "enabled": false
-        }
+        },
+        "omgwtfnzbs": {
+                    "accessType": "both", 
+                    "apikey": "apikey", 
+                    "enabled": false, 
+                    "host": "https://api.omgwtfnzbs.org", 
+                    "name": "omgwtfnzbs.org", 
+                    "preselect": true, 
+                    "score": 0, 
+                    "search_ids": [], 
+                    "showOnSearch": true, 
+                    "timeout": null, 
+                    "username": "anuser"
+                }
     },
     "main": {
         "apikey": "hailhydra",

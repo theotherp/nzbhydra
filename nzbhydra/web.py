@@ -11,6 +11,7 @@ import urlparse
 import arrow
 import datetime
 import rison
+from bunch import Bunch
 from werkzeug.contrib.fixers import ProxyFix
 
 from nzbhydra.searchmodules import omgwtf
@@ -43,7 +44,7 @@ from werkzeug.exceptions import Unauthorized
 from flask_session import Session
 from nzbhydra import config, search, infos, database
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid
-from nzbhydra.config import NzbAccessTypeSelection, mainSettings, downloaderSettings, CacheTypeSelection
+from nzbhydra.config import NzbAccessTypeSelection
 from nzbhydra.database import IndexerStatus, Indexer
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
@@ -61,7 +62,7 @@ class ReverseProxied(object):
 
     def __call__(self, environ, start_response):
         environ["MY_URL_BASE"] = "/"
-        base_url = config.mainSettings.urlBase.get()
+        base_url = config.settings.main.urlBase
         if base_url is not None and base_url.endswith("/"):
             base_url = base_url[:-1]
         if base_url is not None and base_url != "":
@@ -81,7 +82,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config["PRESERVE_CONTEXT_ON_EXCEPTION"] = True
 app.config["PROPAGATE_EXCEPTIONS"] = True
 Session(app)
-search_cache = Cache()
+flask_cache = Cache(app, config={'CACHE_TYPE': "simple", "CACHE_THRESHOLD": 250, "CACHE_DEFAULT_TIMEOUT": 60 * 60 * 24 * 7}) #Used for autocomplete and nfos and such
 internal_cache = Cache(app, config={'CACHE_TYPE': "simple",  # Cache for internal data like settings, form, schema, etc. which will be invalidated on request
                                     "CACHE_DEFAULT_TIMEOUT": 60 * 30})
 proxyFix = ProxyFix(app)
@@ -130,7 +131,7 @@ def _db_disconnect(esc):
 
 @app.after_request
 def disable_caching(response):
-    if mainSettings.debug.get() or "/static" not in request.path: #Prevent caching of control URLs
+    if config.settings.main.debug or "/static" not in request.path: #Prevent caching of control URLs
         response.cache_control.private = True
         response.cache_control.max_age = 0
         response.cache_control.must_revalidate = True
@@ -212,34 +213,34 @@ def create_json_response(success=True, data=None, error_message=None):
 
 def isAdminLoggedIn():
     auth = request.authorization
-    return auth and (auth.username == config.get(mainSettings.adminUsername) and auth.password == config.get(mainSettings.adminPassword))
+    return auth and (auth.username == config.settings.get(config.settings.main.adminUsername) and auth.password == config.settings.get(config.settings.main.adminPassword))
 
 
 def maySeeAdminArea():
-    return (config.mainSettings.enableAdminAuth.get() and isAdminLoggedIn()) or (not config.mainSettings.enableAdminAuth.get())
+    return (config.settings.main.enableAdminAuth and isAdminLoggedIn()) or (not config.settings.main.enableAdminAuth)
 
 
 def isLoggedIn():
     auth = request.authorization
-    return auth and (auth.username == config.get(mainSettings.username) and auth.password == config.get(mainSettings.password))
+    return auth and (auth.username == config.settings.get(config.settings.main.username) and auth.password == config.settings.get(config.settings.main.password))
 
 
 def isAllowed(authType):
     allowed = False
     if isAdminLoggedIn():
         allowed = True
-    if not mainSettings.enableAdminAuth.get():
-        mainSettings.enableAdminAuthForStats.set(False)
+    if not config.settings.main.enableAdminAuth:
+        config.settings.main.enableAdminAuthForStats = False
     if not allowed and authType == "main":
-        if not mainSettings.enableAuth.get() or isLoggedIn():
+        if not config.settings.main.enableAuth or isLoggedIn():
             allowed = True
     if not allowed and authType == "stats":
-        if config.mainSettings.enableAdminAuthForStats.get() and isAdminLoggedIn():
+        if config.settings.main.enableAdminAuthForStats and isAdminLoggedIn():
             allowed = True
-        if (not mainSettings.enableAuth.get() or (mainSettings.enableAuth.get() and isLoggedIn())) and not config.mainSettings.enableAdminAuthForStats.get():
+        if (not config.settings.main.enableAuth or (config.settings.main.enableAuth and isLoggedIn())) and not config.settings.main.enableAdminAuthForStats:
             allowed = True
     if not allowed and authType == "admin":
-        if not config.mainSettings.enableAdminAuth.get() and not (mainSettings.enableAuth.get() and not isLoggedIn()):
+        if not config.settings.main.enableAdminAuth and not (config.settings.main.enableAuth and not isLoggedIn()):
             allowed = True
     return allowed
 
@@ -253,7 +254,7 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
                     logger.debug("Access granted by secret access key")
                     allowed = True
             elif allowWithApiKey and "apikey" in request.args:
-                if request.args.get("apikey") == config.mainSettings.apikey.get():
+                if request.args.get("apikey") == config.settings.main.apikey:
                     logger.debug("Access granted by API key")
                     allowed = True
                 else:
@@ -282,7 +283,7 @@ def base(path):
     logger.debug("Sending index.html")
     host_url = "//" + request.host + request.environ['MY_URL_BASE']
     _, currentVersion = get_current_version()
-    return render_template("index.html", host_url=host_url, isAdmin=maySeeAdminArea(), cacheBuster=("?v=" + currentVersion) if currentVersion is not None else "", onProd="false" if config.mainSettings.debug.get() else "true")
+    return render_template("index.html", host_url=host_url, isAdmin=maySeeAdminArea(), cacheBuster=("?v=" + currentVersion) if currentVersion is not None else "", onProd="false" if config.settings.main.debug else "true")
 
 
 def render_search_results_for_api(search_results, total, offset):
@@ -338,7 +339,7 @@ def api(args):
 
     if args["q"] is not None and args["q"] != "":
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
-    if mainSettings.apikey.get_with_default(None) and ("apikey" not in args or args["apikey"] != mainSettings.apikey.get()):
+    if config.settings.main.apikey and ("apikey" not in args or args["apikey"] != config.settings.main.apikey):
         logger.error("Tried API access with invalid or missing API key")
         raise Unauthorized("API key not provided or invalid")
     elif args["t"] in ("search", "tvsearch", "movie"):
@@ -355,7 +356,6 @@ def api(args):
         return "Unknown API request. Supported functions: search, tvsearch, movie, get, caps", 500
 
 
-@search_cache.memoize(unless=not config.mainSettings.cache_enabled_for_api.get())
 def api_search(args):
     search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], query=args["q"])
     if args["t"] == "search":
@@ -380,6 +380,7 @@ def api_search(args):
     content = render_search_results_for_api(results, result["total"], result["offset"])
     response = make_response(content)
     response.headers["Content-Type"] = "application/xml"
+              
     return content
 
 
@@ -419,13 +420,10 @@ def process_and_jsonify_for_internalapi(results):
         return "No results", 500
 
 
-@search_cache.memoize(unless=not config.mainSettings.cache_enabled.get())
-def cached_search(search_request):
+def cached_search(search_request):    
     results = search.search(True, search_request)
     return process_and_jsonify_for_internalapi(results)
 
-
-cached_search.make_cache_key = make_request_cache_key
 
 internalapi_search_args = {
     "query": fields.String(missing=None),
@@ -538,7 +536,7 @@ internalapi_autocomplete_args = {
 @app.route('/internalapi/autocomplete')
 @requires_auth("main")
 @use_args(internalapi_autocomplete_args, locations=['querystring'])
-@search_cache.memoize()
+@flask_cache.memoize()
 def internalapi_autocomplete(args):
     logger.debug("Autocomplete request with args %s" % args)
     if args["type"] == "movie":
@@ -562,7 +560,7 @@ internalapi__getnfo_args = {
 @app.route('/internalapi/getnfo')
 @requires_auth("main")
 @use_args(internalapi__getnfo_args, locations=['querystring'])
-@search_cache.memoize()
+@flask_cache.memoize()
 def internalapi_getnfo(args):
     logger.debug("Get NFO request with args %s" % args)
     nfo = get_nfo(args["indexer"], args["guid"])
@@ -588,18 +586,18 @@ def internalapi_getnzb(args):
 
 
 def extract_nzb_infos_and_return_response(indexer, indexerguid, title, searchid):
-    if downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.redirect.name:
+    if config.settings.downloader.nzbaccesstype == NzbAccessTypeSelection.redirect:
         link, _, _ = get_indexer_nzb_link(indexer, indexerguid, title, searchid, "redirect", True)
         if link is not None:
             logger.info("Redirecting to %s" % link)
             return redirect(link)
         else:
             return "Unable to build link to NZB", 404
-    elif downloaderSettings.nzbaccesstype.get() == NzbAccessTypeSelection.serve.name:
+    elif config.settings.downloader.nzbaccesstype == NzbAccessTypeSelection.serve:
         return get_nzb_response(indexer, indexerguid, title, searchid)
     else:
-        logger.error("Invalid value of %s" % downloaderSettings.nzbaccesstype)
-        return "downloader.add_type has wrong value: %s" % downloaderSettings.nzbaccesstype, 500
+        logger.error("Invalid value of %s" % config.settings.downloader.nzbaccesstype)
+        return "downloader.add_type has wrong value: %s" % config.settings.downloader.nzbaccesstype, 500
 
 
 internalapi__addnzb_args = {
@@ -614,9 +612,9 @@ internalapi__addnzb_args = {
 def internalapi_addnzb(args):
     logger.debug("Add NZB request with args %s" % args)
     items = json.loads(args["items"])
-    if downloaderSettings.downloader.isSetting(config.DownloaderSelection.nzbget):
+    if config.settings.downloader.downloader == "nzbget":
         downloader = Nzbget()
-    elif downloaderSettings.downloader.isSetting(config.DownloaderSelection.sabnzbd):
+    elif config.settings.downloader.downloader == "sabnzbd":
         downloader = Sabnzbd()
     else:
         logger.error("Adding an NZB without set downloader should not be possible")
@@ -630,7 +628,7 @@ def internalapi_addnzb(args):
         dbsearchid = item["dbsearchid"]
         link, _ = get_nzb_link_and_guid(indexer, indexerguid, dbsearchid, title, True)
 
-        if downloaderSettings.nzbAddingType.isSetting(config.NzbAddingTypeSelection.link):  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
+        if config.settings.downloader.nzbAddingType == config.NzbAddingTypeSelection.link:  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
             add_success = downloader.add_link(link, title, category)
         else:  # We download an NZB send it to the downloader
             nzbdownloadresult = download_nzb_and_log(indexer, indexerguid, title, dbsearchid)
@@ -785,7 +783,7 @@ internalapi__enableindexer_args = {
 @use_args(internalapi__enableindexer_args)
 def internalapi_enable_indexer(args):
     logger.debug("Enabling indexer %s" % args["name"])
-    indexer_status = IndexerStatus().select().join(Indexer).where(fn.lower(Indexer.name) == args["name"].lower()).get()
+    indexer_status = IndexerStatus().select().join(Indexer).where(fn.lower(Indexer.name) == args["name"].lower())
     indexer_status.disabled_until = 0
     indexer_status.reason = None
     indexer_status.level = 0
@@ -803,7 +801,6 @@ def internalapi_setsettings():
         internal_cache.delete_memoized(internalapi_getsafeconfig)
         read_indexers_from_config()
         clean_up_database()
-        configure_cache()
         return "OK"
     except Exception as e:
         logger.exception("Error saving settings")
@@ -815,12 +812,11 @@ def internalapi_setsettings():
 @internal_cache.memoize()
 def internalapi_getconfig():
     logger.debug("Get config request")
-    return jsonify(config.cfg)
+    return jsonify(Bunch.toDict(config.settings))
 
 
 @app.route('/internalapi/getsafeconfig')
 @requires_auth("main")
-@internal_cache.memoize()
 def internalapi_getsafeconfig():
     logger.debug("Get safe config request")
     return jsonify(config.getSafeConfig())
@@ -887,9 +883,9 @@ def internalapi_getcategories():
     logger.debug("Get categories request")
     categories = []
     try:
-        if downloaderSettings.downloader.isSetting(config.DownloaderSelection.nzbget):
+        if config.settings.downloader.downloader.isSetting(config.settings.DownloaderSelection.nzbget):
             categories = Nzbget().get_categories()
-        elif downloaderSettings.downloader.isSetting(config.DownloaderSelection.sabnzbd):
+        elif config.settings.downloader.downloader.isSetting(config.settings.DownloaderSelection.sabnzbd):
             categories = Sabnzbd().get_categories()
         return jsonify({"success": True, "categories": categories})
     except DownloaderException as e:
@@ -951,32 +947,13 @@ def internalapi_update():
 
 def run(host, port, basepath):
     context = create_context()
-    configure_cache()
     configureFolders(basepath)
     for handler in logger.handlers:
         app.logger.addHandler(handler)
     if context is None:
-        app.run(host=host, port=port, debug=config.mainSettings.debug.get(), threaded=config.mainSettings.runThreaded.get(), use_reloader=config.mainSettings.flaskReloader.get())
+        app.run(host=host, port=port, debug=config.settings.main.debug, threaded=config.settings.main.runThreaded, use_reloader=config.settings.main.flaskReloader)
     else:
-        app.run(host=host, port=port, debug=config.mainSettings.debug.get(), ssl_context=context, threaded=config.mainSettings.runThreaded.get(), use_reloader=config.mainSettings.flaskReloader.get())
-
-
-def configure_cache():
-    if mainSettings.cache_enabled.get():
-        if mainSettings.cache_type.get() == CacheTypeSelection.memory.name:
-            logger.info("Using memory based cache")
-            cache_type = "simple"
-        else:
-            logger.info("Using file based cache with folder %s" % mainSettings.cache_folder.get())
-            cache_type = "filesystem"
-    else:
-        logger.info("Not using any caching")
-        cache_type = "null"
-    search_cache.init_app(app, config={'CACHE_TYPE': cache_type,
-                                       "CACHE_DEFAULT_TIMEOUT": mainSettings.cache_timeout.get() * 60,
-                                       "CACHE_THRESHOLD": mainSettings.cache_threshold.get(),
-                                       "CACHE_DIR": mainSettings.cache_folder.get(),
-                                       "CACHE_NO_NULL_WARNING": True})
+        app.run(host=host, port=port, debug=config.settings.main.debug, ssl_context=context, threaded=config.settings.main.runThreaded, use_reloader=config.settings.main.flaskReloader)
 
 
 def configureFolders(basepath):
@@ -986,10 +963,10 @@ def configureFolders(basepath):
 
 def create_context():
     context = None
-    if config.mainSettings.ssl.get():
+    if config.settings.main.ssl:
         if not sslImported:
             logger.error("SSL could not be imported, sorry. Falling back to standard HTTP")
         else:
             context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-            context.load_cert_chain(config.mainSettings.sslcert.get(), config.mainSettings.sslkey.get())
+            context.load_cert_chain(config.settings.main.sslcert, config.settings.main.sslkey)
     return context

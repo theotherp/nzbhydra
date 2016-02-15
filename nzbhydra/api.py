@@ -26,7 +26,6 @@ from marshmallow import Schema, fields
 from requests import RequestException
 
 from nzbhydra import config
-from nzbhydra.config import downloaderSettings, NzbAccessTypeSelection
 from nzbhydra import indexers
 from nzbhydra.database import IndexerApiAccess, IndexerNzbDownload, Indexer, IndexerSearch
 
@@ -102,8 +101,8 @@ def get_nzb_link_and_guid(indexer, indexerguid, searchid, title, external):
     data_getnzb = {"indexer": indexer, "indexerguid": indexerguid, "searchid": searchid, "title": title}
     guid_rison = rison.dumps(data_getnzb)
     
-    externalUrl = config.mainSettings.externalUrl.get_with_default(None)
-    if externalUrl and not (external and config.mainSettings.useLocalUrlForApiAccess.get()):
+    externalUrl = config.settings.main.externalUrl
+    if externalUrl and not (external and config.settings.main.useLocalUrlForApiAccess):
         f = furl(externalUrl)
     else:
         f = furl(get_root_url())
@@ -111,7 +110,7 @@ def get_nzb_link_and_guid(indexer, indexerguid, searchid, title, external):
     args = {"id": guid_rison}
         
     if external:
-        apikey = config.mainSettings.apikey.get_with_default(None)
+        apikey = config.settings.main.apikey
         if apikey is not None:
             args["apikey"] = apikey
     f.set(args=args)
