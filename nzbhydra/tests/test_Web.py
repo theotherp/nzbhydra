@@ -11,6 +11,7 @@ import pytest
 # standard_library.install_aliases()
 import unittest
 
+from bunch import Bunch
 from mock import Mock
 
 from nzbhydra import config
@@ -28,127 +29,81 @@ class TestWeb(UrlTestCase):
         app = flask.Flask(__name__)
 
         with app.test_request_context('/'):
-            # No user logged in
-            web.isLoggedIn = Mock(return_value=False)
-            config.settings.main.enableAuth = False
-            config.settings.main.enableAdminAuth = False
-            config.settings.main.enableAdminAuthForStats = False
+            
+            #No users configured
+            config.settings.auth.users = Bunch.fromDict([{"name": None, "password": None, "maySeeStats": True, "maySeeAdmin": True}])
+            flask.request.authorization = None
             assert web.isAllowed("main")
             assert web.isAllowed("stats")
             assert web.isAllowed("admin")
 
-            config.settings.main.enableAuth = False
-            config.settings.main.enableAdminAuth = False
-            config.settings.main.enableAdminAuthForStats = True
-            assert web.isAllowed("main")
-            assert web.isAllowed("stats")
-            assert web.isAllowed("admin")
-
-            config.settings.main.enableAuth = True
-            config.settings.main.enableAdminAuth = False
-            config.settings.main.enableAdminAuthForStats = False
+            # User required for everything
+            config.settings.auth.users = Bunch.fromDict([{"name": "u", "password": "p", "maySeeStats": True, "maySeeAdmin": True}])
+            flask.request.authorization = None
             assert not web.isAllowed("main")
             assert not web.isAllowed("stats")
             assert not web.isAllowed("admin")
-
-            config.settings.main.enableAuth = False
-            config.settings.main.enableAdminAuth = True
-            config.settings.main.enableAdminAuthForStats = False
+            flask.request.authorization = {"username": "u", "password": "p"}
             assert web.isAllowed("main")
             assert web.isAllowed("stats")
-            assert not web.isAllowed("admin")
+            assert web.isAllowed("admin")
 
-            config.settings.main.enableAuth = False
-            config.settings.main.enableAdminAuth = True
-            config.settings.main.enableAdminAuthForStats = True
+            #User required for stats and admin 
+            config.settings.auth.users = Bunch.fromDict([{"name": None, "password": None, "maySeeStats": False, "maySeeAdmin": False}, {"name": "au", "password": "ap", "maySeeStats": True, "maySeeAdmin": True}])
+            flask.request.authorization = None
             assert web.isAllowed("main")
             assert not web.isAllowed("stats")
             assert not web.isAllowed("admin")
-            
-            
-            #Normal user logged in
-            web.isAdminLoggedIn = Mock(return_value=False)
-            web.isLoggedIn = Mock(return_value=True)
-            config.settings.main.enableAuth = False
-            config.settings.main.enableAdminAuthForStats = False
-            config.settings.main.enableAdminAuth = False
+            flask.request.authorization = {"username": "au", "password": "ap"}
             assert web.isAllowed("main")
             assert web.isAllowed("stats")
             assert web.isAllowed("admin")
 
-            config.settings.main.enableAuth = False
-            config.settings.main.enableAdminAuth = False
-            config.settings.main.enableAdminAuthForStats = True
-            assert web.isAllowed("main")
-            assert web.isAllowed("stats")
-            assert web.isAllowed("admin")
-            
-            config.settings.main.enableAuth = True
-            config.settings.main.enableAdminAuth = False
-            config.settings.main.enableAdminAuthForStats = False
-            assert web.isAllowed("main")
-            assert web.isAllowed("stats")
-            assert web.isAllowed("admin")
-
-            config.settings.main.enableAuth = True
-            config.settings.main.enableAdminAuth = False
-            config.settings.main.enableAdminAuthForStats = True
-            assert web.isAllowed("main")
-            assert web.isAllowed("stats")
-            assert web.isAllowed("admin")
-
-            config.settings.main.enableAuth = False
-            config.settings.main.enableAdminAuth = True
-            config.settings.main.enableAdminAuthForStats = False
+            #User required for admin only
+            config.settings.auth.users = Bunch.fromDict([{"name": None, "password": None, "maySeeStats": True, "maySeeAdmin": False}, {"name": "au", "password": "ap", "maySeeStats": True, "maySeeAdmin": True}])
+            flask.request.authorization = None
             assert web.isAllowed("main")
             assert web.isAllowed("stats")
             assert not web.isAllowed("admin")
+            flask.request.authorization = {"username": "au", "password": "ap"}
+            assert web.isAllowed("main")
+            assert web.isAllowed("stats")
+            assert web.isAllowed("admin")
 
-            config.settings.main.enableAuth = False
-            config.settings.main.enableAdminAuth = True
-            config.settings.main.enableAdminAuthForStats = True
+            #Basic required user for main, admin user required for stats and admin
+            config.settings.auth.users = Bunch.fromDict([{"name": "u", "password": "p", "maySeeStats": False, "maySeeAdmin": False}, {"name": "au", "password": "ap", "maySeeStats": True, "maySeeAdmin": True}])
+            flask.request.authorization = None
+            assert not web.isAllowed("main")
+            assert not web.isAllowed("stats")
+            assert not web.isAllowed("admin")
+            flask.request.authorization = {"username": "u", "password": "p"}
             assert web.isAllowed("main")
             assert not web.isAllowed("stats")
             assert not web.isAllowed("admin")
-
-
-            #Admin logged in
-            web.isAdminLoggedIn = Mock(return_value=True)
-            web.isLoggedIn = Mock(return_value=False)
-            config.settings.main.enableAuth = False
-            config.settings.main.enableAdminAuth = False
-            config.settings.main.enableAdminAuthForStats = False
+            flask.request.authorization = {"username": "au", "password": "ap"}
             assert web.isAllowed("main")
             assert web.isAllowed("stats")
             assert web.isAllowed("admin")
 
-            config.settings.main.enableAuth = False
-            config.settings.main.enableAdminAuth = True
-            config.settings.main.enableAdminAuthForStats = False
+            # Basic user required for main and stats, admin user required for admin
+            config.settings.auth.users = Bunch.fromDict([{"name": "u", "password": "p", "maySeeStats": True, "maySeeAdmin": False}, {"name": "au", "password": "ap", "maySeeStats": True, "maySeeAdmin": True}])
+            flask.request.authorization = None
+            assert not web.isAllowed("main")
+            assert not web.isAllowed("stats")
+            assert not web.isAllowed("admin")
+            flask.request.authorization = {"username": "u", "password": "p"}
+            assert web.isAllowed("main")
+            assert web.isAllowed("stats")
+            assert not web.isAllowed("admin")
+            flask.request.authorization = {"username": "au", "password": "ap"}
             assert web.isAllowed("main")
             assert web.isAllowed("stats")
             assert web.isAllowed("admin")
 
-            config.settings.main.enableAuth = False
-            config.settings.main.enableAdminAuth = True
-            config.settings.main.enableAdminAuthForStats = False
-            assert web.isAllowed("main")
-            assert web.isAllowed("stats")
-            assert web.isAllowed("admin")
 
-            config.settings.main.enableAuth = False
-            config.settings.main.enableAdminAuth = True
-            config.settings.main.enableAdminAuthForStats = True
-            assert web.isAllowed("main")
-            assert web.isAllowed("stats")
-            assert web.isAllowed("admin")
+            
+            
 
-            config.settings.main.enableAuth = True
-            config.settings.main.enableAdminAuth = True
-            config.settings.main.enableAdminAuthForStats = True
-            assert web.isAllowed("main")
-            assert web.isAllowed("stats")
-            assert web.isAllowed("admin")
-
+            
 
             

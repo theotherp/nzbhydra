@@ -207,27 +207,6 @@ function ConfigFields() {
         return fieldset;
     }
 
-    function getNewznabFieldset(index) {
-        return {
-            wrapper: 'fieldset',
-            hideExpression: function ($viewValue, $modelValue, scope) {
-                if (index > 1 && index <= 40) {
-                    var allBeforeNamed = true;
-                    for (var i = 1; i < index; i++) {
-                        if (!scope.model["newznab" + i].name) {
-                            allBeforeNamed = false;
-                            break;
-                        }
-                    }
-                    return !allBeforeNamed;
-                }
-                return false;
-            },
-            key: 'newznab' + index,
-            templateOptions: {label: 'Newznab ' + index},
-            fieldGroup: getBasicIndexerFieldset(true, true, true, false, true, true, 'newznab', true, true)
-        };
-    }
 
     function getFields() {
         console.log("Called getFields() from ConfigFields");
@@ -341,34 +320,7 @@ function ConfigFields() {
                     wrapper: 'fieldset',
                     templateOptions: {label: 'Security'},
                     fieldGroup: [
-                        {
-                            key: 'enableAuth',
-                            type: 'horizontalSwitch',
-                            templateOptions: {
-                                type: 'switch',
-                                label: 'Enable authentication'
-                            }
-                        },
-                        {
-                            key: 'username',
-                            type: 'horizontalInput',
-                            hideExpression: '!model.enableAuth',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'Username',
-                                required: true
-                            }
-                        },
-                        {
-                            key: 'password',
-                            hideExpression: '!model.enableAuth',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'password',
-                                label: 'Password',
-                                required: true
-                            }
-                        },
+
                         {
                             key: 'apikey',
                             type: 'horizontalApiKeyInput',
@@ -376,51 +328,10 @@ function ConfigFields() {
                                 label: 'API key',
                                 help: 'Remove to disable. Alphanumeric only'
                             }
-                        },
-                        {
-                            key: 'enableAdminAuth',
-                            type: 'horizontalSwitch',
-                            templateOptions: {
-                                type: 'switch',
-                                label: 'Enable admin user',
-                                help: 'Enable to protect the config with a separate admin user'
-                            }
-                        },
-                        {
-                            key: 'adminUsername',
-                            type: 'horizontalInput',
-                            hideExpression: '!model.enableAdminAuth',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'Admin username',
-                                required: true
-                            }
-                        },
-                        {
-                            key: 'adminPassword',
-                            hideExpression: '!model.enableAdminAuth',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'password',
-                                label: 'Admin password',
-                                required: true
-                            }
-                        },
-                        {
-                            key: 'enableAdminAuthForStats',
-                            type: 'horizontalSwitch',
-                            hideExpression: '!model.enableAdminAuth',
-                            templateOptions: {
-                                type: 'switch',
-                                label: 'Enable stats admin',
-                                help: 'Enable to protect the history & stats with the admin user'
-                            }
                         }
-
-
                     ]
                 },
-                
+
                 {
                     wrapper: 'fieldset',
                     key: 'logging',
@@ -1153,6 +1064,7 @@ function ConfigFields() {
                     key: 'newznab',
                     templateOptions: {
                         btnText: 'Add new newznab indexer',
+                        altLegendText: 'New indexer',
                         fields: getBasicIndexerFieldset(true, true, true, false, true, true, 'newznab', true, true),
                         defaultModel: {
                             enabled: true,
@@ -1165,12 +1077,72 @@ function ConfigFields() {
                             accessType: "both",
                             search_ids: ["imdbid", "rid", "tvdbid"]
                         }
-                        
+
                     }
 
                 }
 
 
+            ],
+
+            auth: [
+                {
+                    type: 'help',
+                    templateOptions: {
+                        lines: ['A user without username and password controls what is allowed without having to log in.',
+                            'To require login only for admin access remove admin right from the authless user and add a user with username and password and admin rights.',
+                            'To have a simple and an admin user remove the authless user and create two users, one without and one with admin rights.']
+                    }
+                },
+                {
+                    type: 'repeatSection',
+                    key: 'users',
+                    templateOptions: {
+                        btnText: 'Add new user',
+                        altLegendText: 'Authless',
+                        fields: [
+                            {
+                                key: 'name',
+                                type: 'horizontalInput',
+                                templateOptions: {
+                                    type: 'text',
+                                    label: 'Username'
+                                }
+                            },
+                            {
+                                key: 'password',
+                                type: 'horizontalInput',
+                                templateOptions: {
+                                    type: 'text',
+                                    label: 'Password'
+                                }
+                            },
+                            {
+                                key: 'maySeeStats',
+                                type: 'horizontalSwitch',
+                                templateOptions: {
+                                    type: 'switch',
+                                    label: 'May see stats'
+                                }
+                            },
+                            {
+                                key: 'maySeeAdmin',
+                                type: 'horizontalSwitch',
+                                templateOptions: {
+                                    type: 'switch',
+                                    label: 'May see admin area'
+                                }
+                            }
+
+                        ],
+                        defaultModel: {
+                            name: null,
+                            password: null,
+                            maySeeStats: true,
+                            maySeeAdmin: true
+                        }
+                    }
+                }
             ]
 
 

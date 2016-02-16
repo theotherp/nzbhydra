@@ -2,7 +2,7 @@ angular
     .module('nzbhydraApp')
     .directive('otherColumns', otherColumns);
 
-function otherColumns($http, $templateCache, $compile) {
+function otherColumns($http, $templateCache, $compile, $window) {
     return {
         scope: {
             result: "="
@@ -56,6 +56,13 @@ function otherColumns($http, $templateCache, $compile) {
             });
 
             modalInstance.result.then();
+        }
+        
+        $scope.downloadNzb = downloadNzb;
+        
+        function downloadNzb(resultItem) {
+            //href = "{{ result.link }}"
+            $window.location.href = resultItem.link;
         }
 
     }

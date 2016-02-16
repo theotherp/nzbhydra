@@ -27,6 +27,7 @@
         <th>Season</th>
         <th>Episode</th>
         <th>Access</th>
+        <th>Username</th>
     </tr>
     </thead>
     <tbody>
@@ -46,6 +47,7 @@
         <td>{{ request.season }}</td>
         <td>{{ request.episode }}</td>
         <td>{{ request.internal ? "Internal" : "API"}}</td>
+        <td>{{ request.username }}</td>
     </tr>
     </tbody>
 </table>

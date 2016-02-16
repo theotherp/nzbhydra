@@ -217,6 +217,10 @@ def get_indexer_nzb_link(indexer_name, indexerguid, title, searchid, mode, log_a
             # Log to database
             indexer = Indexer.get(fn.lower(Indexer.name) == indexer_name.lower())
             papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, response_successful=None, indexer_search=searchid) if log_api_access else None
+            try:
+                papiaccess.username = request.authorization.username if request.authorization is not None else None
+            except RuntimeError:
+                pass
             papiaccess.save()
             pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode=mode, title=title, guid=indexerguid)
             pnzbdl.save()

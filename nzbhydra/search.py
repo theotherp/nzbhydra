@@ -7,6 +7,7 @@ import re
 from itertools import groupby
 
 from builtins import int
+from flask import request
 from future import standard_library
 
 #standard_library.install_aliases()
@@ -154,7 +155,8 @@ def search(internal, search_request):
         indexers_to_call, with_query_generation = pick_indexers(query_supplied=True if search_request.query is not None and search_request.query != "" else False, identifier_key=search_request.identifier_key, internal=internal, selected_indexers=search_request.indexers)
         for p in indexers_to_call:
             cache_entry["indexer_infos"][p] = {"has_more": True, "search_request": search_request, "total_included": False}
-        dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode, type=search_request.type)
+        dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode, type=search_request.type,
+                          username=request.authorization.username if request.authorization is not None else None)
         #dbsearch.save()
         cache_entry["dbsearch"] = dbsearch
 
@@ -237,12 +239,14 @@ def search(internal, search_request):
 
 def search_and_handle_db(dbsearch, indexers_and_search_requests):
     results_by_indexer = start_search_futures(indexers_and_search_requests)
+    dbsearch.username = request.authorization.username if request.authorization is not None else None
     dbsearch.save()
     for indexer, result in results_by_indexer.items():
         if result.didsearch:
             indexersearchentry = result.indexerSearchEntry
             indexersearchentry.search = dbsearch
             indexersearchentry.save()
+            result.indexerApiAccessEntry.username = request.authorization.username if request.authorization is not None else None
             result.indexerApiAccessEntry.save()
             result.indexerStatus.save()
         

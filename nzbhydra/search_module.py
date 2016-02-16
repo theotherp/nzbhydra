@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import time
 from builtins import str
+from flask import request
 from future import standard_library
 
 from nzbhydra.log import removeSensitiveData
@@ -225,6 +226,11 @@ class SearchModule(object):
 
     def get_url_with_papi_access(self, url, type, cookies=None, timeout=None, saveToDb=True):
         papiaccess = IndexerApiAccess(indexer=self.indexer, type=type, url=url, time=arrow.utcnow().datetime)
+        try:
+            papiaccess.username = request.authorization.username if request.authorization is not None else None
+        except RuntimeError:
+            #Is thrown when we're searching which is run in a thread. When downloading NFOs or whatever this will work
+            pass
         indexerStatus = None
         try:
             time_before = arrow.utcnow()

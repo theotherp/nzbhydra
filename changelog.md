@@ -2,7 +2,10 @@
 
 ----------
 ### 0.0.1a64
-Rewrote and simplified code for settings which finally allows using an unlimited amount of newznab indexers, along with better GUI handling of those.
+Rewrote and simplified code for settings which finally allows using an unlimited amount of newznab indexers, along with better GUI handling of those. 
+This affected basically every feature in the program, so from experience I'd say I fucked up something which I didn't find during testing, so please let me know ;-) 
+
+Replaced simple users with multi-user system. Add as many users as you want and control if they're allowed to use basic features, see the stats and/or have admin rights. All future searches and downloads will be logged with these users.
 
 Removed caching of search results because it didn't really work and nobody uses it anyway. Therefore removed all cache related settings.
 

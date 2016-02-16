@@ -10,6 +10,8 @@ import urlparse
 
 import arrow
 import datetime
+
+import flask
 import rison
 from bunch import Bunch
 from werkzeug.contrib.fixers import ProxyFix
@@ -121,6 +123,8 @@ app.json_encoder = CustomJSONEncoder
 def _db_connect():
     if request.endpoint is not None and not request.endpoint.endswith("static"):  # No point in opening a db connection if we only serve a static file
         database.db.connect()
+    
+    
 
 
 @app.teardown_request
@@ -213,36 +217,34 @@ def create_json_response(success=True, data=None, error_message=None):
 
 def isAdminLoggedIn():
     auth = request.authorization
-    return auth and (auth.username == config.settings.get(config.settings.main.adminUsername) and auth.password == config.settings.get(config.settings.main.adminPassword))
-
-
-def maySeeAdminArea():
-    return (config.settings.main.enableAdminAuth and isAdminLoggedIn()) or (not config.settings.main.enableAdminAuth)
-
-
-def isLoggedIn():
-    auth = request.authorization
-    return auth and (auth.username == config.settings.get(config.settings.main.username) and auth.password == config.settings.get(config.settings.main.password))
+    return len(config.settings.auth.users) == 0 or (auth is not None and any([x.maySeeAdmin and x.name == auth.username and x.password == auth.password for x in config.settings.auth.users]))
 
 
 def isAllowed(authType):
-    allowed = False
-    if isAdminLoggedIn():
-        allowed = True
-    if not config.settings.main.enableAdminAuth:
-        config.settings.main.enableAdminAuthForStats = False
-    if not allowed and authType == "main":
-        if not config.settings.main.enableAuth or isLoggedIn():
-            allowed = True
-    if not allowed and authType == "stats":
-        if config.settings.main.enableAdminAuthForStats and isAdminLoggedIn():
-            allowed = True
-        if (not config.settings.main.enableAuth or (config.settings.main.enableAuth and isLoggedIn())) and not config.settings.main.enableAdminAuthForStats:
-            allowed = True
-    if not allowed and authType == "admin":
-        if not config.settings.main.enableAdminAuth and not (config.settings.main.enableAuth and not isLoggedIn()):
-            allowed = True
-    return allowed
+    if len(config.settings.auth.users) == 0:
+        return True
+    auth = Bunch.fromDict(request.authorization)
+    
+    for user in config.settings.auth.users:
+        if authType == "main":
+            if not user.name and not user.password: #"authless" user
+                return True
+            if auth and auth.username == user.name and auth.password == user.password:
+                return True
+        if authType == "stats":
+            if not user.name and not user.password and user.maySeeStats:  # "authless" user
+                return True
+            if auth and auth.username == user.name and auth.password == user.password:
+                return user.maySeeStats
+        if authType == "admin":
+            if not user.name and not user.password and user.maySeeAdmin:  # "authless" user
+                return True
+            if auth and auth.username == user.name and auth.password == user.password:
+                return user.maySeeAdmin
+        
+    return False
+    
+    
 
 
 def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
@@ -283,7 +285,7 @@ def base(path):
     logger.debug("Sending index.html")
     host_url = "//" + request.host + request.environ['MY_URL_BASE']
     _, currentVersion = get_current_version()
-    return render_template("index.html", host_url=host_url, isAdmin=maySeeAdminArea(), cacheBuster=("?v=" + currentVersion) if currentVersion is not None else "", onProd="false" if config.settings.main.debug else "true")
+    return render_template("index.html", host_url=host_url, isAdmin=isAdminLoggedIn(), cacheBuster=("?v=" + currentVersion) if currentVersion is not None else "", onProd="false" if config.settings.main.debug else "true")
 
 
 def render_search_results_for_api(search_results, total, offset):
@@ -577,6 +579,7 @@ internalapi__getnzb_args = {
 }
 
 
+#Obsolete?
 @app.route('/internalapi/getnzb')
 @requires_auth("main")
 @use_args(internalapi__getnzb_args, locations=['querystring'])
@@ -826,7 +829,7 @@ def internalapi_getsafeconfig():
 @requires_auth("main")
 def internalapi_maySeeAdminArea():
     logger.debug("Get isAdminLoggedIn request")
-    return jsonify({"maySeeAdminArea": maySeeAdminArea()})
+    return jsonify({"maySeeAdminArea": isAdminLoggedIn()})
 
 
 @app.route('/internalapi/askforadmin')

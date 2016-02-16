@@ -36,6 +36,16 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                 }]
             }
         })
+        .state("config.auth", {
+            url: "/auth",
+            templateUrl: "static/html/states/config.html",
+            controller: "ConfigController",
+            resolve: {
+                config: ['ConfigService', function (ConfigService) {
+                    return ConfigService.get();
+                }]
+            }
+        })
         .state("config.searching", {
             url: "/searching",
             templateUrl: "static/html/states/config.html",

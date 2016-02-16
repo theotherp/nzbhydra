@@ -24,6 +24,7 @@
         <th>Title</th>
         <th>Successful</th>
         <th>Access</th>
+        <th>Username</th>
     </tr>
     </thead>
     <tbody>
@@ -33,6 +34,7 @@
         <td><addable-nzb guid="nzbDownload.guid"></addable-nzb> {{ nzbDownload.title }}</td>
         <td><span class="glyphicon" ng-class="{'glyphicon-ok': nzbDownload.response_successful, 'glyphicon-remove': !nzbDownload.response_successful }"></span></td>
         <td>{{ nzbDownload.internal ? "Internal" : "API"}}</td>
+        <td>{{ nzbDownload.username }}</td>
     </tr>
     </tbody>
 </table>

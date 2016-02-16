@@ -84,7 +84,7 @@ def get_avg_indexer_access_success():
 
 def get_nzb_downloads(page=0, limit=100, type=None):
     query = IndexerNzbDownload()\
-        .select(Indexer.name, IndexerNzbDownload.title, IndexerNzbDownload.time, IndexerNzbDownload.guid, Search.internal, IndexerApiAccess.response_successful)\
+        .select(Indexer.name, IndexerNzbDownload.title, IndexerNzbDownload.time, IndexerNzbDownload.guid, Search.internal, IndexerApiAccess.response_successful, IndexerApiAccess.username)\
         .join(IndexerSearch, JOIN.LEFT_OUTER)\
         .join(Search, JOIN.LEFT_OUTER)\
         .switch(IndexerNzbDownload)\
@@ -102,7 +102,7 @@ def get_nzb_downloads(page=0, limit=100, type=None):
 
 
 def get_search_requests(page=0, limit=100, type=None):
-    query = Search().select(Search.time, Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type)
+    query = Search().select(Search.time, Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type, Search.username)
     if type is not None and type != "All":
         query = query.where(Search.internal) if type == "Internal" else query.where(~Search.internal)
     total_requests = query.count()

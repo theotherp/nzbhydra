@@ -3,15 +3,13 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import shutil
 import traceback
 from contextlib import contextmanager
 from sets import Set
 
 import arrow
-import shutil
-from future import standard_library
-
-#standard_library.install_aliases()
+# standard_library.install_aliases()
 from builtins import *
 import json
 import logging
@@ -21,7 +19,6 @@ from furl import furl
 from bunch import Bunch
 
 logger = logging.getLogger('root')
-
 
 initialConfig = {
     "downloader": {
@@ -108,15 +105,10 @@ initialConfig = {
         }
     },
     "main": {
-        "adminPassword": "",
-        "adminUsername": "",
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 8,
+        "configVersion": 9,
         "debug": False,
-        "enableAdminAuth": False,
-        "enableAdminAuthForStats": False,
-        "enableAuth": False,
         "externalUrl": None,
         "flaskReloader": False,
         "host": "0.0.0.0",
@@ -125,7 +117,6 @@ initialConfig = {
             "logfilename": "nzbhydra.log",
             "logfilelevel": "INFO"
         },
-        "password": "",
         "port": 5075,
         "repositoryBase": "https://github.com/theotherp",
         "runThreaded": False,
@@ -135,7 +126,6 @@ initialConfig = {
         "startupBrowser": True,
         "urlBase": None,
         "useLocalUrlForApiAccess": True,
-        "username": ""
     },
     "searching": {
         "categorysizes": {
@@ -180,9 +170,11 @@ initialConfig = {
         "removeDuplicatesExternal": True,
         "timeout": 20,
         "userAgent": "NZBHydra"
+    },
+    "auth": {
+        "users": []
     }
 }
-
 
 settings = Bunch()
 config_file = None
@@ -233,8 +225,7 @@ def version_update(config, version):
     except Exception as e:
         addLogMessage(30, "Exception while trying to migrate config: %s" % e)
         raise
-        
-    
+
 
 def migrate(settingsFilename):
     with open(settingsFilename) as settingsFile:
@@ -262,7 +253,7 @@ def migrate(settingsFilename):
                             addLogMessage(20, "Built sabnzbd URL: %s" % f.url)
                         elif config["downloader"]["downloader"] == "sabnzbd":
                             addLogMessage(30, "Unable to migrate from incomplete sabnzbd settings. Please set the sabnzbd URL manually")
-                
+
                 if config["main"]["configVersion"] == 2:
                     with version_update(config, 3):
                         addLogMessage(20, "Updating NZBClub host to https://www.nzbclub.com")
@@ -321,12 +312,12 @@ def migrate(settingsFilename):
                         config["indexers"].pop("NZBIndex")
                         config["indexers"]["womble"] = config["indexers"]["Womble"]
                         config["indexers"].pop("Womble")
-    
+
                         config["main"]["logging"]["logfilelevel"] = config["main"]["logging"]["logfile-level"]
                         config["main"]["logging"].pop("logfile-level")
                         config["main"]["logging"]["logfilename"] = config["main"]["logging"]["logfile-filename"]
                         config["main"]["logging"].pop("logfile-filename")
-    
+
                         addLogMessage(20, "Moving newznab indexers")
                         config["indexers"]["newznab"] = []
                         for i in range(1, 41):
@@ -335,6 +326,37 @@ def migrate(settingsFilename):
                                 config["indexers"]["newznab"].append(indexer_cfg)
                             config["indexers"].pop("newznab%d" % i)
 
+                if config["main"]["configVersion"] == 8:
+                    with version_update(config, 9):
+                        config["auth"] = {"users": []}
+                        adminNeededForStats = config["main"]["enableAdminAuthForStats"]
+                        if config["main"]["enableAuth"] and config["main"]["username"]:
+                            addLogMessage(20, "Will require auth for any access")
+                            if config["main"]["enableAdminAuth"]:
+                                if adminNeededForStats:
+                                    addLogMessage(20, "Creating user %s with basic rights." % config["main"]["username"])
+                                else:
+                                    addLogMessage(20, "Creating user %s with basic and stats rights." % config["main"]["username"])
+                                config["auth"]["users"].append({"name": config["main"]["username"], "password": config["main"]["password"], "maySeeStats": not adminNeededForStats, "maySeeAdmin": False})
+                            else:
+                                addLogMessage(20, "Creating simple user %s with all rights." % config["main"]["username"])
+                                config["auth"]["users"].append({"name": config["main"]["username"], "password": config["main"]["password"], "maySeeStats": True, "maySeeAdmin": True})
+                        else:
+                            if config["main"]["enableAdminAuth"]:
+                                if adminNeededForStats:
+                                    addLogMessage(20, "Auth will be required for stats and admin access")
+                                else:
+                                    addLogMessage(20, "Auth will be required for admin access")
+                                config["auth"]["users"].append({"name": None, "password": None, "maySeeStats": not adminNeededForStats, "maySeeAdmin": False})
+                            else:
+                                addLogMessage(20, "No auth required for any access")
+                                config["auth"]["users"].append({"name": None, "password": None, "maySeeStats": True, "maySeeAdmin": True})
+
+                        if config["main"]["enableAdminAuth"] and config["main"]["adminUsername"]:
+                            addLogMessage(20, "Creating user %s with admin rights." % config["main"]["adminUsername"])
+                            config["auth"]["users"].append({"name": config["main"]["adminUsername"], "password": config["main"]["adminPassword"], "maySeeStats": True, "maySeeAdmin": True})
+                            if not (config["main"]["enableAuth"] and config["main"]["username"]):
+                                addLogMessage(20, "Will require auth only for any admin access")
 
             except Exception as e:
                 addLogMessage(30, "An error occurred while migrating the config file. A backup file of the original setttings was created: %s" % backupFilename)
@@ -346,13 +368,13 @@ def load(filename):
     global config_file
     global settings
     config_file = filename
-    if os.path.exists(filename):            
+    if os.path.exists(filename):
         try:
             migratedConfig = migrate(filename)
             settings = Bunch.fromDict(update(initialConfig, migratedConfig, level="root"))
         except Exception as e:
             addLogMessage(30, "An error occurred while migrating the settings: %s" % traceback.format_exc())
-            #Now what?
+            # Now what?
     else:
         settings = initialConfig
 
@@ -369,7 +391,6 @@ def save(filename):
     global settings
     with open(filename, "w", encoding="utf-8") as f:
         f.write(json.dumps(settings, ensure_ascii=False, indent=4, sort_keys=True))
-
 
 
 class CacheTypeSelection(object):
@@ -393,8 +414,6 @@ class InternalExternalSelection(object):
     internal = "internal"
     external = "external"
     options = [internal, external]
-
-
 
 
 class NzbAccessTypeSelection(object):
@@ -436,6 +455,3 @@ def getSafeConfig():
         "searching": {"categorysizes": settings["searching"]["categorysizes"]},
         "downloader": {"downloader": settings["downloader"]["downloader"], "nzbget": {"defaultCategory": settings["downloader"]["nzbget"]["defaultCategory"]}, "sabnzbd": {"defaultCategory": settings["downloader"]["sabnzbd"]["defaultCategory"]}}
     }
-
-
-

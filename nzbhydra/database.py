@@ -4,6 +4,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 # standard_library.install_aliases()
+import shutil
+
 from builtins import *
 from builtins import object
 import json
@@ -18,6 +20,7 @@ logger = logging.getLogger('root')
 
 db = SqliteExtDatabase(None, threadlocals=True, journal_mode="WAL")
 
+DATABASE_VERSION = 4
 
 
 class JSONField(TextField):
@@ -57,6 +60,7 @@ class Search(Model):
     season = IntegerField(null=True)
     episode = IntegerField(null=True)
     type = CharField(default="general")
+    username = CharField(null=True)
 
     class Meta(object):
         database = db
@@ -93,6 +97,7 @@ class IndexerApiAccess(Model):
     response_successful = BooleanField(default=False, null=True)
     response_time = IntegerField(null=True)
     error = CharField(null=True)
+    username = CharField(null=True)
 
     class Meta(object):
         database = db
@@ -138,7 +143,7 @@ class IndexerStatus(Model):
 
 
 class VersionInfo(Model):
-    version = IntegerField(default=1)
+    version = IntegerField(default=DATABASE_VERSION)
 
     class Meta(object):
         database = db
@@ -175,7 +180,7 @@ def init_db(dbfile):
             logger.exception("Error while creating table %s" % t)
 
     logger.info("Created new version info entry with database version 1")
-    VersionInfo(version=3).create()
+    VersionInfo(version=DATABASE_VERSION).create()
 
     db.close()
 
@@ -189,47 +194,62 @@ def update_db(dbfile):
     try:
         db.create_table(VersionInfo)
         logger.info("Added new version info entry with database version 1 to existing database")
-        VersionInfo(version=2).create()
+        VersionInfo(version=4).create()
     except OperationalError:
         logger.debug("Skipping creation of table VersionInfo because it already exists")
         pass
 
     vi = VersionInfo.get()
-    if vi.version == 1:
-        logger.info("Upgrading database to version 2")
-        # Update from 1 to 2
-        # Add tv id cache info 
-        try:
-            logger.info("Adding new table TvIdCache to database")
-            db.create_table(TvIdCache)
-        except OperationalError:
-            logger.error("Error adding table TvIdCache to database")
-            # TODO How should we handle this?
-            pass
-        vi.version = 2
-        vi.save()
-    if vi.version == 2:
-        logger.info("Upgrading database to version 3")
-        # Update from 2 to 3
-        # Add tvmaze cache info column 
-        try:
-            logger.debug("Deleting all rows in TvIdCache")
-            TvIdCache.delete().execute()
+    if vi.version < DATABASE_VERSION:
+        logger.info("Migrating database")
+        backupFilename = "%s.%s.bak" % (dbfile, arrow.now().format("YYYY-MM-DD"))
+        logger.info("Copying backup of database to %s" % backupFilename)
+        shutil.copy(dbfile, backupFilename)
+    
+        if vi.version == 1:
+            logger.info("Upgrading database to version 2")
+            # Update from 1 to 2
+            # Add tv id cache info 
+            try:
+                logger.info("Adding new table TvIdCache to database")
+                db.create_table(TvIdCache)
+            except OperationalError:
+                logger.error("Error adding table TvIdCache to database")
+                # TODO How should we handle this?
+                pass
+            vi.version = 2
+            vi.save()
+        if vi.version == 2:
+            logger.info("Upgrading database to version 3")
+            # Update from 2 to 3
+            # Add tvmaze cache info column 
+            try:
+                logger.debug("Deleting all rows in TvIdCache")
+                TvIdCache.delete().execute()
+                migrator = SqliteMigrator(db)
+                logger.info("Adding new column tvmaze to table TvIdCache, setting nullable columns and adding index")
+                migrate(
+                        migrator.add_column("tvidcache", "tvmaze", TvIdCache.tvmaze),
+                        migrator.drop_not_null("tvidcache", "tvdb"),
+                        migrator.drop_not_null("tvidcache", "tvrage"),
+                        migrator.add_index("tvidcache", ("tvdb", "tvrage", "tvmaze"), True)
+                )
+                logger.info("Adding new table MovieIdCache")
+                db.create_table(MovieIdCache)
+            except OperationalError:
+                logger.error("Error adding columb tvmaze to table TvIdCache")
+                # TODO How should we handle this?
+                pass
+            vi.version = 3
+            vi.save()
+        if vi.version == 3:
+            logger.info("Upgrading database to version 4")
+            logger.info("Adding columns for usernames")
             migrator = SqliteMigrator(db)
-            logger.info("Adding new column tvmaze to table TvIdCache, setting nullable columns and adding index")
             migrate(
-                    migrator.add_column("tvidcache", "tvmaze", TvIdCache.tvmaze),
-                    migrator.drop_not_null("tvidcache", "tvdb"),
-                    migrator.drop_not_null("tvidcache", "tvrage"),
-                    migrator.add_index("tvidcache", ("tvdb", "tvrage", "tvmaze"), True)
-            )
-            logger.info("Adding new table MovieIdCache")
-            db.create_table(MovieIdCache)
-        except OperationalError:
-            logger.error("Error adding columb tvmaze to table TvIdCache")
-            # TODO How should we handle this?
-            pass
-        vi.version = 3
-        vi.save()
-
+                    migrator.add_column("indexerapiaccess", "username", IndexerApiAccess.username),
+                    migrator.add_column("search", "username", Search.username)
+                    )
+            vi.version = 4
+            vi.save()
     db.close()

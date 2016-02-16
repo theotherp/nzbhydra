@@ -61,6 +61,11 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             fields: $scope.fields.main
         },
         {
+            name: 'Authorization',
+            model: ConfigModel.auth,
+            fields: $scope.fields.auth
+        },
+        {
             name: 'Searching',
             model: ConfigModel.searching,
             fields: $scope.fields.searching
@@ -81,6 +86,10 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
         {
             active: false,
             state: 'config'
+        },
+        {
+            active: false,
+            state: 'config.auth'
         },
         {
             active: false,

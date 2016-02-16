@@ -35,6 +35,19 @@ angular
             ].join(' ')
         });
 
+        formlyConfigProvider.setType({
+            name: 'help',
+            template: [
+                '<div class="panel panel-default">',
+                '<div class="panel-body">',
+                '<div ng-repeat="line in options.templateOptions.lines">{{ line }}</div>',
+                '</div>',
+                '</div>'
+            ].join(' ')
+        });
+        
+        
+
         formlyConfigProvider.setWrapper({
             name: 'logicalGroup',
             template: [
