@@ -3,8 +3,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from contextlib import contextmanager
 from random import shuffle
 
+import flask
 import pytest
 from bunch import Bunch
 from future import standard_library
@@ -110,8 +112,12 @@ class SearchTests(unittest.TestCase):
         database.IndexerStatus.delete().execute()
         database.IndexerSearch.delete().execute()
 
+        self.app = flask.Flask(__name__)
+
     def tearDown(self):
-        search.start_search_futures = self.oldExecute_search_queries
+        search.start_search_futures = self.oldExecute_search_queries    
+            
+            
 
     def test_pick_indexers(self):
         config.settings.searching.generate_queries= []
@@ -428,223 +434,231 @@ class SearchTests(unittest.TestCase):
     
     @responses.activate
     def testSimpleSearch(self):
-        # Only use newznab indexers
-        with responses.RequestsMock() as rsps:
-            self.prepareSearchMocks(rsps, 2, 1)
-    
-            searchRequest = SearchRequest(type="search")
-            result = search.search(True, searchRequest)
-            results = result["results"]
-            self.assertEqual(2, len(results))
-            self.assertEqual("newznab1", results[0].indexer)
-            self.assertEqual("newznab2", results[1].indexer)
+        with self.app.test_request_context('/'):
+            # Only use newznab indexers
+            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+                self.prepareSearchMocks(rsps, 2, 1)
+        
+                searchRequest = SearchRequest(type="search")
+                result = search.search(True, searchRequest)
+                results = result["results"]
+                self.assertEqual(2, len(results))
+                self.assertEqual("newznab1", results[0].indexer)
+                self.assertEqual("newznab2", results[1].indexer)
     
     @responses.activate
     def testLimitAndOffset(self):
-        # Only use newznab indexers
-        with responses.RequestsMock() as rsps:
-            # Prepare 12 results
-            self.prepareSearchMocks(rsps, 2, 6)
-            # Search with a limit of 6        
-            searchRequest = SearchRequest(limit=6, type="search")
-            result = search.search(False, searchRequest)
-            results = result["results"]
-            self.assertEqual(6, len(results), "Expected the limit of 6 to be respected")
-            self.assertEqual("newznab1result1.title", results[0].title)
-            self.assertEqual("newznab1result6.title", results[5].title)
-    
-            # Search again with an offset, expect the next (and last ) 6 results
-            searchRequest = SearchRequest(offset=6, limit=100, type="search")
-            result = search.search(False, searchRequest)
-            results = result["results"]
-            self.assertEqual(6, len(results), "Expected the limit of 6 to be respected")
-            self.assertEqual("newznab2result1.title", results[0].title)
+        with self.app.test_request_context('/'):
+            # Only use newznab indexers
+            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+                # Prepare 12 results
+                self.prepareSearchMocks(rsps, 2, 6)
+                # Search with a limit of 6        
+                searchRequest = SearchRequest(limit=6, type="search")
+                result = search.search(False, searchRequest)
+                results = result["results"]
+                self.assertEqual(6, len(results), "Expected the limit of 6 to be respected")
+                self.assertEqual("newznab1result1.title", results[0].title)
+                self.assertEqual("newznab1result6.title", results[5].title)
+        
+                # Search again with an offset, expect the next (and last ) 6 results
+                searchRequest = SearchRequest(offset=6, limit=100, type="search")
+                result = search.search(False, searchRequest)
+                results = result["results"]
+                self.assertEqual(6, len(results), "Expected the limit of 6 to be respected")
+                self.assertEqual("newznab2result1.title", results[0].title)
     
     @responses.activate
     def testDuplicateRemovalForExternalApi(self):
         config.settings.searching.removeDuplicatesExternal = True
-        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-            newznabItems = [
-                [mockbuilder.buildNewznabItem(title="title", pubdate=arrow.get(0000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab1")],
-                [mockbuilder.buildNewznabItem(title="title", pubdate=arrow.get(1000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab2")],
-                [mockbuilder.buildNewznabItem(title="title", pubdate=arrow.get(3000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab3")],
-                [mockbuilder.buildNewznabItem(title="title", pubdate=arrow.get(2000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab4")]
-            ]
-    
-            self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
-    
-            # Test that the newest result is chosen if all scores are equal
-            searchRequest = SearchRequest(type="search")
-            result = search.search(False, searchRequest)
-            results = result["results"]
-            self.assertEqual(1, len(results))
-            self.assertEqual("newznab3", results[0].indexer)            
-    
-            # Test that results from an indexer with a higher score are preferred
-            self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
-            config.settings.indexers.newznab[1].score = 99
-            searchRequest = SearchRequest(type="search")
-            result = search.search(False, searchRequest)
-            results = result["results"]
-            self.assertEqual(1, len(results))
-            self.assertEqual("newznab2", results[0].indexer)
+        with self.app.test_request_context('/'):
+            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+                newznabItems = [
+                    [mockbuilder.buildNewznabItem(title="title", pubdate=arrow.get(0000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab1")],
+                    [mockbuilder.buildNewznabItem(title="title", pubdate=arrow.get(1000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab2")],
+                    [mockbuilder.buildNewznabItem(title="title", pubdate=arrow.get(3000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab3")],
+                    [mockbuilder.buildNewznabItem(title="title", pubdate=arrow.get(2000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab4")]
+                ]
+        
+                self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
+        
+                # Test that the newest result is chosen if all scores are equal
+                searchRequest = SearchRequest(type="search")
+                result = search.search(False, searchRequest)
+                results = result["results"]
+                self.assertEqual(1, len(results))
+                self.assertEqual("newznab3", results[0].indexer)            
+        
+                # Test that results from an indexer with a higher score are preferred
+                self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
+                config.settings.indexers.newznab[1].score = 99
+                searchRequest = SearchRequest(type="search")
+                result = search.search(False, searchRequest)
+                results = result["results"]
+                self.assertEqual(1, len(results))
+                self.assertEqual("newznab2", results[0].indexer)
     
     @responses.activate
     def testDuplicateTaggingForInternalApi(self):
-        with responses.RequestsMock() as rsps:
-            newznabItems = [
-                [mockbuilder.buildNewznabItem(title="title1", pubdate=arrow.get(1000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab1", guid="newznab1result1"),
-                 mockbuilder.buildNewznabItem(title="title2", pubdate=arrow.get(3000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab1", guid="newznab1result2")],
-                [mockbuilder.buildNewznabItem(title="title1", pubdate=arrow.get(2000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab2", guid="newznab1result1"),
-                 mockbuilder.buildNewznabItem(title="title2", pubdate=arrow.get(4000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab2", guid="newznab2result2")]
-            ]
-    
-            self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
-    
-            searchRequest = SearchRequest(type="search")
-            result = search.search(True, searchRequest)
-            results = result["results"]
-            self.assertEqual(4, len(results))
-            results = sorted(results, key=lambda x: x.hash)
-            self.assertEqual(results[0].hash, results[1].hash)
-            self.assertEqual(results[2].hash, results[3].hash)
+        with self.app.test_request_context('/'):
+            with responses.RequestsMock() as rsps:
+                newznabItems = [
+                    [mockbuilder.buildNewznabItem(title="title1", pubdate=arrow.get(1000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab1", guid="newznab1result1"),
+                     mockbuilder.buildNewznabItem(title="title2", pubdate=arrow.get(3000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab1", guid="newznab1result2")],
+                    [mockbuilder.buildNewznabItem(title="title1", pubdate=arrow.get(2000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab2", guid="newznab1result1"),
+                     mockbuilder.buildNewznabItem(title="title2", pubdate=arrow.get(4000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab2", guid="newznab2result2")]
+                ]
+        
+                self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
+        
+                searchRequest = SearchRequest(type="search")
+                result = search.search(True, searchRequest)
+                results = result["results"]
+                self.assertEqual(4, len(results))
+                results = sorted(results, key=lambda x: x.hash)
+                self.assertEqual(results[0].hash, results[1].hash)
+                self.assertEqual(results[2].hash, results[3].hash)
     
     @responses.activate
     def testThatResultsAreSortedByAgeDescending(self):
-        with responses.RequestsMock() as rsps:
-            newznabItems = [
-                [mockbuilder.buildNewznabItem(title="title1", pubdate=arrow.get(1000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab1")],
-                [mockbuilder.buildNewznabItem(title="title2", pubdate=arrow.get(0000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab2")],
-                [mockbuilder.buildNewznabItem(title="title3", pubdate=arrow.get(3000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab3")],
-                [mockbuilder.buildNewznabItem(title="title4", pubdate=arrow.get(4000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab4")],
-                [mockbuilder.buildNewznabItem(title="title5", pubdate=arrow.get(2000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab5")]
-            ]
-    
-            self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
-    
-            searchRequest = SearchRequest(type="search")
-            result = search.search(True, searchRequest)
-            results = result["results"]
-            self.assertEqual("title4", results[0].title)
-            self.assertEqual("title3", results[1].title)
-            self.assertEqual("title5", results[2].title)
-            self.assertEqual("title1", results[3].title)
-            self.assertEqual("title2", results[4].title)
+        with self.app.test_request_context('/'):
+            with responses.RequestsMock() as rsps:
+                newznabItems = [
+                    [mockbuilder.buildNewznabItem(title="title1", pubdate=arrow.get(1000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab1")],
+                    [mockbuilder.buildNewznabItem(title="title2", pubdate=arrow.get(0000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab2")],
+                    [mockbuilder.buildNewznabItem(title="title3", pubdate=arrow.get(3000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab3")],
+                    [mockbuilder.buildNewznabItem(title="title4", pubdate=arrow.get(4000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab4")],
+                    [mockbuilder.buildNewznabItem(title="title5", pubdate=arrow.get(2000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab5")]
+                ]
+        
+                self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
+        
+                searchRequest = SearchRequest(type="search")
+                result = search.search(True, searchRequest)
+                results = result["results"]
+                self.assertEqual("title4", results[0].title)
+                self.assertEqual("title3", results[1].title)
+                self.assertEqual("title5", results[2].title)
+                self.assertEqual("title1", results[3].title)
+                self.assertEqual("title2", results[4].title)
     
     @responses.activate
     @pytest.mark.current
     @freeze_time("2015-10-12 18:00:00", tz_offset=0)
     def testThatDatabaseValuesAreStored(self):
-        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-            newznabItems = [
-                [mockbuilder.buildNewznabItem(title="title1", pubdate=arrow.get(1000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab1")],
-                [mockbuilder.buildNewznabItem(title="title2", pubdate=arrow.get(1000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab2")]
-            ]
-    
-            self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
-            #Make the second access unsuccessful
-            rsps._urls.pop(1)
-            rsps.add(responses.GET, r".*",
-                     body="an error message", status=500,
-                     content_type='application/x-html')
-    
-            searchRequest = SearchRequest(type="search", query="aquery", category="acategory", identifier_key="imdbid", identifier_value="animdbid", season=1, episode=2, indexers="newznab1|newznab2")
-            result = search.search(True, searchRequest)
-            results = result["results"]
-            self.assertEqual(1, len(results))
-            
-            dbSearch = Search().get()
-            self.assertEqual(True, dbSearch.internal)
-            self.assertEqual("aquery", dbSearch.query)
-            self.assertEqual("acategory", dbSearch.category)
-            self.assertEqual("imdbid", dbSearch.identifier_key)
-            self.assertEqual("animdbid", dbSearch.identifier_value)
-            self.assertEqual(1, dbSearch.season)
-            self.assertEqual(2, dbSearch.episode)
-            self.assertEqual("search", dbSearch.type)
-            self.assertEqual(18, dbSearch.time.hour)
-            
-            indexerSearch1 = IndexerSearch.get(IndexerSearch.indexer == Indexer.get(Indexer.name == "newznab1"))
-            self.assertEqual(indexerSearch1.search, dbSearch)
-            self.assertEqual(18, indexerSearch1.time.hour)
-    
-            indexerSearch2 = IndexerSearch.get(IndexerSearch.indexer == Indexer.get(Indexer.name == "newznab2"))
-            self.assertEqual(indexerSearch2.search, dbSearch)
-            self.assertEqual(18, indexerSearch2.time.hour)
-            
-            calledUrls = sorted([x.request.url for x in rsps.calls])
-            
-            indexerApiAccess1 = IndexerApiAccess.get(IndexerApiAccess.indexer == Indexer.get(Indexer.name == "newznab1"))
-            self.assertEqual(indexerSearch1, indexerApiAccess1.indexer_search)
-            self.assertEqual(18, indexerApiAccess1.time.hour)
-            self.assertEqual("search", indexerApiAccess1.type)
-            self.assertEqual(calledUrls[0], indexerApiAccess1.url)
-            self.assertTrue(indexerApiAccess1.response_successful)
-            self.assertEqual(0, indexerApiAccess1.response_time)
-            self.assertIsNone(indexerApiAccess1.error)
-    
-            indexerApiAccess2 = IndexerApiAccess.get(IndexerApiAccess.indexer == Indexer.get(Indexer.name == "newznab2"))
-            self.assertEqual(indexerSearch2, indexerApiAccess2.indexer_search)
-            self.assertEqual(18, indexerApiAccess2.time.hour)
-            self.assertEqual("search", indexerApiAccess2.type)
-            self.assertEqual(calledUrls[1], indexerApiAccess2.url)
-            self.assertFalse(indexerApiAccess2.response_successful)
-            self.assertIsNone(indexerApiAccess2.response_time)
-            self.assertTrue("Connection refused" in indexerApiAccess2.error)
-            
-            indexerStatus2 = IndexerStatus.get(IndexerStatus.indexer == Indexer.get(Indexer.name == "newznab2"))
-            self.assertEqual(1, indexerStatus2.level)
-            self.assertTrue("Connection refused" in indexerStatus2.reason)
+        with self.app.test_request_context('/'):
+            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+                newznabItems = [
+                    [mockbuilder.buildNewznabItem(title="title1", pubdate=arrow.get(1000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab1")],
+                    [mockbuilder.buildNewznabItem(title="title2", pubdate=arrow.get(1000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=1000, indexer_name="newznab2")]
+                ]
+        
+                self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
+                #Make the second access unsuccessful
+                rsps._urls.pop(1)
+                rsps.add(responses.GET, r".*",
+                         body="an error message", status=500,
+                         content_type='application/x-html')
+        
+                searchRequest = SearchRequest(type="search", query="aquery", category="acategory", identifier_key="imdbid", identifier_value="animdbid", season=1, episode=2, indexers="newznab1|newznab2")
+                result = search.search(True, searchRequest)
+                results = result["results"]
+                self.assertEqual(1, len(results))
+                
+                dbSearch = Search().get()
+                self.assertEqual(True, dbSearch.internal)
+                self.assertEqual("aquery", dbSearch.query)
+                self.assertEqual("acategory", dbSearch.category)
+                self.assertEqual("imdbid", dbSearch.identifier_key)
+                self.assertEqual("animdbid", dbSearch.identifier_value)
+                self.assertEqual(1, dbSearch.season)
+                self.assertEqual(2, dbSearch.episode)
+                self.assertEqual("search", dbSearch.type)
+                self.assertEqual(18, dbSearch.time.hour)
+                
+                indexerSearch1 = IndexerSearch.get(IndexerSearch.indexer == Indexer.get(Indexer.name == "newznab1"))
+                self.assertEqual(indexerSearch1.search, dbSearch)
+                self.assertEqual(18, indexerSearch1.time.hour)
+        
+                indexerSearch2 = IndexerSearch.get(IndexerSearch.indexer == Indexer.get(Indexer.name == "newznab2"))
+                self.assertEqual(indexerSearch2.search, dbSearch)
+                self.assertEqual(18, indexerSearch2.time.hour)
+                
+                calledUrls = sorted([x.request.url for x in rsps.calls])
+                
+                indexerApiAccess1 = IndexerApiAccess.get(IndexerApiAccess.indexer == Indexer.get(Indexer.name == "newznab1"))
+                self.assertEqual(indexerSearch1, indexerApiAccess1.indexer_search)
+                self.assertEqual(18, indexerApiAccess1.time.hour)
+                self.assertEqual("search", indexerApiAccess1.type)
+                self.assertEqual(calledUrls[0], indexerApiAccess1.url)
+                self.assertTrue(indexerApiAccess1.response_successful)
+                self.assertEqual(0, indexerApiAccess1.response_time)
+                self.assertIsNone(indexerApiAccess1.error)
+        
+                indexerApiAccess2 = IndexerApiAccess.get(IndexerApiAccess.indexer == Indexer.get(Indexer.name == "newznab2"))
+                self.assertEqual(indexerSearch2, indexerApiAccess2.indexer_search)
+                self.assertEqual(18, indexerApiAccess2.time.hour)
+                self.assertEqual("search", indexerApiAccess2.type)
+                self.assertEqual(calledUrls[1], indexerApiAccess2.url)
+                self.assertFalse(indexerApiAccess2.response_successful)
+                self.assertIsNone(indexerApiAccess2.response_time)
+                self.assertTrue("Connection refused" in indexerApiAccess2.error)
+                
+                indexerStatus2 = IndexerStatus.get(IndexerStatus.indexer == Indexer.get(Indexer.name == "newznab2"))
+                self.assertEqual(1, indexerStatus2.level)
+                self.assertTrue("Connection refused" in indexerStatus2.reason)
     
     @responses.activate
     @pytest.mark.current
     def test20Searches(self):
-        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-            self.prepareSearchMocks(rsps, indexerCount=20, resultsPerIndexers=1)
-    
-            searchRequest = SearchRequest(type="search")
-            result = search.search(True, searchRequest)
-            results = result["results"]
-            self.assertEqual(20, len(results))
+        with self.app.test_request_context('/'):
+            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+                self.prepareSearchMocks(rsps, indexerCount=20, resultsPerIndexers=1)
+        
+                searchRequest = SearchRequest(type="search")
+                result = search.search(True, searchRequest)
+                results = result["results"]
+                self.assertEqual(20, len(results))
     
     
     @responses.activate
     def testIgnoreWords(self):
-        with responses.RequestsMock() as rsps:
-            self.prepareSearchMocks(rsps, 2, 2)
-            config.settings.searching.ignoreWords = "newznab1"
-            searchRequest = SearchRequest(type="search")
-            result = search.search(True, searchRequest)
-            config.settings.searching.ignoreWords = None
-            results = result["results"]
-            self.assertEqual(2, len(results))
+        with self.app.test_request_context('/'):
+            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+                self.prepareSearchMocks(rsps, 2, 2)
+                config.settings.searching.ignoreWords = "newznab1"
+                searchRequest = SearchRequest(type="search")
+                result = search.search(True, searchRequest)
+                config.settings.searching.ignoreWords = None
+                results = result["results"]
+                self.assertEqual(2, len(results))
+            
+            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+                self.prepareSearchMocks(rsps, 2, 2)
+                config.settings.searching.ignoreWords= "newznab1, something, else"
+                searchRequest = SearchRequest(type="search")
+                result = search.search(True, searchRequest)
+                config.settings.searching.ignoreWords = None
+                results = result["results"]
+                self.assertEqual(2, len(results))
         
-        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-            self.prepareSearchMocks(rsps, 2, 2)
-            config.settings.searching.ignoreWords= "newznab1, something, else"
-            searchRequest = SearchRequest(type="search")
-            result = search.search(True, searchRequest)
-            config.settings.searching.ignoreWords = None
-            results = result["results"]
-            self.assertEqual(2, len(results))
-    
-        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-            self.prepareSearchMocks(rsps, 2, 2)
-            config.settings.searching.ignoreWords= "newznab1, newznab2"
-            searchRequest = SearchRequest(type="search")
-            result = search.search(True, searchRequest)
-            config.settings.searching.ignoreWords = None
-            results = result["results"]
-            self.assertEqual(0, len(results))
-    
-        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-            self.prepareSearchMocks(rsps, 2, 2, "newznab %d result%d.title")
-            config.settings.searching.ignoreWords= "newznab 1, newznab 2" #Ignore both
-            searchRequest = SearchRequest(type="search")
-            result = search.search(True, searchRequest)
-            config.settings.searching.ignoreWords = None
-            results = result["results"]
-            self.assertEqual(0, len(results))
+            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+                self.prepareSearchMocks(rsps, 2, 2)
+                config.settings.searching.ignoreWords= "newznab1, newznab2"
+                searchRequest = SearchRequest(type="search")
+                result = search.search(True, searchRequest)
+                config.settings.searching.ignoreWords = None
+                results = result["results"]
+                self.assertEqual(0, len(results))
+        
+            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+                self.prepareSearchMocks(rsps, 2, 2, "newznab %d result%d.title")
+                config.settings.searching.ignoreWords= "newznab 1, newznab 2" #Ignore both
+                searchRequest = SearchRequest(type="search")
+                result = search.search(True, searchRequest)
+                config.settings.searching.ignoreWords = None
+                results = result["results"]
+                self.assertEqual(0, len(results))
 
     def testFindDuplicatesWithDD(self):
         import jsonpickle

@@ -65,7 +65,6 @@ gulp.task('less', function () {
     var dest = '.tmp/static/css';
     gulp.src('ui-src/less/nzbhydra.less')
         .pipe(sourcemaps.init())
-        .pipe(newer(dest))
         .pipe(less())
         .on('error', swallowError)
         .pipe(sourcemaps.write("."))
@@ -75,22 +74,18 @@ gulp.task('less', function () {
 gulp.task('copy-assets', function () {
     var fontDest = '.tmp/static/fonts';
     var fonts = gulp.src("bower_components/bootstrap/fonts/*")
-        .pipe(changed(fontDest))
         .pipe(gulp.dest(fontDest));
 
     var imgDest = '.tmp/static/img';
     var img = gulp.src("ui-src/img/**/*")
-        .pipe(changed(imgDest))
         .pipe(gulp.dest(imgDest));
 
     var htmlDest = '.tmp/static/html';
     var html = gulp.src("ui-src/html/**/*")
-        .pipe(changed(htmlDest))
         .pipe(gulp.dest(htmlDest));
 
     var htmlIndex = '.tmp/';
     var html = gulp.src("ui-src/index.html")
-        .pipe(changed(htmlIndex))
         .pipe(gulp.dest(htmlIndex));
 
     return merge(img, html, fonts);
