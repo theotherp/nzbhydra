@@ -134,7 +134,7 @@ gulp.task('reload', function () {
 });
 
 gulp.task('index', function () {
-    runSequence(['clean-static', 'clean-tmp'], 'revision', 'move-indexhtml', 'clean-indexhtml', 'add', 'reload');
+    runSequence(['clean-static', 'clean-tmp'], 'revision', 'move-indexhtml', 'clean-indexhtml', 'add', 'reload', 'clean-tmp');
 });
 
 function swallowError(error) {
