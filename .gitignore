@@ -11,7 +11,7 @@
 /node_modules
 /bower_components
 *.db*
-*.cfg
+/*.cfg
 *.bak
 *.log
 /nzbhydra_virtualenv
