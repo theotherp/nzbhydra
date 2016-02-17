@@ -349,10 +349,10 @@ angular
             extends: 'select',
             wrapper: ['settingWrapper', 'bootstrapHasError']
         });
-
-
+        
+        
         formlyConfigProvider.setType({
-            name: 'ui-select-multiple',
+            name: 'horizontalMultiselect',
             defaultOptions: {
                 templateOptions: {
                     optionsAttr: 'bs-options',
@@ -361,12 +361,6 @@ angular
                     labelProp: 'label'
                 }
             },
-            templateUrl: 'ui-select-multiple.html'
-        });
-
-        formlyConfigProvider.setType({
-            name: 'horizontalMultiselect',
-            extends: 'ui-select-multiple',
             templateUrl: 'ui-select-multiple.html',
             wrapper: ['settingWrapper', 'bootstrapHasError']
         });

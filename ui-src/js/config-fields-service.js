@@ -560,7 +560,7 @@ function ConfigFields() {
                                 type: 'text',
                                 label: 'User agent',
                                 required: true
-                            },
+                            }
                         }
                     ]
                 },
@@ -639,7 +639,7 @@ function ConfigFields() {
                             hideExpression: '!model.enable_category_sizes',
                             fieldGroup: [
                                 {
-                                    wrapper: 'horizontalBootstrapLabel',
+                                    wrapper: 'settingWrapper',
                                     templateOptions: {
                                         label: 'Movies'
                                     },
@@ -663,7 +663,7 @@ function ConfigFields() {
                                     ]
                                 },
                                 {
-                                    wrapper: 'horizontalBootstrapLabel',
+                                    wrapper: 'settingWrapper',
                                     templateOptions: {
                                         label: 'Movies HD'
                                     },
@@ -682,7 +682,7 @@ function ConfigFields() {
                                     ]
                                 },
                                 {
-                                    wrapper: 'horizontalBootstrapLabel',
+                                    wrapper: 'settingWrapper',
                                     templateOptions: {
                                         label: 'Movies SD'
                                     },
@@ -702,7 +702,7 @@ function ConfigFields() {
                                 },
 
                                 {
-                                    wrapper: 'horizontalBootstrapLabel',
+                                    wrapper: 'settingWrapper',
                                     templateOptions: {
                                         label: 'TV'
                                     },
@@ -722,7 +722,7 @@ function ConfigFields() {
                                 },
 
                                 {
-                                    wrapper: 'horizontalBootstrapLabel',
+                                    wrapper: 'settingWrapper',
                                     templateOptions: {
                                         label: 'TV HD'
                                     },
@@ -742,7 +742,7 @@ function ConfigFields() {
                                 },
 
                                 {
-                                    wrapper: 'horizontalBootstrapLabel',
+                                    wrapper: 'settingWrapper',
                                     templateOptions: {
                                         label: 'TV SD'
                                     },
@@ -762,7 +762,7 @@ function ConfigFields() {
                                 },
 
                                 {
-                                    wrapper: 'horizontalBootstrapLabel',
+                                    wrapper: 'settingWrapper',
                                     templateOptions: {
                                         label: 'Audio'
                                     },
@@ -782,7 +782,7 @@ function ConfigFields() {
                                 },
 
                                 {
-                                    wrapper: 'horizontalBootstrapLabel',
+                                    wrapper: 'settingWrapper',
                                     templateOptions: {
                                         label: 'Audio FLAC'
                                     },
@@ -802,7 +802,7 @@ function ConfigFields() {
                                 },
 
                                 {
-                                    wrapper: 'horizontalBootstrapLabel',
+                                    wrapper: 'settingWrapper',
                                     templateOptions: {
                                         label: 'Audio MP3'
                                     },
@@ -822,7 +822,7 @@ function ConfigFields() {
                                 },
 
                                 {
-                                    wrapper: 'horizontalBootstrapLabel',
+                                    wrapper: 'settingWrapper',
                                     templateOptions: {
                                         label: 'Audiobook'
                                     },
@@ -842,7 +842,7 @@ function ConfigFields() {
                                 },
 
                                 {
-                                    wrapper: 'horizontalBootstrapLabel',
+                                    wrapper: 'settingWrapper',
                                     templateOptions: {
                                         label: 'Console'
                                     },
@@ -862,7 +862,7 @@ function ConfigFields() {
                                 },
 
                                 {
-                                    wrapper: 'horizontalBootstrapLabel',
+                                    wrapper: 'settingWrapper',
                                     templateOptions: {
                                         label: 'PC'
                                     },
@@ -882,7 +882,7 @@ function ConfigFields() {
                                 },
 
                                 {
-                                    wrapper: 'horizontalBootstrapLabel',
+                                    wrapper: 'settingWrapper',
                                     templateOptions: {
                                         label: 'XXX'
                                     },
