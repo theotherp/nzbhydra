@@ -1,4 +1,4 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages']);
 
 
 angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig, $urlMatcherFactoryProvider) {
@@ -199,7 +199,6 @@ nzbhydraapp.config(['growlProvider', function (growlProvider) {
     growlProvider.globalPosition('bottom-right');
 }]);
 
-
 nzbhydraapp.directive('ngEnter', function () {
     return function (scope, element, attr) {
         element.bind("keydown keypress", function (event) {
@@ -236,7 +235,6 @@ nzbhydraapp.factory('focus', function ($rootScope, $timeout) {
 nzbhydraapp.filter('unsafe', function ($sce) {
     return $sce.trustAsHtml;
 });
-
 
 _.mixin({
     isNullOrEmpty: function (string) {

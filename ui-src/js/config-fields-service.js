@@ -207,10 +207,53 @@ function ConfigFields() {
         return fieldset;
     }
 
+    function ipValidator() {
+        return {
+            expression: function ($viewValue, $modelValue) {
+                var value = $modelValue || $viewValue;
+                if (value) {
+                    return /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/.test(value)
+                        || /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(value);
+                }
+                return true;
+            },
+            message: '$viewValue + " is not a valid IP Address"'
+        };
+    }
 
-    function getFields() {
-        console.log("Called getFields() from ConfigFields");
+    function authValidatorDontLockYourselfOut(rootModel) {
+        return {
+            expression: function ($viewValue, $modelValue, scope) {
+                var value = $viewValue || $modelValue;
+                if (value) {
+                    return true;
+                }
+                if (rootModel.auth.users.length > 0) {
+                    return _.any(rootModel.auth.users, function (user) {
+                        return scope.model.name != user.name && user.maySeeAdmin;
+                    })
+                }
+                return true;
+            },
+            message: '"If you have users at least one should have admin rights or you lock yourself out"'
+        };
+    }
 
+    function regexValidator(regex, message, prefixViewValue) {
+        return {
+            expression: function ($viewValue, $modelValue) {
+                var value = $modelValue || $viewValue;
+                if (value) {
+                    return regex.test(value);
+                }
+                return true;
+            },
+
+            message: (prefixViewValue ? '$viewValue + " ' : '" ') + message + '"'
+        };
+    }
+
+    function getFields(rootModel) {
         return {
             main: [
                 {
@@ -223,8 +266,12 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'text',
                                 label: 'Host',
+                                required: true,
                                 placeholder: 'IPv4 address to bind to',
                                 help: 'Requires restart'
+                            },
+                            validators: {
+                                ipAddress: ipValidator()
                             },
                             watcher: {
                                 listener: restartListener
@@ -236,8 +283,12 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'number',
                                 label: 'Port',
+                                required: true,
                                 placeholder: '5050',
                                 help: 'Requires restart'
+                            },
+                            validators: {
+                                port: regexValidator(/^\d{1,5}$/, "is no valid port", true)
                             },
                             watcher: {
                                 listener: restartListener
@@ -251,6 +302,9 @@ function ConfigFields() {
                                 label: 'URL base',
                                 placeholder: '/nzbhydra',
                                 help: 'Set when using an external proxy'
+                            },
+                            validators: {
+                                urlBase: regexValidator(/^\/[\w\/]*$/, "Base URL needs to start with a slash and must not end with one")
                             }
                         },
                         {
@@ -327,7 +381,10 @@ function ConfigFields() {
                             templateOptions: {
                                 label: 'API key',
                                 help: 'Remove to disable. Alphanumeric only'
-                            }
+                            },
+                            validators: {
+                                apikey: regexValidator(/^[a-zA-Z0-9]*$/, "API key must only contain numbers and digits", false)
+                            },
                         }
                     ]
                 },
@@ -427,6 +484,7 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'text',
                                 label: 'Repository branch',
+                                required: true,
                                 help: 'Stay on master. Seriously...'
                             }
                         }
@@ -500,8 +558,9 @@ function ConfigFields() {
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
-                                label: 'User agent'
-                            }
+                                label: 'User agent',
+                                required: true
+                            },
                         }
                     ]
                 },
@@ -529,6 +588,7 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'text',
                                 label: 'Duplicate size threshold',
+                                required: true,
                                 addonRight: {
                                     text: '%'
                                 }
@@ -541,6 +601,7 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'number',
                                 label: 'Duplicate age threshold',
+                                required: true,
                                 addonRight: {
                                     text: 'seconds'
                                 }
@@ -898,7 +959,8 @@ function ConfigFields() {
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
-                                label: 'Host'
+                                label: 'Host',
+                                required: true
                             }
                         },
                         {
@@ -907,7 +969,8 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'number',
                                 label: 'Port',
-                                placeholder: '5050'
+                                placeholder: '5050',
+                                required: true
                             }
                         },
                         {
@@ -966,7 +1029,8 @@ function ConfigFields() {
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
-                                label: 'URL'
+                                label: 'URL',
+                                required: true
                             }
                         },
                         {
@@ -1089,14 +1153,17 @@ function ConfigFields() {
                 {
                     type: 'help',
                     templateOptions: {
-                        lines: ['A user without username and password controls what is allowed without having to log in.',
-                            'To require login only for admin access remove admin right from the authless user and add a user with username and password and admin rights.',
-                            'To have a simple and an admin user remove the authless user and create two users, one without and one with admin rights.']
+                        lines: [
+                            'To require login only for admin access create a user with empty username and password and add a user with username and password and admin rights.',
+                            'To have a simple and an admin user remove the authless user and create two users, one without and one with admin rights.',
+                            'Leave empty to disable authorization.'
+                        ]
                     }
                 },
                 {
                     type: 'repeatSection',
                     key: 'users',
+                    model: rootModel.auth,
                     templateOptions: {
                         btnText: 'Add new user',
                         altLegendText: 'Authless',
@@ -1131,6 +1198,12 @@ function ConfigFields() {
                                 templateOptions: {
                                     type: 'switch',
                                     label: 'May see admin area'
+                                },
+                                validators: {
+                                    dontLockYourselfOut: authValidatorDontLockYourselfOut(rootModel)
+                                },
+                                data: {
+                                    rootModel: rootModel
                                 }
                             }
 

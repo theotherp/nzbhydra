@@ -26,33 +26,35 @@ angular
     .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
 
-function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state) {
+function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, formlyValidationMessages) {
     $scope.config = config;
     $scope.submit = submit;
     
     $scope.restartRequired = false;
-    
+
     ConfigFields.setRestartWatcher(function() {
         $scope.restartRequired = true;
     });
 
     function submit(form) {
-        ConfigService.set($scope.config);
-        ConfigService.invalidateSafe();
-        form.$setPristine();
-        CategoriesService.invalidate();
-        if ($scope.restartRequired) {
-            ModalService.open("Restart required", "The changes you have made may require a restart to be effective.<br>Do you want to restart now?", function () {
-                RestartService.restart();
-            }, function() {
-                $scope.restartRequired = false;
-            });
+        if (form.$valid) {
+            ConfigService.set($scope.config);
+            ConfigService.invalidateSafe();
+            form.$setPristine();
+            CategoriesService.invalidate();
+            if ($scope.restartRequired) {
+                ModalService.open("Restart required", "The changes you have made may require a restart to be effective.<br>Do you want to restart now?", function () {
+                    RestartService.restart();
+                }, function () {
+                    $scope.restartRequired = false;
+                });
+            }
         }
     }
 
     ConfigModel = config;
 
-    $scope.fields = ConfigFields.getFields();
+    $scope.fields = ConfigFields.getFields($scope.config);
 
     $scope.formTabs = [
         {
@@ -105,7 +107,6 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
         }
     ];
 
-
     for (var i = 0; i < $scope.allTabs.length; i++) {
         if ($state.is($scope.allTabs[i].state)) {
             $scope.allTabs[i].active = true;
@@ -113,7 +114,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
     }
 
     $scope.isSavingNeeded = function (form) {
-        return form.$dirty && !form.$submitted;
+        return form.$dirty && !form.$submitted && form.$valid;
     };
 
     $scope.goToConfigState = function (index) {
@@ -122,6 +123,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             $scope.downloadLog();
         }
     };
+
+    
     
 }
 

@@ -1,7 +1,7 @@
 <div class="row">
     <form ng-submit="submit(form)" name="form" novalidate>
         <uib-tabset>
-            <uib-tab ng-repeat="tab in formTabs" heading="{{ tab.name }}"  active="allTabs[$index].active" select="goToConfigState($index)">
+            <uib-tab ng-repeat="tab in formTabs" heading="{{ tab.name }}" active="allTabs[$index].active" select="goToConfigState($index)">
                 <formly-form model="tab.model" fields="tab.fields" ng-if="allTabs[$index].active">
                 </formly-form>
             </uib-tab>
@@ -46,27 +46,48 @@
     <div>
         <!--loop through each element in model array-->
         <div class="{{ hideRepeat }}">
-            
-            
-                <div class="repeatsection" ng-repeat="element in model[options.key]" ng-init="fields = copyFields(to.fields)">
-                    <fieldset>
-                        <legend>{{ element.name ? element.name : to.altLegendText}}</legend>
+
+
+            <div class="repeatsection" ng-repeat="element in model[options.key]" ng-init="fields = copyFields(to.fields)">
+                <fieldset>
+                    <legend>{{ element.name ? element.name : to.altLegendText}}</legend>
                     <formly-form fields="fields"
                                  model="element"
                                  form="form">
                     </formly-form>
                     <div style="margin-bottom:20px;">
-                        <button type="button" class="btn btn-sm btn-danger" ng-click="model[options.key].splice($index, 1)">
+                        <button type="button" class="btn btn-sm btn-danger" ng-click="remove($index)">
                             Remove {{ element.name }}
                         </button>
                     </div>
-                    
-                    </fieldset>
-                </div>
+
+                </fieldset>
+            </div>
             <hr>
             <p class="AddNewButton">
                 <button type="button" class="btn btn-primary" ng-click="addNew()">{{ to.btnText }}</button>
             </p>
         </div>
+</script>
+
+
+<script type="text/ng-template" id="setting-wrapper.html">
+
+    <div class="form-group form-horizontal" ng-class="{'row': !options.templateOptions.noRow}">
+        <div style="text-align:right;">
+            <label for="{{::id}}" class="col-md-7 control-label">
+                {{ to.label }} {{ to.required ? "*" : ""}}
+            </label>
+        </div>
+        <div class="col-md-6">
+            <formly-transclude></formly-transclude>
+        </div>
+        <span class="col-md-7 help-block">{{ to.help }}</div>
+    <div class="my-messages" ng-messages="fc.$error" ng-if="options.formControl.$touched" ng-messages-multiple>
+        <div class="some-message has-error control-label" ng-message="{{::name}}" ng-repeat="(name, message) in ::options.validation.messages">
+            {{ message(fc.$viewValue, fc.$modelValue, this)}}
+        </div>
+    </div>
+    
 </script>
 

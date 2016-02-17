@@ -6,22 +6,19 @@ angular
         formlyConfigProvider.disableWarnings = window.onProd;
         
         
-        // set templates here
         formlyConfigProvider.setWrapper({
-            name: 'horizontalBootstrapLabel',
-            template: [
-                '<div class="form-group form-horizontal" ng-class="{\'row\': !options.templateOptions.noRow}">',
-                '<div style="text-align:right;">',
-                '<label for="{{::id}}" class="col-md-7 control-label">',
-                '{{to.label}} {{to.required ? "*" : ""}}',
-                '</label>',
-                '</div>',
-                '<div class="col-md-6">',
-                '<formly-transclude></formly-transclude>',
-                '</div>',
-                '<span class="col-md-7 help-block">{{to.help}}</div>',
-                '</div>'
-            ].join(' ')
+            name: 'settingWrapper',
+            templateUrl: 'setting-wrapper.html',
+            controller: ['$scope', function ($scope) {
+                $scope.options.data.getValidationMessage = getValidationMessage;
+
+                function getValidationMessage(key) {
+                    var message = $scope.options.validation.messages[key];
+                    if (message) {
+                        return message($scope.fc.$viewValue, $scope.fc.$modelValue, $scope);
+                    }
+                }
+            }]
         });
 
 
@@ -58,7 +55,17 @@ angular
         formlyConfigProvider.setType({
             name: 'horizontalInput',
             extends: 'input',
-            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+            wrapper: ['settingWrapper', 'bootstrapHasError'],
+            controller: ['$scope', function ($scope) {
+                $scope.options.data.getValidationMessage = getValidationMessage;
+
+                function getValidationMessage(key) {
+                    var message = $scope.options.validation.messages[key];
+                    if (message) {
+                        return message($scope.fc.$viewValue, $scope.fc.$modelValue, $scope);
+                    }
+                }
+            }]
         });
 
         formlyConfigProvider.setType({
@@ -204,7 +211,7 @@ angular
 
         formlyConfigProvider.setType({
             name: 'horizontalNewznabPreset',
-            wrapper: ['horizontalBootstrapLabel'],
+            wrapper: ['settingWrapper'],
             templateUrl: 'newznab-preset.html',
             controller: function ($scope) {
                 $scope.display = "";
@@ -286,26 +293,26 @@ angular
         formlyConfigProvider.setType({
             name: 'horizontalTestConnection',
             extends: 'testConnection',
-            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+            wrapper: ['settingWrapper', 'bootstrapHasError']
         });
 
         formlyConfigProvider.setType({
             name: 'horizontalCheckCaps',
             extends: 'checkCaps',
-            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+            wrapper: ['settingWrapper', 'bootstrapHasError']
         });
 
 
         formlyConfigProvider.setType({
             name: 'horizontalApiKeyInput',
             extends: 'apiKeyInput',
-            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+            wrapper: ['settingWrapper', 'bootstrapHasError']
         });
 
         formlyConfigProvider.setType({
             name: 'horizontalPercentInput',
             extends: 'percentInput',
-            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+            wrapper: ['settingWrapper', 'bootstrapHasError']
         });
 
 
@@ -334,13 +341,13 @@ angular
         formlyConfigProvider.setType({
             name: 'horizontalSwitch',
             extends: 'switch',
-            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+            wrapper: ['settingWrapper', 'bootstrapHasError']
         });
 
         formlyConfigProvider.setType({
             name: 'horizontalSelect',
             extends: 'select',
-            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+            wrapper: ['settingWrapper', 'bootstrapHasError']
         });
 
 
@@ -361,7 +368,7 @@ angular
             name: 'horizontalMultiselect',
             extends: 'ui-select-multiple',
             templateUrl: 'ui-select-multiple.html',
-            wrapper: ['horizontalBootstrapLabel', 'bootstrapHasError']
+            wrapper: ['settingWrapper', 'bootstrapHasError']
         });
 
 
@@ -387,9 +394,8 @@ angular
             controller: function ($scope) {
                 $scope.formOptions = {formState: $scope.formState};
                 $scope.addNew = addNew;
-
+                $scope.remove = remove;
                 $scope.copyFields = copyFields;
-
 
                 function copyFields(fields) {
                     fields = angular.copy(fields);
@@ -413,16 +419,23 @@ angular
                 function addNew() {
                     $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
                     var repeatsection = $scope.model[$scope.options.key];
-                    var lastSection = repeatsection[repeatsection.length - 1];
-                    var newsection = {};
-                    if (lastSection) {
-                        newsection = angular.copy($scope.options.templateOptions.defaultModel);                        
-                    }
+                    var newsection = angular.copy($scope.options.templateOptions.defaultModel);
                     repeatsection.push(newsection);
                 }
                 
+                function remove($index) {
+                    $scope.model[$scope.options.key].splice($index, 1);
+                }
             }
         
     });
 
     });
+
+angular
+    .module('nzbhydraApp').run(function (formlyConfig, formlyValidationMessages) {
+
+    formlyValidationMessages.messages.required = 'to.label + " is required"';
+    formlyConfig.extras.errorExistsAndShouldBeVisibleExpression = 'fc.$touched || form.$submitted';
+
+});
