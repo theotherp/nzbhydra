@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a65
+Fixed bug where searching didn't work because of a JS error. Whoops.
+
 ### 0.0.1a64
 Rewrote and simplified code for settings which finally allows using an unlimited amount of newznab indexers, along with better GUI handling of those. 
 This affected basically every feature in the program, so from experience I'd say I fucked up something which I didn't find during testing, so please let me know ;-) 

@@ -66,7 +66,7 @@ function SearchService($http) {
         
 
         uri.addQuery("category", category);
-
+        uri = uri.toString();
         console.log("Calling " + uri);
         lastExecutedQuery = uri;
         return $http.get(uri).then(processData);
