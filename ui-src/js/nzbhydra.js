@@ -33,7 +33,10 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             resolve: {
                 config: ['ConfigService', function (ConfigService) {
                     return ConfigService.get();
-                }]
+                }],
+                safeConfig: ['ConfigService', function (ConfigService) {
+                    return ConfigService.getSafe();
+                }] 
             }
         })
         .state("config.auth", {
@@ -179,7 +182,12 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         .state("search", {
             url: "/:search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid&indexers",
             templateUrl: "static/html/states/search.html",
-            controller: "SearchController"
+            controller: "SearchController",
+            resolve: {
+                safeConfig: ['ConfigService', function (ConfigService) {
+                    return ConfigService.getSafe();
+                }]
+            }
         })
     ;
 

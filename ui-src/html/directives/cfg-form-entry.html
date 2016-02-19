@@ -7,10 +7,10 @@
         <input ng-if="type=='text'" ng-model="cfg" type="text" class="form-control"/>
 
         <ui-select ng-if="type=='select'" ng-model="cfg" theme="bootstrap" search-enabled="false">
-            <ui-select-match>
+            <ui-select-match class="ui-select-match">
                 <span ng-bind="cfg.name"></span>
             </ui-select-match>
-            <ui-select-choices repeat="item in options">
+            <ui-select-choices repeat="item in options" class="ui-select-choices">
                 <span ng-bind="item.name"></span>
             </ui-select-choices>
         </ui-select>

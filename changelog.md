@@ -9,6 +9,8 @@ Replaced simple users with multi-user system. Add as many users as you want and 
 
 Removed caching of search results because it didn't really work and nobody uses it anyway. Therefore removed all cache related settings.
 
+Added validation for most settings in config. It's still possible to make mistakes but... just don't be stupid ;-)
+
 ### 0.0.1a63
 Fixed bug where searches with empty query parameters would be sent to indexers.
 

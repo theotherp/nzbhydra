@@ -56,6 +56,7 @@ function ConfigFields() {
                     templateOptions: {
                         type: 'text',
                         label: 'Name',
+                        required: true,
                         help: 'Used for identification. Changing the name will lose all history and stats!'
                     }
                 })
@@ -69,6 +70,7 @@ function ConfigFields() {
                     templateOptions: {
                         type: 'text',
                         label: 'Host',
+                        required: true,
                         placeholder: 'http://www.someindexer.com'
                     }
                 }
@@ -83,6 +85,7 @@ function ConfigFields() {
                     hideExpression: '!model.enabled',
                     templateOptions: {
                         type: 'text',
+                        required: true,
                         label: 'API Key'
                     }
                 }
@@ -97,6 +100,7 @@ function ConfigFields() {
                     hideExpression: '!model.enabled',
                     templateOptions: {
                         type: 'text',
+                        required: true,
                         label: 'Username'
                     }
                 }
@@ -111,6 +115,7 @@ function ConfigFields() {
                 templateOptions: {
                     type: 'number',
                     label: 'Score',
+                    required: true,
                     help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
                 }
             },
@@ -121,6 +126,7 @@ function ConfigFields() {
                 templateOptions: {
                     type: 'number',
                     label: 'Timeout',
+                    required: true,
                     help: 'Supercedes the general timeout in "Searching"'
                 }
             },
@@ -384,7 +390,7 @@ function ConfigFields() {
                             },
                             validators: {
                                 apikey: regexValidator(/^[a-zA-Z0-9]*$/, "API key must only contain numbers and digits", false)
-                            },
+                            }
                         }
                     ]
                 },
@@ -417,7 +423,8 @@ function ConfigFields() {
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
-                                label: 'Log file'
+                                label: 'Log file',
+                                required: true
                             },
                             watcher: {
                                 listener: restartListener
