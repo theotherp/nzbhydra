@@ -28,7 +28,7 @@ function otherColumns($http, $templateCache, $compile, $window) {
             var uri = new URI("internalapi/getnfo");
             uri.addQuery("indexer", resultItem.indexer);
             uri.addQuery("guid", resultItem.indexerguid);
-            return $http.get(uri).then(function (response) {
+            return $http.get(uri.toString()).then(function (response) {
                 if (response.data.has_nfo) {
                     $scope.openModal("lg", response.data.nfo)
                 } else {

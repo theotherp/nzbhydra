@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a66
+Fixed bug where NFO retrieval didn't work because of a JS error. My bad.
+
 ### 0.0.1a65
 Fixed bug where searching didn't work because of a JS error. Whoops.
 
