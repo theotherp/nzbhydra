@@ -285,7 +285,7 @@ def base(path):
     logger.debug("Sending index.html")
     host_url = "//" + request.host + request.environ['MY_URL_BASE']
     _, currentVersion = get_current_version()
-    return render_template("index.html", host_url=host_url, isAdmin=isAdminLoggedIn(), cacheBuster=("?v=" + currentVersion) if currentVersion is not None else "", onProd="false" if config.settings.main.debug else "true")
+    return render_template("index.html", host_url=host_url, isAdmin=isAdminLoggedIn(), onProd="false" if config.settings.main.debug else "true")
 
 
 def render_search_results_for_api(search_results, total, offset):

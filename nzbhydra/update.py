@@ -134,6 +134,8 @@ class UpdateManager():
             url.host = "raw.%s" % url.host
             url.path.add(self.repository)
             url.path.add(self.branch)
+            if self.subfolder:
+                url.path.add(self.subfolder)
             url.path.add("version.txt")
             logger.debug("Loading repository version from %s" % url)
             r = requests.get(url, verify=False)
@@ -164,6 +166,7 @@ class GitUpdateManager(UpdateManager):
         self.repositoryBase = config.settings.main.repositoryBase
         self.repository = "nzbhydra"
         self.branch = config.settings.main.branch
+        self.subfolder = None
         self.main_dir = os.path.dirname(os.path.dirname(__file__))
         self._git_path = self._find_working_git()   
 
@@ -269,6 +272,7 @@ class SourceUpdateManager(UpdateManager):
     def __init__(self):
         self.repositoryBase = config.settings.main.repositoryBase
         self.repository = "nzbhydra"
+        self.subfolder = None
         self.branch = config.settings.main.branch    
 
     def update(self):
@@ -354,6 +358,7 @@ class WindowsUpdateManager(SourceUpdateManager):
         self.repositoryBase = config.settings.main.repositoryBase
         self.repository = "nzbhydra-windows-releases"
         self.branch = config.settings.main.branch
+        self.subfolder = "nzbhydra"
 
     def update(self):
         """
