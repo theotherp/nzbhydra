@@ -126,10 +126,9 @@ function ConfigFields() {
                 templateOptions: {
                     type: 'number',
                     label: 'Timeout',
-                    required: true,
                     help: 'Supercedes the general timeout in "Searching"'
                 }
-            },
+            }
         ]);
 
 
