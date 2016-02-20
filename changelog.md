@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a71
+Reworked caching of assets. Simplifies development process and makes updates a lot smaller.
+
 ### 0.0.1a70
 Fixed bug where buttons for newznab indexer tests wouldn't work
 

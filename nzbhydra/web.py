@@ -43,6 +43,7 @@ from webargs import fields
 from furl import furl
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
+from werkzeug.wrappers import ETagResponseMixin
 from flask_session import Session
 from nzbhydra import config, search, infos, database
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid
@@ -123,9 +124,6 @@ app.json_encoder = CustomJSONEncoder
 def _db_connect():
     if request.endpoint is not None and not request.endpoint.endswith("static"):  # No point in opening a db connection if we only serve a static file
         database.db.connect()
-    
-    
-
 
 @app.teardown_request
 def _db_disconnect(esc):
@@ -135,16 +133,15 @@ def _db_disconnect(esc):
 
 @app.after_request
 def disable_caching(response):
-    if config.settings.main.debug or "/static" not in request.path: #Prevent caching of control URLs
+    if "/static" not in request.path: #Prevent caching of control URLs
         response.cache_control.private = True
         response.cache_control.max_age = 0
         response.cache_control.must_revalidate = True
         response.cache_control.no_cache = True
-        response.cache_control.no_store = True
-        response.headers["Expires"] = datetime.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
-    else:
-        response.cache_control.max_age = 31104000
-        response.headers["Expires"] = (datetime.datetime.utcnow() + datetime.timedelta(500)).strftime("%a, %d %b %Y %H:%M:%S GMT")
+        response.cache_control.no_store = True    
+    response.headers["Expires"] = datetime.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
+    response.cache_control.max_age = 0
+    
     return response
 
 

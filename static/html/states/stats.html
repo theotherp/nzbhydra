@@ -1,0 +1,86 @@
+<uib-tabset style="text-align: center">
+    <uib-tab heading="Stats" active="tabs[0].active" select="goToState(0)">
+        <div class="row">
+            <div class="col-md-9">
+                <table class="table">
+                    <caption>Avg. response times</caption>
+                    <thead>
+                    <tr>
+                        <th>Indexer</th>
+                        <th>Avg. response time</th>
+                        <th>Delta</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="avgResponseTime in avgResponseTimes">
+                        <td>{{ avgResponseTime.name }}</td>
+                        <td>{{ avgResponseTime.avgResponseTime }}</td>
+                        <td>{{ avgResponseTime.delta }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-2"></div>
+
+            <div class="col-md-9">
+                <table class="table">
+                    <caption>Avg. results shares</caption>
+                    <thead>
+                    <tr>
+                        <th>Indexer</th>
+                        <th>Avg. results share (%)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="avgIndexerSearchResultsShare in avgIndexerSearchResultsShares">
+                        <td>{{ avgIndexerSearchResultsShare.name }}</td>
+                        <td>{{ avgIndexerSearchResultsShare.avgResultsShare | number: 0 }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-9">
+                <table class="table">
+                    <caption>Avg. indexer access success</caption>
+                    <thead>
+                    <tr>
+                        <th>Indexer</th>
+                        <th>% successful</th>
+                        <th>% failed</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="avgIndexerAccessSuccess in avgIndexerAccessSuccesses">
+                        <td>{{ avgIndexerAccessSuccess.name }}</td>
+                        <td>{{ avgIndexerAccessSuccess.successPercent | number: 0}}</td>
+                        <td>{{ avgIndexerAccessSuccess.failedPercent | number: 0 }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-2"></div>
+
+            <div class="col-md-9">
+                
+            </div>
+        </div>
+
+    </uib-tab>
+
+    <uib-tab heading="Indexer statuses" active="tabs[1].active" select="goToState(1)">
+        <div indexer-statuses></div>
+    </uib-tab>
+    
+    <uib-tab heading="Searches" active="tabs[2].active" select="goToState(2)">
+        <div search-history></div>
+    </uib-tab>
+    
+    <uib-tab heading="NZB Downloads" active="tabs[3].active" select="goToState(3)">
+        <div download-history></div>
+    </uib-tab>
+
+</uib-tabset>
+
