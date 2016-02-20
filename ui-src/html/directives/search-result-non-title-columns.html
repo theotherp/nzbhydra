@@ -17,7 +17,7 @@
        tooltip-trigger="mouseenter"
        tooltip-enable="result.has_nfo == 2"
     >NFO</a>
-    <a target="_self" href="{{ result.details_link }}" ng-class="{'no-nfo': !result.details_link}">Details</a>
+    <a target="_blank" href="{{ result.details_link }}" ng-class="{'no-nfo': !result.details_link}">Details</a>
     <a target="_self" href="{{ result.link }}">NZB</a>
     <addable-nzb indexerguid="result.indexerguid" title="result.title" indexer="result.indexer" dbsearchid="result.dbsearchid"></addable-nzb>
 </td>
