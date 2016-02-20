@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a70
+Fixed bug where buttons for newznab indexer tests wouldn't work
+
 ### 0.0.1a69
 Fixed bug where newznab indexers' settings would be incomplete and cause an error when searching.
 

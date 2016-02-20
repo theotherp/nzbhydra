@@ -1,3 +1,10 @@
+hashCode = function (s) {
+    return s.split("").reduce(function (a, b) {
+        a = ((a << 5) - a) + b.charCodeAt(0);
+        return a & a
+    }, 0);
+};
+
 angular
     .module('nzbhydraApp')
     .config(function config(formlyConfigProvider) {
@@ -96,9 +103,11 @@ angular
             templateUrl: 'button-test-connection.html',
             controller: function ($scope) {
                 $scope.message = "";
+                $scope.uniqueId = hashCode($scope.model.name) + hashCode($scope.model.host);
 
-                var testButton = "#button-test-connection-" + $scope.formId;
-                var testMessage = "#message-test-connection-" + $scope.formId;
+                var testButton = "#button-test-connection-" + $scope.uniqueId;
+                var testMessage = "#message-test-connection-" + $scope.uniqueId;
+                console.log($scope);
 
                 function showSuccess() {
                     angular.element(testButton).removeClass("btn-default");
@@ -161,9 +170,10 @@ angular
             templateUrl: 'button-check-caps.html',
             controller: function ($scope) {
                 $scope.message = "";
+                $scope.uniqueId = hashCode($scope.model.name) + hashCode($scope.model.host);
 
-                var testButton = "#button-check-caps-" + $scope.formId;
-                var testMessage = "#message-check-caps-" + $scope.formId;
+                var testButton = "#button-check-caps-" + $scope.uniqueId;
+                var testMessage = "#message-check-caps-" + $scope.uniqueId;
 
                 function showSuccess() {
                     angular.element(testButton).removeClass("btn-default");
