@@ -27,7 +27,7 @@ gulp.task('vendor-scripts', function () {
         .pipe(sourcemaps.init())
         .pipe(concat('alllibs.js'))
         .pipe(changed(dest))//Important: Put behind concat, otherwise it will always think the sources changed
-        .pipe(uglify())
+        //.pipe(uglify())
         .pipe(sourcemaps.write("./"))
         .pipe(newer(dest))
         .pipe(gulp.dest(dest));
@@ -56,7 +56,7 @@ gulp.task('scripts', function () {
         .pipe(concat('nzbhydra.js'))
         .on('error', swallowError)
         .pipe(changed(dest))
-        .pipe(uglify())
+        //.pipe(uglify())
         .pipe(sourcemaps.write('./'))
         .pipe(newer(dest))
         .pipe(gulp.dest(dest));
