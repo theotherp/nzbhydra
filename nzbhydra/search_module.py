@@ -265,7 +265,7 @@ class SearchModule(object):
         results = []
         executed_queries = set()
         psearch = IndexerSearch(indexer=self.indexer)
-        papiaccess = None
+        papiaccess = IndexerApiAccess()
         indexerStatus = None
         #psearch.save()
         total_results = 0
@@ -317,8 +317,9 @@ class SearchModule(object):
                 papiaccess.response_successful = False
             except Exception as e:
                 self.logger.exception("An error error occurred while searching: %s", e)
-                papiaccess.error = "Unknown error :%s" % e
-                papiaccess.response_successful = False
+                if papiaccess is not None:
+                    papiaccess.error = "Unknown error :%s" % e
+                    papiaccess.response_successful = False
             finally:
                 if papiaccess is not None:
                     #papiaccess.save()

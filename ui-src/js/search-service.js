@@ -1,3 +1,4 @@
+//
 angular
     .module('nzbhydraApp')
     .factory('SearchService', SearchService);

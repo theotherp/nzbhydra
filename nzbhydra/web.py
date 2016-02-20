@@ -36,7 +36,7 @@ from pprint import pprint
 from time import sleep
 from arrow import Arrow
 from flask import Flask, render_template, request, jsonify, Response
-from flask import redirect, make_response
+from flask import redirect, make_response, send_from_directory
 from flask_cache import Cache
 from flask.json import JSONEncoder
 from webargs import fields
@@ -276,7 +276,6 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
         return update_wrapper(wrapped_function, f)
 
     return decorator
-
 
 @app.route('/<path:path>')
 @app.route('/', defaults={"path": None})
@@ -950,7 +949,7 @@ def internalapi_update():
 
 def run(host, port, basepath):
     context = create_context()
-    configureFolders(basepath)
+    configureFolders(basepath)    
     for handler in logger.handlers:
         app.logger.addHandler(handler)
     if context is None:

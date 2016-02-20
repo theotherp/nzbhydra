@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a69
+Fixed bug where newznab indexers' settings would be incomplete and cause an error when searching.
+
 ### 0.0.1a68
 Fixed valiidation in config so that the indexer timeout is optional.
 

@@ -1128,7 +1128,6 @@ function ConfigFields() {
                     templateOptions: {label: 'Womble'},
                     fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "womble", false)
                 },
-
                 {
                     type: 'repeatSection',
                     key: 'newznab',
@@ -1138,10 +1137,11 @@ function ConfigFields() {
                         fields: getBasicIndexerFieldset(true, true, true, false, true, true, 'newznab', true, true),
                         defaultModel: {
                             enabled: true,
-                            host: undefined,
-                            apikey: undefined,
-                            timeout: undefined,
-                            name: undefined,
+                            host: null,
+                            apikey: null,
+                            timeout: null,
+                            name: null,
+                            showOnSearch: true,
                             score: 0,
                             preselect: true,
                             accessType: "both",
