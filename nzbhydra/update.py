@@ -129,15 +129,15 @@ class UpdateManager():
     pass
 
     def getLatestVersionFromRepository(self):
+        url = furl(self.repositoryBase)
+        url.host = "raw.%s" % url.host
+        url.path.add(self.repository)
+        url.path.add(self.branch)
+        if self.subfolder:
+            url.path.add(self.subfolder)
+        url.path.add("version.txt")
+        logger.debug("Loading repository version from %s" % url)
         try:
-            url = furl(self.repositoryBase)
-            url.host = "raw.%s" % url.host
-            url.path.add(self.repository)
-            url.path.add(self.branch)
-            if self.subfolder:
-                url.path.add(self.subfolder)
-            url.path.add("version.txt")
-            logger.debug("Loading repository version from %s" % url)
             r = requests.get(url, verify=False)
             r.raise_for_status()
             return versiontuple(r.text), r.text
@@ -146,13 +146,13 @@ class UpdateManager():
             return None, None
 
     def getChangelogFromRepository(self):
+        url = furl(self.repositoryBase)
+        url.host = "raw.%s" % url.host
+        url.path.add(self.repository)
+        url.path.add(self.branch)
+        url.path.add("changelog.md")
+        logger.debug("Loading changelog from %s" % url)
         try:
-            url = furl(self.repositoryBase)
-            url.host = "raw.%s" % url.host
-            url.path.add(self.repository)
-            url.path.add(self.branch)
-            url.path.add("changelog.md")
-            logger.debug("Loading changelog from %s" % url)
             r = requests.get(url, verify=False)
             r.raise_for_status()
             return r.text

@@ -886,9 +886,9 @@ def internalapi_getcategories():
     logger.debug("Get categories request")
     categories = []
     try:
-        if config.settings.downloader.downloader.isSetting(config.settings.DownloaderSelection.nzbget):
+        if config.settings.downloader.downloader == config.DownloaderSelection.nzbget:
             categories = Nzbget().get_categories()
-        elif config.settings.downloader.downloader.isSetting(config.settings.DownloaderSelection.sabnzbd):
+        elif config.settings.downloader.downloader == config.DownloaderSelection.sabnzbd:
             categories = Sabnzbd().get_categories()
         return jsonify({"success": True, "categories": categories})
     except DownloaderException as e:

@@ -1,7 +1,12 @@
 # NZB Hydra changelog
 
 ----------
-### 0.0.1a66
+### 0.0.1a67
+Fixed bug where sending NZBs to downloader wouldn't work.
+Removed docker from readme. Will be moved to wiki.
+Open NZB details in new tab/window.
+
+### 0.0.1a67
 Fixed bug where NFO retrieval didn't work because of a JS error. My bad.
 
 ### 0.0.1a65

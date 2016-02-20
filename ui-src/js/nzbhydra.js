@@ -4,7 +4,6 @@ var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy'
 angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig, $urlMatcherFactoryProvider) {
 
     blockUIConfig.autoBlock = false;
-    //$urlRouterProvider.otherwise("/search/");
     $urlMatcherFactoryProvider.strictMode(false);
     
     $stateProvider

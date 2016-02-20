@@ -17,46 +17,7 @@ NZBHydra is a meta search for NZB indexers and the "spiritual successor" to [NZB
 ##  How to run
 Run with Python 2.7.9+. Runs on http://0.0.0.0:5075 by default. See the console output on how to choose the port and host using command line parameters.
 
-## Running in Docker Container
-Note: This was not done by me (TheOtherP) and I cannot provide support. Included with the source is build is a Dockerfile and a Docker Compose template to run this project within a Docker container. Prerequisites is to have Docker installed. If you'd like to run this within Docker Compose, you will need to have that installed as well. All of the following instructions for Docker assume you are in the root directory of this project.
-
-### Building the container
-
-#### Using Docker
-- Run `$ docker build -t nzbhydra .`
-
-#### Using Docker Compose
-- Run `$ docker-compose build`
-- **Note** that if you're using Docker Compose, there's no need to go through this step since running `docker-compose up` in the 'Running the container' step will also build the container in the same step.
-
-### Running the container
-
-#### Using Docker
-- Run `$ docker run nzbhydra`
-
-#### Using Docker Compose
-- Run `$ docker-compose up`
-
-Once the container is up and running you should see output like the following:
-```
-Loading settings from settings.cfg
-2015-12-19 23:50:37,113 - INFO - nzbhydra - Started
-2015-12-19 23:50:37,114 - INFO - nzbhydra - Loading database file nzbhydra.db
-2015-12-19 23:50:37,115 - INFO - database - Initializing database and creating tables
-2015-12-19 23:50:37,135 - INFO - database - Created new version info entry with database version 1
-2015-12-19 23:50:37,137 - INFO - indexers - Loading indexer Binsearch
-2015-12-19 23:50:37,138 - INFO - indexers - Unable to find indexer with name Binsearch in database. Will add it
-[...]
-2015-12-19 23:50:37,162 - INFO - nzbhydra - Starting web app on 0.0.0.0:5075
-2015-12-19 23:50:37,163 - INFO - nzbhydra - Go to http://127.0.0.1:5075 for the frontend (or whatever your public IP is)
-2015-12-19 23:50:37,416 - INFO - web - Using memory based cache
-```
-
-At this point NZBHydra is running. If you are not using boot2docker or docker-machine, you should be able to go to [http://127.0.0.1:5075](http://127.0.0.1:5075) and interact with the UI.
-
-If you are on a Windows or Mac and are using docker-machine or boot2docker (usually installed via Docker Toolbox), you will need to get the IP for that VM and go to that IP in the browser.
-
-More information about getting the docker-machine IP is available [here](https://docs.docker.com/machine/reference/ip/). If using boot2docker, the command to find the ip is `$ boot2docker ip`
+You can also try https://hub.docker.com/r/linuxserver/hydra/ but it is not maintained by me and I can give no support.
 
 ## TODO
 * A lot of bug fixing and improvements regarding performance and stability
