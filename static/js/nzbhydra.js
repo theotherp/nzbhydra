@@ -1986,7 +1986,12 @@ angular
             templateUrl: 'button-test-connection.html',
             controller: function ($scope) {
                 $scope.message = "";
-                $scope.uniqueId = hashCode($scope.model.name) + hashCode($scope.model.host);
+                if ($scope.to.testType == "downloader") {
+                    $scope.uniqueId = "downloader";
+                } else {
+                    $scope.uniqueId = hashCode($scope.model.name) + hashCode($scope.model.host);
+                }
+                
 
                 var testButton = "#button-test-connection-" + $scope.uniqueId;
                 var testMessage = "#message-test-connection-" + $scope.uniqueId;

@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a74
+Fix: Testing connection of downloader in config didn't work.
+
 ### 0.0.1a73
 Fix: Don't provide cert. You need to use your own or better, use a reverse proxy.
 

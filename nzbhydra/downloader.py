@@ -193,9 +193,9 @@ class Sabnzbd(Downloader):
 
     def test(self, url, username=None, password=None, apikey=None):
         self.logger.debug("Testing connection to sabnzbd")
-        f = self.get_sab(url, apikey, username, password)
-        f.add({"mode": "qstatus"})
         try:
+            f = self.get_sab(url, apikey, username, password)
+            f.add({"mode": "qstatus"})
             r = requests.get(f.tostr(), verify=False, timeout=15)
             r.raise_for_status()
             if "state" in json.loads(r.text).keys():
@@ -204,8 +204,10 @@ class Sabnzbd(Downloader):
             else:
                 self.logger.info("Access to sabnzbd failed, probably due to wrong credentials")
                 return False, "Credentials wrong?"
-
-        except (SSLError, HTTPError, ConnectionError, ReadTimeout):
+        except DownloaderException as e:
+            self.logger.error("Error while trying to connect to sabnzbd: %s" % e)
+            return False, str(e)
+        except (SSLError, HTTPError, ConnectionError, ReadTimeout) as e:
             self.logger.error("Error while trying to connect to sabnzbd: %s" % e)
             return False, "SABnzbd is not responding"
 

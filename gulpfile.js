@@ -29,7 +29,7 @@ gulp.task('vendor-scripts', function () {
         .pipe(changed(dest))//Important: Put behind concat, otherwise it will always think the sources changed
         //.pipe(uglify())
         .pipe(sourcemaps.write("./"))
-        .pipe(newer(dest))
+        //.pipe(newer(dest))
         .pipe(gulp.dest(dest));
 });
 
@@ -40,7 +40,7 @@ gulp.task('vendor-css', function () {
         .pipe(concat('alllibs.css'))
         .pipe(changed(dest))
         .pipe(sourcemaps.write("."))
-        .pipe(newer(dest))
+        //.pipe(newer(dest))
         .pipe(gulp.dest(dest));
 
 });
@@ -58,7 +58,7 @@ gulp.task('scripts', function () {
         .pipe(changed(dest))
         //.pipe(uglify())
         .pipe(sourcemaps.write('./'))
-        .pipe(newer(dest))
+        //.pipe(newer(dest))
         .pipe(gulp.dest(dest));
 
 });
@@ -70,7 +70,7 @@ gulp.task('less', function () {
         .pipe(less())
         .on('error', swallowError)
         .pipe(sourcemaps.write("."))
-        .pipe(newer(dest))
+        //.pipe(newer(dest))
         .pipe(gulp.dest(dest));
 });
 
