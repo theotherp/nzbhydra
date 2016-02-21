@@ -2764,7 +2764,7 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'switch',
                                 label: 'Use SSL',
-                                help: 'Requires restart'
+                                help: 'I recommend using a reverse proxy instead of this. Requires restart.'
                             },
                             watcher: {
                                 listener: restartListener
@@ -2778,7 +2778,7 @@ function ConfigFields() {
                                 type: 'text',
                                 label: 'SSL certificate file',
                                 required: true,
-                                help: 'Requires restart'
+                                help: 'Requires restart.'
                             },
                             watcher: {
                                 listener: restartListener
@@ -2792,7 +2792,7 @@ function ConfigFields() {
                                 type: 'text',
                                 label: 'SSL key file',
                                 required: true,
-                                help: 'Requires restart'
+                                help: 'Requires restart.'
                             },
                             watcher: {
                                 listener: restartListener

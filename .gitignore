@@ -19,5 +19,5 @@ Vagrantfile
 /libs/**/tests/**
 /libs/**/test/**
 /libs/**/testsuite/**
-buildTestDist.cmd
+/*.cmd
 **/.cache

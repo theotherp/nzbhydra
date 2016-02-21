@@ -355,7 +355,7 @@ class WindowsUpdateManager(SourceUpdateManager):
         self.repositoryBase = config.settings.main.repositoryBase
         self.repository = "nzbhydra-windows-releases"
         self.branch = config.settings.main.branch
-        self.subfolder = "nzbhydra"
+        self.subfolder = None
 
     def update(self):
         """
@@ -391,12 +391,6 @@ class WindowsUpdateManager(SourceUpdateManager):
             if not tarfile.is_tarfile(tar_download_path):
                 logger.error(u"Retrieved version from " + tar_download_url + " is corrupt, can't update")
                 return False
-
-            static_dir = os.path.join(main_dir, 'static')
-
-            if os.path.isdir(static_dir):
-                logger.info(u"Clearing out static folder " + static_dir + " before extracting")
-                shutil.rmtree(static_dir)
 
             # extract to sb-update dir
             logger.info(u"Extracting update file " + tar_download_path)
