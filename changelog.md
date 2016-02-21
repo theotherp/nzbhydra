@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a75
+Fix: Searching TV shows by season/episode via GUI didn't work.
+
 ### 0.0.1a74
 Fix: Testing connection of downloader in config didn't work.
 

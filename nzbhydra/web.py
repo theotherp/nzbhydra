@@ -497,8 +497,8 @@ internalapi_tvsearch_args = {
     "title": fields.String(missing=None),
     "rid": fields.String(missing=None),
     "tvdbid": fields.String(missing=None),
-    "season": fields.String(missing=None),
-    "episode": fields.String(missing=None),
+    "season": fields.Integer(missing=None),
+    "episode": fields.Integer(missing=None),
     "offset": fields.Integer(missing=0),
     "indexers": fields.String(missing=None),
 
