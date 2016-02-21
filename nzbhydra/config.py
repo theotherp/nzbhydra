@@ -107,7 +107,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 9,
+        "configVersion": 10,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -119,7 +119,7 @@ initialConfig = {
         },
         "port": 5075,
         "repositoryBase": "https://github.com/theotherp",
-        "runThreaded": False,
+        "runThreaded": True,
         "ssl": False,
         "sslcert": "nzbhydra.crt",
         "sslkey": "nzbhydra.key",
@@ -358,6 +358,12 @@ def migrate(settingsFilename):
                             if not (config["main"]["enableAuth"] and config["main"]["username"]):
                                 addLogMessage(20, "Will require auth only for any admin access")
 
+                if config["main"]["configVersion"] == 9:
+                    with version_update(config, 10):
+                        addLogMessage(20, "Activating threaded server")
+                        config["main"]["runThreaded"] = True
+                            
+
             except Exception as e:
                 addLogMessage(30, "An error occurred while migrating the config file. A backup file of the original setttings was created: %s" % backupFilename)
                 addLogMessage(30, str(traceback.format_exc()))
@@ -376,7 +382,7 @@ def load(filename):
             addLogMessage(30, "An error occurred while migrating the settings: %s" % traceback.format_exc())
             # Now what?
     else:
-        settings = initialConfig
+        settings = Bunch.fromDict(initialConfig)
 
 
 def import_config_data(data):
