@@ -300,7 +300,10 @@ class SourceUpdateManager(UpdateManager):
             # retrieve file
             logger.info(u"Downloading update from " + repr(tar_download_url))
             tar_download_path = os.path.join(update_dir, u'sb-update.tar')
-            urllib.urlretrieve(tar_download_url, tar_download_path)
+            response = requests.get(tar_download_url, stream=True, verify=False) #Apparently SSL causes problems on some systems (#138)b
+            with open(tar_download_path, 'wb') as out_file:
+                shutil.copyfileobj(response.raw, out_file)
+            del response
 
             if not os.path.isfile(tar_download_path):
                 logger.error(u"Unable to retrieve new version from " + tar_download_url + ", can't update")
@@ -326,12 +329,6 @@ class SourceUpdateManager(UpdateManager):
                 logger.error(u"Invalid update data, update failed: " + str(update_dir_contents))
                 return False
             content_dir = os.path.join(update_dir, update_dir_contents[0])
-
-            static_dir = os.path.join(main_dir, 'static')
-
-            if os.path.isdir(static_dir):
-                logger.info(u"Clearing out static folder " + static_dir + " before extracting")
-                shutil.rmtree(static_dir)
 
             # walk temp folder and move files to main folder
             logger.info(u"Moving files from " + content_dir + " to " + main_dir)
