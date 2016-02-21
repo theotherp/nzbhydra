@@ -1,8 +1,8 @@
 # NZB Hydra changelog
 
 ----------
-### 0.0.1a72
-Fix: Don't provide cert. You need to use your own or, better, use a reverse proxy.
+### 0.0.1a73
+Fix: Don't provide cert. You need to use your own or better, use a reverse proxy.
 
 ### 0.0.1a72
 Threaded server is now activated by default. Improves page loading times and allows parallel searches (yay).
