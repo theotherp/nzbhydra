@@ -1,6 +1,13 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a72
+Threaded server is now activated by default. Improves page loading times and allows parallel searches (yay).
+
+Fixed: Startup would fail without existing settings.cfg.
+
+Fixed: SSL verification failures on Qnap.
+
 ### 0.0.1a71
 Reworked caching of assets. Simplifies development process and makes updates a lot smaller.
 

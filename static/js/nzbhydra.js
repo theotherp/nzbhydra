@@ -2896,7 +2896,7 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'switch',
                                 label: 'Run threaded server',
-                                help: 'Requires restart. Experimental. Please report your experiences.'
+                                help: 'Requires restart'
                             },
                             watcher: {
                                 listener: restartListener

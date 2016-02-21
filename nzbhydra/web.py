@@ -125,6 +125,7 @@ def _db_connect():
     if request.endpoint is not None and not request.endpoint.endswith("static"):  # No point in opening a db connection if we only serve a static file
         database.db.connect()
 
+
 @app.teardown_request
 def _db_disconnect(esc):
     if not database.db.is_closed():

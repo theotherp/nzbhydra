@@ -47,7 +47,7 @@ def setup_custom_logger(name, logfile=None):
     formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
 
     stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setLevel(config.settings.main.logging.consolelevel)
+    stream_handler.setLevel(config.settings.main.logging.consolelevel )
     stream_handler.setFormatter(formatter)
     
     
