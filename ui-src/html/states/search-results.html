@@ -1,49 +1,55 @@
 <div class="row" ng-if="indexersearches" style="margin-top: 50px">
 
-    <div class="col-md-3"></div>
-    <!-- TODO: Make box smaller if no error messages exist-->
-    <div class="col-md-14">
-        <table class="table" style="margin-bottom: 0px">
-            <thead>
-            <tr>
-                <th class="col-md-6 text-left">
-                    Indexer
-                </th>
-                <th class="col-md-2 text-left">
-                    Results
-                </th>
-                <th class="col-md-4 text-left">
-                    Avg. response time
-                </th>
-                <th class="col-md-9 text-left">
-                    Status
-                </th>
+    <div class="col-md-5"></div>
+    <div class="col-md-10">
+        <!-- TODO: Make box smaller if no error messages exist-->
+        <uib-accordion close-others="oneAtATime">
+            <uib-accordion-group panel-class="panel-indexer-statuses">
+                <uib-accordion-heading>
+                    Indexer statuses <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': indexerStatusesExpanded, 'glyphicon-chevron-right': !indexerStatusesExpanded}" ng-click="indexerStatusesExpanded=!indexerStatusesExpanded"></i>
+                </uib-accordion-heading>
 
-            </tr>
-            </thead>
-            <tbody>
+                <table class="table" style="margin-bottom: 0px">
+                    <thead>
+                    <tr>
+                        <th class="col-md-6 text-left">
+                            Indexer
+                        </th>
+                        <th class="col-md-2 text-left">
+                            Results
+                        </th>
+                        <th class="col-md-4 text-left">
+                            Avg. response time
+                        </th>
+                        <th class="col-md-9 text-left">
+                            Status
+                        </th>
 
-            <tr ng-repeat-start="ps in indexersearches " ng-if="0"></tr>
-            <!-- First result in the list, show regularly -->
-            <tr>
-                <td class="text-left">
-                    <input ng-disabled="!ps.successful" type="checkbox" ng-model="indexerDisplayState[ps.indexer.toLowerCase()]" ng-click="toggleIndexerDisplay(ps.indexer)"
-                           uib-tooltip="Uncheck to hide results from this indexer"
-                           tooltip-placement="top"
-                           tooltip-trigger="mouseenter"
-                    />{{ ps.indexer }}
-                </td>
-                <td class="text-left">
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr ng-repeat-start="ps in indexersearches " ng-if="0"></tr>
+                    <!-- First result in the list, show regularly -->
+                    <tr>
+                        <td class="text-left">
+                            <input ng-disabled="!ps.successful" type="checkbox" ng-model="indexerDisplayState[ps.indexer.toLowerCase()]" ng-click="toggleIndexerDisplay(ps.indexer)"
+                                   uib-tooltip="Uncheck to hide results from this indexer"
+                                   tooltip-placement="top"
+                                   tooltip-trigger="mouseenter"
+                            />{{ ps.indexer }}
+                        </td>
+                        <td class="text-left">
                     <span ng-if="ps.did_search">
                         <span ng-if="!ps.total_known && ps.total > 0">&gt;</span>{{ ps.total }}
                     </span>
-                </td>
-                <td class="text-left">
+                        </td>
+                        <td class="text-left">
                     <span ng-if="ps.did_search">
                         {{ ps.averageResponseTime }}ms
                     </span>
-                </td>
-                <td class="text-left">
+                        </td>
+                        <td class="text-left">
                     <span ng-if="ps.did_search">
                         <span class="glyphicon" ng-class="{'glyphicon-ok' : ps.successful, 'glyphicon-remove' : !ps.successful}"></span>
                         <span ng-repeat="apiaccess in ps.api_accesses">
@@ -54,12 +60,14 @@
                     <span ng-if="!ps.did_search">
                         Did not search.
                     </span>
-                </td>
-            </tr>
+                        </td>
+                    </tr>
 
-            <tr ng-repeat-end ng-if="0"></tr>
-            </tbody>
-        </table>
+                    <tr ng-repeat-end ng-if="0"></tr>
+                    </tbody>
+                </table>
+            </uib-accordion-group>
+        </uib-accordion>
     </div>
 
 
@@ -83,7 +91,7 @@
         <thead class="search-results-header">
         <tr class="search-results-row">
             <th class="col-md-12 cursor-default search-results-cell">
-                <input type="checkbox" ng-click="invertSelection()" display="float:left; width:1%" uib-tooltip="Invert selection." tooltip-placement="top" tooltip-trigger="mouseenter"/>
+                <!--<input type="checkbox" ng-click="invertSelection()" display="float:left; width:1%" uib-tooltip="Invert selection." tooltip-placement="top" tooltip-trigger="mouseenter"/>-->
                 
                 <span ng-click="setSorting('title', false)" style="vertical-align: top; float:right; width:98%">
                 Title <span ng-show="predicate=='title'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>

@@ -1107,6 +1107,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     $scope.groupExpanded = {};
     $scope.doShowDuplicates = false;
     $scope.selected = [];
+    $scope.indexerStatusesExpanded = false;
     
     $scope.countFilteredOut = 0;
 

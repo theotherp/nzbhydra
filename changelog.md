@@ -1,6 +1,13 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a76
+Fix: Binsearch would sometimes return duplicate results.
+
+Change: Indexer statuses on search results page is minimizable and minimized by default.
+
+Change: Checkbox to invert selection temporarily disabled because of a bug. Will reenable it when fixed.
+
 ### 0.0.1a75
 Fix: Searching TV shows by season/episode via GUI didn't work.
 
