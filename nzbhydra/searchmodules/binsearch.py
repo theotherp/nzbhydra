@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import urlparse
+from sets import Set
 
 from builtins import super
 from builtins import str
@@ -110,7 +111,7 @@ class Binsearch(SearchModule):
     def process_query_result(self, html, maxResults = None):
         self.debug("Started processing results")
         logger.info("Last results count %d" % self.last_results_count)
-        entries = []
+        entries = Set([])
         soup = BeautifulSoup(html, config.settings.searching.htmlParser)
         self.debug("Using HTML parser %s" % config.settings.searching.htmlParser)
 
@@ -206,7 +207,7 @@ class Binsearch(SearchModule):
                 self.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
             accepted, reason = self.accept_result(entry)
             if accepted:
-                entries.append(entry)
+                entries.add(entry)
             else:
                 self.debug("Rejected search result. Reason: %s" % reason)
             
