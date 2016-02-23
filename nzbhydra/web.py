@@ -7,6 +7,8 @@ import json
 import logging
 import os
 import urlparse
+from StringIO import StringIO
+from zipfile import ZipFile
 
 import arrow
 import datetime
@@ -36,7 +38,7 @@ from pprint import pprint
 from time import sleep
 from arrow import Arrow
 from flask import Flask, render_template, request, jsonify, Response
-from flask import redirect, make_response, send_from_directory
+from flask import redirect, make_response, send_from_directory, send_file
 from flask_cache import Cache
 from flask.json import JSONEncoder
 from webargs import fields
@@ -47,7 +49,7 @@ from werkzeug.wrappers import ETagResponseMixin
 from flask_session import Session
 from nzbhydra import config, search, infos, database
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid
-from nzbhydra.config import NzbAccessTypeSelection
+from nzbhydra.config import NzbAccessTypeSelection, getAnonymizedConfig, getSettingsToHide
 from nzbhydra.database import IndexerStatus, Indexer
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
@@ -55,7 +57,7 @@ from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses
 from nzbhydra.update import get_rep_version, get_current_version, update, getChangelog, getVersionHistory
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
-from nzbhydra.log import getLogs
+from nzbhydra.log import getLogs, getAnonymizedLogFile
 
 
 
@@ -215,7 +217,7 @@ def create_json_response(success=True, data=None, error_message=None):
 
 def isAdminLoggedIn():
     auth = request.authorization
-    return len(config.settings.auth.users) == 0 or (auth is not None and any([x.maySeeAdmin and x.name == auth.username and x.password == auth.password for x in config.settings.auth.users]))
+    return len(config.settings.auth.users) == 0 or (auth is not None and any([x.maySeeAdmin and x.username == auth.username and x.password == auth.password for x in config.settings.auth.users]))
 
 
 def isAllowed(authType):
@@ -225,19 +227,19 @@ def isAllowed(authType):
     
     for user in config.settings.auth.users:
         if authType == "main":
-            if not user.name and not user.password: #"authless" user
+            if not user.username and not user.password: #"authless" user
                 return True
-            if auth and auth.username == user.name and auth.password == user.password:
+            if auth and auth.username == user.username and auth.password == user.password:
                 return True
         if authType == "stats":
-            if not user.name and not user.password and user.maySeeStats:  # "authless" user
+            if not user.username and not user.password and user.maySeeStats:  # "authless" user
                 return True
-            if auth and auth.username == user.name and auth.password == user.password:
+            if auth and auth.username == user.username and auth.password == user.password:
                 return user.maySeeStats
         if authType == "admin":
-            if not user.name and not user.password and user.maySeeAdmin:  # "authless" user
+            if not user.username and not user.password and user.maySeeAdmin:  # "authless" user
                 return True
-            if auth and auth.username == user.name and auth.password == user.password:
+            if auth and auth.username == user.username and auth.password == user.password:
                 return user.maySeeAdmin
         
     return False
@@ -820,6 +822,26 @@ def internalapi_getconfig():
 def internalapi_getsafeconfig():
     logger.debug("Get safe config request")
     return jsonify(config.getSafeConfig())
+
+
+@app.route('/internalapi/getlogfordebugging')
+@requires_auth("admin")
+def internalapi_getdebugginginfos():
+    logger.debug("Get debugging log request")
+    log = getAnonymizedLogFile(getSettingsToHide())
+    response = make_response(log)
+    response.headers["Content-Disposition"] = "attachment; filename=nzbhydralog.txt"
+    return response
+
+
+@app.route('/internalapi/getconfigfordebugging')
+@requires_auth("admin")
+def internalapi_getdebugginginfos():
+    logger.debug("Get debugging config request")
+    ac = json.dumps(getAnonymizedConfig())
+    response = make_response(ac)
+    response.headers["Content-Disposition"] = "attachment; filename=nzbhydrasettings.txt"
+    return response
 
 
 @app.route('/internalapi/mayseeadminarea')

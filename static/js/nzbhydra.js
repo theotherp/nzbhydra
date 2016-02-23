@@ -3614,7 +3614,7 @@ function ConfigFields() {
                         altLegendText: 'Authless',
                         fields: [
                             {
-                                key: 'name',
+                                key: 'username',
                                 type: 'horizontalInput',
                                 templateOptions: {
                                     type: 'text',

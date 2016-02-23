@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import hashlib
 import shutil
 import traceback
 from contextlib import contextmanager
@@ -10,6 +11,9 @@ from sets import Set
 
 import arrow
 # standard_library.install_aliases()
+import re
+
+import validators as validators
 from builtins import *
 import json
 import logging
@@ -19,6 +23,11 @@ from furl import furl
 from bunch import Bunch
 
 logger = logging.getLogger('root')
+
+# Checklist for adding config values:
+# Make sure they're anonymized if needed
+# Make sure they're migrated to if needed
+# Make sure they're available in safe config if needed
 
 initialConfig = {
     "downloader": {
@@ -107,7 +116,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 10,
+        "configVersion": 11,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -363,7 +372,15 @@ def migrate(settingsFilename):
                     with version_update(config, 10):
                         addLogMessage(20, "Activating threaded server")
                         config["main"]["runThreaded"] = True
-                            
+
+                if config["main"]["configVersion"] == 10:
+                    with version_update(config, 11):
+                        addLogMessage(20, "Renaming keys for usernames")
+                        for user in config["auth"]["users"]:
+                            addLogMessage(10, "Renaming key for user")
+                            user["username"] = user["name"]
+                            user.pop("name")
+
 
             except Exception as e:
                 addLogMessage(30, "An error occurred while migrating the config file. A backup file of the original setttings was created: %s" % backupFilename)
@@ -384,6 +401,71 @@ def load(filename):
             # Now what?
     else:
         settings = Bunch.fromDict(initialConfig)
+
+
+def getAnonymizedConfigSetting(key, value):
+    if value is None:
+        return None
+    if value == "":
+        return ""
+    try:
+        if key == "host":
+            return getAnonymizedIpOrDomain(value)
+        if key == "url" or key == "externalUrl" and value:
+                f = furl(value)
+                if f.host:
+                    f.host = getAnonymizedIpOrDomain(f.host)
+                    return f.tostr()
+                return "<NOTAURL>"
+        if key in ("username", "password", "apikey"):
+            return "<%s:%s>" % (key.upper(), hashlib.md5(value).hexdigest())
+        return value
+    except Exception as e:
+        logger.error('Error while anonymizing setting "%s". Obfuscating to be sure: %s' % (key, e))
+        return "<%s:%s>" % (key.upper(), hashlib.md5(value).hexdigest())
+        
+
+
+def getAnonymizedIpOrDomain(value):
+    if validators.ipv4(value) or validators.ipv6(value):
+        return "<IPADDRESS:%s>" % hashlib.md5(value).hexdigest()
+    elif validators.domain(value):
+        return "<DOMAIN:%s>" % hashlib.md5(value).hexdigest()
+    else:
+        return "<NOTIPADDRESSORDOMAIN:%s>" % hashlib.md5(value).hexdigest()
+
+
+def getAnonymizedConfig(config=None):
+    if config is None:
+        return getAnonymizedConfig(settings)
+    result = {}
+    if isinstance(config, str) or isinstance(config, int) or isinstance(config, float):
+        return config
+    for x, y in config.iteritems():
+        if isinstance(y, dict):
+            result[x] = getAnonymizedConfig(y)
+        elif isinstance(y, list):
+            result[x] = [getAnonymizedConfig(i) for i in y]
+        else:
+            result[x] = getAnonymizedConfigSetting(x, y)
+    return result
+
+
+def getSettingsToHide():
+    #Only use values which would actually appear in the log
+    hideThese = [
+        ("main.apikey", settings.main.apikey),
+        ("main.externalUrl", settings.main.externalUrl),
+        ("main.host", settings.main.host),
+        ("sabnzbd.apikey", settings.downloader.sabnzbd.apikey),
+        ("sabnzbd.url", settings.downloader.sabnzbd.url),
+        ("nzbget.host", settings.downloader.nzbget.host),
+        ("indexers.omgwwtfnzbs.apikey", settings.indexers.omgwtfnzbs.apikey),
+        ("indexers.omgwwtfnzbs.username", settings.indexers.omgwtfnzbs.username),
+    ]
+    hideThese.extend([("newznab.apikey", x.apikey) for x in settings.indexers.newznab])
+    hideThese.extend([("auth.username", x.username) for x in settings.auth.users])
+    return hideThese
 
 
 def import_config_data(data):

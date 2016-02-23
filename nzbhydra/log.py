@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import cgi
+import hashlib
 import types
 
 from future import standard_library
@@ -74,16 +75,32 @@ def setup_custom_logger(name, logfile=None):
     return logger
 
 
-def getLogs():
-    logRe = re.compile(r".*\.log(\.\d+)?")
-    logFiles = [f for f in listdir(".") if isfile(f) and logRe.match(f)]
-    logFiles = [{"name": f, "lastModified": getmtime(f)} for f in logFiles]
+def getLogFile():
     logfile = config.settings.main.logging.logfilename
+    log = None
     if exists(logfile):
         logger.debug("Reading log file %s" % logfile)
         with open(logfile, encoding='utf-8') as logFile:
             log = cgi.escape(logFile.read())
-    else:
-        logger.debug("Configured log file %s was not found" % logfile)
-        log = "No log available"
+    return log
+
+
+def getAnonymizedLogFile(hideThese):
+    log = getLogFile()
+    if log is None:
+        return None
+    for hideThis in hideThese:
+        if hideThis[1]:
+            obfuscated = hashlib.md5(hideThis[1]).hexdigest()
+            log = log.replace(hideThis[1], "<%s:%s>" % (hideThis[0], obfuscated))
+    return log
+
+
+def getLogs():
+    logRe = re.compile(r".*\.log(\.\d+)?")
+    logFiles = [f for f in listdir(".") if isfile(f) and logRe.match(f)]
+    logFiles = [{"name": f, "lastModified": getmtime(f)} for f in logFiles]
+    log = getLogFile()
+    if log is None:
+        log = "No log file found"
     return {"logFiles": logFiles, "log": log}

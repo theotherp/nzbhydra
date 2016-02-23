@@ -175,14 +175,14 @@ class GitUpdateManager(UpdateManager):
 
         main_git = 'git'
 
-        logger.debug(u"Checking if we can use git commands: " + main_git + ' ' + test_cmd)
+        logger.debug("Checking if we can use git commands: " + main_git + ' ' + test_cmd)
         output, err, exit_status = self._run_git(main_git, test_cmd) 
 
         if exit_status == 0:
-            logger.debug(u"Using: " + main_git)
+            logger.debug("Using: " + main_git)
             return main_git
         else:
-            logger.debug(u"Not using: " + main_git)
+            logger.debug("Not using: " + main_git)
 
         # trying alternatives
 
@@ -200,14 +200,14 @@ class GitUpdateManager(UpdateManager):
             logger.debug("Trying known alternative git locations")
 
             for cur_git in alternative_git:
-                logger.debug(u"Checking if we can use git commands: " + cur_git + ' ' + test_cmd)
+                logger.debug("Checking if we can use git commands: " + cur_git + ' ' + test_cmd)
                 output, err, exit_status = self._run_git(cur_git, test_cmd)
 
                 if exit_status == 0:
-                    logger.error(u"Using: " + cur_git)
+                    logger.error("Using: " + cur_git)
                     return cur_git
                 else:
-                    logger.debug(u"Not using: " + cur_git)
+                    logger.debug("Not using: " + cur_git)
 
         # Still haven't found a working git
         logger.error("Unable to find working git command")
@@ -219,40 +219,40 @@ class GitUpdateManager(UpdateManager):
         output = err = exit_status = None
 
         if not git_path:
-            logger.error(u"No git specified, can't use git commands")
+            logger.error("No git specified, can't use git commands")
             exit_status = 1
             return output, err, exit_status
 
         cmd = git_path + ' ' + args
 
         try:
-            logger.debug(u"Executing " + cmd + " with your shell in " + self.main_dir)
+            logger.debug("Executing " + cmd + " with your shell in " + self.main_dir)
             p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, cwd=self.main_dir)
             output, err = p.communicate()
             exit_status = p.returncode
 
             if output:
                 output = output.strip()
-            logger.info(u"git output: " + output)
+            logger.info("git output: " + output)
 
         except OSError:
-            logger.error(u"Command " + cmd + " didn't work")
+            logger.error("Command " + cmd + " didn't work")
             exit_status = 1
 
         if exit_status == 0:
-            logger.debug(cmd + u" : returned successful")
+            logger.debug(cmd + " : returned successful")
             exit_status = 0
 
         elif exit_status == 1:
-            logger.error(cmd + u" returned : " + output)
+            logger.error(cmd + " returned : " + output)
             exit_status = 1
 
         elif exit_status == 128 or 'fatal:' in output or err:
-            logger.error(cmd + u" returned : " + output)
+            logger.error(cmd + " returned : " + output)
             exit_status = 128
 
         else:
-            logger.error(cmd + u" returned : " + output + u", treat as error for now")
+            logger.error(cmd + " returned : " + output + ", treat as error for now")
             exit_status = 1
 
         return output, err, exit_status
@@ -291,47 +291,47 @@ class SourceUpdateManager(UpdateManager):
             update_dir = os.path.join(main_dir, 'update')
 
             if os.path.isdir(update_dir):
-                logger.info(u"Clearing out update folder " + update_dir + " before extracting")
+                logger.info("Clearing out update folder " + update_dir + " before extracting")
                 shutil.rmtree(update_dir)
 
-            logger.info(u"Creating update folder " + update_dir + " before extracting")
+            logger.info("Creating update folder " + update_dir + " before extracting")
             os.makedirs(update_dir)
 
             # retrieve file
-            logger.info(u"Downloading update from " + repr(tar_download_url))
-            tar_download_path = os.path.join(update_dir, u'sb-update.tar')
+            logger.info("Downloading update from " + repr(tar_download_url))
+            tar_download_path = os.path.join(update_dir, 'sb-update.tar')
             response = requests.get(tar_download_url, stream=True, verify=False) #Apparently SSL causes problems on some systems (#138)b
             with open(tar_download_path, 'wb') as out_file:
                 shutil.copyfileobj(response.raw, out_file)
             del response
 
             if not os.path.isfile(tar_download_path):
-                logger.error(u"Unable to retrieve new version from " + tar_download_url + ", can't update")
+                logger.error("Unable to retrieve new version from " + tar_download_url + ", can't update")
                 return False
 
             if not tarfile.is_tarfile(tar_download_path):
-                logger.error(u"Retrieved version from " + tar_download_url + " is corrupt, can't update")
+                logger.error("Retrieved version from " + tar_download_url + " is corrupt, can't update")
                 return False
 
             # extract to sb-update dir
-            logger.info(u"Extracting update file " + tar_download_path)
+            logger.info("Extracting update file " + tar_download_path)
             tar = tarfile.open(tar_download_path)
             tar.extractall(update_dir)
             tar.close()
 
             # delete .tar.gz
-            logger.info(u"Deleting update file " + tar_download_path)
+            logger.info("Deleting update file " + tar_download_path)
             os.remove(tar_download_path)
 
             # find update dir name
             update_dir_contents = [x for x in os.listdir(update_dir) if os.path.isdir(os.path.join(update_dir, x))]
             if len(update_dir_contents) != 1:
-                logger.error(u"Invalid update data, update failed: " + str(update_dir_contents))
+                logger.error("Invalid update data, update failed: " + str(update_dir_contents))
                 return False
             content_dir = os.path.join(update_dir, update_dir_contents[0])
 
             # walk temp folder and move files to main folder
-            logger.info(u"Moving files from " + content_dir + " to " + main_dir)
+            logger.info("Moving files from " + content_dir + " to " + main_dir)
             for dirname, dirnames, filenames in os.walk(content_dir):
                 dirname = dirname[len(content_dir) + 1:]
                 for curfile in filenames:
@@ -344,7 +344,7 @@ class SourceUpdateManager(UpdateManager):
 
 
         except Exception as e:
-            logger.error(u"Error while trying to update: " + str(e))
+            logger.error("Error while trying to update: " + str(e))
             return False
         logger.info("Update successful")
         return True
@@ -373,39 +373,39 @@ class WindowsUpdateManager(SourceUpdateManager):
             update_dir = os.path.join(main_dir, 'update')
 
             if os.path.isdir(update_dir):
-                logger.info(u"Clearing out update folder " + update_dir + " before extracting")
+                logger.info("Clearing out update folder " + update_dir + " before extracting")
                 shutil.rmtree(update_dir)
 
-            logger.info(u"Creating update folder " + update_dir + " before extracting")
+            logger.info("Creating update folder " + update_dir + " before extracting")
             os.makedirs(update_dir)
 
             # retrieve file
-            logger.info(u"Downloading update from " + repr(tar_download_url))
-            tar_download_path = os.path.join(update_dir, u'sb-update.tar')
+            logger.info("Downloading update from " + repr(tar_download_url))
+            tar_download_path = os.path.join(update_dir, 'sb-update.tar')
             urllib.urlretrieve(tar_download_url, tar_download_path)
 
             if not os.path.isfile(tar_download_path):
-                logger.error(u"Unable to retrieve new version from " + tar_download_url + ", can't update")
+                logger.error("Unable to retrieve new version from " + tar_download_url + ", can't update")
                 return False
 
             if not tarfile.is_tarfile(tar_download_path):
-                logger.error(u"Retrieved version from " + tar_download_url + " is corrupt, can't update")
+                logger.error("Retrieved version from " + tar_download_url + " is corrupt, can't update")
                 return False
 
             # extract to sb-update dir
-            logger.info(u"Extracting update file " + tar_download_path)
+            logger.info("Extracting update file " + tar_download_path)
             tar = tarfile.open(tar_download_path)
             tar.extractall(update_dir)
             tar.close()
 
             # delete .tar.gz
-            logger.info(u"Deleting update file " + tar_download_path)
+            logger.info("Deleting update file " + tar_download_path)
             os.remove(tar_download_path)
 
             # find update dir name
             update_dir_contents = [x for x in os.listdir(update_dir) if os.path.isdir(os.path.join(update_dir, x))]
             if len(update_dir_contents) != 1:
-                logger.error(u"Invalid update data, update failed: " + str(update_dir_contents))
+                logger.error("Invalid update data, update failed: " + str(update_dir_contents))
                 return False
             content_dir = os.path.join(update_dir, update_dir_contents[0])
             
@@ -421,7 +421,7 @@ class WindowsUpdateManager(SourceUpdateManager):
                 shutil.move(toRename[0], toRename[1])      
 
             # walk temp folder and move files to main folder
-            logger.info(u"Moving files from " + content_dir + " to " + main_dir)
+            logger.info("Moving files from " + content_dir + " to " + main_dir)
             for dirname, dirnames, filenames in os.walk(content_dir):
                 dirname = dirname[len(content_dir) + 1:]
                 for curfile in filenames:
@@ -436,7 +436,7 @@ class WindowsUpdateManager(SourceUpdateManager):
                         logger.debug("Skipping %s" % curfile)
 
         except Exception as e:
-            logger.error(u"Error while trying to update: " + str(e))
+            logger.error("Error while trying to update: " + str(e))
             return False
         logger.info("Update successful")
         return True
