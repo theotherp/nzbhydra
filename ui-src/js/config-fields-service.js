@@ -546,6 +546,16 @@ function ConfigFields() {
                             }
                         },
 
+                        {
+                            key: 'maxAge',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'number',
+                                label: 'Maximum results age',
+                                help: 'Results older than this are ignored. Can be overwritten per search.'
+                            }
+                        },
+
 
                         {
                             key: 'generate_queries',

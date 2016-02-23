@@ -40,7 +40,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
     $scope.showIndexers = {};
 
-    var safeConfig;
+    var safeConfig = ConfigService.getSafe();
 
 
     $scope.typeAheadWait = 300;
@@ -220,16 +220,15 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         
     }
 
-    ConfigService.getSafe().then(function (cfg) {
-        safeConfig = cfg;
-        $scope.availableIndexers = _.chain(cfg.indexers).filter(function (indexer) {
-            return indexer.enabled && indexer.showOnSearch;
-        }).sortBy("name")
-            .map(function (indexer) {
-            return {name: indexer.name, activated: isIndexerPreselected(indexer)};
-        }).value();
+    
+    $scope.availableIndexers = _.chain(safeConfig.indexers).filter(function (indexer) {
+        return indexer.enabled && indexer.showOnSearch;
+    }).sortBy("name")
+        .map(function (indexer) {
+        return {name: indexer.name, activated: isIndexerPreselected(indexer)};
+    }).value();
         
-    });
+    
 
     if ($scope.mode) {
         console.log("Starting search in newly loaded search controller");

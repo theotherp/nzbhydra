@@ -5,7 +5,7 @@ angular
 function ConfigService($http, $q, $cacheFactory) {
 
     var cache = $cacheFactory("nzbhydra");
-    
+
     return {
         set: set,
         get: get,
@@ -13,8 +13,8 @@ function ConfigService($http, $q, $cacheFactory) {
         invalidateSafe: invalidateSafe,
         maySeeAdminArea: maySeeAdminArea
     };
-    
-    
+
+
     function set(newConfig) {
         $http.put('internalapi/setsettings', newConfig)
             .then(function (successresponse) {
@@ -33,22 +33,24 @@ function ConfigService($http, $q, $cacheFactory) {
             });
             cache.put("config", config);
         }
-        
+
         return config;
     }
 
     function getSafe() {
-            var safeconfig = cache.get("safeconfig");
-            if (angular.isUndefined(safeconfig)) {
-                safeconfig = $http.get('internalapi/getsafeconfig').then(function(data) {
-                    return data.data;
-                });
-                cache.put("safeconfig", safeconfig);
-            }
-        
+        var safeconfig = cache.get("safeconfig");
+        if (angular.isDefined(safeconfig)) {
             return safeconfig;
+        }
+        
+        return $http.get('internalapi/getsafeconfig').then(function (data) {
+            cache.put("safeconfig", data.data);
+            return data.data;
+        });
+
+
     }
-    
+
     function invalidateSafe() {
         cache.remove("safeconfig");
     }

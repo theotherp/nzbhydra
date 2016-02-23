@@ -167,6 +167,7 @@ initialConfig = {
         "ignorePassworded": False,
         "ignoreTemporarilyDisabled": False,
         "ignoreWords": "",
+        "maxAge": "",
         "removeDuplicatesExternal": True,
         "timeout": 20,
         "userAgent": "NZBHydra"
@@ -458,6 +459,6 @@ def getSafeConfig():
     indexers.extend([{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "showOnSearch": x["showOnSearch"] and x["accessType"] != "external"} for x in settings["indexers"]["newznab"]])
     return {
         "indexers": indexers,
-        "searching": {"categorysizes": settings["searching"]["categorysizes"]},
+        "searching": {"categorysizes": settings["searching"]["categorysizes"], "maxAge": settings["searching"]["maxAge"]},
         "downloader": {"downloader": settings["downloader"]["downloader"], "nzbget": {"defaultCategory": settings["downloader"]["nzbget"]["defaultCategory"]}, "sabnzbd": {"defaultCategory": settings["downloader"]["sabnzbd"]["defaultCategory"]}}
     }

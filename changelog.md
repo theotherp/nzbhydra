@@ -1,12 +1,21 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a77
+Fix: If the "Ignore words" settings ended with a comma all search results would be ignored.
+ 
+Added: Properly recognize if wrong schema was supplied for downloader host.
+
+Added: Global setting for maximum age of results.
+
+Changed: Config help texts are now left aligned. 
+
 ### 0.0.1a76
 Fix: Binsearch would sometimes return duplicate results.
 
-Change: Indexer statuses on search results page is minimizable and minimized by default.
+Changed: Indexer statuses on search results page is minimizable and minimized by default.
 
-Change: Checkbox to invert selection temporarily disabled because of a bug. Will reenable it when fixed.
+Changed: Checkbox to invert selection temporarily disabled because of a bug. Will reenable it when fixed.
 
 ### 0.0.1a75
 Fix: Searching TV shows by season/episode via GUI didn't work.

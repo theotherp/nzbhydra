@@ -143,6 +143,9 @@ pseudo_cache = {}
 
 
 def search(internal, search_request):
+    if search_request.maxage is None and config.settings.searching.maxAge:
+        search_request.maxage = config.settings.searching.maxAge
+        logger.info("Will ignore results older than %d days" % search_request.maxage)
     for k in list(pseudo_cache.keys()):
         if pseudo_cache[k]["last_access"].replace(minutes=+5) < arrow.utcnow():
             pseudo_cache.pop(k)

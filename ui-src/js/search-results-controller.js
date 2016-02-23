@@ -3,7 +3,7 @@ angular
     .controller('SearchResultsController', SearchResultsController);
 
 //SearchResultsController.$inject = ['blockUi'];
-function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, SearchService,growl, NzbDownloadService) {
+function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, NzbDownloadService, SearchService, ConfigService) {
 
     $scope.sortPredicate = "epoch";
     $scope.sortReversed = true;
@@ -81,11 +81,15 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, Se
     
     function sortAndFilter(results) {
         $scope.countFilteredOut = 0;
+        var safeConfig = ConfigService.getSafe();
         function filterByAgeAndSize(item) {
             var filterOut = !(_.isNumber($stateParams.minsize) && item.size / 1024 / 1024 < $stateParams.minsize)
                 && !(_.isNumber($stateParams.maxsize) && item.size / 1024 / 1024 > $stateParams.maxsize)
                 && !(_.isNumber($stateParams.minage) && item.age_days < $stateParams.minage)
-                && !(_.isNumber($stateParams.maxage) && item.age_days > $stateParams.maxage);
+                && !((_.isNumber($stateParams.maxage) && item.age_days > $stateParams.maxage)
+                    || (_.isNumber(safeConfig.searching.maxAge) && item.age_days > safeConfig.searching.maxAge)
+                        
+                );
             if (!filterOut) {
                 $scope.countFilteredOut++;
             }
