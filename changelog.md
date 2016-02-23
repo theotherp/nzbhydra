@@ -2,11 +2,13 @@
 
 ----------
 ### 0.0.1a77
-Fix: If the "Ignore words" settings ended with a comma all search results would be ignored.
- 
+Added: Bugreport section in the "System" tab which gives some advice and provides functions to download anonymized versions of the settings and log which you can post.
+
 Added: Properly recognize if wrong schema was supplied for downloader host.
 
 Added: Global setting for maximum age of results.
+
+Fix: If the "Ignore words" settings ended with a comma all search results would be ignored.
 
 Changed: Config help texts are now left aligned. 
 

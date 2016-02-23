@@ -826,7 +826,7 @@ def internalapi_getsafeconfig():
 
 @app.route('/internalapi/getlogfordebugging')
 @requires_auth("admin")
-def internalapi_getdebugginginfos():
+def internalapi_getdebugginginfoslog():
     logger.debug("Get debugging log request")
     log = getAnonymizedLogFile(getSettingsToHide())
     response = make_response(log)
@@ -836,7 +836,7 @@ def internalapi_getdebugginginfos():
 
 @app.route('/internalapi/getconfigfordebugging')
 @requires_auth("admin")
-def internalapi_getdebugginginfos():
+def internalapi_getdebugginginfosconfig():
     logger.debug("Get debugging config request")
     ac = json.dumps(getAnonymizedConfig())
     response = make_response(ac)

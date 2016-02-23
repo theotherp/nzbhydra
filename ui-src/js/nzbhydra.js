@@ -177,6 +177,16 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                 }]
             }
         })
+        .state("system.bugreport", {
+            url: "/bugreport",
+            templateUrl: "static/html/states/system.html",
+            controller: "SystemController",
+            resolve: {
+                foobar: ['$http', function ($http) {
+                    return $http.get("internalapi/askforadmin")
+                }]
+            }
+        })
         .state("search", {
             url: "/:search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid&indexers",
             templateUrl: "static/html/states/search.html",
