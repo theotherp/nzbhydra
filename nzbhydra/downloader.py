@@ -17,7 +17,7 @@ import socket
 import xmlrpc.client
 from furl import furl
 import requests
-from requests.exceptions import HTTPError, SSLError, ConnectionError, ReadTimeout
+from requests.exceptions import HTTPError, SSLError, ConnectionError, ReadTimeout, InvalidSchema
 from nzbhydra import config
 
 
@@ -227,7 +227,7 @@ class Sabnzbd(Downloader):
             r = requests.get(f.tostr(), verify=False, timeout=15)
             r.raise_for_status()
             return r.json()["status"]
-        except (SSLError, HTTPError, ConnectionError, ReadTimeout):
+        except (SSLError, HTTPError, ConnectionError, ReadTimeout, InvalidSchema):
             self.logger.exception("Error while trying to connect to sabnzbd using link %s" % link)
             return False
 
