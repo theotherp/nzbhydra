@@ -7369,5 +7369,8 @@ pre {
 .panel-default > .panel-heading h3 {
   color: #ffffff;
 }
+.help-block {
+  text-align: left;
+}
 
 /*# sourceMappingURL=nzbhydra.css.map */
