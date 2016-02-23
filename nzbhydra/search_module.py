@@ -157,7 +157,7 @@ class SearchModule(object):
         if config.settings.searching.ignorePassworded and nzbSearchResult.passworded:
             return False, "Passworded results shall be ignored"
         if config.settings.searching.ignoreWords:
-            ignoreWords = config.settings.searching.ignoreWords.split(",")
+            ignoreWords = filter(bool, config.settings.searching.ignoreWords.split(","))
             for word in ignoreWords:
                 word = word.strip().lower()
                 if word in nzbSearchResult.title.lower():
