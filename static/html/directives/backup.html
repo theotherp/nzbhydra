@@ -1,0 +1,19 @@
+<div style="text-align: left; margin: auto; width: 600px">
+    <a href="internalapi/getbackup" target="_self">
+        <button>Get backup</button>
+    </a>
+    <div style="margin-top: 50px">
+        <h3>Existing backups</h3>
+        <table>
+            <tr class="row">
+                <th class="col-md-16" style="text-align: left">Filename</th>
+                <th class="col-md-4" style="text-align: left">Created</th>
+            </tr>
+            <tr ng-repeat="backup in backups" class="row">
+                <td class="col-md-16" style="text-align: left"><a href="internalapi/getbackupfile?filename={{ backup.filename }}" target="_self">{{ backup.filename }}</a></td>
+                <td class="col-md-4" style="text-align: left">{{ backup.age }}</td>
+            </tr>
+
+        </table>
+    </div>
+</div>

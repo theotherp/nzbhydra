@@ -34,6 +34,10 @@ function SystemController($scope, $state, growl, RestartService, NzbHydraControl
         },
         {
             active: false,
+            state: 'system.backup'
+        },
+        {
+            active: false,
             state: 'system.bugreport'
         },
         {

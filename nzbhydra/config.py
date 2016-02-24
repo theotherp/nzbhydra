@@ -245,9 +245,6 @@ def migrate(settingsFilename):
             config["main"]["configVersion"] = 1
         if config["main"]["configVersion"] < initialConfig["main"]["configVersion"]:
             addLogMessage(20, "Migrating config")
-            backupFilename = "%s.%s.bak" % (settingsFilename, arrow.now().format("YYYY-MM-DD"))
-            addLogMessage(20, "Copying backup of settings to %s" % backupFilename)
-            shutil.copy(settingsFilename, backupFilename)
             try:
                 if config["main"]["configVersion"] == 1:
                     with version_update(config, 2):

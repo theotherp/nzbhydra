@@ -1,31 +1,19 @@
 import glob
 import subprocess
-from os.path import dirname, abspath
 import os
 import sys
 import argparse
 import webbrowser
+import nzbhydra
 
-def getBasePath():
-    try:
-        basepath = dirname(abspath(__file__))
-    except NameError:  # We are the main py2exe script, not a module
-        import sys
-        basepath = dirname(abspath(sys.argv[0]))
-    if "library.zip" in basepath:
-        basepath = basepath[:basepath.find("library.zip")]
-        print("Running in exe. Setting base path to %s" % basepath)
-    else:
-        print("Setting base path to %s" % basepath)
-    return basepath
-
-
-basepath = getBasePath()
+basepath = nzbhydra.getBasePath()
+print("Setting base path to %s" % basepath)
 os.chdir(basepath)
 sys.path.insert(0, os.path.join(basepath, 'libs'))
 
 
 from furl import furl
+
 from nzbhydra import log
 from nzbhydra import indexers
 from nzbhydra import database
@@ -86,7 +74,9 @@ def run(arguments):
     global logger
     
     settings_file = arguments.config
+    nzbhydra.configFile = settings_file
     database_file = arguments.database
+    nzbhydra.databaseFile = database_file
 
     print("Loading settings from %s" % settings_file)
     config.load(settings_file)

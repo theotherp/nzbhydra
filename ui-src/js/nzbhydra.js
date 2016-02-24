@@ -167,6 +167,16 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                 }]
             }
         })
+        .state("system.backup", {
+            url: "/backup",
+            templateUrl: "static/html/states/system.html",
+            controller: "SystemController",
+            resolve: {
+                foobar: ['$http', function ($http) {
+                    return $http.get("internalapi/askforadmin")
+                }]
+            }
+        })
         .state("system.about", {
             url: "/about",
             templateUrl: "static/html/states/system.html",

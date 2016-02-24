@@ -4,9 +4,11 @@
 ### 0.0.1a77
 Added: Bugreport section in the "System" tab which gives some advice and provides functions to download anonymized versions of the settings and log which you can post.
 
-Added: Properly recognize if wrong schema was supplied for downloader host.
+Added: Automatically create backup of database and settings before updating. Add "Backup" tab in "System" section to create a backup and download existing backup files.
 
 Added: Global setting for maximum age of results.
+
+Fixed: Properly recognize if wrong schema was supplied for downloader host.
 
 Fix: If the "Ignore words" settings ended with a comma all search results would be ignored.
 

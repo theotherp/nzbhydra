@@ -1,6 +1,8 @@
 /.vagrant
 Vagrantfile
 /.tmp
+/backup
+/debug
 /dist
 /build
 /flask_session

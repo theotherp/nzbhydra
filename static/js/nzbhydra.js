@@ -167,6 +167,16 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }]
             }
         })
+        .state("system.backup", {
+            url: "/backup",
+            templateUrl: "static/html/states/system.html",
+            controller: "SystemController",
+            resolve: {
+                foobar: ['$http', function ($http) {
+                    return $http.get("internalapi/askforadmin")
+                }]
+            }
+        })
         .state("system.about", {
             url: "/about",
             templateUrl: "static/html/states/system.html",
@@ -696,6 +706,26 @@ function cfgFormEntry() {
 }
 angular
     .module('nzbhydraApp')
+    .directive('hydrabackup', hydrabackup);
+
+function hydrabackup() {
+    controller.$inject = ["$scope", "BackupService"];
+    return {
+        templateUrl: 'static/html/directives/backup.html',
+        controller: controller
+    };
+
+    function controller($scope, BackupService) {
+        BackupService.getBackupsList().then(function(backups) {
+            $scope.backups = backups;
+        });
+        
+    }
+}
+
+
+angular
+    .module('nzbhydraApp')
     .directive('addableNzb', addableNzb);
 
 function addableNzb() {
@@ -901,6 +931,10 @@ function SystemController($scope, $state, growl, RestartService, NzbHydraControl
         {
             active: false,
             state: 'system.log'
+        },
+        {
+            active: false,
+            state: 'system.backup'
         },
         {
             active: false,
@@ -3900,4 +3934,23 @@ angular
         $uibModalInstance.close($scope);
     }
 }]);
+angular
+    .module('nzbhydraApp')
+    .factory('BackupService', BackupService);
+
+function BackupService($http) {
+
+    return {
+        getBackupsList: getBackupsList
+    };
+    
+
+    function getBackupsList() {
+        return $http.get('internalapi/getbackups').then(function (data) {
+            return data.data.backups;
+        });
+    }
+
+}
+BackupService.$inject = ["$http"];
 //# sourceMappingURL=nzbhydra.js.map

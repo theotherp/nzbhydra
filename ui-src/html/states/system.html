@@ -15,13 +15,17 @@
         <hydralog ng-if="tabs[2].active"></hydralog>
     </uib-tab>
 
-    <uib-tab heading="Bugreport" active="tabs[3].active" select="goToState(3)">
+    <uib-tab heading="Backup" active="tabs[3].active" select="goToState(3)">
+        <hydrabackup ng-if="tabs[3].active"></hydrabackup>
+    </uib-tab>
+
+    <uib-tab heading="Bugreport" active="tabs[4].active" select="goToState(4)">
         <div class="system-tab-content">
             <ng-include src="'static/html/bugreport.html'"></ng-include>
         </div>
     </uib-tab>
 
-    <uib-tab heading="About" active="tabs[4].active" select="goToState(4)">
+    <uib-tab heading="About" active="tabs[5].active" select="goToState(5)">
         <div class="system-tab-content">
         <ng-include src="'static/html/about.html'"></ng-include>
             </div>

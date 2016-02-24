@@ -14,7 +14,7 @@ import tarfile
 import markdown
 import requests
 
-from nzbhydra import config
+from nzbhydra import config, backup_debug
 from furl import furl
 
 logger = logging.getLogger('root')
@@ -127,6 +127,9 @@ def update():
 
 class UpdateManager():
     pass
+    
+    def backup(self):
+        backup_debug.backup()
 
     def getLatestVersionFromRepository(self):
         url = furl(self.repositoryBase)
@@ -259,6 +262,8 @@ class GitUpdateManager(UpdateManager):
 
 
     def update(self):
+        self.backup()
+        
         logger.debug("Calling %s %s" % (self._git_path, 'pull origin ' + self.branch))
         output, err, exit_status = self._run_git(self._git_path, 'pull origin ' + self.branch)  
         
@@ -287,6 +292,8 @@ class SourceUpdateManager(UpdateManager):
         main_dir = os.path.dirname(os.path.dirname(__file__))
 
         try:
+            self.backup()
+            
             # prepare the update dir
             update_dir = os.path.join(main_dir, 'update')
 
@@ -369,6 +376,7 @@ class WindowsUpdateManager(SourceUpdateManager):
         main_dir = os.path.dirname(os.path.dirname(__file__))
 
         try:
+            self.backup()
             # prepare the update dir
             update_dir = os.path.join(main_dir, 'update')
 

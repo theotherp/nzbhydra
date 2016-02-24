@@ -7,13 +7,10 @@ import json
 import logging
 import os
 import urlparse
-from StringIO import StringIO
-from zipfile import ZipFile
 
 import arrow
 import datetime
 
-import flask
 import rison
 from bunch import Bunch
 from werkzeug.contrib.fixers import ProxyFix
@@ -58,7 +55,7 @@ from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_searc
 from nzbhydra.update import get_rep_version, get_current_version, update, getChangelog, getVersionHistory
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import getLogs, getAnonymizedLogFile
-
+from nzbhydra.backup_debug import backup, getDebuggingInfos, getBackupFilenames, getBackupFileByFilename
 
 
 class ReverseProxied(object):
@@ -280,7 +277,7 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
 @requires_auth("main")
 def base(path):
     logger.debug("Sending index.html")
-    base_url = ("/" + config.settings.main.urlBase + "/").replace("//", "/")
+    base_url = ("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/"
     _, currentVersion = get_current_version()
     return render_template("index.html", base_url=base_url, isAdmin=isAdminLoggedIn(), onProd="false" if config.settings.main.debug else "true")
 
@@ -822,24 +819,14 @@ def internalapi_getsafeconfig():
     return jsonify(config.getSafeConfig())
 
 
-@app.route('/internalapi/getlogfordebugging')
+@app.route('/internalapi/getdebugginginfos')
 @requires_auth("admin")
-def internalapi_getdebugginginfoslog():
-    logger.debug("Get debugging log request")
-    log = getAnonymizedLogFile(getSettingsToHide())
-    response = make_response(log)
-    response.headers["Content-Disposition"] = "attachment; filename=nzbhydralog.txt"
-    return response
-
-
-@app.route('/internalapi/getconfigfordebugging')
-@requires_auth("admin")
-def internalapi_getdebugginginfosconfig():
-    logger.debug("Get debugging config request")
-    ac = json.dumps(getAnonymizedConfig())
-    response = make_response(ac)
-    response.headers["Content-Disposition"] = "attachment; filename=nzbhydrasettings.txt"
-    return response
+def internalapi_getdebugginginfos():
+    logger.debug("Get debugging infos request")
+    debuggingInfos = getDebuggingInfos()
+    if debuggingInfos is None:
+        return "Error creating debugging infos", 500
+    return send_file(debuggingInfos, as_attachment=True)
 
 
 @app.route('/internalapi/mayseeadminarea')
@@ -895,6 +882,38 @@ def internalapi_getlogs():
     logger.debug("Get logs request")
     logs = getLogs()
     return jsonify(logs)
+
+
+@app.route('/internalapi/getbackup')
+@requires_auth("admin")
+def internalapi_getbackup():
+    logger.debug("Get backup request")
+    backupFile = backup()
+    if backupFile is None:
+        return "Error creating backup file", 500
+    return send_file(backupFile, as_attachment=True, mimetype="application/zip")
+
+
+internalapi_getbackupfile_args = {
+    "filename": fields.String(required=True)
+}
+
+
+@app.route('/internalapi/getbackupfile')
+@requires_auth("admin")
+@use_args(internalapi_getbackupfile_args)
+def internalapi_getbackupfile(args):
+    logger.debug("Get backup filerequest")
+    backupFile = getBackupFileByFilename(args["filename"])
+    logger.info("Sending %s" % backupFile)
+    return send_file(backupFile, as_attachment=True, mimetype="application/zip")
+
+
+@app.route('/internalapi/getbackups')
+@requires_auth("admin")
+def internalapi_getbackups():
+    logger.debug("Get backups request")
+    return jsonify({"backups": getBackupFilenames()})
 
 
 @app.route('/internalapi/getcategories')
