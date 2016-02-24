@@ -66,14 +66,12 @@ class ReverseProxied(object):
         self.app = app
 
     def __call__(self, environ, start_response):
-        environ["MY_URL_BASE"] = "/"
         base_url = config.settings.main.urlBase
         if base_url is not None and base_url.endswith("/"):
             base_url = base_url[:-1]
         if base_url is not None and base_url != "":
             script_name = str(furl(base_url).path)
             if environ['PATH_INFO'].startswith(script_name):
-                environ["MY_URL_BASE"] = script_name + "/"
                 environ['PATH_INFO'] = environ['PATH_INFO'][len(script_name):]
 
         return self.app(environ, start_response)
@@ -282,9 +280,9 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
 @requires_auth("main")
 def base(path):
     logger.debug("Sending index.html")
-    host_url = "//" + request.host + request.environ['MY_URL_BASE']
+    base_url = ("/" + config.settings.main.urlBase + "/").replace("//", "/")
     _, currentVersion = get_current_version()
-    return render_template("index.html", host_url=host_url, isAdmin=isAdminLoggedIn(), onProd="false" if config.settings.main.debug else "true")
+    return render_template("index.html", base_url=base_url, isAdmin=isAdminLoggedIn(), onProd="false" if config.settings.main.debug else "true")
 
 
 def render_search_results_for_api(search_results, total, offset):

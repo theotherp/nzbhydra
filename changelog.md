@@ -10,6 +10,8 @@ Added: Global setting for maximum age of results.
 
 Fix: If the "Ignore words" settings ended with a comma all search results would be ignored.
 
+Fix: Use relative base href instead of absolute. Should be compatible with IIS reverse proxy now. No need to preserve the host anymore.
+
 Changed: Config help texts are now left aligned. 
 
 ### 0.0.1a76
