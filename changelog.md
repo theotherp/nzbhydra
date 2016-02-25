@@ -2,45 +2,47 @@
 
 ----------
 ### 0.0.1a77
-Added: Bugreport section in the "System" tab which gives some advice and provides functions to download anonymized versions of the settings and log which you can post.
+Added: New "Bugreport" tab in the "System" section which gives some advice and provides functions to download anonymized versions of the settings and log which you can post.
 
-Added: Automatically create backup of database and settings before updating. Add "Backup" tab in "System" section to create a backup and download existing backup files.
+Added: Automatically create backup of database and settings before updating. New "Backup" tab in "System" section to create a backup and download existing backup files.
 
 Added: Global setting for maximum age of results.
 
+Added: Errors in the web client will be logged by the server.
+
 Fixed: Properly recognize if wrong schema was supplied for downloader host.
 
-Fix: If the "Ignore words" settings ended with a comma all search results would be ignored.
+Fixed: If the "Ignore words" settings ended with a comma all search results would be ignored.
 
-Fix: Use relative base href instead of absolute. Should be compatible with IIS reverse proxy now. No need to preserve the host anymore.
+Fixed: Use relative base href instead of absolute. Should be compatible with IIS reverse proxy now. No need to preserve the host anymore.
 
 Changed: Config help texts are now left aligned. 
 
 ### 0.0.1a76
-Fix: Binsearch would sometimes return duplicate results.
+Fixed: Binsearch would sometimes return duplicate results.
 
 Changed: Indexer statuses on search results page is minimizable and minimized by default.
 
 Changed: Checkbox to invert selection temporarily disabled because of a bug. Will reenable it when fixed.
 
 ### 0.0.1a75
-Fix: Searching TV shows by season/episode via GUI didn't work.
+Fixed: Searching TV shows by season/episode via GUI didn't work.
 
 ### 0.0.1a74
-Fix: Testing connection of downloader in config didn't work.
+Fixed: Testing connection of downloader in config didn't work.
 
 ### 0.0.1a73
-Fix: Don't provide cert. You need to use your own or better, use a reverse proxy.
+Fixed: Don't provide cert. You need to use your own or better, use a reverse proxy.
 
 ### 0.0.1a72
-Threaded server is now activated by default. Improves page loading times and allows parallel searches (yay).
+Changed: Threaded server is now activated by default. Improves page loading times and allows parallel searches (yay).
 
 Fixed: Startup would fail without existing settings.cfg.
 
 Fixed: SSL verification failures on Qnap.
 
 ### 0.0.1a71
-Reworked caching of assets. Simplifies development process and makes updates a lot smaller.
+Changed: Reworked caching of assets. Simplifies development process and makes updates a lot smaller.
 
 ### 0.0.1a70
 Fixed bug where buttons for newznab indexer tests wouldn't work

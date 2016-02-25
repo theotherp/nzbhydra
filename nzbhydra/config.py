@@ -255,7 +255,7 @@ def migrate(settingsFilename):
                             f.host = sabnzbd["host"]
                             f.port = sabnzbd["port"]
                             f.scheme = "https" if sabnzbd["ssl"] else "http"
-                            f.path = "/sabnzbd/"
+                            f.path.set("/sabnzbd/")
                             config["downloader"]["sabnzbd"]["url"] = f.url
                             addLogMessage(20, "Built sabnzbd URL: %s" % f.url)
                         elif config["downloader"]["downloader"] == "sabnzbd":
@@ -380,7 +380,7 @@ def migrate(settingsFilename):
 
 
             except Exception as e:
-                addLogMessage(30, "An error occurred while migrating the config file. A backup file of the original setttings was created: %s" % backupFilename)
+                addLogMessage(30, "An error occurred while migrating the config file.")
                 addLogMessage(30, str(traceback.format_exc()))
         return config
 

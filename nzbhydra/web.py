@@ -916,6 +916,20 @@ def internalapi_getbackups():
     return jsonify({"backups": getBackupFilenames()})
 
 
+internalapi_getbackupfile_args = {
+    "error": fields.String(required=True),
+    "cause": fields.String(required=True)
+}
+
+@app.route('/internalapi/logerror', methods=['GET', 'PUT'])
+@requires_auth("main")
+@use_args(internalapi_getbackupfile_args)
+def internalapi_logerror(args):
+    logger.debug("Log error request")
+    logger.error("The client encountered the following error: %s. Caused by: %s" % (args["error"], args["cause"]))
+    return "OK"
+
+
 @app.route('/internalapi/getcategories')
 @requires_auth("main")
 def internalapi_getcategories():

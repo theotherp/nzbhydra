@@ -234,9 +234,5 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         console.log("Starting search in newly loaded search controller");
         $scope.startSearch();
     }
-
-
     
-
-
 }

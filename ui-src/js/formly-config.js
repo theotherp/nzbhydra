@@ -112,7 +112,6 @@ angular
 
                 var testButton = "#button-test-connection-" + $scope.uniqueId;
                 var testMessage = "#message-test-connection-" + $scope.uniqueId;
-                console.log($scope);
 
                 function showSuccess() {
                     angular.element(testButton).removeClass("btn-default");
