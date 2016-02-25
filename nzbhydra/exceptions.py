@@ -1,5 +1,7 @@
 class NzbHydraException(Exception):
-    pass
+    def __init__(self, message=""):
+        super(NzbHydraException, self).__init__()
+        self.message = message
 
 
 class ExternalApiInfoException(NzbHydraException):
