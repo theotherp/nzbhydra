@@ -194,7 +194,7 @@ class Binsearch(SearchModule):
 
             # Age
             try:
-                pubdate = re.compile(r"(\d{1,2}\-\w{3}\-\d{4})").search(row.find_all("td")[-1:][0].text).group(1)
+                pubdate = re.compile(r"(\d{1,2}\-\w{3}\-\d{4})").search(row.text).group(1)
                 pubdate = arrow.get(pubdate, "DD-MMM-YYYY")
                 entry.epoch = pubdate.timestamp
                 entry.pubdate_utc = str(pubdate)

@@ -18,6 +18,8 @@ Fixed: Use relative base href instead of absolute. Should be compatible with IIS
 
 Fixed: Loading of more results would fail.
 
+Fixed: Binsearch results would sometimes have the wrong age.
+
 Changed: Config help texts are now left aligned. 
 
 ### 0.0.1a76

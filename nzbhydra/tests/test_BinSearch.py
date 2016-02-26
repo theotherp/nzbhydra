@@ -47,7 +47,7 @@ class TestBinsearch(UrlTestCase):
         with open("mock/binsearch--q-testtitle.html", encoding="latin-1") as f:
             body = f.read()
             result = w.process_query_result(body, "aquery")
-            entries = result.entries
+            entries = list(result.entries)
             self.assertEqual('testtitle1.TrueFrench.1080p.X264.AC3.5.1-JKF.mkv', entries[0].title)
             self.assertEqual("https://www.binsearch.info/fcgi/nzb.fcgi?q=176073735", entries[0].link)
             self.assertEqual(13110387671, entries[0].size)
