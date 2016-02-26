@@ -1160,10 +1160,9 @@ function SearchService($http) {
         
 
         uri.addQuery("category", category);
-        uri = uri.toString();
-        console.log("Calling " + uri);
+        console.log("Calling " + uri.toString());
         lastExecutedQuery = uri;
-        return $http.get(uri).then(processData);
+        return $http.get(uri.toString()).then(processData);
 
     }
 
@@ -1172,7 +1171,7 @@ function SearchService($http) {
         lastExecutedQuery.addQuery("offset", offset);
 
         console.log("Calling " + lastExecutedQuery);
-        return $http.get(lastExecutedQuery).then(processData);
+        return $http.get(lastExecutedQuery.toString()).then(processData);
     }
 
     function processData(response) {

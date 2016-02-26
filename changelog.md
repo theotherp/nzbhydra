@@ -16,6 +16,8 @@ Fixed: If the "Ignore words" settings ended with a comma all search results woul
 
 Fixed: Use relative base href instead of absolute. Should be compatible with IIS reverse proxy now. No need to preserve the host anymore.
 
+Fixed: Loading of more results would fail.
+
 Changed: Config help texts are now left aligned. 
 
 ### 0.0.1a76
