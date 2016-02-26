@@ -13,12 +13,15 @@ NZBHydra is a meta search for NZB indexers and the "spiritual successor" to [NZB
 * Statistics on indexers (average response time, share of results, access errors), NZB download history and search history (both via internal GUI and API). Indexers with problems are paused for an increasing time span (like in sonarr)
 * Multi user capabilities so that you can share with your friends but keep the config safe.
 * Reverse proxy compatible. See https://github.com/theotherp/nzbhydra/wiki/Reverse-proxy
-* See https://imgur.com/a/lBq9n for screenshots
+* See https://imgur.com/a/lBq9n for screenshots (which might be slightly out of date)
 
 ##  How to run
-Run with Python 2.7.9+. Runs on http://0.0.0.0:5075 by default. See the console output on how to choose the port and host using command line parameters.
+If you downloaded the source run with Python 2.7.9+. Runs on http://0.0.0.0:5075 by default. See the console output on how to choose the port and host using command line parameters.
 
-You can also try https://hub.docker.com/r/linuxserver/hydra/ but it is not maintained by me and I can give no support.
+If you downloaded the windows release just start with NzbHydraTray.exe. Your default browser should open to the NZBHydra web interface.
+
+You're also free to use the [docker container by linuxserver.io](https://hub.docker.com/r/linuxserver/hydra/). 
+Although I do my best to keep that container nice and working please [use their forum](https://forum.linuxserver.io/index.php?threads/support-linuxserver-io-hydra.499/) for support regarding that container.
 
 ## TODO
 * Better query generation
@@ -40,6 +43,8 @@ The program is currently in alpha. Upgrading to an new version might cause loss 
 
 ## Development and how you can help
 Generally testing and any bug reports are very welcome.
+
+If you know LESS/CSS feel free to design a dark theme. Contact me if you need any changes in the code base / templates.
 
 Any pull requests are also welcome, but I feel I and the program would mostly profit from:
 * Advice regarding stability, error handling, net code (I program Java by day and it shows) and performance

@@ -13,7 +13,7 @@ Vagrantfile
 /node_modules
 /bower_components
 *.db*
-/*.cfg
+*.cfg
 *.bak
 *.log
 **/*.pyc
