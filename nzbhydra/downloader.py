@@ -17,7 +17,7 @@ import socket
 import xmlrpc.client
 from furl import furl
 import requests
-from requests.exceptions import HTTPError, SSLError, ConnectionError, ReadTimeout, InvalidSchema
+from requests.exceptions import HTTPError, SSLError, ConnectionError, ReadTimeout, InvalidSchema, MissingSchema
 from nzbhydra import config
 
 
@@ -207,7 +207,7 @@ class Sabnzbd(Downloader):
         except DownloaderException as e:
             self.logger.error("Error while trying to connect to sabnzbd: %s" % e)
             return False, str(e)
-        except (SSLError, HTTPError, ConnectionError, ReadTimeout) as e:
+        except (SSLError, HTTPError, ConnectionError, ReadTimeout, InvalidSchema, MissingSchema) as e:
             self.logger.error("Error while trying to connect to sabnzbd: %s" % e)
             return False, "SABnzbd is not responding"
 
@@ -227,7 +227,7 @@ class Sabnzbd(Downloader):
             r = requests.get(f.tostr(), verify=False, timeout=15)
             r.raise_for_status()
             return r.json()["status"]
-        except (SSLError, HTTPError, ConnectionError, ReadTimeout, InvalidSchema):
+        except (SSLError, HTTPError, ConnectionError, ReadTimeout, InvalidSchema, MissingSchema):
             self.logger.exception("Error while trying to connect to sabnzbd using link %s" % link)
             return False
 
@@ -260,6 +260,6 @@ class Sabnzbd(Downloader):
             r = requests.get(f.tostr(), verify=False, timeout=15)
             r.raise_for_status()
             return r.json()["categories"]
-        except (SSLError, HTTPError, ConnectionError, ReadTimeout):
+        except (SSLError, HTTPError, ConnectionError, ReadTimeout, InvalidSchema, MissingSchema):
             self.logger.exception("Error while trying to connect to sabnzbd with URL %s" % f.url)
             raise DownloaderException("Unable to contact SabNZBd")

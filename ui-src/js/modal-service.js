@@ -27,11 +27,9 @@ function GeneralModalService() {
         params["resolve"] = 
         {
             data: function () {
-                console.log(data);
                 return data;
             }
         };
-        console.log(params);
         
         var modalInstance = $uibModal.open(params);
 

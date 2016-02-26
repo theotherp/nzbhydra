@@ -16,8 +16,7 @@ nzbhydraapp.factory('RequestsErrorHandler',  function ($q, growl, blockUI, Gener
         // --- Response interceptor for handling errors generically ---
         responseError: function (rejection) {
             blockUI.reset();
-            var shouldHandle = (rejection && rejection.config && rejection.config.headers && rejection.config.headers[HEADER_NAME]);
-            
+            var shouldHandle = (rejection && rejection.config && rejection.config.headers && rejection.config.headers[HEADER_NAME] && !rejection.config.url.contains("logerror"));
             if (shouldHandle) {
                 var message = "An error occured :<br>" + rejection.status + ": " + rejection.statusText;
 
@@ -26,6 +25,8 @@ nzbhydraapp.factory('RequestsErrorHandler',  function ($q, growl, blockUI, Gener
                 }
                 GeneralModalService.open(message);
 
+            } else if (rejection && rejection.config && rejection.config.headers && rejection.config.headers[HEADER_NAME] && rejection.config.url.contains("logerror")) {
+                console.log("Not handling connection error while sending exception to server");
             }
 
             return $q.reject(rejection);

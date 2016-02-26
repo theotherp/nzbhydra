@@ -40,6 +40,8 @@ function CategoriesService($http, $q, $uibModal) {
 
         return loadAll().then(function (categories) {
             return categories.categories;
+        }, function (error) {
+            throw error;
         });
     }
 

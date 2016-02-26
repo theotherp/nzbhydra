@@ -4,7 +4,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
 
     blockUIConfig.autoBlock = false;
     $urlMatcherFactoryProvider.strictMode(false);
-    
+
     $stateProvider
         .state("search.results", {
             templateUrl: "static/html/states/search-results.html",
@@ -34,7 +34,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }] 
+                }]
             }
         })
         .state("config.auth", {
@@ -120,7 +120,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             templateUrl: "static/html/states/stats.html",
             controller: "StatsController",
             resolve: {
-                stats: ['StatsService', function(StatsService) {
+                stats: ['StatsService', function (StatsService) {
                     return StatsService.get();
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
@@ -310,13 +310,17 @@ nzbhydraapp.filter('unsafe', function ($sce) {
     return $sce.trustAsHtml;
 });
 
-
 nzbhydraapp.config(function ($provide) {
     $provide.decorator("$exceptionHandler", ['$delegate', '$injector', function ($delegate, $injector) {
         return function (exception, cause) {
             $delegate(exception, cause);
             try {
-                $injector.get("$http").put("internalapi/logerror", {error:exception, cause:cause});
+                var stack = exception.stack.split('\n').map(function (line) {
+                    return line.trim();
+                });
+                stack = stack.join("\n");
+                    $injector.get("$http").put("internalapi/logerror", {error: stack, cause: angular.isDefined(cause) ? cause.toString() : "No known cause"});
+              
             } catch (e) {
                 console.error("Unable to log JS exception to server", e);
             }

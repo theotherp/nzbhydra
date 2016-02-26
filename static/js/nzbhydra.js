@@ -4,7 +4,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
 
     blockUIConfig.autoBlock = false;
     $urlMatcherFactoryProvider.strictMode(false);
-    
+
     $stateProvider
         .state("search.results", {
             templateUrl: "static/html/states/search-results.html",
@@ -34,7 +34,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }] 
+                }]
             }
         })
         .state("config.auth", {
@@ -120,7 +120,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
             templateUrl: "static/html/states/stats.html",
             controller: "StatsController",
             resolve: {
-                stats: ['StatsService', function(StatsService) {
+                stats: ['StatsService', function (StatsService) {
                     return StatsService.get();
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
@@ -310,13 +310,17 @@ nzbhydraapp.filter('unsafe', ["$sce", function ($sce) {
     return $sce.trustAsHtml;
 }]);
 
-
 nzbhydraapp.config(["$provide", function ($provide) {
     $provide.decorator("$exceptionHandler", ['$delegate', '$injector', function ($delegate, $injector) {
         return function (exception, cause) {
             $delegate(exception, cause);
             try {
-                $injector.get("$http").put("internalapi/logerror", {error:exception, cause:cause});
+                var stack = exception.stack.split('\n').map(function (line) {
+                    return line.trim();
+                });
+                stack = stack.join("\n");
+                    $injector.get("$http").put("internalapi/logerror", {error: stack, cause: angular.isDefined(cause) ? cause.toString() : "No known cause"});
+              
             } catch (e) {
                 console.error("Unable to log JS exception to server", e);
             }
@@ -1871,11 +1875,9 @@ function GeneralModalService() {
         params["resolve"] = 
         {
             data: function () {
-                console.log(data);
                 return data;
             }
         };
-        console.log(params);
         
         var modalInstance = $uibModal.open(params);
 
@@ -1903,8 +1905,7 @@ nzbhydraapp.factory('RequestsErrorHandler',  ["$q", "growl", "blockUI", "General
         // --- Response interceptor for handling errors generically ---
         responseError: function (rejection) {
             blockUI.reset();
-            var shouldHandle = (rejection && rejection.config && rejection.config.headers && rejection.config.headers[HEADER_NAME]);
-            
+            var shouldHandle = (rejection && rejection.config && rejection.config.headers && rejection.config.headers[HEADER_NAME] && !rejection.config.url.contains("logerror"));
             if (shouldHandle) {
                 var message = "An error occured :<br>" + rejection.status + ": " + rejection.statusText;
 
@@ -1913,6 +1914,8 @@ nzbhydraapp.factory('RequestsErrorHandler',  ["$q", "growl", "blockUI", "General
                 }
                 GeneralModalService.open(message);
 
+            } else if (rejection && rejection.config && rejection.config.headers && rejection.config.headers[HEADER_NAME] && rejection.config.url.contains("logerror")) {
+                console.log("Not handling connection error while sending exception to server");
             }
 
             return $q.reject(rejection);
@@ -3949,6 +3952,8 @@ function CategoriesService($http, $q, $uibModal) {
 
         return loadAll().then(function (categories) {
             return categories.categories;
+        }, function (error) {
+            throw error;
         });
     }
 
