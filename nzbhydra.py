@@ -6,6 +6,9 @@ import argparse
 import webbrowser
 import nzbhydra
 
+reload(sys)
+sys.setdefaultencoding('utf8')
+
 basepath = nzbhydra.getBasePath()
 print("Setting base path to %s" % basepath)
 os.chdir(basepath)
