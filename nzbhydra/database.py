@@ -190,15 +190,6 @@ def update_db(dbfile):
     db.init(dbfile)
     db.connect()
 
-    # Add version info if none exists
-    try:
-        db.create_table(VersionInfo)
-        logger.info("Added new version info entry with database version 1 to existing database")
-        VersionInfo(version=4).create()
-    except OperationalError:
-        logger.debug("Skipping creation of table VersionInfo because it already exists")
-        pass
-
     vi = VersionInfo.get()
     if vi.version < DATABASE_VERSION:
         logger.info("Migrating database")
