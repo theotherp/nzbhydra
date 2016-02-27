@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import cgi
+import codecs
 import hashlib
 import types
 
@@ -80,7 +81,7 @@ def getLogFile():
     log = None
     if exists(logfile):
         logger.debug("Reading log file %s" % logfile)
-        with open(logfile, encoding='utf-8') as logFile:
+        with codecs.open(logfile, "r", 'utf-8') as logFile:
             log = cgi.escape(logFile.read())
     return log
 

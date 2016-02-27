@@ -1,3 +1,4 @@
+import codecs
 import json
 import logging
 import os
@@ -79,15 +80,15 @@ def getDebuggingInfos():
     logger.debug("Writing debugging info to file %s" % debuginfo_file)
     logger.debug("Compressing ZIP file" if compression == zipfile.ZIP_DEFLATED else "zlib not found. Not compressing ZIP file")
 
-    al = log.getAnonymizedLogFile(config.getSettingsToHide())
+    al = log.getAnonymizedLogFile(config.getSettingsToHide()).encode("utf-8")
     al_file = os.path.join(debug_folder, "logfile.txt")
     logger.debug("Writing log to temp file %s" % al_file)
-    with open(al_file, "w") as textfile:
+    with codecs.open(al_file, "w", "utf-8") as textfile:
         textfile.write(al)
 
     ac_file = os.path.join(debug_folder, "settings.txt")
     logger.debug("Writing settings to temp file %s" % ac_file)
-    with open(ac_file, "w") as textfile:
+    with codecs.open(ac_file, "w", "utf-8") as textfile:
         textfile.write(ac)
 
     zf = zipfile.ZipFile(debuginfo_file, mode="w")

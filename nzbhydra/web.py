@@ -823,10 +823,14 @@ def internalapi_getsafeconfig():
 @requires_auth("admin")
 def internalapi_getdebugginginfos():
     logger.debug("Get debugging infos request")
-    debuggingInfos = getDebuggingInfos()
-    if debuggingInfos is None:
-        return "Error creating debugging infos", 500
-    return send_file(debuggingInfos, as_attachment=True)
+    try:
+        debuggingInfos = getDebuggingInfos()
+        if debuggingInfos is None:
+            return "Error creating debugging infos", 500
+        return send_file(debuggingInfos, as_attachment=True)
+    except Exception as e:
+        logger.exception("Error creating debugging infos")
+        return "An error occured while creating the debugging infos: %s" % e, 500
 
 
 @app.route('/internalapi/mayseeadminarea')

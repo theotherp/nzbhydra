@@ -47,6 +47,7 @@ Generally testing and any bug reports are very welcome.
 If you know LESS/CSS feel free to design a dark theme. Contact me if you need any changes in the code base / templates.
 
 Any pull requests are also welcome, but I feel I and the program would mostly profit from:
+* Unicode handling. I have no idea what I'm doing. 
 * Advice regarding stability, error handling, net code (I program Java by day and it shows) and performance
 
 ### Contact ###
