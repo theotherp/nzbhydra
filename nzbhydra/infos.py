@@ -13,6 +13,7 @@ from builtins import *
 import logging
 import requests
 import tmdbsimple
+import pytvmaze
 from furl import furl
 from enum import Enum
 from requests.exceptions import ReadTimeout
@@ -29,37 +30,37 @@ tmdb_img_config = None
 
 class TvMaze:
     
-    def __init__(self, tvmazeid, rageid, tvdbid, title, poster, all):
+    def __init__(self, tvmazeid, rageid, tvdbid, title, poster):
         self.tvmazeid = tvmazeid
         self.rageid = rageid
         self.tvdbid = tvdbid
         self.title = title
         self.poster = poster
-        self.all = all
      
 
     @staticmethod
     def byId(idType, id):
         logger.info("Requesting info for %s key %s from TVMaze" % (idType, id))
         try:
-            if idType == "thetvdb" or idType == "tvrage":
-                info = requests.get(furl("http://api.tvmaze.com/lookup/shows").add({idType: id}).url)
+            if idType == "thetvdb":
+                info = pytvmaze.get_show(tvdb_id=id)
+            elif idType == "tvrage":
+                info = pytvmaze.get_show(tvrage_id=id)
             elif idType == "tvmaze":
-                info = requests.get(furl("http://api.tvmaze.com/shows/").add(path=id).url)
+                info = pytvmaze.get_show(maze_id=id)
             else:
                 logger.error("Invalid call to byId() using idType %s" % idType)
                 return None
-            info.raise_for_status()
-        except RequestException as e:
-            logger.exception("Unable to contact TVMaze")
+            
+        except pytvmaze.ShowNotFound:
+            logger.error("Unable to find show on TVMaze")
             return None
-        json = info.json()
-        externals = json["externals"]
+        externals = info.externals
         rageid = externals["tvrage"] if "tvrage" in externals.keys() else None
         tvdbid = externals["thetvdb"] if "thetvdb" in externals.keys() else None
-        title = json["name"]
-        poster = json["image"]["medium"] if "medium" in json["image"].keys() else None
-        return TvMaze(json["id"], rageid, tvdbid, title, poster, json)
+        title = info.name
+        poster = info.image["medium"] if "medium" in info.image.keys() else None
+        return TvMaze(info.id, rageid, tvdbid, title, poster)
 
 
 def find_movie_ids(input):
@@ -98,6 +99,9 @@ def imdbid_to_tmdbid(imdbid):
     movie = tmdbsimple.Find("tt" + imdbid)
     response = movie.info(external_source="imdb_id")
     movie_results_ = response["movie_results"]
+    if len(movie_results_) == 0:
+        logger.error("Found no movie with IMDB id %s" % imdbid)
+        return None, None
     if len(movie_results_) != 1:
         logger.error("Expected 1 result but got %d" % len(movie_results_))
     tmdbid = movie_results_[0]["id"]
@@ -226,11 +230,15 @@ def convertId(fromType, toType, id):
     
     elif fromType == "imdb":
         convertedId, title = imdbid_to_tmdbid(id)
-        result = MovieIdCache(tmdb=convertedId, imdb=id, title=title)
+        if convertedId is None:
+            return None
+        result = MovieIdCache(tmdb=convertedId, imdb=id, title=title) 
         result.save()
         
     elif fromType == "tmdb":
         convertedId, title = tmdbid_to_imdbid(id)
+        if convertedId is None:
+            return None
         result = MovieIdCache(imdb=convertedId, tmdb=id, title=title)
         result.save()
     

@@ -40,7 +40,7 @@ class TestInfos(unittest.TestCase):
         id = infos.imdbid_to_tmdbid("0169547")
         self.assertEqual("14", id[0])
 
-    @vcr.use_cassette('vcr/tvmaze.yaml', record_mode='once')
+    @vcr.use_cassette('vcr/tvmaze2.yaml', record_mode='once')
     def testFindSeriesId(self):
         results = infos.find_series_ids("breaking bad")
         self.assertEqual(1, len(results))
@@ -164,6 +164,14 @@ class TestInfos(unittest.TestCase):
         title = infos.convertId("tmdb", "title", "14")
         self.assertEqual("American Beauty", title)
 
+    @vcr.use_cassette('vcr/tmdb2.yaml', record_mode='once')
+    def testGetMovieTitleDoesNotExist(self):
+        MovieIdCache.delete().execute()
+        title = infos.convertId("imdb", "title", "016954739339")
+        self.assertIsNone(title)
+        
+        
+
     @vcr.use_cassette('vcr/tvmaze.yaml', record_mode='once')
     def testGetTvTitle(self):
         TvIdCache.delete().execute()
@@ -196,3 +204,10 @@ class TestInfos(unittest.TestCase):
         TvIdCache.delete().execute()
         id = infos.convertId("tvmaze", "title", "3036")
         self.assertEqual("Casual", id)
+
+    @vcr.use_cassette('vcr/tvmaze3.yaml', record_mode='once')
+    def testGetTvTitleDoesntExist(self):
+        TvIdCache.delete().execute()
+        id = infos.convertId("tvdb", "title", "299350000")
+        self.assertIsNone(id)
+        

@@ -2,10 +2,9 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
     method: GET
     uri: http://api.tvmaze.com/lookup/shows?thetvdb=299350
   response:
@@ -13,9 +12,9 @@ interactions:
     headers:
       access-control-allow-origin: ['*']
       cache-control: ['public, max-age=3600']
-      connection: [keep-alive]
+      connection: [close]
       content-type: [application/json; charset=UTF-8]
-      date: ['Tue, 19 Jan 2016 17:48:16 GMT']
+      date: ['Sun, 28 Feb 2016 17:11:06 GMT']
       location: ['http://api.tvmaze.com/shows/3036']
       server: [nginx/1.4.6 (Ubuntu)]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
@@ -23,34 +22,55 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
     method: GET
     uri: http://api.tvmaze.com/shows/3036
   response:
-    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"00:01","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
+    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
         States","code":"US","timezone":"America/New_York"}},"externals":{"tvrage":47566,"thetvdb":299350,"imdb":"tt4577466"},"image":{"medium":"http://tvmazecdn.com/uploads/images/medium_portrait/20/51190.jpg","original":"http://tvmazecdn.com/uploads/images/original_untouched/20/51190.jpg"},"summary":"<p><strong><em>\"Casual\"</em></strong>
         is a comedy series about a bachelor brother and his newly divorced sister
         living under one roof again. Together, they coach each other through the crazy
-        world of dating while raising her teenage daughter.</p>","updated":1446403860,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
+        world of dating while raising her teenage daughter.</p>","updated":1456389243,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
     headers:
       access-control-allow-origin: ['*']
       cache-control: ['public, max-age=3600']
-      connection: [keep-alive]
+      connection: [close]
       content-type: [application/json; charset=UTF-8]
-      date: ['Tue, 19 Jan 2016 17:48:16 GMT']
+      date: ['Sun, 28 Feb 2016 17:11:06 GMT']
       server: [nginx/1.4.6 (Ubuntu)]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
     status: {code: 200, message: OK}
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
+    method: GET
+    uri: http://api.tvmaze.com/shows/3036
+  response:
+    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
+        States","code":"US","timezone":"America/New_York"}},"externals":{"tvrage":47566,"thetvdb":299350,"imdb":"tt4577466"},"image":{"medium":"http://tvmazecdn.com/uploads/images/medium_portrait/20/51190.jpg","original":"http://tvmazecdn.com/uploads/images/original_untouched/20/51190.jpg"},"summary":"<p><strong><em>\"Casual\"</em></strong>
+        is a comedy series about a bachelor brother and his newly divorced sister
+        living under one roof again. Together, they coach each other through the crazy
+        world of dating while raising her teenage daughter.</p>","updated":1456389243,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
+    headers:
+      access-control-allow-origin: ['*']
+      cache-control: ['public, max-age=3600']
+      connection: [close]
+      content-type: [application/json; charset=UTF-8]
+      date: ['Sun, 28 Feb 2016 17:11:07 GMT']
+      server: [nginx/1.4.6 (Ubuntu)]
+      x-powered-by: [PHP/5.5.9-1ubuntu4.14]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
     method: GET
     uri: http://api.tvmaze.com/lookup/shows?thetvdb=299350
   response:
@@ -58,9 +78,9 @@ interactions:
     headers:
       access-control-allow-origin: ['*']
       cache-control: ['public, max-age=3600']
-      connection: [keep-alive]
+      connection: [close]
       content-type: [application/json; charset=UTF-8]
-      date: ['Tue, 19 Jan 2016 17:48:16 GMT']
+      date: ['Sun, 28 Feb 2016 17:11:07 GMT']
       location: ['http://api.tvmaze.com/shows/3036']
       server: [nginx/1.4.6 (Ubuntu)]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
@@ -68,34 +88,55 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
     method: GET
     uri: http://api.tvmaze.com/shows/3036
   response:
-    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"00:01","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
+    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
         States","code":"US","timezone":"America/New_York"}},"externals":{"tvrage":47566,"thetvdb":299350,"imdb":"tt4577466"},"image":{"medium":"http://tvmazecdn.com/uploads/images/medium_portrait/20/51190.jpg","original":"http://tvmazecdn.com/uploads/images/original_untouched/20/51190.jpg"},"summary":"<p><strong><em>\"Casual\"</em></strong>
         is a comedy series about a bachelor brother and his newly divorced sister
         living under one roof again. Together, they coach each other through the crazy
-        world of dating while raising her teenage daughter.</p>","updated":1446403860,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
+        world of dating while raising her teenage daughter.</p>","updated":1456389243,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
     headers:
       access-control-allow-origin: ['*']
       cache-control: ['public, max-age=3600']
-      connection: [keep-alive]
+      connection: [close]
       content-type: [application/json; charset=UTF-8]
-      date: ['Tue, 19 Jan 2016 17:48:16 GMT']
+      date: ['Sun, 28 Feb 2016 17:11:07 GMT']
       server: [nginx/1.4.6 (Ubuntu)]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
     status: {code: 200, message: OK}
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
+    method: GET
+    uri: http://api.tvmaze.com/shows/3036
+  response:
+    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
+        States","code":"US","timezone":"America/New_York"}},"externals":{"tvrage":47566,"thetvdb":299350,"imdb":"tt4577466"},"image":{"medium":"http://tvmazecdn.com/uploads/images/medium_portrait/20/51190.jpg","original":"http://tvmazecdn.com/uploads/images/original_untouched/20/51190.jpg"},"summary":"<p><strong><em>\"Casual\"</em></strong>
+        is a comedy series about a bachelor brother and his newly divorced sister
+        living under one roof again. Together, they coach each other through the crazy
+        world of dating while raising her teenage daughter.</p>","updated":1456389243,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
+    headers:
+      access-control-allow-origin: ['*']
+      cache-control: ['public, max-age=3600']
+      connection: [close]
+      content-type: [application/json; charset=UTF-8]
+      date: ['Sun, 28 Feb 2016 17:11:07 GMT']
+      server: [nginx/1.4.6 (Ubuntu)]
+      x-powered-by: [PHP/5.5.9-1ubuntu4.14]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
     method: GET
     uri: http://api.tvmaze.com/lookup/shows?tvrage=47566
   response:
@@ -103,9 +144,9 @@ interactions:
     headers:
       access-control-allow-origin: ['*']
       cache-control: ['public, max-age=3600']
-      connection: [keep-alive]
+      connection: [close]
       content-type: [application/json; charset=UTF-8]
-      date: ['Tue, 19 Jan 2016 17:48:16 GMT']
+      date: ['Sun, 28 Feb 2016 17:11:07 GMT']
       location: ['http://api.tvmaze.com/shows/3036']
       server: [nginx/1.4.6 (Ubuntu)]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
@@ -113,34 +154,55 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
     method: GET
     uri: http://api.tvmaze.com/shows/3036
   response:
-    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"00:01","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
+    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
         States","code":"US","timezone":"America/New_York"}},"externals":{"tvrage":47566,"thetvdb":299350,"imdb":"tt4577466"},"image":{"medium":"http://tvmazecdn.com/uploads/images/medium_portrait/20/51190.jpg","original":"http://tvmazecdn.com/uploads/images/original_untouched/20/51190.jpg"},"summary":"<p><strong><em>\"Casual\"</em></strong>
         is a comedy series about a bachelor brother and his newly divorced sister
         living under one roof again. Together, they coach each other through the crazy
-        world of dating while raising her teenage daughter.</p>","updated":1446403860,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
+        world of dating while raising her teenage daughter.</p>","updated":1456389243,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
     headers:
       access-control-allow-origin: ['*']
       cache-control: ['public, max-age=3600']
-      connection: [keep-alive]
+      connection: [close]
       content-type: [application/json; charset=UTF-8]
-      date: ['Tue, 19 Jan 2016 17:48:16 GMT']
+      date: ['Sun, 28 Feb 2016 17:11:07 GMT']
       server: [nginx/1.4.6 (Ubuntu)]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
     status: {code: 200, message: OK}
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
+    method: GET
+    uri: http://api.tvmaze.com/shows/3036
+  response:
+    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
+        States","code":"US","timezone":"America/New_York"}},"externals":{"tvrage":47566,"thetvdb":299350,"imdb":"tt4577466"},"image":{"medium":"http://tvmazecdn.com/uploads/images/medium_portrait/20/51190.jpg","original":"http://tvmazecdn.com/uploads/images/original_untouched/20/51190.jpg"},"summary":"<p><strong><em>\"Casual\"</em></strong>
+        is a comedy series about a bachelor brother and his newly divorced sister
+        living under one roof again. Together, they coach each other through the crazy
+        world of dating while raising her teenage daughter.</p>","updated":1456389243,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
+    headers:
+      access-control-allow-origin: ['*']
+      cache-control: ['public, max-age=3600']
+      connection: [close]
+      content-type: [application/json; charset=UTF-8]
+      date: ['Sun, 28 Feb 2016 17:11:07 GMT']
+      server: [nginx/1.4.6 (Ubuntu)]
+      x-powered-by: [PHP/5.5.9-1ubuntu4.14]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
     method: GET
     uri: http://api.tvmaze.com/lookup/shows?tvrage=47566
   response:
@@ -148,9 +210,9 @@ interactions:
     headers:
       access-control-allow-origin: ['*']
       cache-control: ['public, max-age=3600']
-      connection: [keep-alive]
+      connection: [close]
       content-type: [application/json; charset=UTF-8]
-      date: ['Tue, 19 Jan 2016 17:48:17 GMT']
+      date: ['Sun, 28 Feb 2016 17:11:08 GMT']
       location: ['http://api.tvmaze.com/shows/3036']
       server: [nginx/1.4.6 (Ubuntu)]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
@@ -158,118 +220,92 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
     method: GET
     uri: http://api.tvmaze.com/shows/3036
   response:
-    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"00:01","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
+    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
         States","code":"US","timezone":"America/New_York"}},"externals":{"tvrage":47566,"thetvdb":299350,"imdb":"tt4577466"},"image":{"medium":"http://tvmazecdn.com/uploads/images/medium_portrait/20/51190.jpg","original":"http://tvmazecdn.com/uploads/images/original_untouched/20/51190.jpg"},"summary":"<p><strong><em>\"Casual\"</em></strong>
         is a comedy series about a bachelor brother and his newly divorced sister
         living under one roof again. Together, they coach each other through the crazy
-        world of dating while raising her teenage daughter.</p>","updated":1446403860,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
+        world of dating while raising her teenage daughter.</p>","updated":1456389243,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
     headers:
       access-control-allow-origin: ['*']
       cache-control: ['public, max-age=3600']
-      connection: [keep-alive]
+      connection: [close]
       content-type: [application/json; charset=UTF-8]
-      date: ['Tue, 19 Jan 2016 17:48:17 GMT']
+      date: ['Sun, 28 Feb 2016 17:11:08 GMT']
       server: [nginx/1.4.6 (Ubuntu)]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
     status: {code: 200, message: OK}
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
     method: GET
     uri: http://api.tvmaze.com/shows/3036
   response:
-    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"00:01","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
+    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
         States","code":"US","timezone":"America/New_York"}},"externals":{"tvrage":47566,"thetvdb":299350,"imdb":"tt4577466"},"image":{"medium":"http://tvmazecdn.com/uploads/images/medium_portrait/20/51190.jpg","original":"http://tvmazecdn.com/uploads/images/original_untouched/20/51190.jpg"},"summary":"<p><strong><em>\"Casual\"</em></strong>
         is a comedy series about a bachelor brother and his newly divorced sister
         living under one roof again. Together, they coach each other through the crazy
-        world of dating while raising her teenage daughter.</p>","updated":1446403860,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
+        world of dating while raising her teenage daughter.</p>","updated":1456389243,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
     headers:
       access-control-allow-origin: ['*']
       cache-control: ['public, max-age=3600']
-      connection: [keep-alive]
+      connection: [close]
       content-type: [application/json; charset=UTF-8]
-      date: ['Tue, 19 Jan 2016 17:48:17 GMT']
+      date: ['Sun, 28 Feb 2016 17:11:08 GMT']
       server: [nginx/1.4.6 (Ubuntu)]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
     status: {code: 200, message: OK}
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
     method: GET
     uri: http://api.tvmaze.com/shows/3036
   response:
-    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"00:01","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
+    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
         States","code":"US","timezone":"America/New_York"}},"externals":{"tvrage":47566,"thetvdb":299350,"imdb":"tt4577466"},"image":{"medium":"http://tvmazecdn.com/uploads/images/medium_portrait/20/51190.jpg","original":"http://tvmazecdn.com/uploads/images/original_untouched/20/51190.jpg"},"summary":"<p><strong><em>\"Casual\"</em></strong>
         is a comedy series about a bachelor brother and his newly divorced sister
         living under one roof again. Together, they coach each other through the crazy
-        world of dating while raising her teenage daughter.</p>","updated":1446403860,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
+        world of dating while raising her teenage daughter.</p>","updated":1456389243,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
     headers:
       access-control-allow-origin: ['*']
       cache-control: ['public, max-age=3600']
-      connection: [keep-alive]
+      connection: [close]
       content-type: [application/json; charset=UTF-8]
-      date: ['Tue, 19 Jan 2016 17:48:17 GMT']
+      date: ['Sun, 28 Feb 2016 17:11:08 GMT']
       server: [nginx/1.4.6 (Ubuntu)]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
     status: {code: 200, message: OK}
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+      Connection: [close]
+      Host: [api.tvmaze.com]
+      User-Agent: [Python-urllib/2.7]
     method: GET
-    uri: http://api.tvmaze.com/search/shows?q=breaking%20bad
+    uri: http://api.tvmaze.com/shows/3036
   response:
-    body: {string: "[{\"score\":1.9943498,\"show\":{\"id\":169,\"url\":\"http://www.tvmaze.com/shows/169/breaking-bad\",\"name\":\"Breaking
-        Bad\",\"type\":\"Scripted\",\"language\":\"English\",\"genres\":[\"Drama\",\"Crime\",\"Thriller\"],\"status\":\"Ended\",\"runtime\":60,\"premiered\":\"2008-01-20\",\"schedule\":{\"time\":\"22:00\",\"days\":[\"Sunday\"]},\"rating\":{\"average\":9.3},\"weight\":2,\"network\":{\"id\":20,\"name\":\"AMC\",\"country\":{\"name\":\"United
-        States\",\"code\":\"US\",\"timezone\":\"America/New_York\"}},\"webChannel\":null,\"externals\":{\"tvrage\":18164,\"thetvdb\":81189,\"imdb\":\"tt0903747\"},\"image\":{\"medium\":\"http://tvmazecdn.com/uploads/images/medium_portrait/0/2400.jpg\",\"original\":\"http://tvmazecdn.com/uploads/images/original_untouched/0/2400.jpg\"},\"summary\":\"<p><em><strong>\\\"Breaking
-        Bad\\\"</strong></em> follows protagonist Walter White, a chemistry teacher
-        who lives in New Mexico with his wife and teenage son who has cerebral palsy.
-        White is diagnosed with Stage III cancer and given a prognosis of two years
-        left to live. With a new sense of fearlessness based on his medical prognosis,
-        and a desire to secure his family's financial security, White chooses to enter
-        a dangerous world of drugs and crime and ascends to power in this world. The
-        series explores how a fatal diagnosis such as White's releases a typical man
-        from the daily concerns and constraints of normal society and follows his
-        transformation from mild family man to a kingpin of the drug trade.</p>\",\"updated\":1451250971,\"_links\":{\"self\":{\"href\":\"http://api.tvmaze.com/shows/169\"},\"previousepisode\":{\"href\":\"http://api.tvmaze.com/episodes/12253\"}}}},{\"score\":1.2169102,\"show\":{\"id\":6101,\"url\":\"http://www.tvmaze.com/shows/6101/breaking-band\",\"name\":\"Breaking
-        Band\",\"type\":\"Reality\",\"language\":\"English\",\"genres\":[],\"status\":\"Running\",\"runtime\":30,\"premiered\":\"2015-10-14\",\"schedule\":{\"time\":\"21:30\",\"days\":[\"Sunday\"]},\"rating\":{\"average\":null},\"weight\":0,\"network\":{\"id\":170,\"name\":\"AXS
-        TV\",\"country\":{\"name\":\"United States\",\"code\":\"US\",\"timezone\":\"America/New_York\"}},\"webChannel\":null,\"externals\":{\"tvrage\":null,\"thetvdb\":null,\"imdb\":null},\"image\":{\"medium\":\"http://tvmazecdn.com/uploads/images/medium_portrait/23/59291.jpg\",\"original\":\"http://tvmazecdn.com/uploads/images/original_untouched/23/59291.jpg\"},\"summary\":\"<p><strong><em>\\\"BREAKING
-        BAND\\\"</em></strong>, a new original series from AXS TV airs on Wednesdays
-        at 9pm beginning October 14, 2015. The six-episode 30-minute documentary style
-        reality series places \\nlegendary musical artists into the role of mentors,
-        pairing them with \\nup-and-coming artists for a once in a lifetime collaboration.
-        This seasons mentors are musician and TV personality Mark McGrath \\n(Sugar
-        Ray), pop queen Belinda Carlisle (The Go-Go's), rock legend Robin\\n Zander
-        (Cheap Trick), award winning producer and techno icon Moby, \\nmetal master
-        Sebastian Bach (Skid Row), and guitar idol Dave Navarro \\n(Janes Addiction).</p>As
-        mentors, their role is to share advice and to support the breaking artists
-        debut live performance \u2013 potentially even taking the stage to join them
-        for the encore to make broadcast history.Each episode of \\\"Breaking Band\\\"
-        features emerging artists whom are mentored by musical legends as they take
-        the stage for the biggest show of their career!\",\"updated\":1453221991,\"_links\":{\"self\":{\"href\":\"http://api.tvmaze.com/shows/6101\"},\"previousepisode\":{\"href\":\"http://api.tvmaze.com/episodes/364998\"},\"nextepisode\":{\"href\":\"http://api.tvmaze.com/episodes/570453\"}}}}]"}
+    body: {string: !!python/unicode '{"id":3036,"url":"http://www.tvmaze.com/shows/3036/casual","name":"Casual","type":"Scripted","language":"English","genres":["Comedy"],"status":"Running","runtime":30,"premiered":"2015-10-07","schedule":{"time":"","days":["Wednesday"]},"rating":{"average":8.6},"weight":1,"network":null,"webChannel":{"id":2,"name":"Hulu","country":{"name":"United
+        States","code":"US","timezone":"America/New_York"}},"externals":{"tvrage":47566,"thetvdb":299350,"imdb":"tt4577466"},"image":{"medium":"http://tvmazecdn.com/uploads/images/medium_portrait/20/51190.jpg","original":"http://tvmazecdn.com/uploads/images/original_untouched/20/51190.jpg"},"summary":"<p><strong><em>\"Casual\"</em></strong>
+        is a comedy series about a bachelor brother and his newly divorced sister
+        living under one roof again. Together, they coach each other through the crazy
+        world of dating while raising her teenage daughter.</p>","updated":1456389243,"_links":{"self":{"href":"http://api.tvmaze.com/shows/3036"},"previousepisode":{"href":"http://api.tvmaze.com/episodes/407482"}}}'}
     headers:
       access-control-allow-origin: ['*']
       cache-control: ['public, max-age=3600']
-      connection: [keep-alive]
+      connection: [close]
       content-type: [application/json; charset=UTF-8]
-      date: ['Tue, 19 Jan 2016 17:48:19 GMT']
+      date: ['Sun, 28 Feb 2016 17:11:08 GMT']
       server: [nginx/1.4.6 (Ubuntu)]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
     status: {code: 200, message: OK}
