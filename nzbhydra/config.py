@@ -329,6 +329,8 @@ def migrate(settingsFilename):
                         config["indexers"]["newznab"] = []
                         for i in range(1, 41):
                             indexer_cfg = config["indexers"]["newznab%d" % i]
+                            if "accessType" not in indexer_cfg.keys():
+                                indexer_cfg["accessType"] = "both"
                             if indexer_cfg["name"]:
                                 config["indexers"]["newznab"].append(indexer_cfg)
                             config["indexers"].pop("newznab%d" % i)

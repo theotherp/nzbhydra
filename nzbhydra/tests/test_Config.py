@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 # standard_library.install_aliases()
 import json
 import unittest
-from pprint import pprint
 
 import pytest
 from builtins import *
@@ -19,6 +18,7 @@ from bunch import Bunch
 from nzbhydra import config
 
 print("Loading config from testsettings.cfg")
+
 
 class TestConfig(unittest.TestCase):
     @pytest.fixture
@@ -77,6 +77,46 @@ class TestConfig(unittest.TestCase):
             json.dump(cfg, settingsfile)
         cfg = config.migrate("testsettings.cfg")
         self.assertEqual("redirect", cfg["downloader"]["nzbAddingType"])
+
+    def testMigration7to8(self):
+        testCfg = {
+            "main":
+                {
+                    "configVersion": 7,
+                    "logging": {
+                        "logfile-level": "",
+                        "logfile-filename": 22
+                    }
+                },
+            "indexers": {
+                "Binsearch": {},
+                "NZBClub": {},
+                "NZBIndex": {},
+                "Womble": {},
+                "newznab1": {
+                    "accessType": "both",
+                    "apikey": "apikey1",
+                    "name": "newznab1",
+                    "enabled": False
+                },
+                "newznab2": {
+                    "apikey": "apikey2",
+                    "name": "newznab2",
+                    "enabled": False
+                }
+            }
+        }
+
+        with open("testsettings.cfg", "wb") as settingsfile:
+            cfg = copy.copy(testCfg)
+            json.dump(cfg, settingsfile)
+        cfg = config.migrate("testsettings.cfg")
+        self.assertEqual(2, len(cfg["indexers"]["newznab"]))
+        self.assertEqual("newznab1", cfg["indexers"]["newznab"][0]["name"])
+        self.assertEqual("newznab2", cfg["indexers"]["newznab"][1]["name"])
+        self.assertTrue("accessType" in cfg["indexers"]["newznab"][0].keys())
+        self.assertTrue("accessType" in cfg["indexers"]["newznab"][1].keys())
+        
 
     def testMigration8to9(self):
         testCfg = {
@@ -212,7 +252,7 @@ class TestConfig(unittest.TestCase):
         }
         self.assertTrue("name" in testCfg["auth"]["users"][0].keys())
         self.assertTrue("name" in testCfg["auth"]["users"][1].keys())
-        
+
         with open("testsettings.cfg", "wb") as settingsfile:
             cfg = copy.copy(testCfg)
             json.dump(cfg, settingsfile)
@@ -222,8 +262,6 @@ class TestConfig(unittest.TestCase):
         self.assertEqual("whatever", cfg["auth"]["users"][1]["username"])
         self.assertFalse("name" in cfg["auth"]["users"][0].keys())
         self.assertFalse("name" in cfg["auth"]["users"][1].keys())
-        
-        
 
     def testGetAnonymizedConfig(self):
         config.settings = {
@@ -267,20 +305,18 @@ class TestConfig(unittest.TestCase):
         }
         ac = config.getAnonymizedConfig()
         ac = Bunch.fromDict(ac)
-        self.assertEqual("<OBFUSCATED:3f7ccf2fa729e7329f8d2af3ae5b2d00>", ac.indexers.newznab[0].apikey)
-        self.assertEqual("<OBFUSCATED:be1cd7618f0bc25e333d996582c037b2>", ac.indexers.omgwtfnzbs.username)
-        self.assertEqual("<OBFUSCATED:680eae14a056ebd0d1c71dbfb6c5ebbc>", ac.indexers.omgwtfnzbs.apikey)
+        self.assertEqual("<APIKEY:3f7ccf2fa729e7329f8d2af3ae5b2d00>", ac.indexers.newznab[0].apikey)
+        self.assertEqual("<USERNAME:be1cd7618f0bc25e333d996582c037b2>", ac.indexers.omgwtfnzbs.username)
+        self.assertEqual("<APIKEY:680eae14a056ebd0d1c71dbfb6c5ebbc>", ac.indexers.omgwtfnzbs.apikey)
         self.assertEqual("<IPADDRESS:6465ec74397c9126916786bbcd6d7601>", ac.main.host)
-        self.assertEqual("<OBFUSCATED:b5f0bb7a7671d14f3d79866bcdfac6b5>", ac.main.apikey)
+        self.assertEqual("<APIKEY:b5f0bb7a7671d14f3d79866bcdfac6b5>", ac.main.apikey)
         self.assertEqual("http://<DOMAIN:ea2cbe92bacf786835b93ff2ca78c459>/nzbhydra", ac.main.externalUrl)
-        self.assertEqual("<OBFUSCATED:25adeda6f43bf9adf9781d29d1435986>", ac.auth.users[0].username)
-        self.assertEqual("<OBFUSCATED:9c42a1346e333a770904b2a2b37fa7d3>", ac.auth.users[0].password)
-        self.assertEqual("<OBFUSCATED:df60a3d2b6cdc05d169e684c0aaa7b20>", ac.downloader.nzbget.username)
+        self.assertEqual("<USERNAME:25adeda6f43bf9adf9781d29d1435986>", ac.auth.users[0].username)
+        self.assertEqual("<PASSWORD:9c42a1346e333a770904b2a2b37fa7d3>", ac.auth.users[0].password)
+        self.assertEqual("<USERNAME:df60a3d2b6cdc05d169e684c0aaa7b20>", ac.downloader.nzbget.username)
         self.assertEqual("<IPADDRESS:c6deeee6bee7ff3d4cc2048843f5678b>", ac.downloader.nzbget.host)
-        self.assertEqual("<OBFUSCATED:78afef0fe4ffe1ed97aff6ab577ef5a4>", ac.downloader.nzbget.password)
+        self.assertEqual("<PASSWORD:78afef0fe4ffe1ed97aff6ab577ef5a4>", ac.downloader.nzbget.password)
         self.assertEqual("http://<NOTIPADDRESSORDOMAIN:421aa90e079fa326b6494f812ad13e79>:8080/sabnzbd/", ac.downloader.sabnzbd.url)
-        self.assertEqual("<OBFUSCATED:96c4173454468a77d67b2c813ffe307a>", ac.downloader.sabnzbd.username)
-        self.assertEqual("<OBFUSCATED:f5095bc1520183e76be64af1c5f9e7e3>", ac.downloader.sabnzbd.apikey)
-        self.assertEqual("<OBFUSCATED:4c471a175d85451486af666d7eebe4f8>", ac.downloader.sabnzbd.password)
-
-    
+        self.assertEqual("<USERNAME:96c4173454468a77d67b2c813ffe307a>", ac.downloader.sabnzbd.username)
+        self.assertEqual("<APIKEY:f5095bc1520183e76be64af1c5f9e7e3>", ac.downloader.sabnzbd.apikey)
+        self.assertEqual("<PASSWORD:4c471a175d85451486af666d7eebe4f8>", ac.downloader.sabnzbd.password)
