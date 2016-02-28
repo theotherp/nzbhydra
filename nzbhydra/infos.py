@@ -15,6 +15,9 @@ import requests
 import tmdbsimple
 from furl import furl
 from enum import Enum
+from requests.exceptions import ReadTimeout
+from requests.packages.urllib3.exceptions import HTTPError, ConnectionError
+
 from nzbhydra.exceptions import ExternalApiInfoException
 from nzbhydra.database import TvIdCache, MovieIdCache
 
@@ -136,8 +139,16 @@ def title_from_id(identifier_key, identifier_value):
 
         tvmaze_key = "tvrage" if identifier_key == "rid" else "thetvdb"
         tvmaze = requests.get(furl("http://api.tvmaze.com/lookup/shows").add({tvmaze_key: identifier_value}).url)
+        if tvmaze.status_code == 404:
+            #Unfortunately TVMaze returns a 404 for unknown/invalid IDs
+            raise ExternalApiInfoException("Unable to find id %s and value %s at TVMaze" % (identifier_key, identifier_value))
+        tvmaze.raise_for_status()
+        
         return tvmaze.json()["name"]
 
+    except (HTTPError, ConnectionError, ReadTimeout) as e:
+        logger.exception("Unable to retrieve title by id %s and value %s" % (identifier_key, identifier_value))
+        raise ExternalApiInfoException(str(e))
     except Exception as e:
         logger.exception("Unable to retrieve title by id %s and value %s" % (identifier_key, identifier_value))
         raise ExternalApiInfoException(str(e))

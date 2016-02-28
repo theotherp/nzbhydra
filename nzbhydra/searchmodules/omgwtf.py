@@ -189,7 +189,7 @@ class OmgWtf(SearchModule):
         #Should get most results, apparently there is no way of using "or" searches
         if search_request.season:
             if search_request.episode:
-                search_request.query = "{0} s{1:02d}e{2:02d}".format(str(search_request.query), int(search_request.season), int(search_request.episode))
+                search_request.query = "{0} s{1:02d}e{2:02d}".format(str(search_request.title), int(search_request.season), int(search_request.episode))
             else:
                 search_request.query = "{0} s{1:02d}".format(str(search_request.query), int(search_request.season))
             

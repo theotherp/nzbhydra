@@ -94,10 +94,11 @@ def canUseIdKey(indexer, key):
         return True
 
 
-def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selected_indexers=None):
+def pick_indexers(search_request, internal=True):
+    query_supplied=True if search_request.query else False
+    queryCanBeGenerated = None #Store if we can generate a query from IDs. Initiall true but when we need this the first time and query generation fails we set it to false
     picked_indexers = []
-    selected_indexers = selected_indexers.split("|") if selected_indexers is not None else None
-    with_query_generation = False
+    selected_indexers = search_request.indexers.split("|") if search_request.indexers is not None else None
     for p in indexers.enabled_indexers:
         if not p.settings.enabled:
             logger.debug("Did not pick %s because it is disabled" % p)
@@ -119,24 +120,37 @@ def pick_indexers(query_supplied=True, identifier_key=None, internal=True, selec
         except IndexerStatus.DoesNotExist:
             pass
 
-        if query_supplied and not p.supports_queries:
+        if (query_supplied or search_request.identifier_key is not None)and not p.supports_queries:
             logger.debug("Did not pick %s because a query was supplied but the indexer does not support queries" % p)
             continue
-        if not query_supplied and p.needs_queries and identifier_key is None:
+
+        # Here on we check if we could supply the indexer with generated/retrieved data like the title of a series
+        if not query_supplied and p.needs_queries and search_request.identifier_key is None:
             logger.debug("Did not pick %s because no query was supplied but the indexer needs queries" % p)
             continue
+        
+        # If we can theoretically do that we must try to actually get the title, otherwise the indexer won't be able to search 
         allow_query_generation = (config.InternalExternalSelection.internal in config.settings.searching.generate_queries and internal) or (config.InternalExternalSelection.external in config.settings.searching.generate_queries and not internal)
-        if identifier_key is not None and not canUseIdKey(p, identifier_key):
+        if search_request.identifier_key is not None and not canUseIdKey(p, search_request.identifier_key):
             if not (allow_query_generation and p.generate_queries):
                 logger.debug("Did not pick %s because search will be done by an identifier and the indexer or system wide settings don't allow query generation" % p)
                 continue
             else:
-                with_query_generation = True
+                if queryCanBeGenerated is None:
+                    try:
+                        search_request.title = infos.title_from_id(search_request.identifier_key, search_request.identifier_value)
+                        queryCanBeGenerated = True
+                    except:
+                        queryCanBeGenerated = False
+                        logger.debug("Unable to get title for supplied ID. Indexers that don't support the ID will be skipped")
+                if not queryCanBeGenerated:
+                    logger.debug("Did not pick %s because search will be done by an identifier and retrieval of the title for query generation failed" % p)
+                    continue
 
         logger.debug("Picked %s" % p)
         picked_indexers.append(p)
 
-    return picked_indexers, with_query_generation
+    return picked_indexers
 
 
 pseudo_cache = {}
@@ -155,7 +169,7 @@ def search(internal, search_request):
     if search_hash not in pseudo_cache.keys() or search_request.offset == 0:  # If it's a new search (which starts with offset 0) do it again instead of using the cached results
         logger.debug("Didn't find this query in cache or want to do a new search")
         cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0}
-        indexers_to_call, with_query_generation = pick_indexers(query_supplied=True if search_request.query is not None and search_request.query != "" else False, identifier_key=search_request.identifier_key, internal=internal, selected_indexers=search_request.indexers)
+        indexers_to_call = pick_indexers(search_request=search_request, internal=internal)
         for p in indexers_to_call:
             cache_entry["indexer_infos"][p] = {"has_more": True, "search_request": search_request, "total_included": False}
         dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode, type=search_request.type,
@@ -163,11 +177,6 @@ def search(internal, search_request):
         #dbsearch.save()
         cache_entry["dbsearch"] = dbsearch
 
-        if with_query_generation and search_request.identifier_key and search_request.title is None:
-            try: 
-                search_request.title = infos.title_from_id(search_request.identifier_key, search_request.identifier_value)
-            except:
-                pass
         pseudo_cache[search_hash] = cache_entry
     else:
         cache_entry = pseudo_cache[search_hash]
