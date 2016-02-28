@@ -4,6 +4,8 @@
 ### 0.0.1a78
 Fixed: Skip indexers if query generation is enabled, they don't support an ID and the retrieval of the title for the query generation failed.
 
+Fixed: Properly cache retrieved titles for TV or movie IDs.
+
 ### 0.0.1a77
 Added: New "Bugreport" tab in the "System" section which gives some advice and provides functions to download anonymized versions of the settings and log which you can post.
 

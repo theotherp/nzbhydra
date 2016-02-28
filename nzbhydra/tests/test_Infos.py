@@ -32,12 +32,13 @@ class TestInfos(unittest.TestCase):
     @vcr.use_cassette('vcr/tmdb.yaml', record_mode='once')
     def testTmdbToImdb(self):
         id = tmdbid_to_imdbid("14")
-        self.assertEqual("0169547", id)
+        self.assertEqual("0169547", id[0])
+        self.assertEqual("American Beauty", id[1])
 
     @vcr.use_cassette('vcr/tmdb.yaml', record_mode='once')
     def testImdbToTmdb(self):
         id = infos.imdbid_to_tmdbid("0169547")
-        self.assertEqual("14", id)
+        self.assertEqual("14", id[0])
 
     @vcr.use_cassette('vcr/tvmaze.yaml', record_mode='once')
     def testFindSeriesId(self):
@@ -93,8 +94,14 @@ class TestInfos(unittest.TestCase):
         #This time from cache
         id = infos.convertId("imdb", "tmdb", "0169547")
         self.assertEqual("14", id)
+        #Other direction, still from cache
+        id = infos.convertId("tmdb", "imdb", "14")
+        self.assertEqual("0169547", id)
         
         MovieIdCache.delete().execute()
+        id = infos.convertId("tmdb", "imdb", "14")
+        self.assertEqual("0169547", id)
+        #This time from cache
         id = infos.convertId("tmdb", "imdb", "14")
         self.assertEqual("0169547", id)
 
@@ -129,16 +136,63 @@ class TestInfos(unittest.TestCase):
     def testConvertToAny(self):
         canConvert, toType, id = infos.convertIdToAny("imdb", ["tmdbid"], "0169547")
         self.assertTrue(canConvert)
-        self.assertEqual(toType, "tmdb")
+        self.assertEqual("tmdb", toType)
 
         canConvert, toType, id = infos.convertIdToAny("imdb", ["imdb"], "0169547")
         self.assertTrue(canConvert)
         self.assertEqual(toType, "imdb")
-        self.assertEqual("0169547", id)
+        self.assertEqual(id, "0169547")
 
         canConvert, toType, id = infos.convertIdToAny("imdb", "imdb", "0169547") #Single ID instead of list
         self.assertTrue(canConvert)
         self.assertEqual(toType, "imdb")
-        self.assertEqual("0169547", id)
-            
-            
+        self.assertEqual(id, "0169547")
+
+    @vcr.use_cassette('vcr/tmdb.yaml', record_mode='once')
+    def testGetMovieTitle(self):
+        MovieIdCache.delete().execute()
+        title = infos.convertId("imdb", "title", "0169547")
+        self.assertEqual("American Beauty", title)
+        # This time from cache
+        title = infos.convertId("imdb", "title", "0169547")
+        self.assertEqual("American Beauty", title)
+
+        MovieIdCache.delete().execute()
+        title = infos.convertId("tmdb", "title", "14")
+        self.assertEqual("American Beauty", title)
+        # This time from cache
+        title = infos.convertId("tmdb", "title", "14")
+        self.assertEqual("American Beauty", title)
+
+    @vcr.use_cassette('vcr/tvmaze.yaml', record_mode='once')
+    def testGetTvTitle(self):
+        TvIdCache.delete().execute()
+        id = infos.convertId("tvdb", "title", "299350")
+        self.assertEqual("Casual", id)
+        # This time from cache
+        id = infos.convertId("tvdb", "title", "299350")
+        self.assertEqual("Casual", id)
+
+        TvIdCache.delete().execute()
+
+        id = infos.convertId("tvdb", "title", "299350")
+        self.assertEqual("Casual", id)
+        # This time from cache
+        id = infos.convertId("tvdb", "title", "299350")
+        self.assertEqual("Casual", id)
+
+        TvIdCache.delete().execute()
+        id = infos.convertId("tvrage", "title", "47566")
+        self.assertEqual("Casual", id)
+
+        TvIdCache.delete().execute()
+        id = infos.convertId("tvrage", "title", "47566")
+        self.assertEqual("Casual", id)
+
+        TvIdCache.delete().execute()
+        id = infos.convertId("tvmaze", "title", "3036")
+        self.assertEqual("Casual", id)
+
+        TvIdCache.delete().execute()
+        id = infos.convertId("tvmaze", "title", "3036")
+        self.assertEqual("Casual", id)

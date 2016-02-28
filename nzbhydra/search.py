@@ -138,8 +138,12 @@ def pick_indexers(search_request, internal=True):
             else:
                 if queryCanBeGenerated is None:
                     try:
-                        search_request.title = infos.title_from_id(search_request.identifier_key, search_request.identifier_value)
-                        queryCanBeGenerated = True
+                        title = infos.convertId(search_request.identifier_key, "title", search_request.identifier_value)
+                        if title:
+                            search_request.title = title 
+                            queryCanBeGenerated = True
+                        else:
+                            queryCanBeGenerated = False
                     except:
                         queryCanBeGenerated = False
                         logger.debug("Unable to get title for supplied ID. Indexers that don't support the ID will be skipped")

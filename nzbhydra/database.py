@@ -20,7 +20,7 @@ logger = logging.getLogger('root')
 
 db = SqliteExtDatabase(None, threadlocals=True, journal_mode="WAL")
 
-DATABASE_VERSION = 4
+DATABASE_VERSION = 5
 
 
 class JSONField(TextField):
@@ -153,6 +153,7 @@ class TvIdCache(Model):
     tvdb = CharField(null=True)
     tvrage = CharField(null=True)
     tvmaze = CharField(null=True)
+    title = CharField()
 
     class Meta(object):
         database = db
@@ -162,6 +163,7 @@ class TvIdCache(Model):
 class MovieIdCache(Model):
     imdb = CharField()
     tmdb = CharField()
+    title = CharField()
 
     class Meta(object):
         database = db
@@ -193,9 +195,7 @@ def update_db(dbfile):
     vi = VersionInfo.get()
     if vi.version < DATABASE_VERSION:
         logger.info("Migrating database")
-        backupFilename = "%s.%s.bak" % (dbfile, arrow.now().format("YYYY-MM-DD"))
-        logger.info("Copying backup of database to %s" % backupFilename)
-        shutil.copy(dbfile, backupFilename)
+        #Backup will be done by update code
     
         if vi.version == 1:
             logger.info("Upgrading database to version 2")
@@ -242,5 +242,16 @@ def update_db(dbfile):
                     migrator.add_column("search", "username", Search.username)
                     )
             vi.version = 4
+            vi.save()
+        if vi.version == 4:
+            logger.info("Upgrading database to version 5")
+            logger.info("Dropping and recreating ID cache tables for movies and TV so they will be refilled with titles")
+            
+            db.drop_table(MovieIdCache)
+            db.create_table(MovieIdCache)
+            db.drop_table(TvIdCache)
+            db.create_table(TvIdCache)
+            
+            vi.version = 5
             vi.save()
     db.close()

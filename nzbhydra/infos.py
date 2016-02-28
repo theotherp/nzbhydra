@@ -40,6 +40,7 @@ class TvMaze:
 
     @staticmethod
     def byId(idType, id):
+        logger.info("Requesting info for %s key %s from TVMaze" % (idType, id))
         try:
             if idType == "thetvdb" or idType == "tvrage":
                 info = requests.get(furl("http://api.tvmaze.com/lookup/shows").add({idType: id}).url)
@@ -87,8 +88,9 @@ def tmdbid_to_imdbid(tmdbid):
     movie = tmdbsimple.Movies(tmdbid)
     response = movie.info()
     imdbid = response["imdb_id"][2:]
+    title = response["title"]
     logger.info("Found TMDB id %s for IMDB id %s" % (tmdbid, imdbid))
-    return imdbid
+    return imdbid, title
 
 
 def imdbid_to_tmdbid(imdbid):
@@ -99,8 +101,9 @@ def imdbid_to_tmdbid(imdbid):
     if len(movie_results_) != 1:
         logger.error("Expected 1 result but got %d" % len(movie_results_))
     tmdbid = movie_results_[0]["id"]
+    title = movie_results_[0]["title"]
     logger.info("Found IMDB id %s for TMDB id %s" % (imdbid, tmdbid))
-    return str(tmdbid)
+    return str(tmdbid), title
 
 
 
@@ -163,7 +166,7 @@ def canConvertId(fromType, toType):
                      "tvdb": ["tvrage", "tvmaze"],
                      "tvmaze": ["tvdb", "tvrage"]
                      }
-    return fromType in conversionMap.keys() and toType in conversionMap[fromType]
+    return toType == "title" or (fromType in conversionMap.keys() and toType in conversionMap[fromType])
 
 
 def canConvertList(fromId, toIdList):
@@ -175,36 +178,28 @@ def _tryFromCache(fromType, toType, id):
     #This way we will know if a cache entry exists or the cached value is None 
     try:
         if fromType == "tvrage":
-            id = TvIdCache.get(TvIdCache.tvrage == id)
+            cacheEntry = TvIdCache.get(TvIdCache.tvrage == id)
         elif fromType == "tvdb":
-            id = TvIdCache.get(TvIdCache.tvdb == id)
+            cacheEntry = TvIdCache.get(TvIdCache.tvdb == id)
         elif fromType == "tvmaze":
-            id = TvIdCache.get(TvIdCache.tvmaze == id)
+            cacheEntry = TvIdCache.get(TvIdCache.tvmaze == id)
         elif fromType == "imdb":
-            id = MovieIdCache.get(MovieIdCache.imdb == id)
+            cacheEntry = MovieIdCache.get(MovieIdCache.imdb == id)
         elif fromType == "tmdb":
-            id = MovieIdCache.get(MovieIdCache.tmdb == id)
+            cacheEntry = MovieIdCache.get(MovieIdCache.tmdb == id)
         else:
             return False, None
     except (TvIdCache.DoesNotExist, MovieIdCache.DoesNotExist):
         return False, None
-    if toType == "tvdb":
-        return True, id.tvdb
-    elif toType == "tvrage":
-        return True, id.tvrage
-    elif toType == "tvmaze":
-        return True, id.tvmaze
-    elif toType == "imdb":
-        return True, id.imdb
-    elif toType == "tmdb":
-        return True, id.tmdb
-    else:
-        return False, None
+    return True, cacheEntry
+        
 
 
 def _cacheTvMazeIds(tvMaze):
     try:
-        TvIdCache(tvmaze=tvMaze.tvmazeid, tvrage=tvMaze.rageid, tvdb=tvMaze.tvdbid).save()
+        cacheEntry = TvIdCache(tvmaze=tvMaze.tvmazeid, tvrage=tvMaze.rageid, tvdb=tvMaze.tvdbid, title=tvMaze.title)
+        cacheEntry.save()
+        return cacheEntry
     except IntegrityError as e:
         logger.debug("Unable to save cached TvMaze entry to database. Probably already exists")
         pass
@@ -214,46 +209,53 @@ def _cacheTvMazeIds(tvMaze):
 
 
 def convertId(fromType, toType, id):
-    logger.info("Converting %s value %s from %s " % (toType, id, fromType))
+    logger.info("Converting from %s value %s to %s " % (fromType, id, toType))
     #Clean up names
     fromType = fromType.replace("rid", "tvrage").replace("id", "")
     toType = toType.replace("rid", "tvrage").replace("id", "")
-    
     if fromType.replace("rid", "tvrage").replace("id", "") == toType.replace("rid", "tvrage").replace("id", ""):
         return id
     
-    if not canConvertId(fromType, toType):
+    if toType != "title" and not canConvertId(fromType, toType):
         logger.error("Unable to convert from %s to %s" % (fromType, toType))
         return None
     
-    hasCacheEntry, fromCache = _tryFromCache(fromType, toType, id)
+    hasCacheEntry, result = _tryFromCache(fromType, toType, id)
     if hasCacheEntry:
-        logger.debug("Returning %s value %s from %s from cache" % (toType, id, fromType))
-        return fromCache
+        logger.debug("Found conversion from %s value %s to %s in cache" % (fromType, id, toType))
     
-    if fromType == "imdb":
-        result = imdbid_to_tmdbid(id)
-        MovieIdCache(tmdb=result, imdb=id).save()
-        return result
+    elif fromType == "imdb":
+        convertedId, title = imdbid_to_tmdbid(id)
+        result = MovieIdCache(tmdb=convertedId, imdb=id, title=title)
+        result.save()
         
+    elif fromType == "tmdb":
+        convertedId, title = tmdbid_to_imdbid(id)
+        result = MovieIdCache(imdb=convertedId, tmdb=id, title=title)
+        result.save()
     
-    if fromType == "tmdb":
-        result = tmdbid_to_imdbid(id)
-        MovieIdCache(imdb=result, tmdb=id).save()
-        return result
-    
-    if fromType in ("tvrage", "tvdb", "tvmaze"):
+    elif fromType in ("tvrage", "tvdb", "tvmaze"):
         fromType = fromType.replace("tvdb", "thetvdb") #TVMaze uses "thetvdb"...
         result = TvMaze.byId(fromType, id)
         if result is None:
             return None
-        _cacheTvMazeIds(result)
-        if toType == "tvdb":
-            return str(result.tvdbid)
-        if toType == "tvmaze":
-            return str(result.tvmazeid)
-        if toType == "tvrage":
-            return str(result.rageid)
+        result = _cacheTvMazeIds(result)
+
+    if result is None:
+        return None
+    logger.info("Successfully converted from %s value %s to %s " % (fromType, id, toType))
+    if toType == "imdb":
+        return str(result.imdb)
+    if toType == "tmdb":
+        return str(result.tmdb)
+    if toType == "tvdb":
+        return str(result.tvdb)
+    if toType == "tvmaze":
+        return str(result.tvmaze)
+    if toType == "tvrage":
+        return str(result.tvrage)
+    if toType == "title":
+        return result.title
     
     return None
 
