@@ -1,0 +1,32 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [close]
+      Content-Type: [application/json]
+      User-Agent: [python-requests/2.4.3 CPython/2.7.11 Windows/10]
+    method: GET
+    uri: https://api.themoviedb.org/3/find/tt016954739339?external_source=imdb_id&api_key=4df99d58875c2d01fc04936759fea56f
+  response:
+    body: {string: !!python/unicode '{"movie_results":[],"person_results":[],"tv_results":[],"tv_episode_results":[],"tv_season_results":[]}'}
+    headers:
+      access-control-allow-origin: ['*']
+      cache-control: ['public, max-age=21600']
+      connection: [Close]
+      content-length: ['103']
+      content-type: [application/json;charset=utf-8]
+      date: ['Sun, 28 Feb 2016 17:14:02 GMT']
+      etag: ['"3c145d69f7e57a8b6c3506741c2f3439"']
+      server: [openresty]
+      status: [200 OK]
+      x-memc: ['MISS, STORE']
+      x-memc-age: ['0']
+      x-memc-expires: ['21600']
+      x-memc-key: [584f8acaf08bee8e38aead96deef5412]
+      x-ratelimit-limit: ['40']
+      x-ratelimit-remaining: ['39']
+      x-ratelimit-reset: ['1456679652']
+    status: {code: 200, message: OK}
+version: 1
