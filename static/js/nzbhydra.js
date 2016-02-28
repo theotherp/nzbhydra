@@ -2842,7 +2842,7 @@ function ConfigFields() {
                                 type: 'text',
                                 label: 'URL base',
                                 placeholder: '/nzbhydra',
-                                help: 'Set when using an external proxy'
+                                help: 'Set when using an external proxy. Call using a trailing slash, e.g. http://www.domain.com/nzbhydra/'
                             },
                             validators: {
                                 urlBase: regexValidator(/^\/[\w\/]*$/, "Base URL needs to start with a slash and must not end with one")
@@ -3088,7 +3088,10 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'number',
                                 label: 'Maximum results age',
-                                help: 'Results older than this are ignored. Can be overwritten per search.'
+                                help: 'Results older than this are ignored. Can be overwritten per search.',
+                                addonRight: {
+                                    text: 'days'
+                                }
                             }
                         },
 
