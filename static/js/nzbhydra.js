@@ -943,7 +943,7 @@ function UpdateFooterController($scope, $http, UpdateService) {
 
     $scope.updateAvailable = false;
     
-    $http.get("/internalapi/mayseeadminarea").then(function(data) {
+    $http.get("internalapi/mayseeadminarea").then(function(data) {
        if (data.data.mayseeadminarea) {
            UpdateService.getVersions().then(function (data) {
                $scope.currentVersion = data.data.currentVersion;
