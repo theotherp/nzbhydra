@@ -1347,8 +1347,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         var filtered = _.chain(results)
             //Remove elements of which the indexer is currently hidden    
             .filter(getItemIndexerDisplayState)
-            //and which were not filtered by the indexers (because they don't support queries with min/max size/age)
-            .filter(filterByAgeAndSize)
             //Make groups of results with the same title    
             .groupBy(getCleanedTitle)
             //For every title group make subgroups of duplicates and sort the group    
