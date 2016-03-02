@@ -18,11 +18,12 @@ from nzbhydra import config
 from nzbhydra.database import Indexer
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.nzbclub import NzbClub
+from nzbhydra.tests.UrlTestCase import UrlTestCase
 from nzbhydra.tests.db_prepare import set_and_drop
 
 
 
-class NzbclubTests(unittest.TestCase):
+class NzbclubTests(UrlTestCase):
     @pytest.fixture
     def setUp(self):
         set_and_drop()
@@ -32,13 +33,65 @@ class NzbclubTests(unittest.TestCase):
         self.args = SearchRequest(query="a showtitle", season=1, episode=2)
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
-        print(urls[0])
+        
         self.assertEqual('a showtitle s01e02 or a showtitle 1x02', furl(urls[0]).args["q"])
 
         self.args = SearchRequest(query="a showtitle", season=1, episode=None)
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
         self.assertEqual('a showtitle s01 or a showtitle "season 1"', furl(urls[0]).args["q"])
+
+        self.args = SearchRequest(query="aquery", minage=4)
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertUrlEqual("https://www.nzbclub.com/nzbrss.aspx?ig=2&ns=1&q=aquery&rpp=250&sn=1&st=5&ds=4", urls[0])
+
+        self.args = SearchRequest(query="aquery", minage=18 * 31) #Beyond the last defined limit of days
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertUrlEqual("https://www.nzbclub.com/nzbrss.aspx?ig=2&ns=1&q=aquery&rpp=250&sn=1&st=5&ds=27", urls[0])
+        
+        self.args = SearchRequest(query="aquery", minage=70)
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertUrlEqual("https://www.nzbclub.com/nzbrss.aspx?ig=2&ns=1&q=aquery&rpp=250&sn=1&st=5&ds=12", urls[0])
+
+        self.args = SearchRequest(query="aquery", maxage=18 * 31) # Beyond the last defined limit of days, so don't limit
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertUrlEqual("https://www.nzbclub.com/nzbrss.aspx?ig=2&ns=1&q=aquery&rpp=250&sn=1&st=5", urls[0])
+        
+        self.args = SearchRequest(query="aquery", minage=4, maxage=70)
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertUrlEqual("https://www.nzbclub.com/nzbrss.aspx?ig=2&ns=1&q=aquery&rpp=250&sn=1&st=5&de=13&ds=4", urls[0])
+
+        self.args = SearchRequest(query="aquery", minsize=3)
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertUrlEqual("https://www.nzbclub.com/nzbrss.aspx?ig=2&ns=1&q=aquery&rpp=250&sn=1&st=5&szs=8", urls[0])
+        
+        self.args = SearchRequest(query="aquery", minsize=2400)
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertUrlEqual("https://www.nzbclub.com/nzbrss.aspx?ig=2&ns=1&q=aquery&rpp=250&sn=1&st=5&szs=23", urls[0])
+
+        self.args = SearchRequest(query="aquery", maxsize=2400)
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertUrlEqual("https://www.nzbclub.com/nzbrss.aspx?ig=2&ns=1&q=aquery&rpp=250&sn=1&st=5&sze=24", urls[0])
+
+        self.args = SearchRequest(query="aquery", maxsize=30*1024*1024) #Beyond the last defined limit of size, so don't limit
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertUrlEqual("https://www.nzbclub.com/nzbrss.aspx?ig=2&ns=1&q=aquery&rpp=250&sn=1&st=5", urls[0])
+        
+        self.args = SearchRequest(query="aquery", minsize=3, maxsize=2400)
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertUrlEqual("https://www.nzbclub.com/nzbrss.aspx?ig=2&ns=1&q=aquery&rpp=250&sn=1&st=5&sze=24&szs=8", urls[0])
+        
+        
 
     @freeze_time("2015-09-24 14:00:00", tz_offset=-4)
     def testProcess_results(self):
