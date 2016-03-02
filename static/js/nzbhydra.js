@@ -315,12 +315,14 @@ nzbhydraapp.config(["$provide", function ($provide) {
         return function (exception, cause) {
             $delegate(exception, cause);
             try {
+                console.log(exception);
                 var stack = exception.stack.split('\n').map(function (line) {
                     return line.trim();
                 });
                 stack = stack.join("\n");
-                    $injector.get("$http").put("internalapi/logerror", {error: stack, cause: angular.isDefined(cause) ? cause.toString() : "No known cause"});
-              
+                $injector.get("$http").put("internalapi/logerror", {error: stack, cause: angular.isDefined(cause) ? cause.toString() : "No known cause"});
+                
+
             } catch (e) {
                 console.error("Unable to log JS exception to server", e);
             }
@@ -937,20 +939,26 @@ angular
     .module('nzbhydraApp')
     .controller('UpdateFooterController', UpdateFooterController);
 
-function UpdateFooterController($scope, UpdateService) {
+function UpdateFooterController($scope, $http, UpdateService) {
 
     $scope.updateAvailable = false;
     
-    UpdateService.getVersions().then(function(data) {
-        $scope.currentVersion = data.data.currentVersion;
-        $scope.repVersion = data.data.repVersion;
-        $scope.updateAvailable = data.data.updateAvailable;
-        if ($scope.repVersion > $scope.currentVersion) {
-            UpdateService.getChangelog().then(function (data) {
-                $scope.changelog = data.data.changelog;
-            })
-        } 
+    $http.get("/internalapi/mayseeadminarea").then(function(data) {
+       if (data.data.mayseeadminarea) {
+           UpdateService.getVersions().then(function (data) {
+               $scope.currentVersion = data.data.currentVersion;
+               $scope.repVersion = data.data.repVersion;
+               $scope.updateAvailable = data.data.updateAvailable;
+               if ($scope.repVersion > $scope.currentVersion) {
+                   UpdateService.getChangelog().then(function (data) {
+                       $scope.changelog = data.data.changelog;
+                   })
+               }
+           });
+       } 
     });
+    
+    
     
 
     $scope.update = function () {
@@ -962,7 +970,7 @@ function UpdateFooterController($scope, UpdateService) {
     }
 
 }
-UpdateFooterController.$inject = ["$scope", "UpdateService"];
+UpdateFooterController.$inject = ["$scope", "$http", "UpdateService"];
 
 angular
     .module('nzbhydraApp')
@@ -1369,21 +1377,12 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
 
     $scope.loadMore = loadMore;
     function loadMore() {
-        console.log("Loading more result withs offset " + $scope.resultsCount);
-
         startBlocking("Loading more results...").then(function () {
             SearchService.loadMore($scope.resultsCount).then(function (data) {
-                console.log("Returned more results:");
-                console.log(data.results);
-                console.log($scope.results);
-                console.log("Total: " + data.total);
                 $scope.results = $scope.results.concat(data.results);
                 $scope.filteredResults = sortAndFilter($scope.results);
                 $scope.total = data.total;
                 $scope.resultsCount += data.resultsCount;
-                console.log("Results count: " + $scope.resultsCount);
-                console.log("Total results in $scope.results: " + $scope.results.length);
-
                 stopBlocking();
             });
         });
@@ -1417,7 +1416,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
                 return {"indexerguid": value.indexerguid, "title": value.title, "indexer": value.indexer, "dbsearchid": value.dbsearchid}
             });
 
-            console.log(values);
             NzbDownloadService.download(values).then(function (response) {
                 if (response.data.success) {
                     growl.info("Successfully added " + response.data.added + " of " + response.data.of + " NZBs");
@@ -3764,7 +3762,7 @@ function ConfigFields() {
 
                         ],
                         defaultModel: {
-                            name: null,
+                            username: null,
                             password: null,
                             maySeeStats: true,
                             maySeeAdmin: true

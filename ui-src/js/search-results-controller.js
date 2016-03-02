@@ -166,21 +166,12 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
 
     $scope.loadMore = loadMore;
     function loadMore() {
-        console.log("Loading more result withs offset " + $scope.resultsCount);
-
         startBlocking("Loading more results...").then(function () {
             SearchService.loadMore($scope.resultsCount).then(function (data) {
-                console.log("Returned more results:");
-                console.log(data.results);
-                console.log($scope.results);
-                console.log("Total: " + data.total);
                 $scope.results = $scope.results.concat(data.results);
                 $scope.filteredResults = sortAndFilter($scope.results);
                 $scope.total = data.total;
                 $scope.resultsCount += data.resultsCount;
-                console.log("Results count: " + $scope.resultsCount);
-                console.log("Total results in $scope.results: " + $scope.results.length);
-
                 stopBlocking();
             });
         });
@@ -214,7 +205,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
                 return {"indexerguid": value.indexerguid, "title": value.title, "indexer": value.indexer, "dbsearchid": value.dbsearchid}
             });
 
-            console.log(values);
             NzbDownloadService.download(values).then(function (response) {
                 if (response.data.success) {
                     growl.info("Successfully added " + response.data.added + " of " + response.data.of + " NZBs");

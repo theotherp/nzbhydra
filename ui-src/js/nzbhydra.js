@@ -315,12 +315,14 @@ nzbhydraapp.config(function ($provide) {
         return function (exception, cause) {
             $delegate(exception, cause);
             try {
+                console.log(exception);
                 var stack = exception.stack.split('\n').map(function (line) {
                     return line.trim();
                 });
                 stack = stack.join("\n");
-                    $injector.get("$http").put("internalapi/logerror", {error: stack, cause: angular.isDefined(cause) ? cause.toString() : "No known cause"});
-              
+                $injector.get("$http").put("internalapi/logerror", {error: stack, cause: angular.isDefined(cause) ? cause.toString() : "No known cause"});
+                
+
             } catch (e) {
                 console.error("Unable to log JS exception to server", e);
             }

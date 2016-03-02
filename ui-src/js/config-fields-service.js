@@ -1228,7 +1228,7 @@ function ConfigFields() {
 
                         ],
                         defaultModel: {
-                            name: null,
+                            username: null,
                             password: null,
                             maySeeStats: true,
                             maySeeAdmin: true

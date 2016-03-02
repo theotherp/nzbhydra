@@ -10,6 +10,10 @@ Fixed: Unable to add user without admin rights.
 
 Fixed: Reject results violating age or size filters directly where possible and it not then during result processing, not in the GUI.
 
+Fixed: Problems with validation and general usage of authorization config.
+
+Fixed: Don't show update footer for users without admin rights.
+
 ### 0.0.1a77
 Added: New "Bugreport" tab in the "System" section which gives some advice and provides functions to download anonymized versions of the settings and log which you can post.
 
