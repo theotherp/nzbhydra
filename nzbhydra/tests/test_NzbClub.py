@@ -90,6 +90,12 @@ class NzbclubTests(UrlTestCase):
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
         self.assertUrlEqual("https://www.nzbclub.com/nzbrss.aspx?ig=2&ns=1&q=aquery&rpp=250&sn=1&st=5&sze=24&szs=8", urls[0])
+
+        config.settings.searching.ignoreWords = "ignorethis"
+        self.args = SearchRequest(query="aquery")
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertEqual("https://www.nzbclub.com/nzbrss.aspx?rpp=250&ns=1&sn=1&ig=2&st=5&q=aquery+-ignorethis", urls[0])
         
         
 
@@ -97,7 +103,7 @@ class NzbclubTests(UrlTestCase):
     def testProcess_results(self):
         w = NzbClub(config.settings.indexers.nzbclub)
         with open("mock/nzbclub--q-testtitle.xml", encoding="latin-1") as f:
-            entries = w.process_query_result(f.read(), "aquery").entries
+            entries = w.process_query_result(f.read(), SearchRequest()).entries
             self.assertEqual('testtitle1', entries[0].title)
             self.assertEqual("http://www.nzbclub.com/nzb_get/60269450/testtitle1.nzb", entries[0].link)
             self.assertEqual(1075514926, entries[0].size)

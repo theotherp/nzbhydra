@@ -42,6 +42,7 @@ class SearchModule(object):
         self.category_search = True  # If true the indexer supports searching in a given category (possibly without any query or id)
         self.limit = 100
         self.supportedFilters = []
+        self.supportsNot = None
 
     def __repr__(self):
         return self.name

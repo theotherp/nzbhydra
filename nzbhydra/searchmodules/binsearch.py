@@ -37,6 +37,7 @@ class Binsearch(SearchModule):
         self.category_search = False
         self.last_results_count = 0
         self.supportedFilters = ["minsize", "maxsize", "maxage"]
+        self.supportsNot = False
 
     def build_base_url(self, offset=0):
         f = furl(self.host)

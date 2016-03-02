@@ -283,6 +283,7 @@ class NewzNab(SearchModule):
         self.module = "newznab"
         self.category_search = True
         self.supportedFilters = ["maxage"]
+        self.supportsNot = True
     
 
     def build_base_url(self, action, category, offset=0):
@@ -293,10 +294,16 @@ class NewzNab(SearchModule):
 
     def get_search_urls(self, search_request, search_type="search"):
         f = self.build_base_url(search_type, search_request.category, offset=search_request.offset)
-        if search_request.query:
-            f = f.add({"q": search_request.query})
+        query = search_request.query
+        if query:
+            if config.settings.searching.ignoreWords:
+                ignoreWords = filter(bool, config.settings.searching.ignoreWords.split(","))
+                for word in ignoreWords:
+                    query += " --" + word.strip().lower()
+            f = f.add({"q": query})
         if search_request.maxage:
             f = f.add({"maxage": search_request.maxage})
+        
         return [f.url]
 
     def get_showsearch_urls(self, search_request):

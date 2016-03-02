@@ -11,6 +11,8 @@ from builtins import *
 import re
 from freezegun import freeze_time
 import responses
+
+from nzbhydra import config
 from nzbhydra.database import Indexer
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.newznab import NewzNab
@@ -39,7 +41,7 @@ class NewznabTests(UrlTestCase):
     def testParseSearchResult(self):
         # nzbsorg
         with open("mock/indexercom_q_testtitle_3results.xml") as f:
-            entries = self.n1.process_query_result(f.read(), "aquery").entries
+            entries = self.n1.process_query_result(f.read(), SearchRequest()).entries
         self.assertEqual(3, len(entries))
 
         self.assertEqual(entries[0].title, "testtitle1")
@@ -66,7 +68,7 @@ class NewznabTests(UrlTestCase):
     def testParseSpotwebSearchResult(self):
         # nzbsorg
         with open("mock/spotweb_q_testtitle_3results.xml") as f:
-            entries = self.n1.process_query_result(f.read(), "aquery").entries
+            entries = self.n1.process_query_result(f.read(), SearchRequest()).entries
         self.assertEqual(3, len(entries))
 
         self.assertEqual(entries[0].title, "testtitle1")
@@ -82,7 +84,7 @@ class NewznabTests(UrlTestCase):
     def testPirateNzbParseSearchResult(self):
         # nzbsorg
         with open("mock/piratenzb_movies_response.xml") as f:
-            entries = self.n1.process_query_result(f.read(), "aquery").entries
+            entries = self.n1.process_query_result(f.read(), SearchRequest()).entries
         self.assertEqual(3, len(entries))
 
         self.assertEqual(entries[0].title, "title1")
@@ -189,6 +191,13 @@ class NewznabTests(UrlTestCase):
         assert len(queries) == 1
         query = queries[0]
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&cat=2000&extended=1&limit=100&offset=0&t=movie", query)
+
+        config.settings.searching.ignoreWords = "ignorethis"
+        self.args = SearchRequest(query="aquery")
+        queries = self.n1.get_search_urls(self.args)
+        assert len(queries) == 1
+        query = queries[0]
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&extended=1&limit=100&offset=0&q=aquery --ignorethis&t=search", query)
 
     @responses.activate
     def testGetNfo(self):

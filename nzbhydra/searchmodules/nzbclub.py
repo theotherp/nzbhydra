@@ -15,6 +15,8 @@ import xml.etree.ElementTree as ET
 import arrow
 
 from furl import furl
+
+from nzbhydra import config
 from nzbhydra.exceptions import IndexerResultParsingException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -32,7 +34,8 @@ class NzbClub(SearchModule):
         self.needs_queries = True
         self.category_search = False
         self.max_results = 250
-        self.supportedFilters = []  # Technically we do but we should still check every result because the defined values may lie between the ones supported by NZBClub  
+        self.supportedFilters = []  # Technically we do but we should still check every result because the defined values may lie between the ones supported by NZBClub
+        self.supportsNot = True
 
         self.sizeMap = OrderedDict([
             (1, 8),
@@ -108,7 +111,13 @@ class NzbClub(SearchModule):
         return url
 
     def get_search_urls(self, search_request):
-        f = self.build_base_url().add({"q": search_request.query})
+        query = search_request.query
+        if query:
+            if config.settings.searching.ignoreWords:
+                ignoreWords = filter(bool, config.settings.searching.ignoreWords.split(","))
+                for word in ignoreWords:
+                    query += " -" + word.strip().lower()
+        f = self.build_base_url().add({"q": query})
         if search_request.minage:
             ageValue = self.getMinValue(search_request.minage, self.ageMap)
             f.query.add({"ds": ageValue})
@@ -177,6 +186,7 @@ class NzbClub(SearchModule):
     def process_query_result(self, xml, searchRequest, maxResults=None):
         self.debug("Started processing results")
         entries = []
+        countRejected = 0
         try:
             tree = ET.fromstring(xml)
         except Exception:
@@ -240,10 +250,11 @@ class NzbClub(SearchModule):
             if accepted:
                 entries.append(entry)
             else:
+                countRejected += 1
                 self.debug("Rejected search result. Reason: %s" % reason)
 
         self.debug("Finished processing results")
-        return IndexerProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False)  # No paging with RSS. Might need/want to change to HTML and BS
+        return IndexerProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False, rejected=countRejected)  # No paging with RSS. Might need/want to change to HTML and BS
 
     def get_nfo(self, guid):
         f = furl(self.settings.host)

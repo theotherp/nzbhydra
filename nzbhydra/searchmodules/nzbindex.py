@@ -35,6 +35,7 @@ class NzbIndex(SearchModule):
         self.needs_queries = True
         self.category_search = False
         self.supportedFilters = ["minsize", "maxsize", "minage", "maxage"]
+        self.supportsNot = True
 
     def build_base_url(self):
         f = furl(self.host)
@@ -43,7 +44,13 @@ class NzbIndex(SearchModule):
         return f
 
     def get_search_urls(self, search_request):
-        f = self.build_base_url().add({"q": search_request.query})
+        query = search_request.query
+        if query:
+            if config.settings.searching.ignoreWords:
+                ignoreWords = filter(bool, config.settings.searching.ignoreWords.split(","))
+                for word in ignoreWords:
+                    query += " -" + word.strip().lower()
+        f = self.build_base_url().add({"q": query})
         if search_request.minsize:
             f = f.add({"minsize": search_request.minsize})
         elif config.settings.indexers.nzbindex.generalMinSize:

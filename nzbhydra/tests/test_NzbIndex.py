@@ -17,10 +17,11 @@ import requests
 from nzbhydra import config
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.nzbindex import NzbIndex
+from nzbhydra.tests.UrlTestCase import UrlTestCase
 from nzbhydra.tests.db_prepare import set_and_drop
 
 
-class NzbIndexTests(unittest.TestCase):
+class NzbIndexTests(UrlTestCase):
     @pytest.fixture
     def setUp(self):
         set_and_drop()
@@ -33,17 +34,23 @@ class NzbIndexTests(unittest.TestCase):
         print(urls[0])
         self.assertEqual('a showtitle s01e02 | 1x02', furl(urls[0]).args["q"])
 
-        self.args= SearchRequest(query="a showtitle", season=1, episode=None)
+        self.args = SearchRequest(query="a showtitle", season=1, episode=None)
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
         self.assertEqual('a showtitle s01 | "season 1"', furl(urls[0]).args["q"])
+
+        config.settings.searching.ignoreWords = "ignorethis"
+        self.args = SearchRequest(query="aquery")
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertEqual("https://nzbindex.com/search?max=100&hidecross=1&more=1&q=aquery+-ignorethis&minsize=1", urls[0])
 
         
     @ freeze_time("2015-10-03 20:15:00", tz_offset=+2)
     def testProcess_results(self):
         w = NzbIndex(config.settings.indexers.nzbindex)
         with open("mock/nzbindex--q-testtitle.html") as f:
-            processing_result = w.process_query_result(f.read(), "aquery")
+            processing_result = w.process_query_result(f.read(), SearchRequest())
             entries = processing_result.entries
             self.assertEqual('114143855', entries[0].indexerguid)
             self.assertEqual('testtitle1', entries[0].title)

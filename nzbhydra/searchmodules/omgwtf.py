@@ -156,6 +156,7 @@ class OmgWtf(SearchModule):
         self.needs_queries = False
         self.category_search = True
         self.supportedFilters = ["maxage"]
+        self.supportsNot = False #Why does anybody use this POS
 
     def build_base_url(self):
         f = furl(self.host)
@@ -188,11 +189,17 @@ class OmgWtf(SearchModule):
         if search_request.category is None:
             search_request.category = "TV"
         #Should get most results, apparently there is no way of using "or" searches
+        if search_request.query:
+            query = search_request.query
+        elif search_request.title:
+            query = search_request.title
+        else:
+            query = ""
         if search_request.season:
             if search_request.episode:
-                search_request.query = "{0} s{1:02d}e{2:02d}".format(str(search_request.title), int(search_request.season), int(search_request.episode))
+                search_request.query = "{0} s{1:02d}e{2:02d}".format(query, int(search_request.season), int(search_request.episode))
             else:
-                search_request.query = "{0} s{1:02d}".format(str(search_request.query), int(search_request.season))
+                search_request.query = "{0} s{1:02d}".format(query, int(search_request.season))
             
         return self.get_search_urls(search_request)
 
@@ -269,7 +276,7 @@ class OmgWtf(SearchModule):
                 else:
                     entry.category = "N/A"
                 entries.append(entry)
-            return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=has_more)      
+            return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=has_more, rejected=countRejected)      
         elif tree.tag == "rss":
             regexGuid = re.compile(r".*\?id=(\w+)&.*")
             regexGroup = re.compile(r".*Group:<\/b> ([\w\.\-]+)<br \/>.*")

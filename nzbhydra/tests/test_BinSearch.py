@@ -46,7 +46,7 @@ class TestBinsearch(UrlTestCase):
         w = Binsearch(config.settings.indexers.binsearch)
         with open("mock/binsearch--q-testtitle.html", encoding="latin-1") as f:
             body = f.read()
-            result = w.process_query_result(body, "aquery")
+            result = w.process_query_result(body, SearchRequest())
             entries = list(result.entries)
             self.assertEqual('testtitle1.TrueFrench.1080p.X264.AC3.5.1-JKF.mkv', entries[0].title)
             self.assertEqual("https://www.binsearch.info/fcgi/nzb.fcgi?q=176073735", entries[0].link)
@@ -67,7 +67,7 @@ class TestBinsearch(UrlTestCase):
         w = Binsearch(config.settings.indexers.binsearch)
         with open("mock/binsearch--q-testtitle3results.html", encoding="latin-1") as f:
             body = f.read()
-            result = w.process_query_result(body, "aquery")
+            result = w.process_query_result(body, SearchRequest())
             self.assertFalse(result.has_more)
             self.assertEqual(3, result.total)  
                 
