@@ -96,6 +96,12 @@ class NzbclubTests(UrlTestCase):
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
         self.assertEqual("https://www.nzbclub.com/nzbrss.aspx?rpp=250&ns=1&sn=1&ig=2&st=5&q=aquery+-ignorethis", urls[0])
+
+        config.settings.searching.ignoreWords = ""
+        self.args = SearchRequest(query="aquery", ignoreWords=["ignorethis"])
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertEqual("https://www.nzbclub.com/nzbrss.aspx?rpp=250&ns=1&sn=1&ig=2&st=5&q=aquery+-ignorethis", urls[0])
         
         
 

@@ -43,7 +43,7 @@ session = FuturesSession()
 
 
 class SearchRequest(object):
-    def __init__(self, type=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, title=None, category=None, minsize=None, maxsize=None, minage=None, maxage=None, offset=0, limit=100, indexers=None):
+    def __init__(self, type=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, title=None, category=None, minsize=None, maxsize=None, minage=None, maxage=None, offset=0, limit=100, indexers=None, ignoreWords=None):
         self.type = type
         self.query = query
         self.identifier_key = identifier_key
@@ -59,6 +59,7 @@ class SearchRequest(object):
         self.offset = offset
         self.limit = limit
         self.indexers = indexers
+        self.ignoreWords = ignoreWords if ignoreWords else [] 
 
     @property
     def search_hash(self):
@@ -180,6 +181,16 @@ def search(internal, search_request):
                           username=request.authorization.username if request.authorization is not None else None)
         #dbsearch.save()
         cache_entry["dbsearch"] = dbsearch
+        
+        #Parse query for ignored words
+        if search_request.query:
+            ignoreWords = [str(x) for x in re.findall(r"[\s|\b]\-\-(?P<term>\w+)", search_request.query)]
+            if len(ignoreWords) > 0:
+                logger.debug("Query before removing NOT terms: %s" % search_request.query)
+                search_request.query = re.sub(r"[\s|\b]\-\-(?P<term>\w+)", "", search_request.query)
+                logger.debug("Query before after removing NOT terms: %s" % search_request.query)    
+                logger.debug("Found NOT terms: %s" % ",".join(ignoreWords))
+                search_request.ignoreWords = ignoreWords
 
         pseudo_cache[search_hash] = cache_entry
     else:

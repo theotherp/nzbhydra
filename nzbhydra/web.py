@@ -416,7 +416,7 @@ def process_and_jsonify_for_internalapi(results):
         return "No results", 500
 
 
-def cached_search(search_request):    
+def startSearch(search_request):    
     results = search.search(True, search_request)
     return process_and_jsonify_for_internalapi(results)
 
@@ -447,7 +447,7 @@ def internalapi_search(args):
         type = "general"
     indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None
     search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=indexers)
-    return cached_search(search_request)
+    return startSearch(search_request)
 
 
 internalapi_moviesearch_args = {
@@ -485,7 +485,7 @@ def internalapi_moviesearch(args):
         search_request.identifier_key = "imdbid"
         search_request.identifier_value = imdbid
 
-    return cached_search(search_request)
+    return startSearch(search_request)
 
 
 internalapi_tvsearch_args = {
@@ -520,7 +520,7 @@ def internalapi_tvsearch(args):
     elif args["rid"]:
         search_request.identifier_key = "rid"
         search_request.identifier_value = args["rid"]
-    return cached_search(search_request)
+    return startSearch(search_request)
 
 
 internalapi_autocomplete_args = {

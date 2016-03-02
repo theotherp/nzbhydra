@@ -158,12 +158,13 @@ class SearchModule(object):
         #Allows the implementations to check against one general rule if the search result is ok or shall be discarded
         if config.settings.searching.ignorePassworded and nzbSearchResult.passworded:
             return False, "Passworded results shall be ignored"
-        if config.settings.searching.ignoreWords:
-            ignoreWords = filter(bool, config.settings.searching.ignoreWords.split(","))
+        if not self.supportsNot:
+            ignoreWords = list(filter(bool, config.settings.searching.ignoreWords.split(",")))
+            ignoreWords.extend(searchRequest.ignoreWords)
             for word in ignoreWords:
                 word = word.strip().lower()
                 if word in nzbSearchResult.title.lower():
-                    return False, '"%s" is in the list of ignored words' % word
+                    return False, '"%s" is in the list of ignored words or excluded by the query' % word
         if searchRequest.minsize and "maxsize" not in supportedFilters:
             if nzbSearchResult.size * 1024 * 1024 < searchRequest.minsize:
                 return False, "Smaller than requested minimum size"

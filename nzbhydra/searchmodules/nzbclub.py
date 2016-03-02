@@ -113,10 +113,10 @@ class NzbClub(SearchModule):
     def get_search_urls(self, search_request):
         query = search_request.query
         if query:
-            if config.settings.searching.ignoreWords:
-                ignoreWords = filter(bool, config.settings.searching.ignoreWords.split(","))
-                for word in ignoreWords:
-                    query += " -" + word.strip().lower()
+            ignoreWords = list(filter(bool, config.settings.searching.ignoreWords.split(",")))
+            ignoreWords.extend(search_request.ignoreWords)
+            for word in ignoreWords:
+                query += " -" + word.strip().lower()
         f = self.build_base_url().add({"q": query})
         if search_request.minage:
             ageValue = self.getMinValue(search_request.minage, self.ageMap)

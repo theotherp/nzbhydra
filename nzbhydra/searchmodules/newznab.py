@@ -296,10 +296,10 @@ class NewzNab(SearchModule):
         f = self.build_base_url(search_type, search_request.category, offset=search_request.offset)
         query = search_request.query
         if query:
-            if config.settings.searching.ignoreWords:
-                ignoreWords = filter(bool, config.settings.searching.ignoreWords.split(","))
-                for word in ignoreWords:
-                    query += " --" + word.strip().lower()
+            ignoreWords = list(filter(bool, config.settings.searching.ignoreWords.split(",")))
+            ignoreWords.extend(search_request.ignoreWords)
+            for word in ignoreWords:
+                query += " --" + word.strip().lower()
             f = f.add({"q": query})
         if search_request.maxage:
             f = f.add({"maxage": search_request.maxage})

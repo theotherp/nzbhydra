@@ -44,6 +44,12 @@ class NzbIndexTests(UrlTestCase):
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
         self.assertEqual("https://nzbindex.com/search?max=100&hidecross=1&more=1&q=aquery+-ignorethis&minsize=1", urls[0])
+        
+        config.settings.searching.ignoreWords = ""
+        self.args = SearchRequest(query="aquery", ignoreWords=["ignorethis"])
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertEqual("https://nzbindex.com/search?max=100&hidecross=1&more=1&q=aquery+-ignorethis&minsize=1", urls[0])
 
         
     @ freeze_time("2015-10-03 20:15:00", tz_offset=+2)

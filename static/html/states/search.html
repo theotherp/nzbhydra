@@ -67,7 +67,11 @@
                         </script>
                         <input type="search" ngtype="search" ng-model="query" placeholder="Search" typeahead-min-length="2" typeahead-wait-ms="typeAheadWait" uib-typeahead="item as item.label for item in getAutocomplete($viewValue)" typeahead-template-url="autocompleteTemplate.html"
                                ng-class="{'autocompleteLoading': (loadingItems && autocompleteActive), 'search-border': !seriesSelected}" typeahead-loading="loadingItems" typeahead-on-select="selectAutocompleteItem($item)" ng-enter="startQuerySearch()" class="form-control"
-                               focus-on="focus-query-box">
+                               focus-on="focus-query-box"
+                               uib-tooltip="Prefix terms with -- to exclude"
+                               tooltip-placement="top"
+                               tooltip-trigger="mouseenter"
+                        >
 
                         <span class="input-group-btn input-group-btn2">
                             <button class="btn btn-default" type="button" ng-click="goToSearchUrl()">Go!</button>
