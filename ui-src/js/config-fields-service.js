@@ -235,7 +235,7 @@ function ConfigFields() {
                 }
                 if (rootModel.auth.users.length > 0) {
                     return _.any(rootModel.auth.users, function (user) {
-                        return scope.model.name != user.name && user.maySeeAdmin;
+                        return scope.model.username != user.username && user.maySeeAdmin;
                     })
                 }
                 return true;
