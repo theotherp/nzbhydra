@@ -282,6 +282,7 @@ class NewzNab(SearchModule):
         self.settings = settings  # Already done by super.__init__ but this way PyCharm knows the correct type
         self.module = "newznab"
         self.category_search = True
+        self.supportedFilters = ["maxage"]
     
 
     def build_base_url(self, action, category, offset=0):
@@ -362,10 +363,11 @@ class NewzNab(SearchModule):
         f.path.add(guid)
         return f.url
 
-    def process_query_result(self, xml_response, maxResults=None):
+    def process_query_result(self, xml_response, searchRequest, maxResults=None):
         self.debug("Started processing results")
 
         entries = []
+        countRejected = 0
         grouppattern = re.compile(r"Group:</b> ?([\w\.]+)<br ?/>")
         guidpattern = re.compile(r"(.*/)?([a-zA-Z0-9@\.]+)")
 
@@ -441,10 +443,11 @@ class NewzNab(SearchModule):
                             entry.category = k
                             break
 
-            accepted, reason = self.accept_result(entry)
+            accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
                 entries.append(entry)
             else:
+                countRejected += 1
                 self.debug("Rejected search result. Reason: %s" % reason)
             if maxResults is not None and len(entries) == maxResults:
                 break
@@ -459,9 +462,9 @@ class NewzNab(SearchModule):
             offset = int(response_total_offset.attrib["offset"])
         if total == 0 or len(entries) == 0:
             self.info("Query returned no results")
-            return IndexerProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False)
+            return IndexerProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False, rejected=0)
 
-        return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total)
+        return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total, rejected=countRejected)
 
     def check_auth(self, body):
         return check_auth(body, self)

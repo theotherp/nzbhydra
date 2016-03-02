@@ -174,7 +174,7 @@ class NzbClub(SearchModule):
         f.path.add(guid)
         return f.url
 
-    def process_query_result(self, xml, maxResults=None):
+    def process_query_result(self, xml, searchRequest, maxResults=None):
         self.debug("Started processing results")
         entries = []
         try:
@@ -236,7 +236,7 @@ class NzbClub(SearchModule):
                 entry.epoch = 0
                 self.error("Unable to parse pubdate %s" % pubdate.text)
 
-            accepted, reason = self.accept_result(entry)
+            accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
                 entries.append(entry)
             else:

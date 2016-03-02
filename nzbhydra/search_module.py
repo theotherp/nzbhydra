@@ -24,7 +24,7 @@ from nzbhydra.exceptions import IndexerResultParsingException, IndexerAuthExcept
 from nzbhydra.nzb_search_result import NzbSearchResult
 
 QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "didsearch results indexerSearchEntry indexerApiAccessEntry indexerStatus total loaded_results total_known has_more")
-IndexerProcessingResult = collections.namedtuple("IndexerProcessingResult", "entries queries total total_known has_more")
+IndexerProcessingResult = collections.namedtuple("IndexerProcessingResult", "entries queries total total_known has_more rejected")
 
 
 class SearchModule(object):
@@ -41,6 +41,7 @@ class SearchModule(object):
         self.needs_queries = False
         self.category_search = True  # If true the indexer supports searching in a given category (possibly without any query or id)
         self.limit = 100
+        self.supportedFilters = []
 
     def __repr__(self):
         return self.name
@@ -115,7 +116,7 @@ class SearchModule(object):
             urls = self.get_audiobook_urls(search_request)
         else:
             urls = self.get_search_urls(search_request)
-        queries_execution_result = self.execute_queries(urls)
+        queries_execution_result = self.execute_queries(urls, search_request)
         return queries_execution_result
 
     # Access to most basic functions
@@ -152,7 +153,7 @@ class SearchModule(object):
     def create_nzb_search_result(self):
         return NzbSearchResult(indexer=self.name, indexerscore=self.score)
     
-    def accept_result(self, nzbSearchResult):
+    def accept_result(self, nzbSearchResult, searchRequest, supportedFilters):
         #Allows the implementations to check against one general rule if the search result is ok or shall be discarded
         if config.settings.searching.ignorePassworded and nzbSearchResult.passworded:
             return False, "Passworded results shall be ignored"
@@ -162,10 +163,22 @@ class SearchModule(object):
                 word = word.strip().lower()
                 if word in nzbSearchResult.title.lower():
                     return False, '"%s" is in the list of ignored words' % word
+        if searchRequest.minsize and "maxsize" not in supportedFilters:
+            if nzbSearchResult.size * 1024 * 1024 < searchRequest.minsize:
+                return False, "Smaller than requested minimum size"
+        if searchRequest.maxsize and "maxsize" not in supportedFilters:
+            if nzbSearchResult.size * 1024 * 1024 > searchRequest.maxsize:
+                return False, "Bigger than requested minimum size"
+        if searchRequest.minage and "minage" not in supportedFilters:
+            if nzbSearchResult.age_days < searchRequest.minage:
+                return False, "Younger than requested"
+        if searchRequest.maxage and "maxage" not in supportedFilters:
+            if nzbSearchResult.age_days > searchRequest.maxage:
+                return False, "Older than requested"
         return True, None
         
 
-    def process_query_result(self, result, maxResults=None):
+    def process_query_result(self, result, searchRequest, maxResults=None):
         return []
 
     def check_auth(self, body):
@@ -259,7 +272,7 @@ class SearchModule(object):
     def get_search_ids_from_indexer(self):
         return []
 
-    def execute_queries(self, queries):
+    def execute_queries(self, queries, searchRequest):
         if len(queries) == 0:
             return QueriesExecutionResult(didsearch=False, results=[], indexerSearchEntry=None, indexerApiAccessEntry=None, indexerStatus=None, total=0, loaded_results=0, total_known=True, has_more=False)
         results = []
@@ -289,7 +302,7 @@ class SearchModule(object):
                     self.logger.debug("Successfully loaded URL %s" % request.url)
                     try:
 
-                        parsed_results = self.process_query_result(request.content)
+                        parsed_results = self.process_query_result(request.content, searchRequest)
                         results.extend(parsed_results.entries)  # Retrieve the processed results
                         queries.extend(parsed_results.queries)  # Add queries that were added as a result of the parsing, e.g. when the next result page should also be loaded
                         total_results += parsed_results.total

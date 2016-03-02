@@ -32,12 +32,11 @@ class Binsearch(SearchModule):
     def __init__(self, settings):
         super(Binsearch, self).__init__(settings)
         self.module = "Binsearch"
-
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = True
         self.category_search = False
-        
         self.last_results_count = 0
+        self.supportedFilters = ["minsize", "maxsize", "maxage"]
 
     def build_base_url(self, offset=0):
         f = furl(self.host)
@@ -108,10 +107,11 @@ class Binsearch(SearchModule):
         #Unfortunately binsearch uses different GUIDs for downloading and detail links. We store the one for NZBs
         return None
 
-    def process_query_result(self, html, maxResults = None):
+    def process_query_result(self, html, searchRequest, maxResults=None):
         self.debug("Started processing results")
         logger.info("Last results count %d" % self.last_results_count)
         entries = Set([])
+        countRejected = 0
         soup = BeautifulSoup(html, config.settings.searching.htmlParser)
         self.debug("Using HTML parser %s" % config.settings.searching.htmlParser)
 
@@ -184,9 +184,6 @@ class Binsearch(SearchModule):
             
             entry.category = "N/A"
             
-            
-
-            
             if nfo_pattern.search(info.text):  # 1 nfo file is missing if there is no NFO
                 entry.has_nfo = NzbSearchResult.HAS_NFO_YES
             else:
@@ -205,10 +202,11 @@ class Binsearch(SearchModule):
                 entry.epoch = 0
 
                 self.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
-            accepted, reason = self.accept_result(entry)
+            accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
                 entries.add(entry)
             else:
+                countRejected += 1
                 self.debug("Rejected search result. Reason: %s" % reason)
             
         self.debug("Finished processing %d results" % len(entries))
@@ -223,7 +221,7 @@ class Binsearch(SearchModule):
                 total = int(m.group(1))
                 total_known = True
         
-        return IndexerProcessingResult(entries=entries, queries=[], total_known=total_known, has_more=has_more, total=total) 
+        return IndexerProcessingResult(entries=entries, queries=[], total_known=total_known, has_more=has_more, total=total, rejected=countRejected) 
 
     def get_nfo(self, guid):
         f = furl(self.host)

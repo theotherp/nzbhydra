@@ -67,8 +67,9 @@ class Womble(SearchModule):
         self.info("This indexer does not provide details on releases")
         return None
 
-    def process_query_result(self, xml, maxResults=None):
+    def process_query_result(self, xml, searchRequest, maxResults=None):
         entries = []
+        countRejected = 0
         try:
             tree = ET.fromstring(xml)
         except Exception:
@@ -108,13 +109,14 @@ class Womble(SearchModule):
             entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
             entry.age_days = (arrow.utcnow() - pubdate).days
 
-            accepted, reason = self.accept_result(entry)
+            accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
                 entries.append(entry)
             else:
+                countRejected += 1
                 self.debug("Rejected search result. Reason: %s" % reason)
         
-        return IndexerProcessingResult(entries=entries, queries=[], total_known=True, has_more=False, total=len(entries))
+        return IndexerProcessingResult(entries=entries, queries=[], total_known=True, has_more=False, total=len(entries), rejected=countRejected)
     
     def get_nzb_link(self, guid, title):
         f = furl(self.settings.host)

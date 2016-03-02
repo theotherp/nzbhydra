@@ -34,6 +34,7 @@ class NzbIndex(SearchModule):
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = True
         self.category_search = False
+        self.supportedFilters = ["minsize", "maxsize", "minage", "maxage"]
 
     def build_base_url(self):
         f = furl(self.host)
@@ -93,10 +94,11 @@ class NzbIndex(SearchModule):
     def get_audiobook_urls(self, search_request):
         return self.get_search_urls(search_request)
 
-    def process_query_result(self, html, maxResults=None):
+    def process_query_result(self, html, searchRequest, maxResults=None):
         self.debug("Started processing results")
 
         entries = []
+        countRejected = 0
         logger.debug("Using HTML parser %s" % config.settings.searching.htmlParser)
         soup = BeautifulSoup(html, config.settings.searching.htmlParser)
         main_table = soup.find(id="results").find('table')
@@ -205,10 +207,11 @@ class NzbIndex(SearchModule):
             collection_links = infotd.findAll("a", href=True, text="View collection")
             if collection_links is not None and len(collection_links) > 0: 
                 entry.details_link = collection_links[0].attrs["href"]
-            accepted, reason = self.accept_result(entry)
+            accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
                 entries.append(entry)
             else:
+                countRejected += 1
                 self.debug("Rejected search result. Reason: %s" % reason)
         try:
             page_links = main_table.find("tfoot").find_all("tr")[1].find_all('a')
@@ -226,7 +229,7 @@ class NzbIndex(SearchModule):
             has_more = False
 
             self.debug("Finished processing results")
-        return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=has_more)
+        return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=has_more, rejected=countRejected)
 
     def get_nfo(self, guid):
         f = furl(self.host)

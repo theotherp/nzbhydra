@@ -155,6 +155,7 @@ class OmgWtf(SearchModule):
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = False
         self.category_search = True
+        self.supportedFilters = ["maxage"]
 
     def build_base_url(self):
         f = furl(self.host)
@@ -225,7 +226,7 @@ class OmgWtf(SearchModule):
             search_request.category = "Audiobook"
         return self.get_search_urls(search_request)
 
-    def process_query_result(self, xml_response, maxResults=None):
+    def process_query_result(self, xml_response, searchRequest, maxResults=None):
         self.debug("Started processing results")
 
         if "0 results found" in xml_response:
@@ -235,6 +236,7 @@ class OmgWtf(SearchModule):
             return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
             
         entries = []
+        countRejected = 0
         try:
             tree = ET.fromstring(xml_response)
         except Exception:
@@ -301,15 +303,16 @@ class OmgWtf(SearchModule):
                     entry.category = omgwtf_to_categories[categoryid]
                 else:
                     entry.category = "N/A"
-                accepted, reason = self.accept_result(entry)
+                accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
                 if accepted:
                     entries.append(entry)
                 else:
+                    countRejected += 1
                     self.debug("Rejected search result. Reason: %s" % reason)
-            return IndexerProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False)
+            return IndexerProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False, rejected=countRejected)
         else:
             self.warn("Unknown response type: %s" % xml_response[:100])
-            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
+            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False, rejected=countRejected)
         
 
     def get_nfo(self, guid):
