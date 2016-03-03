@@ -164,17 +164,17 @@ class SearchModule(object):
                 if word in nzbSearchResult.title.lower():
                     return False, '"%s" is in the list of ignored words or excluded by the query' % word
         if searchRequest.minsize and "maxsize" not in supportedFilters:
-            if nzbSearchResult.size * 1024 * 1024 < searchRequest.minsize:
-                return False, "Smaller than requested minimum size"
+            if nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
+                return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize)
         if searchRequest.maxsize and "maxsize" not in supportedFilters:
-            if nzbSearchResult.size * 1024 * 1024 > searchRequest.maxsize:
-                return False, "Bigger than requested minimum size"
+            if nzbSearchResult.size / (1024 * 1024) > searchRequest.maxsize:
+                return False, "Bigger than requested maximum size: %dMB > %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.maxsize)
         if searchRequest.minage and "minage" not in supportedFilters:
             if nzbSearchResult.age_days < searchRequest.minage:
-                return False, "Younger than requested"
+                return False, "Younger than requested minimum age: %dd < %dd" % (nzbSearchResult.age_days, searchRequest.minage)
         if searchRequest.maxage and "maxage" not in supportedFilters:
             if nzbSearchResult.age_days > searchRequest.maxage:
-                return False, "Older than requested"
+                return False, "Older than requested maximum age: %dd > %dd" % (nzbSearchResult.age_days, searchRequest.minage)
         return True, None
         
 
