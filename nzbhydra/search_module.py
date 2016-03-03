@@ -159,9 +159,7 @@ class SearchModule(object):
         if config.settings.searching.ignorePassworded and nzbSearchResult.passworded:
             return False, "Passworded results shall be ignored"
         if not self.supportsNot:
-            ignoreWords = list(filter(bool, config.settings.searching.ignoreWords.split(",")))
-            ignoreWords.extend(searchRequest.ignoreWords)
-            for word in ignoreWords:
+            for word in searchRequest.ignoreWords:
                 word = word.strip().lower()
                 if word in nzbSearchResult.title.lower():
                     return False, '"%s" is in the list of ignored words or excluded by the query' % word

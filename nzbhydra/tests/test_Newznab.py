@@ -193,19 +193,12 @@ class NewznabTests(UrlTestCase):
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&cat=2000&extended=1&limit=100&offset=0&t=movie", query)
 
         config.settings.searching.ignoreWords = "ignorethis"
-        self.args = SearchRequest(query="aquery")
-        queries = self.n1.get_search_urls(self.args)
-        assert len(queries) == 1
-        query = queries[0]
-        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&extended=1&limit=100&offset=0&q=aquery --ignorethis&t=search", query)
-        
-        config.settings.searching.ignoreWords = ""
         self.args = SearchRequest(query="aquery", ignoreWords=["ignorethis"])
         queries = self.n1.get_search_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&extended=1&limit=100&offset=0&q=aquery --ignorethis&t=search", query)
-
+        
         
 
     @responses.activate

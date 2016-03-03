@@ -10,7 +10,7 @@ Fixed: Properly cache retrieved titles for TV or movie IDs.
 
 Fixed: Unable to add user without admin rights.
 
-Fixed: Reject results violating age or size filters directly where possible and it not then during result processing, not in the GUI.
+Fixed: Exclude results violating age or size filters directly in indexer queries where possible and if not then during result processing, not in the GUI.
 
 Fixed: Problems with validation and general usage of authorization config.
 

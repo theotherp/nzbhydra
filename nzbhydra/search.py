@@ -189,7 +189,8 @@ def search(internal, search_request):
                 logger.debug("Query before removing NOT terms: %s" % search_request.query)
                 search_request.query = re.sub(r"[\s|\b]\-\-(?P<term>\w+)", "", search_request.query)
                 logger.debug("Query before after removing NOT terms: %s" % search_request.query)    
-                logger.debug("Found NOT terms: %s" % ",".join(ignoreWords))
+                logger.debug("Found NOT terms: %s" % ",".join(ignoreWords)) 
+                ignoreWords.extend(list(filter(bool, config.settings.searching.ignoreWords.split(","))))
                 search_request.ignoreWords = ignoreWords
 
         pseudo_cache[search_hash] = cache_entry
