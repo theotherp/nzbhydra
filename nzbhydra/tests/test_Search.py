@@ -38,7 +38,7 @@ logging.getLogger("root").addHandler(logging.StreamHandler(sys.stdout))
 logging.getLogger("root").setLevel("DEBUG")
 
 
-def mock(x, y):
+def mock(x, y, z=True):
     return True
 
 class SearchTests(unittest.TestCase):
@@ -113,6 +113,7 @@ class SearchTests(unittest.TestCase):
         self.oldExecute_search_queries = search.start_search_futures
         database.IndexerStatus.delete().execute()
         database.IndexerSearch.delete().execute()
+        infos.convertId = mock
 
         self.app = flask.Flask(__name__)
 

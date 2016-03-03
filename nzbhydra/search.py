@@ -96,7 +96,7 @@ def canUseIdKey(indexer, key):
 
 
 def pick_indexers(search_request, internal=True):
-    query_supplied=True if search_request.query else False
+    query_supplied = True if search_request.query else False
     queryCanBeGenerated = None #Store if we can generate a query from IDs. Initiall true but when we need this the first time and query generation fails we set it to false
     picked_indexers = []
     selected_indexers = search_request.indexers.split("|") if search_request.indexers is not None else None

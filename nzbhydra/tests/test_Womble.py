@@ -49,7 +49,7 @@ class MyTestCase(unittest.TestCase):
     @freeze_time("2015-09-21 14:00:00", tz_offset=-4)
     def testProcess_results(self):
         with open("mock/womble--sec-tv-dvd.xml") as f:
-            entries = self.womble.process_query_result(f.read(), "aquery").entries
+            entries = self.womble.process_query_result(f.read(), SearchRequest()).entries
             self.assertEqual("testtitle1", entries[0].title)
             self.assertEqual("http://www.newshost.co.za/nzb/79d/testtitle1.nzb", entries[0].link)
             self.assertEqual(336592896, entries[0].size)
