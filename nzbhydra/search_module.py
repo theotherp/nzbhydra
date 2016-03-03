@@ -158,23 +158,18 @@ class SearchModule(object):
         #Allows the implementations to check against one general rule if the search result is ok or shall be discarded
         if config.settings.searching.ignorePassworded and nzbSearchResult.passworded:
             return False, "Passworded results shall be ignored"
-        if not self.supportsNot:
-            for word in searchRequest.ignoreWords:
-                word = word.strip().lower()
-                if word in nzbSearchResult.title.lower():
-                    return False, '"%s" is in the list of ignored words or excluded by the query' % word
-        if searchRequest.minsize and "maxsize" not in supportedFilters:
-            if nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
+        for word in searchRequest.ignoreWords:
+            word = word.strip().lower()
+            if word in nzbSearchResult.title.lower():
+                return False, '"%s" is in the list of ignored words or excluded by the query' % word
+        if searchRequest.minsize and nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
                 return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize)
-        if searchRequest.maxsize and "maxsize" not in supportedFilters:
-            if nzbSearchResult.size / (1024 * 1024) > searchRequest.maxsize:
+        if searchRequest.maxsize and nzbSearchResult.size / (1024 * 1024) > searchRequest.maxsize:
                 return False, "Bigger than requested maximum size: %dMB > %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.maxsize)
-        if searchRequest.minage and "minage" not in supportedFilters:
-            if nzbSearchResult.age_days < searchRequest.minage:
-                return False, "Younger than requested minimum age: %dd < %dd" % (nzbSearchResult.age_days, searchRequest.minage)
-        if searchRequest.maxage and "maxage" not in supportedFilters:
-            if nzbSearchResult.age_days > searchRequest.maxage:
-                return False, "Older than requested maximum age: %dd > %dd" % (nzbSearchResult.age_days, searchRequest.minage)
+        if searchRequest.minage and nzbSearchResult.age_days < searchRequest.minage:
+            return False, "Younger than requested minimum age: %dd < %dd" % (nzbSearchResult.age_days, searchRequest.minage)
+        if searchRequest.maxage and nzbSearchResult.age_days > searchRequest.maxage:
+            return False, "Older than requested maximum age: %dd > %dd" % (nzbSearchResult.age_days, searchRequest.minage)
         return True, None
         
 
