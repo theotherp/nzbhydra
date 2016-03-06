@@ -186,6 +186,7 @@ def search(internal, search_request):
         cache_entry["dbsearch"] = dbsearch
         
         #Parse query for ignored words
+        search_request.ignoreWords = list(filter(bool, config.settings.searching.ignoreWords.split(",")))
         if search_request.query:
             ignoreWords = [str(x) for x in re.findall(r"[\s|\b]\-\-(?P<term>\w+)", search_request.query)]
             if len(ignoreWords) > 0:
@@ -193,8 +194,8 @@ def search(internal, search_request):
                 search_request.query = re.sub(r"[\s|\b]\-\-(?P<term>\w+)", "", search_request.query)
                 logger.debug("Query before after removing NOT terms: %s" % search_request.query)    
                 logger.debug("Found NOT terms: %s" % ",".join(ignoreWords)) 
-                ignoreWords.extend(list(filter(bool, config.settings.searching.ignoreWords.split(","))))
-                search_request.ignoreWords = ignoreWords
+                
+                search_request.ignoreWords.extend(ignoreWords)
 
         pseudo_cache[search_hash] = cache_entry
     else:
