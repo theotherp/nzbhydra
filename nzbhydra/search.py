@@ -153,12 +153,7 @@ def pick_indexers(search_request, internal=True):
                 if not queryCanBeGenerated:
                     logger.debug("Did not pick %s because search will be done by an identifier and retrieval of the title for query generation failed" % p)
                     continue
-        
-        if search_request.type == "ebook":
-            if "book" not in p.searchTypes and not allow_query_generation:
-                logger.debug("Did not pick %s because it does not support book searches and query generation is disabled" % p)
-                continue
-            
+                    
 
         logger.debug("Picked %s" % p)
         picked_indexers.append(p)
