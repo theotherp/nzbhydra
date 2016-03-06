@@ -395,6 +395,7 @@ def migrate(settingsFilename):
                         config["indexers"]["womble"]["searchTypes"] = []
                         from nzbhydra.searchmodules import newznab
                         for n in config["indexers"]["newznab"]:
+                            n["searchTypes"] = ["tvsearch", "movie"]
                             addLogMessage(20, "Checking caps of indexer %s" % n["name"])
                             try:
                                 ids, types = newznab.check_caps(n["host"], n["apikey"], config["searching"]["userAgent"], config["searching"]["timeout"])
