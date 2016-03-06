@@ -88,6 +88,8 @@ class NzbIndex(SearchModule):
 
     def get_ebook_urls(self, search_request):
         #NZBIndex's search is a bit weird, apparently we can only use one "or" or something like that, so we use two different queries
+        if not search_request.query and (search_request.author or search_request.title):
+            search_request.query = "%s %s" % (search_request.author if search_request.author else "", search_request.title if search_request.title else "")
         urls = []
         query = search_request.query
         search_request.query = query + " ebook | pdf"

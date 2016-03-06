@@ -2,6 +2,9 @@
 
 ----------
 ### 0.0.1a78
+Added: Support for book searches via API.
+
+### 0.0.1a78
 Added: Prefix terms in query with "--" to exclude them. Works in addition to global ignored words. 
 
 Fixed: Skip indexers if query generation is enabled, they don't support an ID and the retrieval of the title for the query generation failed.

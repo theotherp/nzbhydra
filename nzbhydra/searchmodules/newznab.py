@@ -21,7 +21,7 @@ import arrow
 from furl import furl
 import requests
 import concurrent
-from requests.exceptions import RequestException
+from requests.exceptions import RequestException, HTTPError
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.datestuff import now
 from nzbhydra import infos
@@ -155,7 +155,7 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult):
     
     if len(titles) == 0:
         logger.debug("Search with t=%s and %s=%s returned no results" % (t, idkey, idvalue))
-        return False
+        return False, t
     countWrong = 0
     for title in titles:
         title = title.lower()
@@ -165,13 +165,30 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult):
     percentWrong = (100 * countWrong) / len(titles)
     if percentWrong > 30:
         logger.info("%d%% wrong results, this indexer probably doesn't support %s" % (percentWrong, idkey))
-        return False
+        return False, t
     logger.info("%d%% wrong results, this indexer probably supports %s" % (percentWrong, idkey))
 
-    return True
+    return True, t
 
 
-def check_caps(host, apikey):
+def checkCapsBruteForce(supportedTypes, toCheck, host, apikey):
+    supportedIds = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(toCheck)) as executor:
+        futures_to_ids = {executor.submit(_testId, host, apikey, x["t"], x["id"], x["key"], x["expected"]): x["id"] for x in toCheck}
+        for future in concurrent.futures.as_completed(futures_to_ids):
+            id = futures_to_ids[future]
+            try:
+                supported, t = future.result()
+                if supported:
+                    supportedIds.append(id)
+                    supportedTypes.append(t)
+            except Exception as e:
+                logger.error("An error occurred while trying to test the caps of host %s: %s" % (host, e))
+                raise IndexerResultParsingException("Unable to check caps: %s" % str(e), None)
+    return sorted(list(set(supportedIds))), sorted(list(set(supportedTypes)))
+
+
+def check_caps(host, apikey, userAgent=None, timeout=None):
     toCheck = [
         {"t": "tvsearch",
          "id": "tvdbid",
@@ -205,60 +222,71 @@ def check_caps(host, apikey):
          }
 
     ]
-    result = []
+    supportedIds = []
+    supportedTypes = []
     #Try to find out from caps first
     try:
         url = _build_base_url(host, apikey, "caps", None)
         headers = {
-            'User-Agent': config.settings.searching.userAgent
+            'User-Agent': userAgent if userAgent is not None else config.settings.searching.userAgent
         }
         logger.debug("Requesting %s" % url)
-        r = requests.get(url, verify=False, timeout=config.settings.searching.timeout, headers=headers)
+        r = requests.get(url, verify=False, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers)
         r.raise_for_status()
         
         tree = ET.fromstring(r.content)
         searching = tree.find("searching")
-        
+        doBruteForce = False
         if searching is not None:
             tvsearch = searching.find("tv-search")
             if tvsearch is not None and tvsearch.attrib["available"] == "yes":
-                params = tvsearch.attrib["supportedParams"]
-                params = params.split(",")
-                for x in ["q", "season", "ep"]:
-                    if x in params:
-                        params.remove(x)
-                result.extend(params)
-                logger.debug("Found supported TV IDs: %s" % params)
+                supportedTypes.append("tvsearch")
+                logger.debug("Found supported TV search")
+                if "supportedParams" in tvsearch.attrib:
+                    params = tvsearch.attrib["supportedParams"]
+                    params = params.split(",")
+                    for x in ["q", "season", "ep"]:
+                        if x in params:
+                            params.remove(x)
+                    supportedIds.extend(params)
+                    logger.debug("Found supported TV IDs: %s" % params)
+                else:
+                    doBruteForce = True
             movie_search = searching.find("movie-search")
             if movie_search is not None and movie_search.attrib["available"] == "yes":
-                params = movie_search.attrib["supportedParams"]
-                params = params.split(",")
-                for x in ["q", "genre"]:
-                    if x in params:
-                        params.remove(x)         
-                result.extend(params)
-                logger.debug("Found supported movie IDs: %s" % params)
+                supportedTypes.append("movie")
+                logger.debug("Found supported movie search")
+                if "supportedParams" in movie_search.attrib:
+                    params = movie_search.attrib["supportedParams"]
+                    params = params.split(",")
+                    for x in ["q", "genre"]:
+                        if x in params:
+                            params.remove(x)         
+                    supportedIds.extend(params)
+                    logger.debug("Found supported movie IDs: %s" % params)
+                else:
+                    doBruteForce = True
+            book_search = searching.find("book-search")
+            if book_search is not None and book_search.attrib["available"] == "yes":
+                supportedTypes.append("movie")
+                logger.debug("Found supported book search")
+                
             can_handle = [y["id"] for y in toCheck]
-            result = [x for x in result if x in can_handle] #Only use those we can handle
-            result = set(result)  # Return a set because IMDB might be included for TV and movie search, for example
+            supportedIds = [x for x in supportedIds if x in can_handle] #Only use those we can handle
+            supportedIds = set(supportedIds)  # Return a set because IMDB might be included for TV and movie search, for example
             
-            return set(result)  
+            if doBruteForce:
+                logger.info("Unable to read supported params from caps. Will continue with brute force")
+                return checkCapsBruteForce(supportedTypes, toCheck, host, apikey)
+            return sorted(list(set(supportedIds))), sorted(list(set(supportedTypes)))
         
+    except HTTPError as e:
+        logger.error("Error while trying to determine caps: %s" % e)
+        raise IndexerResultParsingException("Unable to check caps: %s" % str(e), None)
     except Exception as e:
         logger.error("Error getting or parsing caps XML. Will continue with brute force. Error message: %s" % e)
+        return checkCapsBruteForce(supportedTypes, toCheck, host, apikey)
     
-    with concurrent.futures.ThreadPoolExecutor(max_workers=len(toCheck)) as executor:
-        futures_to_ids = {executor.submit(_testId, host, apikey, x["t"], x["id"], x["key"], x["expected"]): x["id"] for x in toCheck}
-        for future in concurrent.futures.as_completed(futures_to_ids):
-            id = futures_to_ids[future]
-            try:
-                supported = future.result()
-                if supported:
-                    result.append(id)
-            except Exception as e:
-                logger.error("An error occurred while trying to test the caps of host %s: %s" % (host, e))
-                raise IndexerResultParsingException("Unable to check caps: %s" % str(e), None)
-    return set(result) 
 
 
 def _build_base_url(host, apikey, action, category, limit=None, offset=0):
@@ -354,8 +382,23 @@ class NewzNab(SearchModule):
     def get_ebook_urls(self, search_request):
         if not search_request.category:
             search_request.category = "Ebook"
-        #search_request.query += " ebook|mobi|pdf|epub"
-        return self.get_search_urls(search_request)
+        if search_request.author or search_request.title:
+            if "book" in self.searchTypes:
+                #API search
+                url = self.build_base_url("book", search_request.category, offset=search_request.offset)
+                if search_request.author:
+                    url.add({"author": search_request.author})
+                if search_request.title:
+                    url.add({"title": search_request.title})
+                return [url.url]
+            else:
+                search_request.query = "%s %s" % (search_request.author if search_request.author else "", search_request.title if search_request.title else "")
+                return self.get_search_urls(search_request)
+        else:
+            #internal search
+            return self.get_search_urls(search_request)
+        
+            
 
     def get_audiobook_urls(self, search_request):
         if not search_request.category:

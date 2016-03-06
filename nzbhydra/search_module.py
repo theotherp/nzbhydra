@@ -65,7 +65,11 @@ class SearchModule(object):
 
     @property
     def search_ids(self):
-        return self.settings.search_ids        
+        return self.settings.search_ids
+
+    @property
+    def searchTypes(self):
+        return self.settings.searchTypes
 
     @property
     def generate_queries(self):

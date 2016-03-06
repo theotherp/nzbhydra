@@ -203,9 +203,10 @@ angular
                     $http.get(url, {params: params}).success(function (result) {
                         //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
                         if (result.success) {
-                            angular.element(testMessage).text("Supports: " + result.result);
+                            angular.element(testMessage).text("Supports: " + result.ids + "," + result.types);
                             $scope.$apply(function () {
-                                $scope.model.search_ids = result.result;
+                                $scope.model.search_ids = result.ids;
+                                $scope.model.searchTypes = result.types;
                             });
                             showSuccess();
                         } else {

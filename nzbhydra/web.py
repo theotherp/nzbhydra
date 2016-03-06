@@ -308,6 +308,7 @@ externalapi_args = {
     "season": fields.String(missing=None),
     "ep": fields.String(missing=None),
     "id": fields.String(missing=None),
+    "author": fields.String(missing=None),
 
     # These aren't actually needed but the way we pass args objects along we need to have them because functions check their value
     "title": fields.String(missing=None),
@@ -338,7 +339,7 @@ def api(args):
     if config.settings.main.apikey and ("apikey" not in args or args["apikey"] != config.settings.main.apikey):
         logger.error("Tried API access with invalid or missing API key")
         raise Unauthorized("API key not provided or invalid")
-    elif args["t"] in ("search", "tvsearch", "movie"):
+    elif args["t"] in ("search", "tvsearch", "movie", "book"):
         return api_search(args)
     elif args["t"] == "get":
         args = rison.loads(args["id"])
@@ -348,7 +349,7 @@ def api(args):
         xml = render_template("caps.html")
         return Response(xml, mimetype="text/xml")
     else:
-        pprint(request)
+        logger.error("Unknown API request. Supported functions: search, tvsearch, movie, get, caps")
         return "Unknown API request. Supported functions: search, tvsearch, movie, get, caps", 500
 
 
@@ -370,6 +371,10 @@ def api_search(args):
         search_request.type = "movie"
         search_request.identifier_key = "imdbid" if args["imdbid"] is not None else None
         search_request.identifier_value = args["imdbid"] if args["imdbid"] is not None else None
+    elif args["t"] == "book":
+        search_request.type = "ebook"
+        search_request.author = args["author"] if args["author"] is not None else None
+        search_request.title = args["title"] if args["title"] is not None else None
     logger.info("API search request: %s" % search_request)
     result = search.search(False, search_request)
     results = process_for_external_api(result)
@@ -717,9 +722,11 @@ def internalapi_testcaps(args):
     logger.debug("Check caps for %s" % indexer)
 
     try:
-        result = check_caps(host, apikey)
+        ids, types = check_caps(host, apikey)
+        ids = sorted(list(ids))
+        types = sorted(list(types))
 
-        return jsonify({"success": True, "result": result})
+        return jsonify({"success": True, "ids": ids, "types": types})
     except IndexerResultParsingException as e:
         return jsonify({"success": False, "message": e.message})
 

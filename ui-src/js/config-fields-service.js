@@ -169,7 +169,7 @@ function ConfigFields() {
                     type: 'horizontalMultiselect',
                     hideExpression: '!model.enabled',
                     templateOptions: {
-                        label: 'Search types',
+                        label: 'Search IDs',
                         options: [
                             {label: 'TVDB', id: 'tvdbid'},
                             {label: 'TVRage', id: 'rid'},
@@ -177,6 +177,22 @@ function ConfigFields() {
                             {label: 'Trakt', id: 'traktid'},
                             {label: 'TVMaze', id: 'tvmazeid'},
                             {label: 'TMDB', id: 'tmdbid'}
+                        ]
+                    }
+                }
+            );
+            fieldset.push(
+                {
+                    key: 'searchTypes',
+                    type: 'horizontalMultiselect',
+                    hideExpression: '!model.enabled',
+                    templateOptions: {
+                        label: 'Search types',
+                        options: [
+                            {label: 'Movies', id: 'movie'},
+                            {label: 'TV', id: 'tvsearch'},
+                            {label: 'Ebooks', id: 'book'},
+                            {label: 'Audio', id: 'audio'}
                         ]
                     }
                 }
@@ -273,7 +289,7 @@ function ConfigFields() {
                                 label: 'Host',
                                 required: true,
                                 placeholder: 'IPv4 address to bind to',
-                                help: 'Requires restart'
+                                help: 'I strongly recommend using a reverse proxy instead of exposing this directly. Requires restart.'
                             },
                             validators: {
                                 ipAddress: ipValidator()
@@ -1158,7 +1174,8 @@ function ConfigFields() {
                             score: 0,
                             preselect: true,
                             accessType: "both",
-                            search_ids: ["imdbid", "rid", "tvdbid"]
+                            search_ids: ["imdbid", "rid", "tvdbid"],
+                            searchTypes: ["tvsearch", "movie"]
                         }
 
                     }
@@ -1199,7 +1216,7 @@ function ConfigFields() {
                                 key: 'password',
                                 type: 'horizontalInput',
                                 templateOptions: {
-                                    type: 'text',
+                                    type: 'password',
                                     label: 'Password'
                                 }
                             },
@@ -1236,11 +1253,7 @@ function ConfigFields() {
                     }
                 }
             ]
-
-
         };
-
-
     }
 
 }

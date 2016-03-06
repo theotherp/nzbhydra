@@ -43,7 +43,7 @@ session = FuturesSession()
 
 
 class SearchRequest(object):
-    def __init__(self, type=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, title=None, category=None, minsize=None, maxsize=None, minage=None, maxage=None, offset=0, limit=100, indexers=None, ignoreWords=None):
+    def __init__(self, type=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, title=None, category=None, minsize=None, maxsize=None, minage=None, maxage=None, offset=0, limit=100, indexers=None, ignoreWords=None, author=None):
         self.type = type
         self.query = query
         self.identifier_key = identifier_key
@@ -51,6 +51,7 @@ class SearchRequest(object):
         self.title = title
         self.season = season
         self.episode = episode
+        self.author = author
         self.category = category
         self.minsize = minsize
         self.maxsize = maxsize
@@ -59,7 +60,8 @@ class SearchRequest(object):
         self.offset = offset
         self.limit = limit
         self.indexers = indexers
-        self.ignoreWords = ignoreWords if ignoreWords else [] 
+        self.ignoreWords = ignoreWords if ignoreWords else []
+        
 
     @property
     def search_hash(self):
@@ -151,6 +153,12 @@ def pick_indexers(search_request, internal=True):
                 if not queryCanBeGenerated:
                     logger.debug("Did not pick %s because search will be done by an identifier and retrieval of the title for query generation failed" % p)
                     continue
+        
+        if search_request.type == "ebook":
+            if "book" not in p.searchTypes and not allow_query_generation:
+                logger.debug("Did not pick %s because it does not support book searches and query generation is disabled" % p)
+                continue
+            
 
         logger.debug("Picked %s" % p)
         picked_indexers.append(p)

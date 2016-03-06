@@ -224,6 +224,8 @@ class OmgWtf(SearchModule):
         return requests.get(query, timeout=timeout, verify=False)
 
     def get_ebook_urls(self, search_request):
+        if not search_request.query and (search_request.author or search_request.title):
+            search_request.query = "%s %s" % (search_request.author if search_request.author else "", search_request.title if search_request.title else "")
         if search_request.category is None:
             search_request.category = "Ebook"
         return self.get_search_urls(search_request)

@@ -97,6 +97,7 @@ class SearchTests(unittest.TestCase):
         self.newznab1.score = 0
         self.newznab1.accessType = "both"
         self.newznab1.search_ids = ["imdbid", "rid", "tvdbid"]
+        self.newznab1.searchTypes = ["book", "tvsearch", "movie"]
 
         self.newznab2 = Bunch()
         self.newznab2.enabled = True
@@ -107,6 +108,7 @@ class SearchTests(unittest.TestCase):
         self.newznab2.accessType = "both"
         self.newznab2.score = 0
         self.newznab2.search_ids = ["rid", "tvdbid"]
+        self.newznab2.searchTypes = ["tvsearch", "movie"]
         
         config.settings.indexers.newznab = [self.newznab1, self.newznab2]
 
@@ -123,7 +125,7 @@ class SearchTests(unittest.TestCase):
             
 
     def test_pick_indexers(self):
-        config.settings.searching.generate_queries= []
+        config.settings.searching.generate_queries = []
         config.settings.indexers.womble.enabled = True
         config.settings.indexers.womble.accessType = "both"
         config.settings.indexers.nzbclub.enabled = True
@@ -189,6 +191,21 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(2, len(indexers))
         indexers = search.pick_indexers(search_request, internal=False)
         self.assertEqual(1, len(indexers))
+
+        config.settings.indexers.nzbclub.enabled = True
+        config.settings.searching.generate_queries = ["internal", "external"]
+        search_request.type = "ebook"
+        search_request.query = None
+        search_request.author = "anauthor"
+        search_request.title = "atitle"
+        indexers = search.pick_indexers(search_request, internal=True)
+        self.assertEqual(3, len(indexers)) #Both newznab indexers, one with query generation, and nzbclub 
+
+        config.settings.searching.generate_queries = []
+        indexers = search.pick_indexers(search_request, internal=True)
+        self.assertEqual(1, len(indexers))  # Only the one newznab indexer which supports book searches 
+
+        
 
     
     

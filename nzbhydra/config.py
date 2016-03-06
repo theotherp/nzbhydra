@@ -59,6 +59,7 @@ initialConfig = {
             "preselect": True,
             "score": 0,
             "search_ids": [],
+            "searchTypes": [],
             "showOnSearch": True,
             "timeout": None
         },
@@ -70,6 +71,7 @@ initialConfig = {
             "preselect": True,
             "score": 0,
             "search_ids": [],
+            "searchTypes": [],
             "showOnSearch": True,
             "timeout": None
         },
@@ -82,6 +84,7 @@ initialConfig = {
             "preselect": True,
             "score": 0,
             "search_ids": [],
+            "searchTypes": [],
             "showOnSearch": True,
             "timeout": None
         },
@@ -93,8 +96,9 @@ initialConfig = {
             "preselect": True,
             "score": 0,
             "search_ids": [],
+            "searchTypes": [],
             "showOnSearch": False,
-            "timeout": None
+            "timeout": None            
         },
         "newznab": [],
         "omgwtfnzbs": {
@@ -108,15 +112,16 @@ initialConfig = {
             "search_ids": [
                 "imdbid"
             ],
+            "searchTypes": [],
             "showOnSearch": True,
             "timeout": None,
-            "username": ""
+            "username": "",
         }
     },
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 11,
+        "configVersion": 12,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -379,6 +384,25 @@ def migrate(settingsFilename):
                             addLogMessage(10, "Renaming key for user")
                             user["username"] = user["name"]
                             user.pop("name")
+
+                if config["main"]["configVersion"] == 11:
+                    with version_update(config, 12):
+                        addLogMessage(20, "Adding search types to indexers")
+                        config["indexers"]["binsearch"]["searchTypes"] = []
+                        config["indexers"]["nzbclub"]["searchTypes"] = []
+                        config["indexers"]["nzbindex"]["searchTypes"] = []
+                        config["indexers"]["omgwtfnzbs"]["searchTypes"] = []
+                        config["indexers"]["womble"]["searchTypes"] = []
+                        from nzbhydra.searchmodules import newznab
+                        for n in config["indexers"]["newznab"]:
+                            addLogMessage(20, "Checking caps of indexer %s" % n["name"])
+                            try:
+                                ids, types = newznab.check_caps(n["host"], n["apikey"], config["searching"]["userAgent"], config["searching"]["timeout"])
+                                n["search_ids"] = ids
+                                n["searchTypes"] = types
+                                addLogMessage(20, "Successfully determined caps")
+                            except Exception as e:
+                                addLogMessage(40, "Error while trying to determine caps: %s" % e)
 
 
             except Exception as e:

@@ -37,13 +37,15 @@
             "host": "https://binsearch.info",
             "search_ids": [],
             "name": "binsearch",
-            "enabled": true
+            "enabled": true,
+            "searchTypes": []
         },
         "nzbclub": {
             "host": "https://www.nzbclub.com",
             "search_ids": [],
             "name": "nzbclub",
-            "enabled": true
+            "enabled": true,
+                                       "searchTypes": []
         },
         "newznab2": {
             "host": null,
@@ -60,13 +62,15 @@
             "host": "https://nzbindex.com",
             "search_ids": [],
             "name": "nzbindex",
-            "enabled": true
+            "enabled": true,
+                                       "searchTypes": []
         },
         "womble": {
             "host": "https://newshost.co.za",
             "search_ids": [],
             "name": "womble",
-            "enabled": true
+            "enabled": true,
+                                       "searchTypes": []
         },
         "newznab4": {
             "host": null,
@@ -101,7 +105,8 @@
                     "search_ids": [], 
                     "showOnSearch": true, 
                     "timeout": null, 
-                    "username": "anuser"
+                    "username": "anuser",
+                    "searchTypes": []
                 }
     },
     "main": {

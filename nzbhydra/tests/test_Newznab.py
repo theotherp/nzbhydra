@@ -35,6 +35,7 @@ class NewznabTests(UrlTestCase):
         self.newznab1.timeout = None
         self.newznab1.score = 0
         self.newznab1.search_ids = ["imdbid", "rid", "tvdbid"]
+        self.newznab1.searchTypes = []
         self.n1 = NewzNab(self.newznab1)
 
     @freeze_time("2015-10-12 18:00:00", tz_offset=-4)
@@ -198,6 +199,13 @@ class NewznabTests(UrlTestCase):
         assert len(queries) == 1
         query = queries[0]
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&extended=1&limit=100&offset=0&q=aquery --ignorethis&t=search", query)
+
+        config.settings.searching.ignoreWords = "ignorethis"
+        self.args = SearchRequest(query="aquery", ignoreWords=["ignorethis"])
+        queries = self.n1.get_search_urls(self.args)
+        assert len(queries) == 1
+        query = queries[0]
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&extended=1&limit=100&offset=0&q=aquery --ignorethis&t=search", query)
         
         
 
@@ -262,10 +270,23 @@ class NewznabTests(UrlTestCase):
         assert 2040 in newznabcats
 
     def testGetEbookUrls(self):
+        
         searchRequest = SearchRequest(query="novel")
         urls = self.n1.get_ebook_urls(searchRequest)
         self.assertEqual(1, len(urls))
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&cat=7020,8010&limit=100&t=search&extended=1&offset=0&q=novel", urls[0])
+
+        self.args = SearchRequest(author="anauthor", title="atitle", category="7020")
+        queries = self.n1.get_ebook_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&cat=7020&extended=1&limit=100&offset=0&q=anauthor+atitle&t=search", queries[0])
+
+        self.newznab1.searchTypes = ["book"]
+        self.n1 = NewzNab(self.newznab1)
+        self.args = SearchRequest(author="anauthor", title="atitle", category="7020")
+        queries = self.n1.get_ebook_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&author=anauthor&cat=7020&extended=1&limit=100&offset=0&t=book&title=atitle", queries[0])
 
     def testGetMovieSearchUrls(self):
         self.newznab1.search_ids = ["imdbid"]
