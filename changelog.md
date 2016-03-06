@@ -2,7 +2,12 @@
 
 ----------
 ### 0.0.1a79
-Added: Support for book searches via API.
+Added: Support for book searches via API. Because a lot of newznab indexers don't support book queries I decided to use query generation instead, 
+meaning I do a raw query with the supplied author and/or title in the ebook categories. This might return some/a lot of false positives, but it's 
+better than no results at all.
+   
+Changed: All raw indexers (Binsearch, NZBClub and NZBIndex) are not only enabled for internal searches only. They return too much crap that tools 
+using the API will not be able to handle properly as they expect correctly indexed results.  
 
 ### 0.0.1a78
 Added: Prefix terms in query with "--" to exclude them. Works in addition to global ignored words. 

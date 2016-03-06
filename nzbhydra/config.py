@@ -52,7 +52,7 @@ initialConfig = {
     },
     "indexers": {
         "binsearch": {
-            "accessType": "both",
+            "accessType": "internal",
             "enabled": True,
             "host": "https://binsearch.info",
             "name": "Binsearch",
@@ -64,7 +64,7 @@ initialConfig = {
             "timeout": None
         },
         "nzbclub": {
-            "accessType": "both",
+            "accessType": "internal",
             "enabled": True,
             "host": "https://www.nzbclub.com",
             "name": "NZBClub",
@@ -76,7 +76,7 @@ initialConfig = {
             "timeout": None
         },
         "nzbindex": {
-            "accessType": "both",
+            "accessType": "internal",
             "enabled": True,
             "generalMinSize": 1,
             "host": "https://nzbindex.com",
