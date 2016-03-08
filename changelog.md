@@ -1,6 +1,11 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a80
+Fixed: Don't crash whole app if exception in search thread is thrown.
+ 
+Fixed: Make sure that searches are not executed with empty converted search IDs. This would sometimes cause false positives being returned.
+
 ### 0.0.1a79
 Added: Support for book searches via API. Because a lot of newznab indexers don't support book queries I decided to use query generation instead, 
 meaning I do a raw query with the supplied author and/or title in the ebook categories. This might return some/a lot of false positives, but it's 

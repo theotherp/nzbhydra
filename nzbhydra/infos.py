@@ -251,22 +251,13 @@ def convertId(fromType, toType, id):
 
     if result is None:
         return None
-    logger.info("Successfully converted from %s value %s to %s " % (fromType, id, toType))
-    if toType == "imdb":
-        return str(result.imdb)
-    if toType == "tmdb":
-        return str(result.tmdb)
-    if toType == "tvdb":
-        return str(result.tvdb)
-    if toType == "tvmaze":
-        return str(result.tvmaze)
-    if toType == "tvrage":
-        return str(result.tvrage)
-    if toType == "title":
-        return result.title
+    wantedType = getattr(result, toType)
+    if wantedType is None:
+        return None
     
-    return None
-
+    logger.info("Successfully converted from %s value %s to %s " % (fromType, id, toType))
+    return str(wantedType)
+    
 
 def convertIdToAny(fromType, possibleToTypes, id):
     """

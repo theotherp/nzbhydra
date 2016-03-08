@@ -303,10 +303,13 @@ def start_search_futures(indexers_and_search_requests):
             count += 1
         count = 1
         for f in concurrent.futures.as_completed(futures_to_indexers.keys()):
-            results = f.result()
-            indexer_to_searchresults[futures_to_indexers[f]] = results
-            logger.debug("Retrieved %d of %d calls from executor" % (count, len(futures_to_indexers)))
-            count += 1
+            try:
+                results = f.result()
+                indexer_to_searchresults[futures_to_indexers[f]] = results
+                logger.debug("Retrieved %d of %d calls from executor" % (count, len(futures_to_indexers)))
+                count += 1
+            except Exception as e:
+                logger.exception("Error while calling search module")
 
     return indexer_to_searchresults
 
