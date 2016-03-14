@@ -502,8 +502,13 @@ def import_config_data(data):
 
 def save(filename):
     global settings
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(json.dumps(settings, ensure_ascii=False, indent=4, sort_keys=True))
+    try:
+        with open(filename, "w", encoding="utf-8") as f:
+            s = json.dumps(settings.toDict(), ensure_ascii=False, indent=4, sort_keys=True)
+            f.write(s)
+    except Exception:
+        logger.exception("Error while saving settings")
+        
 
 
 class CacheTypeSelection(object):

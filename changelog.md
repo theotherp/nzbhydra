@@ -2,7 +2,9 @@
 
 ----------
 ### 0.0.1a81
-Fixed: Binsearch results where age could not be parsed caused problems, will be ignored. 
+Fixed: Binsearch results where age could not be parsed caused problems, will be ignored.
+ 
+Fixed: Leave settings.cfg untouched if an error occurrs instead of writing an empty file. 
 
 ### 0.0.1a80
 Fixed: Don't crash whole app if exception in search thread is thrown.
