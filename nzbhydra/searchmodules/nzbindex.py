@@ -209,7 +209,8 @@ class NzbIndex(SearchModule):
                 entry.age_precise = True  # Precise to 2.4 hours, should be enough for duplicate detection
                 entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z") 
             else:
-                self.debug("Found no age info in %s" % str(agetd))
+                self.error("Found no age info in %s" % str(agetd))
+                continue
 
             collection_links = infotd.findAll("a", href=True, text="View collection")
             if collection_links is not None and len(collection_links) > 0: 

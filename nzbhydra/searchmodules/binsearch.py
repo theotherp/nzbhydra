@@ -204,6 +204,7 @@ class Binsearch(SearchModule):
             except Exception as e:
                 self.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
                 continue
+                
             accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
                 entries.add(entry)

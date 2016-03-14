@@ -243,8 +243,8 @@ class NzbClub(SearchModule):
                 entry.age_days = (arrow.utcnow() - pubdate).days
                 entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
             except Exception as e:
-                entry.epoch = 0
                 self.error("Unable to parse pubdate %s" % pubdate.text)
+                continue
 
             accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
