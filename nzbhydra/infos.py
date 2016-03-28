@@ -256,7 +256,9 @@ def convertId(fromType, toType, id):
         return None
     
     logger.info("Successfully converted from %s value %s to %s " % (fromType, id, toType))
-    return str(wantedType)
+    if isinstance(wantedType, int):
+        return str(wantedType)
+    return wantedType
     
 
 def convertIdToAny(fromType, possibleToTypes, id):

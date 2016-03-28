@@ -1,7 +1,10 @@
 # NZB Hydra changelog
 
 ----------
-0.0.1a82
+### 0.0.1a83
+Fixed: Error when searching movies with titles containing special characters using the frontend.
+
+### 0.0.1a82
 Fixed: Error in search because I wrote code while too tired and checked in without testing. Shame on me.   
 
 ### 0.0.1a81
