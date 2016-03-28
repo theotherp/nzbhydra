@@ -790,7 +790,7 @@ def internalapi_redirect_rid(args):
     tvdbid = infos.convertId("tvrage", "tvdb", args["rid"])
     if tvdbid is None:
         return "Unable to find TVDB link for TVRage ID", 404
-    return redirect("https://thetvdb.com/?tab=series&id=" + tvdbid)
+    return redirect("https://thetvdb.com/?tab=series&id=%s" % tvdbid)
 
 
 internalapi__enableindexer_args = {
