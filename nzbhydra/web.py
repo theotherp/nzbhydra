@@ -777,6 +777,22 @@ def internalapi_search_requests(args):
     return jsonify(get_search_requests(page=args["page"], limit=args["limit"], type=args["type"]))
 
 
+internalapi__redirect_rid_args = {
+    "rid": fields.String(required=True)
+}
+
+
+@app.route('/internalapi/redirect_rid')
+@requires_auth("main")
+@use_args(internalapi__redirect_rid_args)
+def internalapi_redirect_rid(args):
+    logger.debug("Redirect TVRage id request")
+    tvdbid = infos.convertId("tvrage", "tvdb", args["rid"])
+    if tvdbid is None:
+        return "Unable to find TVDB link for TVRage ID", 404
+    return redirect("https://thetvdb.com/?tab=series&id=" + tvdbid)
+
+
 internalapi__enableindexer_args = {
     "name": fields.String(required=True)
 }

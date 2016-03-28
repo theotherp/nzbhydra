@@ -2,6 +2,8 @@
 
 ----------
 ### 0.0.1a83
+Added: Link to TVDB pages from search history for TVRage ID based searches.
+
 Fixed: Error when searching movies with titles containing special characters using the frontend.
 
 ### 0.0.1a82
