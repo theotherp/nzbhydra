@@ -120,7 +120,8 @@ class SearchTests(unittest.TestCase):
         self.app = flask.Flask(__name__)
 
     def tearDown(self):
-        search.start_search_futures = self.oldExecute_search_queries    
+        search.start_search_futures = self.oldExecute_search_queries
+        config.settings.searching.requireWords = None
             
             
 
@@ -144,13 +145,13 @@ class SearchTests(unittest.TestCase):
         search_request.query = None
         indexers = search.pick_indexers(search_request)
         self.assertEqual(3, len(indexers))
-
+    
         search_request.identifier_key = "tvdbid"
         indexers = search.pick_indexers(search_request)
         self.assertEqual(2, len(indexers))
         self.assertEqual("newznab1", indexers[0].name)
         self.assertEqual("newznab2", indexers[1].name)
-
+    
         search_request.identifier_key = "imdbid"
         search_request.category = "tv"
         indexers = search.pick_indexers(search_request)
@@ -173,25 +174,25 @@ class SearchTests(unittest.TestCase):
         #Test picking depending on internal, external, both
         config.settings.indexers.womble.enabled = False
         config.settings.indexers.nzbclub.enabled = False
-
+    
         config.settings.indexers.newznab[1].accessType = "both"
         indexers = search.pick_indexers(search_request, internal=True)
         self.assertEqual(2, len(indexers))
         indexers = search.pick_indexers(search_request, internal=False)
         self.assertEqual(2, len(indexers))
-
+    
         config.settings.indexers.newznab[1].accessType = "external"
         indexers = search.pick_indexers(search_request, internal=True)
         self.assertEqual(1, len(indexers))
         indexers = search.pick_indexers(search_request, internal=False)
         self.assertEqual(2, len(indexers))
-
+    
         config.settings.indexers.newznab[1].accessType = "internal"
         indexers = search.pick_indexers(search_request, internal=True)
         self.assertEqual(2, len(indexers))
         indexers = search.pick_indexers(search_request, internal=False)
         self.assertEqual(1, len(indexers))
-
+    
         
     
     
@@ -643,7 +644,8 @@ class SearchTests(unittest.TestCase):
         with self.app.test_request_context('/'):
             with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
                 self.prepareSearchMocks(rsps, 2, 2)
-                searchRequest = SearchRequest(type="search", ignoreWords=["newznab1"])
+                config.settings.searching.ignoreWords = "newznab1"
+                searchRequest = SearchRequest(type="search")
                 result = search.search(True, searchRequest)
                 config.settings.searching.ignoreWords = None
                 results = result["results"]
@@ -651,7 +653,8 @@ class SearchTests(unittest.TestCase):
             
             with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
                 self.prepareSearchMocks(rsps, 2, 2)
-                searchRequest = SearchRequest(type="search", ignoreWords=["newznab1", "something", "else"])
+                config.settings.searching.ignoreWords = "newznab1, something, else"
+                searchRequest = SearchRequest(type="search")
                 result = search.search(True, searchRequest)
                 config.settings.searching.ignoreWords = None
                 results = result["results"]
@@ -659,7 +662,8 @@ class SearchTests(unittest.TestCase):
         
             with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
                 self.prepareSearchMocks(rsps, 2, 2)
-                searchRequest = SearchRequest(type="search", ignoreWords=["newznab1", "newznab2"])
+                config.settings.searching.ignoreWords = "newznab1, newznab2"
+                searchRequest = SearchRequest(type="search")
                 result = search.search(True, searchRequest)
                 config.settings.searching.ignoreWords = None
                 results = result["results"]
@@ -667,11 +671,25 @@ class SearchTests(unittest.TestCase):
         
             with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
                 self.prepareSearchMocks(rsps, 2, 2, "newznab %d result%d.title")
-                searchRequest = SearchRequest(type="search", ignoreWords=["newznab1", "newznab2"])
+                config.settings.searching.ignoreWords = "newznab1, newznab2"
+                searchRequest = SearchRequest(type="search")
                 result = search.search(True, searchRequest)
                 config.settings.searching.ignoreWords = None
                 results = result["results"]
                 self.assertEqual(0, len(results))
+
+    @responses.activate
+    def testRequireWords(self):
+        with self.app.test_request_context('/'):
+            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+                self.prepareSearchMocks(rsps, 2, 2)
+                config.settings.searching.requireWords = "newznab1"
+                searchRequest = SearchRequest(type="search")
+                result = search.search(True, searchRequest)
+                config.settings.searching.requireWords = None
+                results = result["results"]
+                self.assertEqual(2, len(results))
+
     
     def testFindDuplicatesWithDD(self):
         import jsonpickle

@@ -3098,6 +3098,17 @@ function ConfigFields() {
                         },
 
                         {
+                            key: 'requireWords',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Only accept results with ...',
+                                placeholder: 'separate, with, commas, like, this',
+                                help: "Only results with at least of these words in the title will be displayed"
+                            }
+                        },
+
+                        {
                             key: 'maxAge',
                             type: 'horizontalInput',
                             templateOptions: {

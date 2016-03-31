@@ -166,6 +166,9 @@ class SearchModule(object):
             word = word.strip().lower()
             if word in nzbSearchResult.title.lower():
                 return False, '"%s" is in the list of ignored words or excluded by the query' % word
+        requireWords = [word.lower().strip() for word in filter(bool, config.settings.searching.requireWords.split(","))]
+        if len(requireWords) > 0 and not any(word in nzbSearchResult.title.lower() for word in requireWords):
+            return False, 'None of the required words is contained in the title "%s"' % nzbSearchResult.title
         if searchRequest.minsize and nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
                 return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize)
         if searchRequest.maxsize and nzbSearchResult.size / (1024 * 1024) > searchRequest.maxsize:
