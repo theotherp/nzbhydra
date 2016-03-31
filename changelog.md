@@ -1,10 +1,12 @@
 # NZB Hydra changelog
 
 ----------
-### 0.0.1a83
+### 0.0.1a84
 Added: Add NZB Finder to presets.
 
 Added: Support JSON output for API search results.
+
+Added: Globally define words of which at least one needs to be contained in displayed results.
 
 ### 0.0.1a83
 Added: Link to TVDB pages from search history for TVRage ID based searches.

@@ -183,6 +183,7 @@ initialConfig = {
         "ignoreWords": "",
         "maxAge": "",
         "removeDuplicatesExternal": True,
+        "requireWords": "",
         "timeout": 20,
         "userAgent": "NZBHydra"
     },
