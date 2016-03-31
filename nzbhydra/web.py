@@ -3,14 +3,13 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import datetime
 import json
 import logging
 import os
 import urlparse
 
 import arrow
-import datetime
-
 import rison
 from bunch import Bunch
 from werkzeug.contrib.fixers import ProxyFix
@@ -31,22 +30,20 @@ from nzbhydra.exceptions import DownloaderException, IndexerResultParsingExcepti
 
 # standard_library.install_aliases()
 from functools import update_wrapper
-from pprint import pprint
 from time import sleep
 from arrow import Arrow
 from flask import Flask, render_template, request, jsonify, Response
-from flask import redirect, make_response, send_from_directory, send_file
+from flask import redirect, make_response, send_file
 from flask_cache import Cache
 from flask.json import JSONEncoder
 from webargs import fields
 from furl import furl
 from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
-from werkzeug.wrappers import ETagResponseMixin
 from flask_session import Session
 from nzbhydra import config, search, infos, database
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid
-from nzbhydra.config import NzbAccessTypeSelection, getAnonymizedConfig, getSettingsToHide
+from nzbhydra.config import NzbAccessTypeSelection
 from nzbhydra.database import IndexerStatus, Indexer
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
@@ -54,7 +51,7 @@ from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses
 from nzbhydra.update import get_rep_version, get_current_version, update, getChangelog, getVersionHistory
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
-from nzbhydra.log import getLogs, getAnonymizedLogFile
+from nzbhydra.log import getLogs
 from nzbhydra.backup_debug import backup, getDebuggingInfos, getBackupFilenames, getBackupFileByFilename
 
 
@@ -82,7 +79,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config["PRESERVE_CONTEXT_ON_EXCEPTION"] = True
 app.config["PROPAGATE_EXCEPTIONS"] = True
 Session(app)
-flask_cache = Cache(app, config={'CACHE_TYPE': "simple", "CACHE_THRESHOLD": 250, "CACHE_DEFAULT_TIMEOUT": 60 * 60 * 24 * 7}) #Used for autocomplete and nfos and such
+flask_cache = Cache(app, config={'CACHE_TYPE': "simple", "CACHE_THRESHOLD": 250, "CACHE_DEFAULT_TIMEOUT": 60 * 60 * 24 * 7})  # Used for autocomplete and nfos and such
 internal_cache = Cache(app, config={'CACHE_TYPE': "simple",  # Cache for internal data like settings, form, schema, etc. which will be invalidated on request
                                     "CACHE_DEFAULT_TIMEOUT": 60 * 30})
 proxyFix = ProxyFix(app)
@@ -131,15 +128,15 @@ def _db_disconnect(esc):
 
 @app.after_request
 def disable_caching(response):
-    if "/static" not in request.path: #Prevent caching of control URLs
+    if "/static" not in request.path:  # Prevent caching of control URLs
         response.cache_control.private = True
         response.cache_control.max_age = 0
         response.cache_control.must_revalidate = True
         response.cache_control.no_cache = True
-        response.cache_control.no_store = True    
+        response.cache_control.no_store = True
     response.headers["Expires"] = datetime.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
     response.cache_control.max_age = 0
-    
+
     return response
 
 
@@ -171,8 +168,8 @@ def authenticate():
     if request.authorization:
         global failedLogins
         ip = getIp()
-         
-        if ip in failedLogins.keys(): 
+
+        if ip in failedLogins.keys():
             lastFailedLogin = failedLogins[ip]["lastFailedLogin"]
             lastFailedLoginFormatted = lastFailedLogin.format("YYYY-MM-DD HH:mm:ss")
             failedLoginCounter = failedLogins[ip]["failedLoginCounter"]
@@ -183,7 +180,7 @@ def authenticate():
             failedLogins[ip]["lastFailedLogin"] = arrow.utcnow()
             failedLogins[ip]["lastTriedUsername"] = request.authorization.username
             failedLogins[ip]["lastTriedPassword"] = request.authorization.password
-    
+
             if secondsSinceLastFailedLogin < waitFor:
                 if lastTriedUsername == request.authorization.username and lastTriedPassword == request.authorization.password:
                     # We don't log this and don't increase the counter, it happens when the user reloads the page waiting for the counter to go down, so we don't change the lastFailedLogin (well, we set it back)
@@ -195,11 +192,11 @@ def authenticate():
             else:
                 failedLogins[ip]["failedLoginCounter"] = failedLoginCounter + 1
                 logger.warn("IP %s failed to authenticate. The last time was at %s. This was his %d. failed login attempt" % (ip, lastFailedLoginFormatted, failedLoginCounter + 1))
-    
+
         else:
             logger.warn("IP %s failed to authenticate. This was his first failed login attempt" % ip)
             failedLogins[ip] = {"lastFailedLogin": arrow.utcnow(), "failedLoginCounter": 1, "lastTriedUsername": request.authorization.username, "lastTriedPassword": request.authorization.password}
-    
+
     return Response(
             'Could not verify your access level for that URL. You have to login with proper credentials', 401,
             {'WWW-Authenticate': 'Basic realm="Login Required"'})
@@ -219,10 +216,10 @@ def isAllowed(authType):
     if len(config.settings.auth.users) == 0:
         return True
     auth = Bunch.fromDict(request.authorization)
-    
+
     for user in config.settings.auth.users:
         if authType == "main":
-            if not user.username and not user.password: #"authless" user
+            if not user.username and not user.password:  # "authless" user
                 return True
             if auth and auth.username == user.username and auth.password == user.password:
                 return True
@@ -236,10 +233,8 @@ def isAllowed(authType):
                 return True
             if auth and auth.username == user.username and auth.password == user.password:
                 return user.maySeeAdmin
-        
+
     return False
-    
-    
 
 
 def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
@@ -272,6 +267,7 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
 
     return decorator
 
+
 @app.route('/<path:path>')
 @app.route('/', defaults={"path": None})
 @requires_auth("main")
@@ -282,9 +278,50 @@ def base(path):
     return render_template("index.html", base_url=base_url, isAdmin=isAdminLoggedIn(), onProd="false" if config.settings.main.debug else "true")
 
 
-def render_search_results_for_api(search_results, total, offset):
-    xml = render_template("api.html", channel={}, items=search_results, total=total, offset=offset)
-    return Response(xml, mimetype="application/rss+xml, application/xml, text/xml")
+def render_search_results_for_api(search_results, total, offset, output="xml"):
+    if output.lower() == "xml":
+        xml = render_template("api.html", channel={}, items=search_results, total=total, offset=offset)
+        return Response(xml, mimetype="application/rss+xml, application/xml, text/xml")
+    else:
+        items = [{"title": item.title,
+                  "guid": item.guid,
+                  "link": item.link,
+                  "comments": item.details_link,
+                  "pubDate": item.pubDate,
+                  "description": "%s - %s" % (item.title, item.indexer),
+                  "enclosure": {
+                      "attributes": {
+                          "url": item.link,
+                          "length": item.size,
+                          "type": "application/x-nzb"
+                      }
+                      
+                  },
+                  "attr": [{"@attributes": {
+                      "name": attr["name"],
+                      "value": attr["value"]
+                  }
+                           } for attr in item.attributes]
+
+                  } for item in search_results]
+        result = {"@attributes": {"version": "2.0"},
+                  "channel": {
+                      "title": "NZB Hydra",
+                      "description": "NZB Hydra - the meta search",
+                      "link": "https:\/\/github.com\/theotherp\/nzbhydra",
+                      "language": "en-gb",
+                      "webMaster": "TheOtherP@gmx.de (TheOtherP)",
+                      "category": {},
+                      "response": {
+                          "@attributes": {
+                              "offset": str(offset),
+                              "total": str(total)
+                          }
+                      },
+                      "items": items
+                  }
+                  }
+        return result
 
 
 externalapi_args = {
@@ -297,7 +334,7 @@ externalapi_args = {
     "limit": fields.Integer(missing=100),
     "offset": fields.Integer(missing=0),
     "cat": fields.String(missing=None),
-    "o": fields.String(missing=None),
+    "o": fields.String(missing="XML"),
     "attrs": fields.String(missing=None),
     "extended": fields.Bool(missing=None),
     "del": fields.String(missing=None),
@@ -378,14 +415,20 @@ def api_search(args):
     logger.info("API search request: %s" % search_request)
     result = search.search(False, search_request)
     results = process_for_external_api(result)
-    content = render_search_results_for_api(results, result["total"], result["offset"])
-    response = make_response(content)
-    response.headers["Content-Type"] = "application/xml"
-              
-    return content
+    content = render_search_results_for_api(results, result["total"], result["offset"], output=args["o"])
+    if args["o"].lower() == "xml":
+        response = make_response(content)
+        response.headers["Content-Type"] = "application/xml"
+    elif args["o"].lower() == "json":
+        response = jsonify(content)
+    else:
+        return "Unknown output format", 500
+    
+    return response
 
 
 api_search.make_cache_key = make_request_cache_key
+
 
 @app.route("/details/<path:guid>")
 @requires_auth("main")
@@ -421,7 +464,7 @@ def process_and_jsonify_for_internalapi(results):
         return "No results", 500
 
 
-def startSearch(search_request):    
+def startSearch(search_request):
     results = search.search(True, search_request)
     return process_and_jsonify_for_internalapi(results)
 
@@ -578,7 +621,7 @@ internalapi__getnzb_args = {
 }
 
 
-#Obsolete?
+# Obsolete?
 @app.route('/internalapi/getnzb')
 @requires_auth("main")
 @use_args(internalapi__getnzb_args, locations=['querystring'])
@@ -893,9 +936,9 @@ def internalapi_getversions():
     logger.debug("Get versions request")
     _, current_version = get_current_version()
     _, rep_version = get_rep_version()
-    
+
     versionsInfo = {"currentVersion": str(current_version), "repVersion": str(rep_version), "updateAvailable": rep_version > current_version}
-    
+
     if rep_version > current_version:
         changelog = getChangelog(current_version)
         versionsInfo["changelog"] = changelog
@@ -948,6 +991,7 @@ internalapi_getbackupfile_args = {
     "cause": fields.String(required=True)
 }
 
+
 @app.route('/internalapi/logerror', methods=['GET', 'PUT'])
 @requires_auth("main")
 @use_args(internalapi_getbackupfile_args)
@@ -988,7 +1032,7 @@ def restart(func=None, afterUpdate=False):
 def internalapi_restart():
     logger.info("User requested to restart. Sending restart command in 1 second")
     func = request.environ.get('werkzeug.server.shutdown')
-    thread = threading.Thread(target=restart, args=(func,False))
+    thread = threading.Thread(target=restart, args=(func, False))
     thread.daemon = True
     thread.start()
     return "Restarting"
@@ -1027,7 +1071,7 @@ def internalapi_update():
 
 def run(host, port, basepath):
     context = create_context()
-    configureFolders(basepath)    
+    configureFolders(basepath)
     for handler in logger.handlers:
         app.logger.addHandler(handler)
     if context is None:

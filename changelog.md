@@ -4,6 +4,8 @@
 ### 0.0.1a83
 Added: Add NZB Finder to presets.
 
+Added: Support JSON output for API search results.
+
 ### 0.0.1a83
 Added: Link to TVDB pages from search history for TVRage ID based searches.
 
