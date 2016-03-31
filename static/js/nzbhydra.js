@@ -1994,8 +1994,8 @@ angular
         formlyConfigProvider.extras.removeChromeAutoComplete = true;
         formlyConfigProvider.extras.explicitAsync = true;
         formlyConfigProvider.disableWarnings = window.onProd;
-        
-        
+
+
         formlyConfigProvider.setWrapper({
             name: 'settingWrapper',
             templateUrl: 'setting-wrapper.html',
@@ -2032,8 +2032,7 @@ angular
                 '</div>'
             ].join(' ')
         });
-        
-        
+
 
         formlyConfigProvider.setWrapper({
             name: 'logicalGroup',
@@ -2091,7 +2090,7 @@ angular
                 } else {
                     $scope.uniqueId = hashCode($scope.model.name) + hashCode($scope.model.host);
                 }
-                
+
 
                 var testButton = "#button-test-connection-" + $scope.uniqueId;
                 var testMessage = "#message-test-connection-" + $scope.uniqueId;
@@ -2218,26 +2217,10 @@ angular
                 $scope.presets = [
                     {
                         name: "None"
-                    },
-                    {
-                        name: "DogNZB",
-                        host: "https://api.dognzb.cr",
-                        searchIds: ["tvdbid", "rid", "imdbid"]
-                    },
-                    {
-                        name: "NZBs.org",
-                        host: "https://nzbs.org",
-                        searchIds: ["tvdbid", "rid", "imdbid", "tvmazeid"]
-                    },
-                    {
-                        name: "nzb.su",
-                        host: "https://api.nzb.su",
-                        searchIds: ["rid", "imdbid"]
-                    },
-                    {
-                        name: "nzbgeek",
-                        host: "https://api.nzbgeek.info",
-                        searchIds: ["tvdbid", "rid", "imdbid"]
+                    }, {
+                        name: "6box",
+                        host: "https://6box.me",
+                        searchIds: ["imdbid"]
                     },
                     {
                         name: "6box nzedb",
@@ -2250,16 +2233,35 @@ angular
                         searchIds: ["tvdbid", "rid", "imdbid"]
                     },
                     {
-                        name: "6box",
-                        host: "https://6box.me",
-                        searchIds: ["imdbid"]
+                        name: "DogNZB",
+                        host: "https://api.dognzb.cr",
+                        searchIds: ["tvdbid", "rid", "imdbid"]
                     },
                     {
                         name: "Drunken Slug",
                         host: "https://drunkenslug.com",
                         searchIds: ["tvdbid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
+                    },
+                    {
+                        name: "NZB Finder",
+                        host: "https://nzbfinder.ws",
+                        searchIds: ["tvdbid", "rid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
+                    },
+                    {
+                        name: "NZBs.org",
+                        host: "https://nzbs.org",
+                        searchIds: ["tvdbid", "rid", "imdbid", "tvmazeid"]
+                    },
+                    {
+                        name: "nzb.su",
+                        host: "https://api.nzb.su",
+                        searchIds: ["rid", "imdbid"]
+                    },
+                    {
+                        name: "NZBGeek",
+                        host: "https://api.nzbgeek.info",
+                        searchIds: ["tvdbid", "rid", "imdbid"]
                     }
-
                 ];
 
                 $scope.selectPreset = function (item, model) {
@@ -2347,8 +2349,8 @@ angular
             extends: 'select',
             wrapper: ['settingWrapper', 'bootstrapHasError']
         });
-        
-        
+
+
         formlyConfigProvider.setType({
             name: 'horizontalMultiselect',
             defaultOptions: {
@@ -2414,13 +2416,13 @@ angular
                     var newsection = angular.copy($scope.options.templateOptions.defaultModel);
                     repeatsection.push(newsection);
                 }
-                
+
                 function remove($index) {
                     $scope.model[$scope.options.key].splice($index, 1);
                 }
             }
-        
-    });
+
+        });
 
     }]);
 
