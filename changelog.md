@@ -1,6 +1,10 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a85
+
+Changed: Try to solve database locked error.
+
 ### 0.0.1a84
 Added: Add NZB Finder to presets.
 

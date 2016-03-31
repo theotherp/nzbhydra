@@ -314,7 +314,7 @@ class SearchModule(object):
                         has_more = parsed_results.has_more
 
                         papiaccess.response_successful = True
-                        self.handle_indexer_success()
+                        self.handle_indexer_success(False)
                     except Exception as e:
                         self.logger.exception("Error while processing search results from indexer %s" % self)
                         raise IndexerResultParsingException("Error while parsing the results from indexer", self)

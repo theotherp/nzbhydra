@@ -3,11 +3,13 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from Queue import Queue
 from contextlib import contextmanager
-from random import shuffle
+from random import shuffle, random, randint
 
 import flask
 import pytest
+import time
 from bunch import Bunch
 from future import standard_library
 
@@ -41,7 +43,14 @@ logging.getLogger("root").setLevel("DEBUG")
 def mock(x, y, z=True):
     return True
 
+
+
+
 class SearchTests(unittest.TestCase):
+    
+    
+    
+    
     def prepareIndexers(self, indexerCount):
         config.settings.indexers.newznab = []
         for i in range(1, indexerCount + 1):
@@ -56,11 +65,20 @@ class SearchTests(unittest.TestCase):
             nn.search_ids = ["imdbid", "tvdbid", "rid"]
             config.settings.indexers.newznab.append(nn)
 
-    def prepareSearchMocks(self, rsps, indexerCount=2, resultsPerIndexers=1, newznabItems=None, title="newznab%dresult%d.title"):
+    def rsps_callback(self, request):
+        for x in self.response_callbacks:
+            nn = x[0]
+            if nn in request.url:
+                print("sleeping %d seconds" % x[1])
+                time.sleep(x[1])
+                return 200, {}, x[2]
+
+    def prepareSearchMocks(self, rsps, indexerCount=2, resultsPerIndexers=1, newznabItems=None, title="newznab%dresult%d.title", sleep=0):
         testData = []
+        self.response_callbacks = []
         self.prepareIndexers(indexerCount)
 
-        for i in range(1, indexerCount + 1):
+        for i in range(1, indexerCount + 1):            
             # Prepare search results
             if newznabItems is not None:
                 indexerNewznabItems = newznabItems[i - 1]
@@ -69,11 +87,13 @@ class SearchTests(unittest.TestCase):
                                        j in
                                        range(1, resultsPerIndexers + 1)]
             xml = mockbuilder.buildNewznabResponse("newznab%dResponse" % i, indexerNewznabItems, 0, len(indexerNewznabItems))
-
+            self.response_callbacks.append(('newznab%d' % i, randint(0, sleep), xml))
+            
+            
             # Prepare response mock
             url_re = re.compile(r'.*newznab%d.*' % i)
-            rsps.add(responses.GET, url_re,
-                     body=xml, status=200,
+            rsps.add_callback(responses.GET, url_re,
+                     callback=self.rsps_callback,
                      content_type='application/x-html')
         read_indexers_from_config()
 
@@ -118,6 +138,7 @@ class SearchTests(unittest.TestCase):
         infos.convertId = mock
 
         self.app = flask.Flask(__name__)
+        self.response_callbacks = []
 
     def tearDown(self):
         search.start_search_futures = self.oldExecute_search_queries
@@ -631,7 +652,7 @@ class SearchTests(unittest.TestCase):
     def test20Searches(self):
         with self.app.test_request_context('/'):
             with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-                self.prepareSearchMocks(rsps, indexerCount=20, resultsPerIndexers=1)
+                self.prepareSearchMocks(rsps, indexerCount=20, resultsPerIndexers=1, sleep=5)
         
                 searchRequest = SearchRequest(type="search")
                 result = search.search(True, searchRequest)
@@ -677,7 +698,7 @@ class SearchTests(unittest.TestCase):
                 config.settings.searching.ignoreWords = None
                 results = result["results"]
                 self.assertEqual(0, len(results))
-
+    
     @responses.activate
     def testRequireWords(self):
         with self.app.test_request_context('/'):
@@ -689,7 +710,7 @@ class SearchTests(unittest.TestCase):
                 config.settings.searching.requireWords = None
                 results = result["results"]
                 self.assertEqual(2, len(results))
-
+    
     
     def testFindDuplicatesWithDD(self):
         import jsonpickle

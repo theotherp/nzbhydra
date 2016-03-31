@@ -17,7 +17,7 @@ import copy
 import logging
 import arrow
 from requests_futures.sessions import FuturesSession
-from nzbhydra.database import IndexerStatus, Search
+from nzbhydra.database import IndexerStatus, Search, db
 from nzbhydra import config, indexers, infos
 
 categories = {'All': {"pretty": "All", "index": 0},
@@ -272,15 +272,17 @@ def search(internal, search_request):
 def search_and_handle_db(dbsearch, indexers_and_search_requests):
     results_by_indexer = start_search_futures(indexers_and_search_requests)
     dbsearch.username = request.authorization.username if request.authorization is not None else None
-    dbsearch.save()
+    with db.atomic():
+        dbsearch.save()
     for indexer, result in results_by_indexer.items():
         if result.didsearch:
-            indexersearchentry = result.indexerSearchEntry
-            indexersearchentry.search = dbsearch
-            indexersearchentry.save()
-            result.indexerApiAccessEntry.username = request.authorization.username if request.authorization is not None else None
-            result.indexerApiAccessEntry.save()
-            result.indexerStatus.save()
+            with db.atomic():
+                indexersearchentry = result.indexerSearchEntry
+                indexersearchentry.search = dbsearch
+                indexersearchentry.save()
+                result.indexerApiAccessEntry.username = request.authorization.username if request.authorization is not None else None
+                result.indexerApiAccessEntry.save()
+                result.indexerStatus.save()
         
     logger.debug("Returning search results now")
     return {"results": results_by_indexer, "dbsearch": dbsearch}
