@@ -4,6 +4,8 @@
 ### 0.0.1a86
 Fixed: TypeError when using OMGWTF. 
 
+Fixed: Unable to load details page.
+
 ### 0.0.1a85
 Changed: Try to solve database locked error.
 

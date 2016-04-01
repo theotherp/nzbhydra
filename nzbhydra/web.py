@@ -435,7 +435,7 @@ api_search.make_cache_key = make_request_cache_key
 def get_details(guid):
     # GUID is not the GUID-item from the RSS but the newznab GUID which in our case is just a rison string 
     d = rison.loads(urlparse.unquote(guid))
-    details_link = get_details_link(d["indexer"], d["guid"])
+    details_link = get_details_link(d["indexer"], d["indexerguid"])
     if details_link:
         return redirect(details_link)
     return "Unable to find details", 500
