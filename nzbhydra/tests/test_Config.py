@@ -296,6 +296,7 @@ class TestConfig(unittest.TestCase):
             json.dump(cfg, settingsfile)
         cfg = config.migrate("testsettings.cfg")
         print(json.dumps(cfg))
+        config.logLogMessages()
         self.assertIsNone(cfg["indexers"]["binsearch"]["hitLimit"])
         self.assertIsNone(cfg["indexers"]["nzbclub"]["hitLimit"])
         self.assertIsNone(cfg["indexers"]["nzbindex"]["hitLimit"])
