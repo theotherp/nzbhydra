@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="nzbhydraApp">
 <head>
-    <title>NZB Hydra</title>
+    <title ng-bind="'NZB Hydra' + (' - ' + $title || '')">NZB Hydra</title>
     <base href="{{ base_url }}"/>
     <meta name="robots" content="noindex"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

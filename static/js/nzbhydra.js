@@ -1,4 +1,4 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title']);
 
 angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$locationProvider", "blockUIConfig", "$urlMatcherFactoryProvider", function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig, $urlMatcherFactoryProvider) {
 
@@ -22,6 +22,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 maxsize: undefined,
                 minage: undefined,
                 maxage: undefined
+            }, resolve: {
+                $title: function () {
+                    return "Search results"
+                }
             }
         })
         .state("config", {
@@ -34,7 +38,8 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function(){return "Config"}
             }
         })
         .state("config.auth", {
@@ -47,7 +52,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "Config (Auth)"
+                }
             }
         })
         .state("config.searching", {
@@ -60,7 +68,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "Config (Searching)"
+                }
             }
         })
         .state("config.downloader", {
@@ -73,7 +84,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "Config (Downloader)"
+                }
             }
         })
         .state("config.indexers", {
@@ -86,7 +100,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "Config (Indexers)"
+                }
             }
         })
         .state("config.system", {
@@ -99,7 +116,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "System"
+                }
             }
         })
         .state("config.log", {
@@ -112,7 +132,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "System (Log)"
+                }
             }
         })
         .state("stats", {
@@ -125,7 +148,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "Stats"
+                }
             }
         })
         .state("stats.indexers", {
@@ -138,7 +164,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "Stats (Indexers)"
+                }
             }
         })
         .state("stats.searches", {
@@ -151,7 +180,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "Stats (Searches)"
+                }
             }
         })
         .state("stats.downloads", {
@@ -164,7 +196,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "Stats (Downloads)"
+                }
             }
         })
         .state("system", {
@@ -177,7 +212,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "System"
+                }
             }
         })
         .state("system.updates", {
@@ -190,7 +228,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "System (Updates)"
+                }
             }
         })
         .state("system.log", {
@@ -203,7 +244,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "System (Log)"
+                }
             }
         })
         .state("system.backup", {
@@ -216,7 +260,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "System (Backup)"
+                }
             }
         })
         .state("system.about", {
@@ -229,7 +276,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "System (About)"
+                }
             }
         })
         .state("system.bugreport", {
@@ -242,7 +292,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }],
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "System (Bug report)"
+                }
             }
         })
         .state("search", {
@@ -252,7 +305,10 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
             resolve: {
                 safeConfig: ['ConfigService', function (ConfigService) {
                     return ConfigService.getSafe();
-                }]
+                }],
+                $title: function () {
+                    return "Search"
+                }
             }
         })
     ;
