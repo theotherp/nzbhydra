@@ -7,12 +7,14 @@
                 "rid",
                 "tvdbid"
             ],
+            "hitLimit": null,
             "name": null,
             "apikey": null,
             "enabled": false
         },
         "newznab3": {
             "host": null,
+            "hitLimit": null,
             "search_ids": [
                 "imdbid",
                 "rid",
@@ -24,6 +26,7 @@
         },
         "newznab6": {
             "host": null,
+            "hitLimit": null,
             "search_ids": [
                 "imdbid",
                 "rid",
@@ -35,6 +38,7 @@
         },
         "binsearch": {
             "host": "https://binsearch.info",
+            "hitLimit": null,
             "search_ids": [],
             "name": "binsearch",
             "enabled": true,
@@ -42,6 +46,7 @@
         },
         "nzbclub": {
             "host": "https://www.nzbclub.com",
+            "hitLimit": null,
             "search_ids": [],
             "name": "nzbclub",
             "enabled": true,
@@ -49,6 +54,7 @@
         },
         "newznab2": {
             "host": null,
+            "hitLimit": null,
             "search_ids": [
                 "imdbid",
                 "rid",
@@ -60,6 +66,7 @@
         },
         "nzbindex": {
             "host": "https://nzbindex.com",
+            "hitLimit": null,
             "search_ids": [],
             "name": "nzbindex",
             "enabled": true,
@@ -67,6 +74,7 @@
         },
         "womble": {
             "host": "https://newshost.co.za",
+            "hitLimit": null,
             "search_ids": [],
             "name": "womble",
             "enabled": true,
@@ -74,6 +82,7 @@
         },
         "newznab4": {
             "host": null,
+            "hitLimit": null,
             "search_ids": [
                 "imdbid",
                 "rid",
@@ -85,6 +94,7 @@
         },
         "newznab5": {
             "host": null,
+            "hitLimit": null,
             "search_ids": [
                 "imdbid",
                 "rid",
@@ -97,6 +107,7 @@
         "omgwtfnzbs": {
                     "accessType": "both", 
                     "apikey": "apikey", 
+                    "hitLimit": null,
                     "enabled": false, 
                     "host": "https://api.omgwtfnzbs.org", 
                     "name": "omgwtfnzbs.org", 

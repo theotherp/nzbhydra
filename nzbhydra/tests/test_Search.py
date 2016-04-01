@@ -56,6 +56,7 @@ class SearchTests(unittest.TestCase):
             nn.name = "newznab%d" % i
             nn.host = "http://www.newznab%d.com" % i
             nn.apikey = "apikeyindexer.com"
+            nn.hitLimit = None
             nn.timeout = None
             nn.score = 0
             nn.accessType = "both"
@@ -112,6 +113,7 @@ class SearchTests(unittest.TestCase):
         self.newznab1.host = "https://indexer.com"
         self.newznab1.apikey = "apikeyindexer.com"
         self.newznab1.timeout = None
+        self.newznab1.hitLimit = None
         self.newznab1.score = 0
         self.newznab1.accessType = "both"
         self.newznab1.search_ids = ["imdbid", "rid", "tvdbid"]
@@ -123,6 +125,7 @@ class SearchTests(unittest.TestCase):
         self.newznab2.host = "https://indexer.com"
         self.newznab2.apikey = "apikeyindexer.com"
         self.newznab2.timeout = None
+        self.newznab2.hitLimit = None
         self.newznab2.accessType = "both"
         self.newznab2.score = 0
         self.newznab2.search_ids = ["rid", "tvdbid"]
