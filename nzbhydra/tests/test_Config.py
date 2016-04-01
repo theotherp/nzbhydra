@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import json
 import unittest
 
+import arrow
 import pytest
 from builtins import *
 import os
@@ -116,7 +117,6 @@ class TestConfig(unittest.TestCase):
         self.assertEqual("newznab2", cfg["indexers"]["newznab"][1]["name"])
         self.assertTrue("accessType" in cfg["indexers"]["newznab"][0].keys())
         self.assertTrue("accessType" in cfg["indexers"]["newznab"][1].keys())
-        
 
     def testMigration8to9(self):
         testCfg = {
@@ -262,6 +262,41 @@ class TestConfig(unittest.TestCase):
         self.assertEqual("whatever", cfg["auth"]["users"][1]["username"])
         self.assertFalse("name" in cfg["auth"]["users"][0].keys())
         self.assertFalse("name" in cfg["auth"]["users"][1].keys())
+
+    def testMigration12to13(self):
+        testCfg = {
+            "main":
+                {
+                    "configVersion": 12,
+                },
+            "indexers": {
+                "binsearch": {},
+                "nzbclub": {},
+                "nzbindex": {},
+                "omgwtfnzbs": {},
+                "womble": {},
+                "newznab": [
+                    {},
+                    {}
+
+                ]
+
+            }
+        }
+
+        with open("testsettings.cfg", "wb") as settingsfile:
+            cfg = copy.copy(testCfg)
+            json.dump(cfg, settingsfile)
+        cfg = config.migrate("testsettings.cfg")
+        self.assertIsNone(cfg["indexers"]["binsearch"]["hitLimit"])
+        self.assertIsNone(cfg["indexers"]["nzbclub"]["hitLimit"])
+        self.assertIsNone(cfg["indexers"]["nzbindex"]["hitLimit"])
+        self.assertIsNone(cfg["indexers"]["omgwtfnzbs"]["hitLimit"])
+        self.assertIsNone(cfg["indexers"]["womble"]["hitLimit"])
+        self.assertIsNone(cfg["indexers"]["newznab"][0]["hitLimit"])
+        self.assertIsNone(cfg["indexers"]["newznab"][1]["hitLimit"])
+        self.assertEqual(arrow.get(0), cfg["indexers"]["newznab"][0]["hitLimitResetTime"])
+        self.assertEqual(arrow.get(0), cfg["indexers"]["newznab"][1]["hitLimitResetTime"])
 
     def testGetAnonymizedConfig(self):
         config.settings = {

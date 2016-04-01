@@ -2058,6 +2058,15 @@ angular
         });
 
         formlyConfigProvider.setType({
+            name: 'timeOfDay',
+            extends: 'horizontalInput',
+            controller: ['$scope', function ($scope) {
+                console.log($scope);
+                $scope.model[$scope.options.key] = new Date($scope.model[$scope.options.key]);
+            }]
+        });
+
+        formlyConfigProvider.setType({
             name: 'percentInput',
             template: [
                 '<input type="number" class="form-control" placeholder="Percent" ng-model="model[options.key]" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" required />'
@@ -2665,6 +2674,32 @@ function ConfigFields() {
                 }
             }
         ]);
+        
+        if (testtype == "newznab") {
+            fieldset.push(
+                {
+                    key: 'hitLimit',
+                    type: 'horizontalInput',
+                    hideExpression: '!model.enabled',
+                    templateOptions: {
+                        type: 'number',
+                        label: 'API hit limit',
+                        help: 'Maximum number of API hits since "API hit reset time"'
+                    }
+                }
+            );
+            fieldset.push(
+                {
+                    key: 'hitLimitResetTime',
+                    type: 'timeOfDay',
+                    hideExpression: '!model.enabled || !model.hitLimit',
+                    templateOptions: {
+                        type: 'time',
+                        label: 'API hit reset time',
+                        help: 'Local time at which the API hit counter is reset'
+                    }
+                })
+        }
 
 
         if (showpreselect) {
@@ -3714,6 +3749,8 @@ function ConfigFields() {
                             enabled: true,
                             host: null,
                             apikey: null,
+                            hitLimit: null,
+                            hitLimitResetTime: new Date(0),
                             timeout: null,
                             name: null,
                             showOnSearch: true,

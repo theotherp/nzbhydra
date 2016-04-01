@@ -54,6 +54,8 @@ initialConfig = {
         "binsearch": {
             "accessType": "internal",
             "enabled": True,
+            "hitLimit": 0,
+            "hitLimitResetTime": None,
             "host": "https://binsearch.info",
             "name": "Binsearch",
             "preselect": True,
@@ -66,6 +68,8 @@ initialConfig = {
         "nzbclub": {
             "accessType": "internal",
             "enabled": True,
+            "hitLimit": 0,
+            "hitLimitResetTime": None,
             "host": "https://www.nzbclub.com",
             "name": "NZBClub",
             "preselect": True,
@@ -79,6 +83,8 @@ initialConfig = {
             "accessType": "internal",
             "enabled": True,
             "generalMinSize": 1,
+            "hitLimit": 0,
+            "hitLimitResetTime": None,
             "host": "https://nzbindex.com",
             "name": "NZBIndex",
             "preselect": True,
@@ -91,6 +97,8 @@ initialConfig = {
         "womble": {
             "accessType": "external",
             "enabled": True,
+            "hitLimit": 0,
+            "hitLimitResetTime": None,
             "host": "https://newshost.co.za",
             "name": "Womble",
             "preselect": True,
@@ -105,6 +113,8 @@ initialConfig = {
             "accessType": "both",
             "apikey": "",
             "enabled": False,
+            "hitLimit": 0,
+            "hitLimitResetTime": None,
             "host": "https://api.omgwtfnzbs.org",
             "name": "omgwtfnzbs.org",
             "preselect": True,
@@ -121,7 +131,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 12,
+        "configVersion": 13,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -406,6 +416,26 @@ def migrate(settingsFilename):
                             except Exception as e:
                                 addLogMessage(40, "Error while trying to determine caps: %s" % e)
 
+                if config["main"]["configVersion"] == 12:
+                    with version_update(config, 13):
+                        addLogMessage(20, "Adding API hit limit settings to indexers")
+                        config["indexers"]["binsearch"]["hitLimit"] = None
+                        config["indexers"]["nzbclub"]["hitLimit"] = None
+                        config["indexers"]["nzbindex"]["hitLimit"] = None
+                        config["indexers"]["omgwtfnzbs"]["hitLimit"] = None
+                        config["indexers"]["womble"]["hitLimit"] = None
+                        
+                        config["indexers"]["binsearch"]["hitLimitResetTime"] = None
+                        config["indexers"]["nzbclub"]["hitLimitResetTime"] = None
+                        config["indexers"]["nzbindex"]["hitLimitResetTime"] = None
+                        config["indexers"]["omgwtfnzbs"]["hitLimitResetTime"] = None
+                        config["indexers"]["womble"]["hitLimitResetTime"] = None
+
+                        from nzbhydra.searchmodules import newznab
+                        for n in config["indexers"]["newznab"]:
+                            n["hitLimit"] = None
+                            n["hitLimitResetTime"] = arrow.get(0).isoformat()
+
 
             except Exception as e:
                 addLogMessage(30, "An error occurred while migrating the config file.")
@@ -504,10 +534,10 @@ def import_config_data(data):
 def save(filename):
     global settings
     try:
+        s = json.dumps(settings.toDict(), ensure_ascii=False, indent=4, sort_keys=True)
         with open(filename, "w", encoding="utf-8") as f:
-            s = json.dumps(settings.toDict(), ensure_ascii=False, indent=4, sort_keys=True)
             f.write(s)
-    except Exception:
+    except Exception as e:
         logger.exception("Error while saving settings")
         
 

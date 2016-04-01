@@ -2,6 +2,8 @@
 
 ----------
 ### 0.0.1a86
+Added: Feature to limit the number of maximum API hits for an indexer in 24 hours.
+
 Fixed: TypeError when using OMGWTF. 
 
 Fixed: Unable to load details page.

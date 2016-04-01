@@ -47,10 +47,7 @@ def mock(x, y, z=True):
 
 
 class SearchTests(unittest.TestCase):
-    
-    
-    
-    
+
     def prepareIndexers(self, indexerCount):
         config.settings.indexers.newznab = []
         for i in range(1, indexerCount + 1):
@@ -102,6 +99,7 @@ class SearchTests(unittest.TestCase):
     @pytest.fixture
     def setUp(self):
         set_and_drop()
+                
         config.settings.indexers.binsearch.enabled = False
         config.settings.indexers.nzbindex.enabled = False
         config.settings.indexers.omgwtfnzbs.enabled = False

@@ -75,6 +75,15 @@ angular
         });
 
         formlyConfigProvider.setType({
+            name: 'timeOfDay',
+            extends: 'horizontalInput',
+            controller: ['$scope', function ($scope) {
+                console.log($scope);
+                $scope.model[$scope.options.key] = new Date($scope.model[$scope.options.key]);
+            }]
+        });
+
+        formlyConfigProvider.setType({
             name: 'percentInput',
             template: [
                 '<input type="number" class="form-control" placeholder="Percent" ng-model="model[options.key]" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" required />'
