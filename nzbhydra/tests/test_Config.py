@@ -45,7 +45,7 @@ class TestConfig(unittest.TestCase):
             cfg["main"]["baseUrl"] = u"https://www.somedomain.com/nzbhydra"
             json.dump(cfg, settingsfile)
         cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(cfg["main"]["externalUrl"], "https://www.somedomain.com/nzbhydra")
+        self.assertEqual(cfg["main"]["externalUrl"], "https://www.somedomain.com/nzbhydra", json.dumps(cfg))
         self.assertEqual(cfg["main"]["urlBase"], "/nzbhydra")
 
         with open("testsettings.cfg", "wb") as settingsfile:
@@ -112,7 +112,7 @@ class TestConfig(unittest.TestCase):
             cfg = copy.copy(testCfg)
             json.dump(cfg, settingsfile)
         cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(2, len(cfg["indexers"]["newznab"]))
+        self.assertEqual(2, len(cfg["indexers"]["newznab"]), json.dumps(cfg))
         self.assertEqual("newznab1", cfg["indexers"]["newznab"][0]["name"])
         self.assertEqual("newznab2", cfg["indexers"]["newznab"][1]["name"])
         self.assertTrue("accessType" in cfg["indexers"]["newznab"][0].keys())
@@ -136,7 +136,7 @@ class TestConfig(unittest.TestCase):
             cfg = copy.copy(testCfg)
             json.dump(cfg, settingsfile)
         cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(1, len(cfg["auth"]["users"]))
+        self.assertEqual(1, len(cfg["auth"]["users"]), json.dumps(cfg))
         self.assertIsNone(cfg["auth"]["users"][0]["username"])
         self.assertIsNone(cfg["auth"]["users"][0]["password"])
         self.assertTrue(cfg["auth"]["users"][0]["maySeeStats"])
@@ -288,7 +288,7 @@ class TestConfig(unittest.TestCase):
             cfg = copy.copy(testCfg)
             json.dump(cfg, settingsfile)
         cfg = config.migrate("testsettings.cfg")
-        self.assertIsNone(cfg["indexers"]["binsearch"]["hitLimit"])
+        self.assertIsNone(cfg["indexers"]["binsearch"]["hitLimit"], json.dumps(cfg))
         self.assertIsNone(cfg["indexers"]["nzbclub"]["hitLimit"])
         self.assertIsNone(cfg["indexers"]["nzbindex"]["hitLimit"])
         self.assertIsNone(cfg["indexers"]["omgwtfnzbs"]["hitLimit"])
