@@ -111,7 +111,7 @@ class NzbIndex(SearchModule):
         main_table = soup.find(id="results").find('table')
 
         if "No results found" in soup.text:
-            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
+            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False, rejected=0)
         if not main_table or not main_table.find("tbody"):
             self.error("Unable to find main table in NZBIndex page: %s..." % html[:500])
             self.debug(html[:500])

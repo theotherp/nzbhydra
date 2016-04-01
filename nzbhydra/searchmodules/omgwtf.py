@@ -239,10 +239,10 @@ class OmgWtf(SearchModule):
         self.debug("Started processing results")
 
         if "0 results found" in xml_response:
-            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
+            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False, rejected=0)
         if "search to short" in xml_response:
             self.info("omgwtf says the query was too short")
-            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False)
+            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False, rejected=0)
             
         entries = []
         countRejected = 0

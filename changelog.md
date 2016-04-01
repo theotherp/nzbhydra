@@ -1,8 +1,10 @@
 # NZB Hydra changelog
 
 ----------
-### 0.0.1a85
+### 0.0.1a86
+Fixed: TypeError when using OMGWTF. 
 
+### 0.0.1a85
 Changed: Try to solve database locked error.
 
 ### 0.0.1a84
