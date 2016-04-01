@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 # standard_library.install_aliases()
 import json
+import logging
 import unittest
 
 import arrow
@@ -27,6 +28,12 @@ class TestConfig(unittest.TestCase):
         if os.path.exists("testsettings.cfg"):
             os.remove("testsettings.cfg")
         shutil.copy("testsettings.cfg.orig", "testsettings.cfg")
+        
+        formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
+        stream_handler = logging.StreamHandler(sys.stdout)
+        stream_handler.setLevel("DEBUG")
+        stream_handler.setFormatter(formatter)
+        logging.getLogger("root").setLevel("DEBUG")
 
     def testMigration3to4(self):
         testCfg = {
