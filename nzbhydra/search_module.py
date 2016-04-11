@@ -239,7 +239,7 @@ class SearchModule(object):
             timeout = self.settings.timeout
         if timeout is None:
             timeout = config.settings.searching.timeout
-        if self.settings.username and self.settings.password:
+        if hasattr(self.settings, "username") and self.settings.username and self.settings.password:
             auth = HTTPBasicAuth(self.settings.username, self.settings.password)
             self.debug("Using HTTP auth")
         else:
