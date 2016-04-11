@@ -7,6 +7,7 @@ import time
 from builtins import str
 from flask import request
 from future import standard_library
+from requests.auth import HTTPBasicAuth
 
 from nzbhydra.log import removeSensitiveData
 
@@ -79,10 +80,10 @@ class SearchModule(object):
     def search(self, search_request):
         if search_request.type == "tv":
             if search_request.query is None and search_request.identifier_key is None and self.needs_queries:
-                self.logger.error("TV search without query or id or title is not possible with this indexer")
+                self.error("TV search without query or id or title is not possible with this indexer")
                 return []
             if search_request.query is None and not self.generate_queries:
-                self.logger.error("TV search is not possible with this provideer because query generation is disabled")
+                self.error("TV search is not possible with this provideer because query generation is disabled")
             if search_request.identifier_key in self.search_ids:
                 # Best case, we can search using the ID
                 urls = self.get_showsearch_urls(search_request)
@@ -98,10 +99,10 @@ class SearchModule(object):
                 urls = self.get_showsearch_urls(search_request)
         elif search_request.type == "movie":
             if search_request.query is None and search_request.title is None and search_request.identifier_key is None and self.needs_queries:
-                self.logger.error("Movie search without query or IMDB id or title is not possible with this indexer")
+                self.error("Movie search without query or IMDB id or title is not possible with this indexer")
                 return []
             if search_request.query is None and not self.generate_queries:
-                self.logger.error("Movie search is not possible with this provideer because query generation is disabled")
+                self.error("Movie search is not possible with this provideer because query generation is disabled")
             if search_request.identifier_key is not None and "imdbid" in self.search_ids:
                 # Best case, we can search using IMDB id
                 urls = self.get_moviesearch_urls(search_request)
@@ -238,8 +239,13 @@ class SearchModule(object):
             timeout = self.settings.timeout
         if timeout is None:
             timeout = config.settings.searching.timeout
-        self.logger.debug("Requesting %s with timeout %d" % (url, timeout))
-        return requests.get(url, timeout=timeout, verify=False, cookies=cookies, headers=headers)
+        if self.settings.username and self.settings.password:
+            auth = HTTPBasicAuth(self.settings.username, self.settings.password)
+            self.debug("Using HTTP auth")
+        else:
+            auth = None
+        self.debug("Requesting %s with timeout %d" % (url, timeout))
+        return requests.get(url, timeout=timeout, verify=False, cookies=cookies, headers=headers, auth=auth)
 
     def get_url_with_papi_access(self, url, type, cookies=None, timeout=None, saveToDb=True):
         papiaccess = IndexerApiAccess(indexer=self.indexer, type=type, url=url, time=arrow.utcnow().datetime)
@@ -258,7 +264,7 @@ class SearchModule(object):
             papiaccess.response_successful = True
             indexerStatus = self.handle_indexer_success(saveIndexerStatus=saveToDb)
         except RequestException as e:
-            self.logger.error("Error while connecting to URL %s: %s" % (url, str(e)))
+            self.error("Error while connecting to URL %s: %s" % (url, str(e)))
             papiaccess.error = "Connection failed: %s" % removeSensitiveData(str(e))
             response = None
             indexerStatus = self.handle_indexer_failure("Connection failed: %s" % removeSensitiveData(str(e)), saveIndexerStatus=saveToDb)
@@ -303,7 +309,7 @@ class SearchModule(object):
 
                 if request is not None:
                     self.check_auth(request.text)
-                    self.logger.debug("Successfully loaded URL %s" % request.url)
+                    self.debug("Successfully loaded URL %s" % request.url)
                     try:
 
                         parsed_results = self.process_query_result(request.content, searchRequest)
@@ -316,15 +322,15 @@ class SearchModule(object):
                         papiaccess.response_successful = True
                         self.handle_indexer_success(False)
                     except Exception as e:
-                        self.logger.exception("Error while processing search results from indexer %s" % self)
+                        self.exception("Error while processing search results from indexer %s" % self)
                         raise IndexerResultParsingException("Error while parsing the results from indexer", self)
             except IndexerAuthException as e:
-                self.logger.error("Unable to authorize with %s: %s" % (e.search_module, e.message))
+                self.error("Unable to authorize with %s: %s" % (e.search_module, e.message))
                 papiaccess.error = "Authorization error :%s" % e.message
                 self.handle_indexer_failure(reason="Authentication failed", disable_permanently=True)
                 papiaccess.response_successful = False
             except IndexerAccessException as e:
-                self.logger.error("Unable to access %s: %s" % (e.search_module, e.message))
+                self.error("Unable to access %s: %s" % (e.search_module, e.message))
                 papiaccess.error = "Access error: %s" % e.message
                 self.handle_indexer_failure(reason="Access failed")
                 papiaccess.response_successful = False
@@ -333,7 +339,7 @@ class SearchModule(object):
                 self.handle_indexer_failure(reason="Parsing results failed")
                 papiaccess.response_successful = False
             except Exception as e:
-                self.logger.exception("An error error occurred while searching: %s", e)
+                self.exception("An error error occurred while searching: %s", e)
                 if papiaccess is not None:
                     papiaccess.error = "Unknown error :%s" % e
                     papiaccess.response_successful = False
@@ -342,7 +348,7 @@ class SearchModule(object):
                     #papiaccess.save()
                     psearch.successful = papiaccess.response_successful
                 else:
-                    self.logger.error("Unable to save API response to database")
+                    self.error("Unable to save API response to database")
                 psearch.results = total_results
                 #psearch.save()
         return QueriesExecutionResult(didsearch= True, results=results, indexerSearchEntry=psearch, indexerApiAccessEntry=papiaccess, indexerStatus=indexerStatus, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)

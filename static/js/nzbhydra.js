@@ -2731,7 +2731,7 @@ function ConfigFields() {
                 }
             }
         ]);
-        
+
         if (testtype == "newznab") {
             fieldset.push(
                 {
@@ -2755,7 +2755,34 @@ function ConfigFields() {
                         label: 'API hit reset time',
                         help: 'Local time at which the API hit counter is reset'
                     }
-                })
+                });
+            fieldset.push(
+                {
+                    key: 'username',
+                    type: 'horizontalInput',
+                    hideExpression: '!model.enabled',
+                    templateOptions: {
+                        type: 'text',
+                        required: false,
+                        label: 'Username',
+                        help: 'Only needed if indexer requires HTTP auth for API access (rare)'
+                    }
+                }
+            );
+            fieldset.push(
+                {
+                    key: 'password',
+                    type: 'horizontalInput',
+                    hideExpression: '!model.enabled || !model.username',
+                    templateOptions: {
+                        type: 'text',
+                        required: false,
+                        label: 'Password',
+                        help: 'Only needed if indexer requires HTTP auth for API access (rare)'
+                    }
+                }
+            )
+
         }
 
 
@@ -3177,7 +3204,6 @@ function ConfigFields() {
                                 help: "Not all indexers provide this information"
                             }
                         },
-
                         {
                             key: 'ignoreWords',
                             type: 'horizontalInput',
@@ -3188,7 +3214,6 @@ function ConfigFields() {
                                 help: "Results with any of these words in the title will be ignored"
                             }
                         },
-
                         {
                             key: 'requireWords',
                             type: 'horizontalInput',
@@ -3199,7 +3224,6 @@ function ConfigFields() {
                                 help: "Only results with at least of these words in the title will be displayed"
                             }
                         },
-
                         {
                             key: 'maxAge',
                             type: 'horizontalInput',
@@ -3212,8 +3236,6 @@ function ConfigFields() {
                                 }
                             }
                         },
-
-
                         {
                             key: 'generate_queries',
                             type: 'horizontalMultiselect',
@@ -3235,6 +3257,7 @@ function ConfigFields() {
                                 required: true
                             }
                         }
+
                     ]
                 },
                 {
@@ -3248,7 +3271,7 @@ function ConfigFields() {
                             type: 'horizontalSelect',
                             templateOptions: {
                                 type: 'select',
-                                label: 'Type',
+                                label: 'HTML parser',
                                 options: [
                                     {name: 'Default BS (slow)', value: 'html.parser'},
                                     {name: 'LXML (faster, needs to be installed separately)', value: 'lxml'}
@@ -3812,6 +3835,8 @@ function ConfigFields() {
                             name: null,
                             showOnSearch: true,
                             score: 0,
+                            username: null,
+                            password: null,
                             preselect: true,
                             accessType: "both",
                             search_ids: ["imdbid", "rid", "tvdbid"],

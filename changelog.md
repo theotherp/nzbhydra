@@ -4,6 +4,8 @@
 ### 0.0.1a87
 Added: Show NZB downloads per indexer in stats.
 
+Added: HTTP auth for indexers (rarely needed).
+
 Fixed: Re-enable indexer on status page.
 
 ### 0.0.1a86

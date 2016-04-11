@@ -58,12 +58,14 @@ initialConfig = {
             "hitLimitResetTime": None,
             "host": "https://binsearch.info",
             "name": "Binsearch",
+            "password": None,
             "preselect": True,
             "score": 0,
             "search_ids": [],
             "searchTypes": [],
             "showOnSearch": True,
-            "timeout": None
+            "timeout": None,
+            "username": None
         },
         "nzbclub": {
             "accessType": "internal",
@@ -71,13 +73,16 @@ initialConfig = {
             "hitLimit": 0,
             "hitLimitResetTime": None,
             "host": "https://www.nzbclub.com",
-            "name": "NZBClub",
+            "name": "NZBClub", 
+            "password": None,
             "preselect": True,
             "score": 0,
             "search_ids": [],
             "searchTypes": [],
             "showOnSearch": True,
-            "timeout": None
+            "timeout": None,
+            "username": None
+
         },
         "nzbindex": {
             "accessType": "internal",
@@ -87,12 +92,15 @@ initialConfig = {
             "hitLimitResetTime": None,
             "host": "https://nzbindex.com",
             "name": "NZBIndex",
+            "password": None,
             "preselect": True,
             "score": 0,
             "search_ids": [],
             "searchTypes": [],
             "showOnSearch": True,
-            "timeout": None
+            "timeout": None,
+            "username": None
+
         },
         "womble": {
             "accessType": "external",
@@ -101,12 +109,15 @@ initialConfig = {
             "hitLimitResetTime": None,
             "host": "https://newshost.co.za",
             "name": "Womble",
+            "password": None,
             "preselect": True,
             "score": 0,
             "search_ids": [],
             "searchTypes": [],
             "showOnSearch": False,
-            "timeout": None            
+            "timeout": None,
+            "username": None
+
         },
         "newznab": [],
         "omgwtfnzbs": {
@@ -117,6 +128,7 @@ initialConfig = {
             "hitLimitResetTime": None,
             "host": "https://api.omgwtfnzbs.org",
             "name": "omgwtfnzbs.org",
+            "password": None,
             "preselect": True,
             "score": 0,
             "search_ids": [
@@ -125,13 +137,13 @@ initialConfig = {
             "searchTypes": [],
             "showOnSearch": True,
             "timeout": None,
-            "username": "",
+            "username": ""
         }
     },
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 13,
+        "configVersion": 14,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -435,6 +447,26 @@ def migrate(settingsFilename):
                         for n in config["indexers"]["newznab"]:
                             n["hitLimit"] = None
                             n["hitLimitResetTime"] = arrow.get(0).isoformat()
+
+                if config["main"]["configVersion"] == 13:
+                    with version_update(config, 14):
+                        addLogMessage(20, "Adding empty username and password to indexers")
+                        config["indexers"]["binsearch"]["username"] = None
+                        config["indexers"]["nzbclub"]["username"] = None
+                        config["indexers"]["nzbindex"]["username"] = None
+                        config["indexers"]["omgwtfnzbs"]["username"] = None
+                        config["indexers"]["womble"]["username"] = None
+
+                        config["indexers"]["binsearch"]["password"] = None
+                        config["indexers"]["nzbclub"]["password"] = None
+                        config["indexers"]["nzbindex"]["password"] = None
+                        config["indexers"]["omgwtfnzbs"]["password"] = None
+                        config["indexers"]["womble"]["password"] = None
+
+                        from nzbhydra.searchmodules import newznab
+                        for n in config["indexers"]["newznab"]:
+                            n["username"] = None
+                            n["password"] = None
 
 
             except Exception as e:
