@@ -846,7 +846,7 @@ internalapi__enableindexer_args = {
 @use_args(internalapi__enableindexer_args)
 def internalapi_enable_indexer(args):
     logger.debug("Enabling indexer %s" % args["name"])
-    indexer_status = IndexerStatus().select().join(Indexer).where(fn.lower(Indexer.name) == args["name"].lower())
+    indexer_status = IndexerStatus().select().join(Indexer).where(fn.lower(Indexer.name) == args["name"].lower()).get()
     indexer_status.disabled_until = 0
     indexer_status.reason = None
     indexer_status.level = 0
@@ -1070,6 +1070,7 @@ def internalapi_update():
 
 
 def run(host, port, basepath):
+    # type: (str, int, str) -> object
     context = create_context()
     configureFolders(basepath)
     for handler in logger.handlers:

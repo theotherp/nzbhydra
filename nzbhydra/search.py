@@ -99,6 +99,7 @@ def canUseIdKey(indexer, key):
 
 
 def pick_indexers(search_request, internal=True):
+    # type: (nzbhydra.search.SearchRequest, bool) -> List[nzbhydra.search_modules.SearchModule]
     query_supplied = True if search_request.query else False
     queryCanBeGenerated = None #Store if we can generate a query from IDs. Initiall true but when we need this the first time and query generation fails we set it to false
     picked_indexers = []
@@ -183,6 +184,7 @@ pseudo_cache = {}
 
 
 def search(internal, search_request):
+    # type: (bool, nzbhydra.search.SearchRequest) -> Dict[unicode, future.types.newint.newint]
     if search_request.maxage is None and config.settings.searching.maxAge:
         search_request.maxage = config.settings.searching.maxAge
         logger.info("Will ignore results older than %d days" % search_request.maxage)

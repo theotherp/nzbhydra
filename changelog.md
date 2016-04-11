@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a87
+Fixed: Re-enable indexer on status page.
+
 ### 0.0.1a86
 Added: Feature to limit the number of maximum API hits for an indexer in 24 hours.
 
