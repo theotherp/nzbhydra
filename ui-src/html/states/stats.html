@@ -1,6 +1,7 @@
 <uib-tabset style="text-align: center">
     <uib-tab heading="Stats" active="tabs[0].active" select="goToState(0)">
         <div class="row">
+            
             <div class="col-md-9">
                 <table class="table">
                     <caption>Avg. response times</caption>
@@ -64,7 +65,23 @@
             <div class="col-md-2"></div>
 
             <div class="col-md-9">
-                
+                <table class="table">
+                    <caption>NZB downloads per indexer</caption>
+                    <thead>
+                    <tr>
+                        <th>Indexer</th>
+                        <th>Total</th>
+                        <th>% of all</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="indexerDownloads in indexerDownloadShares">
+                        <td>{{ indexerDownloads.name }}</td>
+                        <td>{{ indexerDownloads.total | number: 0}}</td>
+                        <td>{{ indexerDownloads.share | number: 0 }}</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -73,11 +90,11 @@
     <uib-tab heading="Indexer statuses" active="tabs[1].active" select="goToState(1)">
         <div indexer-statuses></div>
     </uib-tab>
-    
+
     <uib-tab heading="Searches" active="tabs[2].active" select="goToState(2)">
         <div search-history></div>
     </uib-tab>
-    
+
     <uib-tab heading="NZB Downloads" active="tabs[3].active" select="goToState(3)">
         <div download-history></div>
     </uib-tab>

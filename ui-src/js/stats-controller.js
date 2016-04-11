@@ -9,7 +9,8 @@ function StatsController($scope, stats, $state) {
     $scope.avgResponseTimes = stats.avgResponseTimes;
     $scope.avgIndexerSearchResultsShares = stats.avgIndexerSearchResultsShares;
     $scope.avgIndexerAccessSuccesses = stats.avgIndexerAccessSuccesses;
-
+    $scope.indexerDownloadShares = stats.indexerDownloadShares;
+    
 
     $scope.tabs = [
         {

@@ -2,6 +2,8 @@
 
 ----------
 ### 0.0.1a87
+Added: Show NZB downloads per indexer in stats.
+
 Fixed: Re-enable indexer on status page.
 
 ### 0.0.1a86

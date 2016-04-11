@@ -48,7 +48,7 @@ from nzbhydra.database import IndexerStatus, Indexer
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
 from nzbhydra.search import SearchRequest
-from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses
+from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses, getIndexerDownloadStats
 from nzbhydra.update import get_rep_version, get_current_version, update, getChangelog, getVersionHistory
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import getLogs
@@ -780,7 +780,8 @@ def internalapi_getstats():
     logger.debug("Get stats")
     return jsonify({"avgResponseTimes": get_avg_indexer_response_times(),
                     "avgIndexerSearchResultsShares": get_avg_indexer_search_results_share(),
-                    "avgIndexerAccessSuccesses": get_avg_indexer_access_success()})
+                    "avgIndexerAccessSuccesses": get_avg_indexer_access_success(),
+                    "indexerDownloadShares": getIndexerDownloadStats()})
 
 
 @app.route('/internalapi/getindexerstatuses')

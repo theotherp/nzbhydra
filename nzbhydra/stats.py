@@ -3,9 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from future import standard_library
-
-#standard_library.install_aliases()
+# standard_library.install_aliases()
 from builtins import *
 from peewee import fn, JOIN
 from nzbhydra import database
@@ -14,7 +12,7 @@ from nzbhydra.database import Indexer, IndexerApiAccess, IndexerNzbDownload, Ind
 
 def get_indexer_response_times():
     result = []
-    for p in Indexer.select():
+    for p in Indexer.select().order_by(Indexer.name):
         print("Limiting stats to 100 for testing only!")
         result.append({"key": p.name,
                        "values": [{"responseTime": x.response_time, "date": x.time.timestamp} for x in IndexerApiAccess().select(IndexerApiAccess.response_time, IndexerApiAccess.time).where((IndexerApiAccess.response_successful) & (IndexerApiAccess.indexer == p)).join(Indexer).limit(1)]})
@@ -42,33 +40,33 @@ def get_avg_indexer_search_results_share():
     results = []
     for p in Indexer.select().order_by(Indexer.name):
         result = database.db.execute_sql(
-            "select (100 * (select cast(sum(ps.results) as float) from indexersearch ps where ps.search_id in (select ps.search_id from indexersearch ps where ps.indexer_id == %d) and ps.indexer_id == %d)) / (select sum(ps.results) from indexersearch ps where ps.search_id in (select ps.search_id from indexersearch ps where ps.indexer_id == %d)) as sumAllResults" % (
-                p.id, p.id, p.id)).fetchone()
+                "select (100 * (select cast(sum(ps.results) as float) from indexersearch ps where ps.search_id in (select ps.search_id from indexersearch ps where ps.indexer_id == %d) and ps.indexer_id == %d)) / (select sum(ps.results) from indexersearch ps where ps.search_id in (select ps.search_id from indexersearch ps where ps.indexer_id == %d)) as sumAllResults" % (
+                    p.id, p.id, p.id)).fetchone()
         results.append({"name": p.name, "avgResultsShare": result[0] if result[0] is not None else "N/A"})
     return results
 
 
 def get_avg_indexer_access_success():
     results = database.db.execute_sql(
-        """ 
-        SELECT
-          p.name,
-          failed.failed
-          ,success.success
-        FROM indexer p left outer join (SELECT
-                           count(1)     AS failed,
-                           p.indexer_id AS pid1
-                         FROM indexerapiaccess p
-                         WHERE NOT p.response_successful
-                         GROUP BY p.indexer_id) AS failed on p.id == failed.pid1
-        left outer join (SELECT
-                          count(1)     AS success,
-                          p.indexer_id AS pid2
-                        FROM indexerapiaccess p
-                        WHERE p.response_successful
-                        GROUP BY p.indexer_id) AS success
-        on success.pid2 = p.id
-        """).fetchall()
+            """ 
+            SELECT
+              p.name,
+              failed.failed
+              ,success.success
+            FROM indexer p left outer join (SELECT
+                               count(1)     AS failed,
+                               p.indexer_id AS pid1
+                             FROM indexerapiaccess p
+                             WHERE NOT p.response_successful
+                             GROUP BY p.indexer_id) AS failed on p.id == failed.pid1
+            left outer join (SELECT
+                              count(1)     AS success,
+                              p.indexer_id AS pid2
+                            FROM indexerapiaccess p
+                            WHERE p.response_successful
+                            GROUP BY p.indexer_id) AS success
+            on success.pid2 = p.id
+            """).fetchall()
     result = []
     for i in results:
         name = i[0]
@@ -82,19 +80,30 @@ def get_avg_indexer_access_success():
     return result
 
 
+def getIndexerDownloadStats():
+    results = []
+    allDownloadsCount = IndexerNzbDownload.select().count()
+    for p in Indexer.select().order_by(Indexer.name):
+        dlCount = IndexerNzbDownload().select(Indexer.name, IndexerApiAccess.response_successful).join(IndexerSearch, JOIN.LEFT_OUTER).join(Search, JOIN.LEFT_OUTER).switch(IndexerNzbDownload).join(IndexerApiAccess, JOIN.LEFT_OUTER).join(Indexer, JOIN.LEFT_OUTER).where(Indexer.id == p).count()
+        results.append({"name": p.name,
+                        "total": dlCount,
+                        "share": 100 / (allDownloadsCount / dlCount) if allDownloadsCount > 0 and dlCount > 0 else 0})
+    return results
+
+
 def get_nzb_downloads(page=0, limit=100, type=None):
-    query = IndexerNzbDownload()\
-        .select(Indexer.name, IndexerNzbDownload.title, IndexerNzbDownload.time, IndexerNzbDownload.guid, Search.internal, IndexerApiAccess.response_successful, IndexerApiAccess.username)\
-        .join(IndexerSearch, JOIN.LEFT_OUTER)\
-        .join(Search, JOIN.LEFT_OUTER)\
-        .switch(IndexerNzbDownload)\
-        .join(IndexerApiAccess, JOIN.LEFT_OUTER)\
+    query = IndexerNzbDownload() \
+        .select(Indexer.name, IndexerNzbDownload.title, IndexerNzbDownload.time, IndexerNzbDownload.guid, Search.internal, IndexerApiAccess.response_successful, IndexerApiAccess.username) \
+        .join(IndexerSearch, JOIN.LEFT_OUTER) \
+        .join(Search, JOIN.LEFT_OUTER) \
+        .switch(IndexerNzbDownload) \
+        .join(IndexerApiAccess, JOIN.LEFT_OUTER) \
         .join(Indexer, JOIN.LEFT_OUTER)
     if type == "Internal":
         query = query.where(Search.internal)
     elif type == "API":
         query = query.where(~Search.internal)
-    
+
     total_downloads = query.count()
     nzb_downloads = list(query.order_by(IndexerNzbDownload.time.desc()).paginate(page, limit).dicts())
     downloads = {"totalDownloads": total_downloads, "nzbDownloads": nzb_downloads}
