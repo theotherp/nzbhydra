@@ -25,7 +25,7 @@ body {
 
 #footer {
   background-color: @brand-primary;
-  color: white;
+  color: @body-bg;
 }
 
 /* ------ featurette */
@@ -34,7 +34,7 @@ body {
   width: 100%;
   height: 10%; /* set a pixel height and then remove the body,html height */
   vertical-align: middle;
-  color: #fff;
+  color: @body-bg;
 }
 
 .featurette-inner {
@@ -516,7 +516,7 @@ a.disabled:hover {
   width: 100%;
   height: 100%;
   opacity: 0.5;
-  background-color: black;
+  background-color: spin(@body-bg, 180);
 }
 
 .block-ui-message {
