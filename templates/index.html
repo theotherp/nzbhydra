@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
     <link href="static/css/alllibs.css" rel="stylesheet">
-    <link href="static/css/nzbhydra.css" rel="stylesheet">
+    <link href="static/css/{{ theme }}" rel="stylesheet">
     <link rel="shortcut icon" href="static/img/favicon.ico">
 
 </head>
@@ -33,7 +33,7 @@
 
 
     <div style="margin: auto; max-width: 1400px;">
-        <img src="static/img/banner.png" style="margin-bottom: 25px;">
+        <div id="banner"></div>
         <div ui-view class="container-fluid" block-ui="main">
         </div>
     </div>

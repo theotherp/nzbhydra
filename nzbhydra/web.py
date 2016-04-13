@@ -275,7 +275,7 @@ def base(path):
     logger.debug("Sending index.html")
     base_url = ("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/"
     _, currentVersion = get_current_version()
-    return render_template("index.html", base_url=base_url, isAdmin=isAdminLoggedIn(), onProd="false" if config.settings.main.debug else "true")
+    return render_template("index.html", base_url=base_url, isAdmin=isAdminLoggedIn(), onProd="false" if config.settings.main.debug else "true", theme=config.settings.main.theme + ".css")
 
 
 def render_search_results_for_api(search_results, total, offset, output="xml"):
@@ -1015,6 +1015,13 @@ def internalapi_getcategories():
         return jsonify({"success": True, "categories": categories})
     except DownloaderException as e:
         return jsonify({"success": False, "message": e.message})
+
+
+@app.route('/internalapi/gettheme')
+@requires_auth("main")
+def internalapi_gettheme():
+    logger.debug("Get theme request")
+    return send_file("../static/css/default.css")
 
 
 def restart(func=None, afterUpdate=False):

@@ -1,5 +1,5 @@
 @import "../../bower_components/bootstrap-less/less/bootstrap.less";
-@import "slate-variables.less";
+@import "../../bower_components/bootstrap-switch/src/less/bootstrap3/bootstrap-switch.less";
 
 @grid-columns: 20;
 
@@ -236,6 +236,7 @@ a.disabled:hover {
   display: table;
   width: 100%;
   background-color: @table-bg;
+  border-collapse: separate;
 }
 
 .search-results-header {
@@ -263,6 +264,7 @@ a.disabled:hover {
 .search-results-cell {
   //display: table-cell;
   text-align: left;
+  border-top-width: 1px;
 }
 
 .nav-tabs > li, .nav-pills > li {
@@ -409,7 +411,7 @@ a.disabled:hover {
 }
 
 .input-group-btn2 {
-  border: 1px solid @navbar-default-border;
+  border: 1px solid @input-border;
   border-radius: @border-radius-base;
 }
 
@@ -430,7 +432,7 @@ a.disabled:hover {
   border: 1px solid @brand-primary;
 }
 
-.search-results-table > tbody > tr > td {
+.search-results-table > tbody:nth-child(3) > tr > td {
   border-top-width: 0 !important;
 }
 
@@ -479,13 +481,9 @@ a.disabled:hover {
   background-color: darken(@table-bg, 5%);
 }
 
-.nav-tabs > li > a:hover {
-  border-color: @nav-tabs-link-hover-border-color @nav-tabs-link-hover-border-color transparent;
-  background-color: transparent;
+.form-control {
+  height: 36px;
 }
-
-@input-color-placeholder: #c1c1c1;
-
 
 .form-control::-webkit-input-placeholder {
   color: @input-color-placeholder;
@@ -516,18 +514,19 @@ a.disabled:hover {
   width: 100%;
   height: 100%;
   opacity: 0.5;
-  background-color: spin(@body-bg, 180);
+  background-color: @block-overlay-bg;
 }
 
 .block-ui-message {
-  background-color: @navbar-inverse-bg;
-  color: @brand-primary;
+  background-color: @block-message-bg;
+  color: @block-message-color;
 }
 
 .nfo {
   background-color: transparent;
   border-width: 0;
-  text-align: left
+  text-align: left;
+  color: @text-color;
 }
 
 input[type='number'] {
@@ -573,6 +572,20 @@ input:focus + .input-group-addon
   border-color: @input-border-focus;
   outline: 0;
   .box-shadow(~"inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px @{color-rgba}");
+}
 
+#banner {
+  background-image: @banner-url;
+  background-repeat: no-repeat;
+  width: 547px; 
+  height: 150px;
+  margin: 0 auto 25px auto;
+  padding-left: 547px;
+  display: block;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
 
+.input-group-addon {
+  color: @input-group-addon-color;
 }

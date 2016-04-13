@@ -65,13 +65,23 @@ gulp.task('scripts', function () {
 
 gulp.task('less', function () {
     var dest = 'static/css';
-    gulp.src('ui-src/less/nzbhydra.less')
+    var defaultTheme = gulp.src('ui-src/less/default.less')
         .pipe(sourcemaps.init())
         .pipe(less())
         .on('error', swallowError)
         .pipe(sourcemaps.write("."))
         //.pipe(newer(dest))
         .pipe(gulp.dest(dest));
+
+    var darkTheme = gulp.src('ui-src/less/dark.less')
+        .pipe(sourcemaps.init())
+        .pipe(less())
+        .on('error', swallowError)
+        .pipe(sourcemaps.write("."))
+        //.pipe(newer(dest))
+        .pipe(gulp.dest(dest));
+    
+    return merge(defaultTheme, darkTheme);
 });
 
 gulp.task('copy-assets', function () {

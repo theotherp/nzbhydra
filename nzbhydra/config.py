@@ -143,7 +143,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 14,
+        "configVersion": 15,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -160,6 +160,7 @@ initialConfig = {
         "sslcert": None,
         "sslkey": None,
         "startupBrowser": True,
+        "theme": "default",
         "urlBase": None,
         "useLocalUrlForApiAccess": True,
     },
@@ -468,6 +469,11 @@ def migrate(settingsFilename):
                             n["username"] = None
                             n["password"] = None
 
+                if config["main"]["configVersion"] == 14:
+                    with version_update(config, 15):
+                        addLogMessage(20, "Setting default theme")
+                        config["main"]["theme"] = "default"
+                        
 
             except Exception as e:
                 addLogMessage(30, "An error occurred while migrating the config file.")

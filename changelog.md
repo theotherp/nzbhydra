@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a88
+Added: Dark theme. Feedback appreciated.
+
 ### 0.0.1a87
 Added: Show NZB downloads per indexer in stats.
 

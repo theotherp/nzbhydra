@@ -446,6 +446,26 @@ function ConfigFields() {
                 },
                 {
                     wrapper: 'fieldset',
+                    templateOptions: {label: 'UI'},
+                    fieldGroup: [
+
+                        {
+                            key: 'theme',
+                            type: 'horizontalSelect',
+                            templateOptions: {
+                                type: 'select',
+                                label: 'Theme',
+                                help: 'Reload page after saving',
+                                options: [
+                                    {name: 'Default', value: 'default'},
+                                    {name: 'Dark', value: 'dark'}
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    wrapper: 'fieldset',
                     templateOptions: {label: 'Security'},
                     fieldGroup: [
 
@@ -520,6 +540,7 @@ function ConfigFields() {
 
                     ]
                 },
+                
                 {
                     wrapper: 'fieldset',
                     templateOptions: {label: 'Other'},
