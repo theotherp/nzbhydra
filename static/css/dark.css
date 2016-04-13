@@ -2908,7 +2908,7 @@ output {
   padding-top: 7px;
   font-size: 14px;
   line-height: 1.42857143;
-  color: #7a8288;
+  color: #c8c8c8;
 }
 .form-control {
   display: block;
@@ -2917,7 +2917,7 @@ output {
   padding: 6px 12px;
   font-size: 14px;
   line-height: 1.42857143;
-  color: #7a8288;
+  color: #c8c8c8;
   background-color: #1f2328;
   background-image: none;
   border: 1px solid #cccccc;
@@ -2935,14 +2935,14 @@ output {
   box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
 .form-control::-moz-placeholder {
-  color: #3a3f44;
+  color: #7a8288;
   opacity: 1;
 }
 .form-control:-ms-input-placeholder {
-  color: #3a3f44;
+  color: #7a8288;
 }
 .form-control::-webkit-input-placeholder {
-  color: #3a3f44;
+  color: #7a8288;
 }
 .form-control[disabled],
 .form-control[readonly],
@@ -4167,7 +4167,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   font-size: 14px;
   font-weight: normal;
   line-height: 1;
-  color: #7a8288;
+  color: #c8c8c8;
   text-align: center;
   background-color: #999999;
   border: 1px solid #cccccc;
@@ -7194,7 +7194,7 @@ a.expand-collapse:focus {
 }
 .by-id-checkbox {
   font-size: 14px;
-  color: #7a8288;
+  color: #c8c8c8;
   background-color: #1f2328;
   background-image: none;
   border: 1px solid #cccccc;
@@ -7413,19 +7413,19 @@ a.disabled:hover {
 }
 .ui-select-choices-row > a {
   background-color: #1f2328;
-  color: #7a8288;
+  color: #c8c8c8;
 }
 .ui-select-match > .btn {
   background-color: #1f2328;
-  color: #7a8288;
+  color: #c8c8c8;
 }
 .dropdown-menu {
   background-color: #1f2328;
-  color: #7a8288;
+  color: #c8c8c8;
 }
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary {
   background-color: #62c462;
-  color: #ffffff;
+  color: #3a3f44;
 }
 .input-group-btn2 {
   border: 1px solid #cccccc;
@@ -7487,16 +7487,16 @@ a.disabled:hover {
   height: 36px;
 }
 .form-control::-webkit-input-placeholder {
-  color: #3a3f44;
+  color: #7a8288;
 }
 .form-control:-moz-placeholder {
-  color: #3a3f44;
+  color: #7a8288;
 }
 .form-control::-moz-placeholder {
-  color: #3a3f44;
+  color: #7a8288;
 }
 .form-control:-ms-input-placeholder {
-  color: #3a3f44;
+  color: #7a8288;
 }
 .bootstrap-switch {
   border: 1px solid #cccccc;
