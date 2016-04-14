@@ -206,7 +206,7 @@ def search(internal, search_request):
         cache_entry["dbsearch"] = dbsearch
         
         #Parse query for ignored words
-        search_request.ignoreWords = list(filter(bool, config.settings.searching.ignoreWords.split(",")))
+        search_request.ignoreWords = [x.lower().strip() for x in list(filter(bool, config.settings.searching.ignoreWords.split(",")))]
         if search_request.query:
             ignoreWords = [str(x) for x in re.findall(r"[\s|\b]\-\-(?P<term>[\w\.\-]+)", search_request.query)]
             if len(ignoreWords) > 0:

@@ -332,14 +332,13 @@ class NewzNab(SearchModule):
         return [f.url]
 
     def addExcludedWords(self, query, search_request):
-        for word in search_request.ignoreWords:
-            word = word.strip().lower()
-            if " " in word or "-" in word or "." in word:
-                logger.debug('Not using ignored word "%s" in query because it contains a space, dash or dot which is not supported by newznab queries' % word)
-                continue
-            if "nzbgeek" in self.settings.host: #NZBGeek isn't newznab but sticks to its standards in most ways but not in this. Instead of adding a new search module just for this small part I added this small POC here
-                query += " -" + word
-            else:
+        if "nzbgeek" in self.settings.host:  # NZBGeek isn't newznab but sticks to its standards in most ways but not in this. Instead of adding a new search module just for this small part I added this small POC here
+            query += " --" + " ".join([x for x in search_request.ignoreWords if not (" " in x or "-" in x or "." in x)])
+        else:
+            for word in search_request.ignoreWords:
+                if " " in word or "-" in word or "." in word:
+                    logger.debug('Not using ignored word "%s" in query because it contains a space, dash or dot which is not supported by newznab queries' % word)
+                    continue
                 query += " --" + word
         return query
 
