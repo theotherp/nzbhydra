@@ -1,6 +1,11 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a89
+Added: Option to set git executable used for updates.
+
+Changed: Minor changes in dark theme.
+
 ### 0.0.1a88
 Added: Dark theme. Feedback appreciated.
 

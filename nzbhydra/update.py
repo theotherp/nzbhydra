@@ -176,7 +176,12 @@ class GitUpdateManager(UpdateManager):
     def _find_working_git(self):
         test_cmd = 'version'
 
-        main_git = 'git'
+        if config.settings.main.gitPath is not None:
+            main_git = config.settings.main.gitPath 
+            logger.debug("Using configured git executable ath %s" % main_git)
+        else:
+            logger.debug("Git executable not configured, trying to call git globally")
+            main_git = 'git'
 
         logger.debug("Checking if we can use git commands: " + main_git + ' ' + test_cmd)
         output, err, exit_status = self._run_git(main_git, test_cmd) 
@@ -226,7 +231,7 @@ class GitUpdateManager(UpdateManager):
             exit_status = 1
             return output, err, exit_status
 
-        cmd = git_path + ' ' + args
+        cmd = '"' + git_path + '"' + ' ' + args
 
         try:
             logger.debug("Executing " + cmd + " with your shell in " + self.main_dir)
@@ -264,7 +269,7 @@ class GitUpdateManager(UpdateManager):
     def update(self):
         self.backup()
         
-        logger.debug("Calling %s %s" % (self._git_path, 'pull origin ' + self.branch))
+        logger.debug('Calling "%s" %s' % (self._git_path, 'pull origin ' + self.branch))
         output, err, exit_status = self._run_git(self._git_path, 'pull origin ' + self.branch)  
         
         if exit_status == 0:

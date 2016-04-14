@@ -3099,8 +3099,8 @@ function ConfigFields() {
                                     {name: 'Critical', value: 'CRITICAL'},
                                     {name: 'Error', value: 'ERROR'},
                                     {name: 'Warning', value: 'WARNING'},
-                                    {name: 'Debug', value: 'DEBUG'},
-                                    {name: 'Info', value: 'INFO'}
+                                    {name: 'Info', value: 'INFO'},
+                                    {name: 'Debug', value: 'DEBUG'}
                                 ]
                             },
                             watcher: {
@@ -3141,6 +3141,31 @@ function ConfigFields() {
 
                     ]
                 },
+                {
+                    wrapper: 'fieldset',
+                    templateOptions: {label: 'Updating'},
+                    fieldGroup: [
+
+                        {
+                            key: 'gitPath',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                label: 'Git executable',
+                                help: 'Set if git is not in your path'
+                            }
+                        },
+                        {
+                            key: 'branch',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Repository branch',
+                                required: true,
+                                help: 'Stay on master. Seriously...'
+                            }
+                        }
+                    ]
+                },
                 
                 {
                     wrapper: 'fieldset',
@@ -3173,16 +3198,6 @@ function ConfigFields() {
                             templateOptions: {
                                 type: 'switch',
                                 label: 'Open browser on startup'
-                            }
-                        },
-                        {
-                            key: 'branch',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'Repository branch',
-                                required: true,
-                                help: 'Stay on master. Seriously...'
                             }
                         }
                     ]

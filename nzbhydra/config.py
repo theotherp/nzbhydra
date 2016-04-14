@@ -147,6 +147,7 @@ initialConfig = {
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
+        "gitPath": None,
         "host": "0.0.0.0",
         "logging": {
             "consolelevel": "INFO",
