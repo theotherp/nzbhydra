@@ -325,7 +325,11 @@ class NewzNab(SearchModule):
         query = search_request.query
         if query:
             for word in search_request.ignoreWords:
-                query += " --" + word.strip().lower()
+                word = word.strip().lower()
+                if " " in word or "-" in word or "." in word:
+                    logger.debug('Not using ignored word "%s" in query because it contains a space, dash or dot which is not supported by newznab queries' % word)
+                    continue
+                query += " --" + word
             f = f.add({"q": query})
         if search_request.maxage:
             f = f.add({"maxage": search_request.maxage})

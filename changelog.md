@@ -4,6 +4,8 @@
 ### 0.0.1a89
 Added: Option to set git executable used for updates.
 
+Fixed: Don't try to exclude words with dots, dashes or spaces in queries if the indexer doesn't support it. Indexers that don't follow newznab standards (-- prefix for exclusions) will still not work properly, for now.
+
 Changed: Minor changes in dark theme.
 
 ### 0.0.1a88

@@ -208,11 +208,11 @@ def search(internal, search_request):
         #Parse query for ignored words
         search_request.ignoreWords = list(filter(bool, config.settings.searching.ignoreWords.split(",")))
         if search_request.query:
-            ignoreWords = [str(x) for x in re.findall(r"[\s|\b]\-\-(?P<term>\w+)", search_request.query)]
+            ignoreWords = [str(x) for x in re.findall(r"[\s|\b]\-\-(?P<term>[\w\.\-]+)", search_request.query)]
             if len(ignoreWords) > 0:
                 logger.debug("Query before removing NOT terms: %s" % search_request.query)
                 search_request.query = re.sub(r"[\s|\b]\-\-(?P<term>\w+)", "", search_request.query)
-                logger.debug("Query before after removing NOT terms: %s" % search_request.query)    
+                logger.debug("Query after removing NOT terms: %s" % search_request.query)    
                 logger.debug("Found NOT terms: %s" % ",".join(ignoreWords)) 
                 
                 search_request.ignoreWords.extend(ignoreWords)

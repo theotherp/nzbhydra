@@ -47,7 +47,11 @@ class NzbIndex(SearchModule):
         query = search_request.query
         if query:
             for word in search_request.ignoreWords:
-                query += " -" + word.strip().lower()
+                word = word.strip().lower()
+                if " " in word:
+                    logger.debug('Not using ignored word "%s" in query because it contains a space which is not supported by newznab queries' % word)
+                    continue
+                query += " -" + word
         f = self.build_base_url().add({"q": query})
         if search_request.minsize:
             f = f.add({"minsize": search_request.minsize})
