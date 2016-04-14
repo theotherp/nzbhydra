@@ -72,6 +72,16 @@ function searchHistory() {
             
             $state.go("search", stateParams, {inherit: false});
         };
+        
+        $scope.formatQuery = function(request) {
+            if (request.movietitle != null) {
+                return request.movietitle; 
+            }
+            if (request.tvtitle != null) {
+                return request.tvtitle;
+            }
+            return request.query;
+        }
 
 
     }

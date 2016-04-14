@@ -36,7 +36,7 @@ def read_indexers_from_config():
     instance = binsearch.get_instance(config.settings.indexers.binsearch)
     if config.settings.indexers.binsearch.enabled:
         enabled_indexers.append(instance)
-        logger.info("Loading indexer %s" % instance.name)
+        logger.info("Loaded indexer %s" % instance.name)
     init_indexer_table_entry(instance.name)
     configured_indexers.append(instance)
     

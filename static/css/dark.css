@@ -7571,5 +7571,9 @@ input:focus + .input-group-addon {
 .input-group-addon {
   color: #fff;
 }
+.history-title {
+  font-style: italic;
+  color: #7a8288;
+}
 
 /*# sourceMappingURL=dark.css.map */

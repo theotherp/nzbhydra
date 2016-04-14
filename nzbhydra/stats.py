@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 from builtins import *
 from peewee import fn, JOIN
 from nzbhydra import database
-from nzbhydra.database import Indexer, IndexerApiAccess, IndexerNzbDownload, IndexerSearch, Search, IndexerStatus
+from nzbhydra.database import Indexer, IndexerApiAccess, IndexerNzbDownload, IndexerSearch, Search, IndexerStatus, TvIdCache, MovieIdCache
 
 
 def get_indexer_response_times():
@@ -109,9 +109,15 @@ def get_nzb_downloads(page=0, limit=100, type=None):
     downloads = {"totalDownloads": total_downloads, "nzbDownloads": nzb_downloads}
     return downloads
 
-
+#((Search.identifier_value == MovieIdCache.imdb) & (Search.identifier_key == "imdbid"))
 def get_search_requests(page=0, limit=100, type=None):
-    query = Search().select(Search.time, Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type, Search.username)
+    query = Search().select(Search.time, Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type, Search.username, TvIdCache.title.alias("tvtitle"), MovieIdCache.title.alias("movietitle")).join(TvIdCache, JOIN.LEFT_OUTER, on=(
+        ((Search.identifier_value == TvIdCache.tvdb) & (Search.identifier_key == "tvdbid")) | 
+        ((Search.identifier_value == TvIdCache.tvrage) & (Search.identifier_key == "rid"))
+    )).join(MovieIdCache, JOIN.LEFT_OUTER, on=(
+        ((Search.identifier_value == MovieIdCache.imdb) & (Search.identifier_key == "imdbid")) |
+        ((Search.identifier_value == MovieIdCache.tmdb) & (Search.identifier_key == "tmdbid"))))
+
     if type is not None and type != "All":
         query = query.where(Search.internal) if type == "Internal" else query.where(~Search.internal)
     total_requests = query.count()

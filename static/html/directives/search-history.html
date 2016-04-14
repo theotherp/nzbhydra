@@ -35,7 +35,9 @@
         <td>{{ request.time }}</td>
         <td>
             <a href="" ng-click="openSearch(request)"><span class="glyphicon glyphicon-search"></span></a>
-            {{ request.query }}
+            <span ng-class="{'history-title': request.movietitle != null || request.tvtitle != null}">
+                {{ formatQuery(request) }}
+            </span>
         </td>
         <td>{{ request.category }}</td>
         <td>{{ request.identifier_key }}</td>

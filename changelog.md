@@ -23,6 +23,8 @@ Added: Feature to limit the number of maximum API hits for an indexer in 24 hour
 
 Added: Show proper page titles.
 
+Added: Show titles for ID based searches in history (if already known).
+
 Fixed: TypeError when using OMGWTF. 
 
 Fixed: Unable to load details page.

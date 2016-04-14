@@ -7571,6 +7571,10 @@ input:focus + .input-group-addon {
 .input-group-addon {
   color: #555555;
 }
+.history-title {
+  font-style: italic;
+  color: #c1c1c1;
+}
 .nav-tabs > li > a:hover {
   border-color: #eeeeee #eeeeee transparent;
   background-color: transparent;
