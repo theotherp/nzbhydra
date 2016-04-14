@@ -324,17 +324,24 @@ class NewzNab(SearchModule):
         f = self.build_base_url(search_type, search_request.category, offset=search_request.offset)
         query = search_request.query
         if query:
-            for word in search_request.ignoreWords:
-                word = word.strip().lower()
-                if " " in word or "-" in word or "." in word:
-                    logger.debug('Not using ignored word "%s" in query because it contains a space, dash or dot which is not supported by newznab queries' % word)
-                    continue
-                query += " --" + word
+            query = self.addExcludedWords(query, search_request)
             f = f.add({"q": query})
         if search_request.maxage:
             f = f.add({"maxage": search_request.maxage})
         
         return [f.url]
+
+    def addExcludedWords(self, query, search_request):
+        for word in search_request.ignoreWords:
+            word = word.strip().lower()
+            if " " in word or "-" in word or "." in word:
+                logger.debug('Not using ignored word "%s" in query because it contains a space, dash or dot which is not supported by newznab queries' % word)
+                continue
+            if "nzbgeek" in self.settings.host: #NZBGeek isn't newznab but sticks to its standards in most ways but not in this. Instead of adding a new search module just for this small part I added this small POC here
+                query += " -" + word
+            else:
+                query += " --" + word
+        return query
 
     def get_showsearch_urls(self, search_request):
         if search_request.category is None:
