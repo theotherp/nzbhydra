@@ -1010,7 +1010,7 @@ function UpdateFooterController($scope, $http, UpdateService) {
     $scope.updateAvailable = false;
     
     $http.get("internalapi/mayseeadminarea").then(function(data) {
-       if (data.data.mayseeadminarea) {
+       if (data.data.maySeeAdminArea) {
            UpdateService.getVersions().then(function (data) {
                $scope.currentVersion = data.data.currentVersion;
                $scope.repVersion = data.data.repVersion;
