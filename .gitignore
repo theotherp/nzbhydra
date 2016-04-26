@@ -22,4 +22,5 @@ Vagrantfile
 /libs/**/test/**
 /libs/**/testsuite/**
 /*.cmd
-**/.cachenzbhydra.pid
+**/.cache
+nzbhydra.pid
