@@ -1,0 +1,33 @@
+##
+## nzbhydra startup options
+##
+## Variables:
+##
+## NH_USER=         # username to run nzbhydra under, the default is nzbhydra
+## NH_HOME=         # the location of nzbhydra.py, the default is /opt/nzbhydra
+## NH_DB=           # the path to nzbhydra.db, the default is $NH_HOME/nzbhydra.db
+## NH_CONFIG=       # the path to logfile, the default is $NH_HOME/settings.cfg
+## NH_LOGFILE=      # the path to nzbhydra.db, the default is $NH_HOME/nzbhydra.log
+## NH_HOST=         # bind host, default is 0.0.0.0
+## NH_PORT=         # bind port, default is 5075
+## NH_PIDFILE=      # the location of nzbhydra.pid, the default is /var/run/nzbhydra/nzbhydra.pid
+## NH_OPTS=         # extra command line options
+## PYTHON_BIN=      # the location of the python binary, the default is /usr/bin/python2.7
+## SSD_OPTS=        # extra start-stop-daemon option like " --group=users"
+##
+
+## Examples
+# Run as another user
+# NH_USER=jack
+
+# Set home directory (install path)
+# NH_HOME=/home/jack/nzbhydra
+
+# Bind to localhost only
+# NH_HOST=127.0.0.1   
+
+# Set bind port 
+# NH_PORT=8084
+
+# Use an alternate Python 
+# PYTHON_BIN=/usr/local/bin/python2.7

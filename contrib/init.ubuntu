@@ -1,0 +1,136 @@
+#!/bin/sh
+#
+### BEGIN INIT INFO
+# Provides:          nzbhydra
+# Required-Start:    $local_fs $network $remote_fs
+# Required-Stop:     $local_fs $network $remote_fs
+# Should-Start:      $NetworkManager
+# Should-Stop:       $NetworkManager
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts instance of nzbhydra
+# Description:       starts instance of nzbhydra using start-stop-daemon
+### END INIT INFO
+
+NAME=nzbhydra
+DESC=nzbhydra
+CONFIG=/etc/default/nzbhydra
+
+# don't accept config vars from the shell environment
+
+unset NH_USER NH_HOME NH_DB NH_CONFIG NH_LOGFILE NH_HOST NH_PORT NH_PIDFILE NH_OPTS PYTHON_BIN SSD_OPTS
+
+# source lsb init functions
+. /lib/lsb/init-functions
+
+# try loading the configuration file
+[ -r "$CONFIG" ] && . "$CONFIG" || log_action_msg "$DESC: $CONFIG unreadable, falling back to default settings"
+
+## Don't edit this file
+## Edit user configuation in /etc/default/nzbhydra to change
+##
+## NH_USER=         # username to run nzbhydra under, the default is nzbhydra
+## NH_HOME=         # the location of nzbhydra.py, the default is /opt/nzbhydra
+## NH_DB=           # the path to nzbhydra.db, the default is $NH_HOME/nzbhydra.db
+## NH_CONFIG=       # the path to logfile, the default is $NH_HOME/settings.cfg
+## NH_LOGFILE=      # the path to nzbhydra.db, the default is $NH_HOME/nzbhydra.log
+## NH_HOST=         # bind host, default is 0.0.0.0
+## NH_PORT=         # bind port, default is 5075
+## NH_PIDFILE=      # the location of nzbhydra.pid, the default is /var/run/nzbhydra/nzbhydra.pid
+## NH_OPTS=         # extra command line options
+## PYTHON_BIN=      # the location of the python binary, the default is /usr/bin/python2.7
+## SSD_OPTS=        # extra start-stop-daemon option like " --group=users"
+##
+
+: "${NH_USER:=nzbhydra}"
+: "${NH_HOME:=/opt/nzbhydra}"
+: "${NH_DB:=$NH_HOME/nzbhydra.db}"
+: "${NH_CONFIG:=$NH_HOME/settings.cfg}"
+: "${NH_LOGFILE:=$NH_HOME/nzbhydra.log}"
+: "${NH_HOST:=0.0.0.0}"
+: "${NH_PORT:=5075}"
+: "${NH_PIDFILE:=/var/run/nzbhydra/nzbhydra.pid}"
+: "${NH_EXTRA_OPTS:=}"
+: "${PYTHON_BIN:=/usr/bin/python}"
+: "${EXTRA_SSD_OPTS:=}"
+
+# basic sanity checks
+([ -x "$PYTHON_BIN" ] && [ -f "$NH_HOME/nzbhydra.py" ]) || {
+    log_failure_msg "$DESC: init script bad home path or Python bin";
+    exit 0;
+}
+
+PID_PATH=`dirname $NH_PIDFILE`
+DAEMON="$PYTHON_BIN $NH_HOME/nzbhydra.py"
+DAEMON_OPTS=" --daemon --nobrowser --pidfile ${NH_PIDFILE} --host ${NH_HOST} --port ${NH_PORT} --logfile ${NH_LOGFILE} --database ${NH_DB} --config ${NH_CONFIG} ${NH_EXTRA_OPTS} > /dev/null"
+
+# nzbhydra manages its own startup and pid file
+# we want to disable that and manage the pid file here
+remove_pid() {
+    if [ -e $NH_PIDFILE ]; then
+        PID=`cat $NH_PIDFILE`
+        if ! kill -0 $PID > /dev/null 2>&1; then
+            rm $NH_PIDFILE
+            return 1
+        fi
+    fi
+    return 0
+}
+
+start_nzbhydra() {
+    log_daemon_msg "Starting $DESC"
+
+    # remove old pid file
+    remove_pid
+    if [ $? -eq 1 ]; then
+        log_daemon_msg "Removing stale $NH_PIDFILE"
+    fi
+    
+    # create pid directory
+    [ ! -d $PID_PATH ] && {
+        install --directory --owner="$NH_USER" --group=root --mode=0700 $PID_PATH || exit 1;
+    }
+
+    # start 
+    start-stop-daemon --start -q --pidfile "$NH_PIDFILE" --chdir "$NH_HOME" --chuid "$NH_USER" --oknodo --exec $DAEMON $SSD_OPTS -- $DAEMON_OPTS
+
+    # nzbhydra won't manage it's own pid file if this environment variable is set
+    export RESTART=1
+
+    log_end_msg $? || exit $?
+}
+
+stop_nzbhydra() {
+    log_daemon_msg "Stopping $DESC"
+    start-stop-daemon --stop --pidfile $NH_PIDFILE --retry 15
+    if [ $? -eq 0 ]; then
+        remove_pid
+        log_end_msg 0
+        exit 0
+    fi
+    log_end_msg $? || exit $?
+}
+
+case "$1" in
+    start)
+        start_nzbhydra
+        ;;
+    stop)
+        stop_nzbhydra
+        ;;
+    restart|force-reload)
+        stop_nzbhydra
+        sleep 2
+        start_nzbhydra
+        ;;
+    status)
+        status_of_proc -p "$PID_FILE" "$PYTHON_BIN" "$DESC"
+        ;;
+    *)
+        N=/etc/init.d/$NAME
+        echo "Usage: $N {start|stop|restart|force-reload|status}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0
