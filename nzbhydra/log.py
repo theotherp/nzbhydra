@@ -25,9 +25,28 @@ regexUser = re.compile(r"(user|username)=[\w]+", re.I)
 regexPassword = re.compile(r"(password)=[\w]+", re.I)
 
 # module variables
-log_format = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
-logger = None
-logger_default_consolehandler = None
+LOGGER_DEFAULT_FORMAT = '%(asctime)s - %(levelname)s - %(module)s - %(message)s'
+LOGGER_DEFAULT_LEVEL = 'INFO'
+NOTICE_LOG_LEVEL = 25
+
+# add custom NOTICE log level that sits between INFO and WARNING
+logging.addLevelName(NOTICE_LOG_LEVEL, "NOTICE")
+logging.NOTICE = NOTICE_LOG_LEVEL
+def notice(self, message, *args, **kws):
+    # Yes, logger takes its '*args' as 'args'.
+    if self.isEnabledFor(NOTICE_LOG_LEVEL):
+        self._log(NOTICE_LOG_LEVEL, message, args, **kws)
+logging.Logger.notice = notice
+
+# default root logger
+logger = logging.getLogger('root')
+
+console_logger = logging.StreamHandler(sys.stdout)
+console_logger.setFormatter(logging.Formatter(LOGGER_DEFAULT_FORMAT))
+console_logger.setLevel(LOGGER_DEFAULT_LEVEL)
+logger.addHandler(console_logger)
+
+logger.setLevel(LOGGER_DEFAULT_LEVEL)
 
 def removeSensitiveData(msg):
     msg = regexApikey.sub("apikey=<APIKEY>", msg)
@@ -37,7 +56,6 @@ def removeSensitiveData(msg):
     return msg
 
 class SensitiveDataFilter(logging.Filter):
-
     def filter(self, record):
         msg = record.msg
         if type(msg) is types.StringType or isinstance(msg, str):
@@ -45,60 +63,26 @@ class SensitiveDataFilter(logging.Filter):
         record.msg = msg
         return True
 
-"""
-    create a default logger so we can log prior to importing app modules or reading settings
-"""
-def create_logger(name='root'):
-    logger_default_consolehandler = _sh = logging.StreamHandler(sys.stdout)
-    _sh.setLevel('INFO')
-    _sh.setFormatter(log_format)
-
-    _logger = logging.getLogger(name)
-
-    if not sys.executable.endswith("pythonw.exe"): #Don't use console logging if started headless
-        _logger.addHandler(_sh)
-    return _logger
-
-
-"""
-    get the root logger if created otherwise create
-"""
-def get_logger(name='root'):
-    if name == 'root':
-        global logger
-        if type(logger) != logging.Logger:
-            logger = create_logger()
-            return logger
-    return logging.getLogger(name)
-
-# module variable
-logger = create_logger()
-
-
-"""
-    second phase of log creation - after settings read apply them
-"""
 def setup_custom_logger(name, logfile=None):
-    file_handler = RotatingFileHandler(filename=config.settings.main.logging.logfilename if logfile is None else logfile, maxBytes=1000000, backupCount=25)
-    file_handler.setLevel(config.settings.main.logging.logfilelevel)
-    file_handler.setFormatter(log_format)
-
-    logger = get_logger(name)
-    logger.addHandler(file_handler)
-
-    # change the default console log handler level if it is not default in config
-    if config.settings.main.logging.consolelevel.upper() != 'INFO':
-        logger.handlers[logger_default_consolehandler].setLevel(config.settings.main.logging.consolelevel.upper())
-
-    logger.setLevel("DEBUG")
+    console_log_level = config.settings.main.logging.consolelevel.upper()
+    file_log_level = config.settings.main.logging.logfilelevel.upper()
+    # set console log level from config file
+    console_logger.setLevel(console_log_level)
+    logger.setLevel(console_log_level)
+    # add log file handler
+    file_logger = RotatingFileHandler(filename=config.settings.main.logging.logfilename if logfile is None else logfile, maxBytes=1000000, backupCount=25)
+    file_logger.setFormatter(logging.Formatter(LOGGER_DEFAULT_FORMAT))
+    file_logger.setLevel(file_log_level)
+    logger.addHandler(file_logger)
+    # we need to set the global log level to the lowest defined
+    if getattr(logging, file_log_level) < getattr(logging, console_log_level):
+        logger.setLevel(file_log_level)
+    # add sensitive data filter
     logger.addFilter(SensitiveDataFilter())
-
     logging.getLogger("requests").setLevel(logging.CRITICAL)
     logging.getLogger("urllib3").setLevel(logging.CRITICAL)
     logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
-
     return logger
-
 
 def getLogFile():
     logfile = config.settings.main.logging.logfilename

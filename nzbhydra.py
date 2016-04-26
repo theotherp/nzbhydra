@@ -77,17 +77,13 @@ def daemonize(pidfile):
 
 
 def run(arguments):
-    settings_file = arguments.config
-    nzbhydra.configFile = settings_file
-    database_file = arguments.database
-    nzbhydra.databaseFile = database_file
+    nzbhydra.configFile = settings_file = arguments.config
+    nzbhydra.databaseFile = database_file = arguments.database
 
+    logger.notice("Loading settings from {}".format(settings_file))
     config.load(settings_file)
     config.save(settings_file)  # Write any new settings back to the file
-
     log.setup_custom_logger('root', arguments.logfile)
-
-    logger.info("Loaded settings from {}".format(settings_file))
 
     try:
         logger.info("Started")
@@ -104,11 +100,11 @@ def run(arguments):
             database.update_db(database_file)
         database.db.init(database_file)
         indexers.read_indexers_from_config()
-    
+
         if config.settings.main.debug:
             logger.info("Debug mode enabled")
-            
-        #Clean up any "old" files from last update
+
+        # Clean up any "old" files from last update
         oldfiles = glob.glob("*.updated")
         if len(oldfiles) > 0:
             logger.info("Deleting %d old files remaining from update" % len(oldfiles))
@@ -121,11 +117,11 @@ def run(arguments):
                         logger.debug("Not deleting %s because it's still running. TrayHelper will restart itself" % filename)
                 except Exception:
                     logger.warn("Unable to delete old file %s. Please delete manually" % filename)
-            
+
         host = config.settings.main.host if arguments.host is None else arguments.host
         port = config.settings.main.port if arguments.port is None else arguments.port
-    
-        logger.info("Starting web app on %s:%d" % (host, port))
+
+        logger.notice("Starting web app on %s:%d" % (host, port))
         if config.settings.main.externalUrl is not None and config.settings.main.externalUrl != "":
             f = furl(config.settings.main.externalUrl)
         else:
@@ -140,7 +136,7 @@ def run(arguments):
                 logger.info("Opening browser to %s" % f.url)
                 webbrowser.open_new(f.url)
         else:
-            logger.info("Go to %s for the frontend" % f.url)
+            logger.notice("Go to %s for the frontend" % f.url)
 
         web.run(host, port, basepath)
     except Exception:
@@ -149,8 +145,8 @@ def run(arguments):
 
 if __name__ == '__main__':
 
-    logger.info("Starting NZBHydra")
-    logger.info("Base path is {}".format(basepath))
+    logger.notice("Starting NZBHydra")
+    logger.debug("Base path is {}".format(basepath))
 
     parser = argparse.ArgumentParser(description='NZBHydra')
     parser.add_argument('--config', action='store', help='Settings file to load', default="settings.cfg")
