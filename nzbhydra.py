@@ -61,7 +61,7 @@ def daemonize(pidfile):
     try:
         file(pidfile, 'w').write("%s\n" % pid)
     except IOError as e:
-        print(u"Unable to write PID file: nzbhydra.pid. Error: " + str(e.strerror) + " [" + str(e.errno) + "]")
+        sys.stderr.write(u"Unable to write PID file: nzbhydra.pid. Error: " + str(e.strerror) + " [" + str(e.errno) + "]")
 
     # Redirect all output
     sys.stdout.flush()
@@ -84,7 +84,7 @@ def run(arguments):
     database_file = arguments.database
     nzbhydra.databaseFile = database_file
 
-    print("Loading settings from %s" % settings_file)
+    # print("Loading settings from %s" % settings_file)
     config.load(settings_file)
     config.save(settings_file)  # Write any new settings back to the file
     logger = log.setup_custom_logger('root', arguments.logfile)
@@ -161,8 +161,6 @@ if __name__ == '__main__':
 
     args, unknown = parser.parse_known_args()
 
-    parser.print_help()
-    
     run(args)
     if "RESTART" in os.environ.keys() and os.environ["RESTART"] == "1":
         if "STARTEDBYTRAYHELPER" in os.environ.keys():
