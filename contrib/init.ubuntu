@@ -56,7 +56,7 @@ unset NH_USER NH_HOME NH_DB NH_CONFIG NH_LOGFILE NH_HOST NH_PORT NH_PIDFILE NH_O
 
 # basic sanity checks
 ([ -x "$PYTHON_BIN" ] && [ -f "$NH_HOME/nzbhydra.py" ]) || {
-    log_failure_msg "$DESC: init script setup failed basic sanity checks, aborting!";
+    log_failure_msg "$DESC: init script bad home path or Python bin";
     exit 0;
 }
 
