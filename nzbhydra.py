@@ -150,10 +150,6 @@ def run(arguments):
     
 
 if __name__ == '__main__':
-    pyVersion = sys.version_info
-    if not pyVersion[:2] == (2, 7) or pyVersion[2] < 9:
-        print("Please run with python 2.7.9+")
-        os._exit(0)
     
     parser = argparse.ArgumentParser(description='NZBHydra')
     parser.add_argument('--config', action='store', help='Settings file to load', default="settings.cfg")
