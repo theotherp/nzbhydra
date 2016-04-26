@@ -1,20 +1,25 @@
 #!/usr/bin/env python
+
+import sys
+
+if sys.version_info >= (3, 0) or sys.version_info < (2, 7, 9):
+    sys.stderr.write("Sorry, requires Python 2.7.9 or greater, not Python 3 compatible\n")
+    sys.exit(1)
+
 import glob
 import subprocess
 import os
-import sys
 import argparse
 import webbrowser
 import nzbhydra
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+# reload(sys)
+# sys.setdefaultencoding('utf8')
 
 basepath = nzbhydra.getBasePath()
-print("Setting base path to %s" % basepath)
+# print("Setting base path to %s" % basepath)
 os.chdir(basepath)
 sys.path.insert(0, os.path.join(basepath, 'libs'))
-
 
 from furl import furl
 
