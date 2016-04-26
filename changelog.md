@@ -4,6 +4,8 @@
 ### 0.0.1a90
 Fixed: Color in select list using dark theme.
 
+Added: Ubuntu upstart scripts and better daemon control/logging. Thanks to nikcub.
+
 ### 0.0.1a89
 
 Added: Option to set git executable used for updates.
