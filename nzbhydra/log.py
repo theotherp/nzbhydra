@@ -24,8 +24,33 @@ regexApikeyRepr = re.compile(r"u'(apikey|api)': u'[\w]+'", re.I)
 regexUser = re.compile(r"(user|username)=[\w]+", re.I)
 regexPassword = re.compile(r"(password)=[\w]+", re.I)
 
-logger = None
+# module variables
+LOGGER_DEFAULT_FORMAT = '%(asctime)s - %(levelname)s - %(module)s - %(message)s'
+LOGGER_DEFAULT_LEVEL = 'INFO'
+NOTICE_LOG_LEVEL = 25
 
+# add custom NOTICE log level that sits between INFO and WARNING
+logging.addLevelName(NOTICE_LOG_LEVEL, "NOTICE")
+logging.NOTICE = NOTICE_LOG_LEVEL
+def notice(self, message, *args, **kws):
+    # Yes, logger takes its '*args' as 'args'.
+    if self.isEnabledFor(NOTICE_LOG_LEVEL):
+        self._log(NOTICE_LOG_LEVEL, message, args, **kws)
+logging.Logger.notice = notice
+
+# default root logger
+logger = logging.getLogger('root')
+
+console_logger = logging.StreamHandler(sys.stdout)
+console_logger.setFormatter(logging.Formatter(LOGGER_DEFAULT_FORMAT))
+console_logger.setLevel(LOGGER_DEFAULT_LEVEL)
+logger.addHandler(console_logger)
+
+logger.setLevel(LOGGER_DEFAULT_LEVEL)
+
+def quiet_output():
+    console_logger.setLevel(logging.CRITICAL + 1)
+    # logger.removeHandler(console_logger)
 
 def removeSensitiveData(msg):
     msg = regexApikey.sub("apikey=<APIKEY>", msg)
@@ -34,9 +59,7 @@ def removeSensitiveData(msg):
     msg = regexPassword.sub("password=<PASSWORD>", msg)
     return msg
 
-
 class SensitiveDataFilter(logging.Filter):
-
     def filter(self, record):
         msg = record.msg
         if type(msg) is types.StringType or isinstance(msg, str):
@@ -44,37 +67,27 @@ class SensitiveDataFilter(logging.Filter):
         record.msg = msg
         return True
 
-
-def setup_custom_logger(name, logfile=None):
-    formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
-
-    stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setLevel(config.settings.main.logging.consolelevel )
-    stream_handler.setFormatter(formatter)
-    
-    
-    file_handler = RotatingFileHandler(filename=config.settings.main.logging.logfilename if logfile is None else logfile, maxBytes=1000000, backupCount=25)
-    file_handler.setLevel(config.settings.main.logging.logfilelevel)
-    file_handler.setFormatter(formatter)
-
-    global logger
-    logger = logging.getLogger(name)
-
-    if not sys.executable.endswith("pythonw.exe"): #Don't use console logging if started headless
-        logger.addHandler(stream_handler)
-    logger.addHandler(file_handler)
-    
-    logger.setLevel("DEBUG")
-    
+def setup_custom_logger(name, logfile=None, quiet=False):
+    console_log_level = config.settings.main.logging.consolelevel.upper()
+    file_log_level = config.settings.main.logging.logfilelevel.upper()
+    # set console log level from config file
+    if not quiet:
+        console_logger.setLevel(console_log_level)
+    logger.setLevel(console_log_level)
+    # add log file handler
+    file_logger = RotatingFileHandler(filename=config.settings.main.logging.logfilename if logfile is None else logfile, maxBytes=1000000, backupCount=25)
+    file_logger.setFormatter(logging.Formatter(LOGGER_DEFAULT_FORMAT))
+    file_logger.setLevel(file_log_level)
+    logger.addHandler(file_logger)
+    # we need to set the global log level to the lowest defined
+    if getattr(logging, file_log_level) < getattr(logging, console_log_level):
+        logger.setLevel(file_log_level)
+    # add sensitive data filter
     logger.addFilter(SensitiveDataFilter())
-    
     logging.getLogger("requests").setLevel(logging.CRITICAL)
     logging.getLogger("urllib3").setLevel(logging.CRITICAL)
     logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
-
-    
     return logger
-
 
 def getLogFile():
     logfile = config.settings.main.logging.logfilename

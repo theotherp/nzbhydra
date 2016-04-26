@@ -1,19 +1,21 @@
+#!/usr/bin/env python
+
+import sys
+
+if sys.version_info >= (3, 0) or sys.version_info < (2, 7, 9):
+    sys.stderr.write("Sorry, requires Python 2.7.9 or greater, not Python 3 compatible\n")
+    sys.exit(1)
+
 import glob
 import subprocess
 import os
-import sys
 import argparse
 import webbrowser
 import nzbhydra
 
-reload(sys)
-sys.setdefaultencoding('utf8')
-
 basepath = nzbhydra.getBasePath()
-print("Setting base path to %s" % basepath)
 os.chdir(basepath)
 sys.path.insert(0, os.path.join(basepath, 'libs'))
-
 
 from furl import furl
 
@@ -25,7 +27,8 @@ import nzbhydra.config as config
 
 import requests
 requests.packages.urllib3.disable_warnings()
-logger = None
+
+from nzbhydra.log import logger
 
 def daemonize(pidfile):
     # Make a non-session-leader child process
@@ -58,7 +61,7 @@ def daemonize(pidfile):
     try:
         file(pidfile, 'w').write("%s\n" % pid)
     except IOError as e:
-        print(u"Unable to write PID file: nzbhydra.pid. Error: " + str(e.strerror) + " [" + str(e.errno) + "]")
+        sys.stderr.write(u"Unable to write PID file: nzbhydra.pid. Error: " + str(e.strerror) + " [" + str(e.errno) + "]")
 
     # Redirect all output
     sys.stdout.flush()
@@ -74,24 +77,21 @@ def daemonize(pidfile):
 
 
 def run(arguments):
-    global logger
-    
-    settings_file = arguments.config
-    nzbhydra.configFile = settings_file
-    database_file = arguments.database
-    nzbhydra.databaseFile = database_file
+    nzbhydra.configFile = settings_file = arguments.config
+    nzbhydra.databaseFile = database_file = arguments.database
 
-    print("Loading settings from %s" % settings_file)
+    logger.notice("Loading settings from {}".format(settings_file))
     config.load(settings_file)
     config.save(settings_file)  # Write any new settings back to the file
-    logger = log.setup_custom_logger('root', arguments.logfile)
+    log.setup_custom_logger('root', arguments.logfile, arguments.quiet)
+
     try:
         logger.info("Started")
 
         if arguments.daemon:
             logger.info("Daemonizing...")
             daemonize(arguments.pidfile)
-        
+
         config.logLogMessages()
         logger.info("Loading database file %s" % database_file)
         if not os.path.exists(database_file):
@@ -100,11 +100,11 @@ def run(arguments):
             database.update_db(database_file)
         database.db.init(database_file)
         indexers.read_indexers_from_config()
-    
+
         if config.settings.main.debug:
             logger.info("Debug mode enabled")
-            
-        #Clean up any "old" files from last update
+
+        # Clean up any "old" files from last update
         oldfiles = glob.glob("*.updated")
         if len(oldfiles) > 0:
             logger.info("Deleting %d old files remaining from update" % len(oldfiles))
@@ -117,11 +117,11 @@ def run(arguments):
                         logger.debug("Not deleting %s because it's still running. TrayHelper will restart itself" % filename)
                 except Exception:
                     logger.warn("Unable to delete old file %s. Please delete manually" % filename)
-            
+
         host = config.settings.main.host if arguments.host is None else arguments.host
         port = config.settings.main.port if arguments.port is None else arguments.port
-    
-        logger.info("Starting web app on %s:%d" % (host, port))
+
+        logger.notice("Starting web app on %s:%d" % (host, port))
         if config.settings.main.externalUrl is not None and config.settings.main.externalUrl != "":
             f = furl(config.settings.main.externalUrl)
         else:
@@ -136,34 +136,35 @@ def run(arguments):
                 logger.info("Opening browser to %s" % f.url)
                 webbrowser.open_new(f.url)
         else:
-            logger.info("Go to %s for the frontend" % f.url)
-        
+            logger.notice("Go to %s for the frontend" % f.url)
+
         web.run(host, port, basepath)
     except Exception:
         logger.exception("Fatal error occurred")
-    
+
 
 if __name__ == '__main__':
-    pyVersion = sys.version_info
-    if not pyVersion[:2] == (2, 7) or pyVersion[2] < 9:
-        print("Please run with python 2.7.9+")
-        os._exit(0)
-    
+
     parser = argparse.ArgumentParser(description='NZBHydra')
     parser.add_argument('--config', action='store', help='Settings file to load', default="settings.cfg")
     parser.add_argument('--database', action='store', help='Database file to load', default="nzbhydra.db")
     parser.add_argument('--logfile', action='store', help='Log file. If set overwrites config value', default=None)
-    parser.add_argument('--host', action='store', help='Host to run on')
-    parser.add_argument('--port', action='store', help='Port to run on', type=int)
+    parser.add_argument('--host', '-H', action='store', help='Host to run on')
+    parser.add_argument('--port', '-p', action='store', help='Port to run on', type=int)
     parser.add_argument('--nobrowser', action='store_true', help='Don\'t open URL on startup', default=False)
-    parser.add_argument('--daemon', action='store_true', help='Run as daemon. *nix only', default=False)
+    parser.add_argument('--daemon', '-D', action='store_true', help='Run as daemon. *nix only', default=False)
+    parser.add_argument('--quiet', '-q', action='store_true', help='Quiet (no output)', default=False)
     parser.add_argument('--pidfile', action='store', help='PID file. Only relevant with daemon argument', default="nzbhydra.pid")
     parser.add_argument('--restarted', action='store_true', help=argparse.SUPPRESS, default=False)
 
     args, unknown = parser.parse_known_args()
 
-    parser.print_help()
-    
+    if args.quiet:
+        log.quiet_output()
+
+    logger.notice("Starting NZBHydra")
+    logger.debug("Base path is {}".format(basepath))
+
     run(args)
     if "RESTART" in os.environ.keys() and os.environ["RESTART"] == "1":
         if "STARTEDBYTRAYHELPER" in os.environ.keys():
