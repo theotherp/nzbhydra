@@ -83,7 +83,7 @@ def run(arguments):
     logger.notice("Loading settings from {}".format(settings_file))
     config.load(settings_file)
     config.save(settings_file)  # Write any new settings back to the file
-    log.setup_custom_logger('root', arguments.logfile)
+    log.setup_custom_logger('root', arguments.logfile, arguments.quiet)
 
     try:
         logger.info("Started")
@@ -145,9 +145,6 @@ def run(arguments):
 
 if __name__ == '__main__':
 
-    logger.notice("Starting NZBHydra")
-    logger.debug("Base path is {}".format(basepath))
-
     parser = argparse.ArgumentParser(description='NZBHydra')
     parser.add_argument('--config', action='store', help='Settings file to load', default="settings.cfg")
     parser.add_argument('--database', action='store', help='Database file to load', default="nzbhydra.db")
@@ -156,10 +153,17 @@ if __name__ == '__main__':
     parser.add_argument('--port', action='store', help='Port to run on', type=int)
     parser.add_argument('--nobrowser', action='store_true', help='Don\'t open URL on startup', default=False)
     parser.add_argument('--daemon', action='store_true', help='Run as daemon. *nix only', default=False)
+    parser.add_argument('--quiet',  action='store_true', help='Quiet (no output)', default=False)
     parser.add_argument('--pidfile', action='store', help='PID file. Only relevant with daemon argument', default="nzbhydra.pid")
     parser.add_argument('--restarted', action='store_true', help=argparse.SUPPRESS, default=False)
 
     args, unknown = parser.parse_known_args()
+
+    if args.quiet:
+        log.quiet_output()
+
+    logger.notice("Starting NZBHydra")
+    logger.debug("Base path is {}".format(basepath))
 
     run(args)
     if "RESTART" in os.environ.keys() and os.environ["RESTART"] == "1":

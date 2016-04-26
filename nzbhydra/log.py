@@ -48,6 +48,10 @@ logger.addHandler(console_logger)
 
 logger.setLevel(LOGGER_DEFAULT_LEVEL)
 
+def quiet_output():
+    console_logger.setLevel(logging.CRITICAL + 1)
+    # logger.removeHandler(console_logger)
+
 def removeSensitiveData(msg):
     msg = regexApikey.sub("apikey=<APIKEY>", msg)
     msg = regexApikeyRepr.sub("'apikey':<APIKEY>'", msg)
@@ -63,11 +67,12 @@ class SensitiveDataFilter(logging.Filter):
         record.msg = msg
         return True
 
-def setup_custom_logger(name, logfile=None):
+def setup_custom_logger(name, logfile=None, quiet=False):
     console_log_level = config.settings.main.logging.consolelevel.upper()
     file_log_level = config.settings.main.logging.logfilelevel.upper()
     # set console log level from config file
-    console_logger.setLevel(console_log_level)
+    if not quiet:
+        console_logger.setLevel(console_log_level)
     logger.setLevel(console_log_level)
     # add log file handler
     file_logger = RotatingFileHandler(filename=config.settings.main.logging.logfilename if logfile is None else logfile, maxBytes=1000000, backupCount=25)
