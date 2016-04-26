@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import glob
 import subprocess
 import os
