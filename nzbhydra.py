@@ -14,7 +14,6 @@ import webbrowser
 import nzbhydra
 
 basepath = nzbhydra.getBasePath()
-# print("Setting base path to %s" % basepath)
 os.chdir(basepath)
 sys.path.insert(0, os.path.join(basepath, 'libs'))
 
@@ -78,23 +77,26 @@ def daemonize(pidfile):
 
 def run(arguments):
     global logger
-    
     settings_file = arguments.config
     nzbhydra.configFile = settings_file
     database_file = arguments.database
     nzbhydra.databaseFile = database_file
 
-    # print("Loading settings from %s" % settings_file)
     config.load(settings_file)
     config.save(settings_file)  # Write any new settings back to the file
+
     logger = log.setup_custom_logger('root', arguments.logfile)
+
+    logger.info("Base path is {}".format(basepath))
+    logger.info("Loaded settings from {}".format(settings_file))
+
     try:
         logger.info("Started")
 
         if arguments.daemon:
             logger.info("Daemonizing...")
             daemonize(arguments.pidfile)
-        
+
         config.logLogMessages()
         logger.info("Loading database file %s" % database_file)
         if not os.path.exists(database_file):
