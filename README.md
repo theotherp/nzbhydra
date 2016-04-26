@@ -23,6 +23,28 @@ If you downloaded the windows release just start with NzbHydraTray.exe. Your def
 You're also free to use the [docker container by linuxserver.io](https://hub.docker.com/r/linuxserver/hydra/). 
 Although I do my best to keep that container nice and working please [use their forum](https://forum.linuxserver.io/index.php?threads/support-linuxserver-io-hydra.499/) for support regarding that container.
 
+## Install
+Install scripts are provided for Ubuntu upstart based systems in the `contrib` directory. To install:
+
+```sh
+sudo cp contrib/defaults /etc/default/nzbhydra
+sudo cp contrib/init.ubuntu /etc/init.d/nzbhydra
+sudo chmod +x /etc/init.d/nzbhydra
+sudo update-rc.d nzbhydra defaults
+```
+
+Edit the default configuration options:
+
+```sh
+sudo nano /etc/defaults/nzbhydra
+```
+
+Start the service:
+
+```sh
+sudo service start nzbhydra
+```
+
 ## TODO
 * Better query generation
 * More stats?
