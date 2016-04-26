@@ -27,7 +27,8 @@ import nzbhydra.config as config
 
 import requests
 requests.packages.urllib3.disable_warnings()
-logger = None
+
+from nzbhydra.log import logger
 
 def daemonize(pidfile):
     # Make a non-session-leader child process
@@ -76,7 +77,6 @@ def daemonize(pidfile):
 
 
 def run(arguments):
-    global logger
     settings_file = arguments.config
     nzbhydra.configFile = settings_file
     database_file = arguments.database
@@ -85,9 +85,8 @@ def run(arguments):
     config.load(settings_file)
     config.save(settings_file)  # Write any new settings back to the file
 
-    logger = log.setup_custom_logger('root', arguments.logfile)
+    log.setup_custom_logger('root', arguments.logfile)
 
-    logger.info("Base path is {}".format(basepath))
     logger.info("Loaded settings from {}".format(settings_file))
 
     try:
@@ -142,14 +141,17 @@ def run(arguments):
                 webbrowser.open_new(f.url)
         else:
             logger.info("Go to %s for the frontend" % f.url)
-        
+
         web.run(host, port, basepath)
     except Exception:
         logger.exception("Fatal error occurred")
-    
+
 
 if __name__ == '__main__':
-    
+
+    logger.info("Starting NZBHydra")
+    logger.info("Base path is {}".format(basepath))
+
     parser = argparse.ArgumentParser(description='NZBHydra')
     parser.add_argument('--config', action='store', help='Settings file to load', default="settings.cfg")
     parser.add_argument('--database', action='store', help='Database file to load', default="nzbhydra.db")
