@@ -1,0 +1,6 @@
+{
+  "name": "Nzbhydra",
+  "tagline": "Meta search for NZB indexers",
+  "body": "### Overview\r\nNZBHydra is a meta search for NZB indexers and the \"spiritual successor\" to NZBmegasearcH. It provides easy access to a number of raw and newznab based indexers.\r\n\r\nPlease check the [project page|https://github.com/theotherp/nzbhydra] for further details.\r\n\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
