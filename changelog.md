@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a91
+Fixed: Bug in max age limit for results.
+
 ### 0.0.1a90
 Fixed: Color in select list using dark theme.
 

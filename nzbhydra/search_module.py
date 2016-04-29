@@ -177,7 +177,7 @@ class SearchModule(object):
         if searchRequest.minage and nzbSearchResult.age_days < searchRequest.minage:
             return False, "Younger than requested minimum age: %dd < %dd" % (nzbSearchResult.age_days, searchRequest.minage)
         if searchRequest.maxage and nzbSearchResult.age_days > searchRequest.maxage:
-            return False, "Older than requested maximum age: %dd > %dd" % (nzbSearchResult.age_days, searchRequest.minage)
+            return False, "Older than requested maximum age: %dd > %dd" % (nzbSearchResult.age_days, searchRequest.maxage)
         if nzbSearchResult.pubdate_utc is None:
             return False, "Unknown age"
         return True, None
