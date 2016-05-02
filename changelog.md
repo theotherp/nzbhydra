@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a92
+Added: Make errors in config dialog better visible
+
 ### 0.0.1a91
 Fixed: Bug in max age limit for results.
 

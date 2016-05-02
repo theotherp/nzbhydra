@@ -15,17 +15,7 @@ angular
 
         formlyConfigProvider.setWrapper({
             name: 'settingWrapper',
-            templateUrl: 'setting-wrapper.html',
-            controller: ['$scope', function ($scope) {
-                $scope.options.data.getValidationMessage = getValidationMessage;
-
-                function getValidationMessage(key) {
-                    var message = $scope.options.validation.messages[key];
-                    if (message) {
-                        return message($scope.fc.$viewValue, $scope.fc.$modelValue, $scope);
-                    }
-                }
-            }]
+            templateUrl: 'setting-wrapper.html'
         });
 
 
@@ -78,7 +68,6 @@ angular
             name: 'timeOfDay',
             extends: 'horizontalInput',
             controller: ['$scope', function ($scope) {
-                console.log($scope);
                 $scope.model[$scope.options.key] = new Date($scope.model[$scope.options.key]);
             }]
         });
@@ -416,20 +405,18 @@ angular
                 $scope.addNew = addNew;
                 $scope.remove = remove;
                 $scope.copyFields = copyFields;
-
+                
                 function copyFields(fields) {
                     fields = angular.copy(fields);
+                    $scope.repeatfields = fields;
                     return fields;
                 }
 
                 $scope.clear = function (field) {
                     return _.mapObject(field, function (key, val) {
                         if (typeof val === 'object') {
-                            console.log("object " + key);
-                            console.log(key);
                             return $scope.clear(val);
                         }
-                        console.log("other " + key);
                         return undefined;
 
                     });
@@ -455,7 +442,33 @@ angular
 angular
     .module('nzbhydraApp').run(function (formlyConfig, formlyValidationMessages) {
 
-    formlyValidationMessages.messages.required = 'to.label + " is required"';
+    formlyValidationMessages.addStringMessage('required', 'This field is required');
+    
     formlyConfig.extras.errorExistsAndShouldBeVisibleExpression = 'fc.$touched || form.$submitted';
 
+});
+
+angular
+    .module('nzbhydraApp').directive('formlyErrorSummary', function () {
+    return {
+        scope: {},
+        bindToController: {
+            form: '=',
+            fields: '='
+        },
+        templateUrl: 'formly-error-summary.html',
+        controllerAs: 'vm',
+        controller: function () {
+            var vm = this;
+            vm.getErrorAsList = getErrorAsList;
+
+            function getErrorAsList(field) {
+                return Object.keys(field.formControl.$error).map(function (error) {
+                    // note, this only works because the customInput type we have defined.
+
+                    return field.data.getValidationMessage(error);
+                }).join(', ');
+            }
+        }
+    };
 });

@@ -8,11 +8,11 @@ angular
     .module('nzbhydraApp')
     .factory('ConfigWatcher', function () {
         var $scope;
-        
+
         return {
             watch: watch
         };
-        
+
         function watch(scope) {
             $scope = scope;
             $scope.$watchGroup(["config.main.host"], function () {
@@ -26,18 +26,21 @@ angular
     .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
 
-function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state) {
+function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl) {
     $scope.config = config;
     $scope.submit = submit;
-    
+
     $scope.restartRequired = false;
 
-    ConfigFields.setRestartWatcher(function() {
+    ConfigFields.setRestartWatcher(function () {
         $scope.restartRequired = true;
     });
 
+    $scope.newfields = [];
+
     function submit(form) {
         if (form.$valid) {
+            
             ConfigService.set($scope.config);
             ConfigService.invalidateSafe();
             form.$setPristine();
@@ -49,6 +52,24 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
                     $scope.restartRequired = false;
                 });
             }
+        } else {
+            growl.error("Config invalid. Please check your settings.");
+            
+            //Ridiculously hacky way to make the error messages appear
+            try {
+                if (angular.isDefined(form.$error.required)) {
+                    _.each(form.$error.required, function (item) {
+                        if (angular.isDefined(item.$error.required)) {
+                            _.each(item.$error.required, function (item2) {
+                                item2.$setTouched();
+                            });
+                        } 
+                    });
+                }
+            } catch(err) {
+                //
+            }
+            
         }
     }
 
@@ -123,9 +144,9 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             $scope.downloadLog();
         }
     };
+    
 
-    
-    
+
 }
 
 

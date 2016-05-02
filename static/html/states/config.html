@@ -1,12 +1,14 @@
 <div class="row">
     <form ng-submit="submit(form)" name="form" novalidate>
+        
+        <form name="vm.form" ng-submit="vm.onSubmit()" novalidate>
         <uib-tabset>
             <uib-tab ng-repeat="tab in formTabs" heading="{{ tab.name }}" active="allTabs[$index].active" select="goToConfigState($index)">
                 <formly-form model="tab.model" fields="tab.fields" ng-if="allTabs[$index].active">
                 </formly-form>
             </uib-tab>
             <li style="position: absolute; right:0px; ">
-                <button ng-disabled="form.$invalid" type="submit" class="btn config-submit" ng-class="{'btn-info': isSavingNeeded(form), 'pulse2': isSavingNeeded(form), 'btn-success': !isSavingNeeded(form)}">Save</button>
+                <button type="submit"  class="btn config-submit" ng-class="{'btn-info': isSavingNeeded(form), 'pulse2': isSavingNeeded(form), 'btn-success': !isSavingNeeded(form)}">Save</button>
             </li>
         </uib-tabset>
     </form>
@@ -72,7 +74,6 @@
 
 
 <script type="text/ng-template" id="setting-wrapper.html">
-
     <div class="form-group form-horizontal" ng-class="{'row': !options.templateOptions.noRow}">
         <div style="text-align:right;">
             <label for="{{::id}}" class="col-md-7 control-label">
@@ -83,11 +84,33 @@
             <formly-transclude></formly-transclude>
         </div>
         <span class="col-md-7 help-block">{{ to.help }}</div>
-    <div class="my-messages" ng-messages="fc.$error" ng-if="options.formControl.$touched" ng-messages-multiple>
+    <div class="my-messages" ng-messages="fc.$error" ng-if="options.formControl.$touched || form.$submitted" ng-messages-multiple>
         <div class="some-message has-error control-label" ng-message="{{::name}}" ng-repeat="(name, message) in ::options.validation.messages">
             {{ message(fc.$viewValue, fc.$modelValue, this)}}
         </div>
     </div>
-    
+</script>
+
+<script type="text/ng-template" id="formly-error-summary.html">
+    <div class="formly-error-summary">
+        Error summary<br>
+        <div ng-repeat="fieldgroup in vm.fields">
+            Fieldgroup
+            
+            <div ng-repeat="field in fieldgroup.fieldGroup" ng-class="{'color-success': field.formControl.$valid, 'color-error': field.formControl.$invalid}">
+                
+                <!--
+                <i class="glyphicon glyphicon-{{ field.formControl.$invalid ? 'remove' : 'ok'}}"></i>
+                {{ field.templateOptions.label }} is
+              <span ng-if="field.formControl.$invalid">
+                invalid! {{ vm.getErrorAsList(field) }}
+              </span>
+              <span ng-if="field.formControl.$valid">
+                valid!
+              </span>
+              -->
+            </div>
+        </div>
+    </div>
 </script>
 

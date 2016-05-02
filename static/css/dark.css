@@ -7575,5 +7575,8 @@ input:focus + .input-group-addon {
   font-style: italic;
   color: #7a8288;
 }
+.has-error .control-label {
+  color: #ee5f5b;
+}
 
 /*# sourceMappingURL=dark.css.map */

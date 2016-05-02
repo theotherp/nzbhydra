@@ -7575,6 +7575,9 @@ input:focus + .input-group-addon {
   font-style: italic;
   color: #c1c1c1;
 }
+.has-error .control-label {
+  color: #ff4136;
+}
 .nav-tabs > li > a:hover {
   border-color: #eeeeee #eeeeee transparent;
   background-color: transparent;
