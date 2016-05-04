@@ -2,7 +2,9 @@
 
 ----------
 ### 0.0.1a93
-Added: Support for details and getnfo via API 
+Added: Support for details and getnfo via API.
+
+Added: Log IP of NZB downloader. Thanks to sanderjo.
 
 ### 0.0.1a92
 Added: Make errors in config dialog better visible
