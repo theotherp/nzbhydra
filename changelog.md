@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a93
+Added: Support for details and getnfo via API 
+
 ### 0.0.1a92
 Added: Make errors in config dialog better visible
 

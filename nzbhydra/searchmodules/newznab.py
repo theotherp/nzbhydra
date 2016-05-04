@@ -304,6 +304,9 @@ def _build_base_url(host, apikey, action, category, limit=None, offset=0):
 
 
 class NewzNab(SearchModule):
+    grouppattern = re.compile(r"Group:</b> ?([\w\.]+)<br ?/>")
+    guidpattern = re.compile(r"(.*/)?([a-zA-Z0-9@\.]+)")
+    
     # todo feature: read caps from server on first run and store them in the config/database
     def __init__(self, settings):
         super(NewzNab, self).__init__(settings)
@@ -421,13 +424,29 @@ class NewzNab(SearchModule):
         f.path.add(guid)
         return f.url
 
+    def get_entry_by_id(self, guid, title):
+        url = furl(self.settings.host)
+        url.path.add("api")
+        url.add({"apikey": self.settings.apikey, "t": "details", "o": "xml", "id": guid})
+
+        response, papiaccess, _ = self.get_url_with_papi_access(url, "nfo")
+        if response is None:
+            return None
+        try:
+            tree = ET.fromstring(response.content)
+            item = tree.find("channel").find("item")
+            return self.parseItem(item)
+        except ET.ParseError:
+            self.error("Error parsing response for GUID %s" % guid)
+            return None
+        
+        
+
     def process_query_result(self, xml_response, searchRequest, maxResults=None):
         self.debug("Started processing results")
 
         entries = []
         countRejected = 0
-        grouppattern = re.compile(r"Group:</b> ?([\w\.]+)<br ?/>")
-        guidpattern = re.compile(r"(.*/)?([a-zA-Z0-9@\.]+)")
 
         try:
             tree = ET.fromstring(xml_response)
@@ -435,71 +454,7 @@ class NewzNab(SearchModule):
             self.exception("Error parsing XML: %s..." % xml_response[:500])
             raise IndexerResultParsingException("Error parsing XML", self)
         for item in tree.find("channel").findall("item"):
-            usenetdate = None
-            entry = self.create_nzb_search_result()
-            # These are the values that absolutely must be contained in the response
-            entry.title = item.find("title").text
-            entry.link = item.find("link").text
-            entry.attributes = []
-            entry.pubDate = item.find("pubDate").text
-            entry.indexerguid = item.find("guid").text
-            entry.has_nfo = NzbSearchResult.HAS_NFO_MAYBE
-            m = guidpattern.search(entry.indexerguid)
-            if m:
-                entry.indexerguid = m.group(2)
-
-            description = item.find("description")
-            if description is not None:
-                description = description.text
-                if description is not None and "Group:" in description:  # DogNZB has the group in its description
-                    m = grouppattern.search(description)
-                    if m and m.group(1) != "not available":
-                        entry.group = m.group(1)
-
-            categories = []
-            for i in item.findall("./newznab:attr", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}):
-                attribute_name = i.attrib["name"]
-                attribute_value = i.attrib["value"]
-                if attribute_name == "size":
-                    entry.size = int(attribute_value)
-                elif attribute_name == "guid":
-                    entry.indexerguid = attribute_value
-                elif attribute_name == "category" and attribute_value != "":
-                    try:
-                        categories.append(int(attribute_value))
-                    except ValueError:
-                        self.error("Unable to parse category %s" % attribute_value)
-                elif attribute_name == "poster":
-                    entry.poster = attribute_value
-                elif attribute_name == "info":
-                    entry.details_link = attribute_value
-                elif attribute_name == "password" and attribute_value != "0":
-                    entry.passworded = True
-                elif attribute_name == "group" and attribute_value != "not available":
-                    entry.group = attribute_value
-                elif attribute_name == "usenetdate":
-                    usenetdate = arrow.get(attribute_value, 'ddd, DD MMM YYYY HH:mm:ss Z')
-                # Store all the extra attributes, we will return them later for external apis
-                entry.attributes.append({"name": attribute_name, "value": attribute_value})
-            if entry.details_link is None:
-                entry.details_link = self.get_details_link(entry.indexerguid)
-
-            if usenetdate is None:
-                # Not provided by attributes, use pubDate instead
-                usenetdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
-            entry.epoch = usenetdate.timestamp
-            entry.pubdate_utc = str(usenetdate)
-            entry.age_days = (arrow.utcnow() - usenetdate).days
-            entry.precise_date = True
-
-            # Map category. Try to find the most specific category (like 2040), then the more general one (like 2000)
-            categories = sorted(categories, reverse=True)  # Sort to make the most specific category appear first
-            if len(categories) > 0:
-                for k, v in categories_to_newznab.items():
-                    for c in categories:
-                        if c in v:
-                            entry.category = k
-                            break
+            entry = self.parseItem(item)
 
             accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
@@ -523,6 +478,70 @@ class NewzNab(SearchModule):
             return IndexerProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False, rejected=0)
 
         return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total, rejected=countRejected)
+
+    def parseItem(self, item):
+        usenetdate = None
+        entry = self.create_nzb_search_result()
+        # These are the values that absolutely must be contained in the response
+        entry.title = item.find("title").text
+        entry.link = item.find("link").text
+        entry.attributes = []
+        entry.pubDate = item.find("pubDate").text
+        entry.indexerguid = item.find("guid").text
+        entry.has_nfo = NzbSearchResult.HAS_NFO_MAYBE
+        m = self.guidpattern.search(entry.indexerguid)
+        if m:
+            entry.indexerguid = m.group(2)
+        description = item.find("description")
+        if description is not None:
+            description = description.text
+            if description is not None and "Group:" in description:  # DogNZB has the group in its description
+                m = self.grouppattern.search(description)
+                if m and m.group(1) != "not available":
+                    entry.group = m.group(1)
+        categories = []
+        for i in item.findall("./newznab:attr", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}):
+            attribute_name = i.attrib["name"]
+            attribute_value = i.attrib["value"]
+            if attribute_name == "size":
+                entry.size = int(attribute_value)
+            elif attribute_name == "guid":
+                entry.indexerguid = attribute_value
+            elif attribute_name == "category" and attribute_value != "":
+                try:
+                    categories.append(int(attribute_value))
+                except ValueError:
+                    self.error("Unable to parse category %s" % attribute_value)
+            elif attribute_name == "poster":
+                entry.poster = attribute_value
+            elif attribute_name == "info":
+                entry.details_link = attribute_value
+            elif attribute_name == "password" and attribute_value != "0":
+                entry.passworded = True
+            elif attribute_name == "group" and attribute_value != "not available":
+                entry.group = attribute_value
+            elif attribute_name == "usenetdate":
+                usenetdate = arrow.get(attribute_value, 'ddd, DD MMM YYYY HH:mm:ss Z')
+            # Store all the extra attributes, we will return them later for external apis
+            entry.attributes.append({"name": attribute_name, "value": attribute_value})
+        if entry.details_link is None:
+            entry.details_link = self.get_details_link(entry.indexerguid)
+        if usenetdate is None:
+            # Not provided by attributes, use pubDate instead
+            usenetdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
+        entry.epoch = usenetdate.timestamp
+        entry.pubdate_utc = str(usenetdate)
+        entry.age_days = (arrow.utcnow() - usenetdate).days
+        entry.precise_date = True
+        # Map category. Try to find the most specific category (like 2040), then the more general one (like 2000)
+        categories = sorted(categories, reverse=True)  # Sort to make the most specific category appear first
+        if len(categories) > 0:
+            for k, v in categories_to_newznab.items():
+                for c in categories:
+                    if c in v:
+                        entry.category = k
+                        break
+        return entry
 
     def check_auth(self, body):
         return check_auth(body, self)

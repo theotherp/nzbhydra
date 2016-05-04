@@ -5,6 +5,7 @@ from __future__ import absolute_import
 
 import unittest
 
+import responses
 from builtins import open
 from future import standard_library
 #standard_library.install_aliases()
@@ -13,8 +14,10 @@ from freezegun import freeze_time
 from furl import furl
 import pytest
 import requests
+import re
 
 from nzbhydra import config
+from nzbhydra.database import Indexer
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.nzbindex import NzbIndex
 from nzbhydra.tests.UrlTestCase import UrlTestCase
@@ -82,3 +85,23 @@ class NzbIndexTests(UrlTestCase):
         n = NzbIndex(config.settings.indexers.nzbindex)
         link = n.get_nzb_link("guid", "title")
         self.assertEqual("https://nzbindex.com/download/guid/title.nzb", link)
+
+    @responses.activate
+    def testGetEntryById(self):
+        Indexer(name="nzbindex").save()
+        n = NzbIndex(config.settings.indexers.nzbindex)
+        with open("mock/nzbindex--details.html", encoding="latin-1") as f:
+            xml = f.read()
+        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+            url_re = re.compile(r'.*')
+            rsps.add(responses.GET, url_re,
+                     body=xml, status=200,
+                     content_type='application/x-html')
+            item = n.get_entry_by_id("aguid", "atitle")
+            self.assertEqual("atitle", item.title)
+            self.assertEqual(3816816, item.size)
+            self.assertEqual("alt.binaries.pwp | alt.binaries.usenetrevolution", item.group)
+            self.assertEqual("janusch@gmail.com (Janusch)", item.poster)
+            self.assertEqual("https://nzbindex.com/download/aguid/atitle.nzb", item.link)
+            self.assertEqual("https://nzbindex.com/release/aguid/atitle.nzb", item.details_link)
+            

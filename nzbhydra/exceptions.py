@@ -53,5 +53,11 @@ class IndexerResultParsingException(IndexerException):
     pass
 
 
+class IndexerResultParsingRowException(NzbHydraException):
+    """An entry in the returned search results could not be parsed
+    """
+    pass
+
+
 class DownloaderException(NzbHydraException):
     pass

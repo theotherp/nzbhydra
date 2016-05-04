@@ -51,17 +51,7 @@ angular
         formlyConfigProvider.setType({
             name: 'horizontalInput',
             extends: 'input',
-            wrapper: ['settingWrapper', 'bootstrapHasError'],
-            controller: ['$scope', function ($scope) {
-                $scope.options.data.getValidationMessage = getValidationMessage;
-
-                function getValidationMessage(key) {
-                    var message = $scope.options.validation.messages[key];
-                    if (message) {
-                        return message($scope.fc.$viewValue, $scope.fc.$modelValue, $scope);
-                    }
-                }
-            }]
+            wrapper: ['settingWrapper', 'bootstrapHasError']
         });
 
         formlyConfigProvider.setType({
@@ -448,27 +438,3 @@ angular
 
 });
 
-angular
-    .module('nzbhydraApp').directive('formlyErrorSummary', function () {
-    return {
-        scope: {},
-        bindToController: {
-            form: '=',
-            fields: '='
-        },
-        templateUrl: 'formly-error-summary.html',
-        controllerAs: 'vm',
-        controller: function () {
-            var vm = this;
-            vm.getErrorAsList = getErrorAsList;
-
-            function getErrorAsList(field) {
-                return Object.keys(field.formControl.$error).map(function (error) {
-                    // note, this only works because the customInput type we have defined.
-
-                    return field.data.getValidationMessage(error);
-                }).join(', ');
-            }
-        }
-    };
-});

@@ -155,6 +155,11 @@ class SearchModule(object):
 
     def get_details_link(self, guid):
         return ""
+    
+    def get_entry_by_id(self, guid, title):
+        # to extend
+        # Returns an NzbSearchResult for the given GUID 
+        return None
 
     def create_nzb_search_result(self):
         return NzbSearchResult(indexer=self.name, indexerscore=self.score)

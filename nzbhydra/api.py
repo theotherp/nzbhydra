@@ -192,7 +192,6 @@ def get_nfo(indexer_name, guid):
         logger.error("Did not find indexer with name %s" % indexer_name)
         return {"has_nfo": False, "error": "Unable to find indexer"}
     return {"has_nfo": has_nfo, "nfo": nfo, "message": message}
-    return result
 
 
 def get_details_link(indexer_name, guid):
@@ -203,6 +202,15 @@ def get_details_link(indexer_name, guid):
         logger.error("Did not find indexer with name %s" % indexer_name)
         return None
     
+    
+def get_entry_by_id(indexer_name, guid, title):
+    for p in indexers.enabled_indexers:
+        if p.name == indexer_name:
+            return p.get_entry_by_id(guid, title)
+    else:
+        logger.error("Did not find indexer with name %s" % indexer_name)
+        return None
+
 
 def get_indexer_nzb_link(indexer_name, indexerguid, title, searchid, mode, log_api_access):
     """

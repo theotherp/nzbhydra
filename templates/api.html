@@ -6,9 +6,9 @@
         <link>https://github.com/theotherp/nzbhydra</link>
         <language>en-gb</language>
         <webMaster>TheOtherP@gmx.de (TheOtherP)</webMaster>
-
+        {% if offset %}
         <newznab:response offset="{{ offset }}" total="{{ total }}"/>
-
+        {% endif %}
         {% for row in items -%}
             <item>
                 <title>{{ row['title'] }}</title>

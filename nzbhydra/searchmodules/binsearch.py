@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup
 from furl import furl
 
 from nzbhydra import config
-from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException
+from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException, IndexerResultParsingRowException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule, IndexerProcessingResult
@@ -29,6 +29,12 @@ logger = logging.getLogger('root')
 
 
 class Binsearch(SearchModule):
+    title_pattern = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"')
+    size_pattern = re.compile(r"size: (?P<size>[0-9]+(\.[0-9]+)?).(?P<unit>(GB|MB|KB|B))")
+    poster_pattern = re.compile(r"&p=(.*)&")
+    goup_pattern = re.compile(r"&g=([\w\.]*)&")
+    nfo_pattern = re.compile(r"\d nfo file")
+    
     def __init__(self, settings):
         super(Binsearch, self).__init__(settings)
         self.module = "Binsearch"
@@ -126,85 +132,12 @@ class Binsearch(SearchModule):
             raise IndexerResultParsingException("Unable to find main table in binsearch page. This happens sometimes... :-)", self)
 
         items = main_table.find_all('tr')
-        title_pattern = re.compile(r'"(.*)\.(rar|nfo|mkv|par2|001|nzb|url|zip|r[0-9]{2})"')
-        size_pattern = re.compile(r"size: (?P<size>[0-9]+(\.[0-9]+)?).(?P<unit>(GB|MB|KB|B))")
-        poster_pattern = re.compile(r"&p=(.*)&")
-        goup_pattern = re.compile(r"&g=([\w\.]*)&")
-        nfo_pattern = re.compile(r"\d nfo file")
+        
         for row in items:
-            entry = self.create_nzb_search_result()
-            title = row.find('span', attrs={'class': 's'})
-
-            if title is None:
-                self.debug("Ignored entry because it has no title")
-                continue
-            title = title.text
-
-            if "password protect" in title.lower() or "passworded" in title.lower():
-                entry.passworded = True
-
-            m = title_pattern.search(title)
-            if m:
-                entry.title = m.group(1)
-            else:
-                entry.title = title
-
-            entry.indexerguid = row.find("input", attrs={"type": "checkbox"})["name"]
-            entry.link = "https://www.binsearch.info/fcgi/nzb.fcgi?q=%s" % entry.indexerguid
-            info = row.find("span", attrs={"class": "d"})
-            if info is None:
-                self.debug("Ignored entry because it has no info")
-                continue
-
-            collection_link = info.find("a")["href"]  # '/?b=MARVELS.AVENGERS.AGE.OF.ULTRON.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250'
-            entry.details_link = "%s%s" % (self.host, collection_link)
-            m = goup_pattern.search(collection_link)
-            if m:
-                entry.group = m.group(1).strip()
-            
-            m = poster_pattern.search(collection_link)
-            if m:
-                poster = m.group(1).strip()
-                entry.poster = urlparse.unquote(poster).replace("+", " ")
-            
-            # Size
-            m = size_pattern.search(info.text)
-            if not m:
-                self.debug("Unable to find size information in %s" % info.text)
-            else:
-                size = float(m.group("size"))
-                unit = m.group("unit")
-                if unit == "B":
-                    pass
-                elif unit == "KB":
-                    size *= 1024
-                elif unit == "MB":
-                    size = size * 1024 * 1024
-                elif unit == "GB":
-                    size = size * 1024 * 1024 * 1024
-                
-                entry.size = int(size)
-            
-            entry.category = "N/A"
-            
-            if nfo_pattern.search(info.text):  # 1 nfo file is missing if there is no NFO
-                entry.has_nfo = NzbSearchResult.HAS_NFO_YES
-            else:
-                entry.has_nfo = NzbSearchResult.HAS_NFO_NO
-
-            # Age
             try:
-                pubdate = re.compile(r"(\d{1,2}\-\w{3}\-\d{4})").search(row.text).group(1)
-                pubdate = arrow.get(pubdate, "DD-MMM-YYYY")
-                entry.epoch = pubdate.timestamp
-                entry.pubdate_utc = str(pubdate)
-                entry.age_days = (arrow.utcnow() - pubdate).days
-                entry.age_precise = False
-                entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
-            except Exception as e:
-                self.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
+                entry = self.parseRow(row)
+            except IndexerResultParsingRowException:
                 continue
-                
             accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
                 entries.add(entry)
@@ -224,7 +157,81 @@ class Binsearch(SearchModule):
                 total = int(m.group(1))
                 total_known = True
         
-        return IndexerProcessingResult(entries=entries, queries=[], total_known=total_known, has_more=has_more, total=total, rejected=countRejected) 
+        return IndexerProcessingResult(entries=entries, queries=[], total_known=total_known, has_more=has_more, total=total, rejected=countRejected)
+    
+    def parseRow(self, row):
+        entry = self.create_nzb_search_result()
+        title = row.find('span', attrs={'class': 's'})
+
+        if title is None:
+            self.debug("Ignored entry because it has no title")
+            raise IndexerResultParsingRowException("No title found")
+        title = title.text
+
+        if "password protect" in title.lower() or "passworded" in title.lower():
+            entry.passworded = True
+
+        m = self.title_pattern.search(title)
+        if m:
+            entry.title = m.group(1)
+        else:
+            entry.title = title
+
+        entry.indexerguid = row.find("input", attrs={"type": "checkbox"})["name"]
+        entry.link = "https://www.binsearch.info/fcgi/nzb.fcgi?q=%s" % entry.indexerguid
+        info = row.find("span", attrs={"class": "d"})
+        if info is None:
+            self.debug("Ignored entry because it has no info")
+            raise IndexerResultParsingRowException("No info found")
+
+        collection_link = info.find("a")["href"]  # '/?b=MARVELS.AVENGERS.AGE.OF.ULTRON.3D.TOPBOT.TrueFrench.1080p.X264.A&g=alt.binaries.movies.mkv&p=Ramer%40marmer.com+%28Clown_nez%29&max=250'
+        entry.details_link = "%s%s" % (self.host, collection_link)
+        m = self.goup_pattern.search(collection_link)
+        if m:
+            entry.group = m.group(1).strip()
+
+        m = self.poster_pattern.search(collection_link)
+        if m:
+            poster = m.group(1).strip()
+            entry.poster = urlparse.unquote(poster).replace("+", " ")
+
+        # Size
+        m = self.size_pattern.search(info.text)
+        if not m:
+            self.debug("Unable to find size information in %s" % info.text)
+        else:
+            size = float(m.group("size"))
+            unit = m.group("unit")
+            if unit == "GB":
+                size = size * 1024 * 1024 * 1024
+            elif unit == "KB":
+                size *= 1024
+            elif unit == "MB":
+                size = size * 1024 * 1024
+
+            entry.size = int(size)
+
+        entry.category = "N/A"
+
+        if self.nfo_pattern.search(info.text):  # 1 nfo file is missing if there is no NFO
+            entry.has_nfo = NzbSearchResult.HAS_NFO_YES
+        else:
+            entry.has_nfo = NzbSearchResult.HAS_NFO_NO
+
+        # Age
+        try:
+            pubdate = re.compile(r"(\d{1,2}\-\w{3}\-\d{4})").search(row.text).group(1)
+            pubdate = arrow.get(pubdate, "DD-MMM-YYYY")
+            entry.epoch = pubdate.timestamp
+            entry.pubdate_utc = str(pubdate)
+            entry.age_days = (arrow.utcnow() - pubdate).days
+            entry.age_precise = False
+            entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
+        except Exception as e:
+            self.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
+            raise IndexerResultParsingRowException("Unable to parse age")
+
+        
 
     def get_nfo(self, guid):
         f = furl(self.host)

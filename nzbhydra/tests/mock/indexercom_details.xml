@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/">
+    <channel>
+        <atom:link href="https://indexer.com/api?apikey=apikey&amp;t=search&amp;q=avengers" rel="self" type="application/rss+xml"/>
+        <title>indexer(dot)com API Search</title>
+        <description>indexer(dot)com Feed</description>
+        <link>https://indexer.com/</link>
+        <language>en-gb</language>
+        <webMaster>admin@indexer.com (indexer(dot)com)</webMaster>
+        <category></category>
+        <image>
+            <url>https://indexer.com//templates/default/images/banner.jpg</url>
+            <title>indexer(dot)com</title>
+            <link>https://indexer.com/</link>
+            <description>Visit indexer(dot)com</description>
+        </image>
+
+        
+        <item>
+            <title>testtitle1</title>
+            <guid isPermaLink="false">eff551fbdb69d6777d5030c209ee5d4b</guid>
+            <link>https://indexer.com/getnzb/eff551fbdb69d6777d5030c209ee5d4b.nzb&amp;i=1692&amp;r=apikey</link>
+            <comments>https://indexer.com/details/eff551fbdb69d6777d5030c209ee5d4b#comments</comments>
+            <pubDate>Sun, 11 Oct 2015 17:34:17 +0000</pubDate>
+            <category>Other-Misc</category>
+            <description>testtitle1</description>
+            <enclosure url="https://indexer.com/getnzb/eff551fbdb69d6777d5030c209ee5d4b.nzb&amp;i=1692&amp;r=apikey" length="2893890900" type="application/x-nzb"/>
+
+            <newznab:attr name="category" value="7000"/>
+            <newznab:attr name="category" value="7010"/>
+            <newznab:attr name="size" value="2893890900"/>
+            <newznab:attr name="guid" value="eff551fbdb69d6777d5030c209ee5d4b"/>
+            <newznab:attr name="poster" value="chuck@norris.com" />
+            <newznab:attr name="group" value="alt.binaries.mom" />
+        </item>
+        
+    </channel>
+</rss>

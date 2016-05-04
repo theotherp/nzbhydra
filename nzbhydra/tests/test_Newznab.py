@@ -344,3 +344,16 @@ class NewznabTests(UrlTestCase):
         with pytest.raises(Exception) as excinfo:
             self.n1.check_auth(body)
         self.assertEqual("Unknown error while trying to access the indexer: Missing parameter", excinfo.value.message)
+
+    @responses.activate
+    def testGetEntryById(self):        
+        with open("mock/indexercom_details.xml", encoding="latin-1") as f:
+            xml = f.read()
+        with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+            url_re = re.compile(r'.*')
+            rsps.add(responses.GET, url_re,
+                     body=xml, status=200,
+                     content_type='application/x-html')
+            item = self.n1.get_entry_by_id("aguid", "atitle")
+            self.assertEqual("testtitle1", item.title)
+            self.assertEqual(2893890900, item.size)

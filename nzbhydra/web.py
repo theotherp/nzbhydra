@@ -42,7 +42,7 @@ from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
 from flask_session import Session
 from nzbhydra import config, search, infos, database
-from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid
+from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid, get_entry_by_id
 from nzbhydra.config import NzbAccessTypeSelection
 from nzbhydra.database import IndexerStatus, Indexer
 from nzbhydra.downloader import Nzbget, Sabnzbd
@@ -335,6 +335,7 @@ externalapi_args = {
     "offset": fields.Integer(missing=0),
     "cat": fields.String(missing=None),
     "o": fields.String(missing="XML"),
+    "raw": fields.Integer(missing=0),
     "attrs": fields.String(missing=None),
     "extended": fields.Bool(missing=None),
     "del": fields.String(missing=None),
@@ -385,9 +386,29 @@ def api(args):
     elif args["t"] == "caps":
         xml = render_template("caps.html")
         return Response(xml, mimetype="text/xml")
+    elif args["t"] == "details":
+        rison_data = rison.loads(args["id"])
+        item = get_entry_by_id(rison_data["indexer"], rison_data["indexerguid"], rison_data["title"])
+        if item is None:
+            logger.error("Unable to find or parse details for %s" % rison_data["title"])
+            return "Unable to get details", 500
+        item.link = get_nzb_link_and_guid(rison_data["indexer"], rison_data["indexerguid"], rison_data["searchid"], rison_data["title"], False)[0] #We need to make sure the link in the details refers to us
+        return render_search_results_for_api([item], None, None, output=args["o"])
+    elif args["t"] == "getnfo":
+        rison_data = rison.loads(args["id"])
+        result = get_nfo(rison_data["indexer"], rison_data["indexerguid"])
+        if result["has_nfo"]:
+            if args["raw"] == 1:
+                return result["nfo"]
+            else:
+                #TODO Return as json if requested
+                return render_template("nfo.html", nfo=result["nfo"])
+        else:
+            return Response('<error code="300" description="No such item"/>', mimetype="text/xml")
+            
     else:
-        logger.error("Unknown API request. Supported functions: search, tvsearch, movie, get, caps")
-        return "Unknown API request. Supported functions: search, tvsearch, movie, get, caps", 500
+        logger.error("Unknown API request. Supported functions: search, tvsearch, movie, get, caps, details, getnfo")
+        return "Unknown API request. Supported functions: search, tvsearch, movie, get, caps, details, getnfo", 500
 
 
 def api_search(args):

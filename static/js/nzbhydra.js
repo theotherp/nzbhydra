@@ -2101,17 +2101,7 @@ angular
         formlyConfigProvider.setType({
             name: 'horizontalInput',
             extends: 'input',
-            wrapper: ['settingWrapper', 'bootstrapHasError'],
-            controller: ['$scope', function ($scope) {
-                $scope.options.data.getValidationMessage = getValidationMessage;
-
-                function getValidationMessage(key) {
-                    var message = $scope.options.validation.messages[key];
-                    if (message) {
-                        return message($scope.fc.$viewValue, $scope.fc.$modelValue, $scope);
-                    }
-                }
-            }]
+            wrapper: ['settingWrapper', 'bootstrapHasError']
         });
 
         formlyConfigProvider.setType({
@@ -2498,30 +2488,7 @@ angular
 
 }]);
 
-angular
-    .module('nzbhydraApp').directive('formlyErrorSummary', function () {
-    return {
-        scope: {},
-        bindToController: {
-            form: '=',
-            fields: '='
-        },
-        templateUrl: 'formly-error-summary.html',
-        controllerAs: 'vm',
-        controller: function () {
-            var vm = this;
-            vm.getErrorAsList = getErrorAsList;
 
-            function getErrorAsList(field) {
-                return Object.keys(field.formControl.$error).map(function (error) {
-                    // note, this only works because the customInput type we have defined.
-
-                    return field.data.getValidationMessage(error);
-                }).join(', ');
-            }
-        }
-    };
-});
 var filters = angular.module('filters', []);
 
 filters.filter('bytes', function() {
@@ -2731,7 +2698,7 @@ function ConfigFields() {
             )
         }
 
-        fieldset = fieldset.concat([
+        fieldset.push(
             {
                 key: 'score',
                 type: 'horizontalInput',
@@ -2742,7 +2709,9 @@ function ConfigFields() {
                     required: true,
                     help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
                 }
-            },
+            });
+
+        fieldset.push(
             {
                 key: 'timeout',
                 type: 'horizontalInput',
@@ -2752,8 +2721,7 @@ function ConfigFields() {
                     label: 'Timeout',
                     help: 'Supercedes the general timeout in "Searching"'
                 }
-            }
-        ]);
+            });
 
         if (testtype == "newznab") {
             fieldset.push(
@@ -3189,7 +3157,7 @@ function ConfigFields() {
                         }
                     ]
                 },
-                
+
                 {
                     wrapper: 'fieldset',
                     templateOptions: {label: 'Other'},
@@ -3842,19 +3810,19 @@ function ConfigFields() {
                     wrapper: 'fieldset',
                     key: 'binsearch',
                     templateOptions: {label: 'Binsearch'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "binsearch", true)
+                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "binsearch", true, false)
                 },
                 {
                     wrapper: 'fieldset',
                     key: 'nzbclub',
                     templateOptions: {label: 'NZBClub'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbclub", true)
+                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbclub", true, false)
                 },
                 {
                     wrapper: 'fieldset',
                     key: 'nzbindex',
                     templateOptions: {label: 'NZBIndex'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbindex", true).concat([{
+                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbindex", true, false).concat([{
                         key: 'generalMinSize',
                         type: 'horizontalInput',
                         hideExpression: '!model.enabled',
@@ -3869,13 +3837,13 @@ function ConfigFields() {
                     wrapper: 'fieldset',
                     key: 'omgwtfnzbs',
                     templateOptions: {label: 'omgwtfnzbs.org'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, true, true, false, true, 'omgwtf', true)
+                    fieldGroup: getBasicIndexerFieldset(false, false, true, true, false, true, 'omgwtf', true, false)
                 },
                 {
                     wrapper: 'fieldset',
                     key: 'womble',
                     templateOptions: {label: 'Womble'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "womble", false)
+                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "womble", true, false)
                 },
                 {
                     type: 'repeatSection',
@@ -3981,6 +3949,39 @@ function ConfigFields() {
     }
 
 }
+[
+    {
+        wrapper: 'fieldset',
+        key: 'fieldset1',
+        fieldGroup: [
+            {
+                key: 'score',
+                type: 'input',
+                templateOptions: {
+                    type: 'number',
+                    label: 'Score',
+                    required: true
+                }
+            }
+        ]
+    },
+    {
+        wrapper: 'fieldset',
+        key: 'fieldset1',
+        fieldGroup: [
+            {
+                key: 'score',
+                type: 'input',
+                templateOptions: {
+                    type: 'number',
+                    label: 'Score',
+                    required: true
+                }
+            }
+        ]
+    }
+
+];
 angular
     .module('nzbhydraApp')
     .factory('ConfigModel', function () {

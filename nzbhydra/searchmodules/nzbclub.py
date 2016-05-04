@@ -16,8 +16,7 @@ import arrow
 
 from furl import furl
 
-from nzbhydra import config
-from nzbhydra.exceptions import IndexerResultParsingException
+from nzbhydra.exceptions import IndexerResultParsingException, IndexerResultParsingRowException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule, IndexerProcessingResult
@@ -26,6 +25,9 @@ logger = logging.getLogger('root')
 
 
 class NzbClub(SearchModule):
+    group_pattern = re.compile(r"Newsgroup: ?([\w@\. \(\)]+) <br />")
+    poster_pattern = re.compile(r"Poster: ?([\w@\. \(\)]+) <br />")
+    
     def __init__(self, indexer):
         super(NzbClub, self).__init__(indexer)
         self.module = "NZBClub"
@@ -198,56 +200,11 @@ class NzbClub(SearchModule):
             self.debug(xml[:500])
             raise IndexerResultParsingException("Error while parsing XML from NZBClub", self)
 
-        group_pattern = re.compile(r"Newsgroup: ?([\w@\. \(\)]+) <br />")
-        poster_pattern = re.compile(r"Poster: ?([\w@\. \(\)]+) <br />")
-        for elem in tree.iter('item'):
-            title = elem.find("title")
-            url = elem.find("enclosure")
-            pubdate = elem.find("pubDate")
-            if title is None or url is None or pubdate is None:
-                continue
-
-            entry = self.create_nzb_search_result()
-            if "password protect" in title.text.lower() or "passworded" in title.text.lower():
-                entry.passworded = True
-
-            p = re.compile(r'"(.*)"')
-            m = p.search(title.text)
-            if m:
-                entry.title = m.group(1)
-            else:
-                entry.title = title.text
-
-            entry.link = url.attrib["url"]
-            entry.size = int(url.attrib["length"])
-            entry.indexer = self.name
-            entry.category = "N/A"
-            entry.details_link = elem.find("link").text
-
-            entry.indexerguid = elem.find("guid").text[-8:]  # GUID looks like "http://www.nzbclub.com/nzb_view58556415" of which we only want the last part
-
-            description = elem.find("description").text
-            description = urlparse.unquote(description).replace("+", " ")
-            if re.compile(r"\d NFO Files").search(description):  # [x NFO Files] is missing if there is no NFO
-                entry.has_nfo = NzbSearchResult.HAS_NFO_YES
-            else:
-                entry.has_nfo = NzbSearchResult.HAS_NFO_NO
-            m = group_pattern.search(description)
-            if m:
-                entry.group = m.group(1).strip()
-            m = poster_pattern.search(description)
-            if m:
-                entry.poster = m.group(1).strip()
-
+        
+        for item in tree.iter('item'):
             try:
-
-                pubdate = arrow.get(pubdate.text, 'ddd, DD MMM YYYY HH:mm:ss Z')
-                entry.epoch = pubdate.timestamp
-                entry.pubdate_utc = str(pubdate)
-                entry.age_days = (arrow.utcnow() - pubdate).days
-                entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
-            except Exception as e:
-                self.error("Unable to parse pubdate %s" % pubdate.text)
+                entry = self.parseItem(item)
+            except IndexerResultParsingRowException:
                 continue
 
             accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
@@ -259,6 +216,51 @@ class NzbClub(SearchModule):
 
         self.debug("Finished processing results")
         return IndexerProcessingResult(entries=entries, queries=[], total=len(entries), total_known=True, has_more=False, rejected=countRejected)  # No paging with RSS. Might need/want to change to HTML and BS
+
+    def parseItem(self, elem):
+        title = elem.find("title")
+        url = elem.find("enclosure")
+        pubdate = elem.find("pubDate")
+        if title is None or url is None or pubdate is None:
+            raise IndexerResultParsingRowException("Unable to find title, url or date")
+        entry = self.create_nzb_search_result()
+        if "password protect" in title.text.lower() or "passworded" in title.text.lower():
+            entry.passworded = True
+        p = re.compile(r'"(.*)"')
+        m = p.search(title.text)
+        if m:
+            entry.title = m.group(1)
+        else:
+            entry.title = title.text
+        entry.link = url.attrib["url"]
+        entry.size = int(url.attrib["length"])
+        entry.indexer = self.name
+        entry.category = "N/A"
+        entry.details_link = elem.find("link").text
+        entry.indexerguid = elem.find("guid").text[-8:]  # GUID looks like "http://www.nzbclub.com/nzb_view58556415" of which we only want the last part
+        description = elem.find("description").text
+        description = urlparse.unquote(description).replace("+", " ")
+        if re.compile(r"\d NFO Files").search(description):  # [x NFO Files] is missing if there is no NFO
+            entry.has_nfo = NzbSearchResult.HAS_NFO_YES
+        else:
+            entry.has_nfo = NzbSearchResult.HAS_NFO_NO
+        m = self.group_pattern.search(description)
+        if m:
+            entry.group = m.group(1).strip()
+        m = self.poster_pattern.search(description)
+        if m:
+            entry.poster = m.group(1).strip()
+        try:
+
+            pubdate = arrow.get(pubdate.text, 'ddd, DD MMM YYYY HH:mm:ss Z')
+            entry.epoch = pubdate.timestamp
+            entry.pubdate_utc = str(pubdate)
+            entry.age_days = (arrow.utcnow() - pubdate).days
+            entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
+        except Exception:
+            self.error("Unable to parse pubdate %s" % pubdate.text)
+            raise IndexerResultParsingRowException("Unable to parse date")
+        return entry
 
     def get_nfo(self, guid):
         f = furl(self.settings.host)

@@ -262,25 +262,7 @@ class OmgWtf(SearchModule):
             total_pages = int(tree.find("info").find("pages").text)
             has_more = current_page < total_pages
             for item in tree.find("search_req").findall("post"):
-                entry = self.create_nzb_search_result()
-                entry.indexerguid = item.find("nzbid").text
-                entry.title = item.find("release").text
-                entry.group = item.find("group").text
-                entry.link = item.find("getnzb").text
-                entry.size = long(item.find("sizebytes").text)
-                entry.epoch = long(item.find("usenetage").text)
-                pubdate = arrow.get(entry.epoch)
-                entry.pubdate_utc = str(pubdate)
-                entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
-                entry.age_days = (arrow.utcnow() - pubdate).days
-                entry.age_precise = True
-                entry.details_link = item.find("details").text
-                entry.has_nfo = NzbSearchResult.HAS_NFO_YES if item.find("getnfo") is not None else NzbSearchResult.HAS_NFO_NO
-                categoryid = item.find("categoryid").text
-                if categoryid in omgwtf_to_categories.keys():
-                    entry.category = omgwtf_to_categories[categoryid]
-                else:
-                    entry.category = "N/A"
+                entry = self.parseItem(item)
                 accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
                 if accepted:
                     entries.append(entry)
@@ -329,7 +311,28 @@ class OmgWtf(SearchModule):
         else:
             self.warn("Unknown response type: %s" % xml_response[:100])
             return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False, rejected=countRejected)
-        
+
+    def parseItem(self, item):
+        entry = self.create_nzb_search_result()
+        entry.indexerguid = item.find("nzbid").text
+        entry.title = item.find("release").text
+        entry.group = item.find("group").text
+        entry.link = item.find("getnzb").text
+        entry.size = long(item.find("sizebytes").text)
+        entry.epoch = long(item.find("usenetage").text)
+        pubdate = arrow.get(entry.epoch)
+        entry.pubdate_utc = str(pubdate)
+        entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
+        entry.age_days = (arrow.utcnow() - pubdate).days
+        entry.age_precise = True
+        entry.details_link = item.find("details").text
+        entry.has_nfo = NzbSearchResult.HAS_NFO_YES if item.find("getnfo") is not None else NzbSearchResult.HAS_NFO_NO
+        categoryid = item.find("categoryid").text
+        if categoryid in omgwtf_to_categories.keys():
+            entry.category = omgwtf_to_categories[categoryid]
+        else:
+            entry.category = "N/A"
+        return entry
 
     def get_nfo(self, guid):
         f = furl(self.host)

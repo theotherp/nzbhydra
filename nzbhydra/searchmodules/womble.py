@@ -13,13 +13,13 @@ import re
 import arrow
 from furl import furl
 import xml.etree.ElementTree as ET
-from nzbhydra.config import InternalExternalSelection
 from nzbhydra.exceptions import IndexerResultParsingException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
 from nzbhydra.search_module import SearchModule, IndexerProcessingResult
 
 logger = logging.getLogger('root')
+
 
 class Womble(SearchModule):
     # TODO init of config which is dynmic with its path
