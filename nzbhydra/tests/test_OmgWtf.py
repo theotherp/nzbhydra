@@ -102,7 +102,7 @@ class MyTestCase(unittest.TestCase):
     def testProcessSearchResults(self):
         with open("mock/omgwtf_search.xml", encoding="latin-1") as f:
             body = f.read()
-            result = self.omgwtf.process_query_result(body, "atvshow")
+            result = self.omgwtf.process_query_result(body, SearchRequest())
             entries = result.entries
             self.assertEqual(3, len(entries))
             self.assertEqual('atvshow.S02E09.720p.HDTV.DD5.1.x264-NTb', entries[0].title)
