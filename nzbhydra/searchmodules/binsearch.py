@@ -230,6 +230,7 @@ class Binsearch(SearchModule):
         except Exception as e:
             self.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
             raise IndexerResultParsingRowException("Unable to parse age")
+        return entry
 
         
 
