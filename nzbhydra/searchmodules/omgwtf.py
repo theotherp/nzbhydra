@@ -22,7 +22,7 @@ from requests.exceptions import RequestException
 import requests
 from nzbhydra import config
 
-from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException, IndexerAuthException
+from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException, IndexerAuthException, IndexerResultParsingRowException
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule, IndexerProcessingResult
 from nzbhydra import infos
@@ -148,6 +148,10 @@ def test_connection(apikey, username):
 
 
 class OmgWtf(SearchModule):
+    
+    regexGuid = re.compile(r".*\?id=(\w+)&.*")
+    regexGroup = re.compile(r".*Group:<\/b> ([\w\.\-]+)<br \/>.*")
+    
     def __init__(self, indexer):
         super(OmgWtf, self).__init__(indexer)
         self.module = "omgwtfnzbs.org"
@@ -277,28 +281,31 @@ class OmgWtf(SearchModule):
                     entry.category = omgwtf_to_categories[categoryid]
                 else:
                     entry.category = "N/A"
-                entries.append(entry)
+                accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
+                if accepted:
+                    entries.append(entry)
+                else:
+                    countRejected += 1
+                    self.debug("Rejected search result. Reason: %s" % reason)
             return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=has_more, rejected=countRejected)      
         elif tree.tag == "rss":
-            regexGuid = re.compile(r".*\?id=(\w+)&.*")
-            regexGroup = re.compile(r".*Group:<\/b> ([\w\.\-]+)<br \/>.*")
             for item in tree.find("channel").findall("item"):
                 entry = self.create_nzb_search_result()
                 indexerguid = item.find("guid").text
-                m = regexGuid.match(indexerguid)
+                m = self.regexGuid.match(indexerguid)
                 if m:
                     entry.indexerguid = m.group(1)
                 else:
                     self.warn("Unable to find GUID in " + indexerguid)
-                    continue
+                    raise IndexerResultParsingRowException("Unable to find GUID")
                 entry.title = item.find("title").text
                 description = item.find("description").text
-                m = regexGroup.match(description)
+                m = self.regexGroup.match(description)
                 if m:
                     entry.group = m.group(1)
                 else:
                     self.warn("Unable to find group in " + description)
-                    continue
+                    raise IndexerResultParsingRowException("Unable to find usenet group")
                 entry.size = long(item.find("enclosure").attrib["length"])
                 entry.pubDate = item.find("pubDate").text
                 pubdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
