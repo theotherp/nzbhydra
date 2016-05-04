@@ -54,6 +54,7 @@ from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import getLogs
 from nzbhydra.backup_debug import backup, getDebuggingInfos, getBackupFilenames, getBackupFileByFilename
 
+import ipinfo
 
 class ReverseProxied(object):
     def __init__(self, app):
@@ -381,7 +382,7 @@ def api(args):
         return api_search(args)
     elif args["t"] == "get":
         args = rison.loads(args["id"])
-        logger.info("API request to download %s from %s" % (args["title"], args["indexer"]))
+        logger.info("API request from %s to download %s from %s" % (getIp(), args["title"], args["indexer"]))
         return extract_nzb_infos_and_return_response(args["indexer"], args["indexerguid"], args["title"], args["searchid"])
     elif args["t"] == "caps":
         xml = render_template("caps.html")
@@ -473,7 +474,7 @@ getnzb_args = {
 def getnzb(args):
     logger.debug("Get NZB request with args %s" % args)
     args = rison.loads(args["id"])
-    logger.info("API request to download %s from %s" % (args["title"], args["indexer"]))
+    logger.info("API request from %s to download %s from %s" % (getIp(), args["title"], args["indexer"]))
     return extract_nzb_infos_and_return_response(args["indexer"], args["indexerguid"], args["title"], args["searchid"])
 
 
@@ -655,7 +656,12 @@ def extract_nzb_infos_and_return_response(indexer, indexerguid, title, searchid)
     if config.settings.downloader.nzbaccesstype == NzbAccessTypeSelection.redirect:
         link, _, _ = get_indexer_nzb_link(indexer, indexerguid, title, searchid, "redirect", True)
         if link is not None:
-            logger.info("Redirecting to %s" % link)
+            logger.info("Redirecting %s to %s" % (getIp(), link))
+            if ipinfo.ispublic(getIp()):
+                logger.info("Info on %s: %s" % (getIp(),ipinfo.country_and_org(getIp()) ) )
+            else:
+                logger.info("Info on %s: private / RFC1918 address" % getIp() ) 
+
             return redirect(link)
         else:
             return "Unable to build link to NZB", 404
