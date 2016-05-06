@@ -18,6 +18,7 @@ import re
 
 from nzbhydra import config
 from nzbhydra.database import Indexer
+from nzbhydra.indexers import getIndexerSettingByName
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.nzbindex import NzbIndex
 from nzbhydra.tests.UrlTestCase import UrlTestCase
@@ -30,7 +31,7 @@ class NzbIndexTests(UrlTestCase):
         set_and_drop()
 
     def testUrlGeneration(self):
-        w = NzbIndex(config.settings.indexers.nzbindex)
+        w = NzbIndex(getIndexerSettingByName("nzbindex"))
         self.args = SearchRequest(query="a showtitle", season=1, episode=2)
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
@@ -45,12 +46,13 @@ class NzbIndexTests(UrlTestCase):
         self.args = SearchRequest(query="aquery", ignoreWords=["ignorethis"])
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
-        self.assertEqual("https://nzbindex.com/search?max=100&hidecross=1&more=1&q=aquery+-ignorethis&minsize=1", urls[0])
+        self.assertEqual("https://nzbindex.com/search?max=100&hidecross=1&more=1&q=aquery+-ignorethis", urls[0])
+
 
         
     @ freeze_time("2015-10-03 20:15:00", tz_offset=+2)
     def testProcess_results(self):
-        w = NzbIndex(config.settings.indexers.nzbindex)
+        w = NzbIndex(getIndexerSettingByName("nzbindex"))
         with open("mock/nzbindex--q-testtitle.html") as f:
             processing_result = w.process_query_result(f.read(), SearchRequest())
             entries = processing_result.entries
@@ -82,14 +84,14 @@ class NzbIndexTests(UrlTestCase):
         assert "I agree" not in text
 
     def testGetNzbLink(self):
-        n = NzbIndex(config.settings.indexers.nzbindex)
+        n = NzbIndex(getIndexerSettingByName("nzbindex"))
         link = n.get_nzb_link("guid", "title")
         self.assertEqual("https://nzbindex.com/download/guid/title.nzb", link)
 
     @responses.activate
     def testGetEntryById(self):
         Indexer(name="nzbindex").save()
-        n = NzbIndex(config.settings.indexers.nzbindex)
+        n = NzbIndex(getIndexerSettingByName("nzbindex"))
         with open("mock/nzbindex--details.html", encoding="latin-1") as f:
             xml = f.read()
         with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:

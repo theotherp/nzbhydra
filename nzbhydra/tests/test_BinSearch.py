@@ -14,6 +14,7 @@ import pytest
 from nzbhydra import config
 
 from nzbhydra.database import Indexer
+from nzbhydra.indexers import getIndexerSettingByName
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.binsearch import Binsearch
 from nzbhydra.tests.UrlTestCase import UrlTestCase
@@ -28,7 +29,7 @@ class TestBinsearch(UrlTestCase):
     
 
     def testUrlGeneration(self):
-        w = Binsearch(config.settings.indexers.binsearch)
+        w = Binsearch(getIndexerSettingByName("binsearch"))
         self.args = SearchRequest(query="a showtitle", season=1, episode=2)
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(2, len(urls))
@@ -42,8 +43,8 @@ class TestBinsearch(UrlTestCase):
         self.assertEqual('a showtitle "season 1"', furl(urls[1]).args["q"])
         
     def testEbookUrlGeneration(self):
-        config.settings.indexers.binsearch.searchTypes = []
-        w = Binsearch(config.settings.indexers.binsearch)
+        getIndexerSettingByName("binsearch").searchTypes = []
+        w = Binsearch(getIndexerSettingByName("binsearch"))
         self.args = SearchRequest(query="anauthor atitle")
         urls = w.get_ebook_urls(self.args)
         self.assertEqual(4, len(urls))
@@ -60,7 +61,7 @@ class TestBinsearch(UrlTestCase):
 
     @freeze_time("2015-09-30 14:00:00", tz_offset=-4)
     def testProcess_results(self):
-        w = Binsearch(config.settings.indexers.binsearch)
+        w = Binsearch(getIndexerSettingByName("binsearch"))
         with open("mock/binsearch--q-testtitle.html", encoding="latin-1") as f:
             body = f.read()
             result = w.process_query_result(body, SearchRequest())
@@ -81,7 +82,7 @@ class TestBinsearch(UrlTestCase):
             self.assertFalse(result.total_known)
         
     def testProcess_results_totalknown(self):
-        w = Binsearch(config.settings.indexers.binsearch)
+        w = Binsearch(getIndexerSettingByName("binsearch"))
         with open("mock/binsearch--q-testtitle3results.html", encoding="latin-1") as f:
             body = f.read()
             result = w.process_query_result(body, SearchRequest())
@@ -89,7 +90,7 @@ class TestBinsearch(UrlTestCase):
             self.assertEqual(3, result.total)  
                 
     def testGetNzbLink(self):
-        n = Binsearch(config.settings.indexers.binsearch)
+        n = Binsearch(getIndexerSettingByName("binsearch"))
         link = n.get_nzb_link("guid", "title")
         assert "action=nzb" in link
         assert "guid=1" in link

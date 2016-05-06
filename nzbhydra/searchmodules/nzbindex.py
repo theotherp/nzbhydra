@@ -59,8 +59,8 @@ class NzbIndex(SearchModule):
         f = self.build_base_url().add({"q": query})
         if search_request.minsize:
             f = f.add({"minsize": search_request.minsize})
-        elif config.settings.indexers.nzbindex.generalMinSize:
-            f = f.add({"minsize": config.settings.indexers.nzbindex.generalMinSize})
+        elif self.settings.generalMinSize:
+            f = f.add({"minsize": self.settings.generalMinSize})
         if search_request.maxsize:
             f = f.add({"maxsize": search_request.maxsize})
         if search_request.minage:

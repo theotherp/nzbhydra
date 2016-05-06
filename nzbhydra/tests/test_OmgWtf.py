@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from builtins import open
 from future import standard_library
 
+from nzbhydra.indexers import getIndexerSettingByName
 from nzbhydra.nzb_search_result import NzbSearchResult
 
 #standard_library.install_aliases()
@@ -27,7 +28,7 @@ class MyTestCase(unittest.TestCase):
     @pytest.fixture
     def setUp(self):
         set_and_drop()
-        self.omgwtf = OmgWtf(config.settings.indexers.omgwtfnzbs)
+        self.omgwtf = OmgWtf(getIndexerSettingByName("omgwtf"))
         
 
     def testUrlGeneration(self):

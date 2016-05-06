@@ -7,6 +7,7 @@ import pytest
 from builtins import open
 from future import standard_library
 
+from nzbhydra.indexers import getIndexerSettingByName
 from nzbhydra.search import SearchRequest
 
 #standard_library.install_aliases()
@@ -26,7 +27,7 @@ class MyTestCase(unittest.TestCase):
     def setUp(self):
         set_and_drop()
         config.load("testsettings.cfg")
-        self.womble = Womble(config.settings.indexers.womble)
+        self.womble = Womble(getIndexerSettingByName("womble"))
         
     def testGetTvRssUrls(self):
         searchRequest = SearchRequest(type="tv")

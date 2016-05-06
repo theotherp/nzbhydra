@@ -68,6 +68,13 @@ def getIndexerSettingByName(name):
     return None
 
 
+def getIndexerSettingByType(itype):
+    for i in config.settings.indexers:
+        if i.type == itype:
+            return i
+    return None
+
+
 def clean_up_database():
     configured_indexer_names = set([x.name for x in configured_indexers])
     for indexer in database.Indexer.select():

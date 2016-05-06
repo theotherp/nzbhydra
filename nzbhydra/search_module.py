@@ -71,7 +71,7 @@ class SearchModule(object):
     @property
     def searchTypes(self):
         return self.settings.searchTypes
-
+    
     @property
     def generate_queries(self):
         return True  # TODO pass when used check for internal vs external

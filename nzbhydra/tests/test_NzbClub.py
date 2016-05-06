@@ -16,6 +16,7 @@ from furl import furl
 from nzbhydra import config
 
 from nzbhydra.database import Indexer
+from nzbhydra.indexers import getIndexerSettingByName
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.nzbclub import NzbClub
 from nzbhydra.tests.UrlTestCase import UrlTestCase
@@ -29,7 +30,7 @@ class NzbclubTests(UrlTestCase):
         set_and_drop()
 
     def testUrlGeneration(self):
-        w = NzbClub(config.settings.indexers.nzbclub)
+        w = NzbClub(getIndexerSettingByName("nzbclub"))
         self.args = SearchRequest(query="a showtitle", season=1, episode=2)
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
@@ -101,7 +102,7 @@ class NzbclubTests(UrlTestCase):
 
     @freeze_time("2015-09-24 14:00:00", tz_offset=-4)
     def testProcess_results(self):
-        w = NzbClub(config.settings.indexers.nzbclub)
+        w = NzbClub(getIndexerSettingByName("nzbclub"))
         with open("mock/nzbclub--q-testtitle.xml", encoding="latin-1") as f:
             entries = w.process_query_result(f.read(), SearchRequest()).entries
             self.assertEqual('testtitle1', entries[0].title)
@@ -118,7 +119,7 @@ class NzbclubTests(UrlTestCase):
 
     
     def testGetNzbLink(self):
-        n = NzbClub(config.settings.indexers.nzbclub)
+        n = NzbClub(getIndexerSettingByName("nzbclub"))
         link = n.get_nzb_link("guid", "title")
         self.assertEqual("https://www.nzbclub.com/nzb_get/guid/title.nzb", link)
     
