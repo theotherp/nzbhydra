@@ -119,15 +119,18 @@ class Binsearch(SearchModule):
     def process_query_result(self, html, searchRequest, maxResults=None):
         self.debug("Started processing results")
         logger.info("Last results count %d" % self.last_results_count)
+                
         entries = Set([])
-        countRejected = 0
-        soup = BeautifulSoup(html, config.settings.searching.htmlParser)
+        countRejected = 0        
         self.debug("Using HTML parser %s" % config.settings.searching.htmlParser)
+        soup = BeautifulSoup(html, config.settings.searching.htmlParser)
 
+        if "No results in most popular groups" in soup.text:
+            logger.info("No results found for query")
+            return IndexerProcessingResult(entries=[], queries=[], total_known=0, has_more=False, total=0, rejected=0)
         main_table = soup.find('table', attrs={'id': 'r2'})
 
         if not main_table:
-            self.warn("Unable to find main table in binsearch page. This just sometimes happens...")
             self.debug(html[:500])
             raise IndexerResultParsingException("Unable to find main table in binsearch page. This happens sometimes... :-)", self)
 
