@@ -39,6 +39,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
     $scope.newfields = [];
 
     function submit(form) {
+        console.log("Submitting");
         if (form.$valid) {
             
             ConfigService.set($scope.config);
@@ -66,6 +67,9 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
                         } 
                     });
                 }
+                angular.forEach($scope.form.$error.required, function (field) {
+                    field.$setTouched();
+                });
             } catch(err) {
                 //
             }
@@ -135,7 +139,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
     }
 
     $scope.isSavingNeeded = function (form) {
-        return form.$dirty && !form.$submitted && form.$valid;
+        return form.$dirty && form.$valid;
     };
 
     $scope.goToConfigState = function (index) {

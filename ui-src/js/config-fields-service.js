@@ -22,265 +22,7 @@ function ConfigFields() {
         }
     }
 
-    function getBasicIndexerFieldset(showName, host, apikey, username, searchIds, testConnection, testtype, showpreselect, showCheckCaps) {
-        var fieldset = [];
-
-        fieldset.push({
-            key: 'enabled',
-            type: 'horizontalSwitch',
-            templateOptions: {
-                type: 'switch',
-                label: 'Enabled'
-            }
-        });
-
-        if (testtype == 'newznab') {
-            fieldset.push(
-                {
-                    key: 'name',
-                    type: 'horizontalNewznabPreset',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        label: 'Presets'
-                    }
-
-                });
-        }
-
-        if (showName) {
-            fieldset.push(
-                {
-                    key: 'name',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        type: 'text',
-                        label: 'Name',
-                        required: true,
-                        help: 'Used for identification. Changing the name will lose all history and stats!'
-                    }
-                })
-        }
-        if (host) {
-            fieldset.push(
-                {
-                    key: 'host',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        type: 'text',
-                        label: 'Host',
-                        required: true,
-                        placeholder: 'http://www.someindexer.com'
-                    }
-                }
-            )
-        }
-
-        if (apikey) {
-            fieldset.push(
-                {
-                    key: 'apikey',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        type: 'text',
-                        required: true,
-                        label: 'API Key'
-                    }
-                }
-            )
-        }
-
-        if (username) {
-            fieldset.push(
-                {
-                    key: 'username',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        type: 'text',
-                        required: true,
-                        label: 'Username'
-                    }
-                }
-            )
-        }
-
-        fieldset.push(
-            {
-                key: 'score',
-                type: 'horizontalInput',
-                hideExpression: '!model.enabled',
-                templateOptions: {
-                    type: 'number',
-                    label: 'Score',
-                    required: true,
-                    help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
-                }
-            });
-
-        fieldset.push(
-            {
-                key: 'timeout',
-                type: 'horizontalInput',
-                hideExpression: '!model.enabled',
-                templateOptions: {
-                    type: 'number',
-                    label: 'Timeout',
-                    help: 'Supercedes the general timeout in "Searching"'
-                }
-            });
-
-        if (testtype == "newznab") {
-            fieldset.push(
-                {
-                    key: 'hitLimit',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        type: 'number',
-                        label: 'API hit limit',
-                        help: 'Maximum number of API hits since "API hit reset time"'
-                    }
-                }
-            );
-            fieldset.push(
-                {
-                    key: 'hitLimitResetTime',
-                    type: 'timeOfDay',
-                    hideExpression: '!model.enabled || !model.hitLimit',
-                    templateOptions: {
-                        type: 'time',
-                        label: 'API hit reset time',
-                        help: 'Local time at which the API hit counter is reset'
-                    }
-                });
-            fieldset.push(
-                {
-                    key: 'username',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        type: 'text',
-                        required: false,
-                        label: 'Username',
-                        help: 'Only needed if indexer requires HTTP auth for API access (rare)'
-                    }
-                }
-            );
-            fieldset.push(
-                {
-                    key: 'password',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled || !model.username',
-                    templateOptions: {
-                        type: 'text',
-                        required: false,
-                        label: 'Password',
-                        help: 'Only needed if indexer requires HTTP auth for API access (rare)'
-                    }
-                }
-            )
-
-        }
-
-
-        if (showpreselect) {
-            fieldset.push(
-                {
-                    key: 'preselect',
-                    type: 'horizontalSwitch',
-                    hideExpression: '!model.enabled || model.accessType == "external"',
-                    templateOptions: {
-                        type: 'switch',
-                        label: 'Preselect',
-                        help: 'Preselect this indexer on the search page'
-                    }
-                }
-            );
-            fieldset.push(
-                {
-                    key: 'accessType',
-                    type: 'horizontalSelect',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        label: 'Enable for...',
-                        options: [
-                            {name: 'Internal searches only', value: 'internal'},
-                            {name: 'API searches only', value: 'external'},
-                            {name: 'Internal and API searches', value: 'both'}
-                        ]
-                    }
-                }
-            )
-        }
-
-        if (searchIds) {
-            fieldset.push(
-                {
-                    key: 'search_ids',
-                    type: 'horizontalMultiselect',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        label: 'Search IDs',
-                        options: [
-                            {label: 'TVDB', id: 'tvdbid'},
-                            {label: 'TVRage', id: 'rid'},
-                            {label: 'IMDB', id: 'imdbid'},
-                            {label: 'Trakt', id: 'traktid'},
-                            {label: 'TVMaze', id: 'tvmazeid'},
-                            {label: 'TMDB', id: 'tmdbid'}
-                        ]
-                    }
-                }
-            );
-            fieldset.push(
-                {
-                    key: 'searchTypes',
-                    type: 'horizontalMultiselect',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        label: 'Search types',
-                        options: [
-                            {label: 'Movies', id: 'movie'},
-                            {label: 'TV', id: 'tvsearch'},
-                            {label: 'Ebooks', id: 'book'},
-                            {label: 'Audio', id: 'audio'}
-                        ]
-                    }
-                }
-            )
-        }
-
-        if (testConnection) {
-            fieldset.push(
-                {
-                    type: 'horizontalTestConnection',
-                    hideExpression: '!model.enabled || !model.host || !model.apikey || !model.name',
-                    templateOptions: {
-                        label: 'Test connection',
-                        testType: testtype
-                    }
-                }
-            )
-        }
-
-        if (showCheckCaps) {
-            fieldset.push(
-                {
-                    type: 'horizontalCheckCaps',
-                    hideExpression: '!model.enabled || !model.host || !model.apikey || !model.name',
-                    templateOptions: {
-                        label: 'Check search types',
-                        help: 'Find out what search types the indexer supports. It\'s recommended to do this for every new indexer.'
-                    }
-                }
-            )
-        }
-
-        return fieldset;
-    }
+    
 
     function ipValidator() {
         return {
@@ -1214,7 +956,14 @@ function ConfigFields() {
                 }
             ],
 
+        
+            
             indexers: [
+                {
+                    type: "indexers",
+                }
+                /*
+                ,
                 {
                     wrapper: 'fieldset',
                     key: 'binsearch',
@@ -1283,7 +1032,7 @@ function ConfigFields() {
 
                 }
 
-
+            */
             ],
 
             auth: [
@@ -1356,38 +1105,4 @@ function ConfigFields() {
             ]
         };
     }
-
 }
-[
-    {
-        wrapper: 'fieldset',
-        key: 'fieldset1',
-        fieldGroup: [
-            {
-                key: 'score',
-                type: 'input',
-                templateOptions: {
-                    type: 'number',
-                    label: 'Score',
-                    required: true
-                }
-            }
-        ]
-    },
-    {
-        wrapper: 'fieldset',
-        key: 'fieldset1',
-        fieldGroup: [
-            {
-                key: 'score',
-                type: 'input',
-                templateOptions: {
-                    type: 'number',
-                    label: 'Score',
-                    required: true
-                }
-            }
-        ]
-    }
-
-];

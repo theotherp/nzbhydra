@@ -12,7 +12,7 @@ from builtins import *
 import logging
 from nzbhydra import config, database
 from nzbhydra.database import Indexer
-from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch, omgwtf
+from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch, omgwtf #Actually used but referenced dynamically
 
 logger = logging.getLogger('root')
 configured_indexers = []
@@ -33,48 +33,18 @@ def read_indexers_from_config():
     global enabled_indexers, configured_indexers
     enabled_indexers = []
 
-    instance = binsearch.get_instance(config.settings.indexers.binsearch)
-    if config.settings.indexers.binsearch.enabled:
-        enabled_indexers.append(instance)
-        logger.info("Loaded indexer %s" % instance.name)
-    init_indexer_table_entry(instance.name)
-    configured_indexers.append(instance)
-    
-    instance = nzbindex.get_instance(config.settings.indexers.nzbindex)
-    if config.settings.indexers.nzbindex.enabled:
-        enabled_indexers.append(instance)
-        logger.info("Loaded indexer %s" % instance.name)
-    init_indexer_table_entry(instance.name)
-    configured_indexers.append(instance)
-        
-    instance = nzbclub.get_instance(config.settings.indexers.nzbclub)
-    if config.settings.indexers.nzbclub.enabled:
-        enabled_indexers.append(instance)
-        logger.info("Loaded indexer %s" % instance.name)
-    init_indexer_table_entry(instance.name)
-    configured_indexers.append(instance)
-
-    instance = omgwtf.get_instance(config.settings.indexers.omgwtfnzbs)
-    if config.settings.indexers.omgwtfnzbs.enabled:
-        enabled_indexers.append(instance)
-        logger.info("Loaded indexer %s" % instance.name)
-    init_indexer_table_entry(instance.name)
-    configured_indexers.append(instance)
-        
-    instance = womble.get_instance(config.settings.indexers.womble)
-    if config.settings.indexers.womble.enabled:
-        enabled_indexers.append(instance)
-        logger.info("Loaded indexer %s" % instance.name)
-    init_indexer_table_entry(instance.name)
-    configured_indexers.append(instance)
-        
-    for newznabsetting in config.settings.indexers.newznab:
-        instance = newznab.get_instance(newznabsetting)
-        if newznabsetting.enabled:
-            enabled_indexers.append(instance)
-            logger.info("Loaded indexer %s" % instance.name)
+    for indexer in config.settings.indexers:
+        try:
+            instance = sys.modules["nzbhydra.searchmodules." + indexer.type].get_instance(indexer)
+        except Exception:
+            logger.error("Unable to get reference to search module %s" % indexer.type)
+            continue
+        logger.debug("Found indexer %s" % instance.name)
         init_indexer_table_entry(instance.name)
         configured_indexers.append(instance)
+        if indexer.enabled:
+            enabled_indexers.append(instance)
+            logger.info("Activated indexer %s" % instance.name)
         
                   
     database.db.close()            

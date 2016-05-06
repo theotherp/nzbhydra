@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import json
 import logging
 import unittest
+from pprint import pprint
 
 import arrow
 import pytest
@@ -364,3 +365,31 @@ class TestConfig(unittest.TestCase):
         self.assertEqual("<USERNAME:96c4173454468a77d67b2c813ffe307a>", ac.downloader.sabnzbd.username)
         self.assertEqual("<APIKEY:f5095bc1520183e76be64af1c5f9e7e3>", ac.downloader.sabnzbd.apikey)
         self.assertEqual("<PASSWORD:4c471a175d85451486af666d7eebe4f8>", ac.downloader.sabnzbd.password)
+
+    def testMigration15to16(self):
+        testCfg = {
+            "main":
+                {
+                    "configVersion": 15,
+                },
+            "indexers": {
+                "binsearch": {"name": "binsearch", "type": "binsearch"},
+                "nzbclub": {"name": "nzbclub", "type": "nzbclub"},
+                "nzbindex": {"name": "nzbindex", "type": "nzbindex"},
+                "omgwtfnzbs": {"name": "omgwtf", "type": "omgwtf"},
+                "womble": {"name": "womble", "type": "womble"},
+                "newznab": [
+                    {"name": "newznab1", "type": "newznab1"},
+                    {"name": "newznab2", "type": "newznab2"}
+
+                ]
+
+            }
+        }
+        with open("testsettings.cfg", "wb") as settingsfile:
+            cfg = copy.copy(testCfg)
+            json.dump(cfg, settingsfile)
+        cfg = config.migrate("testsettings.cfg")
+        pprint(cfg)
+        indexers = list(sorted(cfg["indexers"], key=lambda x: x["name"]))
+        self.assertEqual(indexers[0]["name"], "binsearch")

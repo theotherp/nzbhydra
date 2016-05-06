@@ -1,6 +1,11 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a94
+Changed: I redesigned the indexer configuration to look like the one in sonarr. It is a lot less cluttered now. Also connection tests are done automatically and for new indexers the capabilities test is executed automatically. Let me know what you think.
+
+Fixed: Properly recognize empty result pages from binsearch and don't show stack trace if the HTML could not be parsed.
+
 ### 0.0.1a93
 Added: Support for details and getnfo via API.
 

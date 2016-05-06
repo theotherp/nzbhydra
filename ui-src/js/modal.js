@@ -23,6 +23,9 @@ function ModalService($uibModal) {
                 },
                 cancel: function() {
                     return cancel;
+                },
+                showCancel: function() {
+                    return angular.isDefined(cancel);
                 }
             }
         });
@@ -30,6 +33,7 @@ function ModalService($uibModal) {
         modalInstance.result.then(function() {
             
         }, function() {
+            if (angular.isDefined(cancel))
             cancel();
         });
     }
@@ -40,10 +44,11 @@ angular
     .module('nzbhydraApp')
     .controller('ModalInstanceCtrl', ModalInstanceCtrl);
 
-function ModalInstanceCtrl($scope, $uibModalInstance, headline, message, ok, cancel) {
+function ModalInstanceCtrl($scope, $uibModalInstance, headline, message, ok, cancel, showCancel) {
 
     $scope.message = message;
     $scope.headline = headline;
+    $scope.showCancel = showCancel;
 
     $scope.ok = function () {
         $uibModalInstance.close();

@@ -1,14 +1,13 @@
 <div class="row">
-    <form ng-submit="submit(form)" name="form" novalidate>
-        
-        <form name="vm.form" ng-submit="vm.onSubmit()" novalidate>
+    <form name="form" novalidate>
+
         <uib-tabset>
             <uib-tab ng-repeat="tab in formTabs" heading="{{ tab.name }}" active="allTabs[$index].active" select="goToConfigState($index)">
                 <formly-form model="tab.model" fields="tab.fields" ng-if="allTabs[$index].active">
                 </formly-form>
             </uib-tab>
             <li style="position: absolute; right:0px; ">
-                <button type="submit"  class="btn config-submit" ng-class="{'btn-info': isSavingNeeded(form), 'pulse2': isSavingNeeded(form), 'btn-success': !isSavingNeeded(form)}">Save</button>
+                <button ng-click="submit(form)" class="btn config-submit" ng-class="{'btn-info': isSavingNeeded(form), 'pulse2': isSavingNeeded(form), 'btn-success': !isSavingNeeded(form)}">Save</button>
             </li>
         </uib-tabset>
     </form>
@@ -45,30 +44,51 @@
 </script>
 
 <script type="text/ng-template" id="repeatSection.html">
-    <div>
-        <!--loop through each element in model array-->
+    <!--loop through each element in model array-->
+    <div class="{{ hideRepeat }}">
+        <div class="repeatsection" ng-repeat="element in model[options.key]" ng-init="fields = copyFields(to.fields)">
+            <fieldset>
+                <legend>{{ element.name ? element.name : (element.username ? element.username : to.altLegendText)}}</legend>
+                <formly-form fields="fields"
+                             model="element"
+                             form="form">
+                </formly-form>
+                <div style="margin-bottom:20px;">
+                    <button type="button" class="btn btn-sm btn-danger" ng-click="remove($index)">
+                        Remove {{ element.name }}
+                    </button>
+                </div>
+
+            </fieldset>
+        </div>
+        <hr>
+        <p class="AddNewButton">
+            <button type="button" class="btn btn-primary" ng-click="addNew()">{{ to.btnText }}</button>
+        </p>
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="indexers.html">
+    
+
+        <div class="btn-group" style="margin-bottom: 30px;">
+            <button class="btn btn-info" ng-click="addIndexer(model)"><span class="glyphicon glyphicon-plus" style="margin-right: 10px"></span> New indexer</button>
+            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li ng-repeat="preset in presets">
+                    <a ng-click="addIndexer(model, preset)">{{ preset.name }}</a>
+                </li>
+            </ul>
+        </div>
+        
         <div class="{{ hideRepeat }}">
-
-
-            <div class="repeatsection" ng-repeat="element in model[options.key]" ng-init="fields = copyFields(to.fields)">
-                <fieldset>
-                    <legend>{{ element.name ? element.name : (element.username ? element.username : to.altLegendText)}}</legend>
-                    <formly-form fields="fields"
-                                 model="element"
-                                 form="form">
-                    </formly-form>
-                    <div style="margin-bottom:20px;">
-                        <button type="button" class="btn btn-sm btn-danger" ng-click="remove($index)">
-                            Remove {{ element.name }}
-                        </button>
-                    </div>
-
-                </fieldset>
+            <div ng-repeat="indexer in model | orderBy: 'name'">
+                <button ng-click="showIndexerBox(indexer, model)" class="btn indexer-button" ng-class="{ 'btn-success': indexer.enabled, 'btn-default': !indexer.enabled }">{{ indexer.name }}</button>
             </div>
-            <hr>
-            <p class="AddNewButton">
-                <button type="button" class="btn btn-primary" ng-click="addNew()">{{ to.btnText }}</button>
-            </p>
         </div>
 </script>
 
@@ -82,35 +102,32 @@
         </div>
         <div class="col-md-6">
             <formly-transclude></formly-transclude>
-        </div>
-        <span class="col-md-7 help-block">{{ to.help }}</div>
-    <div class="my-messages" ng-messages="fc.$error" ng-if="options.formControl.$touched || form.$submitted" ng-messages-multiple>
-        <div class="some-message has-error control-label" ng-message="{{::name}}" ng-repeat="(name, message) in ::options.validation.messages">
-            {{ message(fc.$viewValue, fc.$modelValue, this)}}
-        </div>
-    </div>
-</script>
-
-<script type="text/ng-template" id="formly-error-summary.html">
-    <div class="formly-error-summary">
-        Error summary<br>
-        <div ng-repeat="fieldgroup in vm.fields">
-            Fieldgroup
-            
-            <div ng-repeat="field in fieldgroup.fieldGroup" ng-class="{'color-success': field.formControl.$valid, 'color-error': field.formControl.$invalid}">
-                
-                <!--
-                <i class="glyphicon glyphicon-{{ field.formControl.$invalid ? 'remove' : 'ok'}}"></i>
-                {{ field.templateOptions.label }} is
-              <span ng-if="field.formControl.$invalid">
-                invalid! {{ vm.getErrorAsList(field) }}
-              </span>
-              <span ng-if="field.formControl.$valid">
-                valid!
-              </span>
-              -->
+            <div class="my-messages" ng-messages="fc.$error" ng-if="options.formControl.$touched || form.$submitted" ng-messages-multiple>
+                <div class="some-message has-error control-label" ng-message="{{::name}}" ng-repeat="(name, message) in ::options.validation.messages">
+                    {{ message(fc.$viewValue, fc.$modelValue, this)}}
+                </div>
             </div>
         </div>
+        <span class="col-md-7 help-block">{{ to.help }}</div>
+
+</script>
+
+
+<script type="text/ng-template" id="indexerModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{ model.name }}</h3>
+    </div>
+    <div class="modal-body">
+        <formly-form fields="fields"
+                     model="model"
+                     form="form"
+        >
+        </formly-form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger pull-left" ng-click="deleteIndexer()" ng-if="!isInitial && model.type == 'newznab'">Delete</button>
+        <button class="btn btn-warning" ng-click="reset()">Reset</button>
+        <button class="btn btn-success has-spinner" ng-class="{'active': spinnerActive}" ng-click="obSubmit()"><span class="spinner"><i class="icon-spin icon-refresh"></i></span>Submit</button>
     </div>
 </script>
 

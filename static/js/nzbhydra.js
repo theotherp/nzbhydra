@@ -819,6 +819,89 @@ function downloadHistory() {
 }
 angular
     .module('nzbhydraApp')
+    .directive('connectionTest', connectionTest);
+
+function connectionTest() {
+    controller.$inject = ["$scope"];
+    return {
+        templateUrl: 'static/html/directives/connection-test.html',
+        require: ['^type', '^data'],
+        scope: {
+            type: "=",
+            id: "=",
+            data: "=",
+            downloader: "="
+        },
+        controller: controller
+    };
+
+    function controller($scope) {
+        $scope.message = "";
+        console.log($scope);
+
+        var testButton = "#button-test-connection";
+        var testMessage = "#message-test-connection";
+
+        function showSuccess() {
+            angular.element(testButton).removeClass("btn-default");
+            angular.element(testButton).removeClass("btn-danger");
+            angular.element(testButton).addClass("btn-success");
+        }
+
+        function showError() {
+            angular.element(testButton).removeClass("btn-default");
+            angular.element(testButton).removeClass("btn-success");
+            angular.element(testButton).addClass("btn-danger");
+        }
+
+        $scope.testConnection = function () {
+            angular.element(testButton).addClass("glyphicon-refresh-animate");
+            var myInjector = angular.injector(["ng"]);
+            var $http = myInjector.get("$http");
+            var url;
+            var params;
+            if ($scope.type == "downloader") {
+                url = "internalapi/test_downloader";
+                params = {name: $scope.downloader, username: $scope.data.username, password: $scope.data.password};
+                if ($scope.downloader == "sabnzbd") {
+                    params.apikey = $scope.data.apikey;
+                    params.url = $scope.data.url;
+                } else {
+                    params.host = $scope.data.host;
+                    params.port = $scope.data.port;
+                    params.ssl = $scope.data.ssl;
+                }
+            } else if ($scope.data.type == "newznab") {
+                url = "internalapi/test_newznab";
+                params = {host: $scope.data.host, apikey: $scope.data.apikey};
+            } else if ($scope.data.type == "omgwtf") {
+                url = "internalapi/test_omgwtf";
+                params = {username: $scope.data.username, apikey: $scope.data.apikey};
+            }
+            $http.get(url, {params: params}).success(function (result) {
+                //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
+                if (result.result) {
+                    angular.element(testMessage).text("");
+                    showSuccess();
+                } else {
+                    angular.element(testMessage).text(result.message);
+                    showError();
+                }
+
+            }).error(function () {
+                angular.element(testMessage).text(result.message);
+                showError();
+            }).finally(function () {
+                angular.element(testButton).removeClass("glyphicon-refresh-animate");
+            })
+        }
+
+    }
+}
+
+
+angular
+    .module('nzbhydraApp')
     .directive('cfgFormEntry', cfgFormEntry);
 
 function cfgFormEntry() {
@@ -1870,6 +1953,9 @@ function ModalService($uibModal) {
                 },
                 cancel: function() {
                     return cancel;
+                },
+                showCancel: function() {
+                    return angular.isDefined(cancel);
                 }
             }
         });
@@ -1877,6 +1963,7 @@ function ModalService($uibModal) {
         modalInstance.result.then(function() {
             
         }, function() {
+            if (angular.isDefined(cancel))
             cancel();
         });
     }
@@ -1888,10 +1975,11 @@ angular
     .module('nzbhydraApp')
     .controller('ModalInstanceCtrl', ModalInstanceCtrl);
 
-function ModalInstanceCtrl($scope, $uibModalInstance, headline, message, ok, cancel) {
+function ModalInstanceCtrl($scope, $uibModalInstance, headline, message, ok, cancel, showCancel) {
 
     $scope.message = message;
     $scope.headline = headline;
+    $scope.showCancel = showCancel;
 
     $scope.ok = function () {
         $uibModalInstance.close();
@@ -1907,7 +1995,7 @@ function ModalInstanceCtrl($scope, $uibModalInstance, headline, message, ok, can
         }
     };
 }
-ModalInstanceCtrl.$inject = ["$scope", "$uibModalInstance", "headline", "message", "ok", "cancel"];
+ModalInstanceCtrl.$inject = ["$scope", "$uibModalInstance", "headline", "message", "ok", "cancel", "showCancel"];
 
 angular
     .module('nzbhydraApp')
@@ -2137,73 +2225,7 @@ angular
 
         formlyConfigProvider.setType({
             name: 'testConnection',
-            templateUrl: 'button-test-connection.html',
-            controller: function ($scope) {
-                $scope.message = "";
-                if ($scope.to.testType == "downloader") {
-                    $scope.uniqueId = "downloader";
-                } else {
-                    $scope.uniqueId = hashCode($scope.model.name) + hashCode($scope.model.host);
-                }
-
-
-                var testButton = "#button-test-connection-" + $scope.uniqueId;
-                var testMessage = "#message-test-connection-" + $scope.uniqueId;
-
-                function showSuccess() {
-                    angular.element(testButton).removeClass("btn-default");
-                    angular.element(testButton).removeClass("btn-danger");
-                    angular.element(testButton).addClass("btn-success");
-                }
-
-                function showError() {
-                    angular.element(testButton).removeClass("btn-default");
-                    angular.element(testButton).removeClass("btn-success");
-                    angular.element(testButton).addClass("btn-danger");
-                }
-
-                $scope.testConnection = function () {
-                    angular.element(testButton).addClass("glyphicon-refresh-animate");
-                    var myInjector = angular.injector(["ng"]);
-                    var $http = myInjector.get("$http");
-                    var url;
-                    var params;
-                    if ($scope.to.testType == "downloader") {
-                        url = "internalapi/test_downloader";
-                        params = {name: $scope.to.downloader, username: $scope.model.username, password: $scope.model.password};
-                        if ($scope.to.downloader == "sabnzbd") {
-                            params.apikey = $scope.model.apikey;
-                            params.url = $scope.model.url;
-                        } else {
-                            params.host = $scope.model.host;
-                            params.port = $scope.model.port;
-                            params.ssl = $scope.model.ssl;
-                        }
-                    } else if ($scope.to.testType == "newznab") {
-                        url = "internalapi/test_newznab";
-                        params = {host: $scope.model.host, apikey: $scope.model.apikey};
-                    } else if ($scope.to.testType == "omgwtf") {
-                        url = "internalapi/test_omgwtf";
-                        params = {username: $scope.model.username, apikey: $scope.model.apikey};
-                    }
-                    $http.get(url, {params: params}).success(function (result) {
-                        //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
-                        if (result.result) {
-                            angular.element(testMessage).text("");
-                            showSuccess();
-                        } else {
-                            angular.element(testMessage).text(result.message);
-                            showError();
-                        }
-
-                    }).error(function () {
-                        angular.element(testMessage).text(result.message);
-                        showError();
-                    }).finally(function () {
-                        angular.element(testButton).removeClass("glyphicon-refresh-animate");
-                    })
-                }
-            }
+            templateUrl: 'button-test-connection.html'
         });
 
         formlyConfigProvider.setType({
@@ -2261,89 +2283,6 @@ angular
             }
         });
 
-        formlyConfigProvider.setType({
-            name: 'horizontalNewznabPreset',
-            wrapper: ['settingWrapper'],
-            templateUrl: 'newznab-preset.html',
-            controller: function ($scope) {
-                $scope.display = "";
-                $scope.selectedpreset = undefined;
-
-                $scope.presets = [
-                    {
-                        name: "None"
-                    }, {
-                        name: "6box",
-                        host: "https://6box.me",
-                        searchIds: ["imdbid"]
-                    },
-                    {
-                        name: "6box nzedb",
-                        host: "https://nzedb.6box.me",
-                        searchIds: ["rid", "imdbid"]
-                    },
-                    {
-                        name: "6box nntmux",
-                        host: "https://nn-tmux.6box.me",
-                        searchIds: ["tvdbid", "rid", "imdbid"]
-                    },
-                    {
-                        name: "DogNZB",
-                        host: "https://api.dognzb.cr",
-                        searchIds: ["tvdbid", "rid", "imdbid"]
-                    },
-                    {
-                        name: "Drunken Slug",
-                        host: "https://drunkenslug.com",
-                        searchIds: ["tvdbid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
-                    },
-                    {
-                        name: "NZB Finder",
-                        host: "https://nzbfinder.ws",
-                        searchIds: ["tvdbid", "rid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
-                    },
-                    {
-                        name: "NZBs.org",
-                        host: "https://nzbs.org",
-                        searchIds: ["tvdbid", "rid", "imdbid", "tvmazeid"]
-                    },
-                    {
-                        name: "nzb.su",
-                        host: "https://api.nzb.su",
-                        searchIds: ["rid", "imdbid"]
-                    },
-                    {
-                        name: "NZBGeek",
-                        host: "https://api.nzbgeek.info",
-                        searchIds: ["tvdbid", "rid", "imdbid"]
-                    }
-                ];
-
-                $scope.selectPreset = function (item, model) {
-                    if (item.name == "None") {
-                        $scope.model.name = "";
-                        $scope.model.host = "";
-                        $scope.model.apikey = "";
-                        $scope.model.score = 0;
-                        $scope.model.timeout = null;
-                        $scope.model.search_ids = ["tvdbid", "rid", "imdbid"]; //Default
-                        $scope.display = "";
-                    } else {
-                        $scope.model.name = item.name;
-                        $scope.model.host = item.host;
-                        $scope.model.search_ids = item.searchIds;
-                        _.defer(function () {
-                            $scope.display = item.name;
-                        });
-
-                    }
-                };
-
-                $scope.$watch('[model.host]', function () {
-                    $scope.display = "";
-                }, true);
-            }
-        });
 
         formlyConfigProvider.setType({
             name: 'horizontalTestConnection',
@@ -2445,7 +2384,7 @@ angular
                 $scope.addNew = addNew;
                 $scope.remove = remove;
                 $scope.copyFields = copyFields;
-                
+
                 function copyFields(fields) {
                     fields = angular.copy(fields);
                     $scope.repeatfields = fields;
@@ -2474,6 +2413,413 @@ angular
                     $scope.model[$scope.options.key].splice($index, 1);
                 }
             }
+        });
+
+        formlyConfigProvider.setType({
+            name: 'indexers',
+            templateUrl: 'indexers.html',
+            controller: function ($scope, $uibModal) {
+                $scope.formOptions = {formState: $scope.formState};
+                $scope._showIndexerBox = _showIndexerBox;
+                $scope.showIndexerBox = showIndexerBox;
+                $scope.isInitial = false;
+
+                $scope.presets = [
+                    {
+                        name: "6box",
+                        host: "https://6box.me",
+                        searchIds: ["imdbid"]
+                    },
+                    {
+                        name: "6box nzedb",
+                        host: "https://nzedb.6box.me",
+                        searchIds: ["rid", "imdbid"]
+                    },
+                    {
+                        name: "6box nntmux",
+                        host: "https://nn-tmux.6box.me",
+                        searchIds: ["tvdbid", "rid", "imdbid"]
+                    },
+                    {
+                        name: "DogNZB",
+                        host: "https://api.dognzb.cr",
+                        searchIds: ["tvdbid", "rid", "imdbid"]
+                    },
+                    {
+                        name: "Drunken Slug",
+                        host: "https://drunkenslug.com",
+                        searchIds: ["tvdbid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
+                    },
+                    {
+                        name: "NZB Finder",
+                        host: "https://nzbfinder.ws",
+                        searchIds: ["tvdbid", "rid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
+                    },
+                    {
+                        name: "NZBs.org",
+                        host: "https://nzbs.org",
+                        searchIds: ["tvdbid", "rid", "imdbid", "tvmazeid"]
+                    },
+                    {
+                        name: "nzb.su",
+                        host: "https://api.nzb.su",
+                        searchIds: ["rid", "imdbid"]
+                    },
+                    {
+                        name: "NZBGeek",
+                        host: "https://api.nzbgeek.info",
+                        searchIds: ["tvdbid", "rid", "imdbid"]
+                    }
+                ];
+
+                function _showIndexerBox(model, parentModel, isInitial, callback) {
+                    var modalInstance = $uibModal.open({
+                        templateUrl: 'indexerModal.html',
+                        controller: 'IndexerModalInstanceController',
+                        size: 'lg',
+                        resolve: {
+                            model: function () {
+                                return model;
+                            },
+                            fields: function () {
+                                var fieldset = [];
+
+
+                                fieldset.push({
+                                    key: 'enabled',
+                                    type: 'horizontalSwitch',
+                                    templateOptions: {
+                                        type: 'switch',
+                                        label: 'Enabled'
+                                    }
+                                });
+
+                                if (model.type == 'newznab') {
+                                    fieldset.push(
+                                        {
+                                            key: 'name',
+                                            type: 'horizontalInput',
+                                            hideExpression: '!model.enabled',
+                                            templateOptions: {
+                                                type: 'text',
+                                                label: 'Name',
+                                                required: true,
+                                                help: 'Used for identification. Changing the name will lose all history and stats!'
+                                            }
+                                        })
+                                }
+                                if (model.type == 'newznab') {
+                                    fieldset.push(
+                                        {
+                                            key: 'host',
+                                            type: 'horizontalInput',
+                                            hideExpression: '!model.enabled',
+                                            templateOptions: {
+                                                type: 'text',
+                                                label: 'Host',
+                                                required: true,
+                                                placeholder: 'http://www.someindexer.com'
+                                            },
+                                            watcher: {
+                                                listener: function (field, newValue, oldValue, scope) {
+                                                    if (newValue != oldValue) {
+                                                        scope.$parent.needsConnectionTest = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    )
+                                }
+
+                                if (model.type == 'newznab' || model.type == 'omgwtf') {
+                                    fieldset.push(
+                                        {
+                                            key: 'apikey',
+                                            type: 'horizontalInput',
+                                            hideExpression: '!model.enabled',
+                                            templateOptions: {
+                                                type: 'text',
+                                                required: true,
+                                                label: 'API Key'
+                                            },
+                                            watcher: {
+                                                listener: function (field, newValue, oldValue, scope) {
+                                                    if (newValue != oldValue) {
+                                                        scope.$parent.needsConnectionTest = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    )
+                                }
+
+                                if (model.type == 'omgwtf') {
+                                    fieldset.push(
+                                        {
+                                            key: 'username',
+                                            type: 'horizontalInput',
+                                            hideExpression: '!model.enabled',
+                                            templateOptions: {
+                                                type: 'text',
+                                                required: true,
+                                                label: 'Username'
+                                            },
+                                            watcher: {
+                                                listener: function (field, newValue, oldValue, scope) {
+                                                    if (newValue != oldValue) {
+                                                        scope.$parent.needsConnectionTest = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    )
+                                }
+
+                                fieldset.push(
+                                    {
+                                        key: 'score',
+                                        type: 'horizontalInput',
+                                        hideExpression: '!model.enabled',
+                                        templateOptions: {
+                                            type: 'number',
+                                            label: 'Score',
+                                            required: true,
+                                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
+                                        }
+                                    });
+
+                                fieldset.push(
+                                    {
+                                        key: 'timeout',
+                                        type: 'horizontalInput',
+                                        hideExpression: '!model.enabled',
+                                        templateOptions: {
+                                            type: 'number',
+                                            label: 'Timeout',
+                                            help: 'Supercedes the general timeout in "Searching"'
+                                        }
+                                    });
+
+                                if (model.type == "newznab") {
+                                    fieldset.push(
+                                        {
+                                            key: 'hitLimit',
+                                            type: 'horizontalInput',
+                                            hideExpression: '!model.enabled',
+                                            templateOptions: {
+                                                type: 'number',
+                                                label: 'API hit limit',
+                                                help: 'Maximum number of API hits since "API hit reset time"'
+                                            }
+                                        }
+                                    );
+                                    fieldset.push(
+                                        {
+                                            key: 'hitLimitResetTime',
+                                            type: 'timeOfDay',
+                                            hideExpression: '!model.enabled || !model.hitLimit',
+                                            templateOptions: {
+                                                type: 'time',
+                                                label: 'API hit reset time',
+                                                help: 'Local time at which the API hit counter is reset'
+                                            }
+                                        });
+                                    fieldset.push(
+                                        {
+                                            key: 'username',
+                                            type: 'horizontalInput',
+                                            hideExpression: '!model.enabled',
+                                            templateOptions: {
+                                                type: 'text',
+                                                required: false,
+                                                label: 'Username',
+                                                help: 'Only needed if indexer requires HTTP auth for API access (rare)'
+                                            },
+                                            watcher: {
+                                                listener: function (field, newValue, oldValue, scope) {
+                                                    if (newValue != oldValue) {
+                                                        scope.$parent.needsConnectionTest = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    );
+                                    fieldset.push(
+                                        {
+                                            key: 'password',
+                                            type: 'horizontalInput',
+                                            hideExpression: '!model.enabled || !model.username',
+                                            templateOptions: {
+                                                type: 'text',
+                                                required: false,
+                                                label: 'Password',
+                                                help: 'Only needed if indexer requires HTTP auth for API access (rare)'
+                                            }
+                                        }
+                                    )
+
+                                }
+
+
+                                if (model.type != "womble") {
+                                    fieldset.push(
+                                        {
+                                            key: 'preselect',
+                                            type: 'horizontalSwitch',
+                                            hideExpression: '!model.enabled || model.accessType == "external"',
+                                            templateOptions: {
+                                                type: 'switch',
+                                                label: 'Preselect',
+                                                help: 'Preselect this indexer on the search page'
+                                            }
+                                        }
+                                    );
+                                    fieldset.push(
+                                        {
+                                            key: 'accessType',
+                                            type: 'horizontalSelect',
+                                            hideExpression: '!model.enabled',
+                                            templateOptions: {
+                                                label: 'Enable for...',
+                                                options: [
+                                                    {name: 'Internal searches only', value: 'internal'},
+                                                    {name: 'API searches only', value: 'external'},
+                                                    {name: 'Internal and API searches', value: 'both'}
+                                                ]
+                                            }
+                                        }
+                                    )
+                                }
+
+                                if (model.type == 'newznab') {
+                                    fieldset.push(
+                                        {
+                                            key: 'search_ids',
+                                            type: 'horizontalMultiselect',
+                                            hideExpression: '!model.enabled',
+                                            templateOptions: {
+                                                label: 'Search IDs',
+                                                options: [
+                                                    {label: 'TVDB', id: 'tvdbid'},
+                                                    {label: 'TVRage', id: 'rid'},
+                                                    {label: 'IMDB', id: 'imdbid'},
+                                                    {label: 'Trakt', id: 'traktid'},
+                                                    {label: 'TVMaze', id: 'tvmazeid'},
+                                                    {label: 'TMDB', id: 'tmdbid'}
+                                                ]
+                                            }
+                                        }
+                                    );
+                                    fieldset.push(
+                                        {
+                                            key: 'searchTypes',
+                                            type: 'horizontalMultiselect',
+                                            hideExpression: '!model.enabled',
+                                            templateOptions: {
+                                                label: 'Search types',
+                                                options: [
+                                                    {label: 'Movies', id: 'movie'},
+                                                    {label: 'TV', id: 'tvsearch'},
+                                                    {label: 'Ebooks', id: 'book'},
+                                                    {label: 'Audio', id: 'audio'}
+                                                ]
+                                            }
+                                        }
+                                    )
+                                }
+
+                                if (model.type == 'newznab') {
+                                    fieldset.push(
+                                        {
+                                            type: 'horizontalCheckCaps',
+                                            hideExpression: '!model.enabled || !model.host || !model.apikey || !model.name || angular.isUndefined(model.searchTypes)',
+                                            templateOptions: {
+                                                label: 'Check search types',
+                                                help: 'Find out what search types the indexer supports. Done automatically for new indexers.'
+                                            }
+                                        }
+                                    )
+                                }
+
+                                if (model.type == 'nzbindex') {
+                                    fieldset.push(
+                                        {
+                                            key: 'generalMinSize',
+                                            type: 'horizontalInput',
+                                            hideExpression: '!model.enabled',
+                                            templateOptions: {
+                                                type: 'number',
+                                                label: 'Min size',
+                                                help: 'NZBIndex returns a lot of crap with small file sizes. Set this value and all smaller results will be filtered out no matter the category'
+                                            }
+                                        }
+                                    );
+                                }
+
+                                return fieldset;
+                            },
+                            isInitial: function () {
+                                return isInitial
+                            },
+                            parentModel: function () {
+                                return parentModel;
+                            }
+                        }
+                    });
+
+                    modalInstance.result.then(function () {
+                        $scope.form.$setDirty(true);
+                        if (angular.isDefined(callback)) {
+                            callback(true);
+                        }
+                    }, function () {
+                        console.log("Indexer cancelled");
+                        if (angular.isDefined(callback)) {
+                            callback(false);
+                        }
+                    });
+                }
+
+                function showIndexerBox(model, parentModel) {
+                    $scope._showIndexerBox(model, parentModel, false)
+                }
+
+                $scope.addIndexer = function (indexers, preset) {
+                    var model = {
+                        enabled: true,
+                        host: null,
+                        apikey: null,
+                        hitLimit: null,
+                        hitLimitResetTime: new Date(0),
+                        timeout: null,
+                        name: null,
+                        showOnSearch: true,
+                        score: 0,
+                        username: null,
+                        password: null,
+                        preselect: true,
+                        type: 'newznab',
+                        accessType: "both",
+                        search_ids: undefined, //["imdbid", "rid", "tvdbid"],
+                        searchTypes: undefined, //["tvsearch", "movie"]
+                    };
+                    if (angular.isDefined(preset)) {
+                        model.name = preset.name;
+                        model.host = preset.host;
+                        model.search_ids = preset.searchIds;
+                    }
+
+                    $scope.isInitial = true;
+
+                    $scope._showIndexerBox(model, indexers, true, function (isSubmitted) {
+                        if (isSubmitted) {
+                            console.log("Pusing to model");
+                            indexers.push(model);
+                        }
+                    });
+                };
+
+            }
 
         });
 
@@ -2483,12 +2829,167 @@ angular
     .module('nzbhydraApp').run(["formlyConfig", "formlyValidationMessages", function (formlyConfig, formlyValidationMessages) {
 
     formlyValidationMessages.addStringMessage('required', 'This field is required');
-    
+
     formlyConfig.extras.errorExistsAndShouldBeVisibleExpression = 'fc.$touched || form.$submitted';
 
 }]);
 
 
+angular.module('nzbhydraApp').controller('IndexerModalInstanceController', ["$scope", "$uibModalInstance", "$http", "model", "fields", "isInitial", "parentModel", "growl", "ModalService", "blockUI", function ($scope, $uibModalInstance, $http, model, fields, isInitial, parentModel, growl, ModalService, blockUI) {
+
+    $scope.model = model;
+    $scope.fields = fields;
+    $scope.isInitial = isInitial;
+    $scope.spinnerActive = false;
+    $scope.needsConnectionTest = false;
+
+    console.log($uibModalInstance);
+
+
+    function checkConnection(onSuccess, onUnsuccessful, onError) {
+        console.log("Connection test needed");
+        $scope.spinnerActive = true;
+        var url;
+        var params;
+        if (model.type == "newznab") {
+            url = "internalapi/test_newznab";
+            params = {host: model.host, apikey: model.apikey};
+        } else if (model.type == "omgwtf") {
+            url = "internalapi/test_omgwtf";
+            params = {username: model.username, apikey: model.apikey};
+        }
+
+        $http.get(url, {params: params}).success(function (result) {
+            //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
+            if (result.result) {
+                if (angular.isDefined(onSuccess)) {
+                    onSuccess();
+                }
+            } else {
+                if (angular.isDefined(onUnsuccessful)) {
+                    onUnsuccessful(result.message);
+                }
+            }
+
+        }).error(function (result) {
+            if (angular.isDefined(onError)) {
+                onError(result.message);
+            }
+        }).finally(function () {
+            $scope.spinnerActive = false;
+        });
+    }
+
+    function checkCaps(onSuccess, onError) {
+        $scope.spinnerActive = true;
+        var url;
+        var params;
+
+        url = "internalapi/test_caps";
+        params = {indexer: model.name, apikey: model.apikey, host: model.host};
+        $http.get(url, {params: params}).success(function (result) {
+            //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
+            if (result.success) {
+                if (angular.isDefined(onSuccess)) {
+                    onSuccess(result.ids, result.types);
+                }
+            } else {
+                if (angular.isDefined(onError)) {
+                    onError();
+                }
+            }
+
+        }).error(function () {
+            if (angular.isDefined(onError)) {
+                onError(result.message);
+            }
+        }).finally(function () {
+            $scope.spinnerActive = false;
+        })
+    }
+
+    function checkCapsOrSubmit() {
+        if (angular.isUndefined(model.search_ids) || angular.isUndefined(model.searchTypes)) {
+            console.log("We need to check the caps first");
+            blockUI.start("New indexer found. Testing its capabilities. This may take a bit...");
+            checkCaps(
+                function (ids, types) {
+                    blockUI.reset();
+                    growl.info("Successfully tested capabilites of indexer. Supports: " + ids + "," + types);
+                    model.search_ids = ids;
+                    model.searchTypes = types;
+                    $uibModalInstance.close($scope);
+                },
+                function () {
+                    blockUI.reset();
+                    ModalService.open("Error testing capabilities", "The capabilities of the indexer could not be checked. The indexer won't be used for ID based searches (IMDB, TVDB, etc.). You may repeat the check manually at any time.", function () {
+                        $uibModalInstance.close($scope);
+                    });
+                    model.search_ids = [];
+                    model.searchTypes = [];
+                })
+        } else {
+            $uibModalInstance.close($scope);
+        }
+    }
+
+    $scope.obSubmit = function () {
+        if ($scope.form.$valid) {
+            if ($scope.needsConnectionTest) {
+                checkConnection(
+                    function () {
+                        console.log("Form is valid and connection was tested successfully");
+                        checkCapsOrSubmit();
+                    },
+                    function (message) {
+                        console.log("Form is valid but connection was not tested successfully");
+                        growl.error("The connection to the indexer failed: " + message);
+                    },
+                    function () {
+                        console.log("Form is valid but connection was not tested successfully");
+                        growl.error("The connection to the indexer could not be tested, sorry");
+                    });
+            } else {
+                console.log("No connection test needed");
+                checkCapsOrSubmit();
+            }
+        } else {
+            growl.error("Config invalid. Please check your settings.");
+            console.log($scope);
+            angular.forEach($scope.form.$error.required, function (field) {
+                field.$setTouched();
+            });
+        }
+    };
+
+    $scope.reset = function () {
+        console.log("Cancelling");
+        $scope.reset();
+    };
+
+    $scope.deleteIndexer = function () {
+        parentModel.splice(parentModel.indexOf(model), 1);
+        $uibModalInstance.close($scope);
+    };
+
+    $scope.reset = function () {
+        console.log("Resetting to original model");
+        for (var i = 0; i < $scope.fields.length; i++) {
+            if (angular.isDefined($scope.fields[i].resetModel)) {
+                $scope.fields[i].resetModel();
+            }
+        }
+
+    };
+
+    $scope.$on("modal.closing", function (targetScope, reason, c) {
+        console.log("Closing");
+
+        if (reason == "backdrop click") {
+            $scope.reset();
+        }
+    });
+}]);
 var filters = angular.module('filters', []);
 
 filters.filter('bytes', function() {
@@ -2613,265 +3114,7 @@ function ConfigFields() {
         }
     }
 
-    function getBasicIndexerFieldset(showName, host, apikey, username, searchIds, testConnection, testtype, showpreselect, showCheckCaps) {
-        var fieldset = [];
-
-        fieldset.push({
-            key: 'enabled',
-            type: 'horizontalSwitch',
-            templateOptions: {
-                type: 'switch',
-                label: 'Enabled'
-            }
-        });
-
-        if (testtype == 'newznab') {
-            fieldset.push(
-                {
-                    key: 'name',
-                    type: 'horizontalNewznabPreset',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        label: 'Presets'
-                    }
-
-                });
-        }
-
-        if (showName) {
-            fieldset.push(
-                {
-                    key: 'name',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        type: 'text',
-                        label: 'Name',
-                        required: true,
-                        help: 'Used for identification. Changing the name will lose all history and stats!'
-                    }
-                })
-        }
-        if (host) {
-            fieldset.push(
-                {
-                    key: 'host',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        type: 'text',
-                        label: 'Host',
-                        required: true,
-                        placeholder: 'http://www.someindexer.com'
-                    }
-                }
-            )
-        }
-
-        if (apikey) {
-            fieldset.push(
-                {
-                    key: 'apikey',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        type: 'text',
-                        required: true,
-                        label: 'API Key'
-                    }
-                }
-            )
-        }
-
-        if (username) {
-            fieldset.push(
-                {
-                    key: 'username',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        type: 'text',
-                        required: true,
-                        label: 'Username'
-                    }
-                }
-            )
-        }
-
-        fieldset.push(
-            {
-                key: 'score',
-                type: 'horizontalInput',
-                hideExpression: '!model.enabled',
-                templateOptions: {
-                    type: 'number',
-                    label: 'Score',
-                    required: true,
-                    help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
-                }
-            });
-
-        fieldset.push(
-            {
-                key: 'timeout',
-                type: 'horizontalInput',
-                hideExpression: '!model.enabled',
-                templateOptions: {
-                    type: 'number',
-                    label: 'Timeout',
-                    help: 'Supercedes the general timeout in "Searching"'
-                }
-            });
-
-        if (testtype == "newznab") {
-            fieldset.push(
-                {
-                    key: 'hitLimit',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        type: 'number',
-                        label: 'API hit limit',
-                        help: 'Maximum number of API hits since "API hit reset time"'
-                    }
-                }
-            );
-            fieldset.push(
-                {
-                    key: 'hitLimitResetTime',
-                    type: 'timeOfDay',
-                    hideExpression: '!model.enabled || !model.hitLimit',
-                    templateOptions: {
-                        type: 'time',
-                        label: 'API hit reset time',
-                        help: 'Local time at which the API hit counter is reset'
-                    }
-                });
-            fieldset.push(
-                {
-                    key: 'username',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        type: 'text',
-                        required: false,
-                        label: 'Username',
-                        help: 'Only needed if indexer requires HTTP auth for API access (rare)'
-                    }
-                }
-            );
-            fieldset.push(
-                {
-                    key: 'password',
-                    type: 'horizontalInput',
-                    hideExpression: '!model.enabled || !model.username',
-                    templateOptions: {
-                        type: 'text',
-                        required: false,
-                        label: 'Password',
-                        help: 'Only needed if indexer requires HTTP auth for API access (rare)'
-                    }
-                }
-            )
-
-        }
-
-
-        if (showpreselect) {
-            fieldset.push(
-                {
-                    key: 'preselect',
-                    type: 'horizontalSwitch',
-                    hideExpression: '!model.enabled || model.accessType == "external"',
-                    templateOptions: {
-                        type: 'switch',
-                        label: 'Preselect',
-                        help: 'Preselect this indexer on the search page'
-                    }
-                }
-            );
-            fieldset.push(
-                {
-                    key: 'accessType',
-                    type: 'horizontalSelect',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        label: 'Enable for...',
-                        options: [
-                            {name: 'Internal searches only', value: 'internal'},
-                            {name: 'API searches only', value: 'external'},
-                            {name: 'Internal and API searches', value: 'both'}
-                        ]
-                    }
-                }
-            )
-        }
-
-        if (searchIds) {
-            fieldset.push(
-                {
-                    key: 'search_ids',
-                    type: 'horizontalMultiselect',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        label: 'Search IDs',
-                        options: [
-                            {label: 'TVDB', id: 'tvdbid'},
-                            {label: 'TVRage', id: 'rid'},
-                            {label: 'IMDB', id: 'imdbid'},
-                            {label: 'Trakt', id: 'traktid'},
-                            {label: 'TVMaze', id: 'tvmazeid'},
-                            {label: 'TMDB', id: 'tmdbid'}
-                        ]
-                    }
-                }
-            );
-            fieldset.push(
-                {
-                    key: 'searchTypes',
-                    type: 'horizontalMultiselect',
-                    hideExpression: '!model.enabled',
-                    templateOptions: {
-                        label: 'Search types',
-                        options: [
-                            {label: 'Movies', id: 'movie'},
-                            {label: 'TV', id: 'tvsearch'},
-                            {label: 'Ebooks', id: 'book'},
-                            {label: 'Audio', id: 'audio'}
-                        ]
-                    }
-                }
-            )
-        }
-
-        if (testConnection) {
-            fieldset.push(
-                {
-                    type: 'horizontalTestConnection',
-                    hideExpression: '!model.enabled || !model.host || !model.apikey || !model.name',
-                    templateOptions: {
-                        label: 'Test connection',
-                        testType: testtype
-                    }
-                }
-            )
-        }
-
-        if (showCheckCaps) {
-            fieldset.push(
-                {
-                    type: 'horizontalCheckCaps',
-                    hideExpression: '!model.enabled || !model.host || !model.apikey || !model.name',
-                    templateOptions: {
-                        label: 'Check search types',
-                        help: 'Find out what search types the indexer supports. It\'s recommended to do this for every new indexer.'
-                    }
-                }
-            )
-        }
-
-        return fieldset;
-    }
+    
 
     function ipValidator() {
         return {
@@ -3805,7 +4048,14 @@ function ConfigFields() {
                 }
             ],
 
+        
+            
             indexers: [
+                {
+                    type: "indexers",
+                }
+                /*
+                ,
                 {
                     wrapper: 'fieldset',
                     key: 'binsearch',
@@ -3874,7 +4124,7 @@ function ConfigFields() {
 
                 }
 
-
+            */
             ],
 
             auth: [
@@ -3947,41 +4197,7 @@ function ConfigFields() {
             ]
         };
     }
-
 }
-[
-    {
-        wrapper: 'fieldset',
-        key: 'fieldset1',
-        fieldGroup: [
-            {
-                key: 'score',
-                type: 'input',
-                templateOptions: {
-                    type: 'number',
-                    label: 'Score',
-                    required: true
-                }
-            }
-        ]
-    },
-    {
-        wrapper: 'fieldset',
-        key: 'fieldset1',
-        fieldGroup: [
-            {
-                key: 'score',
-                type: 'input',
-                templateOptions: {
-                    type: 'number',
-                    label: 'Score',
-                    required: true
-                }
-            }
-        ]
-    }
-
-];
 angular
     .module('nzbhydraApp')
     .factory('ConfigModel', function () {
@@ -4023,6 +4239,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
     $scope.newfields = [];
 
     function submit(form) {
+        console.log("Submitting");
         if (form.$valid) {
             
             ConfigService.set($scope.config);
@@ -4050,6 +4267,9 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
                         } 
                     });
                 }
+                angular.forEach($scope.form.$error.required, function (field) {
+                    field.$setTouched();
+                });
             } catch(err) {
                 //
             }
@@ -4119,7 +4339,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
     }
 
     $scope.isSavingNeeded = function (form) {
-        return form.$dirty && !form.$submitted && form.$valid;
+        return form.$dirty && form.$valid;
     };
 
     $scope.goToConfigState = function (index) {

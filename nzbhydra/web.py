@@ -785,7 +785,7 @@ internalapi_testcaps_args = {
 @app.route('/internalapi/test_caps')
 @use_args(internalapi_testcaps_args)
 @requires_auth("admin")
-def internalapi_testcaps(args):
+def internalapi_testcaps(args):    
     indexer = urlparse.unquote(args["indexer"])
     apikey = args["apikey"]
     host = urlparse.unquote(args["host"])

@@ -50,8 +50,8 @@ initialConfig = {
             "username": None
         }
     },
-    "indexers": {
-        "binsearch": {
+    "indexers": [
+        {
             "accessType": "internal",
             "enabled": True,
             "hitLimit": 0,
@@ -65,9 +65,10 @@ initialConfig = {
             "searchTypes": [],
             "showOnSearch": True,
             "timeout": None,
+            "type": "binsearch",
             "username": None
         },
-        "nzbclub": {
+        {
             "accessType": "internal",
             "enabled": True,
             "hitLimit": 0,
@@ -81,10 +82,11 @@ initialConfig = {
             "searchTypes": [],
             "showOnSearch": True,
             "timeout": None,
+            "type": "nzbclub",
             "username": None
 
         },
-        "nzbindex": {
+        {
             "accessType": "internal",
             "enabled": True,
             "generalMinSize": 1,
@@ -99,10 +101,11 @@ initialConfig = {
             "searchTypes": [],
             "showOnSearch": True,
             "timeout": None,
+            "type": "nzbindex",
             "username": None
 
         },
-        "womble": {
+        {
             "accessType": "external",
             "enabled": True,
             "hitLimit": 0,
@@ -116,11 +119,10 @@ initialConfig = {
             "searchTypes": [],
             "showOnSearch": False,
             "timeout": None,
+            "type": "womble",
             "username": None
-
         },
-        "newznab": [],
-        "omgwtfnzbs": {
+        {
             "accessType": "both",
             "apikey": "",
             "enabled": False,
@@ -137,13 +139,14 @@ initialConfig = {
             "searchTypes": [],
             "showOnSearch": True,
             "timeout": None,
+            "type": "omgwtf",
             "username": ""
         }
-    },
+    ],
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 15,
+        "configVersion": 16,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -474,6 +477,18 @@ def migrate(settingsFilename):
                     with version_update(config, 15):
                         addLogMessage(20, "Setting default theme")
                         config["main"]["theme"] = "default"
+
+                if config["main"]["configVersion"] == 15:
+                    with version_update(config, 16):
+                        addLogMessage(20, "Moving indexers")
+                        indexers = []
+                        for indexer in ["binsearch", "nzbclub", "nzbindex", "omgwtfnzbs", "womble"]:
+                            config["indexers"][indexer]["type"] = indexer if indexer != "omgwtfnzbs" else "omgwtf"
+                            indexers.append(config["indexers"][indexer])
+                        for indexer in config["indexers"]["newznab"]:
+                            indexer["type"] = "newznab"
+                            indexers.append(indexer)
+                        config["indexers"] = indexers
                         
 
             except Exception as e:
@@ -636,8 +651,8 @@ class InternalExternalSingleSelection(object):
 
 
 def getSafeConfig():
-    indexers = [{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "showOnSearch": x["showOnSearch"] and x["accessType"] != "external"} for x in settings["indexers"].values() if not isinstance(x, list)]
-    indexers.extend([{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "showOnSearch": x["showOnSearch"] and x["accessType"] != "external"} for x in settings["indexers"]["newznab"]])
+    indexers = [{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "showOnSearch": x["showOnSearch"] and x["accessType"] != "external"} for x in settings["indexers"] if not isinstance(x, list)]
+    indexers.extend([{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "showOnSearch": x["showOnSearch"] and x["accessType"] != "external"} for x in settings["indexers"] if x["type"] == "newznab"])
     return {
         "indexers": indexers,
         "searching": {"categorysizes": settings["searching"]["categorysizes"], "maxAge": settings["searching"]["maxAge"]},
