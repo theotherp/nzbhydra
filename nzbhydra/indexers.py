@@ -37,7 +37,10 @@ def read_indexers_from_config():
         try:
             instance = sys.modules["nzbhydra.searchmodules." + indexer.type].get_instance(indexer)
         except Exception:
-            logger.error("Unable to get reference to search module %s" % indexer.type)
+            if hasattr(indexer, "type"): 
+                logger.error("Unable to get reference to search module %s" % indexer.type)
+            else:
+                logger.error("%s has no type setting" % indexer)
             continue
         logger.debug("Found indexer %s" % instance.name)
         init_indexer_table_entry(instance.name)
@@ -53,6 +56,13 @@ def read_indexers_from_config():
 
 def getIndexerByName(name):
     for i in enabled_indexers:
+        if i.name == name:
+            return i
+    return None
+
+
+def getIndexerSettingByName(name):
+    for i in config.settings.indexers:
         if i.name == name:
             return i
     return None

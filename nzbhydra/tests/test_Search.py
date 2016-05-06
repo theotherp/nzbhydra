@@ -32,7 +32,7 @@ import responses
 from furl import furl
 
 from nzbhydra import search, config, search_module, database, infos
-from nzbhydra.indexers import read_indexers_from_config
+from nzbhydra.indexers import read_indexers_from_config, getIndexerSettingByName
 from nzbhydra.database import Indexer, Search, IndexerApiAccess, IndexerSearch, IndexerStatus
 from nzbhydra.tests.db_prepare import set_and_drop
 
@@ -49,11 +49,12 @@ def mock(x, y, z=True):
 class SearchTests(unittest.TestCase):
 
     def prepareIndexers(self, indexerCount):
-        config.settings.indexers.newznab = []
+        #config.settings.indexers = []
         for i in range(1, indexerCount + 1):
             nn = Bunch()
             nn.enabled = True
             nn.name = "newznab%d" % i
+            nn.type = "newznab"
             nn.host = "http://www.newznab%d.com" % i
             nn.apikey = "apikeyindexer.com"
             nn.hitLimit = None
@@ -61,7 +62,7 @@ class SearchTests(unittest.TestCase):
             nn.score = 0
             nn.accessType = "both"
             nn.search_ids = ["imdbid", "tvdbid", "rid"]
-            config.settings.indexers.newznab.append(nn)
+            config.settings.indexers.append(nn)
 
     def rsps_callback(self, request):
         for x in self.response_callbacks:
@@ -100,12 +101,12 @@ class SearchTests(unittest.TestCase):
     @pytest.fixture
     def setUp(self):
         set_and_drop()
-                
-        config.settings.indexers.binsearch.enabled = False
-        config.settings.indexers.nzbindex.enabled = False
-        config.settings.indexers.omgwtfnzbs.enabled = False
-        config.settings.indexers.womble.enabled = False
-        config.settings.indexers.nzbclub.enabled = False
+
+        getIndexerSettingByName("binsearch").enabled = False
+        getIndexerSettingByName("nzbindex").enabled = False
+        getIndexerSettingByName("omgwtf").enabled = False
+        getIndexerSettingByName("womble").enabled = False
+        getIndexerSettingByName("nzbclub").enabled = False
 
         self.newznab1 = Bunch()
         self.newznab1.enabled = True
@@ -131,7 +132,7 @@ class SearchTests(unittest.TestCase):
         self.newznab2.search_ids = ["rid", "tvdbid"]
         self.newznab2.searchTypes = ["tvsearch", "movie"]
         
-        config.settings.indexers.newznab = [self.newznab1, self.newznab2]
+        config.settings.indexers = [self.newznab1, self.newznab2]
 
         self.oldExecute_search_queries = search.start_search_futures
         database.IndexerStatus.delete().execute()
@@ -149,9 +150,9 @@ class SearchTests(unittest.TestCase):
 
     def test_pick_indexers(self):
         config.settings.searching.generate_queries = []
-        config.settings.indexers.womble.enabled = True
-        config.settings.indexers.womble.accessType = "both"
-        config.settings.indexers.nzbclub.enabled = True
+        getIndexerSettingByName("womble").enabled = True
+        getIndexerSettingByName("womble").accessType = "both"
+        getIndexerSettingByName("nzbclub").enabled = True
         read_indexers_from_config()
         search_request = SearchRequest()
     
@@ -194,22 +195,22 @@ class SearchTests(unittest.TestCase):
         
         
         #Test picking depending on internal, external, both
-        config.settings.indexers.womble.enabled = False
-        config.settings.indexers.nzbclub.enabled = False
+        getIndexerSettingByName("womble").enabled = False
+        getIndexerSettingByName("nzbclub").enabled = False
     
-        config.settings.indexers.newznab[1].accessType = "both"
+        getIndexerSettingByName("newznab1").accessType = "both"
         indexers = search.pick_indexers(search_request, internal=True)
         self.assertEqual(2, len(indexers))
         indexers = search.pick_indexers(search_request, internal=False)
         self.assertEqual(2, len(indexers))
     
-        config.settings.indexers.newznab[1].accessType = "external"
+        getIndexerSettingByName("newznab1").accessType = "external"
         indexers = search.pick_indexers(search_request, internal=True)
         self.assertEqual(1, len(indexers))
         indexers = search.pick_indexers(search_request, internal=False)
         self.assertEqual(2, len(indexers))
     
-        config.settings.indexers.newznab[1].accessType = "internal"
+        getIndexerSettingByName("newznab").accessType = "internal"
         indexers = search.pick_indexers(search_request, internal=True)
         self.assertEqual(2, len(indexers))
         indexers = search.pick_indexers(search_request, internal=False)
@@ -531,7 +532,7 @@ class SearchTests(unittest.TestCase):
         
                 # Test that results from an indexer with a higher score are preferred
                 self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
-                config.settings.indexers.newznab[1].score = 99
+                getIndexerSettingByName("newznab2").score = 99
                 searchRequest = SearchRequest(type="search")
                 result = search.search(False, searchRequest)
                 results = result["results"]
