@@ -505,6 +505,7 @@ def load(filename):
         try:
             migratedConfig = migrate(filename)
             settings = Bunch.fromDict(update(initialConfig, migratedConfig, level="root"))
+            pass
         except Exception as e:
             addLogMessage(30, "An error occurred while migrating the settings: %s" % traceback.format_exc())
             # Now what?
