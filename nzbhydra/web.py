@@ -53,8 +53,7 @@ from nzbhydra.update import get_rep_version, get_current_version, update, getCha
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import getLogs
 from nzbhydra.backup_debug import backup, getDebuggingInfos, getBackupFilenames, getBackupFileByFilename
-
-import ipinfo
+from nzbhydra import ipinfo
 
 class ReverseProxied(object):
     def __init__(self, app):
