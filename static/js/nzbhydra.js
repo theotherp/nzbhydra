@@ -2636,7 +2636,7 @@ angular
                                             type: 'number',
                                             label: 'Priority',
                                             required: true,
-                                            help: 'When duplicate search results are found the result from the indexer with the highest priority will be shown'
+                                            help: 'When duplicate search results are found the result from the indexer with the highest number will be selected'
                                         }
                                     });
 
@@ -3925,6 +3925,26 @@ function ConfigFields() {
                                         },
                                         {
                                             key: 'xxxmax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
+                                },
+
+                                {
+                                    wrapper: 'settingWrapper',
+                                    templateOptions: {
+                                        label: 'Ebook'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'ebookmin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'ebookmax',
                                             type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                         }
                                     ]

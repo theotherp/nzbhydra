@@ -773,6 +773,26 @@ function ConfigFields() {
                                             type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                         }
                                     ]
+                                },
+
+                                {
+                                    wrapper: 'settingWrapper',
+                                    templateOptions: {
+                                        label: 'Ebook'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'ebookmin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'ebookmax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
                                 }
                             ]
                         }
