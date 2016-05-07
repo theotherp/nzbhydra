@@ -169,6 +169,7 @@ initialConfig = {
         "useLocalUrlForApiAccess": True,
     },
     "searching": {
+        "alwaysShowDuplicates": False,
         "categorysizes": {
             "audiobookmax": 1000,
             "audiomax": 2000,
@@ -655,6 +656,6 @@ def getSafeConfig():
     indexers = [{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "showOnSearch": x["showOnSearch"] and x["accessType"] != "external"} for x in settings["indexers"]]
     return {
         "indexers": indexers,
-        "searching": {"categorysizes": settings["searching"]["categorysizes"], "maxAge": settings["searching"]["maxAge"]},
+        "searching": {"categorysizes": settings["searching"]["categorysizes"], "maxAge": settings["searching"]["maxAge"], "alwaysShowDuplicates": settings["searching"]["alwaysShowDuplicates"]},
         "downloader": {"downloader": settings["downloader"]["downloader"], "nzbget": {"defaultCategory": settings["downloader"]["nzbget"]["defaultCategory"]}, "sabnzbd": {"defaultCategory": settings["downloader"]["sabnzbd"]["defaultCategory"]}}
     }

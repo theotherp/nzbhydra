@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a97
+Added: Option to always show duplicates in the search results (see Config -> Searching -> Result processing - > Always show duplicates). 
+
 ### 0.0.1a96
 Added: Show indexer priority (renamed from "Score") in main indexer view. Sort indexers by priority and allow to change it right there.
 

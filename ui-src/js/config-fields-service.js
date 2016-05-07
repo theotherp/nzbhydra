@@ -489,6 +489,15 @@ function ConfigFields() {
                                 label: 'Remove API duplicates',
                                 help: 'Remove duplicates when searching via API'
                             }
+                        },
+                        {
+                            key: 'alwaysShowDuplicates',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Always show duplicates',
+                                help: 'Activate to show duplicates in search results by default'
+                            }
                         }
                     ]
                 },

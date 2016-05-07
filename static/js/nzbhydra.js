@@ -1426,7 +1426,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.indexerDisplayState = []; //Stores if a indexer's results should be displayed or not
     $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
     $scope.groupExpanded = {};
-    $scope.doShowDuplicates = false;
+    $scope.doShowDuplicates = ConfigService.getSafe().searching.alwaysShowDuplicates;
+    console.log(ConfigService.getSafe().alwaysShowDuplicates);
     $scope.selected = [];
     $scope.indexerStatusesExpanded = false;
     
@@ -3643,6 +3644,15 @@ function ConfigFields() {
                                 type: 'switch',
                                 label: 'Remove API duplicates',
                                 help: 'Remove duplicates when searching via API'
+                            }
+                        },
+                        {
+                            key: 'alwaysShowDuplicates',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Always show duplicates',
+                                help: 'Activate to show duplicates in search results by default'
                             }
                         }
                     ]
