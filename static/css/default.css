@@ -7580,7 +7580,6 @@ input:focus + .input-group-addon {
 }
 .indexer-button {
   min-width: 150px;
-  margin-bottom: 20px;
 }
 .spinner {
   display: inline-block;
@@ -7610,6 +7609,37 @@ input:focus + .input-group-addon {
 }
 .has-spinner.btn-large.active .spinner {
   width: 19px;
+}
+.indexer-score-input {
+  border-left-width: 0px !important;
+  border-right-width: 0px !important;
+  border-radius: 0;
+}
+.indexer-score-input-enabled {
+  border-color: #23a123;
+}
+.indexer-input-input-enabled:focus {
+  border-color: #23a123;
+}
+.indexer-score-input-disabled {
+  border-color: #e2e2e2;
+}
+.indexer-score-input-disabled:focus {
+  border-color: #e2e2e2;
+}
+.btn:focus {
+  outline: none;
+}
+.btn-default:active {
+  background-color: #eeeeee;
+}
+.indexer-input:focus {
+  outline: 0;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.indexer-input-focused {
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
 .nav-tabs > li > a:hover {
   border-color: #eeeeee #eeeeee transparent;

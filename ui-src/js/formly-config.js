@@ -284,6 +284,7 @@ angular
                 $scope.formOptions = {formState: $scope.formState};
                 $scope._showIndexerBox = _showIndexerBox;
                 $scope.showIndexerBox = showIndexerBox;
+                $scope.orderIndexer = orderIndexer;
                 $scope.isInitial = false;
 
                 $scope.presets = [
@@ -444,9 +445,9 @@ angular
                                         hideExpression: '!model.enabled',
                                         templateOptions: {
                                             type: 'number',
-                                            label: 'Score',
+                                            label: 'Priority',
                                             required: true,
-                                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
+                                            help: 'When duplicate search results are found the result from the indexer with the highest priority will be shown'
                                         }
                                     });
 
@@ -644,6 +645,17 @@ angular
 
                 function showIndexerBox(model, parentModel) {
                     $scope._showIndexerBox(model, parentModel, false)
+                }
+                
+                function orderIndexer(a, b) {
+                    console.log(a);
+                    console.log(b);
+                    // if (a.score = b.score) {
+                    //     return a.name < b.name;
+                    // } else {
+                    //     return a.score < b.score;
+                    // }
+                    return 0;
                 }
 
                 $scope.addIndexer = function (indexers, preset) {

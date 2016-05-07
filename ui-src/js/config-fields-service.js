@@ -960,79 +960,8 @@ function ConfigFields() {
             
             indexers: [
                 {
-                    type: "indexers",
+                    type: "indexers"
                 }
-                /*
-                ,
-                {
-                    wrapper: 'fieldset',
-                    key: 'binsearch',
-                    templateOptions: {label: 'Binsearch'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "binsearch", true, false)
-                },
-                {
-                    wrapper: 'fieldset',
-                    key: 'nzbclub',
-                    templateOptions: {label: 'NZBClub'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbclub", true, false)
-                },
-                {
-                    wrapper: 'fieldset',
-                    key: 'nzbindex',
-                    templateOptions: {label: 'NZBIndex'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbindex", true, false).concat([{
-                        key: 'generalMinSize',
-                        type: 'horizontalInput',
-                        hideExpression: '!model.enabled',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Min size',
-                            help: 'NZBIndex returns a lot of crap with small file sizes. Set this value and all smaller results will be filtered out no matter the category'
-                        }
-                    }])
-                },
-                {
-                    wrapper: 'fieldset',
-                    key: 'omgwtfnzbs',
-                    templateOptions: {label: 'omgwtfnzbs.org'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, true, true, false, true, 'omgwtf', true, false)
-                },
-                {
-                    wrapper: 'fieldset',
-                    key: 'womble',
-                    templateOptions: {label: 'Womble'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "womble", true, false)
-                },
-                {
-                    type: 'repeatSection',
-                    key: 'newznab',
-                    templateOptions: {
-                        btnText: 'Add new newznab indexer',
-                        altLegendText: 'New indexer',
-                        fields: getBasicIndexerFieldset(true, true, true, false, true, true, 'newznab', true, true),
-                        defaultModel: {
-                            enabled: true,
-                            host: null,
-                            apikey: null,
-                            hitLimit: null,
-                            hitLimitResetTime: new Date(0),
-                            timeout: null,
-                            name: null,
-                            showOnSearch: true,
-                            score: 0,
-                            username: null,
-                            password: null,
-                            preselect: true,
-                            accessType: "both",
-                            search_ids: ["imdbid", "rid", "tvdbid"],
-                            searchTypes: ["tvsearch", "movie"]
-                        }
-
-                    }
-
-                }
-
-            */
             ],
 
             auth: [

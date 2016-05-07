@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a96
+Added: Show indexer priority (renamed from "Score") in main indexer view. Sort indexers by priority and allow to change it right there.
+
 ### 0.0.1a95
 Fixed: Newznab indexers were shown twice on search page since last update.
 

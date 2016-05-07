@@ -712,6 +712,27 @@ function hydralog() {
 
 
 angular
+    .module('nzbhydraApp').directive("keepFocus", ['$timeout', function ($timeout) {
+    /*
+     Intended use:
+     <input keep-focus ng-model='someModel.value'></input>
+     */
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function ($scope, $element, attrs, ngModel) {
+
+            ngModel.$parsers.unshift(function (value) {
+                $timeout(function () {
+                    $element[0].focus();
+                });
+                return value;
+            });
+
+        }
+    };
+}])
+angular
     .module('nzbhydraApp')
     .directive('indexerStatuses', indexerStatuses);
 
@@ -764,6 +785,36 @@ function formatDate(dateFilter) {
     }
 }
 formatDate.$inject = ["dateFilter"];
+angular
+    .module('nzbhydraApp')
+    .directive('indexerInput', indexerInput);
+
+function indexerInput() {
+    controller.$inject = ["$scope"];
+    return {
+        templateUrl: 'static/html/directives/indexer-input.html',
+        scope: {
+            indexer: "=",
+            onClick: "="
+        },
+        controller: controller
+    };
+
+    function controller($scope) {
+        $scope.isFocused = false;
+        
+        $scope.onFocus = function() {
+            $scope.isFocused = true;
+        };
+
+        $scope.onBlur = function () {
+            $scope.isFocused = false;    
+        };
+        
+    }
+}
+
+
 angular
     .module('nzbhydraApp').directive('focusOn', focusOn);
 
@@ -2422,6 +2473,7 @@ angular
                 $scope.formOptions = {formState: $scope.formState};
                 $scope._showIndexerBox = _showIndexerBox;
                 $scope.showIndexerBox = showIndexerBox;
+                $scope.orderIndexer = orderIndexer;
                 $scope.isInitial = false;
 
                 $scope.presets = [
@@ -2582,9 +2634,9 @@ angular
                                         hideExpression: '!model.enabled',
                                         templateOptions: {
                                             type: 'number',
-                                            label: 'Score',
+                                            label: 'Priority',
                                             required: true,
-                                            help: 'When duplicate search results are found the result from the indexer with the highest score will be shown'
+                                            help: 'When duplicate search results are found the result from the indexer with the highest priority will be shown'
                                         }
                                     });
 
@@ -2782,6 +2834,17 @@ angular
 
                 function showIndexerBox(model, parentModel) {
                     $scope._showIndexerBox(model, parentModel, false)
+                }
+                
+                function orderIndexer(a, b) {
+                    console.log(a);
+                    console.log(b);
+                    // if (a.score = b.score) {
+                    //     return a.name < b.name;
+                    // } else {
+                    //     return a.score < b.score;
+                    // }
+                    return 0;
                 }
 
                 $scope.addIndexer = function (indexers, preset) {
@@ -4052,79 +4115,8 @@ function ConfigFields() {
             
             indexers: [
                 {
-                    type: "indexers",
+                    type: "indexers"
                 }
-                /*
-                ,
-                {
-                    wrapper: 'fieldset',
-                    key: 'binsearch',
-                    templateOptions: {label: 'Binsearch'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "binsearch", true, false)
-                },
-                {
-                    wrapper: 'fieldset',
-                    key: 'nzbclub',
-                    templateOptions: {label: 'NZBClub'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbclub", true, false)
-                },
-                {
-                    wrapper: 'fieldset',
-                    key: 'nzbindex',
-                    templateOptions: {label: 'NZBIndex'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "nzbindex", true, false).concat([{
-                        key: 'generalMinSize',
-                        type: 'horizontalInput',
-                        hideExpression: '!model.enabled',
-                        templateOptions: {
-                            type: 'number',
-                            label: 'Min size',
-                            help: 'NZBIndex returns a lot of crap with small file sizes. Set this value and all smaller results will be filtered out no matter the category'
-                        }
-                    }])
-                },
-                {
-                    wrapper: 'fieldset',
-                    key: 'omgwtfnzbs',
-                    templateOptions: {label: 'omgwtfnzbs.org'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, true, true, false, true, 'omgwtf', true, false)
-                },
-                {
-                    wrapper: 'fieldset',
-                    key: 'womble',
-                    templateOptions: {label: 'Womble'},
-                    fieldGroup: getBasicIndexerFieldset(false, false, false, false, false, false, "womble", true, false)
-                },
-                {
-                    type: 'repeatSection',
-                    key: 'newznab',
-                    templateOptions: {
-                        btnText: 'Add new newznab indexer',
-                        altLegendText: 'New indexer',
-                        fields: getBasicIndexerFieldset(true, true, true, false, true, true, 'newznab', true, true),
-                        defaultModel: {
-                            enabled: true,
-                            host: null,
-                            apikey: null,
-                            hitLimit: null,
-                            hitLimitResetTime: new Date(0),
-                            timeout: null,
-                            name: null,
-                            showOnSearch: true,
-                            score: 0,
-                            username: null,
-                            password: null,
-                            preselect: true,
-                            accessType: "both",
-                            search_ids: ["imdbid", "rid", "tvdbid"],
-                            searchTypes: ["tvsearch", "movie"]
-                        }
-
-                    }
-
-                }
-
-            */
             ],
 
             auth: [
