@@ -571,11 +571,11 @@ def getSettingsToHide():
         ("sabnzbd.apikey", settings.downloader.sabnzbd.apikey),
         ("sabnzbd.url", settings.downloader.sabnzbd.url),
         ("nzbget.host", settings.downloader.nzbget.host),
-        ("indexers.omgwwtfnzbs.apikey", settings.indexers.omgwtfnzbs.apikey),
-        ("indexers.omgwwtfnzbs.username", settings.indexers.omgwtfnzbs.username),
     ]
-    hideThese.extend([("newznab.apikey", x.apikey) for x in settings.indexers.newznab])
-    hideThese.extend([("auth.username", x.username) for x in settings.auth.users])
+    for i, indexer in enumerate(settings.indexers):
+        if indexer.type in ["omgwtf", "newznab"]:
+            hideThese.append(("indexers[%d].apikey" % i, indexer.apikey))
+            hideThese.append(("indexers[%d].username" % i, indexer.username))
     return hideThese
 
 
