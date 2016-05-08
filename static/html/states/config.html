@@ -71,24 +71,26 @@
 
 <script type="text/ng-template" id="indexers.html">
 
+    <div class="row">
 
-    <div class="btn-group" style="margin-bottom: 30px;">
-        <button class="btn btn-info" ng-click="addIndexer(model)"><span class="glyphicon glyphicon-plus" style="margin-right: 10px"></span> New indexer</button>
-        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
-        </button>
-        <ul class="dropdown-menu">
-            <li ng-repeat="preset in presets">
-                <a ng-click="addIndexer(model, preset)">{{ preset.name }}</a>
-            </li>
-        </ul>
+        <div class="btn-group" style="margin-bottom: 30px; margin-left: auto; margin-right: auto; float:none !important;">
+            <button class="btn btn-info" ng-click="addIndexer(model)"><span class="glyphicon glyphicon-plus" style="margin-right: 10px"></span> New indexer</button>
+            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li ng-repeat="preset in presets">
+                    <a ng-click="addIndexer(model, preset)">{{ preset.name }}</a>
+                </li>
+            </ul>
+        </div>
     </div>
 
 
     <div ng-repeat="indexer in model | orderBy: ['-score', 'name'] track by indexer.name">
         <div class="row">
-            <div style="margin: 0 auto; float:none" class="col-lg-4">
+            <div style="margin-left: auto; margin-right: auto; float:none !important;" class="col-xs-4">
                 <indexer-input indexer="indexer" on-click="showIndexerBox"></indexer-input>
             </div>
         </div>

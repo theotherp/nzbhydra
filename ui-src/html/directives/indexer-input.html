@@ -1,7 +1,8 @@
-<div class="input-group" style="margin-bottom: 20px" ng-class="{'indexer-input-focused': isFocused}">
-                    <span class="input-group-btn">
-                        <button ng-click="onClick(indexer, model)" class="btn btn-secondary indexer-button indexer-input" style="outline: 0" ng-class="{ 'btn-success': indexer.enabled, 'btn-default': !indexer.enabled, 'indexer-input-focused': isFocused}">{{ indexer.name }} </button>
-                    </span>
-    <input type="number" keep-focus  ng-focus="onFocus()" ng-blur="onBlur()" ng-model="indexer.score" class="form-control indexer-score-input indexer-input" ng-class="{ 'indexer-score-input-enabled': indexer.enabled, 'indexer-score-input-disabled': !indexer.enabled, 'indexer-input-focused': isFocused }" style="width: 43px; height: 34px">
+<div class="input-group" style="margin-bottom: 20px; width:100px;" ng-class="{'indexer-input-focused': isFocused}">
+    <span class="input-group-btn">
+        <button ng-click="onClick(indexer, model)" class="btn btn-secondary indexer-button indexer-input" style="outline: 0" ng-class="{ 'btn-success': indexer.enabled, 'btn-default': !indexer.enabled, 'indexer-input-focused': isFocused}">{{ indexer.name }} </button>
+    </span>
+    <input type="number" keep-focus ng-focus="onFocus()" ng-blur="onBlur()" ng-model="indexer.score" class="form-control indexer-score-input indexer-input"
+           ng-class="{ 'indexer-score-input-enabled': indexer.enabled, 'indexer-score-input-disabled': !indexer.enabled, 'indexer-input-focused': isFocused }" style="width: 43px; height: 34px">
     <span class="input-group-addon indexer-score-addon indexer-input" ng-class="{ 'indexer-score-input-enabled': indexer.enabled, 'indexer-score-input-disabled': !indexer.enabled, 'indexer-input-focused': isFocused }" id="basic-addon1">Priority</span>
 </div>

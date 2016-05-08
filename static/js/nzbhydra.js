@@ -797,6 +797,7 @@ function indexerInput() {
             indexer: "=",
             onClick: "="
         },
+        replace: true,
         controller: controller
     };
 
