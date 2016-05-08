@@ -1,8 +1,13 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a101
+Fixed: NZBGeek queries contained a superfluous "--".
+
 ### 0.0.1a100
 Fixed: Bugreport wouldn't work.
+
+TODO: Migrate old database, sicherstellen dass neuinstallationeinitin auch gehen
 
 ### 0.0.1a99
 Added: When leaving the config page with unsaved changes ask if the user wants to save, discard or stay on the config page.

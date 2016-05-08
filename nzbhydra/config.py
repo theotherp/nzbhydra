@@ -209,6 +209,7 @@ initialConfig = {
         "ignorePassworded": False,
         "ignoreTemporarilyDisabled": False,
         "ignoreWords": "",
+        "keepSearchResultsForDays": 7,
         "maxAge": "",
         "removeDuplicatesExternal": True,
         "requireWords": "",
@@ -572,6 +573,7 @@ def getSettingsToHide():
         ("sabnzbd.url", settings.downloader.sabnzbd.url),
         ("nzbget.host", settings.downloader.nzbget.host),
     ]
+    hideThese.extend([("auth.username", x.username) for x in settings.auth.users])
     for i, indexer in enumerate(settings.indexers):
         if indexer.type in ["omgwtf", "newznab"]:
             hideThese.append(("indexers[%d].apikey" % i, indexer.apikey))

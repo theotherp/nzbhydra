@@ -335,7 +335,7 @@ class NewzNab(SearchModule):
         return [f.url]
 
     def addExcludedWords(self, query, search_request):
-        if "nzbgeek" in self.settings.host:  # NZBGeek isn't newznab but sticks to its standards in most ways but not in this. Instead of adding a new search module just for this small part I added this small POC here
+        if "nzbgeek" in self.settings.host and search_request.ignoreWords:  # NZBGeek isn't newznab but sticks to its standards in most ways but not in this. Instead of adding a new search module just for this small part I added this small POC here
             query += " --" + " ".join([x for x in search_request.ignoreWords if not (" " in x or "-" in x or "." in x)])
         else:
             for word in search_request.ignoreWords:
