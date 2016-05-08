@@ -16,7 +16,6 @@ angular
         function watch(scope) {
             $scope = scope;
             $scope.$watchGroup(["config.main.host"], function () {
-                console.log("Restart needed");
             }, true);
         }
     });
@@ -31,26 +30,32 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
     $scope.submit = submit;
 
     $scope.restartRequired = false;
+    $scope.ignoreSaveNeeded = false;
 
     ConfigFields.setRestartWatcher(function () {
         $scope.restartRequired = true;
     });
+    
 
-    $scope.newfields = [];
-
-    function submit(form) {
-        console.log("Submitting");
-        if (form.$valid) {
+    function submit() {
+        if ($scope.form.$valid) {
             
             ConfigService.set($scope.config);
             ConfigService.invalidateSafe();
-            form.$setPristine();
+            $scope.form.$setPristine();
             CategoriesService.invalidate();
             if ($scope.restartRequired) {
-                ModalService.open("Restart required", "The changes you have made may require a restart to be effective.<br>Do you want to restart now?", function () {
-                    RestartService.restart();
-                }, function () {
-                    $scope.restartRequired = false;
+                ModalService.open("Restart required", "The changes you have made may require a restart to be effective.<br>Do you want to restart now?", {
+                    yes: {
+                        onYes: function () {
+                            RestartService.restart();
+                        }
+                    },
+                    no: {
+                        onNo: function () {
+                            $scope.restartRequired = false;
+                        }
+                    }
                 });
             }
         } else {
@@ -138,8 +143,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
         }
     }
 
-    $scope.isSavingNeeded = function (form) {
-        return form.$dirty && form.$valid;
+    $scope.isSavingNeeded = function () {
+        return $scope.form.$dirty && $scope.form.$valid && !$scope.ignoreSaveNeeded;
     };
 
     $scope.goToConfigState = function (index) {
@@ -148,9 +153,36 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             $scope.downloadLog();
         }
     };
-    
 
-
+    $scope.$on('$stateChangeStart',
+        function (event, toState, toParams, fromState, fromParams) {
+            if ($scope.isSavingNeeded()) {
+                event.preventDefault();
+                ModalService.open("Unsaved changed", "Do you want to save before leaving?", {
+                    yes: {
+                        onYes: function() {
+                            $scope.submit();
+                            $state.go(toState);
+                        },
+                        text: "Yes"
+                    },
+                    no: {
+                        onNo: function () {
+                            $scope.ignoreSaveNeeded = true;
+                            $scope.ctrl.options.resetModel();
+                            $state.go(toState);
+                        },
+                        text: "No"
+                    },
+                    cancel: {
+                        onCancel: function () {
+                            event.preventDefault();
+                        },
+                        text: "Cancel"
+                    }
+                });
+            }            
+        })
 }
 
 

@@ -32,6 +32,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
             url: "/config",
             templateUrl: "static/html/states/config.html",
             controller: "ConfigController",
+            controllerAs: 'ctrl',
             resolve: {
                 config: ['ConfigService', function (ConfigService) {
                     return ConfigService.get();
@@ -1985,30 +1986,46 @@ angular
     .module('nzbhydraApp')
     .factory('ModalService', ModalService);
 
-function ModalService($uibModal) {
+function ModalService($uibModal, $q) {
     
     return {
-        open: openModal
+        open: open
     };
     
-    function openModal(headline, message, ok, cancel) {
+    function open(headline, message, params) {
+        //params example:
+        /*
+        var p =
+        {
+            yes: {
+                text: "Yes",    //default: Ok
+                onYes: function() {}
+            },
+            no: {               //default: Empty
+                text: "No",
+                onNo: function () {
+                }
+            },
+            cancel: {           
+                text: "Cancel", //default: Cancel
+                onCancel: function () {
+                }
+            }
+        };
+        */
         var modalInstance = $uibModal.open({
             templateUrl: 'static/html/modal.html',
             controller: 'ModalInstanceCtrl',
             size: 'md',
             resolve: {
                 headline: function () {
-                    return headline
+                    return headline;
                 },
-                message: function(){ return message},
-                ok: function() {
-                    return ok;
+                message: function(){ 
+                    return message;
                 },
-                cancel: function() {
-                    return cancel;
-                },
-                showCancel: function() {
-                    return angular.isDefined(cancel);
+                params: function() {
+                    return params;
                 }
             }
         });
@@ -2016,39 +2033,65 @@ function ModalService($uibModal) {
         modalInstance.result.then(function() {
             
         }, function() {
-            if (angular.isDefined(cancel))
-            cancel();
+            
         });
     }
     
 }
-ModalService.$inject = ["$uibModal"];
+ModalService.$inject = ["$uibModal", "$q"];
 
 angular
     .module('nzbhydraApp')
     .controller('ModalInstanceCtrl', ModalInstanceCtrl);
 
-function ModalInstanceCtrl($scope, $uibModalInstance, headline, message, ok, cancel, showCancel) {
+function ModalInstanceCtrl($scope, $uibModalInstance, headline, message, params) {
 
     $scope.message = message;
     $scope.headline = headline;
-    $scope.showCancel = showCancel;
+    $scope.params = params;
+    $scope.showCancel = angular.isDefined(params.cancel);
+    $scope.showNo = angular.isDefined(params.no);
 
-    $scope.ok = function () {
+    if (angular.isDefined(params.yes) && angular.isUndefined(params.yes.text)) {
+        params.yes.text = "Yes";
+    }
+    
+    if (angular.isDefined(params.no) && angular.isUndefined(params.no.text)) {
+        params.no.text = "No";
+    }
+    
+    if (angular.isDefined(params.cancel) && angular.isUndefined(params.cancel.text)) {
+        params.cancel.text = "Cancel";
+    }
+
+    $scope.yes = function () {
         $uibModalInstance.close();
-        if(!angular.isUndefined(ok)) {
-            ok();
+        if(angular.isDefined(params.yes) && angular.isDefined(params.yes.onYes)) {
+            params.yes.onYes();
+        }
+    };
+
+    $scope.no = function () {
+        $uibModalInstance.close();
+        if (angular.isDefined(params.no) && angular.isDefined(params.no.onNo)) {
+            params.no.onNo();
         }
     };
 
     $scope.cancel = function () {
         $uibModalInstance.dismiss();
-        if (!angular.isUndefined(cancel)) {
-            cancel();
+        if (angular.isDefined(params.cancel) && angular.isDefined(params.cancel.onCancel)) {
+            params.cancel.onCancel();
         }
     };
+
+    $scope.$on("modal.closing", function (targetScope, reason, c) {
+        if (reason == "backdrop click") {
+            $scope.cancel();
+        }
+    });
 }
-ModalInstanceCtrl.$inject = ["$scope", "$uibModalInstance", "headline", "message", "ok", "cancel", "showCancel"];
+ModalInstanceCtrl.$inject = ["$scope", "$uibModalInstance", "headline", "message", "params"];
 
 angular
     .module('nzbhydraApp')
@@ -3039,12 +3082,26 @@ angular.module('nzbhydraApp').controller('IndexerModalInstanceController', ["$sc
     };
 
     $scope.reset = function () {
-        console.log("Resetting to original model");
+        //Resetting causes some troubles with the date and the multiselects 
+        
+        //So we save the reset time first
+        var date;
         for (var i = 0; i < $scope.fields.length; i++) {
-            if (angular.isDefined($scope.fields[i].resetModel)) {
-                $scope.fields[i].resetModel();
+            var field = $scope.fields[i];
+            if (field.key == "hitLimitResetTime") {
+                date = new Date(field.initialValue);
+                date = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
             }
         }
+        
+        
+        //Then reset the model twice (for some reason when we do it once the search types / ids fields are empty, resetting again fixes that... (wtf))
+        $scope.options.resetModel();
+        $scope.options.resetModel();
+        
+        //and set the date back
+        $scope.model.hitLimitResetTime = date;
+        
 
     };
 
@@ -4240,7 +4297,6 @@ angular
         function watch(scope) {
             $scope = scope;
             $scope.$watchGroup(["config.main.host"], function () {
-                console.log("Restart needed");
             }, true);
         }
     });
@@ -4255,26 +4311,32 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
     $scope.submit = submit;
 
     $scope.restartRequired = false;
+    $scope.ignoreSaveNeeded = false;
 
     ConfigFields.setRestartWatcher(function () {
         $scope.restartRequired = true;
     });
+    
 
-    $scope.newfields = [];
-
-    function submit(form) {
-        console.log("Submitting");
-        if (form.$valid) {
+    function submit() {
+        if ($scope.form.$valid) {
             
             ConfigService.set($scope.config);
             ConfigService.invalidateSafe();
-            form.$setPristine();
+            $scope.form.$setPristine();
             CategoriesService.invalidate();
             if ($scope.restartRequired) {
-                ModalService.open("Restart required", "The changes you have made may require a restart to be effective.<br>Do you want to restart now?", function () {
-                    RestartService.restart();
-                }, function () {
-                    $scope.restartRequired = false;
+                ModalService.open("Restart required", "The changes you have made may require a restart to be effective.<br>Do you want to restart now?", {
+                    yes: {
+                        onYes: function () {
+                            RestartService.restart();
+                        }
+                    },
+                    no: {
+                        onNo: function () {
+                            $scope.restartRequired = false;
+                        }
+                    }
                 });
             }
         } else {
@@ -4362,8 +4424,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
         }
     }
 
-    $scope.isSavingNeeded = function (form) {
-        return form.$dirty && form.$valid;
+    $scope.isSavingNeeded = function () {
+        return $scope.form.$dirty && $scope.form.$valid && !$scope.ignoreSaveNeeded;
     };
 
     $scope.goToConfigState = function (index) {
@@ -4372,9 +4434,36 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             $scope.downloadLog();
         }
     };
-    
 
-
+    $scope.$on('$stateChangeStart',
+        function (event, toState, toParams, fromState, fromParams) {
+            if ($scope.isSavingNeeded()) {
+                event.preventDefault();
+                ModalService.open("Unsaved changed", "Do you want to save before leaving?", {
+                    yes: {
+                        onYes: function() {
+                            $scope.submit();
+                            $state.go(toState);
+                        },
+                        text: "Yes"
+                    },
+                    no: {
+                        onNo: function () {
+                            $scope.ignoreSaveNeeded = true;
+                            $scope.ctrl.options.resetModel();
+                            $state.go(toState);
+                        },
+                        text: "No"
+                    },
+                    cancel: {
+                        onCancel: function () {
+                            event.preventDefault();
+                        },
+                        text: "Cancel"
+                    }
+                });
+            }            
+        })
 }
 ConfigController.$inject = ["$scope", "ConfigService", "config", "CategoriesService", "ConfigFields", "ConfigModel", "ModalService", "RestartService", "$state", "growl"];
 

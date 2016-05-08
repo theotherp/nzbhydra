@@ -848,12 +848,26 @@ angular.module('nzbhydraApp').controller('IndexerModalInstanceController', funct
     };
 
     $scope.reset = function () {
-        console.log("Resetting to original model");
+        //Resetting causes some troubles with the date and the multiselects 
+        
+        //So we save the reset time first
+        var date;
         for (var i = 0; i < $scope.fields.length; i++) {
-            if (angular.isDefined($scope.fields[i].resetModel)) {
-                $scope.fields[i].resetModel();
+            var field = $scope.fields[i];
+            if (field.key == "hitLimitResetTime") {
+                date = new Date(field.initialValue);
+                date = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
             }
         }
+        
+        
+        //Then reset the model twice (for some reason when we do it once the search types / ids fields are empty, resetting again fixes that... (wtf))
+        $scope.options.resetModel();
+        $scope.options.resetModel();
+        
+        //and set the date back
+        $scope.model.hitLimitResetTime = date;
+        
 
     };
 

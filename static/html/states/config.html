@@ -1,13 +1,13 @@
 <div class="row">
-    <form name="form" novalidate>
+    <form name="form" name="ctrl.myform" novalidate>
 
         <uib-tabset>
             <uib-tab ng-repeat="tab in formTabs" heading="{{ tab.name }}" active="allTabs[$index].active" select="goToConfigState($index)">
-                <formly-form model="tab.model" fields="tab.fields" ng-if="allTabs[$index].active">
+                <formly-form model="tab.model" fields="tab.fields" ng-if="allTabs[$index].active" options="ctrl.options">
                 </formly-form>
             </uib-tab>
             <li style="position: absolute; right:0px; ">
-                <button ng-click="submit(form)" class="btn config-submit" ng-class="{'btn-info': isSavingNeeded(form), 'pulse2': isSavingNeeded(form), 'btn-success': !isSavingNeeded(form)}">Save</button>
+                <button ng-click="submit()" class="btn config-submit" ng-class="{'btn-info': isSavingNeeded(), 'pulse2': isSavingNeeded(), 'btn-success': !isSavingNeeded()}">Save</button>
             </li>
         </uib-tabset>
     </form>
@@ -126,6 +126,7 @@
         <formly-form fields="fields"
                      model="model"
                      form="form"
+                     options="options"
         >
         </formly-form>
     </div>

@@ -1,6 +1,11 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a99
+Added: When leaving the config page with unsaved changes ask if the user wants to save, discard or stay on the config page.
+
+Fixed: Some problems with resetting the indexer config.
+
 ### 0.0.1a98
 Fixed: Layout issues in indexer config. Still not perfect but better.
 
