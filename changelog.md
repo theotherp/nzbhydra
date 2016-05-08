@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.1
+Fixed: Small problem with last update and empty details links.
+
 ### 0.2.0
 Changed: Moved minor version to 0.2.0. I would like to say that's because I feel Hydra is more mature now but it's actually because my versioning algorithm thought that 0.0.1a103 < 0.0.1a99...
 

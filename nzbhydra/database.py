@@ -20,7 +20,7 @@ logger = logging.getLogger('root')
 
 db = SqliteExtDatabase(None, threadlocals=True, journal_mode="WAL")
 
-DATABASE_VERSION = 6
+DATABASE_VERSION = 7
 
 
 class JSONField(TextField):
@@ -94,7 +94,7 @@ class SearchResult(Model):
     title = CharField()
     guid = CharField()
     link = CharField()
-    details = CharField()
+    details = CharField(null=True)
 
     class Meta(object):
         database = db
@@ -336,4 +336,12 @@ def update_db(dbfile):
             
                 vi.version = 6
                 vi.save()
+
+        if vi.version == 6:
+            logger.info("Upgrading database to version 7")
+            migrator = SqliteMigrator(db)
+            migrate(
+                migrator.add_not_null("SearchResult", "details")
+            )
+            
     db.close()
