@@ -37,7 +37,7 @@
     "bower": "*",
     "filesize": "~3.1.3",
     "install": "~1.0.4",
-    "moment": "momentjs#~2.10.6",
+    "moment": "momentjs#^2.13.0",
     "objectpath": "~1.2.1",
     "seiyria-bootstrap-slider": "~5.2.1",
     "tv4": "~1.2.7",

@@ -126,17 +126,18 @@ def pick_indexers(search_request, internal=True):
             pass
         
         if p.settings.hitLimit > 0:
+            hitLimitResetTime = arrow.get(p.settings.hitLimitResetTime)
             if p.settings.hitLimitResetTime:
-                hitLimitResetTime = arrow.get(p.settings.hitLimitResetTime)
-                comparisonTime = arrow.now().replace(hour=hitLimitResetTime.hour, minute=hitLimitResetTime.minute, second=0)
-                if comparisonTime > arrow.now():
+                comparisonTime = arrow.utcnow().replace(hour=hitLimitResetTime.hour, minute=hitLimitResetTime.minute, second=0)
+                if comparisonTime > arrow.utcnow():
                     comparisonTime = arrow.get(comparisonTime.datetime - timedelta(days=1)) #Arrow is too dumb to properly subtract 1 day (throws an error on every first of the month)
             else:
+                #Use 00:00 as reset time when no reset time is set 
                 comparisonTime = arrow.now().replace(hour=0, minute=0, second=0)
             
             apiHits = IndexerApiAccess().select().where((IndexerApiAccess.indexer == p.indexer) & (IndexerApiAccess.time > comparisonTime) & IndexerApiAccess.response_successful).count()
             if apiHits > p.settings.hitLimit:
-                logger.info("Did not pick %s because its API hit limit of %d was reached" % (p, p.settings.hitLimit))
+                logger.info("Did not pick %s because its API hit limit of %d was reached. Will pick again after %02d:%02d tomorrow" % (p, p.settings.hitLimit, hitLimitResetTime.hour, hitLimitResetTime.minute))
                 continue
             else:
                 logger.debug("%s has had %d of a maximum of %d API hits since %02d:%02d" % (p, apiHits, p.settings.hitLimit, comparisonTime.hour, comparisonTime.minute))

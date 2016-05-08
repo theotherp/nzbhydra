@@ -2249,7 +2249,8 @@ angular
             name: 'timeOfDay',
             extends: 'horizontalInput',
             controller: ['$scope', function ($scope) {
-                $scope.model[$scope.options.key] = new Date($scope.model[$scope.options.key]);
+                var date = new Date($scope.model[$scope.options.key]);
+                $scope.model[$scope.options.key] = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
             }]
         });
 
@@ -2675,7 +2676,7 @@ angular
                                             templateOptions: {
                                                 type: 'time',
                                                 label: 'API hit reset time',
-                                                help: 'Local time at which the API hit counter is reset'
+                                                help: 'UTC time at which the API hit counter is reset'
                                             }
                                         });
                                     fieldset.push(

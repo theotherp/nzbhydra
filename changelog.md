@@ -4,6 +4,8 @@
 ### 0.0.1a98
 Fixed: Layout issues in indexer config. Still not perfect but better.
 
+Fixed: Show API reset time for indexers in UTC and make sure UTC is used.
+
 ### 0.0.1a97
 Added: Option to always show duplicates in the search results (see Config -> Searching -> Result processing - > Always show duplicates). 
 
