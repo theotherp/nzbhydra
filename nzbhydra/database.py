@@ -20,7 +20,7 @@ logger = logging.getLogger('root')
 
 db = SqliteExtDatabase(None, threadlocals=True, journal_mode="WAL")
 
-DATABASE_VERSION = 5
+DATABASE_VERSION = 6
 
 
 class JSONField(TextField):
@@ -77,7 +77,7 @@ class IndexerSearch(Model):
     time = DateTimeField()
 
     successful = BooleanField(default=False)
-    results = IntegerField(null=True)  # number of results returned
+    resultsCount = IntegerField(null=True)  # number of results, we save this because SearchResult db rows are deleted after some time
 
     class Meta(object):
         database = db
@@ -88,9 +88,29 @@ class IndexerSearch(Model):
         super(IndexerSearch, self).save(*args, **kwargs)
 
 
+class SearchResult(Model):
+    indexer = ForeignKeyField(Indexer, related_name="results")
+    firstFound = DateTimeField()
+    title = CharField()
+    guid = CharField()
+    link = CharField()
+    details = CharField()
+
+    class Meta(object):
+        database = db
+        indexes = (
+            (('indexer', 'guid'), True),  # Note the trailing comma!
+        )
+
+    def save(self, *args, **kwargs):
+        if self.firstFound is None:
+            self.firstFound = datetime.datetime.utcnow()  # Otherwise the time of the first run of this code is taken
+        super(SearchResult, self).save(*args, **kwargs)
+
+
 class IndexerApiAccess(Model):
     indexer = ForeignKeyField(Indexer)
-    indexer_search = ForeignKeyField(IndexerSearch, related_name="api_accesses", null=True)
+    indexer_search = ForeignKeyField(IndexerSearch, related_name="apiAccesses", null=True)
     time = DateTimeUTCField()
     type = CharField()  # search, nzb, comments, nfo?
     url = CharField()
@@ -109,6 +129,22 @@ class IndexerApiAccess(Model):
 
 
 class IndexerNzbDownload(Model):
+    searchResult = ForeignKeyField(SearchResult, related_name="downloads")
+    apiAccess = ForeignKeyField(IndexerApiAccess)  
+    time = DateTimeField()
+    title = CharField() #Redundant when the search result still exists but after it's deleted we still wanna see what the title is
+    mode = CharField()  # "serve" or "redirect"
+    
+    class Meta(object):
+        database = db
+
+    def save(self, *args, **kwargs):
+        if self.time is None:
+            self.time = datetime.datetime.utcnow()  # Otherwise the time at the first run of this code is taken
+        super(IndexerNzbDownload, self).save(*args, **kwargs)
+
+
+class v5IndexerNzbDownload(Model):
     indexer = ForeignKeyField(Indexer, related_name="downloads")
     indexer_search = ForeignKeyField(IndexerSearch, related_name="downloads", null=True)
     api_access = ForeignKeyField(IndexerApiAccess)
@@ -119,11 +155,12 @@ class IndexerNzbDownload(Model):
 
     class Meta(object):
         database = db
+        db_table = "IndexerNzbDownload"
 
     def save(self, *args, **kwargs):
         if self.time is None:
             self.time = datetime.datetime.utcnow()  # Otherwise the time at the first run of this code is taken
-        super(IndexerNzbDownload, self).save(*args, **kwargs)
+        super(v5IndexerNzbDownload, self).save(*args, **kwargs)
 
 
 class IndexerStatus(Model):
@@ -167,10 +204,14 @@ class MovieIdCache(Model):
 
     class Meta(object):
         database = db
+        
+
+class DummyTableDefinition(Model):
+    idField = IntegerField(default=1, null=False)
 
 
 def init_db(dbfile):
-    tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, VersionInfo, TvIdCache, MovieIdCache]
+    tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, VersionInfo, TvIdCache, MovieIdCache, SearchResult]
     db.init(dbfile)
     db.connect()
 
@@ -253,5 +294,44 @@ def update_db(dbfile):
             db.create_table(TvIdCache)
             
             vi.version = 5
+            vi.save()
+
+        if vi.version == 5:
+            logger.info("Upgrading database to version 6")
+            logger.info("Migrating table columns")
+            
+            #TODO: Store all stuff before migrating and after fill it back in
+
+            # Delete all instances of IndexerNzbDownload because we'll allow the reference to SearchResult to be empty but need to make it non-nullable afterwards
+            #IndexerNzbDownload.delete().execute()
+            indexerNzbDownloads = list(v5IndexerNzbDownload.select().dicts())
+            
+            migrator = SqliteMigrator(db)
+            migrate(
+                
+                migrator.rename_column('IndexerSearch', 'results', 'resultscount'),
+                                
+                migrator.drop_column('IndexerNzbDownload', 'indexer_id'),
+                migrator.drop_column('IndexerNzbDownload', 'guid'),
+                migrator.drop_column('IndexerNzbDownload', 'indexer_search_id'),
+
+                migrator.rename_column('IndexerNzbDownload', 'api_access_id', 'apiaccess_id'),
+                
+                # Add foreign key to SearchResult
+                migrator.add_column('IndexerNzbDownload', 'searchResult_id', DummyTableDefinition.idField),
+            )
+            
+            logger.info("Creating table for search results")
+            db.create_table(SearchResult)
+
+            logger.info("Converting search results to new schema")
+            for oldDownload in indexerNzbDownloads:
+                searchResult = SearchResult.create(indexer=oldDownload["indexer"], firstFound=oldDownload["time"], title=oldDownload["title"], guid="Not migrated", link="Not migrated", details="Not migrated")
+                newDownload = IndexerNzbDownload.get(IndexerNzbDownload.apiAccess == oldDownload["api_access"])
+                newDownload.searchResult = searchResult
+                newDownload.save()
+                pass
+            
+            vi.version = 6
             vi.save()
     db.close()

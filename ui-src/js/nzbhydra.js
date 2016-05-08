@@ -347,10 +347,7 @@ nzbhydraapp.directive('ngEnter', function () {
 nzbhydraapp.filter('nzblink', function () {
     return function (resultItem) {
         var uri = new URI("internalapi/getnzb");
-        uri.addQuery("guid", resultItem.guid);
-        uri.addQuery("title", resultItem.title);
-        uri.addQuery("provider", resultItem.provider);
-
+        uri.addQuery("searchResultId", resultItem.searchResultId);
         return uri.toString();
     }
 });

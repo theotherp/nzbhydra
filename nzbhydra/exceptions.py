@@ -61,3 +61,9 @@ class IndexerResultParsingRowException(NzbHydraException):
 
 class DownloaderException(NzbHydraException):
     pass
+
+
+class IndexerNotFoundException(NzbHydraException):
+    """An indexer by the given name could not be found
+    """
+    pass

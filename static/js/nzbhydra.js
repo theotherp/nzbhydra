@@ -347,10 +347,7 @@ nzbhydraapp.directive('ngEnter', function () {
 nzbhydraapp.filter('nzblink', function () {
     return function (resultItem) {
         var uri = new URI("internalapi/getnzb");
-        uri.addQuery("guid", resultItem.guid);
-        uri.addQuery("title", resultItem.title);
-        uri.addQuery("provider", resultItem.provider);
-
+        uri.addQuery("searchResultId", resultItem.searchResultId);
         return uri.toString();
     }
 });
@@ -522,8 +519,7 @@ function otherColumns($http, $templateCache, $compile, $window) {
                 return;
             }
             var uri = new URI("internalapi/getnfo");
-            uri.addQuery("indexer", resultItem.indexer);
-            uri.addQuery("guid", resultItem.indexerguid);
+            uri.addQuery("searchresuldid", resultItem.searchResultId);
             return $http.get(uri.toString()).then(function (response) {
                 if (response.data.has_nfo) {
                     $scope.openModal("lg", response.data.nfo)
@@ -560,7 +556,6 @@ function otherColumns($http, $templateCache, $compile, $window) {
             //href = "{{ result.link }}"
             $window.location.href = resultItem.link;
         }
-
     }
 }
 otherColumns.$inject = ["$http", "$templateCache", "$compile", "$window"];
@@ -1003,12 +998,9 @@ function addableNzb() {
     controller.$inject = ["$scope", "ConfigService", "NzbDownloadService", "growl"];
     return {
         templateUrl: 'static/html/directives/addable-nzb.html',
-        require: ['^indexerguid', '^title', '^indexer', '^dbsearchid'],
+        require: ['^searchresultid'],
         scope: {
-            indexerguid: "=",
-            title: "=",
-            indexer: "=",
-            dbsearchid: "="
+            searchresultid: "="
         },
         controller: controller
     };
@@ -1028,7 +1020,7 @@ function addableNzb() {
 
         $scope.add = function () {
             $scope.classname = "nzb-spinning";
-            NzbDownloadService.download([{"indexerguid": $scope.indexerguid, "title": $scope.title, "indexer": $scope.indexer, "dbsearchid": $scope.dbsearchid}]).then(function (response) {
+            NzbDownloadService.download([$scope.searchresultid]).then(function (response) {
                 if (response.data.success) {
                     $scope.classname = $scope.downloader == "sabnzbd" ? "sabnzbd-success" : "nzbget-success";
                 } else {
@@ -1401,10 +1393,10 @@ function SearchService($http) {
         //TODO: Move this to search result controller because we need to update it every time we loaded more results
         _.each(indexersearches, function (ps) {
             if (ps.did_search) {
-                ps.averageResponseTime = _.reduce(ps.api_accesses, function (memo, rp) {
+                ps.averageResponseTime = _.reduce(ps.apiAccesses, function (memo, rp) {
                     return memo + rp.response_time;
                 }, 0);
-                ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
+                ps.averageResponseTime = ps.averageResponseTime / ps.apiAccesses.length;
             }
         });
         
@@ -1463,7 +1455,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     //Returns the unique group identifier which allows angular to keep track of the grouped search results even after filtering, making filtering by indexers a lot faster (albeit still somewhat slow...)  
     $scope.groupId = groupId;
     function groupId(item) {
-        return item[0][0].guid;
+        return item[0][0].searchResultId;
     }
 
     //Block the UI and return after timeout. This way we make sure that the blocking is done before angular starts updating the model/view. There's probably a better way to achieve that?
@@ -1616,7 +1608,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         } else {
 
             var values = _.map($scope.selected, function (value) {
-                return {"indexerguid": value.indexerguid, "title": value.title, "indexer": value.indexer, "dbsearchid": value.dbsearchid}
+                return value.searchresultid
             });
 
             NzbDownloadService.download(values).then(function (response) {
@@ -1953,13 +1945,12 @@ function NzbDownloadService($http, ConfigService, CategoriesService) {
 
     return service;
 
-
-    function sendNzbAddCommand(items, category) {
+    function sendNzbAddCommand(searchresultids, category) {
         console.log("Now add nzb with category " + category);
-        return $http.put("internalapi/addnzbs", {items: angular.toJson(items), category: category});
+        return $http.put("internalapi/addnzbs", {searchresultids: angular.toJson(searchresultids), category: category});
     }
 
-    function download(items) {
+    function download(searchresultids) {
         var settings = ConfigService.getSafe();
 
         var category;
@@ -1969,14 +1960,15 @@ function NzbDownloadService($http, ConfigService, CategoriesService) {
             category = settings.downloader.sabnzbd.defaultCategory
         }
 
+        
         if (_.isUndefined(category) || category == "" || category == null) {
             return CategoriesService.openCategorySelection().then(function (category) {
-                return sendNzbAddCommand(items, category)
+                return sendNzbAddCommand(searchresultids, category)
             }, function (error) {
                 throw error;
             });
         } else {
-            return sendNzbAddCommand(items, category)
+            return sendNzbAddCommand(searchresultids, category)
         }
     }
 }
@@ -3529,6 +3521,18 @@ function ConfigFields() {
                     wrapper: 'fieldset',
                     templateOptions: {label: 'Other'},
                     fieldGroup: [
+                        {
+                            key: 'keepSearchResultsForDays',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'number',
+                                label: 'Store results for ...',
+                                addonRight: {
+                                    text: 'days'
+                                },
+                                help: 'Meta data from searches is stored in the database. When they\'re deleted links to hydra become invalid.'
+                            }
+                        },
                         {
                             key: 'debug',
                             type: 'horizontalSwitch',

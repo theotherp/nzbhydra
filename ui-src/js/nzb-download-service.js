@@ -10,13 +10,12 @@ function NzbDownloadService($http, ConfigService, CategoriesService) {
 
     return service;
 
-
-    function sendNzbAddCommand(items, category) {
+    function sendNzbAddCommand(searchresultids, category) {
         console.log("Now add nzb with category " + category);
-        return $http.put("internalapi/addnzbs", {items: angular.toJson(items), category: category});
+        return $http.put("internalapi/addnzbs", {searchresultids: angular.toJson(searchresultids), category: category});
     }
 
-    function download(items) {
+    function download(searchresultids) {
         var settings = ConfigService.getSafe();
 
         var category;
@@ -26,14 +25,15 @@ function NzbDownloadService($http, ConfigService, CategoriesService) {
             category = settings.downloader.sabnzbd.defaultCategory
         }
 
+        
         if (_.isUndefined(category) || category == "" || category == null) {
             return CategoriesService.openCategorySelection().then(function (category) {
-                return sendNzbAddCommand(items, category)
+                return sendNzbAddCommand(searchresultids, category)
             }, function (error) {
                 throw error;
             });
         } else {
-            return sendNzbAddCommand(items, category)
+            return sendNzbAddCommand(searchresultids, category)
         }
     }
 }

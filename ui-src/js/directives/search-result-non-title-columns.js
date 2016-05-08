@@ -26,8 +26,7 @@ function otherColumns($http, $templateCache, $compile, $window) {
                 return;
             }
             var uri = new URI("internalapi/getnfo");
-            uri.addQuery("indexer", resultItem.indexer);
-            uri.addQuery("guid", resultItem.indexerguid);
+            uri.addQuery("searchresuldid", resultItem.searchResultId);
             return $http.get(uri.toString()).then(function (response) {
                 if (response.data.has_nfo) {
                     $scope.openModal("lg", response.data.nfo)
@@ -64,7 +63,6 @@ function otherColumns($http, $templateCache, $compile, $window) {
             //href = "{{ result.link }}"
             $window.location.href = resultItem.link;
         }
-
     }
 }
 

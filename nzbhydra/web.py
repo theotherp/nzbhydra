@@ -44,7 +44,7 @@ from flask_session import Session
 from nzbhydra import config, search, infos, database
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid, get_entry_by_id
 from nzbhydra.config import NzbAccessTypeSelection
-from nzbhydra.database import IndexerStatus, Indexer
+from nzbhydra.database import IndexerStatus, Indexer, SearchResult
 from nzbhydra.downloader import Nzbget, Sabnzbd
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
 from nzbhydra.search import SearchRequest
@@ -462,19 +462,23 @@ def get_details(guid):
     return "Unable to find details", 500
 
 
-getnzb_args = {
-    "id": fields.String(missing=None)
+searchresultid_args = {
+    "searchresultid": fields.Integer()
 }
+
+
+
 
 
 @app.route('/getnzb')
 @requires_auth("main", allowWithApiKey=True)
-@use_args(getnzb_args, locations=['querystring'])
+@use_args(searchresultid_args, locations=['querystring'])
 def getnzb(args):
     logger.debug("Get NZB request with args %s" % args)
-    args = rison.loads(args["id"])
-    logger.info("API request from %s to download %s from %s" % (getIp(), args["title"], args["indexer"]))
-    return extract_nzb_infos_and_return_response(args["indexer"], args["indexerguid"], args["title"], args["searchid"])
+    searchResult = SearchResult.get(SearchResult.id == args["searchresultid"])
+    
+    logger.info("API request from %s to download %s from %s" % (getIp(), searchResult.title, searchResult.indexer.name))
+    return extract_nzb_infos_and_return_response(args["searchresultid"])
 
 
 def process_and_jsonify_for_internalapi(results):
@@ -616,48 +620,39 @@ def internalapi_autocomplete(args):
 
 internalapi_autocomplete.make_cache_key = make_request_cache_key
 
-internalapi__getnfo_args = {
-    "guid": fields.String(missing=None),
-    "indexer": fields.String(missing=None),
-}
 
 
 @app.route('/internalapi/getnfo')
 @requires_auth("main")
-@use_args(internalapi__getnfo_args, locations=['querystring'])
+@use_args(searchresultid_args)
 @flask_cache.memoize()
 def internalapi_getnfo(args):
     logger.debug("Get NFO request with args %s" % args)
-    nfo = get_nfo(args["indexer"], args["guid"])
+    nfo = get_nfo(args["searchresultid"])
     return jsonify(nfo)
 
 
 internalapi_getnfo.make_cache_key = make_request_cache_key
 
-internalapi__getnzb_args = {
-    "guid": fields.String(missing=None),
-    "indexer": fields.String(missing=None),
-    "searchid": fields.String(missing=None),
-    "title": fields.String(missing=None)
-}
 
 
-# Obsolete?
+
+
 @app.route('/internalapi/getnzb')
 @requires_auth("main")
-@use_args(internalapi__getnzb_args, locations=['querystring'])
+@use_args(searchresultid_args)
 def internalapi_getnzb(args):
     logger.debug("Get internal NZB request with args %s" % args)
-    return extract_nzb_infos_and_return_response(args["indexer"], args["indexerguid"], args["title"], args["searchid"])
+    return extract_nzb_infos_and_return_response(args["searchresultid"])
 
 
-def extract_nzb_infos_and_return_response(indexer, indexerguid, title, searchid):
+def extract_nzb_infos_and_return_response(searchResultId):
     if config.settings.downloader.nzbaccesstype == NzbAccessTypeSelection.redirect:
-        link, _, _ = get_indexer_nzb_link(indexer, indexerguid, title, searchid, "redirect", True)
+        link, _, _ = get_indexer_nzb_link(searchResultId, "redirect", True)
         if link is not None:
             logger.info("Redirecting %s to %s" % (getIp(), link))
             if ipinfo.ispublic(getIp()):
-                logger.info("Info on %s: %s" % (getIp(),ipinfo.country_and_org(getIp()) ) )
+                logger.info("Info on %s: %s" % (getIp(), ipinfo.country_and_org(getIp()) ) )
             else:
                 logger.info("Info on %s: private / RFC1918 address" % getIp() ) 
 
@@ -665,14 +660,14 @@ def extract_nzb_infos_and_return_response(indexer, indexerguid, title, searchid)
         else:
             return "Unable to build link to NZB", 404
     elif config.settings.downloader.nzbaccesstype == NzbAccessTypeSelection.serve:
-        return get_nzb_response(indexer, indexerguid, title, searchid)
+        return get_nzb_response(searchResultId)
     else:
         logger.error("Invalid value of %s" % config.settings.downloader.nzbaccesstype)
         return "downloader.add_type has wrong value: %s" % config.settings.downloader.nzbaccesstype, 500
 
 
 internalapi__addnzb_args = {
-    "items": fields.String(missing=[]),
+    "searchresultids": fields.String(missing=[]),
     "category": fields.String(missing=None)
 }
 
@@ -682,7 +677,7 @@ internalapi__addnzb_args = {
 @use_args(internalapi__addnzb_args)
 def internalapi_addnzb(args):
     logger.debug("Add NZB request with args %s" % args)
-    items = json.loads(args["items"])
+    searchResultIds = json.loads(args["searchresultids"])
     if config.settings.downloader.downloader == "nzbget":
         downloader = Nzbget()
     elif config.settings.downloader.downloader == "sabnzbd":
@@ -691,27 +686,23 @@ def internalapi_addnzb(args):
         logger.error("Adding an NZB without set downloader should not be possible")
         return jsonify({"success": False})
     added = 0
-    for item in items:
-        title = item["title"]
-        indexerguid = item["indexerguid"]
-        indexer = item["indexer"]
-        category = args["category"]
-        dbsearchid = item["dbsearchid"]
-        link, _ = get_nzb_link_and_guid(indexer, indexerguid, dbsearchid, title, True)
+    for searchResultId in searchResultIds:
+        searchResult = SearchResult.get(SearchResult.id == searchResultId)
+        link = get_nzb_link_and_guid(searchResultId, True)
 
         if config.settings.downloader.nzbAddingType == config.NzbAddingTypeSelection.link:  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
-            add_success = downloader.add_link(link, title, category)
+            add_success = downloader.add_link(link, searchResult.title, args["category"])
         else:  # We download an NZB send it to the downloader
-            nzbdownloadresult = download_nzb_and_log(indexer, indexerguid, title, dbsearchid)
+            nzbdownloadresult = download_nzb_and_log(searchResultId)
             if nzbdownloadresult is not None:
-                add_success = downloader.add_nzb(nzbdownloadresult.content, title, category)
+                add_success = downloader.add_nzb(nzbdownloadresult.content, SearchResult.get(SearchResult.id == searchResultId).title, args["category"])
             else:
                 add_success = False
         if add_success:
             added += 1
 
     if added:
-        return jsonify({"success": True, "added": added, "of": len(items)})
+        return jsonify({"success": True, "added": added, "of": len(searchResultIds)})
     else:
         return jsonify({"success": False})
 

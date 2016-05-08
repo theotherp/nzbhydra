@@ -1,7 +1,11 @@
 # NZB Hydra changelog
 
 ----------
-### 0.0.1a102
+### 0.0.1a103
+Changed: From now on hydra will save all found search results to the database for a certain amount of time. This allows easier communication between server and client and some features that I'm planning. This also means that for the first time I need to do a bit
+    of data migration. The download history should remain intact, but there's the chance that in some circumstances the migration fails. Sorry...!
+
+### 0.0.1a103
 Fixed: Indexers couldn't be deleted in config.
 
 ### 0.0.1a101

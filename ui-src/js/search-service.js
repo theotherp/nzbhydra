@@ -92,10 +92,10 @@ function SearchService($http) {
         //TODO: Move this to search result controller because we need to update it every time we loaded more results
         _.each(indexersearches, function (ps) {
             if (ps.did_search) {
-                ps.averageResponseTime = _.reduce(ps.api_accesses, function (memo, rp) {
+                ps.averageResponseTime = _.reduce(ps.apiAccesses, function (memo, rp) {
                     return memo + rp.response_time;
                 }, 0);
-                ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
+                ps.averageResponseTime = ps.averageResponseTime / ps.apiAccesses.length;
             }
         });
         

@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import re
-from datetime import timedelta
+import datetime
 from itertools import groupby
 
 from builtins import int
@@ -18,7 +18,7 @@ import copy
 import logging
 import arrow
 from requests_futures.sessions import FuturesSession
-from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess
+from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult
 from nzbhydra import config, indexers, infos
 
 categories = {'All': {"pretty": "All", "index": 0},
@@ -130,7 +130,7 @@ def pick_indexers(search_request, internal=True):
             if p.settings.hitLimitResetTime:
                 comparisonTime = arrow.utcnow().replace(hour=hitLimitResetTime.hour, minute=hitLimitResetTime.minute, second=0)
                 if comparisonTime > arrow.utcnow():
-                    comparisonTime = arrow.get(comparisonTime.datetime - timedelta(days=1)) #Arrow is too dumb to properly subtract 1 day (throws an error on every first of the month)
+                    comparisonTime = arrow.get(comparisonTime.datetime - datetime.timedelta(days=1)) #Arrow is too dumb to properly subtract 1 day (throws an error on every first of the month)
             else:
                 #Use 00:00 as reset time when no reset time is set 
                 comparisonTime = arrow.now().replace(hour=0, minute=0, second=0)
@@ -189,9 +189,21 @@ def search(internal, search_request):
     if search_request.maxage is None and config.settings.searching.maxAge:
         search_request.maxage = config.settings.searching.maxAge
         logger.info("Will ignore results older than %d days" % search_request.maxage)
+    
+    #Clean up cache
     for k in list(pseudo_cache.keys()):
         if pseudo_cache[k]["last_access"].replace(minutes=+5) < arrow.utcnow():
             pseudo_cache.pop(k)
+            
+    #Clean up old search results. We do this here because we don't have any background jobs and this is the function most regularly called
+    keepFor = config.settings.main.keepSearchResultsForDays
+    oldSearchResultsCount = SearchResult.select().where(SearchResult.firstFound < (datetime.date.today() - datetime.timedelta(days=keepFor))).count()
+    if oldSearchResultsCount > 0:
+        logger.info("Deleting %d search results from database that are older than %d days" % (oldSearchResultsCount, keepFor))
+        SearchResult.delete().where(SearchResult.firstFound < (datetime.date.today() - datetime.timedelta(days=keepFor))).execute()
+    
+            
+            
     limit = search_request.limit
     external_offset = int(search_request.offset)
     search_hash = search_request.search_hash
@@ -251,6 +263,13 @@ def search(internal, search_request):
             elif queries_execution_result.has_more:
                 logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
                 cache_entry["total"] += 100
+
+        
+            with db.atomic():
+                for result in queries_execution_result.results:
+                    searchResult = SearchResult().get_or_create(indexer=indexer.indexer, title=result.title, link=result.link, details=result.details_link, guid=result.indexerguid)
+                    searchResult = searchResult[0] #Second is a boolean determining if the search result was created
+                    result.searchResultId = searchResult.id             
 
 
         if internal or config.settings.searching.removeDuplicatesExternal:

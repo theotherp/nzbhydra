@@ -52,7 +52,7 @@
                         <td class="text-left">
                     <span ng-if="ps.did_search">
                         <span class="glyphicon" ng-class="{'glyphicon-ok' : ps.successful, 'glyphicon-remove' : !ps.successful}"></span>
-                        <span ng-repeat="apiaccess in ps.api_accesses">
+                        <span ng-repeat="apiaccess in ps.apiAccesses">
                             <span ng-if="$index == 0">{{ apiaccess.error }}</span>
                             <div ng-if="$index > 0">{{ apiaccess.error }}</div>
                         </span>

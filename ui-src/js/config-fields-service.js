@@ -314,6 +314,18 @@ function ConfigFields() {
                     templateOptions: {label: 'Other'},
                     fieldGroup: [
                         {
+                            key: 'keepSearchResultsForDays',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'number',
+                                label: 'Store results for ...',
+                                addonRight: {
+                                    text: 'days'
+                                },
+                                help: 'Meta data from searches is stored in the database. When they\'re deleted links to hydra become invalid.'
+                            }
+                        },
+                        {
                             key: 'debug',
                             type: 'horizontalSwitch',
                             templateOptions: {

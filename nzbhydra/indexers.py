@@ -12,6 +12,7 @@ from builtins import *
 import logging
 from nzbhydra import config, database
 from nzbhydra.database import Indexer
+from nzbhydra.exceptions import IndexerNotFoundException
 from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch, omgwtf #Actually used but referenced dynamically
 
 logger = logging.getLogger('root')
@@ -55,10 +56,10 @@ def read_indexers_from_config():
 
 
 def getIndexerByName(name):
-    for i in enabled_indexers:
+    for i in configured_indexers:
         if i.name == name:
             return i
-    return None
+    raise IndexerNotFoundException("Unable to find indexer named %s" % name)
 
 
 def getIndexerSettingByName(name):

@@ -152,6 +152,7 @@ initialConfig = {
         "flaskReloader": False,
         "gitPath": None,
         "host": "0.0.0.0",
+        "keepSearchResultsForDays": 7,
         "logging": {
             "consolelevel": "INFO",
             "logfilename": "nzbhydra.log",
@@ -209,7 +210,6 @@ initialConfig = {
         "ignorePassworded": False,
         "ignoreTemporarilyDisabled": False,
         "ignoreWords": "",
-        "keepSearchResultsForDays": 7,
         "maxAge": "",
         "removeDuplicatesExternal": True,
         "requireWords": "",

@@ -5,12 +5,9 @@ angular
 function addableNzb() {
     return {
         templateUrl: 'static/html/directives/addable-nzb.html',
-        require: ['^indexerguid', '^title', '^indexer', '^dbsearchid'],
+        require: ['^searchresultid'],
         scope: {
-            indexerguid: "=",
-            title: "=",
-            indexer: "=",
-            dbsearchid: "="
+            searchresultid: "="
         },
         controller: controller
     };
@@ -30,7 +27,7 @@ function addableNzb() {
 
         $scope.add = function () {
             $scope.classname = "nzb-spinning";
-            NzbDownloadService.download([{"indexerguid": $scope.indexerguid, "title": $scope.title, "indexer": $scope.indexer, "dbsearchid": $scope.dbsearchid}]).then(function (response) {
+            NzbDownloadService.download([$scope.searchresultid]).then(function (response) {
                 if (response.data.success) {
                     $scope.classname = $scope.downloader == "sabnzbd" ? "sabnzbd-success" : "nzbget-success";
                 } else {

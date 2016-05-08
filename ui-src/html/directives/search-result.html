@@ -11,7 +11,7 @@
 </tr>
 
 
-<tr ng-repeat="result in groupingRowDuplicatesToShow() track by result.guid" class="search-results-row duplicate" ng-class="{'duplicate-group-middle-row': !$last || titleGroupExpanded, 'duplicate-group-last-row': $last && !titleGroupExpanded}">
+<tr ng-repeat="result in groupingRowDuplicatesToShow() track by result.searchResultId" class="search-results-row duplicate" ng-class="{'duplicate-group-middle-row': !$last || titleGroupExpanded, 'duplicate-group-last-row': $last && !titleGroupExpanded}">
     <td class="col-md-12 search-results-cell">
         <input type="checkbox" ng-model="selected[result.indexerguid]"/>
     </td>
@@ -27,7 +27,7 @@
     </td>
     <td other-columns result="result"></td>
 </tr>
-<tr ng-repeat="result in hashGroupDuplicatesToShow(hashGroup) track by result.guid" class="duplicate" ng-class="{'duplicate-group-last-row': $last && $parent.$last, 'duplicate-group-middle-row': !$last || !$parent.$last}">
+<tr ng-repeat="result in hashGroupDuplicatesToShow(hashGroup) track by result.searchResultId" class="duplicate" ng-class="{'duplicate-group-last-row': $last && $parent.$last, 'duplicate-group-middle-row': !$last || !$parent.$last}">
     <td class="col-md-12 search-results-cell">
         <input type="checkbox" ng-model="selected[result.indexerguid]"/>
     </td>
