@@ -1,7 +1,9 @@
 # NZB Hydra changelog
 
 ----------
-### 0.0.1a103
+### 0.2.0
+Changed: Moved minor version to 0.2.0. I would like to say that's because I feel Hydra is more mature now but it's actually because my versioning algorithm thought that 0.0.1a103 < 0.0.1a99...
+
 Changed: From now on hydra will save all found search results to the database for a certain amount of time. This allows easier communication between server and client and some features that I'm planning. This also means that for the first time I need to do a bit
     of data migration. The download history should remain intact, but there's the chance that in some circumstances the migration fails. Sorry...!
 
@@ -13,8 +15,6 @@ Fixed: NZBGeek queries contained a superfluous "--".
 
 ### 0.0.1a100
 Fixed: Bugreport wouldn't work.
-
-TODO: Migrate old database, sicherstellen dass neuinstallationeinitin auch gehen
 
 ### 0.0.1a99
 Added: When leaving the config page with unsaved changes ask if the user wants to save, discard or stay on the config page.

@@ -47,7 +47,7 @@ def get_current_version():
     if currentVersion is None:
         try:
             with open("version.txt", "r") as f:
-                version = f.read()
+                version = f.read().strip()
             currentVersion = versiontuple(version)
             currentVersionText = version
             return currentVersion, currentVersionText
@@ -143,7 +143,7 @@ class UpdateManager():
         try:
             r = requests.get(url, verify=False)
             r.raise_for_status()
-            return versiontuple(r.text), r.text
+            return versiontuple(r.text.strip()), r.text.strip()
         except requests.RequestException as e:
             logger.error("Error downloading version.txt from %s to check new updates: %s" % (url if url is not None else " Github", e))
             return None, None

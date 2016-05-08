@@ -297,7 +297,7 @@ def update_db(dbfile):
             vi.save()
 
         if vi.version == 5:
-            logger.info("Upgrading database to version 6")
+            logger.info("Upgrading database to version 6 (this might take a couple of seconds)")
             logger.info("Migrating table columns")
             
             #TODO: Store all stuff before migrating and after fill it back in
@@ -305,6 +305,8 @@ def update_db(dbfile):
             # Delete all instances of IndexerNzbDownload because we'll allow the reference to SearchResult to be empty but need to make it non-nullable afterwards
             #IndexerNzbDownload.delete().execute()
             indexerNzbDownloads = list(v5IndexerNzbDownload.select().dicts())
+
+            logger.info("Converting search results to new schema")
             
             migrator = SqliteMigrator(db)
             migrate(
@@ -324,14 +326,14 @@ def update_db(dbfile):
             logger.info("Creating table for search results")
             db.create_table(SearchResult)
 
-            logger.info("Converting search results to new schema")
-            for oldDownload in indexerNzbDownloads:
-                searchResult = SearchResult.create(indexer=oldDownload["indexer"], firstFound=oldDownload["time"], title=oldDownload["title"], guid="Not migrated", link="Not migrated", details="Not migrated")
-                newDownload = IndexerNzbDownload.get(IndexerNzbDownload.apiAccess == oldDownload["api_access"])
-                newDownload.searchResult = searchResult
-                newDownload.save()
-                pass
+            with db.transaction():
+                logger.info("Converting download entries")
+                for oldDownload in indexerNzbDownloads:
+                    searchResult = SearchResult.create(indexer=oldDownload["indexer"], firstFound=oldDownload["time"], title=oldDownload["title"], guid="Not migrated", link="Not migrated", details="Not migrated")
+                    newDownload = IndexerNzbDownload.get(IndexerNzbDownload.apiAccess == oldDownload["api_access"])
+                    newDownload.searchResult = searchResult
+                    newDownload.save()
             
-            vi.version = 6
-            vi.save()
+                vi.version = 6
+                vi.save()
     db.close()
