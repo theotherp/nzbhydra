@@ -519,7 +519,7 @@ function otherColumns($http, $templateCache, $compile, $window) {
                 return;
             }
             var uri = new URI("internalapi/getnfo");
-            uri.addQuery("searchresuldid", resultItem.searchResultId);
+            uri.addQuery("searchresultid", resultItem.searchResultId);
             return $http.get(uri.toString()).then(function (response) {
                 if (response.data.has_nfo) {
                     $scope.openModal("lg", response.data.nfo)
