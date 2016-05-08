@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.0.1a102
+Fixed: Indexers couldn't be deleted in config.
+
 ### 0.0.1a101
 Fixed: NZBGeek queries contained a superfluous "--".
 

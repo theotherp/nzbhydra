@@ -7,6 +7,7 @@ function indexerInput() {
         templateUrl: 'static/html/directives/indexer-input.html',
         scope: {
             indexer: "=",
+            model: "=",
             onClick: "="
         },
         replace: true,

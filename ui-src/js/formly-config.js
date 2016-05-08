@@ -676,7 +676,7 @@ angular
                         type: 'newznab',
                         accessType: "both",
                         search_ids: undefined, //["imdbid", "rid", "tvdbid"],
-                        searchTypes: undefined, //["tvsearch", "movie"]
+                        searchTypes: undefined //["tvsearch", "movie"]
                     };
                     if (angular.isDefined(preset)) {
                         model.name = preset.name;

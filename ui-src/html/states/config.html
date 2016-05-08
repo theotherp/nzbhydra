@@ -91,7 +91,7 @@
     <div ng-repeat="indexer in model | orderBy: ['-score', 'name'] track by indexer.name">
         <div class="row">
             <div style="margin-left: auto; margin-right: auto; float:none !important;" class="col-xs-4">
-                <indexer-input indexer="indexer" on-click="showIndexerBox"></indexer-input>
+                <indexer-input indexer="indexer" model="model" on-click="showIndexerBox"></indexer-input>
             </div>
         </div>
     </div>
