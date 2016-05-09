@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.2
+Fixed: Constraint errors handling search results.
+
 ### 0.2.1
 Fixed: Small problem with last update and empty details links.
 

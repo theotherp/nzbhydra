@@ -267,6 +267,9 @@ def search(internal, search_request):
         
             with db.atomic():
                 for result in queries_execution_result.results:
+                    if result.title is None or result.link is None or result.indexerguid is None:
+                        logger.info("Skipping result with missing data")
+                        continue
                     searchResult = SearchResult().get_or_create(indexer=indexer.indexer, title=result.title, link=result.link, details=result.details_link, guid=result.indexerguid)
                     searchResult = searchResult[0] #Second is a boolean determining if the search result was created
                     result.searchResultId = searchResult.id             
