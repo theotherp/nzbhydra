@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.4
+Fixed: API search results would contain no GUID so sonarr thought they were all the same. This is a quick fix to get things back to running, will improve this later.  
+
 ### 0.2.3
 Bump version to make sure update is executed. Jump to 0.2.x seems to have caused some troubles.
 

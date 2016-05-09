@@ -120,7 +120,7 @@ def transform_results(results, external):
     for j in results:
         i = copy.copy(j)
         i.link = get_nzb_link_and_guid(i.searchResultId, external)
-    
+        i.guid = i.searchResultId
         # Add our internal guid (like the link above but only the identifying part) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
         has_guid = False
         has_size = False
