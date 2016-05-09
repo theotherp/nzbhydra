@@ -269,8 +269,8 @@ class GitUpdateManager(UpdateManager):
     def update(self):
         self.backup()
 
-        logger.debug('Calling "%s" %s' % (self._git_path, 'git reset --hard'))
-        output, err, exit_status = self._run_git(self._git_path, 'git reset --hard')
+        logger.debug('Calling "%s" %s' % (self._git_path, 'reset --hard'))
+        output, err, exit_status = self._run_git(self._git_path, 'reset --hard')
         logger.debug(output)
         logger.debug('Calling "%s" %s' % (self._git_path, 'pull origin ' + self.branch))
         output, err, exit_status = self._run_git(self._git_path, 'pull origin ' + self.branch)
