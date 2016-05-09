@@ -1,6 +1,11 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.5
+Fixed: Downloading and NFO and details retrieval via API didn't work since 0.2.0. 
+
+Changed: Made sure that the GUID of the returned results is unique ("nzbhydrasearchresult" + internal ID). This may cause some issues with tools that already retrieved results and stored them, but nothing too serious.
+
 ### 0.2.4
 Fixed: API search results would contain no GUID so sonarr thought they were all the same. This is a quick fix to get things back to running, will improve this later.  
 

@@ -120,19 +120,19 @@ def transform_results(results, external):
     for j in results:
         i = copy.copy(j)
         i.link = get_nzb_link_and_guid(i.searchResultId, external)
-        i.guid = i.searchResultId
+        i.guid = "nzbhydrasearchresult%d" % i.searchResultId
         # Add our internal guid (like the link above but only the identifying part) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
         has_guid = False
         has_size = False
         
         for a in i.attributes:
             if a["name"] == "guid":
-                a["value"] = i.searchResultId
+                a["value"] = i.guid
                 has_guid = True
             if a["name"] == "size":
                 has_size = True
         if not has_guid:
-            i.attributes.append({"name": "guid", "value": i.searchResultId})  # If it wasn't set before now it is (for results from newznab-indexers)
+            i.attributes.append({"name": "guid", "value": i.guid})  # If it wasn't set before now it is (for results from newznab-indexers)
         if not has_size:
             i.attributes.append({"name": "size", "value": i.size})  # If it wasn't set before now it is (for results from newznab-indexers)
         transformed.append(i)

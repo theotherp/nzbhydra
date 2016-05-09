@@ -371,7 +371,8 @@ def api(args):
     # Map newznab api parameters to internal
     args["category"] = args["cat"]
     args["episode"] = args["ep"]
-
+    
+    
     if args["q"] is not None and args["q"] != "":
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
     if config.settings.main.apikey and ("apikey" not in args or args["apikey"] != config.settings.main.apikey):
@@ -380,23 +381,26 @@ def api(args):
     elif args["t"] in ("search", "tvsearch", "movie", "book"):
         return api_search(args)
     elif args["t"] == "get":
-        args = rison.loads(args["id"])
-        logger.info("API request from %s to download %s from %s" % (getIp(), args["title"], args["indexer"]))
-        return extract_nzb_infos_and_return_response(args["indexer"], args["indexerguid"], args["title"], args["searchid"])
+        searchResultId = int(args["id"][len("nzbhydrasearchresult"):])
+        searchResult = SearchResult.get(SearchResult.id == searchResultId)
+        logger.info("API request from %s to download %s from %s" % (getIp(), searchResult.title, searchResult.indexer.name))
+        return extract_nzb_infos_and_return_response(searchResultId)
     elif args["t"] == "caps":
         xml = render_template("caps.html")
         return Response(xml, mimetype="text/xml")
     elif args["t"] == "details":
-        rison_data = rison.loads(args["id"])
-        item = get_entry_by_id(rison_data["indexer"], rison_data["indexerguid"], rison_data["title"])
+        searchResultId = int(args["id"][len("nzbhydrasearchresult"):])
+        searchResult = SearchResult.get(SearchResult.id == searchResultId)
+        logger.info("API request from to get detils for %s from %s" % (searchResult.title, searchResult.indexer.name))
+        item = get_entry_by_id(searchResult.indexer.name, searchResult.guid, searchResult.title)
         if item is None:
-            logger.error("Unable to find or parse details for %s" % rison_data["title"])
+            logger.error("Unable to find or parse details for %s" % searchResult.title)
             return "Unable to get details", 500
-        item.link = get_nzb_link_and_guid(rison_data["indexer"], rison_data["indexerguid"], rison_data["searchid"], rison_data["title"], False)[0] #We need to make sure the link in the details refers to us
+        item.link = get_nzb_link_and_guid(searchResultId, False)[0] #We need to make sure the link in the details refers to us
         return render_search_results_for_api([item], None, None, output=args["o"])
     elif args["t"] == "getnfo":
-        rison_data = rison.loads(args["id"])
-        result = get_nfo(rison_data["indexer"], rison_data["indexerguid"])
+        searchResultId = int(args["id"][len("nzbhydrasearchresult"):])
+        result = get_nfo(searchResultId)
         if result["has_nfo"]:
             if args["raw"] == 1:
                 return result["nfo"]
