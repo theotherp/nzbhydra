@@ -22,13 +22,13 @@ function CategoriesService($http, $q, $uibModal) {
     function getCategories(downloader) {
 
         function loadAll() {
-            if (angular.isDefined(categories.downloader)) {
+            if (angular.isDefined(categories) && angular.isDefined(categories.downloader)) {
                 var deferred = $q.defer();
                 deferred.resolve(categories.downloader);
                 return deferred.promise;
             }
 
-            return $http.get('internalapi/getcategories', {params: {downloader: downloader}})
+            return $http.get('internalapi/getcategories', {params: {downloader: downloader.name}})
                 .then(function (categoriesResponse) {
                     
                     console.log("Updating downloader categories cache");
