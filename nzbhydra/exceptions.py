@@ -63,6 +63,12 @@ class DownloaderException(NzbHydraException):
     pass
 
 
+class DownloaderNotFoundException(NzbHydraException):
+    """An downloader of the given type could not be found
+    """
+    pass
+
+
 class IndexerNotFoundException(NzbHydraException):
     """An indexer by the given name could not be found
     """

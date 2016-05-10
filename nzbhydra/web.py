@@ -26,7 +26,7 @@ import threading
 import urllib
 from builtins import *
 from peewee import fn
-from nzbhydra.exceptions import DownloaderException, IndexerResultParsingException
+from nzbhydra.exceptions import DownloaderException, IndexerResultParsingException, DownloaderNotFoundException
 
 # standard_library.install_aliases()
 from functools import update_wrapper
@@ -45,7 +45,7 @@ from nzbhydra import config, search, infos, database
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid, get_entry_by_id
 from nzbhydra.config import NzbAccessTypeSelection
 from nzbhydra.database import IndexerStatus, Indexer, SearchResult
-from nzbhydra.downloader import Nzbget, Sabnzbd
+from nzbhydra.downloader import getInstanceBySetting, getDownloaderInstanceByName
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
 from nzbhydra.search import SearchRequest
 from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses, getIndexerDownloadStats
@@ -470,19 +470,21 @@ searchresultid_args = {
     "searchresultid": fields.Integer()
 }
 
-
-
+internalapi__getnzb_args = {
+    "searchresultid": fields.String(),
+    "downloader": fields.String(missing=None)  # Name of downloader or empty if regular link
+}
 
 
 @app.route('/getnzb')
 @requires_auth("main", allowWithApiKey=True)
-@use_args(searchresultid_args, locations=['querystring'])
+@use_args(internalapi__getnzb_args)
 def getnzb(args):
     logger.debug("Get NZB request with args %s" % args)
     searchResult = SearchResult.get(SearchResult.id == args["searchresultid"])
     
     logger.info("API request from %s to download %s from %s" % (getIp(), searchResult.title, searchResult.indexer.name))
-    return extract_nzb_infos_and_return_response(args["searchresultid"])
+    return extract_nzb_infos_and_return_response(args["searchresultid"], args["downloader"])
 
 
 def process_and_jsonify_for_internalapi(results):
@@ -640,18 +642,22 @@ internalapi_getnfo.make_cache_key = make_request_cache_key
 
 
 
-
-
 @app.route('/internalapi/getnzb')
 @requires_auth("main")
-@use_args(searchresultid_args)
+@use_args(internalapi__getnzb_args)
 def internalapi_getnzb(args):
     logger.debug("Get internal NZB request with args %s" % args)
-    return extract_nzb_infos_and_return_response(args["searchresultid"])
+    if args["downloader"] is not None:
+        try:
+            return extract_nzb_infos_and_return_response(args["searchresultid"], args["downloader"])
+        except DownloaderNotFoundException as e:
+            return e.message, 500
+    else:
+        return extract_nzb_infos_and_return_response(args["searchresultid"])
 
 
-def extract_nzb_infos_and_return_response(searchResultId):
-    if config.settings.downloader.nzbaccesstype == NzbAccessTypeSelection.redirect:
+def extract_nzb_infos_and_return_response(searchResultId, downloader=None):
+    if (downloader is None and config.settings.searching.nzbAccessType == NzbAccessTypeSelection.redirect) or (downloader is not None and getDownloaderInstanceByName(downloader).setting.nzbaccesstype == NzbAccessTypeSelection.redirect):
         link, _, _ = get_indexer_nzb_link(searchResultId, "redirect", True)
         if link is not None:
             logger.info("Redirecting %s to %s" % (getIp(), link))
@@ -663,16 +669,14 @@ def extract_nzb_infos_and_return_response(searchResultId):
             return redirect(link)
         else:
             return "Unable to build link to NZB", 404
-    elif config.settings.downloader.nzbaccesstype == NzbAccessTypeSelection.serve:
-        return get_nzb_response(searchResultId)
     else:
-        logger.error("Invalid value of %s" % config.settings.downloader.nzbaccesstype)
-        return "downloader.add_type has wrong value: %s" % config.settings.downloader.nzbaccesstype, 500
+        return get_nzb_response(searchResultId)
 
 
 internalapi__addnzb_args = {
     "searchresultids": fields.String(missing=[]),
-    "category": fields.String(missing=None)
+    "category": fields.String(missing=None),
+    "downloader": fields.String() #Name of downloader
 }
 
 
@@ -682,19 +686,21 @@ internalapi__addnzb_args = {
 def internalapi_addnzb(args):
     logger.debug("Add NZB request with args %s" % args)
     searchResultIds = json.loads(args["searchresultids"])
-    if config.settings.downloader.downloader == "nzbget":
-        downloader = Nzbget()
-    elif config.settings.downloader.downloader == "sabnzbd":
-        downloader = Sabnzbd()
-    else:
-        logger.error("Adding an NZB without set downloader should not be possible")
+    try:
+        downloader = getDownloaderInstanceByName(args["downloader"])
+    except DownloaderNotFoundException as e:
+        logger.error(e.message)
         return jsonify({"success": False})
     added = 0
     for searchResultId in searchResultIds:
-        searchResult = SearchResult.get(SearchResult.id == searchResultId)
-        link = get_nzb_link_and_guid(searchResultId, True)
+        try:
+            searchResult = SearchResult.get(SearchResult.id == searchResultId)
+        except SearchResult.DoesNotExist:
+            logger.error("Unable to find search result with ID %d in database" % searchResultId)
+            continue
+        link = get_nzb_link_and_guid(searchResultId, True, downloader=downloader.setting.name)
 
-        if config.settings.downloader.nzbAddingType == config.NzbAddingTypeSelection.link:  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
+        if downloader.setting.nzbAddingType == config.NzbAddingTypeSelection.link:  # We send a link to the downloader. The link is either to us (where it gets answered or redirected, thet later getnzb will be called) or directly to the indexer
             add_success = downloader.add_link(link, searchResult.title, args["category"])
         else:  # We download an NZB send it to the downloader
             nzbdownloadresult = download_nzb_and_log(searchResultId)
@@ -711,34 +717,24 @@ def internalapi_addnzb(args):
         return jsonify({"success": False})
 
 
-internalapi__testdownloader_args = {
-    "name": fields.String(missing=None),
-    "ssl": fields.Boolean(missing=False),
-    "host": fields.String(missing=None),
-    "port": fields.String(missing=None),
-    "url": fields.String(missing=None),
-    "username": fields.String(missing=None),
-    "password": fields.String(missing=None),
-    "apikey": fields.String(missing=None),
+internalapi__test_downloader_args = {
+    "settings": fields.String(missing=None)
 }
 
 
 @app.route('/internalapi/test_downloader')
-@use_args(internalapi__testdownloader_args)
+@use_args(internalapi__test_downloader_args)
 @requires_auth("main")
 def internalapi_testdownloader(args):
-    logger.debug("Testing connection to downloader %s" % args["name"])
-    if args["name"] == "nzbget":
-        if "ssl" not in args.keys():
-            logger.error("Incomplete test downloader request")
-            return "Incomplete test downloader request", 500
-        success, message = Nzbget().test(args["host"], args["ssl"], args["port"], args["username"], args["password"])
+    settings = Bunch.fromDict(json.loads(args["settings"]))
+    logger.debug("Testing connection to downloader %s" % settings["name"])
+    try:
+        downloader = getInstanceBySetting(settings)
+        success, message = downloader.test(settings)
         return jsonify({"result": success, "message": message})
-    if args["name"] == "sabnzbd":
-        success, message = Sabnzbd().test(args["url"], args["username"], args["password"], args["apikey"])
-        return jsonify({"result": success, "message": message})
-    logger.error("Test downloader request with unknown downloader %s" % args["name"])
-    return jsonify({"result": False, "message": "Internal error. Sorry..."})
+    except DownloaderNotFoundException as e:
+        logger.error(e.message)
+        return jsonify({"result": False, "message": e.message})
 
 
 internalapi__testnewznab_args = {
@@ -779,7 +775,7 @@ internalapi_testcaps_args = {
 @app.route('/internalapi/test_caps')
 @use_args(internalapi_testcaps_args)
 @requires_auth("admin")
-def internalapi_testcaps(args):    
+def internalapi_testcaps(args):
     indexer = urlparse.unquote(args["indexer"])
     apikey = args["apikey"]
     host = urlparse.unquote(args["host"])
@@ -1023,17 +1019,22 @@ def internalapi_logerror(args):
     return "OK"
 
 
+internalapi__downloader_args = {
+    "downloader": fields.String(required=True) #the name
+}
+
+
 @app.route('/internalapi/getcategories')
 @requires_auth("main")
-def internalapi_getcategories():
+@use_args(internalapi__downloader_args)
+def internalapi_getcategories(args):
     logger.debug("Get categories request")
-    categories = []
     try:
-        if config.settings.downloader.downloader == config.DownloaderSelection.nzbget:
-            categories = Nzbget().get_categories()
-        elif config.settings.downloader.downloader == config.DownloaderSelection.sabnzbd:
-            categories = Sabnzbd().get_categories()
-        return jsonify({"success": True, "categories": categories})
+        downloader = getDownloaderInstanceByName(args["downloader"])
+        return jsonify({"success": True, "categories": downloader.get_categories()})
+    except DownloaderNotFoundException as e:
+        logger.error(e.message)
+        return jsonify({"success": False, "message": e.message})
     except DownloaderException as e:
         return jsonify({"success": False, "message": e.message})
 

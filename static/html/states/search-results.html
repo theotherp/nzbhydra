@@ -76,7 +76,7 @@
 <div class="row" ng-if="indexersearches" style="margin-top: 30px">
     <div class="col-md-6" style="text-align: left;">
         <input style="margin-top:20px; margin-bottom:20px;" type="checkbox" ng-model="doShowDuplicates" class="btn btn-default">Include duplicates</input>
-        <button style="margin-top:20px; margin-bottom:20px;" type="button" ng-click="downloadSelected()" class="btn btn-default">Download selected</button>
+        <download-nzbs-button search-results="selected"></download-nzbs-button>
     </div>
 
     <div class="col-md-8">

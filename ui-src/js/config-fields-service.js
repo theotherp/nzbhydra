@@ -2,7 +2,7 @@ angular
     .module('nzbhydraApp')
     .factory('ConfigFields', ConfigFields);
 
-function ConfigFields() {
+function ConfigFields($injector) {
 
     var restartWatcher;
 
@@ -22,7 +22,6 @@ function ConfigFields() {
         }
     }
 
-    
 
     function ipValidator() {
         return {
@@ -510,6 +509,19 @@ function ConfigFields() {
                                 label: 'Always show duplicates',
                                 help: 'Activate to show duplicates in search results by default'
                             }
+                        },
+                        {
+                            key: 'nzbAccessType',
+                            type: 'horizontalSelect',
+                            templateOptions: {
+                                type: 'select',
+                                label: 'NZB access type',
+                                options: [
+                                    {name: 'Proxy NZBs from indexer', value: 'serve'},
+                                    {name: 'Redirect to the indexer', value: 'redirect'}
+                                ],
+                                help: "How access to NZBs is provided when NZBs are downloaded (by the user or external tools). Redirecting is recommended."
+                            }
                         }
                     ]
                 },
@@ -823,185 +835,88 @@ function ConfigFields() {
 
             ],
 
-            downloader: [
+            downloaders: [
                 {
-                    key: 'downloader',
-                    type: 'horizontalSelect',
-                    templateOptions: {
-                        type: 'select',
-                        label: 'Downloader',
-                        options: [
-                            {name: 'None', value: 'none'},
-                            {name: 'NZBGet', value: 'nzbget'},
-                            {name: 'SABnzbd', value: 'sabnzbd'}
-                        ]
-                    }
-                },
-                {
-                    key: 'nzbaccesstype',
-                    type: 'horizontalSelect',
-                    templateOptions: {
-                        type: 'select',
-                        label: 'NZB access type',
-                        options: [
-                            {name: 'Proxy NZBs from indexer', value: 'serve'},
-                            {name: 'Redirect to the indexer', value: 'redirect'}
-                        ],
-                        help: "How external access to NZBs is provided. Redirecting is recommended."
-                    }
-                },
-                {
-                    key: 'nzbAddingType',
-                    type: 'horizontalSelect',
-                    templateOptions: {
-                        type: 'select',
-                        label: 'NZB adding type',
-                        options: [
-                            {name: 'Send link', value: 'link'},
-                            {name: 'Upload NZB', value: 'nzb'}
-                        ],
-                        help: "How NZBs are added to the downloader, either by sending a link to the NZB or by uploading the NZB data"
-                    }
-                },
-                {
-                    wrapper: 'fieldset',
-                    key: 'nzbget',
-                    hideExpression: 'model.downloader!="nzbget"',
-                    templateOptions: {label: 'NZBGet'},
-                    fieldGroup: [
-                        {
-                            key: 'host',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'Host',
-                                required: true
-                            }
+                    type: "arrayConfig",
+                    data: {
+                        defaultModel: {},
+                        entryTemplateUrl: 'downloaderEntry.html',
+                        presets: getDownloaderPresets(),
+                        presetsOnly: true,
+                        addNewText: 'Add new downloader',
+                        fieldsFunction: getDownloaderBoxFields,
+                        allowDeleteFunction: function () {
+                            return true;
                         },
-                        {
-                            key: 'port',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'number',
-                                label: 'Port',
-                                placeholder: '5050',
-                                required: true
-                            }
+                        checkBeforeClose: function (scope, model) {
+                            var DownloaderCheckBeforeCloseService = $injector.get("DownloaderCheckBeforeCloseService");
+                            return DownloaderCheckBeforeCloseService.check(scope, model);
                         },
-                        {
-                            key: 'ssl',
-                            type: 'horizontalSwitch',
-                            templateOptions: {
-                                type: 'switch',
-                                label: 'Use SSL'
-                            }
-                        },
-                        {
-                            key: 'username',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'Username'
-                            }
-                        },
-                        {
-                            key: 'password',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'password',
-                                label: 'Password'
-                            }
-                        },
-                        {
-                            key: 'defaultCategory',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'Default category',
-                                help: 'When adding NZBs this category will be used instead of asking for the category'
-                            }
-                        },
-                        {
-                            type: 'horizontalTestConnection',
-                            templateOptions: {
-                                label: 'Test connection',
-                                testType: 'downloader',
-                                downloader: 'nzbget'
-                            }
+                        resetFunction: function (scope) {
+                            scope.options.resetModel();
+                            scope.options.resetModel();
                         }
 
-
-                    ]
-                },
-                {
-                    wrapper: 'fieldset',
-                    key: 'sabnzbd',
-                    hideExpression: 'model.downloader!="sabnzbd"',
-                    templateOptions: {label: 'SABnzbd'},
-                    fieldGroup: [
-                        {
-                            key: 'url',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'URL',
-                                required: true
-                            }
-                        },
-                        {
-                            key: 'username',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'Username',
-                                help: 'Usually not needed when an API key is used'
-                            }
-                        },
-                        {
-                            key: 'password',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'password',
-                                label: 'Password',
-                                help: 'Usually not needed when an API key is used'
-                            }
-                        },
-                        {
-                            key: 'apikey',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'API Key'
-                            }
-                        },
-                        {
-                            key: 'defaultCategory',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'Default category',
-                                help: 'When adding NZBs this category will be used instead of asking for the category'
-                            }
-                        },
-                        {
-                            type: 'horizontalTestConnection',
-                            templateOptions: {
-                                label: 'Test connection',
-                                testType: 'downloader',
-                                downloader: 'sabnzbd'
-                            }
-                        }
-
-
-                    ]
+                    }
                 }
             ],
 
-        
-            
+
             indexers: [
                 {
-                    type: "indexers"
+                    type: "arrayConfig",
+                    data: {
+                        defaultModel: {
+                            enabled: true,
+                            host: null,
+                            apikey: null,
+                            hitLimit: null,
+                            hitLimitResetTime: new Date(0),
+                            timeout: null,
+                            name: null,
+                            showOnSearch: true,
+                            score: 0,
+                            username: null,
+                            password: null,
+                            preselect: true,
+                            type: 'newznab',
+                            accessType: "both",
+                            search_ids: undefined, //["imdbid", "rid", "tvdbid"],
+                            searchTypes: undefined //["tvsearch", "movie"]
+                        },
+                        addNewText: 'Add new indexer',
+                        entryTemplateUrl: 'indexerEntry.html',
+                        presets: getIndexerPresets(),
+                        fieldsFunction: getIndexerBoxFields,
+                        allowDeleteFunction: function (model) {
+                            return model.type == 'newznab';
+                        },
+                        checkBeforeClose: function (scope, model) {
+                            var IndexerCheckBeforeCloseService = $injector.get("IndexerCheckBeforeCloseService");
+                            return IndexerCheckBeforeCloseService.check(scope, model);
+                        },
+                        resetFunction: function (scope) {
+                            //Resetting causes some troubles with the date and the multiselects 
+
+                            //So we save the reset time first
+                            var date;
+                            for (var i = 0; i < scope.fields.length; i++) {
+                                var field = scope.fields[i];
+                                if (field.key == "hitLimitResetTime") {
+                                    date = new Date(field.initialValue);
+                                    date = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+                                }
+                            }
+
+                            //Then reset the model twice (for some reason when we do it once the search types / ids fields are empty, resetting again fixes that... (wtf))
+                            scope.options.resetModel();
+                            scope.options.resetModel();
+
+                            //and set the date back
+                            scope.model.hitLimitResetTime = date;
+                        }
+
+                    }
                 }
             ],
 
@@ -1075,4 +990,649 @@ function ConfigFields() {
             ]
         };
     }
+}
+
+function getIndexerPresets() {
+    return [
+        {
+            name: "6box",
+            host: "https://6box.me",
+            search_ids: ["imdbid"]
+        },
+        {
+            name: "6box nzedb",
+            host: "https://nzedb.6box.me",
+            search_ids: ["rid", "imdbid"]
+        },
+        {
+            name: "6box nntmux",
+            host: "https://nn-tmux.6box.me",
+            search_ids: ["tvdbid", "rid", "imdbid"]
+        },
+        {
+            name: "DogNZB",
+            host: "https://api.dognzb.cr",
+            search_ids: ["tvdbid", "rid", "imdbid"]
+        },
+        {
+            name: "Drunken Slug",
+            host: "https://drunkenslug.com",
+            search_ids: ["tvdbid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
+        },
+        {
+            name: "NZB Finder",
+            host: "https://nzbfinder.ws",
+            search_ids: ["tvdbid", "rid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
+        },
+        {
+            name: "NZBs.org",
+            host: "https://nzbs.org",
+            search_ids: ["tvdbid", "rid", "imdbid", "tvmazeid"]
+        },
+        {
+            name: "nzb.su",
+            host: "https://api.nzb.su",
+            search_ids: ["rid", "imdbid"]
+        },
+        {
+            name: "NZBGeek",
+            host: "https://api.nzbgeek.info",
+            search_ids: ["tvdbid", "rid", "imdbid"]
+        }
+    ];
+}
+
+function getIndexerBoxFields(type) {
+    var fieldset = [];
+
+    fieldset.push({
+        key: 'enabled',
+        type: 'horizontalSwitch',
+        templateOptions: {
+            type: 'switch',
+            label: 'Enabled'
+        }
+    });
+
+    if (type == 'newznab') {
+        fieldset.push(
+            {
+                key: 'name',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'text',
+                    label: 'Name',
+                    required: true,
+                    help: 'Used for identification. Changing the name will lose all history and stats!'
+                }
+            })
+    }
+    if (type == 'newznab') {
+        fieldset.push(
+            {
+                key: 'host',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'text',
+                    label: 'Host',
+                    required: true,
+                    placeholder: 'http://www.someindexer.com'
+                },
+                watcher: {
+                    listener: function (field, newValue, oldValue, scope) {
+                        if (newValue != oldValue) {
+                            scope.$parent.needsConnectionTest = true;
+                        }
+                    }
+                }
+            }
+        )
+    }
+
+    if (type == 'newznab' || type == 'omgwtf') {
+        fieldset.push(
+            {
+                key: 'apikey',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'text',
+                    required: true,
+                    label: 'API Key'
+                },
+                watcher: {
+                    listener: function (field, newValue, oldValue, scope) {
+                        if (newValue != oldValue) {
+                            scope.$parent.needsConnectionTest = true;
+                        }
+                    }
+                }
+            }
+        )
+    }
+
+    if (type == 'omgwtf') {
+        fieldset.push(
+            {
+                key: 'username',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'text',
+                    required: true,
+                    label: 'Username'
+                },
+                watcher: {
+                    listener: function (field, newValue, oldValue, scope) {
+                        if (newValue != oldValue) {
+                            scope.$parent.needsConnectionTest = true;
+                        }
+                    }
+                }
+            }
+        )
+    }
+
+    fieldset.push(
+        {
+            key: 'score',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'number',
+                label: 'Priority',
+                required: true,
+                help: 'When duplicate search results are found the result from the indexer with the highest number will be selected'
+            }
+        });
+
+    fieldset.push(
+        {
+            key: 'timeout',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'number',
+                label: 'Timeout',
+                help: 'Supercedes the general timeout in "Searching"'
+            }
+        });
+
+    if (type == "newznab") {
+        fieldset.push(
+            {
+                key: 'hitLimit',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'number',
+                    label: 'API hit limit',
+                    help: 'Maximum number of API hits since "API hit reset time"'
+                }
+            }
+        );
+        fieldset.push(
+            {
+                key: 'hitLimitResetTime',
+                type: 'timeOfDay',
+                hideExpression: '!model.hitLimit',
+                templateOptions: {
+                    type: 'time',
+                    label: 'API hit reset time',
+                    help: 'UTC time at which the API hit counter is reset'
+                }
+            });
+        fieldset.push(
+            {
+                key: 'username',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'text',
+                    required: false,
+                    label: 'Username',
+                    help: 'Only needed if indexer requires HTTP auth for API access (rare)'
+                },
+                watcher: {
+                    listener: function (field, newValue, oldValue, scope) {
+                        if (newValue != oldValue) {
+                            scope.$parent.needsConnectionTest = true;
+                        }
+                    }
+                }
+            }
+        );
+        fieldset.push(
+            {
+                key: 'password',
+                type: 'horizontalInput',
+                hideExpression: '!model.username',
+                templateOptions: {
+                    type: 'text',
+                    required: false,
+                    label: 'Password',
+                    help: 'Only needed if indexer requires HTTP auth for API access (rare)'
+                }
+            }
+        )
+
+    }
+
+
+    if (type != "womble") {
+        fieldset.push(
+            {
+                key: 'preselect',
+                type: 'horizontalSwitch',
+                hideExpression: 'model.accessType == "external"',
+                templateOptions: {
+                    type: 'switch',
+                    label: 'Preselect',
+                    help: 'Preselect this indexer on the search page'
+                }
+            }
+        );
+        fieldset.push(
+            {
+                key: 'accessType',
+                type: 'horizontalSelect',
+                templateOptions: {
+                    label: 'Enable for...',
+                    options: [
+                        {name: 'Internal searches only', value: 'internal'},
+                        {name: 'API searches only', value: 'external'},
+                        {name: 'Internal and API searches', value: 'both'}
+                    ]
+                }
+            }
+        )
+    }
+
+    if (type == 'newznab') {
+        fieldset.push(
+            {
+                key: 'search_ids',
+                type: 'horizontalMultiselect',
+                templateOptions: {
+                    label: 'Search IDs',
+                    options: [
+                        {label: 'TVDB', id: 'tvdbid'},
+                        {label: 'TVRage', id: 'rid'},
+                        {label: 'IMDB', id: 'imdbid'},
+                        {label: 'Trakt', id: 'traktid'},
+                        {label: 'TVMaze', id: 'tvmazeid'},
+                        {label: 'TMDB', id: 'tmdbid'}
+                    ]
+                }
+            }
+        );
+        fieldset.push(
+            {
+                key: 'searchTypes',
+                type: 'horizontalMultiselect',
+                templateOptions: {
+                    label: 'Search types',
+                    options: [
+                        {label: 'Movies', id: 'movie'},
+                        {label: 'TV', id: 'tvsearch'},
+                        {label: 'Ebooks', id: 'book'},
+                        {label: 'Audio', id: 'audio'}
+                    ]
+                }
+            }
+        )
+    }
+
+    if (type == 'newznab') {
+        fieldset.push(
+            {
+                type: 'horizontalCheckCaps',
+                hideExpression: '!model.host || !model.apikey || !model.name || angular.isUndefined(model.searchTypes)',
+                templateOptions: {
+                    label: 'Check search types',
+                    help: 'Find out what search types the indexer supports. Done automatically for new indexers.'
+                }
+            }
+        )
+    }
+
+    if (type == 'nzbindex') {
+        fieldset.push(
+            {
+                key: 'generalMinSize',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'number',
+                    label: 'Min size',
+                    help: 'NZBIndex returns a lot of crap with small file sizes. Set this value and all smaller results will be filtered out no matter the category'
+                }
+            }
+        );
+    }
+
+    return fieldset;
+}
+
+
+function getDownloaderBoxFields(type) {
+    var fieldset = [];
+
+    fieldset = _.union(fieldset, [
+        {
+            key: 'enabled',
+            type: 'horizontalSwitch',
+            templateOptions: {
+                type: 'switch',
+                label: 'Enabled'
+            }
+        },
+        {
+            key: 'name',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'Name',
+                required: true,
+                help: 'Used for identification. Changing the name will lose all history and stats!'
+            }
+        }]);
+
+    if (type == "nzbget") {
+        fieldset = _.union(fieldset, [{
+            key: 'host',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'Host',
+                required: true
+            },
+            watcher: {
+                listener: function (field, newValue, oldValue, scope) {
+                    if (newValue != oldValue) {
+                        scope.$parent.needsConnectionTest = true;
+                    }
+                }
+            }
+
+        },
+            {
+                key: 'port',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'number',
+                    label: 'Port',
+                    placeholder: '5050',
+                    required: true
+                },
+                watcher: {
+                    listener: function (field, newValue, oldValue, scope) {
+                        if (newValue != oldValue) {
+                            scope.$parent.needsConnectionTest = true;
+                        }
+                    }
+                }
+            }, {
+                key: 'ssl',
+                type: 'horizontalSwitch',
+                templateOptions: {
+                    type: 'switch',
+                    label: 'Use SSL'
+                }
+            }]);
+    } else if (type == "sabnzbd") {
+        fieldset.push({
+            key: 'url',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'URL',
+                required: true
+            },
+            watcher: {
+                listener: function (field, newValue, oldValue, scope) {
+                    if (newValue != oldValue) {
+                        scope.$parent.needsConnectionTest = true;
+                    }
+                }
+            }
+        });
+    }
+    fieldset = _.union(fieldset, [
+        {
+            key: 'username',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'Username'
+            },
+            watcher: {
+                listener: function (field, newValue, oldValue, scope) {
+                    if (newValue != oldValue) {
+                        scope.$parent.needsConnectionTest = true;
+                    }
+                }
+            }
+        },
+        {
+            key: 'password',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'password',
+                label: 'Password'
+            },
+            watcher: {
+                listener: function (field, newValue, oldValue, scope) {
+                    if (newValue != oldValue) {
+                        scope.$parent.needsConnectionTest = true;
+                    }
+                }
+            }
+        }
+    ]);
+
+
+    if (type == "sabnzbd") {
+        fieldset.push({
+            key: 'apikey',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'API Key'
+            },
+            watcher: {
+                listener: function (field, newValue, oldValue, scope) {
+                    if (newValue != oldValue) {
+                        scope.$parent.needsConnectionTest = true;
+                    }
+                }
+            }
+        })
+    }
+
+    fieldset = _.union(fieldset, [
+        {
+            key: 'defaultCategory',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'Default category',
+                help: 'When adding NZBs this category will be used instead of asking for the category'
+            }
+        },
+        {
+            key: 'nzbaccesstype',
+            type: 'horizontalSelect',
+            templateOptions: {
+                type: 'select',
+                label: 'NZB access type',
+                options: [
+                    {name: 'Proxy NZBs from indexer', value: 'serve'},
+                    {name: 'Redirect to the indexer', value: 'redirect'}
+                ],
+                help: "How external access to NZBs is provided. Redirecting is recommended."
+            }
+        },
+        {
+            key: 'nzbAddingType',
+            type: 'horizontalSelect',
+            templateOptions: {
+                type: 'select',
+                label: 'NZB adding type',
+                options: [
+                    {name: 'Send link', value: 'link'},
+                    {name: 'Upload NZB', value: 'nzb'}
+                ],
+                help: "How NZBs are added to the downloader, either by sending a link to the NZB or by uploading the NZB data"
+            }
+        }
+    ]);
+
+    return fieldset;
+}
+
+function getDownloaderPresets() {
+    return [
+        {
+            host: "127.0.0.1",
+            name: "NZBGet",
+            password: "tegbzn6789x",
+            port: 6789,
+            ssl: false,
+            type: "nzbget",
+            username: "nzbgetx",
+            nzbAddingType: "link",
+            nzbaccesstype: "serve"
+        },
+        {
+            url: "http://localhost:8086",
+            type: "sabnzbd",
+            name: "SABnzbd",
+            nzbAddingType: "link",
+            nzbaccesstype: "redirect"
+        }
+    ];
+}
+
+
+angular
+    .module('nzbhydraApp')
+    .factory('IndexerCheckBeforeCloseService', IndexerCheckBeforeCloseService);
+
+function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, blockUI, growl) {
+
+    return {
+        check: checkBeforeClose
+    };
+
+    function checkBeforeClose(scope, model) {
+        var deferred = $q.defer();
+        if (!scope.needsConnectionTest) {
+            checkCaps(model).then(function () {
+                deferred.resolve();
+            }, function () {
+                deferred.reject();
+            });
+        } else {
+
+
+            scope.spinnerActive = true;
+            var url;
+            var params;
+            if (model.type == "newznab") {
+                url = "internalapi/test_newznab";
+                params = {host: model.host, apikey: model.apikey};
+            } else if (model.type == "omgwtf") {
+                url = "internalapi/test_omgwtf";
+                params = {username: model.username, apikey: model.apikey};
+            }
+
+            ConfigBoxService.checkConnection(url, params).then(function () {
+                    checkCaps(model).then(function () {
+                        growl.info("Connection to the indexer tested successfully");
+                        deferred.resolve();
+                    }, function () {
+                        deferred.reject();
+                    });
+                },
+                function (data) {
+                    if (data.checked) {
+                        growl.error("The connection to the indexer failed: " + data.message);
+                    } else {
+                        growl.error("The connection to the indexer could not be tested, sorry");
+                    }
+                    deferred.reject();
+
+
+                }).finally(function () {
+                $scope.spinnerActive = false;
+            });
+        }
+        return deferred.promise;
+
+    }
+
+    function checkCaps(model) {
+        var deferred = $q.defer();
+        var url = "internalapi/test_caps";
+        var params = {indexer: model.name, apikey: model.apikey, host: model.host};
+        if (angular.isUndefined(model.search_ids) || angular.isUndefined(model.searchTypes)) {
+
+            blockUI.start("New indexer found. Testing its capabilities. This may take a bit...");
+            ConfigBoxService.checkCaps(url, params).then(
+                function (data) {
+                    blockUI.reset();
+                    growl.info("Successfully tested capabilites of indexer. Supports: " + data.ids + "," + data.types);
+                    model.search_ids = data.ids;
+                    model.searchTypes = data.types;
+                    deferred.resolve();
+                },
+                function () {
+                    blockUI.reset();
+                    model.search_ids = [];
+                    model.searchTypes = [];
+                    ModalService.open("Error testing capabilities", "The capabilities of the indexer could not be checked. The indexer won't be used for ID based searches (IMDB, TVDB, etc.). You may repeat the check manually at any time.");
+                    deferred.resolve();
+                }).finally(
+                function () {
+                    $scope.spinnerActive = false;
+                })
+        } else {
+            deferred.resolve();
+        }
+        return deferred.promise;
+
+    }
+}
+
+
+angular
+    .module('nzbhydraApp')
+    .factory('DownloaderCheckBeforeCloseService', DownloaderCheckBeforeCloseService);
+
+function DownloaderCheckBeforeCloseService($q, ConfigBoxService, growl) {
+
+    return {
+        check: checkBeforeClose
+    };
+
+    function checkBeforeClose(scope, model) {
+        var deferred = $q.defer();
+        if (!scope.isInitial && !scope.needsConnectionTest) {
+            deferred.resolve();
+        } else {
+            scope.spinnerActive = true;
+            var url = "internalapi/test_downloader";
+
+            ConfigBoxService.checkConnection(url, {settings: model}).then(function () {
+                    growl.info("Connection to the downloader tested successfully");
+                    deferred.resolve();
+                },
+                function (data) {
+                    if (data.checked) {
+                        growl.error("The connection to the downloader failed: " + data.message);
+                    } else {
+                        growl.error("The connection to the downloader could not be tested, sorry");
+                    }
+                    deferred.reject();
+                }).finally(function () {
+                $scope.spinnerActive = false;
+            });
+        }
+        return deferred.promise;
+    }
+
 }

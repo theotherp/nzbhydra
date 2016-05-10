@@ -30,26 +30,7 @@ logger = logging.getLogger('root')
 # Make sure they're available in safe config if needed
 
 initialConfig = {
-    "downloader": {
-        "downloader": "none",
-        "nzbAddingType": "link",
-        "nzbaccesstype": "redirect",
-        "nzbget": {
-            "defaultCategory": None,
-            "host": "127.0.0.1",
-            "password": "tegbzn6789",
-            "port": 6789,
-            "ssl": False,
-            "username": "nzbget"
-        },
-        "sabnzbd": {
-            "apikey": None,
-            "defaultCategory": None,
-            "password": None,
-            "url": "http://localhost:8080/sabnzbd/",
-            "username": None
-        }
-    },
+    "downloaders": [],
     "indexers": [
         {
             "accessType": "internal",
@@ -146,7 +127,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 16,
+        "configVersion": 17,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -211,6 +192,7 @@ initialConfig = {
         "ignoreTemporarilyDisabled": False,
         "ignoreWords": "",
         "maxAge": "",
+        "nzbAccessType": "redirect",
         "removeDuplicatesExternal": True,
         "requireWords": "",
         "timeout": 20,
@@ -491,6 +473,41 @@ def migrate(settingsFilename):
                             indexer["type"] = "newznab"
                             indexers.append(indexer)
                         config["indexers"] = indexers
+
+                if config["main"]["configVersion"] == 16:
+                    with version_update(config, 17):
+                        addLogMessage(20, "Moving downloaders")
+                        downloaders = []
+                        if config["downloader"]["nzbget"]["host"]:
+                            addLogMessage(20, "Found configured downloader NZBGet")
+                            downloaders.append({
+                                "name": "NZBGet",
+                                "type": "nzbget",
+                                "defaultCategory": config["downloader"]["nzbget"]["defaultCategory"],
+                                "host": config["downloader"]["nzbget"]["host"],
+                                "password": config["downloader"]["nzbget"]["password"],
+                                "port": config["downloader"]["nzbget"]["port"],
+                                "ssl": config["downloader"]["nzbget"]["ssl"],
+                                "username": config["downloader"]["nzbget"]["username"],
+                                "enabled": True if config["downloader"]["downloader"] == "nzbget" else False,
+                                "nzbAddingType": config["downloader"]["nzbAddingType"],
+                                "nzbaccesstype": config["downloader"]["nzbaccesstype"]
+                            })
+                        if config["downloader"]["sabnzbd"]["apikey"]:
+                            addLogMessage(20, "Found configured downloader SABnzbd")
+                            downloaders.append({
+                                "name": "SABnzbd",
+                                "type": "sabnzbd",
+                                "defaultCategory": config["downloader"]["sabnzbd"]["defaultCategory"],
+                                "apikey": config["downloader"]["sabnzbd"]["apikey"],
+                                "password": config["downloader"]["sabnzbd"]["password"],
+                                "url": config["downloader"]["sabnzbd"]["url"],
+                                "username": config["downloader"]["sabnzbd"]["username"],
+                                "enabled": True if config["downloader"]["downloader"] == "sabnzbd" else False,
+                                "nzbAddingType": config["downloader"]["nzbAddingType"],
+                                "nzbaccesstype": config["downloader"]["nzbaccesstype"]
+                            })
+                        config["downloaders"] = downloaders
                         
 
             except Exception as e:
@@ -659,5 +676,5 @@ def getSafeConfig():
     return {
         "indexers": indexers,
         "searching": {"categorysizes": settings["searching"]["categorysizes"], "maxAge": settings["searching"]["maxAge"], "alwaysShowDuplicates": settings["searching"]["alwaysShowDuplicates"]},
-        "downloader": {"downloader": settings["downloader"]["downloader"], "nzbget": {"defaultCategory": settings["downloader"]["nzbget"]["defaultCategory"]}, "sabnzbd": {"defaultCategory": settings["downloader"]["sabnzbd"]["defaultCategory"]}}
+        "downloaders": settings["downloaders"]
     }

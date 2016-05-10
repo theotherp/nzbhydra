@@ -103,9 +103,9 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             fields: $scope.fields.searching
         },
         {
-            name: 'Downloader',
-            model: ConfigModel.downloader,
-            fields: $scope.fields.downloader
+            name: 'Downloaders',
+            model: ConfigModel.downloaders,
+            fields: $scope.fields.downloaders
         },
         {
             name: 'Indexers',

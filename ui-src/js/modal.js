@@ -64,39 +64,45 @@ function ModalInstanceCtrl($scope, $uibModalInstance, headline, message, params)
     $scope.message = message;
     $scope.headline = headline;
     $scope.params = params;
-    $scope.showCancel = angular.isDefined(params.cancel);
-    $scope.showNo = angular.isDefined(params.no);
+    $scope.showCancel = angular.isDefined(params) && angular.isDefined(params.cancel);
+    $scope.showNo = angular.isDefined(params) && angular.isDefined(params.no);
 
-    if (angular.isDefined(params.yes) && angular.isUndefined(params.yes.text)) {
+    if (angular.isUndefined(params) || angular.isUndefined(params.yes)) {
+        $scope.params = {
+            yes: {
+                text: "Ok"
+            }
+        }
+    } else if (angular.isUndefined(params.yes.text)) {
         params.yes.text = "Yes";
     }
     
-    if (angular.isDefined(params.no) && angular.isUndefined(params.no.text)) {
-        params.no.text = "No";
+    if (angular.isDefined(params) && angular.isDefined(params.no) && angular.isUndefined($scope.params.no.text)) {
+        $scope.params.no.text = "No";
     }
     
-    if (angular.isDefined(params.cancel) && angular.isUndefined(params.cancel.text)) {
-        params.cancel.text = "Cancel";
+    if (angular.isDefined(params) && angular.isDefined(params.cancel) && angular.isUndefined($scope.params.cancel.text)) {
+        $scope.params.cancel.text = "Cancel";
     }
 
     $scope.yes = function () {
         $uibModalInstance.close();
-        if(angular.isDefined(params.yes) && angular.isDefined(params.yes.onYes)) {
-            params.yes.onYes();
+        if(angular.isDefined(params) && angular.isDefined(params.yes) && angular.isDefined($scope.params.yes.onYes)) {
+            $scope.params.yes.onYes();
         }
     };
 
     $scope.no = function () {
         $uibModalInstance.close();
-        if (angular.isDefined(params.no) && angular.isDefined(params.no.onNo)) {
-            params.no.onNo();
+        if (angular.isDefined(params) && angular.isDefined(params.no) && angular.isDefined($scope.params.no.onNo)) {
+            $scope.params.no.onNo();
         }
     };
 
     $scope.cancel = function () {
         $uibModalInstance.dismiss();
-        if (angular.isDefined(params.cancel) && angular.isDefined(params.cancel.onCancel)) {
-            params.cancel.onCancel();
+        if (angular.isDefined(params.cancel) && angular.isDefined($scope.params.cancel.onCancel)) {
+            $scope.params.cancel.onCancel();
         }
     };
 

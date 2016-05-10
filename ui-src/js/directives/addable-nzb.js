@@ -5,41 +5,32 @@ angular
 function addableNzb() {
     return {
         templateUrl: 'static/html/directives/addable-nzb.html',
-        require: ['^searchresultid'],
         scope: {
-            searchresultid: "="
+            searchResultId: "=",
+            downloader: "="
         },
         controller: controller
     };
 
-    function controller($scope, ConfigService, NzbDownloadService, growl) {
-        $scope.classname = "";
-        var settings = ConfigService.getSafe();
+    function controller($scope, NzbDownloadService, growl) {
+        $scope.cssClass = $scope.downloader.type == "sabnzbd" ? "sabnzbd" : "nzbget";
         
-        $scope.downloader = settings.downloader.downloader;
-        if ($scope.downloader != "none") {
-            $scope.enabled = true;
-            $scope.classname = $scope.downloader == "sabnzbd" ? "sabnzbd" : "nzbget";
-        } else {
-            $scope.enabled = false;
-        }
-
-
         $scope.add = function () {
-            $scope.classname = "nzb-spinning";
-            NzbDownloadService.download([$scope.searchresultid]).then(function (response) {
+            $scope.cssClass = "nzb-spinning";
+            NzbDownloadService.download($scope.downloader, [$scope.searchResultId]).then(function (response) {
                 if (response.data.success) {
-                    $scope.classname = $scope.downloader == "sabnzbd" ? "sabnzbd-success" : "nzbget-success";
+                    $scope.cssClass = $scope.downloader.type == "sabnzbd" ? "sabnzbd-success" : "nzbget-success";
                 } else {
-                    $scope.classname = $scope.downloader == "sabnzbd" ? "sabnzbd-error" : "nzbget-error";
+                    $scope.cssClass = $scope.downloader.type == "sabnzbd" ? "sabnzbd-error" : "nzbget-error";
                     growl.error("Unable to add NZB. Make sure the downloader is running and properly configured.");
                 }
             }, function () {
-                $scope.classname = $scope.downloader == "sabnzbd" ? "sabnzbd-error" : "nzbget-error";
+                $scope.cssClass = $scope.downloader.type == "sabnzbd" ? "sabnzbd-error" : "nzbget-error";
                 growl.error("An unexpected error occurred while trying to contact NZB Hydra or add the NZB.");
             })
         };
+        
+        
 
     }
 }
-

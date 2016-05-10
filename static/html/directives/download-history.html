@@ -31,7 +31,7 @@
     <tr dir-paginate="nzbDownload in nzbDownloads | itemsPerPage: limit" total-items="totalDownloads" current-page="pagination.current" pagination-id="downloads">
         <td>{{ nzbDownload.time }}</td>
         <td>{{ nzbDownload.name }}</td>
-        <td><addable-nzb searchresultid="nzbDownload.searchResultId" ng-style="{'visibility':!nzbDownload.searchResultId ? 'hidden' : 'initial'}"></addable-nzb> {{ nzbDownload.title }}</td>
+        <td><addable-nzbs search-result-id="nzbDownload.searchResultId" ng-style="{'visibility':!nzbDownload.searchResultId ? 'hidden' : 'initial'}"></addable-nzbs> {{ nzbDownload.title }}</td>
         <td><span class="glyphicon" ng-class="{'glyphicon-ok': nzbDownload.response_successful, 'glyphicon-remove': !nzbDownload.response_successful }"></span></td>
         <td>{{ nzbDownload.internal ? "Internal" : "API"}}</td>
         <td>{{ nzbDownload.username }}</td>

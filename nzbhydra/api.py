@@ -98,7 +98,7 @@ def get_root_url():
     return request.url_root
 
 
-def get_nzb_link_and_guid(searchResultId, external):
+def get_nzb_link_and_guid(searchResultId, external, downloader=None):
     externalUrl = config.settings.main.externalUrl
     if externalUrl and not (external and config.settings.main.useLocalUrlForApiAccess):
         f = furl(externalUrl)
@@ -111,6 +111,8 @@ def get_nzb_link_and_guid(searchResultId, external):
         apikey = config.settings.main.apikey
         if apikey is not None:
             args["apikey"] = apikey
+    if downloader:
+        args["downloader"] = downloader
     f.set(args=args)
     return f.url
 
@@ -121,10 +123,8 @@ def transform_results(results, external):
         i = copy.copy(j)
         i.link = get_nzb_link_and_guid(i.searchResultId, external)
         i.guid = "nzbhydrasearchresult%d" % i.searchResultId
-        # Add our internal guid (like the link above but only the identifying part) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
         has_guid = False
         has_size = False
-        
         for a in i.attributes:
             if a["name"] == "guid":
                 a["value"] = i.guid

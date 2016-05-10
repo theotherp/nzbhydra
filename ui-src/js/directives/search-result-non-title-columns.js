@@ -19,7 +19,7 @@ function otherColumns($http, $templateCache, $compile, $window) {
     };
 
     function controller($scope, $http, $uibModal, growl) {
-
+        
         $scope.showNfo = showNfo;
         function showNfo(resultItem) {
             if (resultItem.has_nfo == 0) {

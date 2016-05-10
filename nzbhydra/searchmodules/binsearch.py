@@ -181,7 +181,7 @@ class Binsearch(SearchModule):
             entry.title = title
 
         entry.indexerguid = row.find("input", attrs={"type": "checkbox"})["name"]
-        entry.link = "https://www.binsearch.info/fcgi/nzb.fcgi?q=%s" % entry.indexerguid
+        entry.link = self.get_nzb_link(entry.indexerguid, None)
         info = row.find("span", attrs={"class": "d"})
         if info is None:
             self.debug("Ignored entry because it has no info")

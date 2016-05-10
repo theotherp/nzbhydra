@@ -192,29 +192,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     function countResults() {
         return $scope.results.length;
     }
-
-    $scope.downloadSelected = downloadSelected;
-    function downloadSelected() {
-
-        if (angular.isUndefined($scope.selected) || $scope.selected.length == 0) {
-            growl.info("You should select at least one result...");
-        } else {
-
-            var values = _.map($scope.selected, function (value) {
-                return value.searchresultid
-            });
-
-            NzbDownloadService.download(values).then(function (response) {
-                if (response.data.success) {
-                    growl.info("Successfully added " + response.data.added + " of " + response.data.of + " NZBs");
-                } else {
-                    growl.error("Error while adding NZBs");
-                }
-            }, function () {
-                growl.error("Error while adding NZBs");
-            });
-        }
-    }
+    
     
     $scope.invertSelection = function invertSelection() {
         $scope.selected = _.difference($scope.results, $scope.selected);

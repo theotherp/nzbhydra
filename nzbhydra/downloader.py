@@ -7,7 +7,7 @@ from builtins import *
 from builtins import str
 from future import standard_library
 
-from nzbhydra.exceptions import DownloaderException
+from nzbhydra.exceptions import DownloaderException, DownloaderNotFoundException
 
 #standard_library.install_aliases()
 import base64
@@ -35,18 +35,21 @@ class Downloader(object):
 
 class Nzbget(Downloader):
     logger = logging.getLogger('root')
+    
+    def __init__(self, setting):
+        self.setting = setting
 
     def get_rpc(self, host=None, ssl=None, port=None, username=None, password=None):
         if host is None:
-            host = config.settings.downloader.nzbget.host
+            host = self.setting.host
         if ssl is None:
-            ssl = config.settings.downloader.nzbget.ssl
+            ssl = self.setting.ssl
         if port is None:
-            port = config.settings.downloader.nzbget.port
+            port = self.setting.port
         if username is None:
-            username = config.settings.downloader.nzbget.username
+            username = self.setting.username
         if password is None:
-            password = config.settings.downloader.nzbget.password
+            password = self.setting.password
         f = furl()
         f.host = host
         f.username = username
@@ -57,9 +60,9 @@ class Nzbget(Downloader):
 
         return xmlrpc.client.ServerProxy(f.tostr())
 
-    def test(self, host, ssl=False, port=None, username=None, password=None, apikey=None):
+    def test(self, setting):
         self.logger.debug("Testing connection to snzbget")
-        rpc = self.get_rpc(host, ssl, port, username, password)
+        rpc = self.get_rpc(setting.host, setting.ssl, setting.port, setting.username, setting.password)
 
         try:
             if rpc.writelog('INFO', 'NZB Hydra connected to test connection'):
@@ -170,15 +173,19 @@ class Nzbget(Downloader):
 class Sabnzbd(Downloader):
     logger = logging.getLogger('root')
 
+    def __init__(self, setting):
+        self.setting = setting
+    
+
     def get_sab(self, url=None, apikey=None, username=None, password=None):
         if url is None:
-            url = config.settings.downloader.sabnzbd.url
+            url = self.setting.url
         if apikey is None:
-            apikey = config.settings.downloader.sabnzbd.apikey
+            apikey = self.setting.apikey
         if username is None:
-            username = config.settings.downloader.sabnzbd.username
+            username = self.setting.username
         if password is None:
-            password = config.settings.downloader.sabnzbd.password
+            password = self.setting.password
         f = furl(url)
         f.path.add("api")
         if apikey:
@@ -191,10 +198,10 @@ class Sabnzbd(Downloader):
 
         return f
 
-    def test(self, url, username=None, password=None, apikey=None):
+    def test(self, setting):
         self.logger.debug("Testing connection to sabnzbd")
         try:
-            f = self.get_sab(url, apikey, username, password)
+            f = self.get_sab(setting.url, setting.apikey, setting.username, setting.password)
             f.add({"mode": "qstatus"})
             r = requests.get(f.tostr(), verify=False, timeout=15)
             r.raise_for_status()
@@ -263,3 +270,20 @@ class Sabnzbd(Downloader):
         except (SSLError, HTTPError, ConnectionError, ReadTimeout, InvalidSchema, MissingSchema):
             self.logger.exception("Error while trying to connect to sabnzbd with URL %s" % f.url)
             raise DownloaderException("Unable to contact SabNZBd")
+
+
+def getDownloaderInstanceByName(name):
+    for i in config.settings.downloaders:
+        if i.name == name:
+            return getInstanceBySetting(i)
+    raise DownloaderNotFoundException("No downloader with name %s found" % name)
+
+
+def getInstanceBySetting(setting):
+    if setting.type == "sabnzbd":
+        return Sabnzbd(setting)
+    if setting.type == "nzbget":
+        return Nzbget(setting)
+    raise DownloaderNotFoundException("No downloader with type %s found" % setting.type)
+        
+    

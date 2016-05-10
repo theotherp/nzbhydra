@@ -4,69 +4,71 @@ angular
 
 function CategoriesService($http, $q, $uibModal) {
 
-    var categories;
-    var selectedCategory;
-    
+    var categories = {};
+    var selectedCategory = {};
+
     var service = {
         get: getCategories,
         invalidate: invalidate,
-        select : select,
-        openCategorySelection: openCategorySelection 
+        select: select,
+        openCategorySelection: openCategorySelection
     };
-    
-    return service;
-    
 
-    function getCategories() {
+    var deferred;
+
+    return service;
+
+
+    function getCategories(downloader) {
 
         function loadAll() {
-            if (!angular.isUndefined(categories)) {
+            if (angular.isDefined(categories.downloader)) {
                 var deferred = $q.defer();
-                deferred.resolve(categories);
+                deferred.resolve(categories.downloader);
                 return deferred.promise;
             }
 
-            return $http.get('internalapi/getcategories')
+            return $http.get('internalapi/getcategories', {params: {downloader: downloader}})
                 .then(function (categoriesResponse) {
                     
-                        console.log("Updating downloader categories cache");
-                        categories = categoriesResponse.data;
-                        return categoriesResponse.data;
-                    
-                }, function(error) {
+                    console.log("Updating downloader categories cache");
+                    categories[downloader] = categoriesResponse.data.categories;
+                    return categoriesResponse.data.categories;
+
+                }, function (error) {
                     throw error;
                 });
         }
 
         return loadAll().then(function (categories) {
-            return categories.categories;
+            return categories;
         }, function (error) {
             throw error;
         });
     }
 
-    
-    var deferred;
-    
-    function openCategorySelection() {
+
+    function openCategorySelection(downloader) {
         $uibModal.open({
             templateUrl: 'static/html/directives/addable-nzb-modal.html',
             controller: 'CategorySelectionController',
             size: "sm",
             resolve: {
-                categories: getCategories
+                categories: function () {
+                    return getCategories(downloader)
+                }
             }
         });
         deferred = $q.defer();
         return deferred.promise;
     }
-    
+
     function select(category) {
         selectedCategory = category;
         console.log("Selected category " + category);
         deferred.resolve(category);
     }
-    
+
     function invalidate() {
         console.log("Invalidating categories");
         categories = undefined;

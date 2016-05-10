@@ -1,6 +1,12 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.7
+Added: Support multiple downloaders.
+
+### 0.2.6
+Fixed: Binsearch downloads would fail after binsearch changed their API.
+
 ### 0.2.5
 Fixed: Downloading and NFO and details retrieval via API didn't work since 0.2.0. 
 
@@ -14,8 +20,6 @@ Bump version to make sure update is executed. Jump to 0.2.x seems to have caused
 
 ### 0.2.2
 Fixed: Constraint errors handling search results.
-
-Fixed: Improve git update (reset hard before pulling).
 
 ### 0.2.1
 Fixed: Small problem with last update and empty details links.
