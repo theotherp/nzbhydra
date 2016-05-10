@@ -18,7 +18,12 @@ from playhouse.sqlite_ext import SqliteExtDatabase
 
 logger = logging.getLogger('root')
 
-db = SqliteExtDatabase(None, threadlocals=True, journal_mode="WAL")
+db = SqliteExtDatabase(None, pragmas=(
+    ('timeout', 20),
+    ('threadlocals', True),
+    ('journal_mode', 'WAL'),
+    
+))
 
 DATABASE_VERSION = 8
 
