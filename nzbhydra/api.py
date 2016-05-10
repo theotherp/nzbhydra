@@ -120,6 +120,8 @@ def get_nzb_link_and_guid(searchResultId, external, downloader=None):
 def transform_results(results, external):
     transformed = []
     for j in results:
+        if j.searchResultId is None: #Quick fix
+            continue
         i = copy.copy(j)
         i.link = get_nzb_link_and_guid(i.searchResultId, external)
         i.guid = "nzbhydrasearchresult%d" % i.searchResultId
