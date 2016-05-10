@@ -2,7 +2,7 @@ angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
 
-function SearchController($scope, $http, $stateParams, $state, SearchService, focus, ConfigService, blockUI) {
+function SearchController($scope, $http, $stateParams, $state, SearchService, focus, ConfigService, blockUI, $element) {
     
     function getNumberOrUndefined(number) {
         if (_.isUndefined(number) || _.isNaN(number) || number == "") {
@@ -58,7 +58,12 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 );
 
         focus('focus-query-box');
-        $scope.query = "";
+        
+        //Hacky way of triggering the autocomplete loading
+        var searchModel = $element.find("#searchfield").controller("ngModel");
+        if (angular.isDefined(searchModel.$viewValue)) {
+            searchModel.$setViewValue(searchModel.$viewValue + " ");
+        }
 
         if (safeConfig.searching.categorysizes.enable_category_sizes) {
             var min = safeConfig.searching.categorysizes[(searchCategory + " min").toLowerCase().replace(" ", "")];

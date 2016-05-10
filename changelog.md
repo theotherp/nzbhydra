@@ -6,6 +6,8 @@ Added: Support multiple downloaders.
 
 Added: When the connection test for a downloader or indexer fails you can decide if you want to add it anyway.
 
+Changed: Don't wipe the search field when changing the category. If you already entered something and you select a movie or TV category the autocomplete function is triggered automatically.
+
 ### 0.2.6
 Fixed: Binsearch downloads would fail after binsearch changed their API.
 
