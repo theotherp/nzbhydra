@@ -4,6 +4,8 @@
 ### 0.2.7
 Added: Support multiple downloaders.
 
+Added: When the connection test for a downloader or indexer fails you can decide if you want to add it anyway.
+
 ### 0.2.6
 Fixed: Binsearch downloads would fail after binsearch changed their API.
 

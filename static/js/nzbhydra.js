@@ -3648,7 +3648,9 @@ function ConfigFields($injector) {
                 {
                     type: "arrayConfig",
                     data: {
-                        defaultModel: {},
+                        defaultModel: {
+                            enabled: true
+                        },
                         entryTemplateUrl: 'downloaderEntry.html',
                         presets: getDownloaderPresets(),
                         presetsOnly: true,
@@ -3873,7 +3875,7 @@ function getIndexerBoxFields(type) {
                     type: 'text',
                     label: 'Name',
                     required: true,
-                    help: 'Used for identification. Changing the name will lose all history and stats!'
+                    help: 'Used for identification. Changing the name will lose all history and stats! Also make sure it\'s unique.'
                 }
             })
     }
@@ -4137,8 +4139,9 @@ function getDownloaderBoxFields(type) {
                 type: 'text',
                 label: 'Name',
                 required: true,
-                help: 'Used for identification. Changing the name will lose all history and stats!'
+                help: 'Make sure this is unique!'
             }
+            
         }]);
 
     if (type == "nzbget") {
@@ -4318,6 +4321,41 @@ function getDownloaderPresets() {
 }
 
 
+function handleConnectionCheckFail(ModalService, data, model, whatFailed, deferred) {
+    var message;
+    var yesText;
+    if (data.checked) {
+        message = "The connection to the " + whatFailed + " failed: " + data.message + "<br>Do you want to add it anyway?";
+        yesText = "I know what I'm doing";
+    } else {
+        message = "The connection to the " + whatFailed + " could not be tested, sorry";
+        yesText = "I'll risk it";
+    }
+    ModalService.open("Connection check failed", message, {
+        yes: {
+            onYes: function () {
+                deferred.resolve();
+            },
+            text: yesText
+        },
+        no: {
+            onNo: function () {
+                model.enabled = false;
+                deferred.resolve();
+            },
+            text: "Add it, but disabled"
+        },
+        cancel: {
+            onCancel: function () {
+                deferred.reject();
+            },
+            text: "Aahh, let me try again"
+        }
+    });
+
+}
+
+
 angular
     .module('nzbhydraApp')
     .factory('IndexerCheckBeforeCloseService', IndexerCheckBeforeCloseService);
@@ -4337,8 +4375,7 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
                 deferred.reject();
             });
         } else {
-
-
+            blockUI.start("Testing connection...");
             scope.spinnerActive = true;
             var url;
             var params;
@@ -4352,23 +4389,22 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
 
             ConfigBoxService.checkConnection(url, params).then(function () {
                     checkCaps(model).then(function () {
+                        blockUI.reset();
+                        scope.spinnerActive = false;
                         growl.info("Connection to the indexer tested successfully");
                         deferred.resolve();
                     }, function () {
+                        blockUI.reset();
+                        scope.spinnerActive = false;
                         deferred.reject();
                     });
                 },
                 function (data) {
-                    if (data.checked) {
-                        growl.error("The connection to the indexer failed: " + data.message);
-                    } else {
-                        growl.error("The connection to the indexer could not be tested, sorry");
-                    }
-                    deferred.reject();
-
-
+                    blockUI.reset();
+                    handleConnectionCheckFail(ModalService, data, model, "indexer", deferred);
                 }).finally(function () {
-                $scope.spinnerActive = false;
+                scope.spinnerActive = false;
+                blockUI.reset();
             });
         }
         return deferred.promise;
@@ -4385,6 +4421,7 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
             ConfigBoxService.checkCaps(url, params).then(
                 function (data) {
                     blockUI.reset();
+                    scope.spinnerActive = false;
                     growl.info("Successfully tested capabilites of indexer. Supports: " + data.ids + "," + data.types);
                     model.search_ids = data.ids;
                     model.searchTypes = data.types;
@@ -4392,13 +4429,14 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
                 },
                 function () {
                     blockUI.reset();
+                    scope.spinnerActive = false;
                     model.search_ids = [];
                     model.searchTypes = [];
                     ModalService.open("Error testing capabilities", "The capabilities of the indexer could not be checked. The indexer won't be used for ID based searches (IMDB, TVDB, etc.). You may repeat the check manually at any time.");
                     deferred.resolve();
                 }).finally(
                 function () {
-                    $scope.spinnerActive = false;
+                    scope.spinnerActive = false;
                 })
         } else {
             deferred.resolve();
@@ -4410,11 +4448,13 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
 IndexerCheckBeforeCloseService.$inject = ["$q", "ModalService", "ConfigBoxService", "blockUI", "growl"];
 
 
+
+
 angular
     .module('nzbhydraApp')
     .factory('DownloaderCheckBeforeCloseService', DownloaderCheckBeforeCloseService);
 
-function DownloaderCheckBeforeCloseService($q, ConfigBoxService, growl) {
+function DownloaderCheckBeforeCloseService($q, ConfigBoxService, growl, ModalService, blockUI) {
 
     return {
         check: checkBeforeClose
@@ -4426,28 +4466,29 @@ function DownloaderCheckBeforeCloseService($q, ConfigBoxService, growl) {
             deferred.resolve();
         } else {
             scope.spinnerActive = true;
+            blockUI.start("Testing connection...");
             var url = "internalapi/test_downloader";
 
             ConfigBoxService.checkConnection(url, {settings: model}).then(function () {
+                    blockUI.reset();
+                    scope.spinnerActive = false;
                     growl.info("Connection to the downloader tested successfully");
                     deferred.resolve();
                 },
                 function (data) {
-                    if (data.checked) {
-                        growl.error("The connection to the downloader failed: " + data.message);
-                    } else {
-                        growl.error("The connection to the downloader could not be tested, sorry");
-                    }
-                    deferred.reject();
+                    blockUI.reset();
+                    scope.spinnerActive = false;
+                    handleConnectionCheckFail(ModalService, data, model, "downloader", deferred);
                 }).finally(function () {
-                $scope.spinnerActive = false;
+                scope.spinnerActive = false;
+                blockUI.reset();
             });
         }
         return deferred.promise;
     }
 
 }
-DownloaderCheckBeforeCloseService.$inject = ["$q", "ConfigBoxService", "growl"];
+DownloaderCheckBeforeCloseService.$inject = ["$q", "ConfigBoxService", "growl", "ModalService", "blockUI"];
 angular
     .module('nzbhydraApp')
     .factory('ConfigModel', function () {
