@@ -4,11 +4,16 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 # standard_library.install_aliases()
+import logging
+
 from builtins import *
 from peewee import fn, JOIN
 from nzbhydra import database
 from nzbhydra.database import Indexer, IndexerApiAccess, IndexerNzbDownload, IndexerSearch, Search, IndexerStatus, TvIdCache, MovieIdCache, SearchResult
+from nzbhydra.exceptions import IndexerNotFoundException
+from nzbhydra.indexers import getIndexerByName
 
+logger = logging.getLogger('root')
 
 def get_indexer_response_times():
     result = []
@@ -39,6 +44,14 @@ def get_avg_indexer_response_times():
 def get_avg_indexer_search_results_share():
     results = []
     for p in Indexer.select().order_by(Indexer.name):
+        try:
+            indexer = getIndexerByName(p.name)
+            if not indexer.settings.enabled:
+                logger.debug("Skipping download stats for %s" % p.name)
+                continue
+        except IndexerNotFoundException:
+            logger.error("Unable to find indexer %s in configuration" % p.name)
+            continue
         result = database.db.execute_sql(
                 "select (100 * (select cast(sum(ps.resultsCount) as float) from indexersearch ps where ps.search_id in (select ps.search_id from indexersearch ps where ps.indexer_id == %d) and ps.indexer_id == %d)) / (select sum(ps.resultsCount) from indexersearch ps where ps.search_id in (select ps.search_id from indexersearch ps where ps.indexer_id == %d)) as sumAllResults" % (
                     p.id, p.id, p.id)).fetchone()
@@ -70,6 +83,14 @@ def get_avg_indexer_access_success():
     result = []
     for i in results:
         name = i[0]
+        try:
+            indexer = getIndexerByName(name)
+            if not indexer.settings.enabled:
+                logger.debug("Skipping download stats for %s" % name)
+                continue
+        except IndexerNotFoundException:
+            logger.error("Unable to find indexer %s in configuration" % name)
+            continue
         failed = i[1] if i[1] is not None else 0
         success = i[2] if i[2] is not None else 0
         sumall = failed + success
@@ -84,7 +105,20 @@ def getIndexerDownloadStats():
     results = []
     allDownloadsCount = IndexerNzbDownload.select().count()
     for p in Indexer.select().order_by(Indexer.name):
-        dlCount = IndexerNzbDownload().select(Indexer.name, IndexerApiAccess.response_successful).join(IndexerSearch, on=(IndexerNzbDownload.apiAccess == IndexerNzbDownload.searchResult)).join(Search, JOIN.LEFT_OUTER).switch(IndexerNzbDownload).join(IndexerApiAccess, JOIN.LEFT_OUTER).join(Indexer, JOIN.LEFT_OUTER).where(Indexer.id == p).count()
+        try:
+            indexer = getIndexerByName(p.name)
+            if not indexer.settings.enabled:
+                logger.debug("Skipping download stats for %s" % p.name)
+                continue
+        except IndexerNotFoundException:
+            logger.error("Unable to find indexer %s in configuration" % p.name)
+            continue
+        dlCount = IndexerNzbDownload().\
+            select(Indexer.name, IndexerApiAccess.response_successful). \
+            join(IndexerApiAccess, JOIN.LEFT_OUTER). \
+            join(Indexer, JOIN.LEFT_OUTER).\
+            where(Indexer.id == p).\
+            count()
         results.append({"name": p.name,
                         "total": dlCount,
                         "share": 100 / (allDownloadsCount / dlCount) if allDownloadsCount > 0 and dlCount > 0 else 0})

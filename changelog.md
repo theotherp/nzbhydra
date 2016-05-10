@@ -8,6 +8,10 @@ Added: When the connection test for a downloader or indexer fails you can decide
 
 Changed: Don't wipe the search field when changing the category. If you already entered something and you select a movie or TV category the autocomplete function is triggered automatically.
 
+Added: Hide disabled indexers in statistics. This only affects the visibility, they're still calculated. If an indexer was never enabled this might skew the statistics, but for now I can't do better.
+
+Fixed: Statistics for downloads and results share were not generated.
+
 ### 0.2.6
 Fixed: Binsearch downloads would fail after binsearch changed their API.
 

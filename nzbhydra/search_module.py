@@ -356,7 +356,7 @@ class SearchModule(object):
                     psearch.successful = papiaccess.response_successful
                 else:
                     self.error("Unable to save API response to database")
-                psearch.results = total_results
+                psearch.resultsCount = total_results
                 #psearch.save()
         return QueriesExecutionResult(didsearch= True, results=results, indexerSearchEntry=psearch, indexerApiAccessEntry=papiaccess, indexerStatus=indexerStatus, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)
 
