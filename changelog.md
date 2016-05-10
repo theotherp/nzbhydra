@@ -12,6 +12,8 @@ Added: Hide disabled indexers in statistics. This only affects the visibility, t
 
 Fixed: Statistics for downloads and results share were not generated.
 
+People are getting more database locked errors. If you have found a realiable way of reproducing it please let me know.
+
 ### 0.2.6
 Fixed: Binsearch downloads would fail after binsearch changed their API.
 

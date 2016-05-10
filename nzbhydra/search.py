@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import json
 import re
 import datetime
 from itertools import groupby
@@ -17,8 +18,9 @@ import concurrent
 import copy
 import logging
 import arrow
+from playhouse.shortcuts import model_to_dict
 from requests_futures.sessions import FuturesSession
-from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult
+from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult, Indexer
 from nzbhydra import config, indexers, infos
 
 categories = {'All': {"pretty": "All", "index": 0},
@@ -324,8 +326,12 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
                 indexersearchentry.search = dbsearch
                 indexersearchentry.save()
                 result.indexerApiAccessEntry.username = request.authorization.username if request.authorization is not None else None
-                result.indexerApiAccessEntry.save()
-                result.indexerStatus.save()
+                try:
+                    result.indexerApiAccessEntry.indexer = Indexer.get(Indexer.name == indexer)
+                    result.indexerApiAccessEntry.save()
+                    result.indexerStatus.save()
+                except Exception:
+                    logger.error("Error saving IndexerApiAccessEntry. Debug info: %s" % json.dumps(model_to_dict(result.indexerApiAccessEntry)))
         
     logger.debug("Returning search results now")
     return {"results": results_by_indexer, "dbsearch": dbsearch}
