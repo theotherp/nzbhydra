@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.9
+Fixed: NZB link should work with URL base.
+
 ### 0.2.8 
 Yeah, well, 0.2.7 changed a lot and broke a lot. Sorry for the problems, I'm trying to get most of them fixed in the coming days.
 
