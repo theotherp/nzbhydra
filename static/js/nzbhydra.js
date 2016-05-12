@@ -4712,12 +4712,12 @@ function CategoriesService($http, $q, $uibModal) {
                 deferred.resolve(categories.downloader);
                 return deferred.promise;
             }
-
+            
             return $http.get('internalapi/getcategories', {params: {downloader: downloader.name}})
                 .then(function (categoriesResponse) {
                     
                     console.log("Updating downloader categories cache");
-                    categories[downloader] = categoriesResponse.data.categories;
+                    var categories = {downloader: categoriesResponse.data.categories};
                     return categoriesResponse.data.categories;
 
                 }, function (error) {

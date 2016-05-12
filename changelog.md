@@ -10,6 +10,8 @@ Fixed: If results are incomplete and not added to the database they're not inclu
 
 Fixed: Config did not like downloader passwords with certain special characters.  
 
+Fixed: Clicking on downloader button would fail.
+
 ### 0.2.7
 Added: Support multiple downloaders.
 
