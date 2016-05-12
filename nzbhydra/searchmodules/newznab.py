@@ -514,8 +514,6 @@ class NewzNab(SearchModule):
                     self.error("Unable to parse category %s" % attribute_value)
             elif attribute_name == "poster":
                 entry.poster = attribute_value
-            elif attribute_name == "info":
-                entry.details_link = attribute_value
             elif attribute_name == "password" and attribute_value != "0":
                 entry.passworded = True
             elif attribute_name == "group" and attribute_value != "not available":
@@ -524,8 +522,7 @@ class NewzNab(SearchModule):
                 usenetdate = arrow.get(attribute_value, 'ddd, DD MMM YYYY HH:mm:ss Z')
             # Store all the extra attributes, we will return them later for external apis
             entry.attributes.append({"name": attribute_name, "value": attribute_value})
-        if entry.details_link is None:
-            entry.details_link = self.get_details_link(entry.indexerguid)
+        entry.details_link = self.get_details_link(entry.indexerguid)
         if usenetdate is None:
             # Not provided by attributes, use pubDate instead
             usenetdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
