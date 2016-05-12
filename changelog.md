@@ -1,6 +1,14 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.8 
+Yeah, well, 0.2.7 changed a lot and broke a lot. Sorry for the problems, I'm trying to get most of them fixed in the coming days.
+
+Fixed: omgwtfnzbs.org results are parsed correctly and will not be skipped.
+
+Fixed: If results are incomplete and not added to the database they're not included in the results either.
+
+
 ### 0.2.7
 Added: Support multiple downloaders.
 

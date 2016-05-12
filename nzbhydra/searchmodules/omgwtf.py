@@ -296,8 +296,10 @@ class OmgWtf(SearchModule):
                 entry.pubdate_utc = str(pubdate)
                 entry.age_days = (arrow.utcnow() - pubdate).days
                 entry.precise_date = True
+                entry.link = item.find("link").text
                 entry.has_nfo = NzbSearchResult.HAS_NFO_MAYBE
                 categoryid = item.find("categoryid").text
+                entry.details_link = self.get_details_link(entry.indexerguid)
                 if categoryid in omgwtf_to_categories.keys():
                     entry.category = omgwtf_to_categories[categoryid]
                 else:

@@ -250,7 +250,16 @@ def search(internal, search_request):
         indexers_to_call = []
         
         for indexer, queries_execution_result in result["results"].items():
-            search_results.extend(queries_execution_result.results)
+            with db.atomic():
+                for result in queries_execution_result.results:
+                    if result.title is None or result.link is None or result.indexerguid is None:
+                        logger.info("Skipping result with missing data: %s" % result)
+                        continue
+                    searchResult = SearchResult().get_or_create(indexer=indexer.indexer, title=result.title, link=result.link, details=result.details_link, guid=result.indexerguid)
+                    searchResult = searchResult[0]  # Second is a boolean determining if the search result was created
+                    result.searchResultId = searchResult.id
+                    search_results.append(result)
+
             logger.debug("%s returned %d results" % (indexer, len(queries_execution_result.results)))
             cache_entry["indexer_infos"][indexer].update({"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known, "indexer_search": queries_execution_result.indexerSearchEntry})
             if queries_execution_result.has_more:
@@ -265,16 +274,6 @@ def search(internal, search_request):
             elif queries_execution_result.has_more:
                 logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
                 cache_entry["total"] += 100
-
-        
-            with db.atomic():
-                for result in queries_execution_result.results:
-                    if result.title is None or result.link is None or result.indexerguid is None:
-                        logger.info("Skipping result with missing data")
-                        continue
-                    searchResult = SearchResult().get_or_create(indexer=indexer.indexer, title=result.title, link=result.link, details=result.details_link, guid=result.indexerguid)
-                    searchResult = searchResult[0] #Second is a boolean determining if the search result was created
-                    result.searchResultId = searchResult.id             
 
 
         if internal or config.settings.searching.removeDuplicatesExternal:

@@ -651,15 +651,15 @@ class SearchTests(unittest.TestCase):
     
     @responses.activate
     @pytest.mark.current
-    def test20Searches(self):
+    def test100Searches(self):
         with self.app.test_request_context('/'):
             with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-                self.prepareSearchMocks(rsps, indexerCount=20, resultsPerIndexers=1, sleep=5)
+                self.prepareSearchMocks(rsps, indexerCount=15, resultsPerIndexers=100, sleep=1)
         
                 searchRequest = SearchRequest(type="search")
                 result = search.search(True, searchRequest)
                 results = result["results"]
-                self.assertEqual(20, len(results))
+                self.assertEqual(1500, len(results))
     
     
     @responses.activate
