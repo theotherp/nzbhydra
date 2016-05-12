@@ -12,6 +12,8 @@ Fixed: Config did not like downloader passwords with certain special characters.
 
 Fixed: Clicking on downloader button would fail.
 
+Changed: Try to prevent "database is locked error" or at least get better logs.
+
 ### 0.2.7
 Added: Support multiple downloaders.
 

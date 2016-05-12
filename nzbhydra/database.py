@@ -20,6 +20,7 @@ logger = logging.getLogger('root')
 
 db = SqliteExtDatabase(None, pragmas=(
     ('timeout', 20),
+    ('busy_timeout', 20),
     ('threadlocals', True),
     ('journal_mode', 'WAL'),
     

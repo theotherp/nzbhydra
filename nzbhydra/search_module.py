@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import json
 import time
 from builtins import str
 from flask import request
@@ -17,7 +18,7 @@ import logging
 import collections
 import arrow
 import requests
-from peewee import fn
+from peewee import fn, OperationalError
 from requests import RequestException
 from nzbhydra import config
 from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, Indexer
@@ -347,6 +348,9 @@ class SearchModule(object):
                 papiaccess.response_successful = False
             except Exception as e:
                 self.exception("An error error occurred while searching: %s", e)
+                if str(e) == "database is locked":
+                    self.logger.error("Database is locked: Here's more info:")
+                    self.logger.error(json.dumps(e))
                 if papiaccess is not None:
                     papiaccess.error = "Unknown error :%s" % e
                     papiaccess.response_successful = False
