@@ -158,6 +158,8 @@ def handle_bad_request(err):
         messages = data['exc'].messages
     else:
         messages = ['Invalid request']
+    
+    logger.error("Invalid request: %s" % json.dumps(messages))
     return jsonify({
         'messages': messages,
     }), 422
@@ -717,17 +719,11 @@ def internalapi_addnzb(args):
         return jsonify({"success": False})
 
 
-internalapi__test_downloader_args = {
-    "settings": fields.String(missing=None)
-}
-
-
-@app.route('/internalapi/test_downloader')
-@use_args(internalapi__test_downloader_args)
+@app.route('/internalapi/test_downloader', methods=['POST'])
 @requires_auth("main")
-def internalapi_testdownloader(args):
-    settings = Bunch.fromDict(json.loads(args["settings"]))
-    logger.debug("Testing connection to downloader %s" % settings["name"])
+def internalapi_testdownloader():
+    settings = Bunch.fromDict(request.get_json(force=True))
+    logger.debug("Testing connection to downloader %s" % settings.name)
     try:
         downloader = getInstanceBySetting(settings)
         success, message = downloader.test(settings)
@@ -743,7 +739,7 @@ internalapi__testnewznab_args = {
 }
 
 
-@app.route('/internalapi/test_newznab')
+@app.route('/internalapi/test_newznab', methods=['POST'])
 @use_args(internalapi__testnewznab_args)
 @requires_auth("main")
 def internalapi_testnewznab(args):
@@ -757,7 +753,7 @@ internalapi__testomgwtf_args = {
 }
 
 
-@app.route('/internalapi/test_omgwtf')
+@app.route('/internalapi/test_omgwtf', methods=['POST'])
 @use_args(internalapi__testomgwtf_args)
 @requires_auth("main")
 def internalapi_testomgwtf(args):
@@ -772,7 +768,7 @@ internalapi_testcaps_args = {
 }
 
 
-@app.route('/internalapi/test_caps')
+@app.route('/internalapi/test_caps', methods=['POST'])
 @use_args(internalapi_testcaps_args)
 @requires_auth("admin")
 def internalapi_testcaps(args):

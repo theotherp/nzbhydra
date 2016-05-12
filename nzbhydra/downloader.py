@@ -84,7 +84,9 @@ class Nzbget(Downloader):
             else:
                 self.logger.error('Protocol error: %s', e)
             return False, str(e)
-
+        except Exception as e:
+            self.logger.exception("Unknown error while communicating with NZBGet")
+            return False, str(e)
         return True, ""
 
     def add_link(self, link, title, category):

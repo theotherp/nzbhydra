@@ -402,10 +402,10 @@ function ConfigBoxService($http, $q) {
         checkCaps: checkCaps
     };
 
-    function checkConnection(url, params) {
+    function checkConnection(url, settings) {
         var deferred = $q.defer();
 
-        $http.get(url, {params: params}).success(function (result) {
+        $http.post(url, settings).success(function (result) {
             //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
             if (result.result) {
                 deferred.resolve();
@@ -422,7 +422,7 @@ function ConfigBoxService($http, $q) {
     function checkCaps(url, params) {
         var deferred = $q.defer();
 
-        $http.get(url, {params: params}).success(function (result) {
+        $http.post(url, params).success(function (result) {
             //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
             if (result.success) {
                 deferred.resolve({ids: result.ids, types: result.types});

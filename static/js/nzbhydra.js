@@ -2671,10 +2671,10 @@ function ConfigBoxService($http, $q) {
         checkCaps: checkCaps
     };
 
-    function checkConnection(url, params) {
+    function checkConnection(url, settings) {
         var deferred = $q.defer();
 
-        $http.get(url, {params: params}).success(function (result) {
+        $http.post(url, settings).success(function (result) {
             //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
             if (result.result) {
                 deferred.resolve();
@@ -2691,7 +2691,7 @@ function ConfigBoxService($http, $q) {
     function checkCaps(url, params) {
         var deferred = $q.defer();
 
-        $http.get(url, {params: params}).success(function (result) {
+        $http.post(url, params).success(function (result) {
             //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
             if (result.success) {
                 deferred.resolve({ids: result.ids, types: result.types});
@@ -4374,7 +4374,7 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
     function checkBeforeClose(scope, model) {
         var deferred = $q.defer();
         if (!scope.needsConnectionTest) {
-            checkCaps(model).then(function () {
+            checkCaps(scope, model).then(function () {
                 deferred.resolve();
             }, function () {
                 deferred.reject();
@@ -4383,17 +4383,17 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
             blockUI.start("Testing connection...");
             scope.spinnerActive = true;
             var url;
-            var params;
+            var settings;
             if (model.type == "newznab") {
                 url = "internalapi/test_newznab";
-                params = {host: model.host, apikey: model.apikey};
+                settings = {host: model.host, apikey: model.apikey};
             } else if (model.type == "omgwtf") {
                 url = "internalapi/test_omgwtf";
-                params = {username: model.username, apikey: model.apikey};
+                settings = {username: model.username, apikey: model.apikey};
             }
 
-            ConfigBoxService.checkConnection(url, params).then(function () {
-                    checkCaps(model).then(function () {
+            ConfigBoxService.checkConnection(url, JSON.stringify(settings)).then(function () {
+                    checkCaps(scope, model).then(function () {
                         blockUI.reset();
                         scope.spinnerActive = false;
                         growl.info("Connection to the indexer tested successfully");
@@ -4416,14 +4416,14 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
 
     }
 
-    function checkCaps(model) {
+    function checkCaps(scope, model) {
         var deferred = $q.defer();
         var url = "internalapi/test_caps";
-        var params = {indexer: model.name, apikey: model.apikey, host: model.host};
+        var settings = {indexer: model.name, apikey: model.apikey, host: model.host};
         if (angular.isUndefined(model.search_ids) || angular.isUndefined(model.searchTypes)) {
 
             blockUI.start("New indexer found. Testing its capabilities. This may take a bit...");
-            ConfigBoxService.checkCaps(url, params).then(
+            ConfigBoxService.checkCaps(url, JSON.stringify(settings)).then(
                 function (data) {
                     blockUI.reset();
                     scope.spinnerActive = false;
@@ -4473,8 +4473,7 @@ function DownloaderCheckBeforeCloseService($q, ConfigBoxService, growl, ModalSer
             scope.spinnerActive = true;
             blockUI.start("Testing connection...");
             var url = "internalapi/test_downloader";
-
-            ConfigBoxService.checkConnection(url, {settings: model}).then(function () {
+            ConfigBoxService.checkConnection(url, JSON.stringify(model)).then(function () {
                     blockUI.reset();
                     scope.spinnerActive = false;
                     growl.info("Connection to the downloader tested successfully");

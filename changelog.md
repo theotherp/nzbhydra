@@ -8,6 +8,7 @@ Fixed: omgwtfnzbs.org results are parsed correctly and will not be skipped.
 
 Fixed: If results are incomplete and not added to the database they're not included in the results either.
 
+Fixed: Config did not like downloader passwords with certain special characters.  
 
 ### 0.2.7
 Added: Support multiple downloaders.
