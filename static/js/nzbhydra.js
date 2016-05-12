@@ -773,7 +773,7 @@ function formatDate(dateFilter) {
             }
             
             var t = timestamp * 1000;
-            t = dateFilter(t, 'yyyy-MM-dd HH:mm:ss Z');
+            t = dateFilter(t, 'yyyy-MM-dd HH:mm');
             return t;
         } else {
             return "";
@@ -781,6 +781,18 @@ function formatDate(dateFilter) {
     }
 }
 formatDate.$inject = ["dateFilter"];
+
+angular
+    .module('nzbhydraApp')
+    .filter('reformatDate', reformatDate);
+
+function reformatDate() {
+    return function (date) {
+        //Date in database is saved as UTC without timezone information
+        return moment(date, "ddd, D MMM YYYY HH:mm:ss z").utcOffset(240).format("YYYY-MM-DD HH:mm");
+        
+    }
+}
 angular
     .module('nzbhydraApp')
     .directive('indexerInput', indexerInput);
