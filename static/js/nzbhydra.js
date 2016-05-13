@@ -1083,8 +1083,12 @@ function addableNzb() {
     };
 
     function controller($scope, NzbDownloadService, growl) {
-        $scope.cssClass = $scope.downloader.type == "sabnzbd" ? "sabnzbd" : "nzbget";
-        
+        if ($scope.downloader.iconCssClass) {
+            $scope.cssClass = "fa fa-" + $scope.downloader.iconCssClass.replace("fa-","").replace("fa ", ""); 
+        } else {
+            $scope.cssClass = $scope.downloader.type == "sabnzbd" ? "sabnzbd" : "nzbget";
+        }
+            
         $scope.add = function () {
             $scope.cssClass = "nzb-spinning";
             NzbDownloadService.download($scope.downloader, [$scope.searchResultId]).then(function (response) {
@@ -4348,6 +4352,15 @@ function getDownloaderBoxFields(model, parentModel, isInitial) {
                     {name: 'Upload NZB', value: 'nzb'}
                 ],
                 help: "How NZBs are added to the downloader, either by sending a link to the NZB or by uploading the NZB data"
+            }
+        },
+        {
+            key: 'iconCssClass',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'Icon CSS class',
+                help: 'Copy an icon name from http://fontawesome.io/examples/ (e.g. "film")'
             }
         }
     ]);

@@ -13,8 +13,12 @@ function addableNzb() {
     };
 
     function controller($scope, NzbDownloadService, growl) {
-        $scope.cssClass = $scope.downloader.type == "sabnzbd" ? "sabnzbd" : "nzbget";
-        
+        if ($scope.downloader.iconCssClass) {
+            $scope.cssClass = "fa fa-" + $scope.downloader.iconCssClass.replace("fa-","").replace("fa ", ""); 
+        } else {
+            $scope.cssClass = $scope.downloader.type == "sabnzbd" ? "sabnzbd" : "nzbget";
+        }
+            
         $scope.add = function () {
             $scope.cssClass = "nzb-spinning";
             NzbDownloadService.download($scope.downloader, [$scope.searchResultId]).then(function (response) {

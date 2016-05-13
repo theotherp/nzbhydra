@@ -1502,6 +1502,15 @@ function getDownloaderBoxFields(model, parentModel, isInitial) {
                 ],
                 help: "How NZBs are added to the downloader, either by sending a link to the NZB or by uploading the NZB data"
             }
+        },
+        {
+            key: 'iconCssClass',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'Icon CSS class',
+                help: 'Copy an icon name from http://fontawesome.io/examples/ (e.g. "film")'
+            }
         }
     ]);
 

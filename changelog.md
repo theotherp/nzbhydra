@@ -8,6 +8,8 @@ Added: Make sure that indexers' and downloaders' names are unique.
 
 Added: Remember state of indexer status box on search results page and remember sorting.
 
+Added: Popover name of downloader and allow to select an icon from http://fontawesome.io/icons/ instead of the default icon.
+
 ### 0.2.9
 Fixed: NZB link should work with URL base.
 
