@@ -67,7 +67,6 @@ function SearchService($http) {
         
 
         uri.addQuery("category", category);
-        console.log("Calling " + uri.toString());
         lastExecutedQuery = uri;
         return $http.get(uri.toString()).then(processData);
 
@@ -77,7 +76,6 @@ function SearchService($http) {
         lastExecutedQuery.removeQuery("offset");
         lastExecutedQuery.addQuery("offset", offset);
 
-        console.log("Calling " + lastExecutedQuery);
         return $http.get(lastExecutedQuery.toString()).then(processData);
     }
 

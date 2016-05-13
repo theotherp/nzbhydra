@@ -199,7 +199,6 @@ angular
             wrapper: ['settingWrapper', 'bootstrapHasError']
         });
 
-
         formlyConfigProvider.setType({
             name: 'horizontalMultiselect',
             defaultOptions: {
@@ -279,8 +278,6 @@ angular
                 $scope.showBox = showBox;
                 $scope.isInitial = false;
 
-                console.log($scope);
-
                 $scope.presets = $scope.options.data.presets;
 
                 function _showBox(model, parentModel, isInitial, callback) {
@@ -293,7 +290,7 @@ angular
                                 return model;
                             },
                             fields: function () {
-                                return $scope.options.data.fieldsFunction(model.type, parentModel);
+                                return $scope.options.data.fieldsFunction(model, parentModel, isInitial);
                             },
                             isInitial: function () {
                                 return isInitial
@@ -356,6 +353,7 @@ angular.module('nzbhydraApp').controller('ConfigBoxInstanceController', function
     $scope.needsConnectionTest = false;
     
     $scope.obSubmit = function () {
+        console.log($scope);
         if ($scope.form.$valid) {
             
             var a = data.checkBeforeClose($scope, model).then(function() {

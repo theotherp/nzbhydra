@@ -146,6 +146,7 @@ def get_nzb_downloads(page=0, limit=100, type=None):
     downloads = {"totalDownloads": total_downloads, "nzbDownloads": nzb_downloads}
     return downloads
 
+
 #((Search.identifier_value == MovieIdCache.imdb) & (Search.identifier_key == "imdbid"))
 def get_search_requests(page=0, limit=100, type=None):
     query = Search().select(Search.time, Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type, Search.username, TvIdCache.title.alias("tvtitle"), MovieIdCache.title.alias("movietitle")).join(TvIdCache, JOIN.LEFT_OUTER, on=(

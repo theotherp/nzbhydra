@@ -1436,7 +1436,6 @@ function SearchService($http) {
         
 
         uri.addQuery("category", category);
-        console.log("Calling " + uri.toString());
         lastExecutedQuery = uri;
         return $http.get(uri.toString()).then(processData);
 
@@ -1446,7 +1445,6 @@ function SearchService($http) {
         lastExecutedQuery.removeQuery("offset");
         lastExecutedQuery.addQuery("offset", offset);
 
-        console.log("Calling " + lastExecutedQuery);
         return $http.get(lastExecutedQuery.toString()).then(processData);
     }
 
@@ -2480,7 +2478,6 @@ angular
             wrapper: ['settingWrapper', 'bootstrapHasError']
         });
 
-
         formlyConfigProvider.setType({
             name: 'horizontalMultiselect',
             defaultOptions: {
@@ -2560,8 +2557,6 @@ angular
                 $scope.showBox = showBox;
                 $scope.isInitial = false;
 
-                console.log($scope);
-
                 $scope.presets = $scope.options.data.presets;
 
                 function _showBox(model, parentModel, isInitial, callback) {
@@ -2574,7 +2569,7 @@ angular
                                 return model;
                             },
                             fields: function () {
-                                return $scope.options.data.fieldsFunction(model.type, parentModel);
+                                return $scope.options.data.fieldsFunction(model, parentModel, isInitial);
                             },
                             isInitial: function () {
                                 return isInitial
@@ -2637,6 +2632,7 @@ angular.module('nzbhydraApp').controller('ConfigBoxInstanceController', ["$scope
     $scope.needsConnectionTest = false;
     
     $scope.obSubmit = function () {
+        console.log($scope);
         if ($scope.form.$valid) {
             
             var a = data.checkBeforeClose($scope, model).then(function() {
@@ -3873,7 +3869,7 @@ function getIndexerPresets() {
     ];
 }
 
-function getIndexerBoxFields(type, parentModel) {
+function getIndexerBoxFields(model, parentModel, isInitial) {
     var fieldset = [];
 
     fieldset.push({
@@ -3885,7 +3881,7 @@ function getIndexerBoxFields(type, parentModel) {
         }
     });
 
-    if (type == 'newznab') {
+    if (model.type == 'newznab') {
         fieldset.push(
             {
                 key: 'name',
@@ -3899,14 +3895,17 @@ function getIndexerBoxFields(type, parentModel) {
                 validators: {
                     uniqueName: {
                         expression: function (viewValue) {
-                            return _.pluck(parentModel, "name").indexOf(viewValue) == -1;
+                            if (isInitial || viewValue != model.name) {
+                                return _.pluck(parentModel, "name").indexOf(viewValue) == -1;
+                            }
+                            return true;
                         },
                         message: '"Indexer \\"" + $viewValue + "\\" already exists"'
                     }
                 }
             })
     }
-    if (type == 'newznab') {
+    if (model.type == 'newznab') {
         fieldset.push(
             {
                 key: 'host',
@@ -3928,7 +3927,7 @@ function getIndexerBoxFields(type, parentModel) {
         )
     }
 
-    if (type == 'newznab' || type == 'omgwtf') {
+    if (model.type == 'newznab' || model.type == 'omgwtf') {
         fieldset.push(
             {
                 key: 'apikey',
@@ -3949,7 +3948,7 @@ function getIndexerBoxFields(type, parentModel) {
         )
     }
 
-    if (type == 'omgwtf') {
+    if (model.type == 'omgwtf') {
         fieldset.push(
             {
                 key: 'username',
@@ -3993,7 +3992,7 @@ function getIndexerBoxFields(type, parentModel) {
             }
         });
 
-    if (type == "newznab") {
+    if (model.type == "newznab") {
         fieldset.push(
             {
                 key: 'hitLimit',
@@ -4052,7 +4051,7 @@ function getIndexerBoxFields(type, parentModel) {
     }
 
 
-    if (type != "womble") {
+    if (model.type != "womble") {
         fieldset.push(
             {
                 key: 'preselect',
@@ -4081,7 +4080,7 @@ function getIndexerBoxFields(type, parentModel) {
         )
     }
 
-    if (type == 'newznab') {
+    if (model.type == 'newznab') {
         fieldset.push(
             {
                 key: 'search_ids',
@@ -4116,7 +4115,7 @@ function getIndexerBoxFields(type, parentModel) {
         )
     }
 
-    if (type == 'newznab') {
+    if (model.type == 'newznab') {
         fieldset.push(
             {
                 type: 'horizontalCheckCaps',
@@ -4129,7 +4128,7 @@ function getIndexerBoxFields(type, parentModel) {
         )
     }
 
-    if (type == 'nzbindex') {
+    if (model.type == 'nzbindex') {
         fieldset.push(
             {
                 key: 'generalMinSize',
@@ -4147,7 +4146,7 @@ function getIndexerBoxFields(type, parentModel) {
 }
 
 
-function getDownloaderBoxFields(type, parentModel) {
+function getDownloaderBoxFields(model, parentModel, isInitial) {
     var fieldset = [];
 
     fieldset = _.union(fieldset, [
@@ -4170,7 +4169,10 @@ function getDownloaderBoxFields(type, parentModel) {
             validators: {
                 uniqueName: {
                     expression: function (viewValue) {
-                        return _.pluck(parentModel, "name").indexOf(viewValue) == -1;
+                        if (isInitial || viewValue != model.name) {
+                            return _.pluck(parentModel, "name").indexOf(viewValue) == -1;
+                        } 
+                        return true;
                     },
                     message: '"Downloader \\"" + $viewValue + "\\" already exists"'
                 }
@@ -4178,7 +4180,7 @@ function getDownloaderBoxFields(type, parentModel) {
             
         }]);
 
-    if (type == "nzbget") {
+    if (model.type == "nzbget") {
         fieldset = _.union(fieldset, [{
             key: 'host',
             type: 'horizontalInput',
@@ -4220,7 +4222,7 @@ function getDownloaderBoxFields(type, parentModel) {
                     label: 'Use SSL'
                 }
             }]);
-    } else if (type == "sabnzbd") {
+    } else if (model.type == "sabnzbd") {
         fieldset.push({
             key: 'url',
             type: 'horizontalInput',
@@ -4272,7 +4274,7 @@ function getDownloaderBoxFields(type, parentModel) {
     ]);
 
 
-    if (type == "sabnzbd") {
+    if (model.type == "sabnzbd") {
         fieldset.push({
             key: 'apikey',
             type: 'horizontalInput',
