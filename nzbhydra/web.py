@@ -939,8 +939,8 @@ def internalapi_getversionhistory():
 @requires_auth("main")
 def internalapi_getchangelog():
     logger.debug("Get changelog request")
-    _, current_version = get_current_version()
-    changelog = getChangelog(current_version)
+    _, current_version_readable = get_current_version()
+    changelog = getChangelog(current_version_readable)
     return jsonify({"changelog": changelog})
 
 
@@ -948,13 +948,13 @@ def internalapi_getchangelog():
 @requires_auth("main")
 def internalapi_getversions():
     logger.debug("Get versions request")
-    _, current_version = get_current_version()
-    _, rep_version = get_rep_version()
+    current_version, current_version_readable = get_current_version()
+    rep_version, rep_version_readable = get_rep_version()
 
-    versionsInfo = {"currentVersion": str(current_version), "repVersion": str(rep_version), "updateAvailable": rep_version > current_version}
+    versionsInfo = {"currentVersion": str(current_version_readable), "repVersion": str(rep_version_readable), "updateAvailable": rep_version > current_version}
 
     if rep_version > current_version:
-        changelog = getChangelog(current_version)
+        changelog = getChangelog(current_version_readable)
         versionsInfo["changelog"] = changelog
 
     return jsonify(versionsInfo)

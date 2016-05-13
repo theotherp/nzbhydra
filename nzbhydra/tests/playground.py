@@ -13,4 +13,5 @@ def versiontuple(v):
         filled.append(point.zfill(8))
     return tuple(filled)
 
-print(versiontuple("0.2.0") > versiontuple("0.0.1a103"))
+print(versiontuple("0.2.10") > versiontuple("0.2.9"))
+print("0.2.91" > "0.2.9")
