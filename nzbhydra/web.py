@@ -252,7 +252,7 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
                     logger.debug("Access granted by API key")
                     allowed = True
                 else:
-                    logger.warn("API access qith invalid API key from %s" % getIp())
+                    logger.warn("API access with invalid API key from %s" % getIp())
             else:
                 allowed = isAllowed(authType)
             if allowed:
