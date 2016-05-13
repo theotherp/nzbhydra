@@ -60,6 +60,7 @@
     "angular-messages": "~1.5.0",
     "angular-aria": "^1.5.0",
     "angular-ui-router-title": "^0.0.4",
-    "moment-timezone": "^0.5.4"
+    "moment-timezone": "^0.5.4",
+    "angular-cookies": "^1.5.5"
   }
 }

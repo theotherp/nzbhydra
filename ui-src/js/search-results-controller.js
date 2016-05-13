@@ -3,10 +3,17 @@ angular
     .controller('SearchResultsController', SearchResultsController);
 
 //SearchResultsController.$inject = ['blockUi'];
-function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, NzbDownloadService, SearchService, ConfigService) {
+function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, $cookies, SearchService, ConfigService) {
 
-    $scope.sortPredicate = "epoch";
-    $scope.sortReversed = true;
+    
+    if (angular.isDefined($cookies.getObject("sorting"))) {
+        var sorting = $cookies.getObject("sorting");
+        $scope.sortPredicate = sorting.predicate;
+        $scope.sortReversed = sorting.reversed;
+    } else {
+        $scope.sortPredicate = "epoch";
+        $scope.sortReversed = true;
+    }
     $scope.limitTo = 100;
     $scope.offset = 0;
     //Handle incoming data
@@ -17,7 +24,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.doShowDuplicates = ConfigService.getSafe().searching.alwaysShowDuplicates;
     console.log(ConfigService.getSafe().alwaysShowDuplicates);
     $scope.selected = [];
-    $scope.indexerStatusesExpanded = false;
+    
+    $scope.indexerStatusesExpanded = angular.isDefined($cookies.get("indexerStatusesExpanded")) ? $cookies.get("indexerStatusesExpanded") : false;
     
     $scope.countFilteredOut = 0;
 
@@ -30,14 +38,12 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         $scope.indexerResultsInfo[ps.indexer.toLowerCase()] = {loadedResults: ps.loaded_results};
     });
     
-
     //Process results
     $scope.results = $stateParams.results;
     $scope.total = $stateParams.total;
     $scope.resultsCount = $stateParams.resultsCount;
     $scope.filteredResults = sortAndFilter($scope.results);
     stopBlocking();
-
 
     //Returns the content of the property (defined by the current sortPredicate) of the first group element 
     $scope.firstResultPredicate = firstResultPredicate;
@@ -74,6 +80,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
             }
             $scope.sortPredicate = predicate;
             $scope.filteredResults = sortAndFilter($scope.results);
+            $cookies.putObject("sorting", {predicate: predicate, reversed: $scope.sortReversed});
             blockUI.reset();
         });
     }
@@ -130,8 +137,14 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         }
 
         function getTitleGroupFirstElementsSortPredicate(titleGroup) {
-            var sortPredicateValue = titleGroup[0][0][$scope.sortPredicate];
-            return $scope.sortReversed ? -sortPredicateValue : sortPredicateValue;
+            var sortPredicateValue;
+            if ($scope.sortPredicate == "title") {
+                sortPredicateValue = titleGroup[0][0].title.toLowerCase();
+            } else {
+                sortPredicateValue = titleGroup[0][0][$scope.sortPredicate];
+            }
+            
+            return sortPredicateValue;
         }
 
         var filtered = _.chain(results)
@@ -144,6 +157,9 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
             //And then sort the title group using its first hashgroup's first item (the group itself is already sorted and so are the hash groups)    
             .sortBy(getTitleGroupFirstElementsSortPredicate)
             .value();
+        if ($scope.sortReversed) {
+            filtered = filtered.reverse();
+        }
         if ($scope.countFilteredOut > 0) {
             growl.info("Filtered " + $scope.countFilteredOut + " of the retrieved results");
         }
@@ -196,6 +212,12 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     
     $scope.invertSelection = function invertSelection() {
         $scope.selected = _.difference($scope.results, $scope.selected);
+    };
+    
+    $scope.toggleIndexerStatuses = function() {
+        $scope.indexerStatusesExpanded = !$scope.indexerStatusesExpanded;
+        $cookies.put("indexerStatusesExpanded", $scope.indexerStatusesExpanded);
+        console.log($cookies.get("indexerStatusesExpanded"));
     }
 
 }

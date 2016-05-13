@@ -6,6 +6,8 @@ Fixed even more: Allow special characters in NZBGet username and password.
 
 Added: Make sure that indexers' and downloaders' names are unique.
 
+Added: Remember state of indexer status box on search results page and remember sorting.
+
 ### 0.2.9
 Fixed: NZB link should work with URL base.
 
