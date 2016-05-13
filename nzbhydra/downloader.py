@@ -3,6 +3,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import urllib
+
 from builtins import *
 from builtins import str
 from future import standard_library
@@ -52,17 +54,17 @@ class Nzbget(Downloader):
             password = self.setting.password
         f = furl()
         f.host = host
-        f.username = username
-        f.password = password
         f.scheme = "https" if ssl else "http"
         f.port = port
+        if username is not None and password is not None:
+            f.path.add("%s:%s" % (username, password))
         f.path.add("xmlrpc")
 
         return xmlrpc.client.ServerProxy(f.tostr())
 
     def test(self, setting):
         self.logger.debug("Testing connection to snzbget")
-        rpc = self.get_rpc(setting.host, setting.ssl, setting.port, setting.username, setting.password)
+        rpc = self.get_rpc(setting.host, setting.ssl, setting.port, urllib.quote(setting.username), urllib.quote(setting.password))
 
         try:
             if rpc.writelog('INFO', 'NZB Hydra connected to test connection'):

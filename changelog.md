@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.10
+Fixed even more: Allow special characters in NZBGet username and password.
+
 ### 0.2.9
 Fixed: NZB link should work with URL base.
 
