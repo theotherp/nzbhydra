@@ -1044,7 +1044,7 @@ function getIndexerPresets() {
     ];
 }
 
-function getIndexerBoxFields(type) {
+function getIndexerBoxFields(type, parentModel) {
     var fieldset = [];
 
     fieldset.push({
@@ -1065,7 +1065,15 @@ function getIndexerBoxFields(type) {
                     type: 'text',
                     label: 'Name',
                     required: true,
-                    help: 'Used for identification. Changing the name will lose all history and stats! Also make sure it\'s unique.'
+                    help: 'Used for identification. Changing the name will lose all history and stats!'
+                },
+                validators: {
+                    uniqueName: {
+                        expression: function (viewValue) {
+                            return _.pluck(parentModel, "name").indexOf(viewValue) == -1;
+                        },
+                        message: '"Indexer \\"" + $viewValue + "\\" already exists"'
+                    }
                 }
             })
     }
@@ -1310,7 +1318,7 @@ function getIndexerBoxFields(type) {
 }
 
 
-function getDownloaderBoxFields(type) {
+function getDownloaderBoxFields(type, parentModel) {
     var fieldset = [];
 
     fieldset = _.union(fieldset, [
@@ -1328,8 +1336,15 @@ function getDownloaderBoxFields(type) {
             templateOptions: {
                 type: 'text',
                 label: 'Name',
-                required: true,
-                help: 'Make sure this is unique!'
+                required: true
+            },
+            validators: {
+                uniqueName: {
+                    expression: function (viewValue) {
+                        return _.pluck(parentModel, "name").indexOf(viewValue) == -1;
+                    },
+                    message: '"Downloader \\"" + $viewValue + "\\" already exists"'
+                }
             }
             
         }]);

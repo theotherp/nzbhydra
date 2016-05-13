@@ -2574,7 +2574,7 @@ angular
                                 return model;
                             },
                             fields: function () {
-                                return $scope.options.data.fieldsFunction(model.type);
+                                return $scope.options.data.fieldsFunction(model.type, parentModel);
                             },
                             isInitial: function () {
                                 return isInitial
@@ -2638,14 +2638,16 @@ angular.module('nzbhydraApp').controller('ConfigBoxInstanceController', ["$scope
     
     $scope.obSubmit = function () {
         if ($scope.form.$valid) {
+            
             var a = data.checkBeforeClose($scope, model).then(function() {
                 $uibModalInstance.close($scope);
             });
-            console.log(a);
         } else {
             growl.error("Config invalid. Please check your settings.");
-            angular.forEach($scope.form.$error.required, function (field) {
-                field.$setTouched();
+            angular.forEach($scope.form.$error, function (error) {
+                angular.forEach(error, function (field) {
+                    field.$setTouched();
+                });
             });
         }
     };
@@ -3871,7 +3873,7 @@ function getIndexerPresets() {
     ];
 }
 
-function getIndexerBoxFields(type) {
+function getIndexerBoxFields(type, parentModel) {
     var fieldset = [];
 
     fieldset.push({
@@ -3892,7 +3894,15 @@ function getIndexerBoxFields(type) {
                     type: 'text',
                     label: 'Name',
                     required: true,
-                    help: 'Used for identification. Changing the name will lose all history and stats! Also make sure it\'s unique.'
+                    help: 'Used for identification. Changing the name will lose all history and stats!'
+                },
+                validators: {
+                    uniqueName: {
+                        expression: function (viewValue) {
+                            return _.pluck(parentModel, "name").indexOf(viewValue) == -1;
+                        },
+                        message: '"Indexer \\"" + $viewValue + "\\" already exists"'
+                    }
                 }
             })
     }
@@ -4137,7 +4147,7 @@ function getIndexerBoxFields(type) {
 }
 
 
-function getDownloaderBoxFields(type) {
+function getDownloaderBoxFields(type, parentModel) {
     var fieldset = [];
 
     fieldset = _.union(fieldset, [
@@ -4155,8 +4165,15 @@ function getDownloaderBoxFields(type) {
             templateOptions: {
                 type: 'text',
                 label: 'Name',
-                required: true,
-                help: 'Make sure this is unique!'
+                required: true
+            },
+            validators: {
+                uniqueName: {
+                    expression: function (viewValue) {
+                        return _.pluck(parentModel, "name").indexOf(viewValue) == -1;
+                    },
+                    message: '"Downloader \\"" + $viewValue + "\\" already exists"'
+                }
             }
             
         }]);

@@ -293,7 +293,7 @@ angular
                                 return model;
                             },
                             fields: function () {
-                                return $scope.options.data.fieldsFunction(model.type);
+                                return $scope.options.data.fieldsFunction(model.type, parentModel);
                             },
                             isInitial: function () {
                                 return isInitial
@@ -357,14 +357,16 @@ angular.module('nzbhydraApp').controller('ConfigBoxInstanceController', function
     
     $scope.obSubmit = function () {
         if ($scope.form.$valid) {
+            
             var a = data.checkBeforeClose($scope, model).then(function() {
                 $uibModalInstance.close($scope);
             });
-            console.log(a);
         } else {
             growl.error("Config invalid. Please check your settings.");
-            angular.forEach($scope.form.$error.required, function (field) {
-                field.$setTouched();
+            angular.forEach($scope.form.$error, function (error) {
+                angular.forEach(error, function (field) {
+                    field.$setTouched();
+                });
             });
         }
     };

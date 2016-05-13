@@ -4,6 +4,8 @@
 ### 0.2.10
 Fixed even more: Allow special characters in NZBGet username and password.
 
+Added: Make sure that indexers' and downloaders' names are unique.
+
 ### 0.2.9
 Fixed: NZB link should work with URL base.
 
