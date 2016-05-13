@@ -14,11 +14,7 @@ function hydraupdates() {
             $scope.currentVersion = data.data.currentVersion;
             $scope.repVersion = data.data.repVersion;
             $scope.updateAvailable = data.data.updateAvailable;
-            if ($scope.repVersion > $scope.currentVersion) {
-                UpdateService.getChangelog().then(function(data) {
-                    $scope.changelog = data.data.changelog;
-                })
-            }
+            $scope.changelog = data.data.changelog;
         });
         
         UpdateService.getVersionHistory().then(function(data) {

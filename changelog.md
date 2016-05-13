@@ -4,7 +4,7 @@
 ### 0.2.91
 Fixed even more: Allow special characters in NZBGet username and password.
 
-Changed: Jumped to version 0.2.91 because I'm an idiot and the version check did a string comparison, so 0.2.91 was the next minor version that would be found as an update. 
+Changed: Jumped to version 0.2.91 because I'm an idiot and the version check did a string comparison, so 0.2.91 was the next minor version that would be found as an update. Also fixed some bugs in the changelog retrieval. 
 
 Added: Make sure that indexers' and downloaders' names are unique.
 

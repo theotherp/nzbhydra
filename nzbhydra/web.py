@@ -954,7 +954,7 @@ def internalapi_getversions():
     versionsInfo = {"currentVersion": str(current_version_readable), "repVersion": str(rep_version_readable), "updateAvailable": rep_version > current_version}
 
     if rep_version > current_version:
-        changelog = getChangelog(current_version_readable)
+        changelog = getChangelog(current_version_readable, rep_version_readable)
         versionsInfo["changelog"] = changelog
 
     return jsonify(versionsInfo)

@@ -23,6 +23,8 @@ currentVersion = None
 currentVersionText = None
 updateManager = None
 
+changelogCache = {}
+
 
 def versiontuple(v):
     filled = []
@@ -70,10 +72,13 @@ def is_new_version_available():
 
 
 
-def getChangelog(currentVersion):
+def getChangelog(currentVersion, repVersion):
+    if repVersion in changelogCache:
+        return changelogCache[repVersion]
     changelog = getUpdateManager().getChangelogFromRepository()
     if changelog is None:
         return None
+    changelogCache[repVersion] = changelog
     return getChangesSince(changelog, currentVersion)
 
 
@@ -94,7 +99,7 @@ def getChangesSince(changelog, oldVersion=None):
     changelog = changelog[start:]
     if oldVersion:
         try:
-            end = changelog.index(("### %s" % oldVersion).strip())
+            end = changelog.find(("### %s" % oldVersion).strip(), start)
             changelog = changelog[:end]
         except ValueError:
             logger.exception("Err while finding current version in changelog. Will return the whole changelog")
