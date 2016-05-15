@@ -460,9 +460,9 @@ api_search.make_cache_key = make_request_cache_key
 @app.route("/details/<path:guid>")
 @requires_auth("main")
 def get_details(guid):
-    # GUID is not the GUID-item from the RSS but the newznab GUID which in our case is just a rison string 
-    d = rison.loads(urlparse.unquote(guid))
-    details_link = get_details_link(d["indexer"], d["indexerguid"])
+    searchResultId = int(guid[len("nzbhydrasearchresult"):])
+    searchResult = SearchResult.get(SearchResult.id == searchResultId)
+    details_link = get_details_link(searchResult.indexer.name, searchResult.guid)
     if details_link:
         return redirect(details_link)
     return "Unable to find details", 500

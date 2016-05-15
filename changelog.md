@@ -3,6 +3,10 @@
 ----------
 ### 0.2.92
 
+Fixed: /details links wouldn't work.
+
+### 0.2.92
+
 Fixed: Bug report info generating should work again.
 
 ### 0.2.91
