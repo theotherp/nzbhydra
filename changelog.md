@@ -1,6 +1,10 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.92
+
+Fixed: Bug report info generating should work again.
+
 ### 0.2.91
 Fixed even more: Allow special characters in NZBGet username and password.
 

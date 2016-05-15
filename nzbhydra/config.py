@@ -586,15 +586,22 @@ def getSettingsToHide():
         ("main.apikey", settings.main.apikey),
         ("main.externalUrl", settings.main.externalUrl),
         ("main.host", settings.main.host),
-        ("sabnzbd.apikey", settings.downloader.sabnzbd.apikey),
-        ("sabnzbd.url", settings.downloader.sabnzbd.url),
-        ("nzbget.host", settings.downloader.nzbget.host),
     ]
+    for i, downloader in enumerate(settings.downloaders):
+        if hasattr(downloader, "apikey"):
+            hideThese.append(("downloaders[%d].apikey" % i, downloader.apikey))
+        if hasattr(downloader, "username"):
+            hideThese.append(("downloaders[%d].username" % i, downloader.username))
+        if hasattr(downloader, "password"):
+            hideThese.append(("downloaders[%d].password" % i, downloader.password))
     hideThese.extend([("auth.username", x.username) for x in settings.auth.users])
+    hideThese.extend([("auth.password", x.password) for x in settings.auth.users])
     for i, indexer in enumerate(settings.indexers):
         if indexer.type in ["omgwtf", "newznab"]:
-            hideThese.append(("indexers[%d].apikey" % i, indexer.apikey))
-            hideThese.append(("indexers[%d].username" % i, indexer.username))
+            if hasattr(indexer, "apikey"): 
+                hideThese.append(("indexers[%d].apikey" % i, indexer.apikey))
+            if hasattr(indexer, "username"):
+                hideThese.append(("indexers[%d].username" % i, indexer.username))
     return hideThese
 
 
