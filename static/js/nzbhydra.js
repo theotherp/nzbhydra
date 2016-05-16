@@ -2619,7 +2619,7 @@ angular
                 }
 
                 $scope.addEntry = function (entriesCollection, preset) {
-                    var model = $scope.options.data.defaultModel;
+                    var model = angular.copy($scope.options.data.defaultModel);
                     if (angular.isDefined(preset)) {
                         _.extend(model, preset);
                     }

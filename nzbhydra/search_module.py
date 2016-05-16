@@ -307,7 +307,7 @@ class SearchModule(object):
                 continue
 
             try:
-                request, papiaccess, indexerStatus = self.get_url_with_papi_access(query, "search", False)
+                request, papiaccess, indexerStatus = self.get_url_with_papi_access(query, "search", saveToDb=False)
                 papiaccess.indexer_search = psearch
 
                 executed_queries.add(query)
@@ -348,9 +348,6 @@ class SearchModule(object):
                 papiaccess.response_successful = False
             except Exception as e:
                 self.exception("An error error occurred while searching: %s", e)
-                if str(e) == "database is locked":
-                    self.logger.error("Database is locked: Here's more info:")
-                    self.logger.error(json.dumps(e))
                 if papiaccess is not None:
                     papiaccess.error = "Unknown error :%s" % e
                     papiaccess.response_successful = False

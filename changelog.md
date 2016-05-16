@@ -4,7 +4,9 @@
 ### 0.2.94
 Probably not fixed but less likely: Database is locked.
  
-Fixed: Details link would point to "http://api.indexer.com/details/..." and not work. 
+Fixed: Details link would point to "http://api.indexer.com/details/..." and not work.
+ 
+Fixed: When adding multiple indexers one after the other the data from the old indexer would be still there.
 
 ### 0.2.93
 
