@@ -8,6 +8,8 @@ Fixed: Details link would point to "http://api.indexer.com/details/..." and not 
  
 Fixed: When adding multiple indexers one after the other the data from the old indexer would be still there.
 
+Added: Option if IP addresses should be logged. Failed logins will still be logged with the used IP address.
+
 ### 0.2.93
 
 Fixed: /details links wouldn't work.

@@ -258,7 +258,10 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
             if allowed:
                 try:
                     failedLogins.pop(getIp())
-                    logger.info("Successful login from IP %s after failed login tries. Resetting failed login counter." % getIp())
+                    if config.settings.main.logging.logIpAddresses:
+                        logger.info("Successful login from IP %s after failed login tries. Resetting failed login counter." % getIp())
+                    else:
+                        logger.info("Successful login from <HIDDENIP> after failed login tries. Resetting failed login counter.")
                 except KeyError:
                     pass
                 return f(*args, **kwargs)
@@ -385,7 +388,10 @@ def api(args):
     elif args["t"] == "get":
         searchResultId = int(args["id"][len("nzbhydrasearchresult"):])
         searchResult = SearchResult.get(SearchResult.id == searchResultId)
-        logger.info("API request from %s to download %s from %s" % (getIp(), searchResult.title, searchResult.indexer.name))
+        if config.settings.main.logging.logIpAddresses:
+            logger.info("API request from %s to download %s from %s" % (getIp(), searchResult.title, searchResult.indexer.name))
+        else:
+            logger.info("API request to download %s from %s" % (searchResult.title, searchResult.indexer.name))
         return extract_nzb_infos_and_return_response(searchResultId)
     elif args["t"] == "caps":
         xml = render_template("caps.html")
@@ -484,8 +490,10 @@ internalapi__getnzb_args = {
 def getnzb(args):
     logger.debug("Get NZB request with args %s" % args)
     searchResult = SearchResult.get(SearchResult.id == args["searchresultid"])
-    
-    logger.info("API request from %s to download %s from %s" % (getIp(), searchResult.title, searchResult.indexer.name))
+    if config.settings.main.logging.logIpAddresses:
+        logger.info("API request from %s to download %s from %s" % (getIp(), searchResult.title, searchResult.indexer.name))
+    else:
+        logger.info("API request to download %s from %s" % (searchResult.title, searchResult.indexer.name))
     return extract_nzb_infos_and_return_response(args["searchresultid"], args["downloader"])
 
 
@@ -662,11 +670,14 @@ def extract_nzb_infos_and_return_response(searchResultId, downloader=None):
     if (downloader is None and config.settings.searching.nzbAccessType == NzbAccessTypeSelection.redirect) or (downloader is not None and getDownloaderInstanceByName(downloader).setting.nzbaccesstype == NzbAccessTypeSelection.redirect):
         link, _, _ = get_indexer_nzb_link(searchResultId, "redirect", True)
         if link is not None:
-            logger.info("Redirecting %s to %s" % (getIp(), link))
-            if ipinfo.ispublic(getIp()):
-                logger.info("Info on %s: %s" % (getIp(), ipinfo.country_and_org(getIp()) ) )
+            if config.settings.main.logging.logIpAddresses:
+                logger.info("Redirecting %s to %s" % (getIp(), link))
+                if ipinfo.ispublic(getIp()):
+                    logger.info("Info on %s: %s" % (getIp(), ipinfo.country_and_org(getIp()) ) )
+                else:
+                    logger.info("Info on %s: private / RFC1918 address" % getIp() ) 
             else:
-                logger.info("Info on %s: private / RFC1918 address" % getIp() ) 
+                logger.info("Redirecting to %s" % link)
 
             return redirect(link)
         else:

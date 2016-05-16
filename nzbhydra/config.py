@@ -137,7 +137,8 @@ initialConfig = {
         "logging": {
             "consolelevel": "INFO",
             "logfilename": "nzbhydra.log",
-            "logfilelevel": "INFO"
+            "logfilelevel": "INFO",
+            "logIpAddresses": True
         },
         "port": 5075,
         "repositoryBase": "https://github.com/theotherp",

@@ -3119,6 +3119,14 @@ function ConfigFields($injector) {
                             watcher: {
                                 listener: restartListener
                             }
+                        },
+                        {
+                            key: 'logIpAddresses',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Log IP addresses'
+                            }
                         }
 
 
