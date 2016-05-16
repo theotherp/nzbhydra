@@ -1,7 +1,12 @@
 # NZB Hydra changelog
 
 ----------
-### 0.2.92
+### 0.2.94
+Probably not fixed but less likely: Database is locked.
+ 
+Fixed: Details link would point to "http://api.indexer.com/details/..." and not work. 
+
+### 0.2.93
 
 Fixed: /details links wouldn't work.
 
