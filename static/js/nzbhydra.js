@@ -984,7 +984,7 @@ angular
 function reformatDate() {
     return function (date) {
         //Date in database is saved as UTC without timezone information
-        return moment(date, "ddd, D MMM YYYY HH:mm:ss z").utcOffset(240).format("YYYY-MM-DD HH:mm");
+        return moment.utc(date, "ddd, D MMM YYYY HH:mm:ss z").local().format("YYYY-MM-DD HH:mm");
         
     }
 }
@@ -1401,11 +1401,11 @@ angular
     .module('nzbhydraApp')
     .controller('UpdateFooterController', UpdateFooterController);
 
-function UpdateFooterController($scope, UpdateService, HydraAuthService) {
+function UpdateFooterController($scope, UpdateService, HydraAuthService, bootstrapped) {
 
     $scope.updateAvailable = false;
 
-    $scope.mayUpdate = HydraAuthService.getUserRights().maySeeAdmin;
+    $scope.mayUpdate = HydraAuthService.getUserRights().maySeeAdmin || bootstrapped.maySeeAdmin;
 
     $scope.$on("user:loggedIn", function (event, data) {
         console.log("loggedIn event");
@@ -1440,7 +1440,7 @@ function UpdateFooterController($scope, UpdateService, HydraAuthService) {
     }
 
 }
-UpdateFooterController.$inject = ["$scope", "UpdateService", "HydraAuthService"];
+UpdateFooterController.$inject = ["$scope", "UpdateService", "HydraAuthService", "bootstrapped"];
 
 angular
     .module('nzbhydraApp')

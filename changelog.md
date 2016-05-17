@@ -4,6 +4,8 @@
 ### 0.2.95
 Added: Decide if you want to authenticate using HTTP basic auth or a login form. 
 
+Fixed: Displayed times in stats were all sorts of wrong.  
+
 ### 0.2.94
 Probably not fixed but less likely: Database is locked.
  

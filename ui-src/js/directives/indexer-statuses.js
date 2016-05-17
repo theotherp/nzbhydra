@@ -58,7 +58,7 @@ angular
 function reformatDate() {
     return function (date) {
         //Date in database is saved as UTC without timezone information
-        return moment(date, "ddd, D MMM YYYY HH:mm:ss z").utcOffset(240).format("YYYY-MM-DD HH:mm");
+        return moment.utc(date, "ddd, D MMM YYYY HH:mm:ss z").local().format("YYYY-MM-DD HH:mm");
         
     }
 }
