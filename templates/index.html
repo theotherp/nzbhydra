@@ -14,20 +14,20 @@
 </head>
 <body style="text-align: center">
 <div growl></div>
-<div ng-cloak>
-    <div id="wrap">
+
+    <div id="wrap" ng-cloak>
 
         <div ui-view="header"></div>
 
-        <div>
-            <div style="margin: auto; max-width: 1400px;">
-                <div id="banner"></div>
-                <div class="container-fluid" block-ui="main" ui-view="container">
-                </div>
+
+        <div style="margin: auto; max-width: 1400px;">
+            <div id="banner"></div>
+            <div class="container-fluid" block-ui="main" ui-view="container">
             </div>
-            <div id="push"></div>
         </div>
+        <div id="push"></div>
     </div>
+
 <span ng-controller="UpdateFooterController">
     <div id="footer" ng-if="updateAvailable" ng-cloak>
         <div class="container">
@@ -38,7 +38,9 @@
 
     </div>
 </span>
-</div>
+
+
+
 </body>
 
 <script src="static/js/alllibs.js"></script>
