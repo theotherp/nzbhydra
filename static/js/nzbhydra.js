@@ -4254,6 +4254,13 @@ function getIndexerPresets() {
             name: "NZBGeek",
             host: "https://api.nzbgeek.info",
             search_ids: ["tvdbid", "rid", "imdbid"]
+        },
+        {
+            name: "SimplyNZBs",
+            host: "https://simplynzbs.com",
+            search_ids: ["imdbid", "rid", "tmdbid", "tvdbid", "tvmazeid"],
+            searchTypes: ["tvsearch", "movie"]
+            
         }
     ];
 }

@@ -4,6 +4,8 @@
 ### 0.2.95
 Added: Decide if you want to authenticate using HTTP basic auth or a login form. 
 
+Added: SimplyNZBs added to the presets.
+
 Fixed: Displayed times in stats were all sorts of wrong.  
 
 ### 0.2.94
