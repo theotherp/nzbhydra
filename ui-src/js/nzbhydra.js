@@ -396,18 +396,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                     controller: "SearchResultsController",
                     controllerAs: "srController",
                     options: {
-                        inherit: false
+                        inherit: true
                     },
-                    params: {
-                        results: [],
-                        indexersearches: [],
-                        total: 0,
-                        resultsCount: 0,
-                        minsize: undefined,
-                        maxsize: undefined,
-                        minage: undefined,
-                        maxage: undefined
-                    }, resolve: {
+                    resolve: {
                         loginRequired: loginRequiredSearch,
                         $title: function () {
                             return "Search results"

@@ -396,18 +396,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     controller: "SearchResultsController",
                     controllerAs: "srController",
                     options: {
-                        inherit: false
+                        inherit: true
                     },
-                    params: {
-                        results: [],
-                        indexersearches: [],
-                        total: 0,
-                        resultsCount: 0,
-                        minsize: undefined,
-                        maxsize: undefined,
-                        minage: undefined,
-                        maxage: undefined
-                    }, resolve: {
+                    resolve: {
                         loginRequired: loginRequiredSearch,
                         $title: function () {
                             return "Search results"
@@ -1590,9 +1581,14 @@ function SearchService($http) {
 
 
     var lastExecutedQuery;
+    var lastResults;
 
-    var service = {search: search, loadMore: loadMore};
-    return service;
+    return {
+        search: search,
+        getLastResults: getLastResults,
+        loadMore: loadMore
+    };
+    
 
     function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, indexers) {
         console.log("Category: " + category);
@@ -1680,8 +1676,12 @@ function SearchService($http) {
             }
         });
         
-
-        return {"results": results, "indexersearches": indexersearches, "total": total, "resultsCount": resultsCount}
+        lastResults = {"results": results, "indexersearches": indexersearches, "total": total, "resultsCount": resultsCount};
+        return lastResults;
+    }
+    
+    function getLastResults() {
+        return lastResults;
     }
 }
 SearchService.$inject = ["$http"];
@@ -1704,12 +1704,12 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.limitTo = 100;
     $scope.offset = 0;
     //Handle incoming data
-    $scope.indexersearches = $stateParams.indexersearches;
+    
+    $scope.indexersearches = SearchService.getLastResults().indexersearches;
     $scope.indexerDisplayState = []; //Stores if a indexer's results should be displayed or not
     $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
     $scope.groupExpanded = {};
     $scope.doShowDuplicates = ConfigService.getSafe().searching.alwaysShowDuplicates;
-    console.log(ConfigService.getSafe().alwaysShowDuplicates);
     $scope.selected = [];
     
     $scope.indexerStatusesExpanded = angular.isDefined($cookies.get("indexerStatusesExpanded")) ? $cookies.get("indexerStatusesExpanded") : false;
@@ -1726,9 +1726,9 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     });
     
     //Process results
-    $scope.results = $stateParams.results;
-    $scope.total = $stateParams.total;
-    $scope.resultsCount = $stateParams.resultsCount;
+    $scope.results = SearchService.getLastResults().results;
+    $scope.total = SearchService.getLastResults().total;
+    $scope.resultsCount = SearchService.getLastResults().resultsCount;
     $scope.filteredResults = sortAndFilter($scope.results);
     stopBlocking();
 
@@ -2035,12 +2035,8 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.startSearch = function () {
         blockUI.start("Searching...");
         var indexers = angular.isUndefined($scope.indexers) ? undefined : $scope.indexers.join("|");
-        SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers).then(function (searchResult) {
+        SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers).then(function () {
             $state.go("root.search.results", {
-                results: searchResult.results,
-                indexersearches: searchResult.indexersearches,
-                total: searchResult.total,
-                resultsCount: searchResult.resultsCount,
                 minsize: $scope.minsize,
                 maxsize: $scope.maxsize,
                 minage: $scope.minage,

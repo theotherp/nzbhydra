@@ -17,12 +17,12 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.limitTo = 100;
     $scope.offset = 0;
     //Handle incoming data
-    $scope.indexersearches = $stateParams.indexersearches;
+    
+    $scope.indexersearches = SearchService.getLastResults().indexersearches;
     $scope.indexerDisplayState = []; //Stores if a indexer's results should be displayed or not
     $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
     $scope.groupExpanded = {};
     $scope.doShowDuplicates = ConfigService.getSafe().searching.alwaysShowDuplicates;
-    console.log(ConfigService.getSafe().alwaysShowDuplicates);
     $scope.selected = [];
     
     $scope.indexerStatusesExpanded = angular.isDefined($cookies.get("indexerStatusesExpanded")) ? $cookies.get("indexerStatusesExpanded") : false;
@@ -39,9 +39,9 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     });
     
     //Process results
-    $scope.results = $stateParams.results;
-    $scope.total = $stateParams.total;
-    $scope.resultsCount = $stateParams.resultsCount;
+    $scope.results = SearchService.getLastResults().results;
+    $scope.total = SearchService.getLastResults().total;
+    $scope.resultsCount = SearchService.getLastResults().resultsCount;
     $scope.filteredResults = sortAndFilter($scope.results);
     stopBlocking();
 

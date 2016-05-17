@@ -7,9 +7,14 @@ function SearchService($http) {
 
 
     var lastExecutedQuery;
+    var lastResults;
 
-    var service = {search: search, loadMore: loadMore};
-    return service;
+    return {
+        search: search,
+        getLastResults: getLastResults,
+        loadMore: loadMore
+    };
+    
 
     function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, indexers) {
         console.log("Category: " + category);
@@ -97,7 +102,11 @@ function SearchService($http) {
             }
         });
         
-
-        return {"results": results, "indexersearches": indexersearches, "total": total, "resultsCount": resultsCount}
+        lastResults = {"results": results, "indexersearches": indexersearches, "total": total, "resultsCount": resultsCount};
+        return lastResults;
+    }
+    
+    function getLastResults() {
+        return lastResults;
     }
 }

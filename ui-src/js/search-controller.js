@@ -124,12 +124,8 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.startSearch = function () {
         blockUI.start("Searching...");
         var indexers = angular.isUndefined($scope.indexers) ? undefined : $scope.indexers.join("|");
-        SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers).then(function (searchResult) {
+        SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers).then(function () {
             $state.go("root.search.results", {
-                results: searchResult.results,
-                indexersearches: searchResult.indexersearches,
-                total: searchResult.total,
-                resultsCount: searchResult.resultsCount,
                 minsize: $scope.minsize,
                 maxsize: $scope.maxsize,
                 minage: $scope.minage,
