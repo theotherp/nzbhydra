@@ -9,7 +9,6 @@ import logging
 import unittest
 from pprint import pprint
 
-import arrow
 import pytest
 from builtins import *
 import os
@@ -29,7 +28,7 @@ class TestConfig(unittest.TestCase):
         if os.path.exists("testsettings.cfg"):
             os.remove("testsettings.cfg")
         shutil.copy("testsettings.cfg.orig", "testsettings.cfg")
-        
+
         formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
         stream_handler = logging.StreamHandler(sys.stdout)
         stream_handler.setLevel("DEBUG")
@@ -52,7 +51,7 @@ class TestConfig(unittest.TestCase):
             cfg = testCfg
             cfg["main"]["baseUrl"] = u"https://www.somedomain.com/nzbhydra"
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         self.assertEqual(cfg["main"]["externalUrl"], "https://www.somedomain.com/nzbhydra", json.dumps(cfg))
         self.assertEqual(cfg["main"]["urlBase"], "/nzbhydra")
 
@@ -60,7 +59,7 @@ class TestConfig(unittest.TestCase):
             cfg = testCfg
             cfg["main"]["baseUrl"] = u"https://127.0.0.1/nzbhydra/"
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         self.assertEqual(cfg["main"]["externalUrl"], "https://127.0.0.1/nzbhydra")
         self.assertEqual(cfg["main"]["urlBase"], "/nzbhydra")
 
@@ -68,7 +67,7 @@ class TestConfig(unittest.TestCase):
             cfg = testCfg
             cfg["main"]["baseUrl"] = u"https://www.somedomain.com/"
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         self.assertEqual(cfg["main"]["externalUrl"], "https://www.somedomain.com")
         self.assertIsNone(cfg["main"]["urlBase"])
 
@@ -76,7 +75,7 @@ class TestConfig(unittest.TestCase):
             cfg = testCfg
             cfg["main"]["baseUrl"] = None
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         self.assertIsNone(cfg["main"]["externalUrl"])
         self.assertIsNone(cfg["main"]["urlBase"])
 
@@ -84,7 +83,7 @@ class TestConfig(unittest.TestCase):
             cfg = testCfg
             cfg["main"]["nzbAddingType"] = "direct"
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         self.assertEqual("redirect", cfg["downloader"]["nzbAddingType"])
 
     def testMigration7to8(self):
@@ -119,7 +118,7 @@ class TestConfig(unittest.TestCase):
         with open("testsettings.cfg", "wb") as settingsfile:
             cfg = copy.copy(testCfg)
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         self.assertEqual(2, len(cfg["indexers"]["newznab"]), json.dumps(cfg))
         self.assertEqual("newznab1", cfg["indexers"]["newznab"][0]["name"])
         self.assertEqual("newznab2", cfg["indexers"]["newznab"][1]["name"])
@@ -143,7 +142,7 @@ class TestConfig(unittest.TestCase):
         with open("testsettings.cfg", "wb") as settingsfile:
             cfg = copy.copy(testCfg)
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         self.assertEqual(1, len(cfg["auth"]["users"]), json.dumps(cfg))
         self.assertIsNone(cfg["auth"]["users"][0]["username"])
         self.assertIsNone(cfg["auth"]["users"][0]["password"])
@@ -156,7 +155,7 @@ class TestConfig(unittest.TestCase):
             cfg["main"]["username"] = "u"
             cfg["main"]["password"] = "p"
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         self.assertEqual(1, len(cfg["auth"]["users"]))
         self.assertEqual("u", cfg["auth"]["users"][0]["username"])
         self.assertEqual("p", cfg["auth"]["users"][0]["password"])
@@ -172,7 +171,7 @@ class TestConfig(unittest.TestCase):
             cfg["main"]["adminUsername"] = "au"
             cfg["main"]["adminPassword"] = "ap"
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         self.assertEqual(2, len(cfg["auth"]["users"]))
         self.assertEqual("u", cfg["auth"]["users"][0]["username"])
         self.assertEqual("p", cfg["auth"]["users"][0]["password"])
@@ -193,7 +192,7 @@ class TestConfig(unittest.TestCase):
             cfg["main"]["adminUsername"] = "au"
             cfg["main"]["adminPassword"] = "ap"
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         self.assertEqual(2, len(cfg["auth"]["users"]))
         self.assertEqual("u", cfg["auth"]["users"][0]["username"])
         self.assertEqual("p", cfg["auth"]["users"][0]["password"])
@@ -212,7 +211,7 @@ class TestConfig(unittest.TestCase):
             cfg["main"]["adminUsername"] = "au"
             cfg["main"]["adminPassword"] = "ap"
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         self.assertEqual(2, len(cfg["auth"]["users"]))
         self.assertIsNone(cfg["auth"]["users"][0]["username"])
         self.assertIsNone(cfg["auth"]["users"][0]["password"])
@@ -231,7 +230,7 @@ class TestConfig(unittest.TestCase):
             cfg["main"]["adminUsername"] = "au"
             cfg["main"]["adminPassword"] = "ap"
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         self.assertEqual(2, len(cfg["auth"]["users"]))
         self.assertIsNone(cfg["auth"]["users"][0]["username"])
         self.assertIsNone(cfg["auth"]["users"][0]["password"])
@@ -264,7 +263,7 @@ class TestConfig(unittest.TestCase):
         with open("testsettings.cfg", "wb") as settingsfile:
             cfg = copy.copy(testCfg)
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         self.assertEqual(2, len(cfg["auth"]["users"]))
         self.assertIsNone(cfg["auth"]["users"][0]["username"])
         self.assertEqual("whatever", cfg["auth"]["users"][1]["username"])
@@ -295,18 +294,9 @@ class TestConfig(unittest.TestCase):
         with open("testsettings.cfg", "wb") as settingsfile:
             cfg = copy.copy(testCfg)
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        print(json.dumps(cfg))
+        cfg = Bunch.fromDict(config.loadAndMigrateSettingsFile("testsettings.cfg"))
+
         config.logLogMessages()
-        self.assertIsNone(cfg["indexers"]["binsearch"]["hitLimit"])
-        self.assertIsNone(cfg["indexers"]["nzbclub"]["hitLimit"])
-        self.assertIsNone(cfg["indexers"]["nzbindex"]["hitLimit"])
-        self.assertIsNone(cfg["indexers"]["omgwtfnzbs"]["hitLimit"])
-        self.assertIsNone(cfg["indexers"]["womble"]["hitLimit"])
-        self.assertIsNone(cfg["indexers"]["newznab"][0]["hitLimit"])
-        self.assertIsNone(cfg["indexers"]["newznab"][1]["hitLimit"])
-        self.assertEqual(arrow.get(0), cfg["indexers"]["newznab"][0]["hitLimitResetTime"])
-        self.assertEqual(arrow.get(0), cfg["indexers"]["newznab"][1]["hitLimitResetTime"])
 
     def testGetAnonymizedConfig(self):
         config.settings = {
@@ -389,7 +379,109 @@ class TestConfig(unittest.TestCase):
         with open("testsettings.cfg", "wb") as settingsfile:
             cfg = copy.copy(testCfg)
             json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
+        cfg = config.loadAndMigrateSettingsFile("testsettings.cfg")
         pprint(cfg)
         indexers = list(sorted(cfg["indexers"], key=lambda x: x["name"]))
         self.assertEqual(indexers[0]["name"], "binsearch")
+
+    def testMigration17to18(self):
+        # Authless and admin user
+        testCfg = {
+            "main":
+                {
+                    "configVersion": 17,
+                },
+            "auth": {
+                "users": [
+                    {
+                        "username": "",
+                        "password": "",
+                        "maySeeAdmin": False,
+                        "maySeeStats": False,
+                    },
+                    {
+                        "username": "admin",
+                        "password": "admin",
+                        "maySeeAdmin": True,
+                        "maySeeStats": True,
+                    }
+                ]
+            }
+        }
+        cfg = config.migrateConfig(testCfg)
+        cfg = Bunch.fromDict(cfg)
+
+        self.assertTrue(cfg.auth.restrictAdmin)
+        self.assertTrue(cfg.auth.restrictStats)
+        self.assertFalse(cfg.auth.restrictSearch)
+
+        # Only admin user
+        testCfg = {
+            "main":
+                {
+                    "configVersion": 17,
+                },
+            "auth": {
+                "users": [
+                    {
+                        "username": "admin",
+                        "password": "admin",
+                        "maySeeAdmin": True,
+                        "maySeeStats": True,
+                    }
+                ]
+            }
+        }
+        cfg = config.migrateConfig(testCfg)
+        cfg = Bunch.fromDict(cfg)
+        self.assertTrue(cfg.auth.restrictAdmin)
+        self.assertTrue(cfg.auth.restrictStats)
+        self.assertTrue(cfg.auth.restrictSearch)
+
+        # Normal user and admin user
+        testCfg = {
+            "main":
+                {
+                    "configVersion": 17,
+                },
+            "auth": {
+                "users": [
+                    {
+                        "username": "normal",
+                        "password": "normal",
+                        "maySeeAdmin": False,
+                        "maySeeStats": False,
+                    },
+                    {
+                        "username": "admin",
+                        "password": "admin",
+                        "maySeeAdmin": True,
+                        "maySeeStats": True,
+                    }
+                ]
+            }
+        }
+        cfg = config.migrateConfig(testCfg)
+        cfg = Bunch.fromDict(cfg)
+
+        self.assertTrue(cfg.auth.restrictAdmin)
+        self.assertTrue(cfg.auth.restrictStats)
+        self.assertTrue(cfg.auth.restrictSearch)
+
+        # No users
+        testCfg = {
+            "main":
+                {
+                    "configVersion": 17,
+                },
+            "auth": {
+                "users": [
+                ]
+            }
+        }
+        cfg = config.migrateConfig(testCfg)
+        cfg = Bunch.fromDict(cfg)
+
+        self.assertFalse(cfg.auth.restrictAdmin)
+        self.assertFalse(cfg.auth.restrictStats)
+        self.assertFalse(cfg.auth.restrictSearch)

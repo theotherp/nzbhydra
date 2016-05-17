@@ -3,8 +3,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import codecs
 import hashlib
+import random
 import shutil
+import string
 import traceback
 from contextlib import contextmanager
 from sets import Set
@@ -127,7 +130,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 17,
+        "configVersion": 18,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -143,6 +146,7 @@ initialConfig = {
         "port": 5075,
         "repositoryBase": "https://github.com/theotherp",
         "runThreaded": True,
+        "secret": None,
         "ssl": False,
         "sslcert": None,
         "sslkey": None,
@@ -200,6 +204,10 @@ initialConfig = {
         "userAgent": "NZBHydra"
     },
     "auth": {
+        "authType": "none",
+        "restrictSearch": False,
+        "restrictAdmin": False,
+        "restrictStats": False,
         "users": []
     }
 }
@@ -255,266 +263,315 @@ def version_update(config, version):
         raise
 
 
-def migrate(settingsFilename):
-    with open(settingsFilename) as settingsFile:
-        config = json.load(settingsFile)
-        # CAUTION: Don't forget to increase the default value for configVersion
-        if "configVersion" not in config["main"].keys():
-            config["main"]["configVersion"] = 1
-        if config["main"]["configVersion"] < initialConfig["main"]["configVersion"]:
-            addLogMessage(20, "Migrating config")
-            try:
-                if config["main"]["configVersion"] == 1:
-                    with version_update(config, 2):
-                        sabnzbd = config["downloader"]["sabnzbd"]
-                        if sabnzbd["host"] and sabnzbd["port"]:
-                            addLogMessage(20, "Migrating sabnzbd settings")
-                            f = furl()
-                            f.host = sabnzbd["host"]
-                            f.port = sabnzbd["port"]
-                            f.scheme = "https" if sabnzbd["ssl"] else "http"
-                            f.path.set("/sabnzbd/")
-                            config["downloader"]["sabnzbd"]["url"] = f.url
-                            addLogMessage(20, "Built sabnzbd URL: %s" % f.url)
-                        elif config["downloader"]["downloader"] == "sabnzbd":
-                            addLogMessage(30, "Unable to migrate from incomplete sabnzbd settings. Please set the sabnzbd URL manually")
+def loadAndMigrateSettingsFile(settingsFilename):
+    with codecs.open(settingsFilename, "r", "utf-8") as settingsFile:
+        config = json.load(settingsFile, encoding="utf-8")
+        return migrateConfig(config)
 
-                if config["main"]["configVersion"] == 2:
-                    with version_update(config, 3):
-                        addLogMessage(20, "Updating NZBClub host to https://www.nzbclub.com")
-                        config["indexers"]["NZBClub"]["host"] = "https://www.nzbclub.com"
 
-                if config["main"]["configVersion"] == 3:
-                    with version_update(config, 4):
-                        addLogMessage(20, "Converting Base URL to URL base and external URL")
-                        baseUrl = config["main"]["baseUrl"]
-                        if baseUrl is not None and baseUrl != "":
-                            f = furl(config["main"]["baseUrl"])
-                            if f.path != "/":
-                                config["main"]["urlBase"] = str(f.path)
-                                if config["main"]["urlBase"].endswith("/"):
-                                    config["main"]["urlBase"] = config["main"]["urlBase"][:-1]
-                            else:
-                                config["main"]["urlBase"] = None
-                            config["main"]["externalUrl"] = f.url
-                            if config["main"]["externalUrl"].endswith("/"):
-                                config["main"]["externalUrl"] = config["main"]["externalUrl"][:-1]
-                            addLogMessage(20, "Setting URL base to %s and external URL to %s" % (config["main"]["urlBase"], config["main"]["externalUrl"]))
+def migrateConfig(config):
+    # CAUTION: Don't forget to increase the default value for configVersion
+    if "configVersion" not in config["main"].keys():
+        config["main"]["configVersion"] = 1
+    if config["main"]["configVersion"] < initialConfig["main"]["configVersion"]:
+        addLogMessage(20, "Migrating config")
+        try:
+            if config["main"]["configVersion"] == 1:
+                with version_update(config, 2):
+                    sabnzbd = config["downloader"]["sabnzbd"]
+                    if sabnzbd["host"] and sabnzbd["port"]:
+                        addLogMessage(20, "Migrating sabnzbd settings")
+                        f = furl()
+                        f.host = sabnzbd["host"]
+                        f.port = sabnzbd["port"]
+                        f.scheme = "https" if sabnzbd["ssl"] else "http"
+                        f.path.set("/sabnzbd/")
+                        config["downloader"]["sabnzbd"]["url"] = f.url
+                        addLogMessage(20, "Built sabnzbd URL: %s" % f.url)
+                    elif config["downloader"]["downloader"] == "sabnzbd":
+                        addLogMessage(30, "Unable to migrate from incomplete sabnzbd settings. Please set the sabnzbd URL manually")
+
+            if config["main"]["configVersion"] == 2:
+                with version_update(config, 3):
+                    addLogMessage(20, "Updating NZBClub host to https://www.nzbclub.com")
+                    config["indexers"]["NZBClub"]["host"] = "https://www.nzbclub.com"
+
+            if config["main"]["configVersion"] == 3:
+                with version_update(config, 4):
+                    addLogMessage(20, "Converting Base URL to URL base and external URL")
+                    baseUrl = config["main"]["baseUrl"]
+                    if baseUrl is not None and baseUrl != "":
+                        f = furl(config["main"]["baseUrl"])
+                        if f.path != "/":
+                            config["main"]["urlBase"] = str(f.path)
+                            if config["main"]["urlBase"].endswith("/"):
+                                config["main"]["urlBase"] = config["main"]["urlBase"][:-1]
                         else:
                             config["main"]["urlBase"] = None
-                            config["main"]["externalUrl"] = None
-                        config["main"].pop("baseUrl")
+                        config["main"]["externalUrl"] = f.url
+                        if config["main"]["externalUrl"].endswith("/"):
+                            config["main"]["externalUrl"] = config["main"]["externalUrl"][:-1]
+                        addLogMessage(20, "Setting URL base to %s and external URL to %s" % (config["main"]["urlBase"], config["main"]["externalUrl"]))
+                    else:
+                        config["main"]["urlBase"] = None
+                        config["main"]["externalUrl"] = None
+                    config["main"].pop("baseUrl")
 
-                if config["main"]["configVersion"] == 4:
-                    with version_update(config, 5):
-                        addLogMessage(20, "Converting repository base URL")
-                        if "repositoryBase" in config["main"].keys():
-                            config["main"]["repositoryBase"] = "https://github.com/theotherp"
+            if config["main"]["configVersion"] == 4:
+                with version_update(config, 5):
+                    addLogMessage(20, "Converting repository base URL")
+                    if "repositoryBase" in config["main"].keys():
+                        config["main"]["repositoryBase"] = "https://github.com/theotherp"
 
-                if config["main"]["configVersion"] == 5:
-                    with version_update(config, 6):
-                        if config["downloader"]["nzbAddingType"] == "direct":
-                            addLogMessage(20, 'Removing legacy setting for NZB access "direct" and setting it to redirect. Sorry.')
-                            config["main"]["nzbAddingType"] = "redirect"
+            if config["main"]["configVersion"] == 5:
+                with version_update(config, 6):
+                    if config["downloader"]["nzbAddingType"] == "direct":
+                        addLogMessage(20, 'Removing legacy setting for NZB access "direct" and setting it to redirect. Sorry.')
+                        config["main"]["nzbAddingType"] = "redirect"
 
-                if config["main"]["configVersion"] == 6:
-                    with version_update(config, 7):
-                        for i in range(1, 41):
-                            indexer_cfg = config["indexers"]["newznab%d" % i]
-                            search_ids = indexer_cfg["search_ids"]
-                            indexer_cfg["search_ids"] = list(Set(search_ids))
-                            if len(search_ids) != len(indexer_cfg["search_ids"]):
-                                addLogMessage(20, "Removed duplicate search types from indexer %s" % indexer_cfg["name"])
+            if config["main"]["configVersion"] == 6:
+                with version_update(config, 7):
+                    for i in range(1, 41):
+                        indexer_cfg = config["indexers"]["newznab%d" % i]
+                        search_ids = indexer_cfg["search_ids"]
+                        indexer_cfg["search_ids"] = list(Set(search_ids))
+                        if len(search_ids) != len(indexer_cfg["search_ids"]):
+                            addLogMessage(20, "Removed duplicate search types from indexer %s" % indexer_cfg["name"])
 
-                if config["main"]["configVersion"] == 7:
-                    with version_update(config, 8):
-                        addLogMessage(20, "Renaming keys")
-                        config["indexers"]["binsearch"] = config["indexers"]["Binsearch"]
-                        config["indexers"].pop("Binsearch")
-                        config["indexers"]["nzbclub"] = config["indexers"]["NZBClub"]
-                        config["indexers"].pop("NZBClub")
-                        config["indexers"]["nzbindex"] = config["indexers"]["NZBIndex"]
-                        config["indexers"].pop("NZBIndex")
-                        config["indexers"]["womble"] = config["indexers"]["Womble"]
-                        config["indexers"].pop("Womble")
+            if config["main"]["configVersion"] == 7:
+                with version_update(config, 8):
+                    addLogMessage(20, "Renaming keys")
+                    config["indexers"]["binsearch"] = config["indexers"]["Binsearch"]
+                    config["indexers"].pop("Binsearch")
+                    config["indexers"]["nzbclub"] = config["indexers"]["NZBClub"]
+                    config["indexers"].pop("NZBClub")
+                    config["indexers"]["nzbindex"] = config["indexers"]["NZBIndex"]
+                    config["indexers"].pop("NZBIndex")
+                    config["indexers"]["womble"] = config["indexers"]["Womble"]
+                    config["indexers"].pop("Womble")
 
-                        config["main"]["logging"]["logfilelevel"] = config["main"]["logging"]["logfile-level"]
-                        config["main"]["logging"].pop("logfile-level")
-                        config["main"]["logging"]["logfilename"] = config["main"]["logging"]["logfile-filename"]
-                        config["main"]["logging"].pop("logfile-filename")
+                    config["main"]["logging"]["logfilelevel"] = config["main"]["logging"]["logfile-level"]
+                    config["main"]["logging"].pop("logfile-level")
+                    config["main"]["logging"]["logfilename"] = config["main"]["logging"]["logfile-filename"]
+                    config["main"]["logging"].pop("logfile-filename")
 
-                        addLogMessage(20, "Moving newznab indexers")
-                        config["indexers"]["newznab"] = []
-                        for i in range(1, 41):
-                            indexer_cfg = config["indexers"]["newznab%d" % i]
-                            if "accessType" not in indexer_cfg.keys():
-                                indexer_cfg["accessType"] = "both"
-                            if indexer_cfg["name"]:
-                                config["indexers"]["newznab"].append(indexer_cfg)
-                            config["indexers"].pop("newznab%d" % i)
+                    addLogMessage(20, "Moving newznab indexers")
+                    config["indexers"]["newznab"] = []
+                    for i in range(1, 41):
+                        indexer_cfg = config["indexers"]["newznab%d" % i]
+                        if "accessType" not in indexer_cfg.keys():
+                            indexer_cfg["accessType"] = "both"
+                        if indexer_cfg["name"]:
+                            config["indexers"]["newznab"].append(indexer_cfg)
+                        config["indexers"].pop("newznab%d" % i)
 
-                if config["main"]["configVersion"] == 8:
-                    with version_update(config, 9):
-                        config["auth"] = {"users": []}
-                        adminNeededForStats = config["main"]["enableAdminAuthForStats"]
-                        if config["main"]["enableAuth"] and config["main"]["username"]:
-                            addLogMessage(20, "Will require auth for any access")
-                            if config["main"]["enableAdminAuth"]:
-                                if adminNeededForStats:
-                                    addLogMessage(20, "Creating user %s with basic rights." % config["main"]["username"])
-                                else:
-                                    addLogMessage(20, "Creating user %s with basic and stats rights." % config["main"]["username"])
-                                config["auth"]["users"].append({"name": config["main"]["username"], "password": config["main"]["password"], "maySeeStats": not adminNeededForStats, "maySeeAdmin": False})
+            if config["main"]["configVersion"] == 8:
+                with version_update(config, 9):
+                    config["auth"] = {"users": []}
+                    adminNeededForStats = config["main"]["enableAdminAuthForStats"]
+                    if config["main"]["enableAuth"] and config["main"]["username"]:
+                        addLogMessage(20, "Will require auth for any access")
+                        if config["main"]["enableAdminAuth"]:
+                            if adminNeededForStats:
+                                addLogMessage(20, "Creating user %s with basic rights." % config["main"]["username"])
                             else:
-                                addLogMessage(20, "Creating simple user %s with all rights." % config["main"]["username"])
-                                config["auth"]["users"].append({"name": config["main"]["username"], "password": config["main"]["password"], "maySeeStats": True, "maySeeAdmin": True})
+                                addLogMessage(20, "Creating user %s with basic and stats rights." % config["main"]["username"])
+                            config["auth"]["users"].append({"name": config["main"]["username"], "password": config["main"]["password"], "maySeeStats": not adminNeededForStats, "maySeeAdmin": False})
                         else:
-                            if config["main"]["enableAdminAuth"]:
-                                if adminNeededForStats:
-                                    addLogMessage(20, "Auth will be required for stats and admin access")
-                                else:
-                                    addLogMessage(20, "Auth will be required for admin access")
-                                config["auth"]["users"].append({"name": None, "password": None, "maySeeStats": not adminNeededForStats, "maySeeAdmin": False})
+                            addLogMessage(20, "Creating simple user %s with all rights." % config["main"]["username"])
+                            config["auth"]["users"].append({"name": config["main"]["username"], "password": config["main"]["password"], "maySeeStats": True, "maySeeAdmin": True})
+                    else:
+                        if config["main"]["enableAdminAuth"]:
+                            if adminNeededForStats:
+                                addLogMessage(20, "Auth will be required for stats and admin access")
                             else:
-                                addLogMessage(20, "No auth required for any access")
-                                config["auth"]["users"].append({"name": None, "password": None, "maySeeStats": True, "maySeeAdmin": True})
+                                addLogMessage(20, "Auth will be required for admin access")
+                            config["auth"]["users"].append({"name": None, "password": None, "maySeeStats": not adminNeededForStats, "maySeeAdmin": False})
+                        else:
+                            addLogMessage(20, "No auth required for any access")
+                            config["auth"]["users"].append({"name": None, "password": None, "maySeeStats": True, "maySeeAdmin": True})
 
-                        if config["main"]["enableAdminAuth"] and config["main"]["adminUsername"]:
-                            addLogMessage(20, "Creating user %s with admin rights." % config["main"]["adminUsername"])
-                            config["auth"]["users"].append({"name": config["main"]["adminUsername"], "password": config["main"]["adminPassword"], "maySeeStats": True, "maySeeAdmin": True})
-                            if not (config["main"]["enableAuth"] and config["main"]["username"]):
-                                addLogMessage(20, "Will require auth only for any admin access")
+                    if config["main"]["enableAdminAuth"] and config["main"]["adminUsername"]:
+                        addLogMessage(20, "Creating user %s with admin rights." % config["main"]["adminUsername"])
+                        config["auth"]["users"].append({"name": config["main"]["adminUsername"], "password": config["main"]["adminPassword"], "maySeeStats": True, "maySeeAdmin": True})
+                        if not (config["main"]["enableAuth"] and config["main"]["username"]):
+                            addLogMessage(20, "Will require auth only for any admin access")
 
-                if config["main"]["configVersion"] == 9:
-                    with version_update(config, 10):
-                        addLogMessage(20, "Activating threaded server")
-                        config["main"]["runThreaded"] = True
+            if config["main"]["configVersion"] == 9:
+                with version_update(config, 10):
+                    addLogMessage(20, "Activating threaded server")
+                    config["main"]["runThreaded"] = True
 
-                if config["main"]["configVersion"] == 10:
-                    with version_update(config, 11):
-                        addLogMessage(20, "Renaming keys for usernames")
+            if config["main"]["configVersion"] == 10:
+                with version_update(config, 11):
+                    addLogMessage(20, "Renaming keys for usernames")
+                    for user in config["auth"]["users"]:
+                        addLogMessage(10, "Renaming key for user")
+                        user["username"] = user["name"]
+                        user.pop("name")
+
+            if config["main"]["configVersion"] == 11:
+                with version_update(config, 12):
+                    addLogMessage(20, "Adding search types to indexers")
+                    config["indexers"]["binsearch"]["searchTypes"] = []
+                    config["indexers"]["nzbclub"]["searchTypes"] = []
+                    config["indexers"]["nzbindex"]["searchTypes"] = []
+                    config["indexers"]["omgwtfnzbs"]["searchTypes"] = []
+                    config["indexers"]["womble"]["searchTypes"] = []
+                    from nzbhydra.searchmodules import newznab
+                    for n in config["indexers"]["newznab"]:
+                        n["searchTypes"] = ["tvsearch", "movie"]
+                        addLogMessage(20, "Checking caps of indexer %s" % n["name"])
+                        try:
+                            ids, types = newznab.check_caps(n["host"], n["apikey"], config["searching"]["userAgent"], config["searching"]["timeout"])
+                            n["search_ids"] = ids
+                            n["searchTypes"] = types
+                            addLogMessage(20, "Successfully determined caps")
+                        except Exception as e:
+                            addLogMessage(40, "Error while trying to determine caps: %s" % e)
+
+            if config["main"]["configVersion"] == 12:
+                with version_update(config, 13):
+                    addLogMessage(20, "Adding API hit limit settings to indexers")
+                    config["indexers"]["binsearch"]["hitLimit"] = None
+                    config["indexers"]["nzbclub"]["hitLimit"] = None
+                    config["indexers"]["nzbindex"]["hitLimit"] = None
+                    config["indexers"]["omgwtfnzbs"]["hitLimit"] = None
+                    config["indexers"]["womble"]["hitLimit"] = None
+
+                    config["indexers"]["binsearch"]["hitLimitResetTime"] = None
+                    config["indexers"]["nzbclub"]["hitLimitResetTime"] = None
+                    config["indexers"]["nzbindex"]["hitLimitResetTime"] = None
+                    config["indexers"]["omgwtfnzbs"]["hitLimitResetTime"] = None
+                    config["indexers"]["womble"]["hitLimitResetTime"] = None
+
+                    from nzbhydra.searchmodules import newznab
+                    for n in config["indexers"]["newznab"]:
+                        n["hitLimit"] = None
+                        n["hitLimitResetTime"] = arrow.get(0).isoformat()
+
+            if config["main"]["configVersion"] == 13:
+                with version_update(config, 14):
+                    addLogMessage(20, "Adding empty username and password to indexers")
+                    config["indexers"]["binsearch"]["username"] = None
+                    config["indexers"]["nzbclub"]["username"] = None
+                    config["indexers"]["nzbindex"]["username"] = None
+                    config["indexers"]["omgwtfnzbs"]["username"] = None
+                    config["indexers"]["womble"]["username"] = None
+
+                    config["indexers"]["binsearch"]["password"] = None
+                    config["indexers"]["nzbclub"]["password"] = None
+                    config["indexers"]["nzbindex"]["password"] = None
+                    config["indexers"]["omgwtfnzbs"]["password"] = None
+                    config["indexers"]["womble"]["password"] = None
+
+                    from nzbhydra.searchmodules import newznab
+                    for n in config["indexers"]["newznab"]:
+                        n["username"] = None
+                        n["password"] = None
+
+            if config["main"]["configVersion"] == 14:
+                with version_update(config, 15):
+                    addLogMessage(20, "Setting default theme")
+                    config["main"]["theme"] = "default"
+
+            if config["main"]["configVersion"] == 15:
+                with version_update(config, 16):
+                    addLogMessage(20, "Moving indexers")
+                    indexers = []
+                    for indexer in ["binsearch", "nzbclub", "nzbindex", "omgwtfnzbs", "womble"]:
+                        config["indexers"][indexer]["type"] = indexer if indexer != "omgwtfnzbs" else "omgwtf"
+                        indexers.append(config["indexers"][indexer])
+                    for indexer in config["indexers"]["newznab"]:
+                        indexer["type"] = "newznab"
+                        indexers.append(indexer)
+                    config["indexers"] = indexers
+
+            if config["main"]["configVersion"] == 16:
+                with version_update(config, 17):
+                    addLogMessage(20, "Moving downloaders")
+                    downloaders = []
+                    if config["downloader"]["nzbget"]["host"]:
+                        addLogMessage(20, "Found configured downloader NZBGet")
+                        downloaders.append({
+                            "name": "NZBGet",
+                            "type": "nzbget",
+                            "defaultCategory": config["downloader"]["nzbget"]["defaultCategory"],
+                            "host": config["downloader"]["nzbget"]["host"],
+                            "password": config["downloader"]["nzbget"]["password"],
+                            "port": config["downloader"]["nzbget"]["port"],
+                            "ssl": config["downloader"]["nzbget"]["ssl"],
+                            "username": config["downloader"]["nzbget"]["username"],
+                            "enabled": True if config["downloader"]["downloader"] == "nzbget" else False,
+                            "nzbAddingType": config["downloader"]["nzbAddingType"],
+                            "nzbaccesstype": config["downloader"]["nzbaccesstype"]
+                        })
+                    if config["downloader"]["sabnzbd"]["apikey"]:
+                        addLogMessage(20, "Found configured downloader SABnzbd")
+                        downloaders.append({
+                            "name": "SABnzbd",
+                            "type": "sabnzbd",
+                            "defaultCategory": config["downloader"]["sabnzbd"]["defaultCategory"],
+                            "apikey": config["downloader"]["sabnzbd"]["apikey"],
+                            "password": config["downloader"]["sabnzbd"]["password"],
+                            "url": config["downloader"]["sabnzbd"]["url"],
+                            "username": config["downloader"]["sabnzbd"]["username"],
+                            "enabled": True if config["downloader"]["downloader"] == "sabnzbd" else False,
+                            "nzbAddingType": config["downloader"]["nzbAddingType"],
+                            "nzbaccesstype": config["downloader"]["nzbaccesstype"]
+                        })
+                    config["downloaders"] = downloaders
+            if config["main"]["configVersion"] == 17:
+                with version_update(config, 18):
+                    addLogMessage(20, "Adding secret for auth")
+                    config["main"]["secret"] = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16))
+                    addLogMessage(20, "Migrating auth settings")
+                    if len(config["auth"]["users"]) == 0:
+                        addLogMessage(20, "No users configured, setting auth type to none")
+                        config["auth"]["authType"] = "none"
+                        config["auth"]["restrictAdmin"] = False
+                        config["auth"]["restrictStats"] = False
+                        config["auth"]["restrictSearch"] = False
+                    else:
+                        addLogMessage(20, "Found configured users, setting auth type to basic")
+                        config["auth"]["authType"] = "basic"
                         for user in config["auth"]["users"]:
-                            addLogMessage(10, "Renaming key for user")
-                            user["username"] = user["name"]
-                            user.pop("name")
+                            if user["username"] == "" and user["password"] == "":
+                                addLogMessage(20, "Found authless user, not restricting access to search")
+                                config["auth"]["restrictSearch"] = False
+                                if user["maySeeAdmin"]:
+                                    addLogMessage(20, "Found authless user with admin rights, not restricting access to admin functions")
+                                    config["auth"]["restrictAdmin"] = False
+                                else:
+                                    addLogMessage(20, "Found authless user without admin rights, restricting access to admin functions")
+                                    config["auth"]["restrictAdmin"] = True
+                                if user["maySeeStats"]:
+                                    addLogMessage(20, "Found authless user with admin rights, not restricting access to stats")
+                                    config["auth"]["restrictStats"] = False
+                                else:
+                                    addLogMessage(20, "Found authless user without stats rights, restricting access to stats")
+                                    config["auth"]["restrictStats"] = True
+                            else:
+                                if user["maySeeAdmin"]:
+                                    addLogMessage(20, "Found user with admin rights,  restricting access to admin functions")
+                                    config["auth"]["restrictAdmin"] = True
+                                if user["maySeeStats"]:
+                                    addLogMessage(20, "Found user with stats rights,  restricting access to stats")
+                                    config["auth"]["restrictStats"] = True
+                        if not any([x for x in config["auth"]["users"] if x["username"] == "" and x["password"] == ""]):
+                            addLogMessage(20, "Did not find an authless user, restricting access to all functions")
+                            config["auth"]["restrictAdmin"] = True
+                            config["auth"]["restrictStats"] = True
+                            config["auth"]["restrictSearch"] = True
+                    # Make sure user is not locked out
+                    if not any([x for x in config["auth"]["users"] if x["maySeeAdmin"]]) and config["auth"]["authType"] != "none" and config["auth"]["restrictAdmin"]:
+                        addLogMessage(30, "Did not find any user with admin rights, you will need to change that manually!")
 
-                if config["main"]["configVersion"] == 11:
-                    with version_update(config, 12):
-                        addLogMessage(20, "Adding search types to indexers")
-                        config["indexers"]["binsearch"]["searchTypes"] = []
-                        config["indexers"]["nzbclub"]["searchTypes"] = []
-                        config["indexers"]["nzbindex"]["searchTypes"] = []
-                        config["indexers"]["omgwtfnzbs"]["searchTypes"] = []
-                        config["indexers"]["womble"]["searchTypes"] = []
-                        from nzbhydra.searchmodules import newznab
-                        for n in config["indexers"]["newznab"]:
-                            n["searchTypes"] = ["tvsearch", "movie"]
-                            addLogMessage(20, "Checking caps of indexer %s" % n["name"])
-                            try:
-                                ids, types = newznab.check_caps(n["host"], n["apikey"], config["searching"]["userAgent"], config["searching"]["timeout"])
-                                n["search_ids"] = ids
-                                n["searchTypes"] = types
-                                addLogMessage(20, "Successfully determined caps")
-                            except Exception as e:
-                                addLogMessage(40, "Error while trying to determine caps: %s" % e)
 
-                if config["main"]["configVersion"] == 12:
-                    with version_update(config, 13):
-                        addLogMessage(20, "Adding API hit limit settings to indexers")
-                        config["indexers"]["binsearch"]["hitLimit"] = None
-                        config["indexers"]["nzbclub"]["hitLimit"] = None
-                        config["indexers"]["nzbindex"]["hitLimit"] = None
-                        config["indexers"]["omgwtfnzbs"]["hitLimit"] = None
-                        config["indexers"]["womble"]["hitLimit"] = None
-                        
-                        config["indexers"]["binsearch"]["hitLimitResetTime"] = None
-                        config["indexers"]["nzbclub"]["hitLimitResetTime"] = None
-                        config["indexers"]["nzbindex"]["hitLimitResetTime"] = None
-                        config["indexers"]["omgwtfnzbs"]["hitLimitResetTime"] = None
-                        config["indexers"]["womble"]["hitLimitResetTime"] = None
-
-                        from nzbhydra.searchmodules import newznab
-                        for n in config["indexers"]["newznab"]:
-                            n["hitLimit"] = None
-                            n["hitLimitResetTime"] = arrow.get(0).isoformat()
-
-                if config["main"]["configVersion"] == 13:
-                    with version_update(config, 14):
-                        addLogMessage(20, "Adding empty username and password to indexers")
-                        config["indexers"]["binsearch"]["username"] = None
-                        config["indexers"]["nzbclub"]["username"] = None
-                        config["indexers"]["nzbindex"]["username"] = None
-                        config["indexers"]["omgwtfnzbs"]["username"] = None
-                        config["indexers"]["womble"]["username"] = None
-
-                        config["indexers"]["binsearch"]["password"] = None
-                        config["indexers"]["nzbclub"]["password"] = None
-                        config["indexers"]["nzbindex"]["password"] = None
-                        config["indexers"]["omgwtfnzbs"]["password"] = None
-                        config["indexers"]["womble"]["password"] = None
-
-                        from nzbhydra.searchmodules import newznab
-                        for n in config["indexers"]["newznab"]:
-                            n["username"] = None
-                            n["password"] = None
-
-                if config["main"]["configVersion"] == 14:
-                    with version_update(config, 15):
-                        addLogMessage(20, "Setting default theme")
-                        config["main"]["theme"] = "default"
-
-                if config["main"]["configVersion"] == 15:
-                    with version_update(config, 16):
-                        addLogMessage(20, "Moving indexers")
-                        indexers = []
-                        for indexer in ["binsearch", "nzbclub", "nzbindex", "omgwtfnzbs", "womble"]:
-                            config["indexers"][indexer]["type"] = indexer if indexer != "omgwtfnzbs" else "omgwtf"
-                            indexers.append(config["indexers"][indexer])
-                        for indexer in config["indexers"]["newznab"]:
-                            indexer["type"] = "newznab"
-                            indexers.append(indexer)
-                        config["indexers"] = indexers
-
-                if config["main"]["configVersion"] == 16:
-                    with version_update(config, 17):
-                        addLogMessage(20, "Moving downloaders")
-                        downloaders = []
-                        if config["downloader"]["nzbget"]["host"]:
-                            addLogMessage(20, "Found configured downloader NZBGet")
-                            downloaders.append({
-                                "name": "NZBGet",
-                                "type": "nzbget",
-                                "defaultCategory": config["downloader"]["nzbget"]["defaultCategory"],
-                                "host": config["downloader"]["nzbget"]["host"],
-                                "password": config["downloader"]["nzbget"]["password"],
-                                "port": config["downloader"]["nzbget"]["port"],
-                                "ssl": config["downloader"]["nzbget"]["ssl"],
-                                "username": config["downloader"]["nzbget"]["username"],
-                                "enabled": True if config["downloader"]["downloader"] == "nzbget" else False,
-                                "nzbAddingType": config["downloader"]["nzbAddingType"],
-                                "nzbaccesstype": config["downloader"]["nzbaccesstype"]
-                            })
-                        if config["downloader"]["sabnzbd"]["apikey"]:
-                            addLogMessage(20, "Found configured downloader SABnzbd")
-                            downloaders.append({
-                                "name": "SABnzbd",
-                                "type": "sabnzbd",
-                                "defaultCategory": config["downloader"]["sabnzbd"]["defaultCategory"],
-                                "apikey": config["downloader"]["sabnzbd"]["apikey"],
-                                "password": config["downloader"]["sabnzbd"]["password"],
-                                "url": config["downloader"]["sabnzbd"]["url"],
-                                "username": config["downloader"]["sabnzbd"]["username"],
-                                "enabled": True if config["downloader"]["downloader"] == "sabnzbd" else False,
-                                "nzbAddingType": config["downloader"]["nzbAddingType"],
-                                "nzbaccesstype": config["downloader"]["nzbaccesstype"]
-                            })
-                        config["downloaders"] = downloaders
-                        
-
-            except Exception as e:
-                addLogMessage(30, "An error occurred while migrating the config file.")
-                addLogMessage(30, str(traceback.format_exc()))
-        return config
+        except Exception as e:
+            addLogMessage(30, "An error occurred while migrating the config file.")
+            addLogMessage(30, str(traceback.format_exc()))
+    return config
 
 
 def load(filename):
@@ -523,7 +580,7 @@ def load(filename):
     config_file = filename
     if os.path.exists(filename):
         try:
-            migratedConfig = migrate(filename)
+            migratedConfig = loadAndMigrateSettingsFile(filename)
             settings = Bunch.fromDict(update(initialConfig, migratedConfig, level="root"))
             pass
         except Exception as e:
@@ -531,6 +588,7 @@ def load(filename):
             # Now what?
     else:
         settings = Bunch.fromDict(initialConfig)
+        settings.main.secret = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16)) 
 
 
 def getAnonymizedConfigSetting(key, value):
@@ -587,6 +645,7 @@ def getSettingsToHide():
         ("main.apikey", settings.main.apikey),
         ("main.externalUrl", settings.main.externalUrl),
         ("main.host", settings.main.host),
+        ("main.secret", settings.main.secret),
     ]
     for i, downloader in enumerate(settings.downloaders):
         if hasattr(downloader, "apikey"):

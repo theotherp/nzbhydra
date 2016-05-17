@@ -22,27 +22,27 @@ function SystemController($scope, $state, growl, RestartService, NzbHydraControl
     $scope.tabs = [
         {
             active: false,
-            state: 'system'
+            state: 'root.system'
         },
         {
             active: false,
-            state: 'system.updates'
+            state: 'root.system.updates'
         },
         {
             active: false,
-            state: 'system.log'
+            state: 'root.system.log'
         },
         {
             active: false,
-            state: 'system.backup'
+            state: 'root.system.backup'
         },
         {
             active: false,
-            state: 'system.bugreport'
+            state: 'root.system.bugreport'
         },
         {
             active: false,
-            state: 'system.about'
+            state: 'root.system.about'
         }
     ];
 

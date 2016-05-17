@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.95
+Added: Decide if you want to authenticate using HTTP basic auth or a login form. 
+
 ### 0.2.94
 Probably not fixed but less likely: Database is locked.
  
@@ -8,7 +11,7 @@ Fixed: Details link would point to "http://api.indexer.com/details/..." and not 
  
 Fixed: When adding multiple indexers one after the other the data from the old indexer would be still there.
 
-Added: Option if IP addresses should be logged. Failed logins will still be logged with the used IP address.
+Added: Option if IP addresses should be logged. Failed logins will still be logged with the used IP address.   
 
 ### 0.2.93
 

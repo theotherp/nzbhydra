@@ -70,7 +70,7 @@ function searchHistory() {
 
             stateParams.category = request.category;
             
-            $state.go("search", stateParams, {inherit: false});
+            $state.go("root.search", stateParams, {inherit: false});
         };
         
         $scope.formatQuery = function(request) {

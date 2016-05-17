@@ -15,22 +15,21 @@ function StatsController($scope, stats, $state) {
     $scope.tabs = [
         {
             active: false,
-            state: 'stats'
+            state: 'root.stats'
         },
         {
             active: false,
-            state: 'stats.indexers'
+            state: 'root.stats.indexers'
         },
         {
             active: false,
-            state: 'stats.searches'
+            state: 'root.stats.searches'
         },
         {
             active: false,
-            state: 'stats.downloads'
+            state: 'root.stats.downloads'
         }
     ];
-
 
     for (var i = 0; i < $scope.tabs.length; i++) {
         if ($state.is($scope.tabs[i].state)) {
@@ -38,7 +37,6 @@ function StatsController($scope, stats, $state) {
         }
     }
     
-
     $scope.goToState = function (index) {
         $state.go($scope.tabs[index].state);
     }

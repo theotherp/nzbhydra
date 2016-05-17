@@ -1,321 +1,516 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title', 'ngCookies']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title', 'ngCookies', 'satellizer', 'LocalStorageModule']);
 
-angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$locationProvider", "blockUIConfig", "$urlMatcherFactoryProvider", function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig, $urlMatcherFactoryProvider) {
+angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$locationProvider", "blockUIConfig", "$urlMatcherFactoryProvider", "$authProvider", "localStorageServiceProvider", "bootstrapped", function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig, $urlMatcherFactoryProvider, $authProvider, localStorageServiceProvider, bootstrapped) {
 
     blockUIConfig.autoBlock = false;
     $urlMatcherFactoryProvider.strictMode(false);
 
+    $urlRouterProvider.otherwise("/");
+
+
     $stateProvider
-        .state("search.results", {
-            templateUrl: "static/html/states/search-results.html",
-            controller: "SearchResultsController",
-            controllerAs: "srController",
-            options: {
-                inherit: false
+        .state('root', {
+            url: '',
+            abstract: true,
+            resolve: {
+                //loginRequired: loginRequired
             },
-            params: {
-                results: [],
-                indexersearches: [],
-                total: 0,
-                resultsCount: 0,
-                minsize: undefined,
-                maxsize: undefined,
-                minage: undefined,
-                maxage: undefined
-            }, resolve: {
-                $title: function () {
-                    return "Search results"
+            views: {
+                'header': {
+                    templateUrl: 'static/html/states/header.html',
+                    controller: 'HeaderController'
+                },
+                'footer': {
+                    templateUrl: 'footer.html'
                 }
             }
         })
-        .state("config", {
+        .state("root.config", {
             url: "/config",
-            templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            controllerAs: 'ctrl',
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function(){return "Config"}
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    controllerAs: 'ctrl',
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        // askAdmin: ['loginRequired', '$http', function (loginRequired, $http) {
+                        //     return $http.get("internalapi/askadmin");
+                        // }],
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Config"
+                        }
+                    }
+                }
             }
         })
-        .state("config.auth", {
+        .state("root.config.auth", {
             url: "/auth",
-            templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Config (Auth)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Config (Auth)"
+                        }
+                    }
                 }
             }
         })
-        .state("config.searching", {
+        .state("root.config.searching", {
             url: "/searching",
-            templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Config (Searching)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Config (Searching)"
+                        }
+                    }
                 }
             }
         })
-        .state("config.downloader", {
+        .state("root.config.downloader", {
             url: "/downloader",
-            templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Config (Downloader)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Config (Downloader)"
+                        }
+                    }
                 }
             }
         })
-        .state("config.indexers", {
+        .state("root.config.indexers", {
             url: "/indexers",
-            templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Config (Indexers)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Config (Indexers)"
+                        }
+                    }
                 }
             }
         })
-        .state("config.system", {
+        .state("root.config.system", {
             url: "/system",
             templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System"
+            views: {
+                'container@': {
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System"
+                        }
+                    }
                 }
             }
         })
-        .state("config.log", {
+        .state("root.config.log", {
             url: "/log",
-            templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System (Log)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System (Log)"
+                        }
+                    }
                 }
-            }
+            },
         })
-        .state("stats", {
+        .state("root.stats", {
             url: "/stats",
-            templateUrl: "static/html/states/stats.html",
-            controller: "StatsController",
-            resolve: {
-                stats: ['StatsService', function (StatsService) {
-                    return StatsService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Stats"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/stats.html",
+                    controller: "StatsController",
+                    resolve: {
+                        loginRequired: loginRequiredStats,
+                        stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
+                            return StatsService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Stats"
+                        }
+                    }
                 }
             }
         })
-        .state("stats.indexers", {
+        .state("root.stats.indexers", {
             url: "/indexers",
-            templateUrl: "static/html/states/stats.html",
-            controller: "StatsController",
-            resolve: {
-                stats: ['StatsService', function (StatsService) {
-                    return StatsService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Stats (Indexers)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/stats.html",
+                    controller: "StatsController",
+                    resolve: {
+                        loginRequired: loginRequiredStats,
+                        stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
+                            return StatsService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Stats (Indexers)"
+                        }
+                    }
                 }
             }
         })
-        .state("stats.searches", {
+        .state("root.stats.searches", {
             url: "/searches",
-            templateUrl: "static/html/states/stats.html",
-            controller: "StatsController",
-            resolve: {
-                stats: ['StatsService', function (StatsService) {
-                    return StatsService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Stats (Searches)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/stats.html",
+                    controller: "StatsController",
+                    resolve: {
+                        loginRequired: loginRequiredStats,
+                        stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
+                            return StatsService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Stats (Searches)"
+                        }
+                    }
                 }
             }
         })
-        .state("stats.downloads", {
+        .state("root.stats.downloads", {
             url: "/downloads",
-            templateUrl: "static/html/states/stats.html",
-            controller: "StatsController",
-            resolve: {
-                stats: ['StatsService', function (StatsService) {
-                    return StatsService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Stats (Downloads)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/stats.html",
+                    controller: "StatsController",
+                    resolve: {
+                        loginRequired: loginRequiredStats,
+                        stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
+                            return StatsService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Stats (Downloads)"
+                        }
+                    }
                 }
             }
         })
-        .state("system", {
+        .state("root.system", {
             url: "/system",
-            templateUrl: "static/html/states/system.html",
-            controller: "SystemController",
-            resolve: {
-                foobar: ['$http', function ($http) {
-                    return $http.get("internalapi/askforadmin")
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/system.html",
+                    controller: "SystemController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        askAdmin: ['loginRequired', '$http', function (loginRequired, $http) {
+                            return $http.get("internalapi/askadmin");
+                        }],
+                        $title: function () {
+                            return "System"
+                        }
+                    }
                 }
             }
         })
-        .state("system.updates", {
+        .state("root.system.updates", {
             url: "/updates",
-            templateUrl: "static/html/states/system.html",
-            controller: "SystemController",
-            resolve: {
-                foobar: ['$http', function ($http) {
-                    return $http.get("internalapi/askforadmin")
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System (Updates)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/system.html",
+                    controller: "SystemController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System (Updates)"
+                        }
+                    }
                 }
             }
         })
-        .state("system.log", {
+        .state("root.system.log", {
             url: "/log",
-            templateUrl: "static/html/states/system.html",
-            controller: "SystemController",
-            resolve: {
-                foobar: ['$http', function ($http) {
-                    return $http.get("internalapi/askforadmin")
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System (Log)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/system.html",
+                    controller: "SystemController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System (Log)"
+                        }
+                    }
                 }
             }
         })
-        .state("system.backup", {
+        .state("root.system.backup", {
             url: "/backup",
-            templateUrl: "static/html/states/system.html",
-            controller: "SystemController",
-            resolve: {
-                foobar: ['$http', function ($http) {
-                    return $http.get("internalapi/askforadmin")
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System (Backup)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/system.html",
+                    controller: "SystemController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System (Backup)"
+                        }
+                    }
                 }
             }
         })
-        .state("system.about", {
+        .state("root.system.about", {
             url: "/about",
-            templateUrl: "static/html/states/system.html",
-            controller: "SystemController",
-            resolve: {
-                foobar: ['$http', function ($http) {
-                    return $http.get("internalapi/askforadmin")
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System (About)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/system.html",
+                    controller: "SystemController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System (About)"
+                        }
+                    }
                 }
             }
         })
-        .state("system.bugreport", {
+        .state("root.system.bugreport", {
             url: "/bugreport",
-            templateUrl: "static/html/states/system.html",
-            controller: "SystemController",
-            resolve: {
-                foobar: ['$http', function ($http) {
-                    return $http.get("internalapi/askforadmin")
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System (Bug report)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/system.html",
+                    controller: "SystemController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System (Bug report)"
+                        }
+                    }
                 }
             }
         })
-        .state("search", {
-            url: "/:search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid&indexers",
-            templateUrl: "static/html/states/search.html",
-            controller: "SearchController",
-            resolve: {
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Search"
+        .state("root.search", {
+            url: "/?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid&indexers",
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/search.html",
+                    controller: "SearchController",
+                    resolve: {
+                        loginRequired: loginRequiredSearch,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Search"
+                        }
+                    }
+                }
+            }
+        })
+        .state("root.search.results", {
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/search-results.html",
+                    controller: "SearchResultsController",
+                    controllerAs: "srController",
+                    options: {
+                        inherit: false
+                    },
+                    params: {
+                        results: [],
+                        indexersearches: [],
+                        total: 0,
+                        resultsCount: 0,
+                        minsize: undefined,
+                        maxsize: undefined,
+                        minage: undefined,
+                        maxage: undefined
+                    }, resolve: {
+                        loginRequired: loginRequiredSearch,
+                        $title: function () {
+                            return "Search results"
+                        }
+                    }
+                }
+            }
+        })
+        .state("root.login", {
+            url: "/login",
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/login.html",
+                    controller: "LoginController",
+                    resolve: {
+                        loginRequired: function () {
+                            return null;
+                        },
+                        $title: function () {
+                            return "Login"
+                        }
+                    }
                 }
             }
         })
     ;
 
+
     $locationProvider.html5Mode(true);
+
+    $authProvider.httpInterceptor = function () {
+        return true;
+    };
+    $authProvider.withCredentials = true;
+    $authProvider.tokenRoot = null;
+    $authProvider.baseUrl = '/';
+    $authProvider.loginUrl = '/auth/login';
+    $authProvider.signupUrl = '/auth/signup';
+    $authProvider.unlinkUrl = '/unlink/';
+    $authProvider.tokenName = 'token';
+    $authProvider.tokenPrefix = 'satellizer';
+    $authProvider.authHeader = 'TokenAuthorization';
+    $authProvider.authToken = 'Bearer';
+    $authProvider.storageType = 'localStorage';
+
+
+    //Because I don't know for what state the login is required / asked I have a function for each 
+
+    function loginRequiredSearch($q, $timeout, $auth, $state, bootstrapped) {
+        
+        var deferred = $q.defer();
+
+        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || bootstrapped.maySeeSearch) {
+            deferred.resolve();
+        } else {
+            $timeout(function () {
+                // This code runs after the authentication promise has been rejected.
+                // Go to the log-in page
+                $state.go("root.login");
+            })
+        }
+        return deferred.promise;
+    }
+    loginRequiredSearch.$inject = ["$q", "$timeout", "$auth", "$state", "bootstrapped"];
+
+    function loginRequiredStats($q, $timeout, $auth, $state, bootstrapped) {
+        var deferred = $q.defer();
+
+        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || bootstrapped.maySeeStats) {
+            deferred.resolve();
+        } else {
+            $timeout(function () {
+                // This code runs after the authentication promise has been rejected.
+                // Go to the log-in page
+                $state.go("root.login");
+            })
+        }
+        return deferred.promise;
+    }
+    loginRequiredStats.$inject = ["$q", "$timeout", "$auth", "$state", "bootstrapped"];
+
+    function loginRequiredAdmin($q, $timeout, $auth, $state, bootstrapped) {
+        var deferred = $q.defer();
+
+        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || bootstrapped.maySeeAdmin) {
+            deferred.resolve();
+        } else {
+            $timeout(function () {
+                // This code runs after the authentication promise has been rejected.
+                // Go to the log-in page
+                $state.go("root.login");
+            })
+        }
+        return deferred.promise;
+    }
+    loginRequiredAdmin.$inject = ["$q", "$timeout", "$auth", "$state", "bootstrapped"];
+
+    localStorageServiceProvider
+        .setPrefix('nzbhydra');
+    localStorageServiceProvider
+        .setNotify(true, false);
 }]);
+
 
 nzbhydraapp.config(["paginationTemplateProvider", function (paginationTemplateProvider) {
     paginationTemplateProvider.setPath('static/html/dirPagination.tpl.html');
@@ -360,6 +555,19 @@ nzbhydraapp.factory('focus', ["$rootScope", "$timeout", function ($rootScope, $t
     }
 }]);
 
+nzbhydraapp.run(["$rootScope", function ($rootScope) {
+    $rootScope.$on('$stateChangeSuccess',
+        function (event, toState, toParams, fromState, fromParams) {
+            try {
+                $rootScope.title = toState.views["container@"].resolve.$title();
+            } catch(e) {
+                
+            }
+                
+        });
+}]);
+
+
 nzbhydraapp.filter('unsafe', ["$sce", function ($sce) {
     return $sce.trustAsHtml;
 }]);
@@ -375,7 +583,7 @@ nzbhydraapp.config(["$provide", function ($provide) {
                 });
                 stack = stack.join("\n");
                 $injector.get("$http").put("internalapi/logerror", {error: stack, cause: angular.isDefined(cause) ? cause.toString() : "No known cause"});
-                
+
 
             } catch (e) {
                 console.error("Unable to log JS exception to server", e);
@@ -645,7 +853,7 @@ function searchHistory() {
 
             stateParams.category = request.category;
             
-            $state.go("search", stateParams, {inherit: false});
+            $state.go("root.search", stateParams, {inherit: false});
         };
         
         $scope.formatQuery = function(request) {
@@ -1202,23 +1410,35 @@ angular
     .module('nzbhydraApp')
     .controller('UpdateFooterController', UpdateFooterController);
 
-function UpdateFooterController($scope, $http, UpdateService) {
+function UpdateFooterController($scope, UpdateService, HydraAuthService) {
 
     $scope.updateAvailable = false;
-    
-    $http.get("internalapi/mayseeadminarea").then(function(data) {
-       if (data.data.maySeeAdminArea) {
-           UpdateService.getVersions().then(function (data) {
-               $scope.currentVersion = data.data.currentVersion;
-               $scope.repVersion = data.data.repVersion;
-               $scope.updateAvailable = data.data.updateAvailable;
-               $scope.changelog = data.data.changelog;
-           });
-       } 
+
+    $scope.mayUpdate = HydraAuthService.getUserRights().maySeeAdmin;
+
+    $scope.$on("user:loggedIn", function (event, data) {
+        console.log("loggedIn event");
+        console.log(data);
+        if (data.maySeeAdmin) {
+            retrieveUpdateInfos();
+        }
     });
-    
-    
-    
+
+
+    if ($scope.mayUpdate) {
+        retrieveUpdateInfos();
+    }
+
+    function retrieveUpdateInfos() {
+        console.log("Getting update infos");
+        UpdateService.getVersions().then(function (data) {
+            $scope.currentVersion = data.data.currentVersion;
+            $scope.repVersion = data.data.repVersion;
+            $scope.updateAvailable = data.data.updateAvailable;
+            $scope.changelog = data.data.changelog;
+        });
+    }
+
 
     $scope.update = function () {
         UpdateService.update();
@@ -1229,7 +1449,7 @@ function UpdateFooterController($scope, $http, UpdateService) {
     }
 
 }
-UpdateFooterController.$inject = ["$scope", "$http", "UpdateService"];
+UpdateFooterController.$inject = ["$scope", "UpdateService", "HydraAuthService"];
 
 angular
     .module('nzbhydraApp')
@@ -1255,27 +1475,27 @@ function SystemController($scope, $state, growl, RestartService, NzbHydraControl
     $scope.tabs = [
         {
             active: false,
-            state: 'system'
+            state: 'root.system'
         },
         {
             active: false,
-            state: 'system.updates'
+            state: 'root.system.updates'
         },
         {
             active: false,
-            state: 'system.log'
+            state: 'root.system.log'
         },
         {
             active: false,
-            state: 'system.backup'
+            state: 'root.system.backup'
         },
         {
             active: false,
-            state: 'system.bugreport'
+            state: 'root.system.bugreport'
         },
         {
             active: false,
-            state: 'system.about'
+            state: 'root.system.about'
         }
     ];
 
@@ -1331,22 +1551,21 @@ function StatsController($scope, stats, $state) {
     $scope.tabs = [
         {
             active: false,
-            state: 'stats'
+            state: 'root.stats'
         },
         {
             active: false,
-            state: 'stats.indexers'
+            state: 'root.stats.indexers'
         },
         {
             active: false,
-            state: 'stats.searches'
+            state: 'root.stats.searches'
         },
         {
             active: false,
-            state: 'stats.downloads'
+            state: 'root.stats.downloads'
         }
     ];
-
 
     for (var i = 0; i < $scope.tabs.length; i++) {
         if ($state.is($scope.tabs[i].state)) {
@@ -1354,7 +1573,6 @@ function StatsController($scope, stats, $state) {
         }
     }
     
-
     $scope.goToState = function (index) {
         $state.go($scope.tabs[index].state);
     }
@@ -1818,7 +2036,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         blockUI.start("Searching...");
         var indexers = angular.isUndefined($scope.indexers) ? undefined : $scope.indexers.join("|");
         SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers).then(function (searchResult) {
-            $state.go("search.results", {
+            $state.go("root.search.results", {
                 results: searchResult.results,
                 indexersearches: searchResult.indexersearches,
                 total: searchResult.total,
@@ -1871,7 +2089,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         stateParams.category = $scope.category;
         stateParams.indexers = encodeURIComponent(getSelectedIndexers());
         
-        $state.go("search", stateParams, {inherit: false, notify: true, reload: true});
+        $state.go("root.search", stateParams, {inherit: false, notify: true, reload: true});
     };
 
 
@@ -2197,6 +2415,106 @@ function GeneralModalService() {
     
    
 }
+angular
+    .module('nzbhydraApp')
+    .controller('LoginController', LoginController);
+
+function LoginController($scope, $stateParams, $state, HydraAuthService, $auth) {
+    $scope.user = {};
+    $scope.login = function() {
+        $auth.login($scope.user).then(function(data) {
+            
+            console.log("Logged in from LoginController");
+            HydraAuthService.setLoggedIn();
+            $state.go("root.search");
+        });
+        
+    }
+    
+}
+LoginController.$inject = ["$scope", "$stateParams", "$state", "HydraAuthService", "$auth"];
+
+angular
+    .module('nzbhydraApp')
+    .controller('IndexController', IndexController);
+
+function IndexController($scope, $http, $stateParams, $state) {
+    console.log("Index");
+    $state.go("root.search");
+}
+IndexController.$inject = ["$scope", "$http", "$stateParams", "$state"];
+
+angular
+    .module('nzbhydraApp')
+    .factory('HydraAuthService', HydraAuthService);
+
+function HydraAuthService(localStorageService, $auth, $q, $rootScope) {
+
+    return {
+        isLoggedIn: isLoggedIn,
+
+        login: login,
+        setLoggedIn: setLoggedIn,
+        getUserRights: getUserRights 
+        
+    };
+    
+    function isLoggedIn() {
+        return $auth.isAuthenticated();
+    }
+    
+    function setLoggedIn() {
+        var maySeeStats = $auth.getPayload().maySeeStats;
+        var maySeeAdmin = $auth.getPayload().maySeeAdmin;
+        $rootScope.$broadcast("user:loggedIn", {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin});
+    }
+    
+    function login(user) {
+        var deferred = $q.defer();
+        $auth.login(user).then(function (data) {
+            console.log("logged in");
+            $rootScope.$broadcast("user:loggedIn", data);
+           deferred.resolve();
+        });
+        return deferred;
+    }
+    
+    function getUserRights() {
+        if (!isLoggedIn()) {
+            return {maySeeStats: false, maySeeAdmin: false}
+        } else {
+            var maySeeStats = $auth.getPayload().maySeeStats;
+            var maySeeAdmin = $auth.getPayload().maySeeAdmin;
+            return {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin};
+        }
+    }
+    
+   
+}
+HydraAuthService.$inject = ["localStorageService", "$auth", "$q", "$rootScope"];
+angular
+    .module('nzbhydraApp')
+    .controller('HeaderController', HeaderController);
+
+function HeaderController($scope, HydraAuthService, bootstrapped) {
+
+    if (HydraAuthService.isLoggedIn()) {
+        var rights = HydraAuthService.getUserRights();
+        $scope.maySeeAdmin = rights.maySeeAdmin;
+        $scope.maySeeStats = rights.maySeeStats;
+    } else {
+        $scope.maySeeAdmin = bootstrapped.showAdmin;
+        $scope.maySeeStats = bootstrapped.showStats;
+    }
+    
+    $scope.$on("user:loggedIn", function (event, data) {
+        $scope.maySeeAdmin = data.maySeeAdmin;
+        $scope.maySeeStats = data.maySeeStats;
+    });
+    
+}
+HeaderController.$inject = ["$scope", "HydraAuthService", "bootstrapped"];
+
 var HEADER_NAME = 'MyApp-Handle-Errors-Generically';
 var specificallyHandleInProgress = false;
 
@@ -2818,6 +3136,8 @@ function ConfigService($http, $q, $cacheFactory) {
     }
 
     function maySeeAdminArea() {
+        console.log("MAYSEEADMINAREA IS SET TO TRUE FOR DEBUGGING");
+        return true;
         function loadAll() {
             var maySeeAdminArea = cache.get("maySeeAdminArea");
             if (!angular.isUndefined(maySeeAdminArea)) {
@@ -3777,10 +4097,59 @@ function ConfigFields($injector) {
                     type: 'help',
                     templateOptions: {
                         lines: [
-                            'To require login only for admin access create a user with empty username and password and add a user with username and password and admin rights.',
-                            'To have a simple and an admin user remove the authless user and create two users, one without and one with admin rights.',
-                            'Leave empty to disable authorization.'
+                            "For some reasons I cannot do proper validation here. So it's up to you not to do something stupid like restrict admin access and have no user with admin rights.",
+                            "Leave empty to disable authorization.",
+                            "With form auth you need users for everyone. With basic auth you can just require a login for admin access."
                         ]
+                    }
+                },
+                {
+                    key: 'authType',
+                    type: 'horizontalSelect',
+                    templateOptions: {
+                        label: 'Auth type',
+                        options: [
+                            {name: 'None', value: 'none'},
+                            {name: 'HTTP Basic auth', value: 'basic'},
+                            {name: 'Login form', value: 'form'}
+                        ]
+                        
+                    }
+                },
+                {
+                    key: 'restrictSearch',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Restrict searching',
+                        help: 'Restrict access to searching'
+                    },
+                    hideExpression: function () {
+                        return rootModel.auth.authType == "none";
+                    }
+                },
+                {
+                    key: 'restrictStats',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Restrict stats',
+                        help: 'Restrict access to stats'
+                    },
+                    hideExpression: function () {
+                        return rootModel.auth.authType == "none";
+                    }
+                },
+                {
+                    key: 'restrictAdmin',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Restrict admin',
+                        help: 'Restrict access to admin functions'
+                    },
+                    hideExpression: function () {
+                        return rootModel.auth.authType == "none";
                     }
                 },
                 {
@@ -3796,23 +4165,18 @@ function ConfigFields($injector) {
                                 type: 'horizontalInput',
                                 templateOptions: {
                                     type: 'text',
-                                    label: 'Username'
+                                    label: 'Username',
+                                    required: true
                                 }
+                                
                             },
                             {
                                 key: 'password',
                                 type: 'horizontalInput',
                                 templateOptions: {
                                     type: 'password',
-                                    label: 'Password'
-                                }
-                            },
-                            {
-                                key: 'maySeeStats',
-                                type: 'horizontalSwitch',
-                                templateOptions: {
-                                    type: 'switch',
-                                    label: 'May see stats'
+                                    label: 'Password',
+                                    required: true
                                 }
                             },
                             {
@@ -3821,13 +4185,16 @@ function ConfigFields($injector) {
                                 templateOptions: {
                                     type: 'switch',
                                     label: 'May see admin area'
-                                },
-                                validators: {
-                                    dontLockYourselfOut: authValidatorDontLockYourselfOut(rootModel)
-                                },
-                                data: {
-                                    rootModel: rootModel
                                 }
+                            },
+                            {
+                                key: 'maySeeStats',
+                                type: 'horizontalSwitch',
+                                templateOptions: {
+                                    type: 'switch',
+                                    label: 'May see stats'
+                                },
+                                hideExpression: 'model.maySeeAdmin'
                             }
 
                         ],
@@ -4586,7 +4953,7 @@ angular
     .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
 
-function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl) {
+function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl, $rootScope) {
     $scope.config = config;
     $scope.submit = submit;
 
@@ -4596,6 +4963,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
     ConfigFields.setRestartWatcher(function () {
         $scope.restartRequired = true;
     });
+    
+    console.log($rootScope);
     
 
     function submit() {
@@ -4678,23 +5047,23 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
     $scope.allTabs = [
         {
             active: false,
-            state: 'config'
+            state: 'root.config'
         },
         {
             active: false,
-            state: 'config.auth'
+            state: 'root.config.auth'
         },
         {
             active: false,
-            state: 'config.searching'
+            state: 'root.config.searching'
         },
         {
             active: false,
-            state: 'config.downloader'
+            state: 'root.config.downloader'
         },
         {
             active: false,
-            state: 'config.indexers'
+            state: 'root.config.indexers'
         }
     ];
 
@@ -4745,7 +5114,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             }            
         })
 }
-ConfigController.$inject = ["$scope", "ConfigService", "config", "CategoriesService", "ConfigFields", "ConfigModel", "ModalService", "RestartService", "$state", "growl"];
+ConfigController.$inject = ["$scope", "ConfigService", "config", "CategoriesService", "ConfigFields", "ConfigModel", "ModalService", "RestartService", "$state", "growl", "$rootScope"];
 
 
 

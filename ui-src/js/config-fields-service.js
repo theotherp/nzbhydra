@@ -935,10 +935,59 @@ function ConfigFields($injector) {
                     type: 'help',
                     templateOptions: {
                         lines: [
-                            'To require login only for admin access create a user with empty username and password and add a user with username and password and admin rights.',
-                            'To have a simple and an admin user remove the authless user and create two users, one without and one with admin rights.',
-                            'Leave empty to disable authorization.'
+                            "For some reasons I cannot do proper validation here. So it's up to you not to do something stupid like restrict admin access and have no user with admin rights.",
+                            "Leave empty to disable authorization.",
+                            "With form auth you need users for everyone. With basic auth you can just require a login for admin access."
                         ]
+                    }
+                },
+                {
+                    key: 'authType',
+                    type: 'horizontalSelect',
+                    templateOptions: {
+                        label: 'Auth type',
+                        options: [
+                            {name: 'None', value: 'none'},
+                            {name: 'HTTP Basic auth', value: 'basic'},
+                            {name: 'Login form', value: 'form'}
+                        ]
+                        
+                    }
+                },
+                {
+                    key: 'restrictSearch',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Restrict searching',
+                        help: 'Restrict access to searching'
+                    },
+                    hideExpression: function () {
+                        return rootModel.auth.authType == "none";
+                    }
+                },
+                {
+                    key: 'restrictStats',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Restrict stats',
+                        help: 'Restrict access to stats'
+                    },
+                    hideExpression: function () {
+                        return rootModel.auth.authType == "none";
+                    }
+                },
+                {
+                    key: 'restrictAdmin',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Restrict admin',
+                        help: 'Restrict access to admin functions'
+                    },
+                    hideExpression: function () {
+                        return rootModel.auth.authType == "none";
                     }
                 },
                 {
@@ -954,23 +1003,18 @@ function ConfigFields($injector) {
                                 type: 'horizontalInput',
                                 templateOptions: {
                                     type: 'text',
-                                    label: 'Username'
+                                    label: 'Username',
+                                    required: true
                                 }
+                                
                             },
                             {
                                 key: 'password',
                                 type: 'horizontalInput',
                                 templateOptions: {
                                     type: 'password',
-                                    label: 'Password'
-                                }
-                            },
-                            {
-                                key: 'maySeeStats',
-                                type: 'horizontalSwitch',
-                                templateOptions: {
-                                    type: 'switch',
-                                    label: 'May see stats'
+                                    label: 'Password',
+                                    required: true
                                 }
                             },
                             {
@@ -979,13 +1023,16 @@ function ConfigFields($injector) {
                                 templateOptions: {
                                     type: 'switch',
                                     label: 'May see admin area'
-                                },
-                                validators: {
-                                    dontLockYourselfOut: authValidatorDontLockYourselfOut(rootModel)
-                                },
-                                data: {
-                                    rootModel: rootModel
                                 }
+                            },
+                            {
+                                key: 'maySeeStats',
+                                type: 'horizontalSwitch',
+                                templateOptions: {
+                                    type: 'switch',
+                                    label: 'May see stats'
+                                },
+                                hideExpression: 'model.maySeeAdmin'
                             }
 
                         ],

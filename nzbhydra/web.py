@@ -8,9 +8,10 @@ import json
 import logging
 import os
 import urlparse
+from pprint import pprint
 
 import arrow
-import rison
+import jwt
 from bunch import Bunch
 from werkzeug.contrib.fixers import ProxyFix
 
@@ -26,13 +27,14 @@ import threading
 import urllib
 from builtins import *
 from peewee import fn
+from jwt import DecodeError, ExpiredSignature
 from nzbhydra.exceptions import DownloaderException, IndexerResultParsingException, DownloaderNotFoundException
 
 # standard_library.install_aliases()
 from functools import update_wrapper
 from time import sleep
 from arrow import Arrow
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, g
 from flask import redirect, make_response, send_file
 from flask_cache import Cache
 from flask.json import JSONEncoder
@@ -54,6 +56,7 @@ from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import getLogs
 from nzbhydra.backup_debug import backup, getDebuggingInfos, getBackupFilenames, getBackupFileByFilename
 from nzbhydra import ipinfo
+
 
 class ReverseProxied(object):
     def __init__(self, app):
@@ -158,7 +161,7 @@ def handle_bad_request(err):
         messages = data['exc'].messages
     else:
         messages = ['Invalid request']
-    
+
     logger.error("Invalid request: %s" % json.dumps(messages))
     return jsonify({
         'messages': messages,
@@ -200,8 +203,25 @@ def authenticate():
             failedLogins[ip] = {"lastFailedLogin": arrow.utcnow(), "failedLoginCounter": 1, "lastTriedUsername": request.authorization.username, "lastTriedPassword": request.authorization.password}
 
     return Response(
-            'Could not verify your access level for that URL. You have to login with proper credentials', 401,
-            {'WWW-Authenticate': 'Basic realm="Login Required"'})
+        'Could not verify your access level for that URL. You have to login with proper credentials', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+
+def create_token(user):
+    payload = {
+        'username': user.username,
+        'maySeeAdmin': user.maySeeAdmin or not config.settings.auth.restrictAdmin,
+        'maySeeStats': user.maySeeStats or not config.settings.auth.restrictStats,
+        'iat': arrow.utcnow().datetime,
+        'exp': arrow.utcnow().datetime + datetime.timedelta(days=14)
+    }
+    token = jwt.encode(payload, config.settings.main.secret)
+    return token.decode('unicode_escape')
+
+
+def parse_token(req):
+    token = req.headers.get('TokenAuthorization').split()[1]
+    return jwt.decode(token, config.settings.main.secret)
 
 
 # TODO: use this to create generic responses. the gui should have a service to intercept this and forward only the data (if it was successful) or else show the error, possibly log it
@@ -217,29 +237,54 @@ def isAdminLoggedIn():
 def isAllowed(authType):
     if len(config.settings.auth.users) == 0:
         return True
-    auth = Bunch.fromDict(request.authorization)
+    if authType == "admin" and not config.settings.auth.restrictAdmin:
+        return True
+    if authType == "stats" and not config.settings.auth.restrictStats:
+        return True
 
-    for user in config.settings.auth.users:
-        if authType == "main":
-            if not user.username and not user.password:  # "authless" user
+    if config.settings.auth.authType == "form":
+        if not request.headers.get('TokenAuthorization'):
+            print('Missing authorization header')
+            return False
+        try:
+            payload = parse_token(request)
+            for u in config.settings.auth.users:
+                if u.username == payload["username"]:
+                    g.user = u
+                    if authType == "stats":
+                        print("maySeeStats: %s" % u.maySeeAdmin or u.maySeeStats)
+                        return u.maySeeAdmin or u.maySeeStats
+                    if authType == "admin":
+                        print("maySeeAdmin: %s" % u.maySeeAdmin)
+                        return u.maySeeAdmin
+                    return True
+            else:
+                print("Token is invalid, user %s is unknown" % payload["username"])
+                return False
+        except DecodeError:
+            print('Token is invalid')
+            return False
+        except ExpiredSignature:
+            print("Token has expired")
+            return False
+    else:
+        auth = Bunch.fromDict(request.authorization)
+
+        for u in config.settings.auth.users:
+            if auth and auth.username == u.username:
+                if auth.password != u.password:
+                    return False
+                g.user = u
+                if authType == "stats":
+                    return u.maySeeAdmin or u.maySeeStats
+                if authType == "admin":
+                    return u.maySeeAdmin
                 return True
-            if auth and auth.username == user.username and auth.password == user.password:
-                return True
-        if authType == "stats":
-            if not user.username and not user.password and user.maySeeStats:  # "authless" user
-                return True
-            if auth and auth.username == user.username and auth.password == user.password:
-                return user.maySeeStats
-        if authType == "admin":
-            if not user.username and not user.password and user.maySeeAdmin:  # "authless" user
-                return True
-            if auth and auth.username == user.username and auth.password == user.password:
-                return user.maySeeAdmin
 
     return False
 
 
-def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
+def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False, isIndex=False):
     def decorator(f):
         def wrapped_function(*args, **kwargs):
             allowed = False
@@ -253,6 +298,10 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
                     allowed = True
                 else:
                     logger.warn("API access with invalid API key from %s" % getIp())
+            elif isIndex and (config.settings.auth.authType == "form" or not config.settings.auth.restrictSearch):  # Users need to be able to visit the main page without having to auth 
+                allowed = True
+            elif config.settings.auth.authType == "none":
+                allowed = True
             else:
                 allowed = isAllowed(authType)
             if allowed:
@@ -273,14 +322,56 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False):
     return decorator
 
 
+@app.route('/auth/login', methods=['POST'])
+def login():
+    username = request.json['username'].encode("utf-8")
+    password = request.json['password'].encode("utf-8")
+    for u in config.settings.auth.users:
+        if u.username.encode("utf-8") == username and u.password.encode("utf-8") == password:
+            token = create_token(u)
+            print("Login successful")
+            return jsonify(token=token)
+        else:
+            print(u.username.encode("utf-8"))
+            print(username.encode("utf-8"))
+    response = jsonify(message='Wrong username or Password')
+    
+    response.status_code = 401
+    return response
+
+
 @app.route('/<path:path>')
 @app.route('/', defaults={"path": None})
-@requires_auth("main")
+@requires_auth("main", isIndex=True)
 def base(path):
     logger.debug("Sending index.html")
     base_url = ("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/"
     _, currentVersion = get_current_version()
-    return render_template("index.html", base_url=base_url, isAdmin=isAdminLoggedIn(), onProd="false" if config.settings.main.debug else "true", theme=config.settings.main.theme + ".css")
+
+        
+    bootstrapped = {
+        "authType": config.settings.auth.authType,
+        "showAdmin": not config.settings.auth.restrictAdmin or len(config.settings.auth.users) == 0 or config.settings.auth.authType == "none",
+        "showStats": not config.settings.auth.restrictStats or len(config.settings.auth.users) == 0 or config.settings.auth.authType == "none",
+        "maySeeAdmin": not config.settings.auth.restrictAdmin or len(config.settings.auth.users) == 0 or config.settings.auth.authType == "none",
+        "maySeeStats": not config.settings.auth.restrictStats or len(config.settings.auth.users) == 0 or config.settings.auth.authType == "none",
+        "maySeeSearch": not config.settings.auth.restrictSearch or len(config.settings.auth.users) == 0 or config.settings.auth.authType == "none",
+    }
+    if request.authorization:
+        for u in config.settings.auth.users:
+            if u.username == request.authorization.username:
+                if config.settings.auth.restrictAdmin:
+                    bootstrapped["maySeeAdmin"] = u.maySeeAdmin
+                    bootstrapped["showAdmin"] = u.maySeeAdmin
+                if config.settings.auth.restrictStats:
+                    bootstrapped["maySeeStats"] = u.maySeeStats
+                    bootstrapped["showStats"] = u.maySeeStats
+    else:
+        bootstrapped["showStats"] = True
+        bootstrapped["showAdmin"] = True
+        
+
+    return render_template("index.html", base_url=base_url, onProd="false" if config.settings.main.debug else "true", theme=config.settings.main.theme + ".css", bootstrapped=json.dumps(bootstrapped))
 
 
 def render_search_results_for_api(search_results, total, offset, output="xml"):
@@ -300,7 +391,7 @@ def render_search_results_for_api(search_results, total, offset, output="xml"):
                           "length": item.size,
                           "type": "application/x-nzb"
                       }
-                      
+
                   },
                   "attr": [{"@attributes": {
                       "name": attr["name"],
@@ -376,8 +467,7 @@ def api(args):
     # Map newznab api parameters to internal
     args["category"] = args["cat"]
     args["episode"] = args["ep"]
-    
-    
+
     if args["q"] is not None and args["q"] != "":
         args["query"] = args["q"]  # Because internally we work with "query" instead of "q"
     if config.settings.main.apikey and ("apikey" not in args or args["apikey"] != config.settings.main.apikey):
@@ -404,7 +494,7 @@ def api(args):
         if item is None:
             logger.error("Unable to find or parse details for %s" % searchResult.title)
             return "Unable to get details", 500
-        item.link = get_nzb_link_and_guid(searchResultId, False)[0] #We need to make sure the link in the details refers to us
+        item.link = get_nzb_link_and_guid(searchResultId, False)[0]  # We need to make sure the link in the details refers to us
         return render_search_results_for_api([item], None, None, output=args["o"])
     elif args["t"] == "getnfo":
         searchResultId = int(args["id"][len("nzbhydrasearchresult"):])
@@ -413,11 +503,11 @@ def api(args):
             if args["raw"] == 1:
                 return result["nfo"]
             else:
-                #TODO Return as json if requested
+                # TODO Return as json if requested
                 return render_template("nfo.html", nfo=result["nfo"])
         else:
             return Response('<error code="300" description="No such item"/>', mimetype="text/xml")
-            
+
     else:
         logger.error("Unknown API request. Supported functions: search, tvsearch, movie, get, caps, details, getnfo")
         return "Unknown API request. Supported functions: search, tvsearch, movie, get, caps, details, getnfo", 500
@@ -456,7 +546,7 @@ def api_search(args):
         response = jsonify(content)
     else:
         return "Unknown output format", 500
-    
+
     return response
 
 
@@ -637,7 +727,6 @@ def internalapi_autocomplete(args):
 internalapi_autocomplete.make_cache_key = make_request_cache_key
 
 
-
 @app.route('/internalapi/getnfo')
 @requires_auth("main")
 @use_args(searchresultid_args)
@@ -649,7 +738,6 @@ def internalapi_getnfo(args):
 
 
 internalapi_getnfo.make_cache_key = make_request_cache_key
-
 
 
 @app.route('/internalapi/getnzb')
@@ -673,9 +761,9 @@ def extract_nzb_infos_and_return_response(searchResultId, downloader=None):
             if config.settings.main.logging.logIpAddresses:
                 logger.info("Redirecting %s to %s" % (getIp(), link))
                 if ipinfo.ispublic(getIp()):
-                    logger.info("Info on %s: %s" % (getIp(), ipinfo.country_and_org(getIp()) ) )
+                    logger.info("Info on %s: %s" % (getIp(), ipinfo.country_and_org(getIp())))
                 else:
-                    logger.info("Info on %s: private / RFC1918 address" % getIp() ) 
+                    logger.info("Info on %s: private / RFC1918 address" % getIp())
             else:
                 logger.info("Redirecting to %s" % link)
 
@@ -689,7 +777,7 @@ def extract_nzb_infos_and_return_response(searchResultId, downloader=None):
 internalapi__addnzb_args = {
     "searchresultids": fields.String(missing=[]),
     "category": fields.String(missing=None),
-    "downloader": fields.String() #Name of downloader
+    "downloader": fields.String()  # Name of downloader
 }
 
 
@@ -904,7 +992,7 @@ def internalapi_getconfig():
 
 
 @app.route('/internalapi/getsafeconfig')
-@requires_auth("main")
+@requires_auth("main", isIndex=True)
 def internalapi_getsafeconfig():
     logger.debug("Get safe config request")
     return jsonify(config.getSafeConfig())
@@ -931,6 +1019,14 @@ def internalapi_maySeeAdminArea():
     return jsonify({"maySeeAdminArea": isAdminLoggedIn()})
 
 
+@app.route('/internalapi/askadmin')
+@requires_auth("admin")
+def internalapi_askAdmin():
+    #Serves only so that the client make a request asking for admin when resolving the state change to protected tabs that don't have any other resolved calls that would trigger auth
+    logger.debug("Get askadmin request")
+    return "True"
+
+
 @app.route('/internalapi/askforadmin')
 @requires_auth("admin")
 def internalapi_askforadmin():
@@ -951,7 +1047,7 @@ def internalapi_getversionhistory():
 def internalapi_getchangelog():
     logger.debug("Get changelog request")
     _, current_version_readable = get_current_version()
-    changelog = getChangelog(current_version_readable)
+    changelog = getChangelog(current_version_readable) #TODO
     return jsonify({"changelog": changelog})
 
 
@@ -1027,7 +1123,7 @@ def internalapi_logerror(args):
 
 
 internalapi__downloader_args = {
-    "downloader": fields.String(required=True) #the name
+    "downloader": fields.String(required=True)  # the name
 }
 
 

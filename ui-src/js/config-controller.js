@@ -25,7 +25,7 @@ angular
     .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
 
-function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl) {
+function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl, $rootScope) {
     $scope.config = config;
     $scope.submit = submit;
 
@@ -35,6 +35,8 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
     ConfigFields.setRestartWatcher(function () {
         $scope.restartRequired = true;
     });
+    
+    console.log($rootScope);
     
 
     function submit() {
@@ -117,23 +119,23 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
     $scope.allTabs = [
         {
             active: false,
-            state: 'config'
+            state: 'root.config'
         },
         {
             active: false,
-            state: 'config.auth'
+            state: 'root.config.auth'
         },
         {
             active: false,
-            state: 'config.searching'
+            state: 'root.config.searching'
         },
         {
             active: false,
-            state: 'config.downloader'
+            state: 'root.config.downloader'
         },
         {
             active: false,
-            state: 'config.indexers'
+            state: 'root.config.indexers'
         }
     ];
 
