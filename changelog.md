@@ -2,7 +2,7 @@
 
 ----------
 ### 0.2.95
-Added: Decide if you want to authenticate using HTTP basic auth or a login form. 
+Added: Decide if you want to authenticate using HTTP basic auth or a login form. If you have users configured please make sure that everything is in order.
 
 Added: SimplyNZBs added to the presets.
 
