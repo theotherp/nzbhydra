@@ -1,22 +1,9 @@
 angular
     .module('nzbhydraApp')
-    .directive('indexerStatuses', indexerStatuses);
+    .controller('IndexerStatusesController', IndexerStatusesController);
 
-function indexerStatuses() {
-    return {
-        templateUrl: 'static/html/directives/indexer-statuses.html',
-        controller: ['$scope', '$http', controller]
-    };
-
-    function controller($scope, $http) {
-        
-        getIndexerStatuses();
-        
-        function getIndexerStatuses() {
-            $http.get("internalapi/getindexerstatuses").success(function (response) {
-                $scope.indexerStatuses = response.indexerStatuses;
-            });
-        }
+    function IndexerStatusesController($scope, $http, statuses) {
+        $scope.statuses = statuses.data.indexerStatuses;
         
         $scope.isInPast = function (timestamp) {
             return timestamp * 1000 < (new Date).getTime();
@@ -24,12 +11,12 @@ function indexerStatuses() {
         
         $scope.enable = function(indexerName) {
             $http.get("internalapi/enableindexer", {params: {name: indexerName}}).then(function(response){
-                $scope.indexerStatuses = response.data.indexerStatuses;
+                $scope.statuses = response.data.indexerStatuses;
             });
         }
 
     }
-}
+
 
 angular
     .module('nzbhydraApp')

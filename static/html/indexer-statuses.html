@@ -9,7 +9,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="indexerStatus in indexerStatuses">
+    <tr ng-repeat="indexerStatus in statuses">
         <td class="col-md-2">{{ indexerStatus.name }}</td>
         <td class="col-md-3">{{ indexerStatus.latest_failure | formatDate:false}}</td>
         <td class="col-md-4">

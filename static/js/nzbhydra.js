@@ -34,9 +34,6 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     controllerAs: 'ctrl',
                     resolve: {
                         loginRequired: loginRequiredAdmin,
-                        // askAdmin: ['loginRequired', '$http', function (loginRequired, $http) {
-                        //     return $http.get("internalapi/askadmin");
-                        // }],
                         config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.get();
                         }],
@@ -174,21 +171,37 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                         }
                     }
                 }
-            },
+            }
         })
         .state("root.stats", {
             url: "/stats",
+            abstract: true,
             views: {
                 'container@': {
                     templateUrl: "static/html/states/stats.html",
+                    controller: ["$scope", "$state", function($scope, $state) {
+                        $scope.$state = $state;
+                    }],
+                    resolve: {
+                        loginRequired: loginRequiredStats,
+                        $title: function () {
+                            return "Stats"
+                        }
+                    }
+                    
+                }
+            }            
+        })
+        .state("root.stats.main", {
+            url: "/stats",
+            views: {
+                'stats@root.stats': {
+                    templateUrl: "static/html/states/main-stats.html",
                     controller: "StatsController",
                     resolve: {
                         loginRequired: loginRequiredStats,
                         stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
                             return StatsService.get();
-                        }],
-                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
-                            return ConfigService.getSafe();
                         }],
                         $title: function () {
                             return "Stats"
@@ -200,16 +213,15 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
         .state("root.stats.indexers", {
             url: "/indexers",
             views: {
-                'container@': {
-                    templateUrl: "static/html/states/stats.html",
-                    controller: "StatsController",
+                'stats@root.stats': {
+                    templateUrl: "static/html/states/indexer-statuses.html",
+                    controller: IndexerStatusesController,
                     resolve: {
                         loginRequired: loginRequiredStats,
-                        stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
-                            return StatsService.get();
-                        }],
-                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
-                            return ConfigService.getSafe();
+                        statuses: ["$http", function($http) {
+                            return $http.get("internalapi/getindexerstatuses").success(function (response) {
+                                return response.indexerStatuses;
+                            });
                         }],
                         $title: function () {
                             return "Stats (Indexers)"
@@ -221,16 +233,13 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
         .state("root.stats.searches", {
             url: "/searches",
             views: {
-                'container@': {
-                    templateUrl: "static/html/states/stats.html",
-                    controller: "StatsController",
+                'stats@root.stats': {
+                    templateUrl: "static/html/states/search-history.html",
+                    controller: SearchHistoryController,
                     resolve: {
                         loginRequired: loginRequiredStats,
-                        stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
-                            return StatsService.get();
-                        }],
-                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
-                            return ConfigService.getSafe();
+                        history: ["StatsService", function(StatsService) {
+                            return StatsService.getSearchHistory();
                         }],
                         $title: function () {
                             return "Stats (Searches)"
@@ -242,16 +251,13 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
         .state("root.stats.downloads", {
             url: "/downloads",
             views: {
-                'container@': {
-                    templateUrl: "static/html/states/stats.html",
-                    controller: "StatsController",
+                'stats@root.stats': {
+                    templateUrl: 'static/html/states/download-history.html',
+                    controller: DownloadHistoryController,
                     resolve: {
                         loginRequired: loginRequiredStats,
-                        stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
-                            return StatsService.get();
-                        }],
-                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
-                            return ConfigService.getSafe();
+                        downloads: ["StatsService", function (StatsService) {
+                            return StatsService.getDownloadHistory();
                         }],
                         $title: function () {
                             return "Stats (Downloads)"
@@ -550,7 +556,7 @@ nzbhydraapp.run(["$rootScope", function ($rootScope) {
     $rootScope.$on('$stateChangeSuccess',
         function (event, toState, toParams, fromState, fromParams) {
             try {
-                $rootScope.title = toState.views["container@"].resolve.$title();
+                $rootScope.title = toState.views[Object.keys(toState.views)[0]].resolve.$title();
             } catch(e) {
                 
             }
@@ -589,6 +595,33 @@ _.mixin({
     }
 });
 
+nzbhydraapp.factory('sessionInjector', ["$injector", function ($injector) {
+    var sessionInjector = {
+        response: function (response) {
+            if (response.headers("Hydra-MaySeeAdmin") != null) {
+                $injector.get("HydraAuthService").setLoggedInByBasic(response.headers("Hydra-MaySeeStats") == "True", response.headers("Hydra-MaySeeAdmin") == "True")
+            }
+            
+            return response;
+        }
+    };
+    return sessionInjector;
+}]);
+
+nzbhydraapp.config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.interceptors.push('sessionInjector');
+}]);
+
+nzbhydraapp.directive('autoFocus', ["$timeout", function ($timeout) {
+    return {
+        restrict: 'AC',
+        link: function (_scope, _element) {
+            $timeout(function () {
+                _element[0].focus();
+            }, 0);
+        }
+    };
+}]);
 angular
     .module('nzbhydraApp')
     .directive('hydraupdates', hydraupdates);
@@ -772,94 +805,6 @@ function NfoModalInstanceCtrl($scope, $modalInstance, nfo) {
     };
 }
 NfoModalInstanceCtrl.$inject = ["$scope", "$modalInstance", "nfo"];
-angular
-    .module('nzbhydraApp')
-    .directive('searchHistory', searchHistory);
-
-
-function searchHistory() {
-    return {
-        templateUrl: 'static/html/directives/search-history.html',
-        controller: ['$scope', '$http','$state', controller],
-        scope: {}
-    };
-    
-    function controller($scope, $http, $state) {
-        $scope.type = "All";
-        $scope.limit = 100;
-        $scope.pagination = {
-            current: 1
-        };
-
-        getSearchRequestsPage(1);
-
-        $scope.pageChanged = function (newPage) {
-            getSearchRequestsPage(newPage);
-        };
-        
-        $scope.changeType = function(type) {
-            $scope.type = type;
-            getSearchRequestsPage($scope.pagination.current);
-        };
-
-        function getSearchRequestsPage(pageNumber) {
-            $http.get("internalapi/getsearchrequests", {params: {page: pageNumber, limit: $scope.limit, type: $scope.type}}).success(function (response) {
-                $scope.searchRequests = response.searchRequests;
-                $scope.totalRequests = response.totalRequests;
-            });
-        }
-        
-        $scope.openSearch = function (request) {
-            var stateParams = {};
-            if (request.identifier_key == "imdbid") {
-                stateParams.imdbid = request.identifier_value;
-            } else if (request.identifier_key == "tvdbid" || request.identifier_key == "rid") {
-                if (request.identifier_key == "rid" ) {
-                    stateParams.rid = request.identifier_value;
-                } else {
-                    stateParams.tvdbid = request.identifier_value;
-                } 
-                
-                if (request.season != "") {
-                    stateParams.season = request.season;
-                }
-                if (request.episode != "") {
-                    stateParams.episode = request.episode;
-                }
-            }
-            if (request.query != "") {
-                stateParams.query = request.query;
-            }
-            if (request.type == "tv") {
-                stateParams.mode = "tvsearch"
-            } else if (request.type == "tv") {
-                stateParams.mode = "moviesearch"
-            } else {
-                stateParams.mode = "search"
-            }
-            
-            if (request.category != "") {
-                stateParams.category = request.category;
-            }
-
-            stateParams.category = request.category;
-            
-            $state.go("root.search", stateParams, {inherit: false});
-        };
-        
-        $scope.formatQuery = function(request) {
-            if (request.movietitle != null) {
-                return request.movietitle; 
-            }
-            if (request.tvtitle != null) {
-                return request.tvtitle;
-            }
-            return request.query;
-        }
-
-
-    }
-}
 //Can be used in an ng-repeat directive to call a function when the last element was rendered
 //We use it to mark the end of sorting / filtering so we can stop blocking the UI
 
@@ -923,71 +868,6 @@ angular
         }
     };
 }])
-angular
-    .module('nzbhydraApp')
-    .directive('indexerStatuses', indexerStatuses);
-
-function indexerStatuses() {
-    return {
-        templateUrl: 'static/html/directives/indexer-statuses.html',
-        controller: ['$scope', '$http', controller]
-    };
-
-    function controller($scope, $http) {
-        
-        getIndexerStatuses();
-        
-        function getIndexerStatuses() {
-            $http.get("internalapi/getindexerstatuses").success(function (response) {
-                $scope.indexerStatuses = response.indexerStatuses;
-            });
-        }
-        
-        $scope.isInPast = function (timestamp) {
-            return timestamp * 1000 < (new Date).getTime();
-        };
-        
-        $scope.enable = function(indexerName) {
-            $http.get("internalapi/enableindexer", {params: {name: indexerName}}).then(function(response){
-                $scope.indexerStatuses = response.data.indexerStatuses;
-            });
-        }
-
-    }
-}
-
-angular
-    .module('nzbhydraApp')
-    .filter('formatDate', formatDate);
-
-function formatDate(dateFilter) {
-    return function(timestamp, hidePast) {
-        if (timestamp) {
-            if (timestamp * 1000 < (new Date).getTime() && hidePast) {
-                return ""; //
-            }
-            
-            var t = timestamp * 1000;
-            t = dateFilter(t, 'yyyy-MM-dd HH:mm');
-            return t;
-        } else {
-            return "";
-        }
-    }
-}
-formatDate.$inject = ["dateFilter"];
-
-angular
-    .module('nzbhydraApp')
-    .filter('reformatDate', reformatDate);
-
-function reformatDate() {
-    return function (date) {
-        //Date in database is saved as UTC without timezone information
-        return moment.utc(date, "ddd, D MMM YYYY HH:mm:ss z").local().format("YYYY-MM-DD HH:mm");
-        
-    }
-}
 angular
     .module('nzbhydraApp')
     .directive('indexerInput', indexerInput);
@@ -1079,45 +959,6 @@ function downloadNzbsButton() {
 }
 
 
-angular
-    .module('nzbhydraApp')
-    .directive('downloadHistory', downloadHistory);
-
-function downloadHistory() {
-    return {
-        templateUrl: 'static/html/directives/download-history.html',
-        controller: ['$scope', '$http', controller],
-        scope: {}
-    };
-
-    function controller($scope, $http) {
-        $scope.type = "All";
-        $scope.limit = 100;
-        $scope.pagination = {
-            current: 1
-        };
-
-        $scope.changeType = function (type) {
-            $scope.type = type;
-            getDownloadsPage($scope.pagination.current);
-        };
-
-        getDownloadsPage(1);
-
-        $scope.pageChanged = function (newPage) {
-            getDownloadsPage(newPage);
-        };
-        
-        function getDownloadsPage(pageNumber) {
-            $http.get("internalapi/getnzbdownloads", {params:{page: pageNumber, limit: $scope.limit, type: $scope.type}}).success(function (response) {
-                $scope.nzbDownloads = response.nzbDownloads;
-                $scope.totalDownloads = response.totalDownloads;
-            });
-        }
-
-
-    }
-}
 angular
     .module('nzbhydraApp')
     .directive('connectionTest', connectionTest);
@@ -1404,13 +1245,14 @@ angular
 function UpdateFooterController($scope, UpdateService, HydraAuthService, bootstrapped) {
 
     $scope.updateAvailable = false;
+    $scope.checked = false;
 
     $scope.mayUpdate = HydraAuthService.getUserRights().maySeeAdmin || bootstrapped.maySeeAdmin;
 
     $scope.$on("user:loggedIn", function (event, data) {
         console.log("loggedIn event");
         console.log(data);
-        if (data.maySeeAdmin) {
+        if (data.maySeeAdmin && !$scope.checked) {
             retrieveUpdateInfos();
         }
     });
@@ -1421,6 +1263,7 @@ function UpdateFooterController($scope, UpdateService, HydraAuthService, bootstr
     }
 
     function retrieveUpdateInfos() {
+        $scope.checked = true;
         console.log("Getting update infos");
         UpdateService.getVersions().then(function (data) {
             $scope.currentVersion = data.data.currentVersion;
@@ -1511,16 +1354,56 @@ angular
     .factory('StatsService', StatsService);
 
 function StatsService($http) {
-    
+
     return {
-        get: getStats
+        get: getStats,
+        getSearchHistory: getSearchHistory,
+        getDownloadHistory: getDownloadHistory
     };
 
     function getStats() {
-            return $http.get("internalapi/getstats").success(function (response) {
-               return response.data;
-            });
+        return $http.get("internalapi/getstats").success(function (response) {
+            return response.data;
+        });
+    }
 
+    function getSearchHistory(pageNumber, limit, type) {
+        if (angular.isUndefined(pageNumber)) {
+            pageNumber = 1;
+        }
+        if (angular.isUndefined(limit)) {
+            limit = 100;
+        }
+        if (angular.isUndefined(type)) {
+            type = "All";
+        }
+        return $http.get("internalapi/getsearchrequests", {params: {page: pageNumber, limit: limit, type: type}}).success(function (response) {
+            return {
+                searchRequests: response.searchRequests,
+                totalRequests: response.totalRequests
+            }
+        });
+    }
+    
+    function getDownloadHistory(pageNumber, limit, type) {
+        if (angular.isUndefined(pageNumber)) {
+            pageNumber = 1;
+        }
+        if (angular.isUndefined(limit)) {
+            limit = 100;
+        }
+        if (angular.isUndefined(type)) {
+            type = "All";
+        }
+        console.log(1);
+        return $http.get("internalapi/getnzbdownloads", {params: {page: pageNumber, limit: limit, type: type}}).success(function (response) {
+            console.log(2);
+            return {
+                nzbDownloads: response.nzbDownloads,
+                totalDownloads: response.totalDownloads
+            };
+            
+        });
     }
 
 }
@@ -1529,7 +1412,7 @@ angular
     .module('nzbhydraApp')
     .controller('StatsController', StatsController);
 
-function StatsController($scope, stats, $state) {
+function StatsController($scope, stats) {
 
     stats = stats.data;
     $scope.nzbDownloads = null;
@@ -1538,39 +1421,8 @@ function StatsController($scope, stats, $state) {
     $scope.avgIndexerAccessSuccesses = stats.avgIndexerAccessSuccesses;
     $scope.indexerDownloadShares = stats.indexerDownloadShares;
     
-
-    $scope.tabs = [
-        {
-            active: false,
-            state: 'root.stats'
-        },
-        {
-            active: false,
-            state: 'root.stats.indexers'
-        },
-        {
-            active: false,
-            state: 'root.stats.searches'
-        },
-        {
-            active: false,
-            state: 'root.stats.downloads'
-        }
-    ];
-
-    for (var i = 0; i < $scope.tabs.length; i++) {
-        if ($state.is($scope.tabs[i].state)) {
-            $scope.tabs[i].active = true;
-        }
-    }
-    
-    $scope.goToState = function (index) {
-        $state.go($scope.tabs[index].state);
-    }
-
-
 }
-StatsController.$inject = ["$scope", "stats", "$state"];
+StatsController.$inject = ["$scope", "stats"];
 
 //
 angular
@@ -1909,6 +1761,91 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
 
 }
 SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "growl", "$cookies", "SearchService", "ConfigService"];
+angular
+    .module('nzbhydraApp')
+    .controller('SearchHistoryController', SearchHistoryController);
+
+
+function SearchHistoryController($scope, $state, StatsService, history) {
+    $scope.type = "All";
+    $scope.limit = 100;
+    $scope.pagination = {
+        current: 1
+    };
+    $scope.isLoaded = true;
+    $scope.searchRequests = history.data.searchRequests;
+    $scope.totalRequests = history.data.totalRequests;
+
+
+    $scope.pageChanged = function (newPage) {
+        getSearchRequestsPage(newPage);
+    };
+
+    $scope.changeType = function (type) {
+        $scope.type = type;
+        getSearchRequestsPage($scope.pagination.current);
+    };
+
+    function getSearchRequestsPage(pageNumber) {
+        StatsService.getSearchHistory(pageNumber, $scope.limit, $scope.type).then(function (history) {
+            $scope.searchRequests = history.data.searchRequests;
+            $scope.totalRequests = history.data.totalRequests;
+            $scope.isLoaded = true;
+        });
+    }
+
+    $scope.openSearch = function (request) {
+        var stateParams = {};
+        if (request.identifier_key == "imdbid") {
+            stateParams.imdbid = request.identifier_value;
+        } else if (request.identifier_key == "tvdbid" || request.identifier_key == "rid") {
+            if (request.identifier_key == "rid") {
+                stateParams.rid = request.identifier_value;
+            } else {
+                stateParams.tvdbid = request.identifier_value;
+            }
+
+            if (request.season != "") {
+                stateParams.season = request.season;
+            }
+            if (request.episode != "") {
+                stateParams.episode = request.episode;
+            }
+        }
+        if (request.query != "") {
+            stateParams.query = request.query;
+        }
+        if (request.type == "tv") {
+            stateParams.mode = "tvsearch"
+        } else if (request.type == "tv") {
+            stateParams.mode = "moviesearch"
+        } else {
+            stateParams.mode = "search"
+        }
+
+        if (request.category != "") {
+            stateParams.category = request.category;
+        }
+
+        stateParams.category = request.category;
+
+        $state.go("root.search", stateParams, {inherit: false});
+    };
+
+    $scope.formatQuery = function (request) {
+        if (request.movietitle != null) {
+            return request.movietitle;
+        }
+        if (request.tvtitle != null) {
+            return request.tvtitle;
+        }
+        return request.query;
+    }
+
+
+}
+SearchHistoryController.$inject = ["$scope", "$state", "StatsService", "history"];
+
 angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
@@ -2415,21 +2352,80 @@ angular
     .module('nzbhydraApp')
     .controller('LoginController', LoginController);
 
-function LoginController($scope, $stateParams, $state, HydraAuthService, $auth) {
+function LoginController($scope, RequestsErrorHandler, $state, HydraAuthService, $auth, growl) {
     $scope.user = {};
     $scope.login = function() {
-        $auth.login($scope.user).then(function(data) {
-            
-            console.log("Logged in from LoginController");
-            HydraAuthService.setLoggedIn();
-            $state.go("root.search");
+        RequestsErrorHandler.specificallyHandled(function() {
+            $auth.login($scope.user).then(function (data) {
+
+                console.log(data);
+                HydraAuthService.setLoggedInByForm();
+                growl.info("Login successful!");
+                $state.go("root.search");
+            }, function () {
+                growl.error("Login failed!")
+            });
         });
+        
         
     }
     
 }
-LoginController.$inject = ["$scope", "$stateParams", "$state", "HydraAuthService", "$auth"];
+LoginController.$inject = ["$scope", "RequestsErrorHandler", "$state", "HydraAuthService", "$auth", "growl"];
 
+angular
+    .module('nzbhydraApp')
+    .controller('IndexerStatusesController', IndexerStatusesController);
+
+    function IndexerStatusesController($scope, $http, statuses) {
+        $scope.statuses = statuses.data.indexerStatuses;
+        
+        $scope.isInPast = function (timestamp) {
+            return timestamp * 1000 < (new Date).getTime();
+        };
+        
+        $scope.enable = function(indexerName) {
+            $http.get("internalapi/enableindexer", {params: {name: indexerName}}).then(function(response){
+                $scope.statuses = response.data.indexerStatuses;
+            });
+        }
+
+    }
+    IndexerStatusesController.$inject = ["$scope", "$http", "statuses"];
+
+
+angular
+    .module('nzbhydraApp')
+    .filter('formatDate', formatDate);
+
+function formatDate(dateFilter) {
+    return function(timestamp, hidePast) {
+        if (timestamp) {
+            if (timestamp * 1000 < (new Date).getTime() && hidePast) {
+                return ""; //
+            }
+            
+            var t = timestamp * 1000;
+            t = dateFilter(t, 'yyyy-MM-dd HH:mm');
+            return t;
+        } else {
+            return "";
+        }
+    }
+}
+formatDate.$inject = ["dateFilter"];
+
+angular
+    .module('nzbhydraApp')
+    .filter('reformatDate', reformatDate);
+
+function reformatDate() {
+    return function (date) {
+        //Date in database is saved as UTC without timezone information
+        return moment.utc(date, "ddd, D MMM YYYY HH:mm:ss z").local().format("YYYY-MM-DD HH:mm");
+        
+    }
+}
 angular
     .module('nzbhydraApp')
     .controller('IndexController', IndexController);
@@ -2444,60 +2440,75 @@ angular
     .module('nzbhydraApp')
     .factory('HydraAuthService', HydraAuthService);
 
-function HydraAuthService(localStorageService, $auth, $q, $rootScope) {
+function HydraAuthService($auth, $q, $rootScope, ConfigService, bootstrapped) {
 
+    var loggedIn = false;
+    var maySeeAdmin = bootstrapped.maySeeAdmin;
+    var maySeeStats = bootstrapped.maySeeStats;
+    
     return {
         isLoggedIn: isLoggedIn,
-
         login: login,
-        setLoggedIn: setLoggedIn,
-        getUserRights: getUserRights 
-        
+        logout: logout,
+        setLoggedInByForm: setLoggedInByForm,
+        getUserRights: getUserRights,
+        setLoggedInByBasic: setLoggedInByBasic
     };
     
     function isLoggedIn() {
-        return $auth.isAuthenticated();
+        return loggedIn || (ConfigService.getSafe().authType == "form" && $auth.isAuthenticated()) || ConfigService.getSafe().authType == "none";
     }
     
-    function setLoggedIn() {
-        var maySeeStats = $auth.getPayload().maySeeStats;
-        var maySeeAdmin = $auth.getPayload().maySeeAdmin;
+    function setLoggedInByForm() {
+        maySeeStats = $auth.getPayload().maySeeStats;
+        maySeeAdmin = $auth.getPayload().maySeeAdmin;
+        loggedIn = true;
+        $rootScope.$broadcast("user:loggedIn", {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin});
+    }
+
+    function setLoggedInByBasic(_maySeeStats, _maySeeAdmin) {
+        maySeeAdmin = _maySeeAdmin;
+        maySeeStats = _maySeeStats;
+        loggedIn = true;
         $rootScope.$broadcast("user:loggedIn", {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin});
     }
     
     function login(user) {
         var deferred = $q.defer();
         $auth.login(user).then(function (data) {
-            console.log("logged in");
             $rootScope.$broadcast("user:loggedIn", data);
            deferred.resolve();
         });
         return deferred;
     }
     
-    function getUserRights() {
-        if (!isLoggedIn()) {
-            return {maySeeStats: false, maySeeAdmin: false}
-        } else {
-            var maySeeStats = $auth.getPayload().maySeeStats;
-            var maySeeAdmin = $auth.getPayload().maySeeAdmin;
-            return {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin};
-        }
+    function logout() {
+        $auth.logout();
+        $rootScope.$broadcast("user:loggedOut", {maySeeStats: bootstrapped.maySeeStats, maySeeAdmin: bootstrapped.maySeeAdmin});
     }
+    
+    function getUserRights() {
+        return {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin};
+    }
+    
+    
     
    
 }
-HydraAuthService.$inject = ["localStorageService", "$auth", "$q", "$rootScope"];
+HydraAuthService.$inject = ["$auth", "$q", "$rootScope", "ConfigService", "bootstrapped"];
 angular
     .module('nzbhydraApp')
     .controller('HeaderController', HeaderController);
 
-function HeaderController($scope, HydraAuthService, bootstrapped) {
+function HeaderController($scope, $state, HydraAuthService, ConfigService, bootstrapped) {
+    
+    $scope.showLogout = false;
 
     if (HydraAuthService.isLoggedIn()) {
         var rights = HydraAuthService.getUserRights();
         $scope.maySeeAdmin = rights.maySeeAdmin;
         $scope.maySeeStats = rights.maySeeStats;
+        $scope.showLogout = ConfigService.getSafe().authType == "form";
     } else {
         $scope.maySeeAdmin = bootstrapped.showAdmin;
         $scope.maySeeStats = bootstrapped.showStats;
@@ -2506,10 +2517,29 @@ function HeaderController($scope, HydraAuthService, bootstrapped) {
     $scope.$on("user:loggedIn", function (event, data) {
         $scope.maySeeAdmin = data.maySeeAdmin;
         $scope.maySeeStats = data.maySeeStats;
+        $scope.showLogout = ConfigService.getSafe().authType == "form";
+    });
+
+    $scope.$on("user:loggedOut", function (event, data) {
+        if (ConfigService.getSafe().authType == "form") {
+            $scope.maySeeAdmin = true;
+            $scope.maySeeStats = true;
+            $scope.showLogout = false;
+        } else {
+            $scope.maySeeAdmin = data.maySeeAdmin;
+            $scope.maySeeStats = data.maySeeStats;
+            $scope.showLogout = false;
+        }
+        
     });
     
+    $scope.logout = function() {
+        HydraAuthService.logout();
+        $state.go("root.search");
+    }
+    
 }
-HeaderController.$inject = ["$scope", "HydraAuthService", "bootstrapped"];
+HeaderController.$inject = ["$scope", "$state", "HydraAuthService", "ConfigService", "bootstrapped"];
 
 var HEADER_NAME = 'MyApp-Handle-Errors-Generically';
 var specificallyHandleInProgress = false;
@@ -3074,6 +3104,43 @@ filters.filter('unsafe',
 		};
 	}]
 );
+angular
+    .module('nzbhydraApp')
+    .controller('DownloadHistoryController', DownloadHistoryController);
+
+
+function DownloadHistoryController($scope, StatsService, downloads) {
+    $scope.type = "All";
+    $scope.limit = 100;
+    $scope.pagination = {
+        current: 1
+    };
+
+    $scope.nzbDownloads = downloads.data.nzbDownloads;
+    $scope.totalDownloads = downloads.data.totalDownloads;
+
+    $scope.changeType = function (type) {
+        $scope.type = type;
+        getDownloadsPage($scope.pagination.current);
+    };
+
+
+    $scope.pageChanged = function (newPage) {
+        getDownloadsPage(newPage);
+    };
+
+    function getDownloadsPage(pageNumber) {
+        StatsService.getDownloadHistory(pageNumber, $scope.limit, $scope.type).then(function(downloads) {
+            $scope.nzbDownloads = downloads.data.nzbDownloads;
+            $scope.totalDownloads = downloads.data.totalDownloads;
+        });
+        
+    }
+
+
+}
+DownloadHistoryController.$inject = ["$scope", "StatsService", "downloads"];
+
 angular
     .module('nzbhydraApp')
     .factory('ConfigService', ConfigService);

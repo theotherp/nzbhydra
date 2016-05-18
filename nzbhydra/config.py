@@ -743,5 +743,6 @@ def getSafeConfig():
     return {
         "indexers": indexers,
         "searching": {"categorysizes": settings["searching"]["categorysizes"], "maxAge": settings["searching"]["maxAge"], "alwaysShowDuplicates": settings["searching"]["alwaysShowDuplicates"]},
-        "downloaders": settings["downloaders"]
+        "downloaders": settings["downloaders"],
+        "authType": settings["auth"]["authType"],
     }

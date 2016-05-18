@@ -34,9 +34,6 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                     controllerAs: 'ctrl',
                     resolve: {
                         loginRequired: loginRequiredAdmin,
-                        // askAdmin: ['loginRequired', '$http', function (loginRequired, $http) {
-                        //     return $http.get("internalapi/askadmin");
-                        // }],
                         config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.get();
                         }],
@@ -174,21 +171,37 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         }
                     }
                 }
-            },
+            }
         })
         .state("root.stats", {
             url: "/stats",
+            abstract: true,
             views: {
                 'container@': {
                     templateUrl: "static/html/states/stats.html",
+                    controller: function($scope, $state) {
+                        $scope.$state = $state;
+                    },
+                    resolve: {
+                        loginRequired: loginRequiredStats,
+                        $title: function () {
+                            return "Stats"
+                        }
+                    }
+                    
+                }
+            }            
+        })
+        .state("root.stats.main", {
+            url: "/stats",
+            views: {
+                'stats@root.stats': {
+                    templateUrl: "static/html/states/main-stats.html",
                     controller: "StatsController",
                     resolve: {
                         loginRequired: loginRequiredStats,
                         stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
                             return StatsService.get();
-                        }],
-                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
-                            return ConfigService.getSafe();
                         }],
                         $title: function () {
                             return "Stats"
@@ -200,17 +213,16 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         .state("root.stats.indexers", {
             url: "/indexers",
             views: {
-                'container@': {
-                    templateUrl: "static/html/states/stats.html",
-                    controller: "StatsController",
+                'stats@root.stats': {
+                    templateUrl: "static/html/states/indexer-statuses.html",
+                    controller: IndexerStatusesController,
                     resolve: {
                         loginRequired: loginRequiredStats,
-                        stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
-                            return StatsService.get();
-                        }],
-                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
-                            return ConfigService.getSafe();
-                        }],
+                        statuses: function($http) {
+                            return $http.get("internalapi/getindexerstatuses").success(function (response) {
+                                return response.indexerStatuses;
+                            });
+                        },
                         $title: function () {
                             return "Stats (Indexers)"
                         }
@@ -221,17 +233,14 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         .state("root.stats.searches", {
             url: "/searches",
             views: {
-                'container@': {
-                    templateUrl: "static/html/states/stats.html",
-                    controller: "StatsController",
+                'stats@root.stats': {
+                    templateUrl: "static/html/states/search-history.html",
+                    controller: SearchHistoryController,
                     resolve: {
                         loginRequired: loginRequiredStats,
-                        stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
-                            return StatsService.get();
-                        }],
-                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
-                            return ConfigService.getSafe();
-                        }],
+                        history: function(StatsService) {
+                            return StatsService.getSearchHistory();
+                        },
                         $title: function () {
                             return "Stats (Searches)"
                         }
@@ -242,17 +251,14 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         .state("root.stats.downloads", {
             url: "/downloads",
             views: {
-                'container@': {
-                    templateUrl: "static/html/states/stats.html",
-                    controller: "StatsController",
+                'stats@root.stats': {
+                    templateUrl: 'static/html/states/download-history.html',
+                    controller: DownloadHistoryController,
                     resolve: {
                         loginRequired: loginRequiredStats,
-                        stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
-                            return StatsService.get();
-                        }],
-                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
-                            return ConfigService.getSafe();
-                        }],
+                        downloads: function (StatsService) {
+                            return StatsService.getDownloadHistory();
+                        },
                         $title: function () {
                             return "Stats (Downloads)"
                         }
@@ -547,7 +553,7 @@ nzbhydraapp.run(function ($rootScope) {
     $rootScope.$on('$stateChangeSuccess',
         function (event, toState, toParams, fromState, fromParams) {
             try {
-                $rootScope.title = toState.views["container@"].resolve.$title();
+                $rootScope.title = toState.views[Object.keys(toState.views)[0]].resolve.$title();
             } catch(e) {
                 
             }
@@ -584,4 +590,32 @@ _.mixin({
     isNullOrEmpty: function (string) {
         return (_.isUndefined(string) || _.isNull(string) || (_.isString(string) && string.length === 0))
     }
+});
+
+nzbhydraapp.factory('sessionInjector', function ($injector) {
+    var sessionInjector = {
+        response: function (response) {
+            if (response.headers("Hydra-MaySeeAdmin") != null) {
+                $injector.get("HydraAuthService").setLoggedInByBasic(response.headers("Hydra-MaySeeStats") == "True", response.headers("Hydra-MaySeeAdmin") == "True")
+            }
+            
+            return response;
+        }
+    };
+    return sessionInjector;
+});
+
+nzbhydraapp.config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.interceptors.push('sessionInjector');
+}]);
+
+nzbhydraapp.directive('autoFocus', function ($timeout) {
+    return {
+        restrict: 'AC',
+        link: function (_scope, _element) {
+            $timeout(function () {
+                _element[0].focus();
+            }, 0);
+        }
+    };
 });

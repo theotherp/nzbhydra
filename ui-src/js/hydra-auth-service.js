@@ -2,46 +2,58 @@ angular
     .module('nzbhydraApp')
     .factory('HydraAuthService', HydraAuthService);
 
-function HydraAuthService(localStorageService, $auth, $q, $rootScope) {
+function HydraAuthService($auth, $q, $rootScope, ConfigService, bootstrapped) {
 
+    var loggedIn = false;
+    var maySeeAdmin = bootstrapped.maySeeAdmin;
+    var maySeeStats = bootstrapped.maySeeStats;
+    
     return {
         isLoggedIn: isLoggedIn,
-
         login: login,
-        setLoggedIn: setLoggedIn,
-        getUserRights: getUserRights 
-        
+        logout: logout,
+        setLoggedInByForm: setLoggedInByForm,
+        getUserRights: getUserRights,
+        setLoggedInByBasic: setLoggedInByBasic
     };
     
     function isLoggedIn() {
-        return $auth.isAuthenticated();
+        return loggedIn || (ConfigService.getSafe().authType == "form" && $auth.isAuthenticated()) || ConfigService.getSafe().authType == "none";
     }
     
-    function setLoggedIn() {
-        var maySeeStats = $auth.getPayload().maySeeStats;
-        var maySeeAdmin = $auth.getPayload().maySeeAdmin;
+    function setLoggedInByForm() {
+        maySeeStats = $auth.getPayload().maySeeStats;
+        maySeeAdmin = $auth.getPayload().maySeeAdmin;
+        loggedIn = true;
+        $rootScope.$broadcast("user:loggedIn", {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin});
+    }
+
+    function setLoggedInByBasic(_maySeeStats, _maySeeAdmin) {
+        maySeeAdmin = _maySeeAdmin;
+        maySeeStats = _maySeeStats;
+        loggedIn = true;
         $rootScope.$broadcast("user:loggedIn", {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin});
     }
     
     function login(user) {
         var deferred = $q.defer();
         $auth.login(user).then(function (data) {
-            console.log("logged in");
             $rootScope.$broadcast("user:loggedIn", data);
            deferred.resolve();
         });
         return deferred;
     }
     
-    function getUserRights() {
-        if (!isLoggedIn()) {
-            return {maySeeStats: false, maySeeAdmin: false}
-        } else {
-            var maySeeStats = $auth.getPayload().maySeeStats;
-            var maySeeAdmin = $auth.getPayload().maySeeAdmin;
-            return {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin};
-        }
+    function logout() {
+        $auth.logout();
+        $rootScope.$broadcast("user:loggedOut", {maySeeStats: bootstrapped.maySeeStats, maySeeAdmin: bootstrapped.maySeeAdmin});
     }
+    
+    function getUserRights() {
+        return {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin};
+    }
+    
+    
     
    
 }

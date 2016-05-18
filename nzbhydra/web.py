@@ -139,7 +139,10 @@ def disable_caching(response):
         response.cache_control.no_store = True
     response.headers["Expires"] = datetime.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
     response.cache_control.max_age = 0
-
+    user = getattr(g, "user", None)
+    if user is not None:
+        response.headers["Hydra-MaySeeAdmin"] = user["maySeeAdmin"]
+        response.headers["Hydra-MaySeeStats"] = user["maySeeStats"]
     return response
 
 
@@ -244,7 +247,7 @@ def isAllowed(authType):
 
     if config.settings.auth.authType == "form":
         if not request.headers.get('TokenAuthorization'):
-            print('Missing authorization header')
+            logger.error('Missing authorization header')
             return False
         try:
             payload = parse_token(request)
@@ -252,24 +255,21 @@ def isAllowed(authType):
                 if u.username == payload["username"]:
                     g.user = u
                     if authType == "stats":
-                        print("maySeeStats: %s" % u.maySeeAdmin or u.maySeeStats)
                         return u.maySeeAdmin or u.maySeeStats
                     if authType == "admin":
-                        print("maySeeAdmin: %s" % u.maySeeAdmin)
                         return u.maySeeAdmin
                     return True
             else:
-                print("Token is invalid, user %s is unknown" % payload["username"])
+                logger.error("Token is invalid, user %s is unknown" % payload["username"])
                 return False
         except DecodeError:
-            print('Token is invalid')
+            logger.error('Token is invalid')
             return False
         except ExpiredSignature:
-            print("Token has expired")
+            logger.error("Token has expired")
             return False
     else:
         auth = Bunch.fromDict(request.authorization)
-
         for u in config.settings.auth.users:
             if auth and auth.username == u.username:
                 if auth.password != u.password:
@@ -329,11 +329,8 @@ def login():
     for u in config.settings.auth.users:
         if u.username.encode("utf-8") == username and u.password.encode("utf-8") == password:
             token = create_token(u)
-            print("Login successful")
+            logger.info("Login successful")
             return jsonify(token=token)
-        else:
-            print(u.username.encode("utf-8"))
-            print(username.encode("utf-8"))
     response = jsonify(message='Wrong username or Password')
     
     response.status_code = 401

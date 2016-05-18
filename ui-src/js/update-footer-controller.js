@@ -5,13 +5,14 @@ angular
 function UpdateFooterController($scope, UpdateService, HydraAuthService, bootstrapped) {
 
     $scope.updateAvailable = false;
+    $scope.checked = false;
 
     $scope.mayUpdate = HydraAuthService.getUserRights().maySeeAdmin || bootstrapped.maySeeAdmin;
 
     $scope.$on("user:loggedIn", function (event, data) {
         console.log("loggedIn event");
         console.log(data);
-        if (data.maySeeAdmin) {
+        if (data.maySeeAdmin && !$scope.checked) {
             retrieveUpdateInfos();
         }
     });
@@ -22,6 +23,7 @@ function UpdateFooterController($scope, UpdateService, HydraAuthService, bootstr
     }
 
     function retrieveUpdateInfos() {
+        $scope.checked = true;
         console.log("Getting update infos");
         UpdateService.getVersions().then(function (data) {
             $scope.currentVersion = data.data.currentVersion;
