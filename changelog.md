@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.96
+Fixed: Search box would disappear when showing search results.
+
 ### 0.2.95
 Added: Decide if you want to authenticate using HTTP basic auth or a login form. If you have users configured please make sure that everything is in order.
 

@@ -397,7 +397,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
         })
         .state("root.search.results", {
             views: {
-                'container@': {
+                'results@root.search': {
                     templateUrl: "static/html/states/search-results.html",
                     controller: "SearchResultsController",
                     controllerAs: "srController",
