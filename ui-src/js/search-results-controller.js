@@ -3,11 +3,11 @@ angular
     .controller('SearchResultsController', SearchResultsController);
 
 //SearchResultsController.$inject = ['blockUi'];
-function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, $cookies, SearchService, ConfigService) {
+function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, localStorageService, SearchService, ConfigService) {
 
     
-    if (angular.isDefined($cookies.getObject("sorting"))) {
-        var sorting = $cookies.getObject("sorting");
+    if (localStorageService.get("sorting") != null) {
+        var sorting = localStorageService.get("sorting");
         $scope.sortPredicate = sorting.predicate;
         $scope.sortReversed = sorting.reversed;
     } else {
@@ -25,7 +25,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.doShowDuplicates = ConfigService.getSafe().searching.alwaysShowDuplicates;
     $scope.selected = [];
     
-    $scope.indexerStatusesExpanded = angular.isDefined($cookies.get("indexerStatusesExpanded")) ? $cookies.get("indexerStatusesExpanded") : false;
+    $scope.indexerStatusesExpanded = localStorageService.get("indexerStatusesExpanded") != null ? localStorageService.get("indexerStatusesExpanded") : false;
     
     $scope.countFilteredOut = 0;
 
@@ -80,7 +80,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
             }
             $scope.sortPredicate = predicate;
             $scope.filteredResults = sortAndFilter($scope.results);
-            $cookies.putObject("sorting", {predicate: predicate, reversed: $scope.sortReversed});
+            localStorageService.set("sorting", {predicate: predicate, reversed: $scope.sortReversed});
             blockUI.reset();
         });
     }
@@ -216,8 +216,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     
     $scope.toggleIndexerStatuses = function() {
         $scope.indexerStatusesExpanded = !$scope.indexerStatusesExpanded;
-        $cookies.put("indexerStatusesExpanded", $scope.indexerStatusesExpanded);
-        console.log($cookies.get("indexerStatusesExpanded"));
+        localStorageService.set("indexerStatusesExpanded", $scope.indexerStatusesExpanded);
     }
 
 }

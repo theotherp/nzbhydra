@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.97
+Fixed: Indexer status box state wasn't remembered.
+
 ### 0.2.96
 Fixed: Search box would disappear when showing search results.
 

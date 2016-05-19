@@ -1,4 +1,4 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title', 'ngCookies', 'satellizer', 'LocalStorageModule']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title', 'satellizer', 'LocalStorageModule']);
 
 angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$locationProvider", "blockUIConfig", "$urlMatcherFactoryProvider", "$authProvider", "localStorageServiceProvider", "bootstrapped", function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig, $urlMatcherFactoryProvider, $authProvider, localStorageServiceProvider, bootstrapped) {
 
@@ -1542,11 +1542,11 @@ angular
     .controller('SearchResultsController', SearchResultsController);
 
 //SearchResultsController.$inject = ['blockUi'];
-function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, $cookies, SearchService, ConfigService) {
+function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, localStorageService, SearchService, ConfigService) {
 
     
-    if (angular.isDefined($cookies.getObject("sorting"))) {
-        var sorting = $cookies.getObject("sorting");
+    if (localStorageService.get("sorting") != null) {
+        var sorting = localStorageService.get("sorting");
         $scope.sortPredicate = sorting.predicate;
         $scope.sortReversed = sorting.reversed;
     } else {
@@ -1564,7 +1564,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.doShowDuplicates = ConfigService.getSafe().searching.alwaysShowDuplicates;
     $scope.selected = [];
     
-    $scope.indexerStatusesExpanded = angular.isDefined($cookies.get("indexerStatusesExpanded")) ? $cookies.get("indexerStatusesExpanded") : false;
+    $scope.indexerStatusesExpanded = localStorageService.get("indexerStatusesExpanded") != null ? localStorageService.get("indexerStatusesExpanded") : false;
     
     $scope.countFilteredOut = 0;
 
@@ -1619,7 +1619,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
             }
             $scope.sortPredicate = predicate;
             $scope.filteredResults = sortAndFilter($scope.results);
-            $cookies.putObject("sorting", {predicate: predicate, reversed: $scope.sortReversed});
+            localStorageService.set("sorting", {predicate: predicate, reversed: $scope.sortReversed});
             blockUI.reset();
         });
     }
@@ -1755,12 +1755,11 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     
     $scope.toggleIndexerStatuses = function() {
         $scope.indexerStatusesExpanded = !$scope.indexerStatusesExpanded;
-        $cookies.put("indexerStatusesExpanded", $scope.indexerStatusesExpanded);
-        console.log($cookies.get("indexerStatusesExpanded"));
+        localStorageService.set("indexerStatusesExpanded", $scope.indexerStatusesExpanded);
     }
 
 }
-SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "growl", "$cookies", "SearchService", "ConfigService"];
+SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "growl", "localStorageService", "SearchService", "ConfigService"];
 angular
     .module('nzbhydraApp')
     .controller('SearchHistoryController', SearchHistoryController);
