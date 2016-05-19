@@ -99,7 +99,9 @@ def getChangesSince(changelog, oldVersion=None):
     changelog = changelog[start:]
     if oldVersion:
         try:
-            end = changelog.find(("### %s" % oldVersion).strip(), start)
+            print("Looking for %s" % oldVersion)
+            end = changelog.index(("### %s" % oldVersion).strip())
+            print("FOund old version at index %d" % end)
             changelog = changelog[:end]
         except ValueError:
             logger.exception("Err while finding current version in changelog. Will return the whole changelog")

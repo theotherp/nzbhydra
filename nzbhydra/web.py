@@ -1039,12 +1039,19 @@ def internalapi_getversionhistory():
     return jsonify({"versionHistory": versionHistory})
 
 
+internalapi__getChangelog_args = {
+    "currentVersion": fields.String(required=True),
+    "repVersion": fields.String(required=True)
+}
+
+
 @app.route('/internalapi/get_changelog')
 @requires_auth("main")
-def internalapi_getchangelog():
+@use_args(internalapi__getChangelog_args)
+def internalapi_getchangelog(args):
     logger.debug("Get changelog request")
     _, current_version_readable = get_current_version()
-    changelog = getChangelog(current_version_readable) #TODO
+    changelog = getChangelog(args["currentVersion"], args["repVersion"])
     return jsonify({"changelog": changelog})
 
 

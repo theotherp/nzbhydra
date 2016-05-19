@@ -1177,7 +1177,7 @@ function UpdateService($http, growl, blockUI, RestartService) {
     }
 
     function getChangelog() {
-        return $http.get("internalapi/get_changelog").then(function (data) {
+        return $http.get("internalapi/get_changelog", {currentVersion: currentVersion, repVersion: repVersion}).then(function (data) {
             changelog = data.data.changelog;
             return data;
         });
@@ -1190,7 +1190,7 @@ function UpdateService($http, growl, blockUI, RestartService) {
         });
     }
 
-    function showChanges() {
+    function showChanges(changelog) {
 
         var myInjector = angular.injector(["ng", "ui.bootstrap"]);
         var $uibModal = myInjector.get("$uibModal");

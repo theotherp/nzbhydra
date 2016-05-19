@@ -4,6 +4,10 @@
 ### 0.2.96
 Fixed: Search box would disappear when showing search results.
 
+Fixed: Sensitive downloader data would be sent to non-admins. Sorry. 
+
+Fixed: Changelog would be shown empty.
+
 ### 0.2.95
 Added: Decide if you want to authenticate using HTTP basic auth or a login form. If you have users configured please make sure that everything is in order.
 
