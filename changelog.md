@@ -4,6 +4,8 @@
 ### 0.2.97
 Fixed: Indexer status box state wasn't remembered.
 
+Fixed: Changelog would either show too much or not enough...
+
 ### 0.2.96
 Fixed: Search box would disappear when showing search results.
 
