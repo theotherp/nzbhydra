@@ -1,6 +1,13 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.98
+Changed: Provide a bit better info when auth fails.
+
+Changed: Provide better feedback when the connection test to an indexer fails.
+
+Fixed: Form based auth wouldn't work with subdirectories on reverse proxies.
+
 ### 0.2.97
 Fixed: Indexer status box state wasn't remembered.
 

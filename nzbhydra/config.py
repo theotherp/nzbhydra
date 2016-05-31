@@ -524,7 +524,7 @@ def migrateConfig(config):
             if config["main"]["configVersion"] == 17:
                 with version_update(config, 18):
                     addLogMessage(20, "Adding secret for auth")
-                    config["main"]["secret"] = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16))
+                    config["main"]["secret"] = createSecret()
                     addLogMessage(20, "Migrating auth settings")
                     if len(config["auth"]["users"]) == 0:
                         addLogMessage(20, "No users configured, setting auth type to none")
@@ -572,6 +572,10 @@ def migrateConfig(config):
             addLogMessage(30, "An error occurred while migrating the config file.")
             addLogMessage(30, str(traceback.format_exc()))
     return config
+
+
+def createSecret():
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16))
 
 
 def load(filename):
@@ -670,10 +674,12 @@ def import_config_data(data):
     global config_file
     settings = Bunch.fromDict(data)
     save(config_file)
-    # Now what?
-
-
-def save(filename):
+    
+    
+def save(filename=None):
+    global config_file
+    if filename is None:
+        filename = config_file
     global settings
     try:
         s = json.dumps(settings.toDict(), ensure_ascii=False, indent=4, sort_keys=True)
