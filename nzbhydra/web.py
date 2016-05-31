@@ -45,7 +45,7 @@ from werkzeug.exceptions import Unauthorized
 from flask_session import Session
 from nzbhydra import config, search, infos, database
 from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid, get_entry_by_id
-from nzbhydra.config import NzbAccessTypeSelection
+from nzbhydra.config import NzbAccessTypeSelection, createSecret
 from nzbhydra.database import IndexerStatus, Indexer, SearchResult
 from nzbhydra.downloader import getInstanceBySetting, getDownloaderInstanceByName
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
@@ -218,6 +218,11 @@ def create_token(user):
         'iat': arrow.utcnow().datetime,
         'exp': arrow.utcnow().datetime + datetime.timedelta(days=14)
     }
+    if config.settings.main.secret is None:
+        logger.info("Creating secret which should've been created when migrating config. ")
+        config.settings.main.secret = createSecret()
+        config.save()
+        
     token = jwt.encode(payload, config.settings.main.secret)
     return token.decode('unicode_escape')
 
@@ -247,7 +252,7 @@ def isAllowed(authType):
 
     if config.settings.auth.authType == "form":
         if not request.headers.get('TokenAuthorization'):
-            logger.error('Missing authorization header')
+            logger.warn('Missing token authorization header')
             return False
         try:
             payload = parse_token(request)
@@ -255,38 +260,57 @@ def isAllowed(authType):
                 if u.username == payload["username"]:
                     g.user = u
                     if authType == "stats":
-                        return u.maySeeAdmin or u.maySeeStats
+                        maySee = u.maySeeAdmin or u.maySeeStats
+                        if not maySee:
+                            logger.warn("User %s may not see the stats" % u.username)
+                        return maySee
                     if authType == "admin":
+                        if not u.maySeeAdmin:
+                            logger.warn("User %s may not see the admin area" % u.username)
                         return u.maySeeAdmin
                     return True
             else:
-                logger.error("Token is invalid, user %s is unknown" % payload["username"])
+                logger.warn("Token is invalid, user %s is unknown" % payload["username"])
                 return False
         except DecodeError:
-            logger.error('Token is invalid')
+            logger.warn('Token is invalid')
             return False
         except ExpiredSignature:
-            logger.error("Token has expired")
+            logger.warn("Token has expired")
             return False
     else:
         auth = Bunch.fromDict(request.authorization)
+        if not auth:
+            logger.warn("Missing basic auth header")
+            return False
+        if not auth.username or not auth.password:
+            logger.warn("No username or password provided")
+            return False
         for u in config.settings.auth.users:
-            if auth and auth.username == u.username:
+            if auth.username == u.username:
                 if auth.password != u.password:
                     return False
                 g.user = u
                 if authType == "stats":
-                    return u.maySeeAdmin or u.maySeeStats
+                    maySee = u.maySeeAdmin or u.maySeeStats
+                    if not maySee:
+                        logger.warn("User %s may not see the stats" % u.username)
+                    return maySee
                 if authType == "admin":
+                    if not u.maySeeAdmin:
+                        logger.warn("User %s may not see the admin area" % u.username)
                     return u.maySeeAdmin
                 return True
-
+        else:
+            logger.warn("Unable to find a user with name %s" % auth.username)            
+    logger.error("Auth could not be processed, this is a bug")
     return False
 
 
 def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False, isIndex=False):
     def decorator(f):
         def wrapped_function(*args, **kwargs):
+            logger.debug("Call to method %s" % f.__name__)
             allowed = False
             if allowWithSecretKey and "SECRETACCESSKEY" in os.environ.keys():
                 if "secretaccesskey" in request.args and request.args.get("secretaccesskey").lower() == os.environ["SECRETACCESSKEY"].lower():
@@ -303,6 +327,7 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False, isI
             elif config.settings.auth.authType == "none":
                 allowed = True
             else:
+                logger.debug("Requiring auth for method %s" % f.__name__)
                 allowed = isAllowed(authType)
             if allowed:
                 try:
@@ -329,10 +354,10 @@ def login():
     for u in config.settings.auth.users:
         if u.username.encode("utf-8") == username and u.password.encode("utf-8") == password:
             token = create_token(u)
-            logger.info("Login successful")
+            logger.info("Form login form user %s successful" % username)
             return jsonify(token=token)
     response = jsonify(message='Wrong username or Password')
-    
+    logger.warn("Unsuccessful form login for user %s" % username)
     response.status_code = 401
     return response
 
@@ -347,6 +372,7 @@ def base(path):
 
         
     bootstrapped = {
+        "baseUrl": base_url,
         "authType": config.settings.auth.authType,
         "showAdmin": not config.settings.auth.restrictAdmin or len(config.settings.auth.users) == 0 or config.settings.auth.authType == "none",
         "showStats": not config.settings.auth.restrictStats or len(config.settings.auth.users) == 0 or config.settings.auth.authType == "none",
@@ -886,7 +912,6 @@ def internalapi_testcaps(args):
 @app.route('/internalapi/getstats')
 @requires_auth("stats")
 def internalapi_getstats():
-    logger.debug("Get stats")
     return jsonify({"avgResponseTimes": get_avg_indexer_response_times(),
                     "avgIndexerSearchResultsShares": get_avg_indexer_search_results_share(),
                     "avgIndexerAccessSuccesses": get_avg_indexer_access_success(),
@@ -911,7 +936,6 @@ internalapi__getnzbdownloads_args = {
 @requires_auth("stats")
 @use_args(internalapi__getnzbdownloads_args)
 def internalapi_getnzb_downloads(args):
-    logger.debug("Get NZB downloads")
     return jsonify(get_nzb_downloads(page=args["page"], limit=args["limit"], type=args["type"]))
 
 
@@ -926,7 +950,6 @@ internalapi__getsearchrequests_args = {
 @requires_auth("stats")
 @use_args(internalapi__getsearchrequests_args)
 def internalapi_search_requests(args):
-    logger.debug("Get search requests")
     return jsonify(get_search_requests(page=args["page"], limit=args["limit"], type=args["type"]))
 
 
@@ -939,7 +962,6 @@ internalapi__redirect_rid_args = {
 @requires_auth("main")
 @use_args(internalapi__redirect_rid_args)
 def internalapi_redirect_rid(args):
-    logger.debug("Redirect TVRage id request")
     tvdbid = infos.convertId("tvrage", "tvdb", args["rid"])
     if tvdbid is None:
         return "Unable to find TVDB link for TVRage ID", 404
@@ -967,7 +989,6 @@ def internalapi_enable_indexer(args):
 @app.route('/internalapi/setsettings', methods=["PUT"])
 @requires_auth("admin")
 def internalapi_setsettings():
-    logger.debug("Set settings request")
     try:
         config.import_config_data(request.get_json(force=True))
         internal_cache.delete_memoized(internalapi_getconfig)
@@ -984,21 +1005,18 @@ def internalapi_setsettings():
 @requires_auth("admin")
 @internal_cache.memoize()
 def internalapi_getconfig():
-    logger.debug("Get config request")
     return jsonify(Bunch.toDict(config.settings))
 
 
 @app.route('/internalapi/getsafeconfig')
 @requires_auth("main", isIndex=True)
 def internalapi_getsafeconfig():
-    logger.debug("Get safe config request")
     return jsonify(config.getSafeConfig())
 
 
 @app.route('/internalapi/getdebugginginfos')
 @requires_auth("admin")
 def internalapi_getdebugginginfos():
-    logger.debug("Get debugging infos request")
     try:
         debuggingInfos = getDebuggingInfos()
         if debuggingInfos is None:
@@ -1012,7 +1030,6 @@ def internalapi_getdebugginginfos():
 @app.route('/internalapi/mayseeadminarea')
 @requires_auth("main")
 def internalapi_maySeeAdminArea():
-    logger.debug("Get isAdminLoggedIn request")
     return jsonify({"maySeeAdminArea": isAdminLoggedIn()})
 
 
@@ -1027,14 +1044,12 @@ def internalapi_askAdmin():
 @app.route('/internalapi/askforadmin')
 @requires_auth("admin")
 def internalapi_askforadmin():
-    logger.debug("Get askforadmin request")
     return "Ok... or not"
 
 
 @app.route('/internalapi/get_version_history')
 @requires_auth("main")
 def internalapi_getversionhistory():
-    logger.debug("Get local changelog request")
     versionHistory = getVersionHistory()
     return jsonify({"versionHistory": versionHistory})
 
@@ -1049,7 +1064,6 @@ internalapi__getChangelog_args = {
 @requires_auth("main")
 @use_args(internalapi__getChangelog_args)
 def internalapi_getchangelog(args):
-    logger.debug("Get changelog request")
     _, current_version_readable = get_current_version()
     changelog = getChangelog(args["currentVersion"], args["repVersion"])
     return jsonify({"changelog": changelog})
@@ -1058,7 +1072,6 @@ def internalapi_getchangelog(args):
 @app.route('/internalapi/get_versions')
 @requires_auth("main")
 def internalapi_getversions():
-    logger.debug("Get versions request")
     current_version, current_version_readable = get_current_version()
     rep_version, rep_version_readable = get_rep_version()
 
@@ -1074,7 +1087,6 @@ def internalapi_getversions():
 @app.route('/internalapi/getlogs')
 @requires_auth("admin")
 def internalapi_getlogs():
-    logger.debug("Get logs request")
     logs = getLogs()
     return jsonify(logs)
 
@@ -1082,7 +1094,6 @@ def internalapi_getlogs():
 @app.route('/internalapi/getbackup')
 @requires_auth("admin")
 def internalapi_getbackup():
-    logger.debug("Get backup request")
     backupFile = backup()
     if backupFile is None:
         return "Error creating backup file", 500
@@ -1098,7 +1109,6 @@ internalapi_getbackupfile_args = {
 @requires_auth("admin")
 @use_args(internalapi_getbackupfile_args)
 def internalapi_getbackupfile(args):
-    logger.debug("Get backup filerequest")
     backupFile = getBackupFileByFilename(args["filename"])
     logger.info("Sending %s" % backupFile)
     return send_file(backupFile, as_attachment=True, mimetype="application/zip")
@@ -1121,7 +1131,6 @@ internalapi_getbackupfile_args = {
 @requires_auth("main")
 @use_args(internalapi_getbackupfile_args)
 def internalapi_logerror(args):
-    logger.debug("Log error request")
     logger.error("The client encountered the following error: %s. Caused by: %s" % (args["error"], args["cause"]))
     return "OK"
 
@@ -1135,7 +1144,6 @@ internalapi__downloader_args = {
 @requires_auth("main")
 @use_args(internalapi__downloader_args)
 def internalapi_getcategories(args):
-    logger.debug("Get categories request")
     try:
         downloader = getDownloaderInstanceByName(args["downloader"])
         return jsonify({"success": True, "categories": downloader.get_categories()})
@@ -1149,7 +1157,6 @@ def internalapi_getcategories(args):
 @app.route('/internalapi/gettheme')
 @requires_auth("main")
 def internalapi_gettheme():
-    logger.debug("Get theme request")
     return send_file("../static/css/default.css")
 
 
