@@ -440,7 +440,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
     };
     $authProvider.withCredentials = true;
     $authProvider.tokenRoot = null;
-    $authProvider.baseUrl = '/';
+    $authProvider.baseUrl = bootstrapped.baseUrl;
     $authProvider.loginUrl = '/auth/login';
     $authProvider.signupUrl = '/auth/signup';
     $authProvider.unlinkUrl = '/unlink/';
