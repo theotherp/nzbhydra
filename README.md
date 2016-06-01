@@ -36,7 +36,7 @@ sudo update-rc.d nzbhydra defaults
 Edit the default configuration options:
 
 ```sh
-sudo nano /etc/defaults/nzbhydra
+sudo nano /etc/default/nzbhydra
 ```
 
 Start the service:
