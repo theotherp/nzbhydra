@@ -749,6 +749,6 @@ def getSafeConfig():
     return {
         "indexers": indexers,
         "searching": {"categorysizes": settings["searching"]["categorysizes"], "maxAge": settings["searching"]["maxAge"], "alwaysShowDuplicates": settings["searching"]["alwaysShowDuplicates"]},
-        "downloaders": [{"enabled": x.enabled, "name": x.name, "type": x.type} for x in settings["downloaders"]],
+        "downloaders": [{"enabled": x.enabled, "name": x.name, "type": x.type, "defaultCategory": x.defaultCategory if hasattr(x, "defaultCategory") else None} for x in settings["downloaders"]],
         "authType": settings["auth"]["authType"],
     }

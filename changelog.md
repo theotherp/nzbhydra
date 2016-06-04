@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.99
+Fixed: Downloader default category wouldn't be used.
+
 ### 0.2.98
 Changed: Provide a bit better info when auth fails.
 
