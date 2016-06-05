@@ -412,6 +412,7 @@ def render_search_results_for_api(search_results, total, offset, output="xml"):
                   "link": item.link,
                   "comments": item.details_link,
                   "pubDate": item.pubDate,
+                  "category": item.category,
                   "description": "%s - %s" % (item.title, item.indexer),
                   "enclosure": {
                       "attributes": {

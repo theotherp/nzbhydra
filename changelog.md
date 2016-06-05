@@ -1,7 +1,10 @@
 # NZB Hydra changelog
 
 ----------
-### 0.2.100
+### 0.2.101
+Added: Return category in API search results.
+
+### 0.2.101
 Added: Show log in scrollable area.
 
 Added: Comic category. Searches in newznab comic category if available, otherwise in general ebook category or just for the query in case of raw search engines.
