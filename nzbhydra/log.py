@@ -41,6 +41,8 @@ logging.Logger.notice = notice
 # default root logger
 logger = logging.getLogger('root')
 
+logfilename = None
+
 console_logger = logging.StreamHandler(sys.stdout)
 console_logger.setFormatter(logging.Formatter(LOGGER_DEFAULT_FORMAT))
 console_logger.setLevel(LOGGER_DEFAULT_LEVEL)
@@ -67,7 +69,10 @@ class SensitiveDataFilter(logging.Filter):
         record.msg = msg
         return True
 
-def setup_custom_logger(name, logfile=None, quiet=False):
+
+def setup_custom_logger(logfile=None, quiet=False):
+    global logfilename
+    logfilename = config.settings.main.logging.logfilename if logfile is None else logfile
     console_log_level = config.settings.main.logging.consolelevel.upper()
     file_log_level = config.settings.main.logging.logfilelevel.upper()
     # set console log level from config file
@@ -75,7 +80,7 @@ def setup_custom_logger(name, logfile=None, quiet=False):
         console_logger.setLevel(console_log_level)
     logger.setLevel(console_log_level)
     # add log file handler
-    file_logger = RotatingFileHandler(filename=config.settings.main.logging.logfilename if logfile is None else logfile, maxBytes=1000000, backupCount=25)
+    file_logger = RotatingFileHandler(filename=logfilename, maxBytes=1000000, backupCount=25)
     file_logger.setFormatter(logging.Formatter(LOGGER_DEFAULT_FORMAT))
     file_logger.setLevel(file_log_level)
     logger.addHandler(file_logger)
@@ -89,12 +94,13 @@ def setup_custom_logger(name, logfile=None, quiet=False):
     logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
     return logger
 
+
 def getLogFile():
-    logfile = config.settings.main.logging.logfilename
+    global logfilename
     log = None
-    if exists(logfile):
-        logger.debug("Reading log file %s" % logfile)
-        with codecs.open(logfile, "r", 'utf-8') as logFile:
+    if exists(logfilename):
+        logger.debug("Reading log file %s" % logfilename)
+        with codecs.open(logfilename, "r", 'utf-8') as logFile:
             log = cgi.escape(logFile.read())
     return log
 

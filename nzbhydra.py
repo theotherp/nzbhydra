@@ -83,7 +83,7 @@ def run(arguments):
     logger.notice("Loading settings from {}".format(settings_file))
     config.load(settings_file)
     config.save(settings_file)  # Write any new settings back to the file
-    log.setup_custom_logger('root', arguments.logfile, arguments.quiet)
+    log.setup_custom_logger(arguments.logfile, arguments.quiet)
 
     try:
         logger.info("Started")

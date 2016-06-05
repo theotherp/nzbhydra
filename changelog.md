@@ -4,6 +4,8 @@
 ### 0.2.101
 Added: Return category in API search results.
 
+Fixed: If log file name is provided in command line show that in GUI instead of the configured one.
+
 ### 0.2.101
 Added: Show log in scrollable area.
 
