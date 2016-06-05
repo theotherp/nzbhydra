@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.100
+Fixed: Selecting search results from duplicates / same name rows wouldn't work.
+
 ### 0.2.99
 Fixed: Downloader default category wouldn't be used.
 
