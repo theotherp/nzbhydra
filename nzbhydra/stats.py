@@ -127,7 +127,7 @@ def getIndexerDownloadStats():
 
 def get_nzb_downloads(page=0, limit=100, type=None):
     query = IndexerNzbDownload() \
-        .select(Indexer.name, IndexerNzbDownload.title, IndexerNzbDownload.time, SearchResult.id.alias('searchResultId'), Search.internal, IndexerApiAccess.response_successful, IndexerApiAccess.username) \
+        .select(Indexer.name.alias("indexerName"), IndexerNzbDownload.title, IndexerNzbDownload.time, SearchResult.id.alias('searchResultId'), SearchResult.details.alias('detailsLink'), Search.internal, IndexerApiAccess.response_successful, IndexerApiAccess.username) \
         .join(SearchResult, JOIN.LEFT_OUTER) \
         .switch(IndexerNzbDownload) \
         .join(IndexerApiAccess, JOIN.LEFT_OUTER) \
