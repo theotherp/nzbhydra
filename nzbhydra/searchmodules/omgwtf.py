@@ -45,7 +45,8 @@ categories_to_omgwtf = {
     'PC': ["1", "12"],
     'XXX': ["23", "24", "25", "26", "27", "28"],
     'Other': ["11"],
-    'Ebook': ["9"]
+    'Ebook': ["9"],
+    'Comic': ["9"]
 }
 
 omgwtf_to_categories = {
@@ -95,7 +96,8 @@ newznab_to_omgwtf = {
     '4000': ["1", "12"],
     '6000': ["23", "24", "25", "26", "27", "28"],
     '7000': ["11"],
-    '7020': ["9"]
+    '7020': ["9"],
+    '7030': ["9"]
 }
 
 
@@ -238,6 +240,12 @@ class OmgWtf(SearchModule):
     def get_audiobook_urls(self, search_request):
         if search_request.category is None:
             search_request.category = "Audiobook"
+        return self.get_search_urls(search_request)
+
+    def get_comic_urls(self, search_request):
+        if not search_request.category:
+            search_request.category = "Comic"
+        logger.info("Searching for comics in ebook category")
         return self.get_search_urls(search_request)
 
     def process_query_result(self, xml_response, searchRequest, maxResults=None):

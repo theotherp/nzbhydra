@@ -650,6 +650,8 @@ def internalapi_search(args):
         type = "ebook"
     elif args["category"].lower() == "audiobook":
         type = "audiobook"
+    elif args["category"].lower() == "comic":
+        type = "comic"
     else:
         type = "general"
     indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None

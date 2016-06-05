@@ -834,6 +834,26 @@ function ConfigFields($injector) {
                                             type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
                                         }
                                     ]
+                                },
+
+                                {
+                                    wrapper: 'settingWrapper',
+                                    templateOptions: {
+                                        label: 'Comic'
+                                    },
+                                    fieldGroup: [
+                                        {
+                                            key: 'comicmin',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        },
+                                        {
+                                            type: 'duolabel'
+                                        },
+                                        {
+                                            key: 'comicmax',
+                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                                        }
+                                    ]
                                 }
                             ]
                         }

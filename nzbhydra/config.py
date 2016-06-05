@@ -162,6 +162,8 @@ initialConfig = {
             "audiomax": 2000,
             "audiomin": 1,
             "audioookmin": 50,
+            "comicmax": 250,
+            "comicmin": 1,
             "consolemax": 40000,
             "consolemin": 100,
             "ebookmax": 100,

@@ -62,6 +62,18 @@ class Womble(SearchModule):
     def get_moviesearch_urls(self, search_request):
         self.error("This indexer does not support movie search")
         return []
+
+    def get_ebook_urls(self, search_request):
+        self.error("This indexer does not support ebook search")
+        return []
+
+    def get_audiobook_urls(self, search_request):
+        self.error("This indexer does not support audiobook search")
+        return []
+
+    def get_comic_urls(self, search_request):
+        self.error("This indexer does not support comic search")
+        return []
     
     def get_details_link(self, guid):
         self.info("This indexer does not provide details on releases")

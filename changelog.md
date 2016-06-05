@@ -4,6 +4,8 @@
 ### 0.2.100
 Added: Show log in scrollable area.
 
+Added: Comic category. Searches in newznab comic category if available, otherwise in general ebook category or just for the query in case of raw search engines.
+
 Fixed: Selecting search results from duplicates / same name rows wouldn't work.
 
 Fixed: Search would ask for auth even if access wasn't restricted.

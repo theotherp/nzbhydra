@@ -37,7 +37,8 @@ categories = {'All': {"pretty": "All", "index": 0},
               'Console': {"pretty": "Console", "index": 10},
               'PC': {"pretty": "PC", "index": 11},
               'XXX': {"pretty": "XXX", "index": 12},
-              'Ebook': {"pretty": "XXX", "index": 13}
+              'Ebook': {"pretty": "XXX", "index": 13},
+              'Comic': {"pretty": "Comic", "index": 15}
               }
 
 logger = logging.getLogger('root')

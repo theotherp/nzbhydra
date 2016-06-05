@@ -109,7 +109,9 @@ class Binsearch(SearchModule):
 
     def get_audiobook_urls(self, search_request):
         return self.get_search_urls(search_request)
-        
+
+    def get_comic_urls(self, search_request):
+        return self.get_search_urls(search_request)
     
     def get_details_link(self, guid):
         logger.info("Details for binsearch not yet implemented")

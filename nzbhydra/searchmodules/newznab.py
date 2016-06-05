@@ -48,7 +48,8 @@ categories_to_newznab = {
     'PC': [4000],
     'XXX': [6000],
     'Other': [7000],
-    'Ebook': [7020, 8010]
+    'Ebook': [7020, 8010],
+    'Comic': [7030]
 }
 
 
@@ -410,12 +411,15 @@ class NewzNab(SearchModule):
         else:
             #internal search
             return self.get_search_urls(search_request)
-        
-            
 
     def get_audiobook_urls(self, search_request):
         if not search_request.category:
             search_request.category = "Audiobook"
+        return self.get_search_urls(search_request)
+
+    def get_comic_urls(self, search_request):
+        if not search_request.category:
+            search_request.category = "Comic"
         return self.get_search_urls(search_request)
 
     def get_details_link(self, guid):
