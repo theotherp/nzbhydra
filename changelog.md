@@ -1,7 +1,7 @@
 # NZB Hydra changelog
 
 ----------
-### 0.2.101
+### 0.2.102
 Added: Return category in API search results.
 
 Fixed: If log file name is provided in command line show that in GUI instead of the configured one.
