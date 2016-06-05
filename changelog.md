@@ -4,6 +4,8 @@
 ### 0.2.100
 Fixed: Selecting search results from duplicates / same name rows wouldn't work.
 
+Fixed: Search would ask for auth even if access wasn't restricted.
+
 ### 0.2.99
 Fixed: Downloader default category wouldn't be used.
 

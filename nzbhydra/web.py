@@ -245,9 +245,14 @@ def isAdminLoggedIn():
 def isAllowed(authType):
     if len(config.settings.auth.users) == 0:
         return True
+    if authType == "main" and not config.settings.auth.restrictSearch:
+        logger.debug("Access to main area is not restricted")
+        return True
     if authType == "admin" and not config.settings.auth.restrictAdmin:
+        logger.debug("Access to admin area is not restricted")
         return True
     if authType == "stats" and not config.settings.auth.restrictStats:
+        logger.debug("Access to stats area is not restricted")
         return True
 
     if config.settings.auth.authType == "form":
