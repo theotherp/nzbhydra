@@ -2,6 +2,8 @@
 
 ----------
 ### 0.2.100
+Added: Show log in scrollable area.
+
 Fixed: Selecting search results from duplicates / same name rows wouldn't work.
 
 Fixed: Search would ask for auth even if access wasn't restricted.
