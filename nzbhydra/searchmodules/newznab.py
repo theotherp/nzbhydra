@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-
+from arrow.parser import ParserError
 from future import standard_library
 
 from nzbhydra import config
@@ -337,13 +337,13 @@ class NewzNab(SearchModule):
 
     def addExcludedWords(self, query, search_request):
         if "nzbgeek" in self.settings.host and search_request.ignoreWords:  # NZBGeek isn't newznab but sticks to its standards in most ways but not in this. Instead of adding a new search module just for this small part I added this small POC here
-            query += " --" + " ".join([x for x in search_request.ignoreWords if not (" " in x or "-" in x or "." in x)])
+            query += " !" + " ".join([x for x in search_request.ignoreWords if not (" " in x or "-" in x or "." in x)])
         else:
             for word in search_request.ignoreWords:
                 if " " in word or "-" in word or "." in word:
                     logger.debug('Not using ignored word "%s" in query because it contains a space, dash or dot which is not supported by newznab queries' % word)
                     continue
-                query += " --" + word
+                query += " !" + word
         return query
 
     def get_showsearch_urls(self, search_request):
@@ -523,7 +523,11 @@ class NewzNab(SearchModule):
             elif attribute_name == "group" and attribute_value != "not available":
                 entry.group = attribute_value
             elif attribute_name == "usenetdate":
-                usenetdate = arrow.get(attribute_value, 'ddd, DD MMM YYYY HH:mm:ss Z')
+                try: 
+                    usenetdate = arrow.get(attribute_value, 'ddd, DD MMM YYYY HH:mm:ss Z')
+                except ParserError:
+                    logger.error("Unable to parse usenet date format: %s" % attribute_value)
+                    usenetdate = None
             # Store all the extra attributes, we will return them later for external apis
             entry.attributes.append({"name": attribute_name, "value": attribute_value})
         entry.details_link = self.get_details_link(entry.indexerguid)

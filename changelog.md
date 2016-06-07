@@ -1,6 +1,11 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.102
+Changed: Using ! to exclude words when querying newznab indexers. This should be compatible with more indexers and provide the wanted results. Thanks to judhat2 for the research and tests.
+
+Fixed: Fallback to pubdate when usenet date cannot be parsed.
+
 ### 0.2.101
 Added: Return category in API search results.
 
