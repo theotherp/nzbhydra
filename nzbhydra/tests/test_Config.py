@@ -90,6 +90,8 @@ class TestConfig(unittest.TestCase):
                 },
             "searching": {
                 "alwaysShowDuplicates": True,
+                "ignoreWords": "forbidden",
+                "requireWords": "required",
                 "categorysizes": {
                     "audiobookmax": 1000,
                     "audiobookmin": 50,
@@ -132,3 +134,5 @@ class TestConfig(unittest.TestCase):
         self.assertFalse(cfg["categories"]["categories"]["movies"]["requiredWords"])
         self.assertFalse(cfg["categories"]["categories"]["movies"]["forbiddenWords"])
         self.assertEqual(2000, cfg["categories"]["categories"]["movies"]["newznabCategories"][0])
+        self.assertEqual("forbidden", cfg["searching"]["forbiddenWords"])
+        self.assertEqual("required", cfg["searching"]["requiredWords"])
