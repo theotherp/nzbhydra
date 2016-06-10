@@ -531,11 +531,10 @@ def migrateConfig(config):
 
                     config["searching"].pop("categorysizes")
                     config["searching"]["forbiddenWords"] = config["searching"]["ignoreWords"]
-                    config["searching"]["requiredWords"] = config["searching"]["requiredWords"]
+                    config["searching"]["requiredWords"] = config["searching"]["requireWords"]
 
         except Exception as e:
-            addLogMessage(30, "An error occurred while migrating the config file.")
-            addLogMessage(30, str(traceback.format_exc()))
+            raise e
     return config
 
 
@@ -550,11 +549,12 @@ def load(filename):
     if os.path.exists(filename):
         try:
             migratedConfig = loadAndMigrateSettingsFile(filename)
-            settings = Bunch.fromDict(update(initialConfig, migratedConfig, level="root"))
+            if migratedConfig:
+                settings = Bunch.fromDict(update(initialConfig, migratedConfig, level="root"))
             pass
         except Exception as e:
             addLogMessage(30, "An error occurred while migrating the settings: %s" % traceback.format_exc())
-            # Now what?
+            raise e
     else:
         settings = Bunch.fromDict(initialConfig)
         settings.main.secret = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16))

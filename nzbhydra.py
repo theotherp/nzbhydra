@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import traceback
 
 if sys.version_info >= (3, 0) or sys.version_info < (2, 7, 9):
     sys.stderr.write("Sorry, requires Python 2.7.9 or greater, not Python 3 compatible\n")
@@ -81,9 +82,15 @@ def run(arguments):
     nzbhydra.databaseFile = database_file = arguments.database
 
     logger.notice("Loading settings from {}".format(settings_file))
-    config.load(settings_file)
-    config.save(settings_file)  # Write any new settings back to the file
-    log.setup_custom_logger(arguments.logfile, arguments.quiet)
+    try:
+        config.load(settings_file)
+        config.save(settings_file)  # Write any new settings back to the file
+    except Exception:
+        print("An error occured during migrating the old config. Sorry about that...: ")
+        traceback.print_exc(file=sys.stdout)
+        print("Trying to log messages from migration...")
+        config.logLogMessages()
+        exit(-5)
 
     try:
         logger.info("Started")
