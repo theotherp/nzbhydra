@@ -50,9 +50,11 @@ logger.addHandler(console_logger)
 
 logger.setLevel(LOGGER_DEFAULT_LEVEL)
 
+
 def quiet_output():
     console_logger.setLevel(logging.CRITICAL + 1)
     # logger.removeHandler(console_logger)
+
 
 def removeSensitiveData(msg):
     msg = regexApikey.sub("apikey=<APIKEY>", msg)
@@ -60,6 +62,7 @@ def removeSensitiveData(msg):
     msg = regexUser.sub("\g<1>=<USER>", msg)
     msg = regexPassword.sub("password=<PASSWORD>", msg)
     return msg
+
 
 class SensitiveDataFilter(logging.Filter):
     def filter(self, record):
