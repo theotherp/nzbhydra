@@ -82,115 +82,6 @@ class TestConfig(unittest.TestCase):
         self.assertEqual("<APIKEY:f5095bc1520183e76be64af1c5f9e7e3>", ac.downloader.sabnzbd.apikey)
         self.assertEqual("<PASSWORD:4c471a175d85451486af666d7eebe4f8>", ac.downloader.sabnzbd.password)
 
-   
-
-    def testMigration17to18(self):
-        # Authless and admin user
-        testCfg = {
-            "main":
-                {
-                    "configVersion": 17,
-                },
-            "auth": {
-                "users": [
-                    {
-                        "username": "",
-                        "password": "",
-                        "maySeeAdmin": False,
-                        "maySeeStats": False,
-                    },
-                    {
-                        "username": "admin",
-                        "password": "admin",
-                        "maySeeAdmin": True,
-                        "maySeeStats": True,
-                    }
-                ]
-            }
-        }
-        cfg = config.migrateConfig(testCfg)
-        print(cfg)
-
-        self.assertTrue(cfg["auth"]["restrictAdmin"])
-        self.assertTrue(cfg["auth"]["restrictStats"])
-        self.assertFalse(cfg["auth"]["restrictSearch"])
-
-        # Only admin user
-        testCfg = {
-            "main":
-                {
-                    "configVersion": 17,
-                },
-            "auth": {
-                "users": [
-                    {
-                        "username": "admin",
-                        "password": "admin",
-                        "maySeeAdmin": True,
-                        "maySeeStats": True,
-                    }
-                ]
-            }
-        }
-        cfg = config.migrateConfig(testCfg)
-        for x in config.logLogMessages():
-            print(x)
-
-        self.assertTrue(cfg["auth"]["restrictAdmin"])
-        self.assertTrue(cfg["auth"]["restrictStats"])
-        self.assertTrue(cfg["auth"]["restrictSearch"])
-
-        # Normal user and admin user
-        testCfg = {
-            "main":
-                {
-                    "configVersion": 17,
-                },
-            "auth": {
-                "users": [
-                    {
-                        "username": "normal",
-                        "password": "normal",
-                        "maySeeAdmin": False,
-                        "maySeeStats": False,
-                    },
-                    {
-                        "username": "admin",
-                        "password": "admin",
-                        "maySeeAdmin": True,
-                        "maySeeStats": True,
-                    }
-                ]
-            }
-        }
-        cfg = config.migrateConfig(testCfg)
-        for x in config.logLogMessages():
-            print(x)
-            
-        self.assertTrue(cfg["auth"]["restrictAdmin"])
-        self.assertTrue(cfg["auth"]["restrictStats"])
-        self.assertTrue(cfg["auth"]["restrictSearch"])
-
-        # No users
-        testCfg = {
-            "main":
-                {
-                    "configVersion": 17,
-                },
-            "auth": {
-                "users": [
-                ]
-            }
-        }
-        cfg = config.migrateConfig(testCfg)
-        for x in config.logLogMessages():
-            print(x)
-        
-
-        self.assertFalse(cfg["auth"]["restrictAdmin"])
-        self.assertFalse(cfg["auth"]["restrictStats"])
-        self.assertFalse(cfg["auth"]["restrictSearch"])
-
     def testMigration18to19(self):
         testCfg = {
             "main":
@@ -235,8 +126,7 @@ class TestConfig(unittest.TestCase):
             }
         }
         cfg = config.migrateConfig(testCfg)
-        for x in config.logLogMessages():
-            print(x)
+        print(cfg)
 
         self.assertTrue(cfg["categories"]["enableCategorySizes"])
         self.assertFalse(cfg["categories"]["categories"]["movies"]["requiredWords"])
