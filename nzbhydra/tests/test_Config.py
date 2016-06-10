@@ -104,6 +104,8 @@ class TestConfig(unittest.TestCase):
             }
         }
         cfg = config.migrateConfig(testCfg)
+        for x in config.logLogMessages():
+            print(x)
         indexers = list(sorted(cfg["indexers"], key=lambda x: x["name"]))
         self.assertEqual(indexers[0]["name"], "binsearch")
 
@@ -132,6 +134,8 @@ class TestConfig(unittest.TestCase):
             }
         }
         cfg = config.migrateConfig(testCfg)
+        for x in config.logLogMessages():
+            print(x)
 
         self.assertTrue(cfg["auth"]["restrictAdmin"])
         self.assertTrue(cfg["auth"]["restrictStats"])
@@ -154,10 +158,13 @@ class TestConfig(unittest.TestCase):
                 ]
             }
         }
+        cfg = config.migrateConfig(testCfg)
+        for x in config.logLogMessages():
+            print(x)
 
         self.assertTrue(cfg["auth"]["restrictAdmin"])
         self.assertTrue(cfg["auth"]["restrictStats"])
-        self.assertFalse(cfg["auth"]["restrictSearch"])
+        self.assertTrue(cfg["auth"]["restrictSearch"])
 
         # Normal user and admin user
         testCfg = {
@@ -183,8 +190,9 @@ class TestConfig(unittest.TestCase):
             }
         }
         cfg = config.migrateConfig(testCfg)
-        cfg = Bunch.fromDict(cfg)
-
+        for x in config.logLogMessages():
+            print(x)
+            
         self.assertTrue(cfg["auth"]["restrictAdmin"])
         self.assertTrue(cfg["auth"]["restrictStats"])
         self.assertTrue(cfg["auth"]["restrictSearch"])
@@ -201,7 +209,9 @@ class TestConfig(unittest.TestCase):
             }
         }
         cfg = config.migrateConfig(testCfg)
-        cfg = Bunch.fromDict(cfg)
+        for x in config.logLogMessages():
+            print(x)
+        
 
         self.assertFalse(cfg["auth"]["restrictAdmin"])
         self.assertFalse(cfg["auth"]["restrictStats"])
@@ -251,7 +261,8 @@ class TestConfig(unittest.TestCase):
             }
         }
         cfg = config.migrateConfig(testCfg)
-        cfg = Bunch.fromDict(cfg)
+        for x in config.logLogMessages():
+            print(x)
 
         self.assertTrue(cfg["categories"]["enableCategorySizes"])
         self.assertFalse(cfg["categories"]["categories"]["movies"]["requiredWords"])

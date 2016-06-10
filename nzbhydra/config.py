@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import codecs
+import copy
 import hashlib
 import random
 import string
@@ -376,7 +377,9 @@ def logLogMessages():
     global logMessages
     for x in logMessages:
         logger.log(x["level"], x["message"])
-    logMessages = []
+    oldLogMessages = copy.copy(logMessages)
+    logMessages = [] 
+    return oldLogMessages
 
 
 def update(d, u, level):
