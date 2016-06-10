@@ -205,7 +205,7 @@ class SearchModule(object):
                 reason = " for API searches"
                 ignore = True
             if ignore:
-                return False, "Results from category %s are configured to be ignored " + reason
+                return False, "Results from category %s are configured to be ignored %s" % (nzbSearchResult.category.pretty, reason)
         return True, None
         
 
