@@ -4,31 +4,21 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 # standard_library.install_aliases()
-import json
 import logging
 import unittest
-from pprint import pprint
 
 import pytest
 from builtins import *
-import os
-import copy
-import shutil
 
 from bunch import Bunch
 
 from nzbhydra import config
 
-print("Loading config from testsettings.cfg")
 
 
 class TestConfig(unittest.TestCase):
     @pytest.fixture
     def setUp(self):
-        if os.path.exists("testsettings.cfg"):
-            os.remove("testsettings.cfg")
-        shutil.copy("testsettings.cfg.orig", "testsettings.cfg")
-
         formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
         stream_handler = logging.StreamHandler(sys.stdout)
         stream_handler.setLevel("DEBUG")
@@ -114,7 +104,6 @@ class TestConfig(unittest.TestCase):
             }
         }
         cfg = config.migrateConfig(testCfg)
-        cfg = Bunch.fromDict(cfg)
         indexers = list(sorted(cfg["indexers"], key=lambda x: x["name"]))
         self.assertEqual(indexers[0]["name"], "binsearch")
 
@@ -143,11 +132,10 @@ class TestConfig(unittest.TestCase):
             }
         }
         cfg = config.migrateConfig(testCfg)
-        cfg = Bunch.fromDict(cfg)
 
-        self.assertTrue(cfg.auth.restrictAdmin)
-        self.assertTrue(cfg.auth.restrictStats)
-        self.assertFalse(cfg.auth.restrictSearch)
+        self.assertTrue(cfg["auth"]["restrictAdmin"])
+        self.assertTrue(cfg["auth"]["restrictStats"])
+        self.assertFalse(cfg["auth"]["restrictSearch"])
 
         # Only admin user
         testCfg = {
@@ -166,11 +154,10 @@ class TestConfig(unittest.TestCase):
                 ]
             }
         }
-        cfg = config.migrateConfig(testCfg)
-        cfg = Bunch.fromDict(cfg)
-        self.assertTrue(cfg.auth.restrictAdmin)
-        self.assertTrue(cfg.auth.restrictStats)
-        self.assertTrue(cfg.auth.restrictSearch)
+
+        self.assertTrue(cfg["auth"]["restrictAdmin"])
+        self.assertTrue(cfg["auth"]["restrictStats"])
+        self.assertFalse(cfg["auth"]["restrictSearch"])
 
         # Normal user and admin user
         testCfg = {
@@ -198,9 +185,9 @@ class TestConfig(unittest.TestCase):
         cfg = config.migrateConfig(testCfg)
         cfg = Bunch.fromDict(cfg)
 
-        self.assertTrue(cfg.auth.restrictAdmin)
-        self.assertTrue(cfg.auth.restrictStats)
-        self.assertTrue(cfg.auth.restrictSearch)
+        self.assertTrue(cfg["auth"]["restrictAdmin"])
+        self.assertTrue(cfg["auth"]["restrictStats"])
+        self.assertTrue(cfg["auth"]["restrictSearch"])
 
         # No users
         testCfg = {
@@ -216,10 +203,9 @@ class TestConfig(unittest.TestCase):
         cfg = config.migrateConfig(testCfg)
         cfg = Bunch.fromDict(cfg)
 
-        self.assertFalse(cfg.auth.restrictAdmin)
-        self.assertFalse(cfg.auth.restrictStats)
-        self.assertFalse(cfg.auth.restrictSearch)
-
+        self.assertFalse(cfg["auth"]["restrictAdmin"])
+        self.assertFalse(cfg["auth"]["restrictStats"])
+        self.assertFalse(cfg["auth"]["restrictSearch"])
 
     def testMigration18to19(self):
         testCfg = {
@@ -266,7 +252,7 @@ class TestConfig(unittest.TestCase):
         }
         cfg = config.migrateConfig(testCfg)
         cfg = Bunch.fromDict(cfg)
-        
+
         self.assertTrue(cfg["categories"]["enableCategorySizes"])
         self.assertFalse(cfg["categories"]["categories"]["movies"]["requiredWords"])
         self.assertFalse(cfg["categories"]["categories"]["movies"]["forbiddenWords"])
