@@ -160,9 +160,6 @@ function ConfigController($scope, ConfigService, config, DownloaderCategoriesSer
 
     $scope.goToConfigState = function (index) {
         $state.go($scope.allTabs[index].state);
-        if (index == 5) {
-            $scope.downloadLog();
-        }
     };
 
     $scope.$on('$stateChangeStart',

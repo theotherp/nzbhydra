@@ -12,6 +12,8 @@ Decide for every category if you want to ignore results from it for external and
  
 Fixed: Don't display an NZB download as failed if it was only redirected (then we don't know if it was successful).
 
+Fixed: Error where indexers tab in config could not be opened.
+
 ### 0.2.102
 Changed: Using ! to exclude words when querying newznab indexers. This should be compatible with more indexers and provide the wanted results. Thanks to judhat2 for the research and tests.
 
