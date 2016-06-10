@@ -485,3 +485,55 @@ class TestConfig(unittest.TestCase):
         self.assertFalse(cfg.auth.restrictAdmin)
         self.assertFalse(cfg.auth.restrictStats)
         self.assertFalse(cfg.auth.restrictSearch)
+
+
+    def testMigration18to19(self):
+        testCfg = {
+            "main":
+                {
+                    "configVersion": 18,
+                },
+            "searching": {
+                "alwaysShowDuplicates": True,
+                "categorysizes": {
+                    "audiobookmax": 1000,
+                    "audiobookmin": 50,
+                    "audiomax": 2000,
+                    "audiomin": 1,
+                    "comicmax": 250,
+                    "comicmin": 1,
+                    "consolemax": 40000,
+                    "consolemin": 100,
+                    "ebookmax": 100,
+                    "ebookmin": None,
+                    "enable_category_sizes": True,
+                    "flacmax": 2000,
+                    "flacmin": 10,
+                    "movieshdmax": 20000,
+                    "movieshdmin": 3000,
+                    "moviesmax": 20000,
+                    "moviesmin": 500,
+                    "moviessdmax": 3000,
+                    "moviessdmin": 500,
+                    "mp3max": 500,
+                    "mp3min": 1,
+                    "pcmax": 50000,
+                    "pcmin": 100,
+                    "tvhdmax": 3000,
+                    "tvhdmin": 300,
+                    "tvmax": 5000,
+                    "tvmin": 50,
+                    "tvsdmax": 1000,
+                    "tvsdmin": 50,
+                    "xxxmax": 10000,
+                    "xxxmin": 100
+                }
+            }
+        }
+        cfg = config.migrateConfig(testCfg)
+        cfg = Bunch.fromDict(cfg)
+        
+        self.assertTrue(cfg["categories"]["enableCategorySizes"])
+        self.assertFalse(cfg["categories"]["categories"]["movies"]["requiredWords"])
+        self.assertFalse(cfg["categories"]["categories"]["movies"]["forbiddenWords"])
+        self.assertEqual(2000, cfg["categories"]["categories"]["movies"]["newznabCategories"][0])

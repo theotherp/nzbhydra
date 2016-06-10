@@ -20,6 +20,7 @@ from bs4 import BeautifulSoup
 from furl import furl
 
 from nzbhydra import config
+from nzbhydra.categories import getUnknownCategory
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException, IndexerResultParsingRowException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -216,7 +217,7 @@ class Binsearch(SearchModule):
 
             entry.size = int(size)
 
-        entry.category = "N/A"
+        entry.category = getUnknownCategory()
 
         if self.nfo_pattern.search(info.text):  # 1 nfo file is missing if there is no NFO
             entry.has_nfo = NzbSearchResult.HAS_NFO_YES

@@ -17,7 +17,6 @@ function SearchService($http) {
     
 
     function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, indexers) {
-        console.log("Category: " + category);
         var uri;
         if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
             console.log("Search for movies");

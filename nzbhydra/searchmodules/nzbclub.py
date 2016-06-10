@@ -16,6 +16,7 @@ import arrow
 
 from furl import furl
 
+from nzbhydra.categories import getUnknownCategory
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerResultParsingRowException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -115,7 +116,7 @@ class NzbClub(SearchModule):
     def get_search_urls(self, search_request):
         query = search_request.query
         if query:
-            for word in search_request.ignoreWords:
+            for word in search_request.forbiddenWords:
                 word = word.strip().lower()
                 if "-" in word or " " in word:
                     logger.debug('Not using ignored word "%s" in query because it contains a space or dash which is not supported by newznab queries' % word)
@@ -238,7 +239,7 @@ class NzbClub(SearchModule):
         entry.link = url.attrib["url"]
         entry.size = int(url.attrib["length"])
         entry.indexer = self.name
-        entry.category = "N/A"
+        entry.category = getUnknownCategory()
         entry.details_link = elem.find("link").text
         entry.indexerguid = elem.find("guid").text[-8:]  # GUID looks like "http://www.nzbclub.com/nzb_view58556415" of which we only want the last part
         description = elem.find("description").text

@@ -25,7 +25,7 @@ angular
     .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
 
-function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl, $rootScope) {
+function ConfigController($scope, ConfigService, config, DownloaderCategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl, $rootScope) {
     $scope.config = config;
     $scope.submit = submit;
 
@@ -45,7 +45,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             ConfigService.set($scope.config);
             ConfigService.invalidateSafe();
             $scope.form.$setPristine();
-            CategoriesService.invalidate();
+            DownloaderCategoriesService.invalidate();
             if ($scope.restartRequired) {
                 ModalService.open("Restart required", "The changes you have made may require a restart to be effective.<br>Do you want to restart now?", {
                     yes: {
@@ -105,6 +105,11 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             fields: $scope.fields.searching
         },
         {
+            name: 'Categories',
+            model: ConfigModel.categories,
+            fields: $scope.fields.categories
+        },
+        {
             name: 'Downloaders',
             model: ConfigModel.downloaders,
             fields: $scope.fields.downloaders
@@ -128,6 +133,10 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
         {
             active: false,
             state: 'root.config.searching'
+        },
+        {
+            active: false,
+            state: 'root.config.categories'
         },
         {
             active: false,

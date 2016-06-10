@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from builtins import open
 from future import standard_library
 
+from nzbhydra.categories import getCategoryByAnyInput
 from nzbhydra.indexers import getIndexerSettingByName
 from nzbhydra.nzb_search_result import NzbSearchResult
 
@@ -37,7 +38,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(1, len(urls))
         self.assertEqual("https://api.omgwtfnzbs.org/xml/?api=apikey&user=anuser&search=aquery", urls[0])
 
-        self.args = SearchRequest(query="aquery", category="TV HD")
+        self.args = SearchRequest(query="aquery", category=getCategoryByAnyInput("tvhd"))
         urls = self.omgwtf.get_search_urls(self.args)
         self.assertEqual(1, len(urls))
         self.assertEqual("https://api.omgwtfnzbs.org/xml/?api=apikey&user=anuser&search=aquery&catid=20", urls[0])
@@ -47,7 +48,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(1, len(urls))
         self.assertEqual("https://api.omgwtfnzbs.org/xml/?api=apikey&user=anuser&search=aquery&retention=100", urls[0])
 
-        self.args = SearchRequest(query="aquery", category="TV HD", maxage=100)
+        self.args = SearchRequest(query="aquery", category=getCategoryByAnyInput("tvhd"), maxage=100)
         urls = self.omgwtf.get_search_urls(self.args)
         self.assertEqual(1, len(urls))
         self.assertEqual("https://api.omgwtfnzbs.org/xml/?api=apikey&user=anuser&search=aquery&retention=100&catid=20", urls[0])
@@ -57,7 +58,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(1, len(urls))
         self.assertEqual("https://rss.omgwtfnzbs.org/rss-download.php?api=apikey&user=anuser", urls[0])
         
-        self.args = SearchRequest(category="TV HD")
+        self.args = SearchRequest(category=getCategoryByAnyInput("tvhd"))
         urls = self.omgwtf.get_search_urls(self.args)
         self.assertEqual(1, len(urls))
         self.assertEqual("https://rss.omgwtfnzbs.org/rss-download.php?api=apikey&user=anuser&catid=20", urls[0])
@@ -68,7 +69,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(1, len(urls))
         self.assertEqual("https://api.omgwtfnzbs.org/xml/?api=apikey&user=anuser&search=aquery&catid=19,20,21", urls[0])
 
-        self.args = SearchRequest(query="aquery", category="TV HD")
+        self.args = SearchRequest(query="aquery", category=getCategoryByAnyInput("tvhd"))
         urls = self.omgwtf.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
         self.assertEqual("https://api.omgwtfnzbs.org/xml/?api=apikey&user=anuser&search=aquery&catid=20", urls[0])
@@ -94,7 +95,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(1, len(urls))
         self.assertEqual("https://api.omgwtfnzbs.org/xml/?api=apikey&user=anuser&search=tt0169547&catid=15,16,17,18", urls[0])
 
-        self.args = SearchRequest(identifier_key="tmdb", identifier_value="14", category="Movies HD")
+        self.args = SearchRequest(identifier_key="tmdb", identifier_value="14", category=getCategoryByAnyInput("movieshd"))
         urls = self.omgwtf.get_moviesearch_urls(self.args)
         self.assertEqual(1, len(urls))
         self.assertEqual("https://api.omgwtfnzbs.org/xml/?api=apikey&user=anuser&search=tt0169547&catid=16", urls[0])
@@ -116,7 +117,7 @@ class MyTestCase(unittest.TestCase):
             self.assertTrue(entries[0].age_precise)
             self.assertEqual(NzbSearchResult.HAS_NFO_NO, entries[0].has_nfo)
             self.assertEqual("alt.binaries.hdtv", entries[0].group)
-            self.assertEqual("TV HD", entries[0].category)
+            self.assertEqual(getCategoryByAnyInput("tvhd").category.name, entries[0].category.name)
             self.assertEqual("https://omgwtfnzbs.org/details?id=x30FI", entries[0].details_link)
             self.assertFalse(result.has_more)
             self.assertTrue(result.total_known)

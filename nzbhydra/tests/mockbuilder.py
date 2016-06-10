@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from bunch import Bunch
 from future import standard_library
 
 #standard_library.install_aliases()
@@ -43,8 +44,8 @@ def buildNewznabItem(title=None, guid=None, link=None, pubdate=None, description
     ]
     attributes.extend([{"name": "category", "value": x} for x in categories])
 
-    return {
-        "guid": id,
+    return Bunch.fromDict({
+        "guid": guid,
         "title": title,
         "link": link,
         "comments": "",
@@ -52,7 +53,7 @@ def buildNewznabItem(title=None, guid=None, link=None, pubdate=None, description
         "description": description,
         "attributes": attributes
 
-    }
+    })
 
 
 def buildNewznabResponse(title, items, offset=0, total=None):

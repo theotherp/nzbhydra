@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 import codecs
 import hashlib
 import random
-import shutil
 import string
 import traceback
 from contextlib import contextmanager
@@ -14,7 +13,6 @@ from sets import Set
 
 import arrow
 # standard_library.install_aliases()
-import re
 
 import validators as validators
 from builtins import *
@@ -24,6 +22,8 @@ import os
 import collections
 from furl import furl
 from bunch import Bunch
+
+from nzbhydra import categories
 
 logger = logging.getLogger('root')
 
@@ -58,7 +58,7 @@ initialConfig = {
             "hitLimit": 0,
             "hitLimitResetTime": None,
             "host": "https://www.nzbclub.com",
-            "name": "NZBClub", 
+            "name": "NZBClub",
             "password": None,
             "preselect": True,
             "score": 0,
@@ -130,7 +130,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 18,
+        "configVersion": 19,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -157,38 +157,6 @@ initialConfig = {
     },
     "searching": {
         "alwaysShowDuplicates": False,
-        "categorysizes": {
-            "audiobookmax": 1000,
-            "audiomax": 2000,
-            "audiomin": 1,
-            "audioookmin": 50,
-            "comicmax": 250,
-            "comicmin": 1,
-            "consolemax": 40000,
-            "consolemin": 100,
-            "ebookmax": 100,
-            "ebookmin": None,
-            "enable_category_sizes": True,
-            "flacmax": 2000,
-            "flacmin": 10,
-            "movieshdmax": 20000,
-            "movieshdmin": 3000,
-            "moviesmax": 20000,
-            "moviesmin": 500,
-            "moviessdmin": 500,
-            "mp3max": 500,
-            "mp3min": 1,
-            "pcmax": 50000,
-            "pcmin": 100,
-            "tvhdmax": 3000,
-            "tvhdmin": 300,
-            "tvmax": 5000,
-            "tvmin": 50,
-            "tvsdmax": 1000,
-            "tvsdmin": 50,
-            "xxxmax": 10000,
-            "xxxmin": 100
-        },
         "duplicateAgeThreshold": 3600,
         "duplicateSizeThresholdInPercent": 0.1,
         "generate_queries": [
@@ -197,13 +165,186 @@ initialConfig = {
         "htmlParser": "html.parser",
         "ignorePassworded": False,
         "ignoreTemporarilyDisabled": False,
-        "ignoreWords": "",
+        "forbiddenWords": "",
         "maxAge": "",
         "nzbAccessType": "redirect",
         "removeDuplicatesExternal": True,
-        "requireWords": "",
+        "requiredWords": "",
         "timeout": 20,
         "userAgent": "NZBHydra"
+    },
+    "categories": {
+        "enableCategorySizes": True,
+        "categories": {
+            "tvhd": {
+                "applyRestrictions": "both",
+                "min": 300,
+                "max": 3000,
+                "newznabCategories": [
+                    5040
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "xxx": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 10000,
+                "newznabCategories": [
+                    6000
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "both"
+            },
+            "console": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 40000,
+                "newznabCategories": [
+                    1000
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "tvsd": {
+                "applyRestrictions": "both",
+                "min": 50,
+                "max": 1000,
+                "newznabCategories": [
+                    5030
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "tv": {
+                "applyRestrictions": "both",
+                "min": 50,
+                "max": 5000,
+                "newznabCategories": [
+                    5000
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "movieshd": {
+                "applyRestrictions": "both",
+                "min": 3000,
+                "max": 20000,
+                "newznabCategories": [
+                    2040,
+                    2050,
+                    2060
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "audiobook": {
+                "applyRestrictions": "both",
+                "min": 50,
+                "max": 1000,
+                "newznabCategories": [
+                    3030
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "pc": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 50000,
+                "newznabCategories": [
+                    4000
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "moviessd": {
+                "applyRestrictions": "both",
+                "min": 500,
+                "max": 3000,
+                "newznabCategories": [
+                    2030
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "ebook": {
+                "applyRestrictions": "both",
+                "min": None,
+                "max": 100,
+                "newznabCategories": [
+                    7020,
+                    8010
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "movies": {
+                "applyRestrictions": "both",
+                "min": 500,
+                "max": 20000,
+                "newznabCategories": [
+                    2000
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "mp3": {
+                "applyRestrictions": "both",
+                "min": 1,
+                "max": 500,
+                "newznabCategories": [
+                    3010
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "flac": {
+                "applyRestrictions": "both",
+                "min": 10,
+                "max": 2000,
+                "newznabCategories": [
+                    3040
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "comic": {
+                "applyRestrictions": "both",
+                "min": 1,
+                "max": 250,
+                "newznabCategories": [
+                    7030
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "audio": {
+                "applyRestrictions": "both",
+                "min": 1,
+                "max": 2000,
+                "newznabCategories": [
+                    3000
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            }
+        }
     },
     "auth": {
         "authType": "none",
@@ -569,6 +710,23 @@ def migrateConfig(config):
                     if not any([x for x in config["auth"]["users"] if x["maySeeAdmin"]]) and config["auth"]["authType"] != "none" and config["auth"]["restrictAdmin"]:
                         addLogMessage(30, "Did not find any user with admin rights, you will need to change that manually!")
 
+            if config["main"]["configVersion"] == 18:
+                with version_update(config, 19):
+                    from nzbhydra import search
+                    addLogMessage(20, "Moving category sizes")
+                    categoriesToMigrate = ["movies", "movieshd", "moviessd", "tv", "tvsd", "tvhd", "audio", "flac", "mp3", "audiobook", "console", "pc", "xxx", "ebook", "comic"]
+                    config["categories"] = {
+                        "categories": {},
+                        "enableCategorySizes": config["searching"]["categorysizes"]["enable_category_sizes"]
+                    }
+                    for category in categoriesToMigrate:
+                        config["categories"]["categories"][category] = initialConfig["categories"]["categories"][category]
+                        config["categories"]["categories"][category]["min"] = config["searching"]["categorysizes"][category + "min"]
+                        config["categories"]["categories"][category]["max"] = config["searching"]["categorysizes"][category + "max"]
+
+                    config["searching"].pop("categorysizes")
+                    config["searching"]["forbiddenWords"] = config["searching"]["ignoreWords"]
+                    config["searching"]["requiredWords"] = config["searching"]["requiredWords"]
 
         except Exception as e:
             addLogMessage(30, "An error occurred while migrating the config file.")
@@ -594,7 +752,7 @@ def load(filename):
             # Now what?
     else:
         settings = Bunch.fromDict(initialConfig)
-        settings.main.secret = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16)) 
+        settings.main.secret = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16))
 
 
 def getAnonymizedConfigSetting(key, value):
@@ -606,18 +764,17 @@ def getAnonymizedConfigSetting(key, value):
         if key == "host":
             return getAnonymizedIpOrDomain(value)
         if key == "url" or key == "externalUrl" and value:
-                f = furl(value)
-                if f.host:
-                    f.host = getAnonymizedIpOrDomain(f.host)
-                    return f.tostr()
-                return "<NOTAURL>"
+            f = furl(value)
+            if f.host:
+                f.host = getAnonymizedIpOrDomain(f.host)
+                return f.tostr()
+            return "<NOTAURL>"
         if key in ("username", "password", "apikey"):
             return "<%s:%s>" % (key.upper(), hashlib.md5(value).hexdigest())
         return value
     except Exception as e:
         logger.error('Error while anonymizing setting "%s". Obfuscating to be sure: %s' % (key, e))
         return "<%s:%s>" % (key.upper(), hashlib.md5(value).hexdigest())
-        
 
 
 def getAnonymizedIpOrDomain(value):
@@ -646,7 +803,7 @@ def getAnonymizedConfig(config=None):
 
 
 def getSettingsToHide():
-    #Only use values which would actually appear in the log
+    # Only use values which would actually appear in the log
     hideThese = [
         ("main.apikey", settings.main.apikey),
         ("main.externalUrl", settings.main.externalUrl),
@@ -664,7 +821,7 @@ def getSettingsToHide():
     hideThese.extend([("auth.password", x.password) for x in settings.auth.users])
     for i, indexer in enumerate(settings.indexers):
         if indexer.type in ["omgwtf", "newznab"]:
-            if hasattr(indexer, "apikey"): 
+            if hasattr(indexer, "apikey"):
                 hideThese.append(("indexers[%d].apikey" % i, indexer.apikey))
             if hasattr(indexer, "username"):
                 hideThese.append(("indexers[%d].username" % i, indexer.username))
@@ -676,8 +833,8 @@ def import_config_data(data):
     global config_file
     settings = Bunch.fromDict(data)
     save(config_file)
-    
-    
+
+
 def save(filename=None):
     global config_file
     if filename is None:
@@ -689,7 +846,6 @@ def save(filename=None):
             f.write(s)
     except Exception as e:
         logger.exception("Error while saving settings")
-        
 
 
 class CacheTypeSelection(object):
@@ -746,11 +902,19 @@ class InternalExternalSingleSelection(object):
     options = [internal, external, both]
 
 
+def getCategorySettingByName(name):
+    for k, v in settings["categories"]["categories"].items():
+        if name == k:
+            return v
+
+
 def getSafeConfig():
     indexers = [{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "showOnSearch": x["showOnSearch"] and x["accessType"] != "external"} for x in settings["indexers"]]
+
     return {
         "indexers": indexers,
-        "searching": {"categorysizes": settings["searching"]["categorysizes"], "maxAge": settings["searching"]["maxAge"], "alwaysShowDuplicates": settings["searching"]["alwaysShowDuplicates"]},
+        "searching": {"maxAge": settings["searching"]["maxAge"], "alwaysShowDuplicates": settings["searching"]["alwaysShowDuplicates"], "enableCategorySizes": settings["categories"]["enableCategorySizes"]},
+        "categories": categories.getCategories(),
         "downloaders": [{"enabled": x.enabled, "name": x.name, "type": x.type, "defaultCategory": x.defaultCategory if hasattr(x, "defaultCategory") else None} for x in settings["downloaders"]],
         "authType": settings["auth"]["authType"],
     }

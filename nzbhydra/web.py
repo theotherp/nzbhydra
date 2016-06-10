@@ -543,7 +543,7 @@ def api(args):
 
 
 def api_search(args):
-    search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], query=args["q"])
+    search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], query=args["q"], internal=False)
     if args["t"] == "search":
         search_request.type = "general"
         logger.info("")
@@ -565,7 +565,7 @@ def api_search(args):
         search_request.author = args["author"] if args["author"] is not None else None
         search_request.title = args["title"] if args["title"] is not None else None
     logger.info("API search request: %s" % search_request)
-    result = search.search(False, search_request)
+    result = search.search(search_request)
     results = process_for_external_api(result)
     content = render_search_results_for_api(results, result["total"], result["offset"], output=args["o"])
     if args["o"].lower() == "xml":
@@ -625,7 +625,9 @@ def process_and_jsonify_for_internalapi(results):
 
 
 def startSearch(search_request):
-    results = search.search(True, search_request)
+    search_request.username = request.authorization.username if request.authorization is not None else None
+    search_request.internal = True
+    results = search.search(search_request)
     return process_and_jsonify_for_internalapi(results)
 
 

@@ -21,6 +21,7 @@ from furl import furl
 from requests.exceptions import RequestException
 import requests
 from nzbhydra import config
+from nzbhydra.categories import getUnknownCategory, getCategoryByAnyInput, getCategoryByName
 
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException, IndexerAuthException, IndexerResultParsingRowException
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -30,55 +31,55 @@ from nzbhydra import infos
 logger = logging.getLogger('root')
 
 categories_to_omgwtf = { 
-    'All': [],
-    'Movies': ["15", "16", "17", "18"],
-    'Movies HD': ["16"],
-    'Movies SD': ["15"],
-    'TV': ["19", "20", "21"],
-    'TV SD': ["19"],
-    'TV HD': ["20"],
-    'Audio': ["3", "7", "8", "22"],
-    'Audio FLAC': ["22"],
-    'Audio MP3': ["7"],
-    'Audiobook': ["29"],
-    'Console': ["14"],
-    'PC': ["1", "12"],
-    'XXX': ["23", "24", "25", "26", "27", "28"],
-    'Other': ["11"],
-    'Ebook': ["9"],
-    'Comic': ["9"]
+    'all': [],
+    'movies': ["15", "16", "17", "18"],
+    'movieshd': ["16"],
+    'moviessd': ["15"],
+    'tv': ["19", "20", "21"],
+    'tvsd': ["19"],
+    'tvhd': ["20"],
+    'audio': ["3", "7", "8", "22"],
+    'flac': ["22"],
+    'mp3': ["7"],
+    'audiobook': ["29"],
+    'console': ["14"],
+    'pc': ["1", "12"],
+    'xxx': ["23", "24", "25", "26", "27", "28"],
+    'na': ["11"],
+    'ebook': ["9"],
+    'comic': ["9"]
 }
 
 omgwtf_to_categories = {
-    "1": "PC",
-    "2": "Other",
-    "3": "Audio",
-    "4": "Other",
-    "5": "Other",
-    "6": "Other",
-    "7": "Audio MP3",
-    "8": "Audio",
-    "9": "Ebook",
-    "10": "Other",
-    "11": "Other",
-    "12": "PC",
-    "13": "Other",
-    "14": "Other",
-    "15": "Movies SD",
-    "16": "Movies HD",
-    "17": "Movies ",
-    "18": "Movies ",
-    "19": "TV SD",
-    "20": "TV HD",
-    "21": "TV",
-    "22": "Audio FLAC",
-    "23": "XXX",
-    "24": "XXX",
-    "25": "XXX",
-    "26": "XXX",
-    "27": "XXX",
-    "28": "XXX",
-    "29": "Audiobook",
+    "1": "pc",
+    "2": "other",
+    "3": "audio",
+    "4": "na",
+    "5": "na",
+    "6": "na",
+    "7": "mp3",
+    "8": "audio",
+    "9": "ebook",
+    "10": "na",
+    "11": "na",
+    "12": "pc",
+    "13": "na",
+    "14": "na",
+    "15": "moviessd",
+    "16": "movieshd",
+    "17": "movies",
+    "18": "movies",
+    "19": "tvsd",
+    "20": "tvhd",
+    "21": "tv",
+    "22": "flac",
+    "23": "xxx",
+    "24": "xxx",
+    "25": "xxx",
+    "26": "xxx",
+    "27": "xxx",
+    "28": "xxx",
+    "29": "audiobook",
 }
 
 newznab_to_omgwtf = {
@@ -102,26 +103,18 @@ newznab_to_omgwtf = {
 
 
 def map_category(category):
-    if category is None:
+    if not category:
         return []
-    if "," in category:
-        #newznab categories
-        cats = []
-        for x in category.split(","):
-            if x in newznab_to_omgwtf:
-                logger.debug("Mapped category %s to %s" % (x, newznab_to_omgwtf[x]))
-                cats.extend(newznab_to_omgwtf[x])
-        return cats
-    else:
-        if category in categories_to_omgwtf.keys():
-            return categories_to_omgwtf[category]
-        else:
-            if category in newznab_to_omgwtf:
-                logger.debug("Mapped category %s to %s" % (category, newznab_to_omgwtf[category]))
-                return newznab_to_omgwtf[category]
-            else:
-                # If not we return an empty list so that we search in all categories
-                return []
+    
+    if category.type == "hydra":
+        if category.category.name == "all":
+            return []
+        logger.debug("Mapped category %s to %s" % (category.category.name, categories_to_omgwtf[category.category.name]))
+        return categories_to_omgwtf[category.category.name]
+    return [newznab_to_omgwtf[x] for x in category.category.newznabCategories]
+    
+    
+    
 
 
 def test_connection(apikey, username):
@@ -194,7 +187,7 @@ class OmgWtf(SearchModule):
 
     def get_showsearch_urls(self, search_request):
         if search_request.category is None:
-            search_request.category = "TV"
+            search_request.category = getCategoryByAnyInput("tv")
         #Should get most results, apparently there is no way of using "or" searches
         if search_request.query:
             query = search_request.query
@@ -212,7 +205,7 @@ class OmgWtf(SearchModule):
 
     def get_moviesearch_urls(self, search_request):
         if search_request.category is None:
-            search_request.category = "Movies"
+            search_request.category = getCategoryByAnyInput("movies")
         if search_request.identifier_key:
             canBeConverted, toType, id = infos.convertIdToAny(search_request.identifier_key, ["imdb"], search_request.identifier_value)
             if canBeConverted:
@@ -234,17 +227,17 @@ class OmgWtf(SearchModule):
         if not search_request.query and (search_request.author or search_request.title):
             search_request.query = "%s %s" % (search_request.author if search_request.author else "", search_request.title if search_request.title else "")
         if search_request.category is None:
-            search_request.category = "Ebook"
+            search_request.category = getCategoryByAnyInput("ebook")
         return self.get_search_urls(search_request)
 
     def get_audiobook_urls(self, search_request):
         if search_request.category is None:
-            search_request.category = "Audiobook"
+            search_request.category = getCategoryByAnyInput("audiobook")
         return self.get_search_urls(search_request)
 
     def get_comic_urls(self, search_request):
         if not search_request.category:
-            search_request.category = "Comic"
+            search_request.category = getCategoryByAnyInput("comic")
         logger.info("Searching for comics in ebook category")
         return self.get_search_urls(search_request)
 
@@ -311,7 +304,7 @@ class OmgWtf(SearchModule):
                 if categoryid in omgwtf_to_categories.keys():
                     entry.category = omgwtf_to_categories[categoryid]
                 else:
-                    entry.category = "N/A"
+                    entry.category = getUnknownCategory()
                 accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
                 if accepted:
                     entries.append(entry)
@@ -340,9 +333,9 @@ class OmgWtf(SearchModule):
         entry.has_nfo = NzbSearchResult.HAS_NFO_YES if item.find("getnfo") is not None else NzbSearchResult.HAS_NFO_NO
         categoryid = item.find("categoryid").text
         if categoryid in omgwtf_to_categories.keys():
-            entry.category = omgwtf_to_categories[categoryid]
+            entry.category = getCategoryByName(omgwtf_to_categories[categoryid])
         else:
-            entry.category = "N/A"
+            entry.category = getUnknownCategory()
         return entry
 
     def get_nfo(self, guid):

@@ -13,6 +13,8 @@ import re
 import arrow
 from furl import furl
 import xml.etree.ElementTree as ET
+
+from nzbhydra.categories import getUnknownCategory, getCategoryByName
 from nzbhydra.exceptions import IndexerResultParsingException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
@@ -106,11 +108,11 @@ class Womble(SearchModule):
                 entry.description = m.group(1)
                 entry.size = int(m.group(2)) * 1024 * 1024 #megabyte to byte
             if elem.find("category").text.lower() == "tv-dvdrip" or elem.find("category").text.lower() == "tv-sd":
-                entry.category = "TV SD"
+                entry.category = getCategoryByName("tvsd")
             elif elem.find("category").text.lower() == "tv-x264" or elem.find("category").text.lower == "tv-hd":
-                entry.category = "TV HD"
+                entry.category = getCategoryByName("tvhd")
             else:
-                entry.category = "N/A" #undefined
+                entry.category = getUnknownCategory()
                 
             
             entry.indexerguid = elem.find("guid").text[30:] #39a/The.Almighty.Johnsons.S03E06.720p.BluRay.x264-YELLOWBiRD.nzb is the GUID, only the 39a doesn't work

@@ -13,6 +13,7 @@ from freezegun import freeze_time
 import responses
 
 from nzbhydra import config
+from nzbhydra.categories import getCategoryByAnyInput
 from nzbhydra.database import Indexer
 from nzbhydra.search import SearchRequest
 from nzbhydra.searchmodules.newznab import NewzNab
@@ -115,7 +116,7 @@ class NewznabTests(UrlTestCase):
         query = queries[0]
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&extended=1&limit=100&offset=0&t=search", query)
 
-        self.args = SearchRequest(category="Audio")
+        self.args = SearchRequest(category=getCategoryByAnyInput("audio"))
         queries = self.n1.get_search_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
@@ -139,7 +140,7 @@ class NewznabTests(UrlTestCase):
         query = queries[0]
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&cat=5000&extended=1&limit=100&offset=0&t=tvsearch", query)
 
-        self.args = SearchRequest(category="All")
+        self.args = SearchRequest(category=getCategoryByAnyInput("all"))
         queries = self.n1.get_showsearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
@@ -169,43 +170,43 @@ class NewznabTests(UrlTestCase):
         query = queries[0]
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&cat=2000&extended=1&imdbid=12345678&limit=100&offset=0&t=movie", query)
 
-        self.args = SearchRequest(identifier_value="12345678", identifier_key="imdbid", category="Movies HD")
+        self.args = SearchRequest(identifier_value="12345678", identifier_key="imdbid", category=getCategoryByAnyInput("movieshd"))
         queries = self.n1.get_moviesearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&cat=2040,2050,2060&extended=1&imdbid=12345678&limit=100&offset=0&t=movie", query)
 
-        self.args = SearchRequest(category="Movies")
+        self.args = SearchRequest(category=getCategoryByAnyInput("movies"))
         queries = self.n1.get_moviesearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&cat=2000&extended=1&limit=100&offset=0&t=movie", query)
 
-        self.args = SearchRequest(category="Movies", query=None)
+        self.args = SearchRequest(category=getCategoryByAnyInput("movies"), query=None)
         queries = self.n1.get_moviesearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&cat=2000&extended=1&limit=100&offset=0&t=movie", query)
 
-        self.args = SearchRequest(category="Movies", query="")
+        self.args = SearchRequest(category=getCategoryByAnyInput("movies"), query="")
         queries = self.n1.get_moviesearch_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&cat=2000&extended=1&limit=100&offset=0&t=movie", query)
 
-        config.settings.searching.ignoreWords = "ignorethis"
-        self.args = SearchRequest(query="aquery", ignoreWords=["ignorethis"])
+        config.settings.searching.forbiddenWords = "ignorethis"
+        self.args = SearchRequest(query="aquery", forbiddenWords=["ignorethis"])
         queries = self.n1.get_search_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
-        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&extended=1&limit=100&offset=0&q=aquery --ignorethis&t=search", query)
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&extended=1&limit=100&offset=0&q=aquery !ignorethis&t=search", query)
 
-        config.settings.searching.ignoreWords = "ignorethis"
-        self.args = SearchRequest(query="aquery", ignoreWords=["ignorethis"])
+        config.settings.searching.forbiddenWords = "ignorethis"
+        self.args = SearchRequest(query="aquery", forbiddenWords=["ignorethis"])
         queries = self.n1.get_search_urls(self.args)
         assert len(queries) == 1
         query = queries[0]
-        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&extended=1&limit=100&offset=0&q=aquery --ignorethis&t=search", query)
+        self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&extended=1&limit=100&offset=0&q=aquery !ignorethis&t=search", query)
         
         
 
@@ -260,14 +261,6 @@ class NewznabTests(UrlTestCase):
         assert "id=guid" in link
         assert "t=get" in link
 
-    def testMapCats(self):
-        from nzbhydra.searchmodules import newznab
-        assert newznab.map_category("Movies") == [2000]
-        assert newznab.map_category("2000") == [2000]
-        newznabcats = newznab.map_category("2030,2040")
-        assert len(newznabcats) == 2
-        assert 2030 in newznabcats
-        assert 2040 in newznabcats
 
     def testGetEbookUrls(self):
         
@@ -276,14 +269,14 @@ class NewznabTests(UrlTestCase):
         self.assertEqual(1, len(urls))
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&cat=7020,8010&limit=100&t=search&extended=1&offset=0&q=novel", urls[0])
 
-        self.args = SearchRequest(author="anauthor", title="atitle", category="7020")
+        self.args = SearchRequest(author="anauthor", title="atitle", category=getCategoryByAnyInput(7020))
         queries = self.n1.get_ebook_urls(self.args)
         self.assertEqual(1, len(urls))
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&cat=7020&extended=1&limit=100&offset=0&q=anauthor+atitle&t=search", queries[0])
 
         self.newznab1.searchTypes = ["book"]
         self.n1 = NewzNab(self.newznab1)
-        self.args = SearchRequest(author="anauthor", title="atitle", category="7020")
+        self.args = SearchRequest(author="anauthor", title="atitle", category=getCategoryByAnyInput(7020))
         queries = self.n1.get_ebook_urls(self.args)
         self.assertEqual(1, len(urls))
         self.assertUrlEqual("https://indexer.com/api?apikey=apikeyindexer.com&author=anauthor&cat=7020&extended=1&limit=100&offset=0&t=book&title=atitle", queries[0])

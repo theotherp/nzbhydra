@@ -64,9 +64,130 @@ function ConfigFields($injector) {
                 }
                 return true;
             },
-
             message: (prefixViewValue ? '$viewValue + " ' : '" ') + message + '"'
         };
+    }
+
+    function getCategoryFields() {
+        var fields = [];
+        var ConfigService = $injector.get("ConfigService");
+        var categories = ConfigService.getSafe().categories;
+        fields.push({
+            key: 'enableCategorySizes',
+            type: 'horizontalSwitch',
+            templateOptions: {
+                type: 'switch',
+                label: 'Category sizes',
+                help: "Preset min and max sizes depending on the selected category"
+            }
+        });
+        _.each(categories, function (category) {
+                if (category.name != "all" && category.name != "na") {
+                    var categoryFields = [
+                        {
+                            key: "categories." + category.name + '.requiredWords',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Required words',
+                                placeholder: 'separate, with, commas, like, this'
+                            }
+                        },
+                        {
+                            key: "categories." + category.name + '.forbiddenWords',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Forbidden words',
+                                placeholder: 'separate, with, commas, like, this'
+                            }
+                        }
+                        ,
+                        {
+                            key: "categories." + category.name + '.applyRestrictions',
+                            type: 'horizontalSelect',
+                            templateOptions: {
+                                label: 'Apply restrictions',
+                                options: [
+                                    {name: 'Internal searches', value: 'internal'},
+                                    {name: 'API searches', value: 'external'},
+                                    {name: 'All searches', value: 'both'}
+                                ],
+                                help: "For which type of search word restrictions will be applied"
+                            }
+                        }
+                    ];
+                    categoryFields.push({
+                        wrapper: 'settingWrapper',
+                        templateOptions: {
+                            label: 'Size preset'
+                        },
+                        fieldGroup: [
+                            {
+                                key: "categories." + category.name + '.min',
+                                type: 'duoSetting',
+                                templateOptions: {
+                                    addonRight: {
+                                        text: 'MB'
+                                    }
+                                }
+                            },
+                            {
+                                type: 'duolabel'
+                            },
+                            {
+                                key: "categories." + category.name + '.max',
+                                type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                            }
+                        ]
+                    });
+                    categoryFields.push({
+                        key: "categories." + category.name + '.newznabCategories',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Newznab categories',
+                            help: 'Map newznab categories to hydra categories',
+                            required: true
+                        },
+                        parsers: [function(value) {
+                            if (!value) {
+                                return value;
+                            }
+                            var arr = [];
+                            arr.push.apply(arr, value.split(",").map(Number));
+                            return arr;
+                            
+                        }]
+                    });
+                    categoryFields.push({
+                        key: "categories." + category.name + '.ignoreResults',
+                        type: 'horizontalSelect',
+                        templateOptions: {
+                            label: 'Ignore results',
+                            options: [
+                                {name: 'For internal searches', value: 'internal'},
+                                {name: 'For API searches', value: 'external'},
+                                {name: 'Always', value: 'always'},
+                                {name: 'Never', value: 'never'}
+                            ],
+                            help: "Ignore results from this category (if not explicitly selected)"
+                        }
+                    });
+
+                    fields.push({
+                        wrapper: 'fieldset',
+                        templateOptions: {
+                            label: category.pretty
+                        },
+                        fieldGroup: categoryFields
+
+                    })
+                }
+            }
+        );
+        console.log(fields);
+        return fields;
     }
 
     function getFields(rootModel) {
@@ -371,6 +492,7 @@ function ConfigFields($injector) {
                     templateOptions: {
                         label: 'Indexer access'
                     },
+
                     fieldGroup: [
                         {
                             key: 'timeout',
@@ -406,7 +528,7 @@ function ConfigFields($injector) {
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
-                                label: 'Ignore results with ...',
+                                label: 'Forbidden words',
                                 placeholder: 'separate, with, commas, like, this',
                                 help: "Results with any of these words in the title will be ignored"
                             }
@@ -416,7 +538,7 @@ function ConfigFields($injector) {
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
-                                label: 'Only accept results with ...',
+                                label: 'Required words',
                                 placeholder: 'separate, with, commas, like, this',
                                 help: "Only results with at least of these words in the title will be displayed"
                             }
@@ -532,336 +654,10 @@ function ConfigFields($injector) {
                             }
                         }
                     ]
-                },
-
-                {
-                    wrapper: 'fieldset',
-                    key: 'categorysizes',
-                    templateOptions: {label: 'Category sizes'},
-                    fieldGroup: [
-
-                        {
-                            key: 'enable_category_sizes',
-                            type: 'horizontalSwitch',
-                            templateOptions: {
-                                type: 'switch',
-                                label: 'Category sizes',
-                                help: "Preset min and max sizes depending on the selected category"
-                            }
-                        },
-                        {
-                            wrapper: 'logicalGroup',
-                            hideExpression: '!model.enable_category_sizes',
-                            fieldGroup: [
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Movies'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'moviesmin',
-                                            type: 'duoSetting',
-                                            templateOptions: {
-                                                addonRight: {
-                                                    text: 'MB'
-                                                }
-                                            }
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'moviesmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Movies HD'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'movieshdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'movieshdmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Movies SD'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'moviessdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'movieshdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'TV'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'tvmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'tvmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'TV HD'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'tvhdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'tvhdmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'TV SD'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'tvsdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'tvsdmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Audio'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'audiomin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'audiomax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Audio FLAC'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'flacmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'flacmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Audio MP3'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'mp3min',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'mp3max',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Audiobook'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'audiobookmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'audiobookmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Console'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'consolemin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'consolemax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'PC'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'pcmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'pcmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'XXX'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'xxxmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'xxxmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Ebook'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'ebookmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'ebookmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Comic'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'comicmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'comicmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-
-                    ]
                 }
-
             ],
+
+            categories: getCategoryFields(),
 
             downloaders: [
                 {
@@ -971,7 +767,7 @@ function ConfigFields($injector) {
                             {name: 'HTTP Basic auth', value: 'basic'},
                             {name: 'Login form', value: 'form'}
                         ]
-                        
+
                     }
                 },
                 {
@@ -1026,7 +822,7 @@ function ConfigFields($injector) {
                                     label: 'Username',
                                     required: true
                                 }
-                                
+
                             },
                             {
                                 key: 'password',
@@ -1121,7 +917,7 @@ function getIndexerPresets() {
             host: "https://simplynzbs.com",
             search_ids: ["imdbid", "rid", "tmdbid", "tvdbid", "tvmazeid"],
             searchTypes: ["tvsearch", "movie"]
-            
+
         }
     ];
 }
@@ -1428,13 +1224,13 @@ function getDownloaderBoxFields(model, parentModel, isInitial) {
                     expression: function (viewValue) {
                         if (isInitial || viewValue != model.name) {
                             return _.pluck(parentModel, "name").indexOf(viewValue) == -1;
-                        } 
+                        }
                         return true;
                     },
                     message: '"Downloader \\"" + $viewValue + "\\" already exists"'
                 }
             }
-            
+
         }]);
 
     if (model.type == "nzbget") {
@@ -1747,8 +1543,6 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
 
     }
 }
-
-
 
 
 angular

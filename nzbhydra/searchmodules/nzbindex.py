@@ -17,6 +17,7 @@ from bs4 import BeautifulSoup
 from furl import furl
 import requests
 from nzbhydra import config
+from nzbhydra.categories import getUnknownCategory
 
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException, IndexerResultParsingRowException
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -50,7 +51,7 @@ class NzbIndex(SearchModule):
     def get_search_urls(self, search_request):
         query = search_request.query
         if query:
-            for word in search_request.ignoreWords:
+            for word in search_request.forbiddenWords:
                 word = word.strip().lower()
                 if " " in word:
                     logger.debug('Not using ignored word "%s" in query because it contains a space which is not supported by newznab queries' % word)
@@ -188,7 +189,7 @@ class NzbIndex(SearchModule):
             entry.link = link[0]["href"]
         else:
             self.debug("Did not find link in row")
-        entry.category = "N/A"
+        entry.category = getUnknownCategory()
         sizetd = tds[2]
         entry.size = self.parse_size(sizetd)
         grouptd = tds[3]

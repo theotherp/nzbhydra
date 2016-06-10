@@ -176,12 +176,11 @@ class SearchModule(object):
         #Allows the implementations to check against one general rule if the search result is ok or shall be discarded
         if config.settings.searching.ignorePassworded and nzbSearchResult.passworded:
             return False, "Passworded results shall be ignored"
-        for word in searchRequest.ignoreWords:
+        for word in searchRequest.forbiddenWords:
             word = word.strip().lower()
             if word in nzbSearchResult.title.lower():
                 return False, '"%s" is in the list of ignored words or excluded by the query' % word
-        requireWords = [word.lower().strip() for word in filter(bool, config.settings.searching.requireWords.split(","))]
-        if len(requireWords) > 0 and not any(word in nzbSearchResult.title.lower() for word in requireWords):
+        if searchRequest.requiredWords and len(searchRequest.requiredWords) > 0 and not any(word.strip().lower() in nzbSearchResult.title.lower() for word in searchRequest.requiredWords):
             return False, 'None of the required words is contained in the title "%s"' % nzbSearchResult.title
         if searchRequest.minsize and nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
                 return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize)
@@ -193,6 +192,20 @@ class SearchModule(object):
             return False, "Older than requested maximum age: %dd > %dd" % (nzbSearchResult.age_days, searchRequest.maxage)
         if nzbSearchResult.pubdate_utc is None:
             return False, "Unknown age"
+        if nzbSearchResult.category:
+            ignore = False
+            reason = ""
+            if nzbSearchResult.category.ignoreResults == "always":
+                reason = "always"
+                ignore = True
+            if nzbSearchResult.category.ignoreResults == "internal" and searchRequest.internal:
+                reason = " for internal searches"
+                ignore = True
+            if nzbSearchResult.category.ignoreResults == "external" and not searchRequest.internal:
+                reason = " for API searches"
+                ignore = True
+            if ignore:
+                return False, "Results from category %s are configured to be ignored " + reason
         return True, None
         
 

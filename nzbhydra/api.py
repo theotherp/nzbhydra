@@ -137,6 +137,7 @@ def transform_results(results, external):
             i.attributes.append({"name": "guid", "value": i.guid})  # If it wasn't set before now it is (for results from newznab-indexers)
         if not has_size:
             i.attributes.append({"name": "size", "value": i.size})  # If it wasn't set before now it is (for results from newznab-indexers)
+        i.category = i.category.pretty
         transformed.append(i)
 
     return transformed

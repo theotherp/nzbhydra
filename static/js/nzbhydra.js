@@ -89,6 +89,27 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 }
             }
         })
+        .state("root.config.categories", {
+            url: "/categories",
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Config (Categories)"
+                        }
+                    }
+                }
+            }
+        })
         .state("root.config.downloader", {
             url: "/downloader",
             views: {
@@ -1443,7 +1464,6 @@ function SearchService($http) {
     
 
     function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, indexers) {
-        console.log("Category: " + category);
         var uri;
         if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
             console.log("Search for movies");
@@ -1849,7 +1869,7 @@ angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
 
-function SearchController($scope, $http, $stateParams, $state, SearchService, focus, ConfigService, blockUI, $element) {
+function SearchController($scope, $http, $stateParams, $state, SearchService, focus, ConfigService, CategoriesService, blockUI, $element) {
     
     function getNumberOrUndefined(number) {
         if (_.isUndefined(number) || _.isNaN(number) || number == "") {
@@ -1865,8 +1885,8 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
     //Fill the form with the search values we got from the state params (so that their values are the same as in the current url)
     $scope.mode = $stateParams.mode;
-    
-    $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? "All" : $stateParams.category;
+    $scope.categories = _.filter(CategoriesService.getAll(), function(c) { return c.mayBeSelected; });
+    $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? CategoriesService.getDefault() : CategoriesService.getByName($stateParams.category);
     $scope.tmdbid = $stateParams.tmdbid;
     $scope.tvdbid = $stateParams.tvdbid;
     $scope.rid = $stateParams.rid;
@@ -1893,7 +1913,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.typeAheadWait = 300;
     $scope.selectedItem = "";
     $scope.autocompleteLoading = false;
-    $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 ); //If true a check box will be shown asking the user if he wants to search by ID 
+    $scope.isAskById = $scope.category.supportsById; 
     $scope.isById = {value: true}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
     $scope.availableIndexers = [];
     $scope.autocompleteClass = "autocompletePosterMovies";
@@ -1902,7 +1922,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         $scope.category = searchCategory;
 
         //Show checkbox to ask if the user wants to search by ID (using autocomplete)
-        $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 );
+        $scope.isAskById = $scope.category.supportsById;
 
         focus('focus-query-box');
         
@@ -1912,9 +1932,9 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
             searchModel.$setViewValue(searchModel.$viewValue + " ");
         }
 
-        if (safeConfig.searching.categorysizes.enable_category_sizes) {
-            var min = safeConfig.searching.categorysizes[(searchCategory + " min").toLowerCase().replace(" ", "")];
-            var max = safeConfig.searching.categorysizes[(searchCategory + " max").toLowerCase().replace(" ", "")];
+        if (safeConfig.searching.enableCategorySizes) {
+            var min = searchCategory.min;
+            var max = searchCategory.max;
             if (_.isNumber(min)) {
                 $scope.minsize = min;
             } else {
@@ -1943,7 +1963,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
             return {};
         }
 
-        if ($scope.category.indexOf("Movies") > -1) {
+        if ($scope.category.name.indexOf("movies") > -1) {
             return $http.get('internalapi/autocomplete?type=movie', {
                 params: {
                     input: val
@@ -1952,7 +1972,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
                 $scope.autocompleteLoading = false;
                 return response.data.results;
             });
-        } else if ($scope.category.indexOf("TV") > -1) {
+        } else if ($scope.category.name.indexOf("tv") > -1) {
 
             return $http.get('internalapi/autocomplete?type=tv', {
                 params: {
@@ -1971,7 +1991,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.startSearch = function () {
         blockUI.start("Searching...");
         var indexers = angular.isUndefined($scope.indexers) ? undefined : $scope.indexers.join("|");
-        SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers).then(function () {
+        SearchService.search($scope.category.name, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers).then(function () {
             $state.go("root.search.results", {
                 minsize: $scope.minsize,
                 maxsize: $scope.maxsize,
@@ -1995,14 +2015,14 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
     $scope.goToSearchUrl = function () {
         var stateParams = {};
-        if ($scope.category.indexOf("Movies") > -1) {
+        if ($scope.category.name.indexOf("movies") > -1) {
             stateParams.mode = "moviesearch";
             stateParams.title = $scope.title;
             stateParams.mode = "moviesearch";
-        } else if ($scope.category.indexOf("TV") > -1) {
+        } else if ($scope.category.name.indexOf("tv") > -1) {
             stateParams.mode = "tvsearch";
             stateParams.title = $scope.title;
-        } else if ($scope.category == "Ebook") {
+        } else if ($scope.category.name == "ebook") {
             stateParams.mode = "ebook";
         } else {
             stateParams.mode = "search";
@@ -2018,7 +2038,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         stateParams.maxsize = $scope.maxsize;
         stateParams.minage = $scope.minage;
         stateParams.maxage = $scope.maxage;
-        stateParams.category = $scope.category;
+        stateParams.category = $scope.category.name;
         stateParams.indexers = encodeURIComponent(getSelectedIndexers());
         
         $state.go("root.search", stateParams, {inherit: false, notify: true, reload: true});
@@ -2028,9 +2048,9 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.selectAutocompleteItem = function ($item) {
         $scope.selectedItem = $item;
         $scope.title = $item.title;
-        if ($scope.category.indexOf("Movies") > -1) {
+        if ($scope.category.name.indexOf("movies") > -1) {
             $scope.tmdbid = $item.value;
-        } else if ($scope.category.indexOf("TV") > -1) {
+        } else if ($scope.category.name.indexOf("tv") > -1) {
             $scope.tvdbid = $item.value;
         }
         $scope.query = "";
@@ -2047,11 +2067,11 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
 
     $scope.autocompleteActive = function () {
-        return ($scope.category.indexOf("TV") > -1) || ($scope.category.indexOf("Movies") > -1)
+        return $scope.category.supportsById;
     };
 
     $scope.seriesSelected = function () {
-        return ($scope.category.indexOf("TV") > -1);
+        return $scope.category.name.indexOf("tv") > -1;
     };
     
     $scope.toggleIndexer = function(indexer) {
@@ -2075,7 +2095,6 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         .map(function (indexer) {
         return {name: indexer.name, activated: isIndexerPreselected(indexer)};
     }).value();
-        
     
 
     if ($scope.mode) {
@@ -2084,7 +2103,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     }
     
 }
-SearchController.$inject = ["$scope", "$http", "$stateParams", "$state", "SearchService", "focus", "ConfigService", "blockUI", "$element"];
+SearchController.$inject = ["$scope", "$http", "$stateParams", "$state", "SearchService", "focus", "ConfigService", "CategoriesService", "blockUI", "$element"];
 
 angular
     .module('nzbhydraApp')
@@ -2154,7 +2173,7 @@ angular
     .module('nzbhydraApp')
     .factory('NzbDownloadService', NzbDownloadService);
 
-function NzbDownloadService($http, ConfigService, CategoriesService) {
+function NzbDownloadService($http, ConfigService, DownloaderCategoriesService) {
 
     var service = {
         download: download,
@@ -2172,7 +2191,7 @@ function NzbDownloadService($http, ConfigService, CategoriesService) {
         var category = downloader.defaultCategory;
         
         if (_.isUndefined(category) || category == "" || category == null) {
-            return CategoriesService.openCategorySelection(downloader).then(function (category) {
+            return DownloaderCategoriesService.openCategorySelection(downloader).then(function (category) {
                 return sendNzbAddCommand(downloader, searchresultids, category)
             }, function (error) {
                 throw error;
@@ -2186,7 +2205,7 @@ function NzbDownloadService($http, ConfigService, CategoriesService) {
         return _.filter(ConfigService.getSafe().downloaders, "enabled");
     }
 }
-NzbDownloadService.$inject = ["$http", "ConfigService", "CategoriesService"];
+NzbDownloadService.$inject = ["$http", "ConfigService", "DownloaderCategoriesService"];
 
 
 angular
@@ -3105,6 +3124,93 @@ filters.filter('unsafe',
 );
 angular
     .module('nzbhydraApp')
+    .factory('DownloaderCategoriesService', DownloaderCategoriesService);
+
+function DownloaderCategoriesService($http, $q, $uibModal) {
+
+    var categories = {};
+    var selectedCategory = {};
+
+    var service = {
+        get: getCategories,
+        invalidate: invalidate,
+        select: select,
+        openCategorySelection: openCategorySelection
+    };
+
+    var deferred;
+
+    return service;
+
+
+    function getCategories(downloader) {
+
+        function loadAll() {
+            if (angular.isDefined(categories) && angular.isDefined(categories.downloader)) {
+                var deferred = $q.defer();
+                deferred.resolve(categories.downloader);
+                return deferred.promise;
+            }
+            
+            return $http.get('internalapi/getcategories', {params: {downloader: downloader.name}})
+                .then(function (categoriesResponse) {
+                    
+                    console.log("Updating downloader categories cache");
+                    var categories = {downloader: categoriesResponse.data.categories};
+                    return categoriesResponse.data.categories;
+
+                }, function (error) {
+                    throw error;
+                });
+        }
+
+        return loadAll().then(function (categories) {
+            return categories;
+        }, function (error) {
+            throw error;
+        });
+    }
+
+
+    function openCategorySelection(downloader) {
+        $uibModal.open({
+            templateUrl: 'static/html/directives/addable-nzb-modal.html',
+            controller: 'DownloaderCategorySelectionController',
+            size: "sm",
+            resolve: {
+                categories: function () {
+                    return getCategories(downloader)
+                }
+            }
+        });
+        deferred = $q.defer();
+        return deferred.promise;
+    }
+
+    function select(category) {
+        selectedCategory = category;
+        console.log("Selected category " + category);
+        deferred.resolve(category);
+    }
+
+    function invalidate() {
+        console.log("Invalidating categories");
+        categories = undefined;
+    }
+}
+DownloaderCategoriesService.$inject = ["$http", "$q", "$uibModal"];
+
+angular
+    .module('nzbhydraApp').controller('DownloaderCategorySelectionController', ["$scope", "$uibModalInstance", "DownloaderCategoriesService", "categories", function ($scope, $uibModalInstance, DownloaderCategoriesService, categories) {
+    console.log(categories);
+    $scope.categories = categories;
+    $scope.select = function (category) {
+        DownloaderCategoriesService.select(category);
+        $uibModalInstance.close($scope);
+    }
+}]);
+angular
+    .module('nzbhydraApp')
     .controller('DownloadHistoryController', DownloadHistoryController);
 
 
@@ -3288,9 +3394,130 @@ function ConfigFields($injector) {
                 }
                 return true;
             },
-
             message: (prefixViewValue ? '$viewValue + " ' : '" ') + message + '"'
         };
+    }
+
+    function getCategoryFields() {
+        var fields = [];
+        var ConfigService = $injector.get("ConfigService");
+        var categories = ConfigService.getSafe().categories;
+        fields.push({
+            key: 'enableCategorySizes',
+            type: 'horizontalSwitch',
+            templateOptions: {
+                type: 'switch',
+                label: 'Category sizes',
+                help: "Preset min and max sizes depending on the selected category"
+            }
+        });
+        _.each(categories, function (category) {
+                if (category.name != "all" && category.name != "na") {
+                    var categoryFields = [
+                        {
+                            key: "categories." + category.name + '.requiredWords',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Required words',
+                                placeholder: 'separate, with, commas, like, this'
+                            }
+                        },
+                        {
+                            key: "categories." + category.name + '.forbiddenWords',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Forbidden words',
+                                placeholder: 'separate, with, commas, like, this'
+                            }
+                        }
+                        ,
+                        {
+                            key: "categories." + category.name + '.applyRestrictions',
+                            type: 'horizontalSelect',
+                            templateOptions: {
+                                label: 'Apply restrictions',
+                                options: [
+                                    {name: 'Internal searches', value: 'internal'},
+                                    {name: 'API searches', value: 'external'},
+                                    {name: 'All searches', value: 'both'}
+                                ],
+                                help: "For which type of search word restrictions will be applied"
+                            }
+                        }
+                    ];
+                    categoryFields.push({
+                        wrapper: 'settingWrapper',
+                        templateOptions: {
+                            label: 'Size preset'
+                        },
+                        fieldGroup: [
+                            {
+                                key: "categories." + category.name + '.min',
+                                type: 'duoSetting',
+                                templateOptions: {
+                                    addonRight: {
+                                        text: 'MB'
+                                    }
+                                }
+                            },
+                            {
+                                type: 'duolabel'
+                            },
+                            {
+                                key: "categories." + category.name + '.max',
+                                type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                            }
+                        ]
+                    });
+                    categoryFields.push({
+                        key: "categories." + category.name + '.newznabCategories',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Newznab categories',
+                            help: 'Map newznab categories to hydra categories',
+                            required: true
+                        },
+                        parsers: [function(value) {
+                            if (!value) {
+                                return value;
+                            }
+                            var arr = [];
+                            arr.push.apply(arr, value.split(",").map(Number));
+                            return arr;
+                            
+                        }]
+                    });
+                    categoryFields.push({
+                        key: "categories." + category.name + '.ignoreResults',
+                        type: 'horizontalSelect',
+                        templateOptions: {
+                            label: 'Ignore results',
+                            options: [
+                                {name: 'For internal searches', value: 'internal'},
+                                {name: 'For API searches', value: 'external'},
+                                {name: 'Always', value: 'always'},
+                                {name: 'Never', value: 'never'}
+                            ],
+                            help: "Ignore results from this category (if not explicitly selected)"
+                        }
+                    });
+
+                    fields.push({
+                        wrapper: 'fieldset',
+                        templateOptions: {
+                            label: category.pretty
+                        },
+                        fieldGroup: categoryFields
+
+                    })
+                }
+            }
+        );
+        console.log(fields);
+        return fields;
     }
 
     function getFields(rootModel) {
@@ -3595,6 +3822,7 @@ function ConfigFields($injector) {
                     templateOptions: {
                         label: 'Indexer access'
                     },
+
                     fieldGroup: [
                         {
                             key: 'timeout',
@@ -3630,7 +3858,7 @@ function ConfigFields($injector) {
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
-                                label: 'Ignore results with ...',
+                                label: 'Forbidden words',
                                 placeholder: 'separate, with, commas, like, this',
                                 help: "Results with any of these words in the title will be ignored"
                             }
@@ -3640,7 +3868,7 @@ function ConfigFields($injector) {
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
-                                label: 'Only accept results with ...',
+                                label: 'Required words',
                                 placeholder: 'separate, with, commas, like, this',
                                 help: "Only results with at least of these words in the title will be displayed"
                             }
@@ -3756,336 +3984,10 @@ function ConfigFields($injector) {
                             }
                         }
                     ]
-                },
-
-                {
-                    wrapper: 'fieldset',
-                    key: 'categorysizes',
-                    templateOptions: {label: 'Category sizes'},
-                    fieldGroup: [
-
-                        {
-                            key: 'enable_category_sizes',
-                            type: 'horizontalSwitch',
-                            templateOptions: {
-                                type: 'switch',
-                                label: 'Category sizes',
-                                help: "Preset min and max sizes depending on the selected category"
-                            }
-                        },
-                        {
-                            wrapper: 'logicalGroup',
-                            hideExpression: '!model.enable_category_sizes',
-                            fieldGroup: [
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Movies'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'moviesmin',
-                                            type: 'duoSetting',
-                                            templateOptions: {
-                                                addonRight: {
-                                                    text: 'MB'
-                                                }
-                                            }
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'moviesmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Movies HD'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'movieshdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'movieshdmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Movies SD'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'moviessdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'movieshdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'TV'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'tvmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'tvmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'TV HD'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'tvhdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'tvhdmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'TV SD'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'tvsdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'tvsdmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Audio'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'audiomin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'audiomax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Audio FLAC'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'flacmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'flacmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Audio MP3'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'mp3min',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'mp3max',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Audiobook'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'audiobookmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'audiobookmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Console'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'consolemin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'consolemax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'PC'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'pcmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'pcmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'XXX'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'xxxmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'xxxmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Ebook'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'ebookmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'ebookmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Comic'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'comicmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'comicmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-
-                    ]
                 }
-
             ],
+
+            categories: getCategoryFields(),
 
             downloaders: [
                 {
@@ -4195,7 +4097,7 @@ function ConfigFields($injector) {
                             {name: 'HTTP Basic auth', value: 'basic'},
                             {name: 'Login form', value: 'form'}
                         ]
-                        
+
                     }
                 },
                 {
@@ -4250,7 +4152,7 @@ function ConfigFields($injector) {
                                     label: 'Username',
                                     required: true
                                 }
-                                
+
                             },
                             {
                                 key: 'password',
@@ -4346,7 +4248,7 @@ function getIndexerPresets() {
             host: "https://simplynzbs.com",
             search_ids: ["imdbid", "rid", "tmdbid", "tvdbid", "tvmazeid"],
             searchTypes: ["tvsearch", "movie"]
-            
+
         }
     ];
 }
@@ -4653,13 +4555,13 @@ function getDownloaderBoxFields(model, parentModel, isInitial) {
                     expression: function (viewValue) {
                         if (isInitial || viewValue != model.name) {
                             return _.pluck(parentModel, "name").indexOf(viewValue) == -1;
-                        } 
+                        }
                         return true;
                     },
                     message: '"Downloader \\"" + $viewValue + "\\" already exists"'
                 }
             }
-            
+
         }]);
 
     if (model.type == "nzbget") {
@@ -4975,8 +4877,6 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
 IndexerCheckBeforeCloseService.$inject = ["$q", "ModalService", "ConfigBoxService", "blockUI", "growl"];
 
 
-
-
 angular
     .module('nzbhydraApp')
     .factory('DownloaderCheckBeforeCloseService', DownloaderCheckBeforeCloseService);
@@ -5042,7 +4942,7 @@ angular
     .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
 
-function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl, $rootScope) {
+function ConfigController($scope, ConfigService, config, DownloaderCategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl, $rootScope) {
     $scope.config = config;
     $scope.submit = submit;
 
@@ -5062,7 +4962,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             ConfigService.set($scope.config);
             ConfigService.invalidateSafe();
             $scope.form.$setPristine();
-            CategoriesService.invalidate();
+            DownloaderCategoriesService.invalidate();
             if ($scope.restartRequired) {
                 ModalService.open("Restart required", "The changes you have made may require a restart to be effective.<br>Do you want to restart now?", {
                     yes: {
@@ -5122,6 +5022,11 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             fields: $scope.fields.searching
         },
         {
+            name: 'Categories',
+            model: ConfigModel.categories,
+            fields: $scope.fields.categories
+        },
+        {
             name: 'Downloaders',
             model: ConfigModel.downloaders,
             fields: $scope.fields.downloaders
@@ -5145,6 +5050,10 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
         {
             active: false,
             state: 'root.config.searching'
+        },
+        {
+            active: false,
+            state: 'root.config.categories'
         },
         {
             active: false,
@@ -5203,7 +5112,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             }            
         })
 }
-ConfigController.$inject = ["$scope", "ConfigService", "config", "CategoriesService", "ConfigFields", "ConfigModel", "ModalService", "RestartService", "$state", "growl", "$rootScope"];
+ConfigController.$inject = ["$scope", "ConfigService", "config", "DownloaderCategoriesService", "ConfigFields", "ConfigModel", "ModalService", "RestartService", "$state", "growl", "$rootScope"];
 
 
 
@@ -5211,89 +5120,34 @@ angular
     .module('nzbhydraApp')
     .factory('CategoriesService', CategoriesService);
 
-function CategoriesService($http, $q, $uibModal) {
+function CategoriesService(ConfigService) {
 
-    var categories = {};
-    var selectedCategory = {};
-
-    var service = {
-        get: getCategories,
-        invalidate: invalidate,
-        select: select,
-        openCategorySelection: openCategorySelection
+    return {
+        getByName: getByName,
+        getAll: getAll,
+        getDefault: getDefault
     };
 
-    var deferred;
 
-    return service;
-
-
-    function getCategories(downloader) {
-
-        function loadAll() {
-            if (angular.isDefined(categories) && angular.isDefined(categories.downloader)) {
-                var deferred = $q.defer();
-                deferred.resolve(categories.downloader);
-                return deferred.promise;
+    function getByName(name) {
+        for (var category in ConfigService.getSafe().categories) {
+            category = ConfigService.getSafe().categories[category];
+            if (category.name == name) {
+                return category;
             }
-            
-            return $http.get('internalapi/getcategories', {params: {downloader: downloader.name}})
-                .then(function (categoriesResponse) {
-                    
-                    console.log("Updating downloader categories cache");
-                    var categories = {downloader: categoriesResponse.data.categories};
-                    return categoriesResponse.data.categories;
-
-                }, function (error) {
-                    throw error;
-                });
         }
-
-        return loadAll().then(function (categories) {
-            return categories;
-        }, function (error) {
-            throw error;
-        });
+    }
+    
+    function getAll() {
+        return ConfigService.getSafe().categories;
+    }
+    
+    function getDefault() {
+        return getAll()[1];
     }
 
-
-    function openCategorySelection(downloader) {
-        $uibModal.open({
-            templateUrl: 'static/html/directives/addable-nzb-modal.html',
-            controller: 'CategorySelectionController',
-            size: "sm",
-            resolve: {
-                categories: function () {
-                    return getCategories(downloader)
-                }
-            }
-        });
-        deferred = $q.defer();
-        return deferred.promise;
-    }
-
-    function select(category) {
-        selectedCategory = category;
-        console.log("Selected category " + category);
-        deferred.resolve(category);
-    }
-
-    function invalidate() {
-        console.log("Invalidating categories");
-        categories = undefined;
-    }
 }
-CategoriesService.$inject = ["$http", "$q", "$uibModal"];
-
-angular
-    .module('nzbhydraApp').controller('CategorySelectionController', ["$scope", "$uibModalInstance", "CategoriesService", "categories", function ($scope, $uibModalInstance, CategoriesService, categories) {
-    console.log(categories);
-    $scope.categories = categories;
-    $scope.select = function (category) {
-        CategoriesService.select(category);
-        $uibModalInstance.close($scope);
-    }
-}]);
+CategoriesService.$inject = ["ConfigService"];
 angular
     .module('nzbhydraApp')
     .factory('BackupService', BackupService);

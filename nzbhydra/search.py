@@ -3,16 +3,13 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import datetime
 import json
 import re
-import datetime
 from itertools import groupby
 
-from builtins import int
 from flask import request
-from future import standard_library
-
-#standard_library.install_aliases()
+# standard_library.install_aliases()
 from builtins import *
 import concurrent
 import copy
@@ -20,26 +17,9 @@ import logging
 import arrow
 from playhouse.shortcuts import model_to_dict
 from requests_futures.sessions import FuturesSession
-from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult, Indexer
-from nzbhydra import config, indexers, infos
 
-categories = {'All': {"pretty": "All", "index": 0},
-              'Movies': {"pretty": "Movie", "index": 1},
-              'Movies HD': {"pretty": "HD", "index": 2},
-              'Movies SD': {"pretty": "SD", "index": 3},
-              'TV': {"pretty": "TV", "index": 4},
-              'TV SD': {"pretty": "SD", "index": 5},
-              'TV HD': {"pretty": "HD", "index": 6},
-              'Audio': {"pretty": "Audio", "index": 7},
-              'Audio FLAC': {"pretty": "Audio FLAC", "index": 8},
-              'Audio MP3': {"pretty": "Audio MP3", "index": 9},
-              'Audiobook': {"pretty": "Audiobook", "index": 14},
-              'Console': {"pretty": "Console", "index": 10},
-              'PC': {"pretty": "PC", "index": 11},
-              'XXX': {"pretty": "XXX", "index": 12},
-              'Ebook': {"pretty": "XXX", "index": 13},
-              'Comic': {"pretty": "Comic", "index": 15}
-              }
+from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult, Indexer
+from nzbhydra import config, indexers, infos, categories
 
 logger = logging.getLogger('root')
 
@@ -47,7 +27,7 @@ session = FuturesSession()
 
 
 class SearchRequest(object):
-    def __init__(self, type=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, title=None, category=None, minsize=None, maxsize=None, minage=None, maxage=None, offset=0, limit=100, indexers=None, ignoreWords=None, author=None):
+    def __init__(self, type=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, title=None, category=None, minsize=None, maxsize=None, minage=None, maxage=None, offset=0, limit=100, indexers=None, forbiddenWords=None, requiredWords=None, author=None, username=None, internal=True):
         self.type = type
         self.query = query
         self.identifier_key = identifier_key
@@ -64,8 +44,10 @@ class SearchRequest(object):
         self.offset = offset
         self.limit = limit
         self.indexers = indexers
-        self.ignoreWords = ignoreWords if ignoreWords else []
-        
+        self.forbiddenWords = forbiddenWords if forbiddenWords else []
+        self.requiredWords = requiredWords if requiredWords else []
+        self.username = username
+        self.internal = internal
 
     @property
     def search_hash(self):
@@ -77,6 +59,9 @@ class SearchRequest(object):
         rep += (", identifier_key \"%s\" " % self.identifier_key) if self.identifier_key is not None else ""
         rep += (", identifier_value \"%s\"" % self.identifier_value) if self.identifier_value is not None else ""
         rep += (", title \"%s\"" % self.title) if self.title is not None else ""
+        rep += (", query \"%s\"" % self.query) if self.query is not None else ""
+        rep += (", forbiddenWords \"%s\"" % self.forbiddenWords) if self.forbiddenWords is not None else ""
+        rep += (", requiredWords \"%s\"" % self.requiredWords) if self.requiredWords is not None else ""
         rep += (", season \"%s\"" % self.season) if self.season is not None else ""
         rep += (", episode \"%s\"" % self.episode) if self.episode is not None else ""
         rep += (", category \"%s\"" % self.category) if self.category is not None else ""
@@ -101,20 +86,20 @@ def canUseIdKey(indexer, key):
         return True
 
 
-def pick_indexers(search_request, internal=True):
+def pick_indexers(search_request):
     # type: (nzbhydra.search.SearchRequest, bool) -> List[nzbhydra.search_modules.SearchModule]
     query_supplied = True if search_request.query else False
-    queryCanBeGenerated = None #Store if we can generate a query from IDs. Initiall true but when we need this the first time and query generation fails we set it to false
+    queryCanBeGenerated = None  # Store if we can generate a query from IDs. Initiall true but when we need this the first time and query generation fails we set it to false
     picked_indexers = []
     selected_indexers = search_request.indexers.split("|") if search_request.indexers is not None else None
     for p in indexers.enabled_indexers:
         if not p.settings.enabled:
             logger.debug("Did not pick %s because it is disabled" % p)
             continue
-        if internal and p.settings.accessType == "external":
+        if search_request.internal and p.settings.accessType == "external":
             logger.debug("Did not pick %s because it is only enabled for external searches" % p)
             continue
-        if not internal and p.settings.accessType == "internal":
+        if not search_request.internal and p.settings.accessType == "internal":
             logger.debug("Did not pick %s because it is only enabled for internal searches" % p)
             continue
         if selected_indexers and p.name not in selected_indexers:
@@ -127,26 +112,25 @@ def pick_indexers(search_request, internal=True):
                 continue
         except IndexerStatus.DoesNotExist:
             pass
-        
+
         if p.settings.hitLimit > 0:
             hitLimitResetTime = arrow.get(p.settings.hitLimitResetTime)
             if p.settings.hitLimitResetTime:
                 comparisonTime = arrow.utcnow().replace(hour=hitLimitResetTime.hour, minute=hitLimitResetTime.minute, second=0)
                 if comparisonTime > arrow.utcnow():
-                    comparisonTime = arrow.get(comparisonTime.datetime - datetime.timedelta(days=1)) #Arrow is too dumb to properly subtract 1 day (throws an error on every first of the month)
+                    comparisonTime = arrow.get(comparisonTime.datetime - datetime.timedelta(days=1))  # Arrow is too dumb to properly subtract 1 day (throws an error on every first of the month)
             else:
-                #Use 00:00 as reset time when no reset time is set 
+                # Use 00:00 as reset time when no reset time is set 
                 comparisonTime = arrow.now().replace(hour=0, minute=0, second=0)
-            
+
             apiHits = IndexerApiAccess().select().where((IndexerApiAccess.indexer == p.indexer) & (IndexerApiAccess.time > comparisonTime) & IndexerApiAccess.response_successful).count()
             if apiHits > p.settings.hitLimit:
                 logger.info("Did not pick %s because its API hit limit of %d was reached. Will pick again after %02d:%02d tomorrow" % (p, p.settings.hitLimit, hitLimitResetTime.hour, hitLimitResetTime.minute))
                 continue
             else:
                 logger.debug("%s has had %d of a maximum of %d API hits since %02d:%02d" % (p, apiHits, p.settings.hitLimit, comparisonTime.hour, comparisonTime.minute))
-        
 
-        if (query_supplied or search_request.identifier_key is not None)and not p.supports_queries:
+        if (query_supplied or search_request.identifier_key is not None) and not p.supports_queries:
             logger.debug("Did not pick %s because a query was supplied but the indexer does not support queries" % p)
             continue
 
@@ -154,9 +138,9 @@ def pick_indexers(search_request, internal=True):
         if not query_supplied and p.needs_queries and search_request.identifier_key is None:
             logger.debug("Did not pick %s because no query was supplied but the indexer needs queries" % p)
             continue
-        
+
         # If we can theoretically do that we must try to actually get the title, otherwise the indexer won't be able to search 
-        allow_query_generation = (config.InternalExternalSelection.internal in config.settings.searching.generate_queries and internal) or (config.InternalExternalSelection.external in config.settings.searching.generate_queries and not internal)
+        allow_query_generation = (config.InternalExternalSelection.internal in config.settings.searching.generate_queries and search_request.internal) or (config.InternalExternalSelection.external in config.settings.searching.generate_queries and not search_request.internal)
         if search_request.identifier_key is not None and not canUseIdKey(p, search_request.identifier_key):
             if not (allow_query_generation and p.generate_queries):
                 logger.debug("Did not pick %s because search will be done by an identifier and the indexer or system wide settings don't allow query generation" % p)
@@ -166,7 +150,7 @@ def pick_indexers(search_request, internal=True):
                     try:
                         title = infos.convertId(search_request.identifier_key, "title", search_request.identifier_value)
                         if title:
-                            search_request.title = title 
+                            search_request.title = title
                             queryCanBeGenerated = True
                         else:
                             queryCanBeGenerated = False
@@ -176,7 +160,6 @@ def pick_indexers(search_request, internal=True):
                 if not queryCanBeGenerated:
                     logger.debug("Did not pick %s because search will be done by an identifier and retrieval of the title for query generation failed" % p)
                     continue
-                    
 
         logger.debug("Picked %s" % p)
         picked_indexers.append(p)
@@ -187,51 +170,68 @@ def pick_indexers(search_request, internal=True):
 pseudo_cache = {}
 
 
-def search(internal, search_request):
+def search(search_request):
     # type: (bool, nzbhydra.search.SearchRequest) -> Dict[unicode, future.types.newint.newint]
     if search_request.maxage is None and config.settings.searching.maxAge:
         search_request.maxage = config.settings.searching.maxAge
         logger.info("Will ignore results older than %d days" % search_request.maxage)
-    
-    #Clean up cache
+
+    # Clean up cache
     for k in list(pseudo_cache.keys()):
         if pseudo_cache[k]["last_access"].replace(minutes=+5) < arrow.utcnow():
             pseudo_cache.pop(k)
-            
-    #Clean up old search results. We do this here because we don't have any background jobs and this is the function most regularly called
+
+    # Clean up old search results. We do this here because we don't have any background jobs and this is the function most regularly called
     keepFor = config.settings.main.keepSearchResultsForDays
     oldSearchResultsCount = SearchResult.select().where(SearchResult.firstFound < (datetime.date.today() - datetime.timedelta(days=keepFor))).count()
     if oldSearchResultsCount > 0:
         logger.info("Deleting %d search results from database that are older than %d days" % (oldSearchResultsCount, keepFor))
         SearchResult.delete().where(SearchResult.firstFound < (datetime.date.today() - datetime.timedelta(days=keepFor))).execute()
-    
-            
-            
+
     limit = search_request.limit
     external_offset = int(search_request.offset)
     search_hash = search_request.search_hash
     if search_hash not in pseudo_cache.keys() or search_request.offset == 0:  # If it's a new search (which starts with offset 0) do it again instead of using the cached results
         logger.debug("Didn't find this query in cache or want to do a new search")
         cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0}
-        indexers_to_call = pick_indexers(search_request=search_request, internal=internal)
+        indexers_to_call = pick_indexers(search_request)
         for p in indexers_to_call:
             cache_entry["indexer_infos"][p] = {"has_more": True, "search_request": search_request, "total_included": False}
-        dbsearch = Search(internal=internal, query=search_request.query, category=search_request.category, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode, type=search_request.type,
-                          username=request.authorization.username if request.authorization is not None else None)
-        #dbsearch.save()
+        categoryResult = categories.getCategoryByAnyInput(search_request.category)
+        search_request.category = categoryResult
+        category = categoryResult.category
+        dbsearch = Search(internal=search_request.internal, query=search_request.query, category=categoryResult.category.pretty, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode, type=search_request.type,
+                          username=search_request.username)
+        # dbsearch.save()
         cache_entry["dbsearch"] = dbsearch
+
+        # Find ignored words and pParse query for ignored words
+        search_request.forbiddenWords = []
+        search_request.requiredWords = []
+        if config.settings.searching.forbiddenWords:
+            logger.debug("Using configured global forbidden words: %s" % config.settings.searching.forbiddenWords)
+            search_request.forbiddenWords.extend([x.lower().strip() for x in list(filter(bool, config.settings.searching.forbiddenWords.split(",")))])
+        if config.settings.searching.requiredWords:
+            logger.debug("Using configured global required words: %s" % config.settings.searching.requiredWords)
+            search_request.requiredWords.extend([x.lower().strip() for x in list(filter(bool, config.settings.searching.requiredWords.split(",")))])
+        if category.applyRestrictions == "both" or (category.applyRestrictions == "internal" and search_request.internal) or (category.applyRestrictions == "external" and not search_request.internal):
+            if category.forbiddenWords:
+                logger.debug("Using configured forbidden words for category %s: %s" % (category.pretty, category.forbiddenWords))
+                search_request.forbiddenWords.extend([x.lower().strip() for x in list(filter(bool, category.forbiddenWords.split(",")))])
+            if category.requiredWords:
+                logger.debug("Using configured required words for category %s: %s" % (category.pretty, category.requiredWords))
+                search_request.requiredWords.extend([x.lower().strip() for x in list(filter(bool, category.requiredWords.split(",")))])
         
-        #Parse query for ignored words
-        search_request.ignoreWords = [x.lower().strip() for x in list(filter(bool, config.settings.searching.ignoreWords.split(",")))]
+        
         if search_request.query:
-            ignoreWords = [str(x) for x in re.findall(r"[\s|\b]\-\-(?P<term>[\w\.\-]+)", search_request.query)]
-            if len(ignoreWords) > 0:
+            forbiddenWords = [str(x) for x in re.findall(r"[\s|\b](\-\-|!)(?P<term>\w+)", search_request.query)]
+            if len(forbiddenWords) > 0:
                 logger.debug("Query before removing NOT terms: %s" % search_request.query)
-                search_request.query = re.sub(r"[\s|\b]\-\-(?P<term>\w+)", "", search_request.query)
-                logger.debug("Query after removing NOT terms: %s" % search_request.query)    
-                logger.debug("Found NOT terms: %s" % ",".join(ignoreWords)) 
-                
-                search_request.ignoreWords.extend(ignoreWords)
+                search_request.query = re.sub(r"[\s|\b](\-\-|!)(?P<term>\w+)", "", search_request.query)
+                logger.debug("Query after removing NOT terms: %s" % search_request.query)
+                logger.debug("Found NOT terms: %s" % ",".join(forbiddenWords))
+
+                search_request.forbiddenWords.extend(forbiddenWords)
 
         pseudo_cache[search_hash] = cache_entry
     else:
@@ -245,11 +245,13 @@ def search(internal, search_request):
         logger.debug("We want %d results but have only %d so far" % ((external_offset + limit), len(cache_entry["results"])))
         logger.debug("%d indexers still have results" % len(indexers_to_call))
         search_request.offset = cache_entry["offset"]
+        
         logger.debug("Searching indexers with offset %d" % search_request.offset)
         result = search_and_handle_db(dbsearch, {x: search_request for x in indexers_to_call})
+        
         search_results = []
         indexers_to_call = []
-        
+
         for indexer, queries_execution_result in result["results"].items():
             with db.atomic():
                 for result in queries_execution_result.results:
@@ -262,7 +264,9 @@ def search(internal, search_request):
                     search_results.append(result)
 
             logger.debug("%s returned %d results" % (indexer, len(queries_execution_result.results)))
-            cache_entry["indexer_infos"][indexer].update({"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known, "indexer_search": queries_execution_result.indexerSearchEntry})
+            cache_entry["indexer_infos"][indexer].update(
+                {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
+                 "indexer_search": queries_execution_result.indexerSearchEntry})
             if queries_execution_result.has_more:
                 indexers_to_call.append(indexer)
                 logger.debug("%s still has more results so we could use it the next round" % indexer)
@@ -276,25 +280,24 @@ def search(internal, search_request):
                 logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
                 cache_entry["total"] += 100
 
-
-        if internal or config.settings.searching.removeDuplicatesExternal:
+        if search_request.internal or config.settings.searching.removeDuplicatesExternal:
             countBefore = len(search_results)
             grouped_by_sameness = find_duplicates(search_results)
             allresults = []
             for group in grouped_by_sameness:
-                if internal:
+                if search_request.internal:
                     for i in group:
                         # We give each group of results a unique value by which they can be identified later
                         i.hash = hash(group[0].guid)
                         allresults.append(i)
-                    
+
                 else:
                     # We sort by age first and then by indexerscore so the newest result with the highest indexer score is chosen
                     group = sorted(group, key=lambda x: x.epoch, reverse=True)
                     group = sorted(group, key=lambda x: x.indexerscore, reverse=True)
                     allresults.append(group[0])
             search_results = allresults
-            if not internal:
+            if not search_request.internal:
                 countAfter = len(search_results)
                 countRemoved = countBefore - countAfter
                 logger.info("Removed %d duplicates from %d results" % (countRemoved, countBefore))
@@ -303,14 +306,14 @@ def search(internal, search_request):
         cache_entry["results"].extend(search_results)
         cache_entry["offset"] += limit
 
-    if internal:
+    if search_request.internal:
         logger.debug("We have %d cached results and return them all because we search internally" % len(cache_entry["results"]))
         nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:])
     else:
         logger.debug("We have %d cached results and return %d-%d of %d total available accounting for the limit set for the API search" % (len(cache_entry["results"]), external_offset, external_offset + limit, cache_entry["total"]))
         nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:(external_offset + limit)])
     cache_entry["last_access"] = arrow.utcnow()
-    
+
     return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearchid": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset}
 
 
@@ -332,7 +335,7 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
                     result.indexerStatus.save()
                 except Exception:
                     logger.error("Error saving IndexerApiAccessEntry. Debug info: %s" % json.dumps(model_to_dict(result.indexerApiAccessEntry)))
-        
+
     logger.debug("Returning search results now")
     return {"results": results_by_indexer, "dbsearch": dbsearch}
 
@@ -366,12 +369,12 @@ def start_search_futures(indexers_and_search_requests):
 
 
 def find_duplicates(results):
-    #We group all results with the same title together (only those can be duplicates of each other)
+    # We group all results with the same title together (only those can be duplicates of each other)
     sorted_results = sorted(results, key=lambda x: re.sub(r"[ \.\-_]", "", x.title.lower()))
     grouped_by_title = groupby(sorted_results, key=lambda x: re.sub(r"[ \.\-_]", "", x.title.lower()))
     grouped_by_sameness = []
     for title, titleGroup in grouped_by_title:
-        #As we compare the results' size first we want to have the results sorted by that
+        # As we compare the results' size first we want to have the results sorted by that
         titleGroup = sorted(list(titleGroup), key=lambda x: x.pubdate_utc, reverse=True)
         grouped = [titleGroup[:1]]
         for i in titleGroup[1:]:
@@ -389,7 +392,7 @@ def find_duplicates(results):
                     break
             if not foundGroup:
                 grouped.append([i])
-        grouped_by_sameness.extend(grouped)    
+        grouped_by_sameness.extend(grouped)
 
     return grouped_by_sameness
 

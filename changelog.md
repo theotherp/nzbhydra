@@ -1,6 +1,15 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.103
+Added: Several changes in the handling and configuration of categories:
+
+New category section in the config. Define required and forbidden words for every category and if they should be applied for external and/or internal searches.  This allows you to finetune results for CP or Sonarr, for example.
+
+Define newznab categories for every Hydra category. These categories will be used when you search with that category from the GUI. That way you can control if foreign movies should be included in movie searches, for example.
+
+Decide for every category if you want to ignore results from it for external and/or internal searches. 
+
 ### 0.2.102
 Changed: Using ! to exclude words when querying newznab indexers. This should be compatible with more indexers and provide the wanted results. Thanks to judhat2 for the research and tests.
 

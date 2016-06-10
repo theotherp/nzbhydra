@@ -89,6 +89,27 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                 }
             }
         })
+        .state("root.config.categories", {
+            url: "/categories",
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Config (Categories)"
+                        }
+                    }
+                }
+            }
+        })
         .state("root.config.downloader", {
             url: "/downloader",
             views: {

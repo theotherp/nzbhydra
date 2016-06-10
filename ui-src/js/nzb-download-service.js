@@ -2,7 +2,7 @@ angular
     .module('nzbhydraApp')
     .factory('NzbDownloadService', NzbDownloadService);
 
-function NzbDownloadService($http, ConfigService, CategoriesService) {
+function NzbDownloadService($http, ConfigService, DownloaderCategoriesService) {
 
     var service = {
         download: download,
@@ -20,7 +20,7 @@ function NzbDownloadService($http, ConfigService, CategoriesService) {
         var category = downloader.defaultCategory;
         
         if (_.isUndefined(category) || category == "" || category == null) {
-            return CategoriesService.openCategorySelection(downloader).then(function (category) {
+            return DownloaderCategoriesService.openCategorySelection(downloader).then(function (category) {
                 return sendNzbAddCommand(downloader, searchresultids, category)
             }, function (error) {
                 throw error;
