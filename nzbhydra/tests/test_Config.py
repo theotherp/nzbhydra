@@ -15,7 +15,6 @@ from bunch import Bunch
 from nzbhydra import config
 
 
-
 class TestConfig(unittest.TestCase):
     @pytest.fixture
     def setUp(self):
