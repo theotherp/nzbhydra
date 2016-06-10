@@ -82,31 +82,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual("<APIKEY:f5095bc1520183e76be64af1c5f9e7e3>", ac.downloader.sabnzbd.apikey)
         self.assertEqual("<PASSWORD:4c471a175d85451486af666d7eebe4f8>", ac.downloader.sabnzbd.password)
 
-    def testMigration15to16(self):
-        testCfg = {
-            "main":
-                {
-                    "configVersion": 15,
-                },
-            "indexers": {
-                "binsearch": {"name": "binsearch", "type": "binsearch"},
-                "nzbclub": {"name": "nzbclub", "type": "nzbclub"},
-                "nzbindex": {"name": "nzbindex", "type": "nzbindex"},
-                "omgwtfnzbs": {"name": "omgwtf", "type": "omgwtf"},
-                "womble": {"name": "womble", "type": "womble"},
-                "newznab": [
-                    {"name": "newznab1", "type": "newznab1"},
-                    {"name": "newznab2", "type": "newznab2"}
-
-                ]
-
-            }
-        }
-        cfg = config.migrateConfig(testCfg)
-        for x in config.logLogMessages():
-            print(x)
-        indexers = list(sorted(cfg["indexers"], key=lambda x: x["name"]))
-        self.assertEqual(indexers[0]["name"], "binsearch")
+   
 
     def testMigration17to18(self):
         # Authless and admin user
@@ -133,8 +109,7 @@ class TestConfig(unittest.TestCase):
             }
         }
         cfg = config.migrateConfig(testCfg)
-        for x in config.logLogMessages():
-            print(x)
+        print(cfg)
 
         self.assertTrue(cfg["auth"]["restrictAdmin"])
         self.assertTrue(cfg["auth"]["restrictStats"])
