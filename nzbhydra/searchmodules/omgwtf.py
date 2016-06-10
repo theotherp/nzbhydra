@@ -221,6 +221,10 @@ class OmgWtf(SearchModule):
 
     def get(self, query, timeout=None, cookies=None):
         # overwrite for special handling, e.g. cookies
+        if timeout is None:
+            timeout = self.settings.timeout
+        if timeout is None:
+            timeout = config.settings.searching.timeout
         return requests.get(query, timeout=timeout, verify=False)
 
     def get_ebook_urls(self, search_request):
