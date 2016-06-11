@@ -52,7 +52,7 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService, Config
                         old_username: HydraAuthService.getUserName()
                     }
                 } 
-                $http.get("/internalapi/askforpassword", {params: params}).then(function () {
+                $http.get("internalapi/askforpassword", {params: params}).then(function () {
                     growl.info("Login successful!");
                     $state.go("root.search");
                 })

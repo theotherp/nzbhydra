@@ -1136,9 +1136,13 @@ internalapi_gethelp_args = {
 @requires_auth("main")
 @use_args(internalapi_gethelp_args)
 def internalapi_getHelp(args):
-    with open(("onlinehelp/%s.md" % args["id"]).lower()) as f:
-        helpMd = f.read()
-        return markdown.markdown(helpMd, output_format="html", extensions=['markdown.extensions.nl2br'])
+    helpFile = ("onlinehelp/%s.md" % args["id"]).lower()
+    if os.path.exists(helpFile):
+        with open(helpFile) as f:
+            helpMd = f.read()
+            return markdown.markdown(helpMd, output_format="html", extensions=['markdown.extensions.nl2br'])
+    logger.error("Unable to find help file %s" % helpFile)
+    return "Unable to find help file %s" % helpFile, 500
 
 @app.route('/internalapi/getbackup')
 @requires_auth("admin")

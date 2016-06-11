@@ -149,7 +149,7 @@ function ConfigController($scope, $http, ConfigService, config, DownloaderCatego
     };
     
     $scope.help = function() {
-        $http.get("/internalapi/gethelp", {params: {id: $scope.activeTab.name}}).then(function(result) {
+        $http.get("internalapi/gethelp", {params: {id: $scope.activeTab.name}}).then(function(result) {
                 var html = '<span style="text-align: left;">' + result.data + "</span>";
                 ModalService.open($scope.activeTab.name + " - Help", html, {}, "lg");
         },
