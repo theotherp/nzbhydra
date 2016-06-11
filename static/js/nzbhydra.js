@@ -1310,7 +1310,7 @@ angular
     .module('nzbhydraApp')
     .controller('SystemController', SystemController);
 
-function SystemController($scope, $state, growl, RestartService, NzbHydraControlService) {
+function SystemController($scope, $state, $http, growl, RestartService, NzbHydraControlService) {
 
 
     $scope.shutdown = function () {
@@ -1364,11 +1364,24 @@ function SystemController($scope, $state, growl, RestartService, NzbHydraControl
 
     $scope.goToState = function (index) {
         $state.go($scope.tabs[index].state);
+    
+    };
+
+    $scope.downloadDebuggingInfos = function() {
+        $http({method: 'GET', url: '/internalapi/getdebugginginfos', responseType: 'arraybuffer'}).success(function (data, status, headers, config) {
+            var a = document.createElement('a');
+            console.log(data);
+            var blob = new Blob([data], {'type': "application/octet-stream"});
+            a.href = URL.createObjectURL(blob);
+            a.download = "filename.zip";
+            a.click();
+        }).error(function (data, status, headers, config) {
+            // handle error
+        });
     }
     
-    
 }
-SystemController.$inject = ["$scope", "$state", "growl", "RestartService", "NzbHydraControlService"];
+SystemController.$inject = ["$scope", "$state", "$http", "growl", "RestartService", "NzbHydraControlService"];
 
 angular
     .module('nzbhydraApp')
