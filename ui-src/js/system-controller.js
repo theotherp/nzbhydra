@@ -65,7 +65,8 @@ function SystemController($scope, $state, $http, growl, RestartService, NzbHydra
             console.log(data);
             var blob = new Blob([data], {'type': "application/octet-stream"});
             a.href = URL.createObjectURL(blob);
-            a.download = "filename.zip";
+            var filename = "nzbhydra-debuginfo-" + moment().format("YYYY-MM-DD-HH-mm") + ".zip";
+            a.download = filename;
             a.click();
         }).error(function (data, status, headers, config) {
             // handle error

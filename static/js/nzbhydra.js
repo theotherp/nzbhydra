@@ -1373,7 +1373,8 @@ function SystemController($scope, $state, $http, growl, RestartService, NzbHydra
             console.log(data);
             var blob = new Blob([data], {'type': "application/octet-stream"});
             a.href = URL.createObjectURL(blob);
-            a.download = "filename.zip";
+            var filename = "nzbhydra-debuginfo-" + moment().format("YYYY-MM-DD-HH-mm") + ".zip";
+            a.download = filename;
             a.click();
         }).error(function (data, status, headers, config) {
             // handle error
@@ -1476,43 +1477,45 @@ function SearchService($http) {
     };
     
 
-    function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, indexers) {
+    function search(category, query, tmdbid, title, tvdbid, rid, season, episode, minsize, maxsize, minage, maxage, indexers, mode) {
         var uri;
-        if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
+        if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0) || mode == "movie") {
             console.log("Search for movies");
             uri = new URI("internalapi/moviesearch");
-            if (!_.isUndefined(tmdbid)) {
+            if (angular.isDefined(tmdbid)) {
                 console.log("moviesearch per tmdbid");
                 uri.addQuery("tmdbid", tmdbid);
-                uri.addQuery("title", title);
             } else {
                 console.log("moviesearch per query");
                 uri.addQuery("query", query);
             }
 
-        } else if (category.indexOf("TV") > -1 || (category.indexOf("50") == 0)) {
+        } else if (category.indexOf("TV") > -1 || (category.indexOf("50") == 0) || mode == "tvsearch") {
             console.log("Search for shows");
             uri = new URI("internalapi/tvsearch");
-            if (!_.isUndefined(tvdbid)) {
+            if (angular.isDefined(tvdbid)) {
                 uri.addQuery("tvdbid", tvdbid);
-                uri.addQuery("title", title);
+            }
+            if (angular.isDefined(rid)) {
+                uri.addQuery("rid", rid);
             } else {
                 console.log("tvsearch per query");
                 uri.addQuery("query", query);
             }
 
-            if (!_.isUndefined(season)) {
+            if (angular.isDefined(season)) {
                 uri.addQuery("season", season);
             }
-            if (!_.isUndefined(episode)) {
+            if (angular.isDefined(episode)) {
                 uri.addQuery("episode", episode);
             }
         } else {
-            console.log("Search for all");
             uri = new URI("internalapi/search");
             uri.addQuery("query", query);
         }
-
+        if (angular.isDefined(title)) {
+            uri.addQuery("title", title);
+        }
         if (_.isNumber(minsize)) {
             uri.addQuery("minsize", minsize);
         }
@@ -1855,6 +1858,13 @@ function SearchHistoryController($scope, $state, StatsService, history) {
             stateParams.mode = "search"
         }
 
+        if (request.movietitle != null) {
+            stateParams.title = request.movietitle;
+        }
+        if (request.tvtitle != null) {
+            stateParams.title = request.tvtitle;
+        }
+
         if (request.category) {
             stateParams.category = request.category;
         }
@@ -2011,7 +2021,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.startSearch = function () {
         blockUI.start("Searching...");
         var indexers = angular.isUndefined($scope.indexers) ? undefined : $scope.indexers.join("|");
-        SearchService.search($scope.category.name, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers).then(function () {
+        SearchService.search($scope.category.name, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.rid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers, $scope.mode).then(function () {
             $state.go("root.search.results", {
                 minsize: $scope.minsize,
                 maxsize: $scope.maxsize,

@@ -2,7 +2,7 @@
 
 ----------
 ### 0.2.107
-Fixed: Repeating search from history wouldn't work.
+Fixed: Repeating search from history wouldn't work (in multiple ways).
 
 ### 0.2.106
 Fixed: Forbidden and ignored words not displayed in config.

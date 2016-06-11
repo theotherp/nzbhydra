@@ -60,6 +60,13 @@ function SearchHistoryController($scope, $state, StatsService, history) {
             stateParams.mode = "search"
         }
 
+        if (request.movietitle != null) {
+            stateParams.title = request.movietitle;
+        }
+        if (request.tvtitle != null) {
+            stateParams.title = request.tvtitle;
+        }
+
         if (request.category) {
             stateParams.category = request.category;
         }

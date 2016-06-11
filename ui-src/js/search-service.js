@@ -16,43 +16,45 @@ function SearchService($http) {
     };
     
 
-    function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, indexers) {
+    function search(category, query, tmdbid, title, tvdbid, rid, season, episode, minsize, maxsize, minage, maxage, indexers, mode) {
         var uri;
-        if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
+        if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0) || mode == "movie") {
             console.log("Search for movies");
             uri = new URI("internalapi/moviesearch");
-            if (!_.isUndefined(tmdbid)) {
+            if (angular.isDefined(tmdbid)) {
                 console.log("moviesearch per tmdbid");
                 uri.addQuery("tmdbid", tmdbid);
-                uri.addQuery("title", title);
             } else {
                 console.log("moviesearch per query");
                 uri.addQuery("query", query);
             }
 
-        } else if (category.indexOf("TV") > -1 || (category.indexOf("50") == 0)) {
+        } else if (category.indexOf("TV") > -1 || (category.indexOf("50") == 0) || mode == "tvsearch") {
             console.log("Search for shows");
             uri = new URI("internalapi/tvsearch");
-            if (!_.isUndefined(tvdbid)) {
+            if (angular.isDefined(tvdbid)) {
                 uri.addQuery("tvdbid", tvdbid);
-                uri.addQuery("title", title);
+            }
+            if (angular.isDefined(rid)) {
+                uri.addQuery("rid", rid);
             } else {
                 console.log("tvsearch per query");
                 uri.addQuery("query", query);
             }
 
-            if (!_.isUndefined(season)) {
+            if (angular.isDefined(season)) {
                 uri.addQuery("season", season);
             }
-            if (!_.isUndefined(episode)) {
+            if (angular.isDefined(episode)) {
                 uri.addQuery("episode", episode);
             }
         } else {
-            console.log("Search for all");
             uri = new URI("internalapi/search");
             uri.addQuery("query", query);
         }
-
+        if (angular.isDefined(title)) {
+            uri.addQuery("title", title);
+        }
         if (_.isNumber(minsize)) {
             uri.addQuery("minsize", minsize);
         }
