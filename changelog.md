@@ -4,11 +4,11 @@
 ### 0.2.103
 Added: Several changes in the handling and configuration of categories.
 
-New category section in the config. Define required and forbidden words for every category and if they should be applied for external and/or internal searches.  This allows you to finetune results for CP or Sonarr, for example.
+* New category section in the config. Define required and forbidden words for every category and if they should be applied for external and/or internal searches.  This allows you to finetune results for CP or Sonarr, for example.
 
-Define newznab categories for every Hydra category. These categories will be used when you search with that category from the GUI. That way you can control if foreign movies should be included in movie searches, for example.
+* Define newznab categories for every Hydra category. These categories will be used when you search with that category from the GUI. That way you can control if foreign movies should be included in movie searches, for example.
 
-Decide for every category if you want to ignore results from it for external and/or internal searches.
+* Decide for every category if you want to ignore results from it for external and/or internal searches.
 
 Added: Online help in the configuration.
 
