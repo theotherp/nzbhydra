@@ -2529,17 +2529,23 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService, Config
 
     $scope.showLoginout = false;
 
-    if (HydraAuthService.isLoggedIn()) {
-        var rights = HydraAuthService.getUserRights();
-        $scope.showAdmin = rights.maySeeAdmin;
-        $scope.showStats = rights.maySeeStats;
-        $scope.loginlogoutText = "Logout";
-        $scope.showLoginout = true;
+    if (ConfigService.getSafe().authType == "none") {
+        $scope.showAdmin = true;
+        $scope.showStats = true;
+        $scope.showLoginout = false;
     } else {
-        $scope.showAdmin = !bootstrapped.adminRestricted;
-        $scope.showStats = !bootstrapped.statsRestricted;
-        $scope.loginlogoutText = "Login";
-        $scope.showLoginout = bootstrapped.adminRestricted || bootstrapped.statsRestricted || bootstrapped.searchRestricted;
+        if (HydraAuthService.isLoggedIn()) {
+            var rights = HydraAuthService.getUserRights();
+            $scope.showAdmin = rights.maySeeAdmin;
+            $scope.showStats = rights.maySeeStats;
+            $scope.loginlogoutText = "Logout";
+            $scope.showLoginout = true;
+        } else {
+            $scope.showAdmin = !bootstrapped.adminRestricted;
+            $scope.showStats = !bootstrapped.statsRestricted;
+            $scope.loginlogoutText = "Login";
+            $scope.showLoginout = bootstrapped.adminRestricted || bootstrapped.statsRestricted || bootstrapped.searchRestricted;
+        }
     }
 
     $scope.$on("user:loggedIn", function (event, data) {

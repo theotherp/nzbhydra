@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.104
+Fixed: Stats and config invisible with no auth enabled.
+
 ### 0.2.103
 Added: Several changes in the handling and configuration of categories.
 
