@@ -1855,7 +1855,7 @@ function SearchHistoryController($scope, $state, StatsService, history) {
             stateParams.mode = "search"
         }
 
-        if (request.category != "") {
+        if (request.category) {
             stateParams.category = request.category;
         }
 
@@ -1901,6 +1901,11 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.categories = _.filter(CategoriesService.getAll(), function(c) { 
         return c.mayBeSelected && (c.ignoreResults == "never" || c.ignoreResults == "external"); 
     });
+    if (angular.isDefined($stateParams.category) && $stateParams.category) {
+        $scope.category = CategoriesService.getByName($stateParams.category);
+    } else {
+        $scope.category = CategoriesService.getDefault();
+    }
     $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? CategoriesService.getDefault() : CategoriesService.getByName($stateParams.category);
     $scope.tmdbid = $stateParams.tmdbid;
     $scope.tvdbid = $stateParams.tvdbid;
@@ -5167,7 +5172,7 @@ function CategoriesService(ConfigService) {
     function getByName(name) {
         for (var category in ConfigService.getSafe().categories) {
             category = ConfigService.getSafe().categories[category];
-            if (category.name == name) {
+            if (category.name == name || category.pretty == name) {
                 return category;
             }
         }

@@ -21,6 +21,11 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.categories = _.filter(CategoriesService.getAll(), function(c) { 
         return c.mayBeSelected && (c.ignoreResults == "never" || c.ignoreResults == "external"); 
     });
+    if (angular.isDefined($stateParams.category) && $stateParams.category) {
+        $scope.category = CategoriesService.getByName($stateParams.category);
+    } else {
+        $scope.category = CategoriesService.getDefault();
+    }
     $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? CategoriesService.getDefault() : CategoriesService.getByName($stateParams.category);
     $scope.tmdbid = $stateParams.tmdbid;
     $scope.tvdbid = $stateParams.tvdbid;

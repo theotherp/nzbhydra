@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.107
+Fixed: Repeating search from history wouldn't work.
+
 ### 0.2.106
 Fixed: Forbidden and ignored words not displayed in config.
 

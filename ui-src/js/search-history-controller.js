@@ -60,7 +60,7 @@ function SearchHistoryController($scope, $state, StatsService, history) {
             stateParams.mode = "search"
         }
 
-        if (request.category != "") {
+        if (request.category) {
             stateParams.category = request.category;
         }
 

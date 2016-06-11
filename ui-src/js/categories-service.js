@@ -14,7 +14,7 @@ function CategoriesService(ConfigService) {
     function getByName(name) {
         for (var category in ConfigService.getSafe().categories) {
             category = ConfigService.getSafe().categories[category];
-            if (category.name == name) {
+            if (category.name == name || category.pretty == name) {
                 return category;
             }
         }
