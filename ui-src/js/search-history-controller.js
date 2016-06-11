@@ -55,7 +55,7 @@ function SearchHistoryController($scope, $state, StatsService, history) {
         if (request.type == "tv") {
             stateParams.mode = "tvsearch"
         } else if (request.type == "tv") {
-            stateParams.mode = "moviesearch"
+            stateParams.mode = "movie"
         } else {
             stateParams.mode = "search"
         }

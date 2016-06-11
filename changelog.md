@@ -4,6 +4,8 @@
 ### 0.2.107
 Fixed: Repeating search from history wouldn't work (in multiple ways).
 
+Fixed: ID based search from the GUI didn't work.
+
 ### 0.2.106
 Fixed: Forbidden and ignored words not displayed in config.
 

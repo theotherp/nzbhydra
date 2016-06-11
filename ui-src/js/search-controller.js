@@ -156,9 +156,8 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.goToSearchUrl = function () {
         var stateParams = {};
         if ($scope.category.name.indexOf("movies") > -1) {
-            stateParams.mode = "moviesearch";
             stateParams.title = $scope.title;
-            stateParams.mode = "moviesearch";
+            stateParams.mode = "movie";
         } else if ($scope.category.name.indexOf("tv") > -1) {
             stateParams.mode = "tvsearch";
             stateParams.title = $scope.title;
