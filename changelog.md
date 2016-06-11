@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.106
+Fixed: Forbidden and ignored words not displayed in config.
+
 ### 0.2.105
 Fixed: Set appropriate categories when API searches are done ("Movies" for movie search, etc.) 
 

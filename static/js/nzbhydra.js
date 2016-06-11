@@ -3893,7 +3893,7 @@ function ConfigFields($injector) {
                             }
                         },
                         {
-                            key: 'ignoreWords',
+                            key: 'forbiddenWords',
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
@@ -3903,7 +3903,7 @@ function ConfigFields($injector) {
                             }
                         },
                         {
-                            key: 'requireWords',
+                            key: 'requiredWords',
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
