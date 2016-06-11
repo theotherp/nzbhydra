@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.105
+Fixed: Set appropriate categories when API searches are done ("Movies" for movie search, etc.) 
+
 ### 0.2.104
 Fixed: Stats and config invisible with no auth enabled.
 

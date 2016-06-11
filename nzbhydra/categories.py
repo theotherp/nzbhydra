@@ -89,6 +89,8 @@ def getCategoryByAnyInput(cat):
     :param cat: 
     :return: 
     """
+    if isinstance(cat, Bunch):
+        return Bunch.fromDict({"type": "hydra", "category": cat})
     if isinstance(cat, list) and len(cat) == 0:
         return Bunch.fromDict({"type": "newznab", "category": getCategories()[1]})
     if not cat:

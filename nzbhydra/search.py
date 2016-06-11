@@ -8,6 +8,7 @@ import json
 import re
 from itertools import groupby
 
+from bunch import Bunch
 from flask import request
 # standard_library.install_aliases()
 from builtins import *
@@ -51,7 +52,7 @@ class SearchRequest(object):
 
     @property
     def search_hash(self):
-        return hash(frozenset([self.type, self.query, self.identifier_key, self.identifier_value, self.title, self.season, self.episode, self.category, self.minsize, self.maxsize, self.minage, self.maxage]))
+        return hash(frozenset([self.type, self.query, self.identifier_key, self.identifier_value, self.title, self.season, self.episode, self.minsize, self.maxsize, self.minage, self.maxage]))
 
     def __repr__(self):
         rep = "SearchRequest ["
@@ -64,7 +65,11 @@ class SearchRequest(object):
         rep += (", requiredWords \"%s\"" % self.requiredWords) if self.requiredWords is not None else ""
         rep += (", season \"%s\"" % self.season) if self.season is not None else ""
         rep += (", episode \"%s\"" % self.episode) if self.episode is not None else ""
-        rep += (", category \"%s\"" % self.category) if self.category is not None else ""
+        if self.category:
+            if isinstance(self.category, dict) or isinstance(self.category, Bunch):
+                rep += (", category \"%s\"" % self.category.pretty)
+        else:
+            rep += (", category \"%s\"" % self.category)
         rep += (", minsize \"%s\"" % self.minsize) if self.minsize is not None else ""
         rep += (", maxsize \"%s\"" % self.maxsize) if self.maxsize is not None else ""
         rep += (", minage \"%s\"" % self.minage) if self.minage is not None else ""

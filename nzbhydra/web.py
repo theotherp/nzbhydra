@@ -15,6 +15,7 @@ import markdown
 from bunch import Bunch
 from werkzeug.contrib.fixers import ProxyFix
 
+from nzbhydra.categories import getCategoryByName
 from nzbhydra.searchmodules import omgwtf
 
 sslImported = True
@@ -547,6 +548,8 @@ def api_search(args):
     if args["t"] == "search":
         search_request.type = "general"
     elif args["t"] == "tvsearch":
+        if not args["cat"]:
+            search_request.category = getCategoryByName("tv")
         search_request.type = "tv"
         identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
         if identifier_key is not None:
@@ -556,10 +559,14 @@ def api_search(args):
         search_request.season = int(args["season"]) if args["season"] else None
         search_request.episode = int(args["episode"]) if args["episode"] else None
     elif args["t"] == "movie":
+        if not args["cat"]:
+            search_request.category = getCategoryByName("movies")
         search_request.type = "movie"
         search_request.identifier_key = "imdbid" if args["imdbid"] is not None else None
         search_request.identifier_value = args["imdbid"] if args["imdbid"] is not None else None
     elif args["t"] == "book":
+        if not args["cat"]:
+            search_request.category = getCategoryByName("ebook")
         search_request.type = "ebook"
         search_request.author = args["author"] if args["author"] is not None else None
         search_request.title = args["title"] if args["title"] is not None else None
