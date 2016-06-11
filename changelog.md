@@ -9,6 +9,9 @@ New category section in the config. Define required and forbidden words for ever
 Define newznab categories for every Hydra category. These categories will be used when you search with that category from the GUI. That way you can control if foreign movies should be included in movie searches, for example.
 
 Decide for every category if you want to ignore results from it for external and/or internal searches.
+
+Changed: Login and logout functionality. The navigation only shows links to sections the current user is allowed to visit. Click the login button in the upper right to login. Click it again to logout.
+If you use basic auth and logged out make sure to close the browser so that the auth header is removed.
  
 Changed: Don't require auth for NZB details links when form based auth is enabled. Should prevent troubles with viewing details from external tools like CP and the security risks are negligible. 
 

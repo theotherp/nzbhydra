@@ -478,7 +478,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
         
         var deferred = $q.defer();
 
-        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || bootstrapped.maySeeSearch) {
+        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || !bootstrapped.searchRestricted) {
             deferred.resolve();
         } else {
             $timeout(function () {
@@ -494,7 +494,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
     function loginRequiredStats($q, $timeout, $auth, $state, bootstrapped) {
         var deferred = $q.defer();
 
-        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || bootstrapped.maySeeStats) {
+        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || !bootstrapped.statsRestricted) {
             deferred.resolve();
         } else {
             $timeout(function () {
@@ -510,7 +510,7 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
     function loginRequiredAdmin($q, $timeout, $auth, $state, bootstrapped) {
         var deferred = $q.defer();
 
-        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || bootstrapped.maySeeAdmin) {
+        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || !bootstrapped.adminRestricted) {
             deferred.resolve();
         } else {
             $timeout(function () {
@@ -620,7 +620,7 @@ nzbhydraapp.factory('sessionInjector', ["$injector", function ($injector) {
     var sessionInjector = {
         response: function (response) {
             if (response.headers("Hydra-MaySeeAdmin") != null) {
-                $injector.get("HydraAuthService").setLoggedInByBasic(response.headers("Hydra-MaySeeStats") == "True", response.headers("Hydra-MaySeeAdmin") == "True")
+                $injector.get("HydraAuthService").setLoggedInByBasic(response.headers("Hydra-MaySeeStats") == "True", response.headers("Hydra-MaySeeAdmin") == "True", response.headers("Hydra-Username"))
             }
             
             return response;
@@ -2372,11 +2372,9 @@ angular
 
 function LoginController($scope, RequestsErrorHandler, $state, HydraAuthService, $auth, growl) {
     $scope.user = {};
-    $scope.login = function() {
-        RequestsErrorHandler.specificallyHandled(function() {
+    $scope.login = function () {
+        RequestsErrorHandler.specificallyHandled(function () {
             $auth.login($scope.user).then(function (data) {
-
-                console.log(data);
                 HydraAuthService.setLoggedInByForm();
                 growl.info("Login successful!");
                 $state.go("root.search");
@@ -2384,10 +2382,7 @@ function LoginController($scope, RequestsErrorHandler, $state, HydraAuthService,
                 growl.error("Login failed!")
             });
         });
-        
-        
     }
-    
 }
 LoginController.$inject = ["$scope", "RequestsErrorHandler", "$state", "HydraAuthService", "$auth", "growl"];
 
@@ -2461,6 +2456,7 @@ angular
 function HydraAuthService($auth, $q, $rootScope, ConfigService, bootstrapped) {
 
     var loggedIn = false;
+    var username;
     var maySeeAdmin = bootstrapped.maySeeAdmin;
     var maySeeStats = bootstrapped.maySeeStats;
     
@@ -2470,7 +2466,8 @@ function HydraAuthService($auth, $q, $rootScope, ConfigService, bootstrapped) {
         logout: logout,
         setLoggedInByForm: setLoggedInByForm,
         getUserRights: getUserRights,
-        setLoggedInByBasic: setLoggedInByBasic
+        setLoggedInByBasic: setLoggedInByBasic,
+        getUserName: getUserName
     };
     
     function isLoggedIn() {
@@ -2480,13 +2477,15 @@ function HydraAuthService($auth, $q, $rootScope, ConfigService, bootstrapped) {
     function setLoggedInByForm() {
         maySeeStats = $auth.getPayload().maySeeStats;
         maySeeAdmin = $auth.getPayload().maySeeAdmin;
+        username = $auth.getPayload().username;
         loggedIn = true;
         $rootScope.$broadcast("user:loggedIn", {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin});
     }
 
-    function setLoggedInByBasic(_maySeeStats, _maySeeAdmin) {
+    function setLoggedInByBasic(_maySeeStats, _maySeeAdmin, _username) {
         maySeeAdmin = _maySeeAdmin;
         maySeeStats = _maySeeStats;
+        username = _username;
         loggedIn = true;
         $rootScope.$broadcast("user:loggedIn", {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin});
     }
@@ -2494,6 +2493,7 @@ function HydraAuthService($auth, $q, $rootScope, ConfigService, bootstrapped) {
     function login(user) {
         var deferred = $q.defer();
         $auth.login(user).then(function (data) {
+            
             $rootScope.$broadcast("user:loggedIn", data);
            deferred.resolve();
         });
@@ -2502,11 +2502,16 @@ function HydraAuthService($auth, $q, $rootScope, ConfigService, bootstrapped) {
     
     function logout() {
         $auth.logout();
-        $rootScope.$broadcast("user:loggedOut", {maySeeStats: bootstrapped.maySeeStats, maySeeAdmin: bootstrapped.maySeeAdmin});
+        loggedIn = false;
+        $rootScope.$broadcast("user:loggedOut");
     }
     
     function getUserRights() {
         return {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin};
+    }
+    
+    function getUserName() {
+        return username;
     }
     
     
@@ -2518,46 +2523,72 @@ angular
     .module('nzbhydraApp')
     .controller('HeaderController', HeaderController);
 
-function HeaderController($scope, $state, HydraAuthService, ConfigService, bootstrapped) {
-    
-    $scope.showLogout = false;
+function HeaderController($scope, $state, $http, growl, HydraAuthService, ConfigService, bootstrapped) {
+
+    $scope.showLoginout = false;
 
     if (HydraAuthService.isLoggedIn()) {
         var rights = HydraAuthService.getUserRights();
-        $scope.maySeeAdmin = rights.maySeeAdmin;
-        $scope.maySeeStats = rights.maySeeStats;
-        $scope.showLogout = ConfigService.getSafe().authType == "form";
+        $scope.showAdmin = rights.maySeeAdmin;
+        $scope.showStats = rights.maySeeStats;
+        $scope.loginlogoutText = "Logout";
+        $scope.showLoginout = true;
     } else {
-        $scope.maySeeAdmin = bootstrapped.showAdmin;
-        $scope.maySeeStats = bootstrapped.showStats;
+        $scope.showAdmin = !bootstrapped.adminRestricted;
+        $scope.showStats = !bootstrapped.statsRestricted;
+        $scope.loginlogoutText = "Login";
+        $scope.showLoginout = bootstrapped.adminRestricted || bootstrapped.statsRestricted || bootstrapped.searchRestricted;
     }
-    
+
     $scope.$on("user:loggedIn", function (event, data) {
-        $scope.maySeeAdmin = data.maySeeAdmin;
-        $scope.maySeeStats = data.maySeeStats;
-        $scope.showLogout = ConfigService.getSafe().authType == "form";
+        $scope.showAdmin = data.maySeeAdmin;
+        $scope.showStats = data.maySeeStats;
+        $scope.showLoginout = true;
+        $scope.loginlogoutText = "Logout";
     });
 
     $scope.$on("user:loggedOut", function (event, data) {
-        if (ConfigService.getSafe().authType == "form") {
-            $scope.maySeeAdmin = true;
-            $scope.maySeeStats = true;
-            $scope.showLogout = false;
-        } else {
-            $scope.maySeeAdmin = data.maySeeAdmin;
-            $scope.maySeeStats = data.maySeeStats;
-            $scope.showLogout = false;
-        }
-        
+        $scope.showAdmin = !bootstrapped.adminRestricted;
+        $scope.showStats = !bootstrapped.statsRestricted;
+        $scope.loginlogoutText = "Login";
+        $scope.showLoginout = bootstrapped.adminRestricted || bootstrapped.statsRestricted || bootstrapped.searchRestricted;
     });
-    
-    $scope.logout = function() {
-        HydraAuthService.logout();
-        $state.go("root.search");
+
+    $scope.loginout = function () {
+        if (HydraAuthService.isLoggedIn()) {
+            HydraAuthService.logout();
+
+            if (ConfigService.getSafe().authType == "basic") {
+                growl.info("Logged out. Close your browser to make sure session is closed.");
+            }
+            else if (ConfigService.getSafe().authType == "form") {
+                growl.info("Logged out");
+            } 
+            $state.go("root.search");
+        } else {
+            if (ConfigService.getSafe().authType == "basic") {
+                var params = {};
+                if (HydraAuthService.getUserName()) {
+                    params = {
+                        old_username: HydraAuthService.getUserName()
+                    }
+                } 
+                $http.get("/internalapi/askforpassword", {params: params}).then(function () {
+                    growl.info("Login successful!");
+                    $state.go("root.search");
+                })
+            } else if (ConfigService.getSafe().authType == "form") {
+                $state.go("root.login");
+            } else {
+                growl.info("You shouldn't need to login but here you go!");
+            }
+
+        }
+
     }
-    
+
 }
-HeaderController.$inject = ["$scope", "$state", "HydraAuthService", "ConfigService", "bootstrapped"];
+HeaderController.$inject = ["$scope", "$state", "$http", "growl", "HydraAuthService", "ConfigService", "bootstrapped"];
 
 var HEADER_NAME = 'MyApp-Handle-Errors-Generically';
 var specificallyHandleInProgress = false;

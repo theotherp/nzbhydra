@@ -5,6 +5,7 @@ angular
 function HydraAuthService($auth, $q, $rootScope, ConfigService, bootstrapped) {
 
     var loggedIn = false;
+    var username;
     var maySeeAdmin = bootstrapped.maySeeAdmin;
     var maySeeStats = bootstrapped.maySeeStats;
     
@@ -14,7 +15,8 @@ function HydraAuthService($auth, $q, $rootScope, ConfigService, bootstrapped) {
         logout: logout,
         setLoggedInByForm: setLoggedInByForm,
         getUserRights: getUserRights,
-        setLoggedInByBasic: setLoggedInByBasic
+        setLoggedInByBasic: setLoggedInByBasic,
+        getUserName: getUserName
     };
     
     function isLoggedIn() {
@@ -24,13 +26,15 @@ function HydraAuthService($auth, $q, $rootScope, ConfigService, bootstrapped) {
     function setLoggedInByForm() {
         maySeeStats = $auth.getPayload().maySeeStats;
         maySeeAdmin = $auth.getPayload().maySeeAdmin;
+        username = $auth.getPayload().username;
         loggedIn = true;
         $rootScope.$broadcast("user:loggedIn", {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin});
     }
 
-    function setLoggedInByBasic(_maySeeStats, _maySeeAdmin) {
+    function setLoggedInByBasic(_maySeeStats, _maySeeAdmin, _username) {
         maySeeAdmin = _maySeeAdmin;
         maySeeStats = _maySeeStats;
+        username = _username;
         loggedIn = true;
         $rootScope.$broadcast("user:loggedIn", {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin});
     }
@@ -38,6 +42,7 @@ function HydraAuthService($auth, $q, $rootScope, ConfigService, bootstrapped) {
     function login(user) {
         var deferred = $q.defer();
         $auth.login(user).then(function (data) {
+            
             $rootScope.$broadcast("user:loggedIn", data);
            deferred.resolve();
         });
@@ -46,11 +51,16 @@ function HydraAuthService($auth, $q, $rootScope, ConfigService, bootstrapped) {
     
     function logout() {
         $auth.logout();
-        $rootScope.$broadcast("user:loggedOut", {maySeeStats: bootstrapped.maySeeStats, maySeeAdmin: bootstrapped.maySeeAdmin});
+        loggedIn = false;
+        $rootScope.$broadcast("user:loggedOut");
     }
     
     function getUserRights() {
         return {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin};
+    }
+    
+    function getUserName() {
+        return username;
     }
     
     

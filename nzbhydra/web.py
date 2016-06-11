@@ -142,6 +142,8 @@ def disable_caching(response):
     if user is not None:
         response.headers["Hydra-MaySeeAdmin"] = user["maySeeAdmin"]
         response.headers["Hydra-MaySeeStats"] = user["maySeeStats"]
+        response.headers["Hydra-Username"] = user["username"]
+        
     return response
 
 
@@ -241,6 +243,33 @@ def isAdminLoggedIn():
     return len(config.settings.auth.users) == 0 or (auth is not None and any([x.maySeeAdmin and x.username == auth.username and x.password == auth.password for x in config.settings.auth.users]))
 
 
+def verifyAuthHeader(authType):
+    auth = Bunch.fromDict(request.authorization)
+    if not auth:
+        logger.warn("Missing basic auth header")
+        return False
+    if not auth.username or not auth.password:
+        logger.warn("No username or password provided")
+        return False
+    for u in config.settings.auth.users:
+        if auth.username == u.username:
+            if auth.password != u.password:
+                return False
+            g.user = u
+            if authType == "stats":
+                maySee = u.maySeeAdmin or u.maySeeStats
+                if not maySee:
+                    logger.warn("User %s may not see the stats" % u.username)
+                return maySee
+            if authType == "admin":
+                if not u.maySeeAdmin:
+                    logger.warn("User %s may not see the admin area" % u.username)
+                return u.maySeeAdmin
+            return True
+    else:
+        logger.warn("Unable to find a user with name %s" % auth.username)
+    return False
+
 def isAllowed(authType):
     if len(config.settings.auth.users) == 0:
         return True
@@ -283,32 +312,9 @@ def isAllowed(authType):
             logger.warn("Token has expired")
             return False
     else:
-        auth = Bunch.fromDict(request.authorization)
-        if not auth:
-            logger.warn("Missing basic auth header")
-            return False
-        if not auth.username or not auth.password:
-            logger.warn("No username or password provided")
-            return False
-        for u in config.settings.auth.users:
-            if auth.username == u.username:
-                if auth.password != u.password:
-                    return False
-                g.user = u
-                if authType == "stats":
-                    maySee = u.maySeeAdmin or u.maySeeStats
-                    if not maySee:
-                        logger.warn("User %s may not see the stats" % u.username)
-                    return maySee
-                if authType == "admin":
-                    if not u.maySeeAdmin:
-                        logger.warn("User %s may not see the admin area" % u.username)
-                    return u.maySeeAdmin
-                return True
-        else:
-            logger.warn("Unable to find a user with name %s" % auth.username)
-    logger.error("Auth could not be processed, this is a bug")
-    return False
+        return verifyAuthHeader(authType)
+    
+    
 
 
 def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False, disableAuthForForm=False):
@@ -377,24 +383,17 @@ def base(path):
     bootstrapped = {
         "baseUrl": base_url,
         "authType": config.settings.auth.authType,
-        "showAdmin": not config.settings.auth.restrictAdmin or len(config.settings.auth.users) == 0 or config.settings.auth.authType == "none",
-        "showStats": not config.settings.auth.restrictStats or len(config.settings.auth.users) == 0 or config.settings.auth.authType == "none",
-        "maySeeAdmin": not config.settings.auth.restrictAdmin or len(config.settings.auth.users) == 0 or config.settings.auth.authType == "none",
-        "maySeeStats": not config.settings.auth.restrictStats or len(config.settings.auth.users) == 0 or config.settings.auth.authType == "none",
-        "maySeeSearch": not config.settings.auth.restrictSearch or len(config.settings.auth.users) == 0 or config.settings.auth.authType == "none",
+        "adminRestricted": config.settings.auth.restrictAdmin and len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none",
+        "statsRestricted": config.settings.auth.restrictStats and len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none",
+        "searchRestricted": config.settings.auth.restrictSearch and len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none",
     }
     if request.authorization:
         for u in config.settings.auth.users:
             if u.username == request.authorization.username:
                 if config.settings.auth.restrictAdmin:
                     bootstrapped["maySeeAdmin"] = u.maySeeAdmin
-                    bootstrapped["showAdmin"] = u.maySeeAdmin
                 if config.settings.auth.restrictStats:
-                    bootstrapped["maySeeStats"] = u.maySeeStats
-                    bootstrapped["showStats"] = u.maySeeStats
-    else:
-        bootstrapped["showStats"] = True
-        bootstrapped["showAdmin"] = True
+                    bootstrapped["maySeeStats"] = u.maySeeStats    
 
     return render_template("index.html", base_url=base_url, onProd="false" if config.settings.main.debug else "true", theme=config.settings.main.theme + ".css", bootstrapped=json.dumps(bootstrapped))
 
@@ -1053,10 +1052,34 @@ def internalapi_askAdmin():
     return "True"
 
 
-@app.route('/internalapi/askforadmin')
-@requires_auth("admin")
-def internalapi_askforadmin():
-    return "Ok... or not"
+internalapi__askforpassword_args = {
+    "old_username": fields.String(missing=None)
+}
+
+
+@app.route('/internalapi/askforpassword')
+@use_args(internalapi__askforpassword_args)
+def internalapi_askforadmin(args):
+    logger.debug("Get askforpassword request")
+    if not request.authorization:
+        logger.debug("Authorization header not set, asking for credentials")
+        return Response(
+            'Asking for password', 401,
+            {'WWW-Authenticate': 'Basic realm="Login Required"'})
+    elif request.authorization.username == args["old_username"]:
+        logger.info("Authorization header contains the same username as one that logged out. Returning 401 so user can login with a different username")
+        return Response(
+            'Asking for password', 401,
+            {'WWW-Authenticate': 'Basic realm="Login Required"'})
+    else:
+        if args["old_username"]:
+            logger.debug("Authorization header set and contains a username other than the one that logged out")
+        if verifyAuthHeader("any"):
+            return "Ok"
+        else:
+            return authenticate()
+    
+    
 
 
 @app.route('/internalapi/get_version_history')

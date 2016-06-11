@@ -85,6 +85,7 @@ def run(arguments):
     try:
         config.load(settings_file)
         config.save(settings_file)  # Write any new settings back to the file
+        log.setup_custom_logger(arguments.logfile, arguments.quiet)
     except Exception:
         print("An error occured during migrating the old config. Sorry about that...: ")
         traceback.print_exc(file=sys.stdout)

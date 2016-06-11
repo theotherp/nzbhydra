@@ -478,7 +478,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         
         var deferred = $q.defer();
 
-        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || bootstrapped.maySeeSearch) {
+        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || !bootstrapped.searchRestricted) {
             deferred.resolve();
         } else {
             $timeout(function () {
@@ -493,7 +493,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
     function loginRequiredStats($q, $timeout, $auth, $state, bootstrapped) {
         var deferred = $q.defer();
 
-        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || bootstrapped.maySeeStats) {
+        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || !bootstrapped.statsRestricted) {
             deferred.resolve();
         } else {
             $timeout(function () {
@@ -508,7 +508,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
     function loginRequiredAdmin($q, $timeout, $auth, $state, bootstrapped) {
         var deferred = $q.defer();
 
-        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || bootstrapped.maySeeAdmin) {
+        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || !bootstrapped.adminRestricted) {
             deferred.resolve();
         } else {
             $timeout(function () {
@@ -617,7 +617,7 @@ nzbhydraapp.factory('sessionInjector', function ($injector) {
     var sessionInjector = {
         response: function (response) {
             if (response.headers("Hydra-MaySeeAdmin") != null) {
-                $injector.get("HydraAuthService").setLoggedInByBasic(response.headers("Hydra-MaySeeStats") == "True", response.headers("Hydra-MaySeeAdmin") == "True")
+                $injector.get("HydraAuthService").setLoggedInByBasic(response.headers("Hydra-MaySeeStats") == "True", response.headers("Hydra-MaySeeAdmin") == "True", response.headers("Hydra-Username"))
             }
             
             return response;
