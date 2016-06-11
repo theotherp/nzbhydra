@@ -748,16 +748,6 @@ function ConfigFields($injector) {
 
             auth: [
                 {
-                    type: 'help',
-                    templateOptions: {
-                        lines: [
-                            "For some reasons I cannot do proper validation here. So it's up to you not to do something stupid like restrict admin access and have no user with admin rights.",
-                            "Leave empty to disable authorization.",
-                            "With form auth you need users for everyone. With basic auth you can just require a login for admin access."
-                        ]
-                    }
-                },
-                {
                     key: 'authType',
                     type: 'horizontalSelect',
                     templateOptions: {

@@ -8,7 +8,7 @@ function ModalService($uibModal, $q) {
         open: open
     };
     
-    function open(headline, message, params) {
+    function open(headline, message, params, size) {
         //params example:
         /*
         var p =
@@ -32,7 +32,7 @@ function ModalService($uibModal, $q) {
         var modalInstance = $uibModal.open({
             templateUrl: 'static/html/modal.html',
             controller: 'ModalInstanceCtrl',
-            size: 'md',
+            size: angular.isDefined(size) ? size : "md",
             resolve: {
                 headline: function () {
                     return headline;

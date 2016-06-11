@@ -2,13 +2,15 @@
 
 ----------
 ### 0.2.103
-Added: Several changes in the handling and configuration of categories:
+Added: Several changes in the handling and configuration of categories.
 
 New category section in the config. Define required and forbidden words for every category and if they should be applied for external and/or internal searches.  This allows you to finetune results for CP or Sonarr, for example.
 
 Define newznab categories for every Hydra category. These categories will be used when you search with that category from the GUI. That way you can control if foreign movies should be included in movie searches, for example.
 
 Decide for every category if you want to ignore results from it for external and/or internal searches.
+
+Added: Online help in the configuration.
 
 Changed: Login and logout functionality. The navigation only shows links to sections the current user is allowed to visit. Click the login button in the upper right to login. Click it again to logout.
 If you use basic auth and logged out make sure to close the browser so that the auth header is removed.
@@ -20,6 +22,8 @@ Fixed: Don't display an NZB download as failed if it was only redirected (then w
 Fixed: Error where indexers tab in config could not be opened.
 
 Fixed: When migration of old config fails keep the config instead of overwriting it. Provide feedback and stop program.
+
+Fixed: Support for custom downloader icons was broken.
 
 ### 0.2.102
 Changed: Using ! to exclude words when querying newznab indexers. This should be compatible with more indexers and provide the wanted results. Thanks to judhat2 for the research and tests.

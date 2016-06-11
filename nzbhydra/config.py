@@ -532,6 +532,11 @@ def migrateConfig(config):
                     config["searching"].pop("categorysizes")
                     config["searching"]["forbiddenWords"] = config["searching"]["ignoreWords"]
                     config["searching"]["requiredWords"] = config["searching"]["requireWords"]
+                    
+                    for downloader in config["downloaders"]:
+                        if "iconCssClass" not in downloader.keys():
+                            addLogMessage(20, "Adding icon CSS class to downloader")
+                            downloader["iconCssClass"] = ""
 
         except Exception as e:
             raise e
@@ -720,6 +725,6 @@ def getSafeConfig():
         "indexers": indexers,
         "searching": {"maxAge": settings["searching"]["maxAge"], "alwaysShowDuplicates": settings["searching"]["alwaysShowDuplicates"], "enableCategorySizes": settings["categories"]["enableCategorySizes"]},
         "categories": categories.getCategories(),
-        "downloaders": [{"enabled": x.enabled, "name": x.name, "type": x.type, "defaultCategory": x.defaultCategory if hasattr(x, "defaultCategory") else None} for x in settings["downloaders"]],
+        "downloaders": [{"enabled": x.enabled, "name": x.name, "type": x.type, "iconCssClass": x.iconCssClass, "defaultCategory": x.defaultCategory if hasattr(x, "defaultCategory") else None} for x in settings["downloaders"]],
         "authType": settings["auth"]["authType"],
     }

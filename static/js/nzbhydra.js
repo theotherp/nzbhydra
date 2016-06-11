@@ -1885,7 +1885,9 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
     //Fill the form with the search values we got from the state params (so that their values are the same as in the current url)
     $scope.mode = $stateParams.mode;
-    $scope.categories = _.filter(CategoriesService.getAll(), function(c) { return c.mayBeSelected; });
+    $scope.categories = _.filter(CategoriesService.getAll(), function(c) { 
+        return c.mayBeSelected && (c.ignoreResults == "never" || c.ignoreResults == "external"); 
+    });
     $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? CategoriesService.getDefault() : CategoriesService.getByName($stateParams.category);
     $scope.tmdbid = $stateParams.tmdbid;
     $scope.tvdbid = $stateParams.tvdbid;
@@ -2218,7 +2220,7 @@ function ModalService($uibModal, $q) {
         open: open
     };
     
-    function open(headline, message, params) {
+    function open(headline, message, params, size) {
         //params example:
         /*
         var p =
@@ -2242,7 +2244,7 @@ function ModalService($uibModal, $q) {
         var modalInstance = $uibModal.open({
             templateUrl: 'static/html/modal.html',
             controller: 'ModalInstanceCtrl',
-            size: 'md',
+            size: angular.isDefined(size) ? size : "md",
             resolve: {
                 headline: function () {
                     return headline;
@@ -4109,16 +4111,6 @@ function ConfigFields($injector) {
 
             auth: [
                 {
-                    type: 'help',
-                    templateOptions: {
-                        lines: [
-                            "For some reasons I cannot do proper validation here. So it's up to you not to do something stupid like restrict admin access and have no user with admin rights.",
-                            "Leave empty to disable authorization.",
-                            "With form auth you need users for everyone. With basic auth you can just require a login for admin access."
-                        ]
-                    }
-                },
-                {
                     key: 'authType',
                     type: 'horizontalSelect',
                     templateOptions: {
@@ -4973,9 +4965,10 @@ angular
     .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
 
-function ConfigController($scope, ConfigService, config, DownloaderCategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl, $rootScope) {
+function ConfigController($scope, $http, ConfigService, config, DownloaderCategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl, $rootScope) {
     $scope.config = config;
     $scope.submit = submit;
+    $scope.activeTab = undefined;
 
     $scope.restartRequired = false;
     $scope.ignoreSaveNeeded = false;
@@ -4983,8 +4976,6 @@ function ConfigController($scope, ConfigService, config, DownloaderCategoriesSer
     ConfigFields.setRestartWatcher(function () {
         $scope.restartRequired = true;
     });
-    
-    console.log($rootScope);
     
 
     function submit() {
@@ -5035,70 +5026,56 @@ function ConfigController($scope, ConfigService, config, DownloaderCategoriesSer
     ConfigModel = config;
 
     $scope.fields = ConfigFields.getFields($scope.config);
-
-    $scope.formTabs = [
+    
+    $scope.allTabs = [
         {
+            active: false,
+            state: 'root.config',
             name: 'Main',
             model: ConfigModel.main,
             fields: $scope.fields.main
         },
         {
+            active: false,
+            state: 'root.config.auth',
             name: 'Authorization',
             model: ConfigModel.auth,
             fields: $scope.fields.auth
         },
         {
+            active: false,
+            state: 'root.config.searching',
             name: 'Searching',
             model: ConfigModel.searching,
             fields: $scope.fields.searching
         },
         {
+            active: false,
+            state: 'root.config.categories',
             name: 'Categories',
             model: ConfigModel.categories,
             fields: $scope.fields.categories
         },
         {
+            active: false,
+            state: 'root.config.downloader',
             name: 'Downloaders',
             model: ConfigModel.downloaders,
             fields: $scope.fields.downloaders
         },
         {
+            active: false,
+            state: 'root.config.indexers',
             name: 'Indexers',
             model: ConfigModel.indexers,
             fields: $scope.fields.indexers
         }
     ];
 
-    $scope.allTabs = [
-        {
-            active: false,
-            state: 'root.config'
-        },
-        {
-            active: false,
-            state: 'root.config.auth'
-        },
-        {
-            active: false,
-            state: 'root.config.searching'
-        },
-        {
-            active: false,
-            state: 'root.config.categories'
-        },
-        {
-            active: false,
-            state: 'root.config.downloader'
-        },
-        {
-            active: false,
-            state: 'root.config.indexers'
-        }
-    ];
-
     for (var i = 0; i < $scope.allTabs.length; i++) {
         if ($state.is($scope.allTabs[i].state)) {
             $scope.allTabs[i].active = true;
+            $scope.activeTab = $scope.allTabs[i];
         }
     }
 
@@ -5108,6 +5085,17 @@ function ConfigController($scope, ConfigService, config, DownloaderCategoriesSer
 
     $scope.goToConfigState = function (index) {
         $state.go($scope.allTabs[index].state);
+        $scope.activeTab = $scope.allTabs[index]; 
+    };
+    
+    $scope.help = function() {
+        $http.get("/internalapi/gethelp", {params: {id: $scope.activeTab.name}}).then(function(result) {
+                var html = '<span style="text-align: left;">' + result.data + "</span>";
+                ModalService.open($scope.activeTab.name + " - Help", html, {}, "lg");
+        },
+        function() {
+            growl.error("Error while loading help")
+        })
     };
 
     $scope.$on('$stateChangeStart',
@@ -5140,7 +5128,7 @@ function ConfigController($scope, ConfigService, config, DownloaderCategoriesSer
             }            
         })
 }
-ConfigController.$inject = ["$scope", "ConfigService", "config", "DownloaderCategoriesService", "ConfigFields", "ConfigModel", "ModalService", "RestartService", "$state", "growl", "$rootScope"];
+ConfigController.$inject = ["$scope", "$http", "ConfigService", "config", "DownloaderCategoriesService", "ConfigFields", "ConfigModel", "ModalService", "RestartService", "$state", "growl", "$rootScope"];
 
 
 

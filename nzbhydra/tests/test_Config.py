@@ -88,6 +88,9 @@ class TestConfig(unittest.TestCase):
                 {
                     "configVersion": 18,
                 },
+            "downloaders": [
+                {}
+            ],
             "searching": {
                 "alwaysShowDuplicates": True,
                 "ignoreWords": "forbidden",
@@ -136,3 +139,4 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(2000, cfg["categories"]["categories"]["movies"]["newznabCategories"][0])
         self.assertEqual("forbidden", cfg["searching"]["forbiddenWords"])
         self.assertEqual("required", cfg["searching"]["requiredWords"])
+        self.assertEqual("", cfg["downloaders"][0]["iconCssClass"])

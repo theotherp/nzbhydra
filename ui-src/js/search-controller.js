@@ -18,7 +18,9 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
     //Fill the form with the search values we got from the state params (so that their values are the same as in the current url)
     $scope.mode = $stateParams.mode;
-    $scope.categories = _.filter(CategoriesService.getAll(), function(c) { return c.mayBeSelected; });
+    $scope.categories = _.filter(CategoriesService.getAll(), function(c) { 
+        return c.mayBeSelected && (c.ignoreResults == "never" || c.ignoreResults == "external"); 
+    });
     $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? CategoriesService.getDefault() : CategoriesService.getByName($stateParams.category);
     $scope.tmdbid = $stateParams.tmdbid;
     $scope.tvdbid = $stateParams.tvdbid;

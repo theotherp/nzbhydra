@@ -11,6 +11,7 @@ import urlparse
 
 import arrow
 import jwt
+import markdown
 from bunch import Bunch
 from werkzeug.contrib.fixers import ProxyFix
 
@@ -1125,6 +1126,19 @@ def internalapi_getlogs():
     logs = getLogs()
     return jsonify(logs)
 
+
+internalapi_gethelp_args = {
+    "id": fields.String(required=True)
+}
+
+
+@app.route("/internalapi/gethelp")
+@requires_auth("main")
+@use_args(internalapi_gethelp_args)
+def internalapi_getHelp(args):
+    with open(("onlinehelp/%s.md" % args["id"]).lower()) as f:
+        helpMd = f.read()
+        return markdown.markdown(helpMd, output_format="html", extensions=['markdown.extensions.nl2br'])
 
 @app.route('/internalapi/getbackup')
 @requires_auth("admin")

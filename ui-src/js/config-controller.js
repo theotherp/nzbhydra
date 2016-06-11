@@ -25,9 +25,10 @@ angular
     .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
 
-function ConfigController($scope, ConfigService, config, DownloaderCategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl, $rootScope) {
+function ConfigController($scope, $http, ConfigService, config, DownloaderCategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl, $rootScope) {
     $scope.config = config;
     $scope.submit = submit;
+    $scope.activeTab = undefined;
 
     $scope.restartRequired = false;
     $scope.ignoreSaveNeeded = false;
@@ -35,8 +36,6 @@ function ConfigController($scope, ConfigService, config, DownloaderCategoriesSer
     ConfigFields.setRestartWatcher(function () {
         $scope.restartRequired = true;
     });
-    
-    console.log($rootScope);
     
 
     function submit() {
@@ -87,70 +86,56 @@ function ConfigController($scope, ConfigService, config, DownloaderCategoriesSer
     ConfigModel = config;
 
     $scope.fields = ConfigFields.getFields($scope.config);
-
-    $scope.formTabs = [
+    
+    $scope.allTabs = [
         {
+            active: false,
+            state: 'root.config',
             name: 'Main',
             model: ConfigModel.main,
             fields: $scope.fields.main
         },
         {
+            active: false,
+            state: 'root.config.auth',
             name: 'Authorization',
             model: ConfigModel.auth,
             fields: $scope.fields.auth
         },
         {
+            active: false,
+            state: 'root.config.searching',
             name: 'Searching',
             model: ConfigModel.searching,
             fields: $scope.fields.searching
         },
         {
+            active: false,
+            state: 'root.config.categories',
             name: 'Categories',
             model: ConfigModel.categories,
             fields: $scope.fields.categories
         },
         {
+            active: false,
+            state: 'root.config.downloader',
             name: 'Downloaders',
             model: ConfigModel.downloaders,
             fields: $scope.fields.downloaders
         },
         {
+            active: false,
+            state: 'root.config.indexers',
             name: 'Indexers',
             model: ConfigModel.indexers,
             fields: $scope.fields.indexers
         }
     ];
 
-    $scope.allTabs = [
-        {
-            active: false,
-            state: 'root.config'
-        },
-        {
-            active: false,
-            state: 'root.config.auth'
-        },
-        {
-            active: false,
-            state: 'root.config.searching'
-        },
-        {
-            active: false,
-            state: 'root.config.categories'
-        },
-        {
-            active: false,
-            state: 'root.config.downloader'
-        },
-        {
-            active: false,
-            state: 'root.config.indexers'
-        }
-    ];
-
     for (var i = 0; i < $scope.allTabs.length; i++) {
         if ($state.is($scope.allTabs[i].state)) {
             $scope.allTabs[i].active = true;
+            $scope.activeTab = $scope.allTabs[i];
         }
     }
 
@@ -160,6 +145,17 @@ function ConfigController($scope, ConfigService, config, DownloaderCategoriesSer
 
     $scope.goToConfigState = function (index) {
         $state.go($scope.allTabs[index].state);
+        $scope.activeTab = $scope.allTabs[index]; 
+    };
+    
+    $scope.help = function() {
+        $http.get("/internalapi/gethelp", {params: {id: $scope.activeTab.name}}).then(function(result) {
+                var html = '<span style="text-align: left;">' + result.data + "</span>";
+                ModalService.open($scope.activeTab.name + " - Help", html, {}, "lg");
+        },
+        function() {
+            growl.error("Error while loading help")
+        })
     };
 
     $scope.$on('$stateChangeStart',
