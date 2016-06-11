@@ -8,7 +8,6 @@ import json
 import logging
 import os
 import urlparse
-from pprint import pprint
 
 import arrow
 import jwt
@@ -222,7 +221,7 @@ def create_token(user):
         logger.info("Creating secret which should've been created when migrating config. ")
         config.settings.main.secret = createSecret()
         config.save()
-        
+
     token = jwt.encode(payload, config.settings.main.secret)
     return token.decode('unicode_escape')
 
@@ -307,7 +306,7 @@ def isAllowed(authType):
                     return u.maySeeAdmin
                 return True
         else:
-            logger.warn("Unable to find a user with name %s" % auth.username)            
+            logger.warn("Unable to find a user with name %s" % auth.username)
     logger.error("Auth could not be processed, this is a bug")
     return False
 
@@ -375,7 +374,6 @@ def base(path):
     base_url = ("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/"
     _, currentVersion = get_current_version()
 
-        
     bootstrapped = {
         "baseUrl": base_url,
         "authType": config.settings.auth.authType,
@@ -397,7 +395,6 @@ def base(path):
     else:
         bootstrapped["showStats"] = True
         bootstrapped["showAdmin"] = True
-        
 
     return render_template("index.html", base_url=base_url, onProd="false" if config.settings.main.debug else "true", theme=config.settings.main.theme + ".css", bootstrapped=json.dumps(bootstrapped))
 
@@ -505,6 +502,9 @@ def api(args):
     elif args["t"] in ("search", "tvsearch", "movie", "book"):
         return api_search(args)
     elif args["t"] == "get":
+        if "nzbhydrasearchresult" not in args["id"]:
+            logger.error("API NZB download request with invalid id %s" % args["id"])
+            return "Invalid ID %s" % args["id"], 500
         searchResultId = int(args["id"][len("nzbhydrasearchresult"):])
         searchResult = SearchResult.get(SearchResult.id == searchResultId)
         if config.settings.main.logging.logIpAddresses:
@@ -546,7 +546,6 @@ def api_search(args):
     search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], query=args["q"], internal=False)
     if args["t"] == "search":
         search_request.type = "general"
-        logger.info("")
     elif args["t"] == "tvsearch":
         search_request.type = "tv"
         identifier_key = "rid" if args["rid"] else "tvdbid" if args["tvdbid"] else None
@@ -792,11 +791,14 @@ def extract_nzb_infos_and_return_response(searchResultId, downloader=None):
         link, _, _ = get_indexer_nzb_link(searchResultId, "redirect", True)
         if link is not None:
             if config.settings.main.logging.logIpAddresses:
-                logger.info("Redirecting %s to %s" % (getIp(), link))
-                if ipinfo.ispublic(getIp()):
-                    logger.info("Info on %s: %s" % (getIp(), ipinfo.country_and_org(getIp())))
+                if getIp() is None:
+                    logger.info("Unable to retrieve IP")
                 else:
-                    logger.info("Info on %s: private / RFC1918 address" % getIp())
+                    logger.info("Redirecting %s to %s" % (getIp(), link))
+                    if ipinfo.ispublic(getIp()):
+                        logger.info("Info on %s: %s" % (getIp(), ipinfo.country_and_org(getIp())))
+                    else:
+                        logger.info("Info on %s: private / RFC1918 address" % getIp())
             else:
                 logger.info("Redirecting to %s" % link)
 
@@ -1046,7 +1048,7 @@ def internalapi_maySeeAdminArea():
 @app.route('/internalapi/askadmin')
 @requires_auth("admin")
 def internalapi_askAdmin():
-    #Serves only so that the client make a request asking for admin when resolving the state change to protected tabs that don't have any other resolved calls that would trigger auth
+    # Serves only so that the client make a request asking for admin when resolving the state change to protected tabs that don't have any other resolved calls that would trigger auth
     logger.debug("Get askadmin request")
     return "True"
 

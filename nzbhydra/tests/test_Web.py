@@ -12,6 +12,7 @@ import pytest
 # standard_library.install_aliases()
 
 from bunch import Bunch
+from mock import patch
 
 from nzbhydra import config
 from nzbhydra import web
@@ -25,6 +26,7 @@ class TestWeb(UrlTestCase):
         set_and_drop()
         web.app.template_folder = "../templates"
         self.app = web.app.test_client()
+        config.settings.main.apikey = None
 
      
 
@@ -289,3 +291,48 @@ class TestWeb(UrlTestCase):
             self.checkAreaAccess("main", True, "x", "y", "post")
             self.checkAreaAccess("admin", False, "x", "y", "post")
             self.checkAreaAccess("stats", False, "x", "y", "post")
+
+    @patch("nzbhydra.search.search")
+    def testApiSearch(self, searchMock):
+        searchMock.return_value = {"results": [], "indexer_infos": [], "dbsearchid": 1, "total": 0, "offset": 0}
+        with web.app.test_request_context():
+            self.app.get("/api?q=query&t=search")
+            searchRequest = searchMock.mock_calls[0][1][0]
+            self.assertEqual("general", searchRequest.type)
+
+            searchMock.reset_mock()
+            self.app.get("/api?q=query&t=search&q=query")
+            searchRequest = searchMock.mock_calls[0][1][0]
+            self.assertEqual("general", searchRequest.type)
+            self.assertEqual("query", searchRequest.query)
+
+            searchMock.reset_mock()
+            self.app.get("/api?t=tvsearch&season=1&ep=2&rid=3")
+            searchRequest = searchMock.mock_calls[0][1][0]
+            self.assertEqual("tv", searchRequest.type)
+            self.assertEqual(1, searchRequest.season)
+            self.assertEqual(2, searchRequest.episode)
+            self.assertEqual("rid", searchRequest.identifier_key)
+            self.assertEqual("3", searchRequest.identifier_value)
+
+            searchMock.reset_mock()
+            self.app.get("/api?t=movie&imdbid=123")
+            searchRequest = searchMock.mock_calls[0][1][0]
+            self.assertEqual("movie", searchRequest.type)
+            self.assertEqual("imdbid", searchRequest.identifier_key)
+            self.assertEqual("123", searchRequest.identifier_value)
+
+            searchMock.reset_mock()
+            self.app.get("/api?t=book&author=william&title=macbeth")
+            searchRequest = searchMock.mock_calls[0][1][0]
+            self.assertEqual("ebook", searchRequest.type)
+            self.assertEqual("william", searchRequest.author)
+            self.assertEqual("macbeth", searchRequest.title)
+
+    @patch("nzbhydra.web.extract_nzb_infos_and_return_response", return_value="NZB")
+    @patch("nzbhydra.database.SearchResult.get", return_value=Bunch(title="title", indexer=Bunch(name="name")))
+    def testApiGetNzb(self, a, b):
+        with web.app.test_request_context():
+            resp = self.app.get("/api?t=get&id=nzbhydrasearchresult1")
+            self.assertEqual("NZB", resp.data)
+            
