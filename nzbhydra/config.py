@@ -421,125 +421,129 @@ def migrateConfig(config):
         config["main"]["configVersion"] = 1
     if config["main"]["configVersion"] < initialConfig["main"]["configVersion"]:
         addLogMessage(20, "Migrating config")
-        try:
+
             
-            if config["main"]["configVersion"] == 15:
-                with version_update(config, 16):
-                    addLogMessage(20, "Moving indexers")
-                    indexers = []
-                    for indexer in ["binsearch", "nzbclub", "nzbindex", "omgwtfnzbs", "womble"]:
-                        config["indexers"][indexer]["type"] = indexer if indexer != "omgwtfnzbs" else "omgwtf"
-                        indexers.append(config["indexers"][indexer])
-                    for indexer in config["indexers"]["newznab"]:
-                        indexer["type"] = "newznab"
-                        indexers.append(indexer)
-                    config["indexers"] = indexers
+        if config["main"]["configVersion"] == 15:
+            with version_update(config, 16):
+                addLogMessage(20, "Moving indexers")
+                indexers = []
+                for indexer in ["binsearch", "nzbclub", "nzbindex", "omgwtfnzbs", "womble"]:
+                    config["indexers"][indexer]["type"] = indexer if indexer != "omgwtfnzbs" else "omgwtf"
+                    indexers.append(config["indexers"][indexer])
+                for indexer in config["indexers"]["newznab"]:
+                    indexer["type"] = "newznab"
+                    indexers.append(indexer)
+                config["indexers"] = indexers
 
-            if config["main"]["configVersion"] == 16:
-                with version_update(config, 17):
-                    addLogMessage(20, "Moving downloaders")
-                    downloaders = []
-                    if config["downloader"]["nzbget"]["host"]:
-                        addLogMessage(20, "Found configured downloader NZBGet")
-                        downloaders.append({
-                            "name": "NZBGet",
-                            "type": "nzbget",
-                            "defaultCategory": config["downloader"]["nzbget"]["defaultCategory"],
-                            "host": config["downloader"]["nzbget"]["host"],
-                            "password": config["downloader"]["nzbget"]["password"],
-                            "port": config["downloader"]["nzbget"]["port"],
-                            "ssl": config["downloader"]["nzbget"]["ssl"],
-                            "username": config["downloader"]["nzbget"]["username"],
-                            "enabled": True if config["downloader"]["downloader"] == "nzbget" else False,
-                            "nzbAddingType": config["downloader"]["nzbAddingType"],
-                            "nzbaccesstype": config["downloader"]["nzbaccesstype"]
-                        })
-                    if config["downloader"]["sabnzbd"]["apikey"]:
-                        addLogMessage(20, "Found configured downloader SABnzbd")
-                        downloaders.append({
-                            "name": "SABnzbd",
-                            "type": "sabnzbd",
-                            "defaultCategory": config["downloader"]["sabnzbd"]["defaultCategory"],
-                            "apikey": config["downloader"]["sabnzbd"]["apikey"],
-                            "password": config["downloader"]["sabnzbd"]["password"],
-                            "url": config["downloader"]["sabnzbd"]["url"],
-                            "username": config["downloader"]["sabnzbd"]["username"],
-                            "enabled": True if config["downloader"]["downloader"] == "sabnzbd" else False,
-                            "nzbAddingType": config["downloader"]["nzbAddingType"],
-                            "nzbaccesstype": config["downloader"]["nzbaccesstype"]
-                        })
-                    config["downloaders"] = downloaders
-            if config["main"]["configVersion"] == 17:
-                with version_update(config, 18):
-                    addLogMessage(20, "Adding secret for auth")
-                    config["main"]["secret"] = createSecret()
-                    addLogMessage(20, "Migrating auth settings")
-                    if len(config["auth"]["users"]) == 0:
-                        addLogMessage(20, "No users configured, setting auth type to none")
-                        config["auth"]["authType"] = "none"
-                        config["auth"]["restrictAdmin"] = False
-                        config["auth"]["restrictStats"] = False
-                        config["auth"]["restrictSearch"] = False
-                    else:
-                        addLogMessage(20, "Found configured users, setting auth type to basic")
-                        config["auth"]["authType"] = "basic"
-                        for user in config["auth"]["users"]:
-                            if user["username"] == "" and user["password"] == "":
-                                addLogMessage(20, "Found authless user, not restricting access to search")
-                                config["auth"]["restrictSearch"] = False
-                                if user["maySeeAdmin"]:
-                                    addLogMessage(20, "Found authless user with admin rights, not restricting access to admin functions")
-                                    config["auth"]["restrictAdmin"] = False
-                                else:
-                                    addLogMessage(20, "Found authless user without admin rights, restricting access to admin functions")
-                                    config["auth"]["restrictAdmin"] = True
-                                if user["maySeeStats"]:
-                                    addLogMessage(20, "Found authless user with admin rights, not restricting access to stats")
-                                    config["auth"]["restrictStats"] = False
-                                else:
-                                    addLogMessage(20, "Found authless user without stats rights, restricting access to stats")
-                                    config["auth"]["restrictStats"] = True
+        if config["main"]["configVersion"] == 16:
+            with version_update(config, 17):
+                addLogMessage(20, "Moving downloaders")
+                downloaders = []
+                if config["downloader"]["nzbget"]["host"]:
+                    addLogMessage(20, "Found configured downloader NZBGet")
+                    downloaders.append({
+                        "name": "NZBGet",
+                        "type": "nzbget",
+                        "defaultCategory": config["downloader"]["nzbget"]["defaultCategory"],
+                        "host": config["downloader"]["nzbget"]["host"],
+                        "password": config["downloader"]["nzbget"]["password"],
+                        "port": config["downloader"]["nzbget"]["port"],
+                        "ssl": config["downloader"]["nzbget"]["ssl"],
+                        "username": config["downloader"]["nzbget"]["username"],
+                        "enabled": True if config["downloader"]["downloader"] == "nzbget" else False,
+                        "nzbAddingType": config["downloader"]["nzbAddingType"],
+                        "nzbaccesstype": config["downloader"]["nzbaccesstype"]
+                    })
+                if config["downloader"]["sabnzbd"]["apikey"]:
+                    addLogMessage(20, "Found configured downloader SABnzbd")
+                    downloaders.append({
+                        "name": "SABnzbd",
+                        "type": "sabnzbd",
+                        "defaultCategory": config["downloader"]["sabnzbd"]["defaultCategory"],
+                        "apikey": config["downloader"]["sabnzbd"]["apikey"],
+                        "password": config["downloader"]["sabnzbd"]["password"],
+                        "url": config["downloader"]["sabnzbd"]["url"],
+                        "username": config["downloader"]["sabnzbd"]["username"],
+                        "enabled": True if config["downloader"]["downloader"] == "sabnzbd" else False,
+                        "nzbAddingType": config["downloader"]["nzbAddingType"],
+                        "nzbaccesstype": config["downloader"]["nzbaccesstype"]
+                    })
+                config["downloaders"] = downloaders
+        if config["main"]["configVersion"] == 17:
+            with version_update(config, 18):
+                addLogMessage(20, "Adding secret for auth")
+                config["main"]["secret"] = createSecret()
+                addLogMessage(20, "Migrating auth settings")
+                if len(config["auth"]["users"]) == 0:
+                    addLogMessage(20, "No users configured, setting auth type to none")
+                    config["auth"]["authType"] = "none"
+                    config["auth"]["restrictAdmin"] = False
+                    config["auth"]["restrictStats"] = False
+                    config["auth"]["restrictSearch"] = False
+                else:
+                    addLogMessage(20, "Found configured users, setting auth type to basic")
+                    config["auth"]["authType"] = "basic"
+                    for user in config["auth"]["users"]:
+                        if user["username"] == "" and user["password"] == "":
+                            addLogMessage(20, "Found authless user, not restricting access to search")
+                            config["auth"]["restrictSearch"] = False
+                            if user["maySeeAdmin"]:
+                                addLogMessage(20, "Found authless user with admin rights, not restricting access to admin functions")
+                                config["auth"]["restrictAdmin"] = False
                             else:
-                                if user["maySeeAdmin"]:
-                                    addLogMessage(20, "Found user with admin rights,  restricting access to admin functions")
-                                    config["auth"]["restrictAdmin"] = True
-                                if user["maySeeStats"]:
-                                    addLogMessage(20, "Found user with stats rights,  restricting access to stats")
-                                    config["auth"]["restrictStats"] = True
-                        if not any([x for x in config["auth"]["users"] if x["username"] == "" and x["password"] == ""]):
-                            addLogMessage(20, "Did not find an authless user, restricting access to all functions")
-                            config["auth"]["restrictAdmin"] = True
-                            config["auth"]["restrictStats"] = True
-                            config["auth"]["restrictSearch"] = True
-                    # Make sure user is not locked out
-                    if not any([x for x in config["auth"]["users"] if x["maySeeAdmin"]]) and config["auth"]["authType"] != "none" and config["auth"]["restrictAdmin"]:
-                        addLogMessage(30, "Did not find any user with admin rights, you will need to change that manually!")
+                                addLogMessage(20, "Found authless user without admin rights, restricting access to admin functions")
+                                config["auth"]["restrictAdmin"] = True
+                            if user["maySeeStats"]:
+                                addLogMessage(20, "Found authless user with admin rights, not restricting access to stats")
+                                config["auth"]["restrictStats"] = False
+                            else:
+                                addLogMessage(20, "Found authless user without stats rights, restricting access to stats")
+                                config["auth"]["restrictStats"] = True
+                        else:
+                            if user["maySeeAdmin"]:
+                                addLogMessage(20, "Found user with admin rights,  restricting access to admin functions")
+                                config["auth"]["restrictAdmin"] = True
+                            if user["maySeeStats"]:
+                                addLogMessage(20, "Found user with stats rights,  restricting access to stats")
+                                config["auth"]["restrictStats"] = True
+                    if not any([x for x in config["auth"]["users"] if x["username"] == "" and x["password"] == ""]):
+                        addLogMessage(20, "Did not find an authless user, restricting access to all functions")
+                        config["auth"]["restrictAdmin"] = True
+                        config["auth"]["restrictStats"] = True
+                        config["auth"]["restrictSearch"] = True
+                # Make sure user is not locked out
+                if not any([x for x in config["auth"]["users"] if x["maySeeAdmin"]]) and config["auth"]["authType"] != "none" and config["auth"]["restrictAdmin"]:
+                    addLogMessage(30, "Did not find any user with admin rights, you will need to change that manually!")
 
-            if config["main"]["configVersion"] == 18:
-                with version_update(config, 19):
-                    from nzbhydra import search
-                    addLogMessage(20, "Moving category sizes")
-                    categoriesToMigrate = ["movies", "movieshd", "moviessd", "tv", "tvsd", "tvhd", "audio", "flac", "mp3", "audiobook", "console", "pc", "xxx", "ebook", "comic"]
-                    config["categories"] = {
-                        "categories": {},
-                        "enableCategorySizes": config["searching"]["categorysizes"]["enable_category_sizes"]
-                    }
-                    for category in categoriesToMigrate:
-                        config["categories"]["categories"][category] = initialConfig["categories"]["categories"][category]
+        if config["main"]["configVersion"] == 18:
+            with version_update(config, 19):
+                from nzbhydra import search
+                addLogMessage(20, "Moving category sizes")
+                categoriesToMigrate = ["movies", "movieshd", "moviessd", "tv", "tvsd", "tvhd", "audio", "flac", "mp3", "audiobook", "console", "pc", "xxx", "ebook", "comic"]
+                config["categories"] = {
+                    "categories": initialConfig["categories"]["categories"],
+                    "enableCategorySizes": config["searching"]["categorysizes"]["enable_category_sizes"]
+                }
+                for category in categoriesToMigrate:
+                    if category == "audiobook": #was saved as "audioookmin"
+                        config["categories"]["categories"][category]["min"] = config["searching"]["categorysizes"]["audioookmin"]
+                    else:
                         config["categories"]["categories"][category]["min"] = config["searching"]["categorysizes"][category + "min"]
-                        config["categories"]["categories"][category]["max"] = config["searching"]["categorysizes"][category + "max"]
-
-                    config["searching"].pop("categorysizes")
-                    config["searching"]["forbiddenWords"] = config["searching"]["ignoreWords"]
-                    config["searching"]["requiredWords"] = config["searching"]["requireWords"]
                     
-                    for downloader in config["downloaders"]:
-                        if "iconCssClass" not in downloader.keys():
-                            addLogMessage(20, "Adding icon CSS class to downloader")
-                            downloader["iconCssClass"] = ""
+                    if category != "moviessd":  # Movies SD Max was not set in older versions
+                        config["categories"]["categories"][category]["max"] = config["searching"]["categorysizes"][category + "max"]
+                    else:
+                        config["categories"]["categories"][category]["max"] = 3000
 
-        except Exception as e:
-            raise e
+                config["searching"].pop("categorysizes")
+                config["searching"]["forbiddenWords"] = config["searching"]["ignoreWords"]
+                config["searching"]["requiredWords"] = config["searching"]["requireWords"]
+                
+                for downloader in config["downloaders"]:
+                    if "iconCssClass" not in downloader.keys():
+                        addLogMessage(20, "Adding icon CSS class to downloader")
+                        downloader["iconCssClass"] = ""
+
     return config
 
 

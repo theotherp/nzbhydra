@@ -97,7 +97,7 @@ class TestConfig(unittest.TestCase):
                 "requireWords": "required",
                 "categorysizes": {
                     "audiobookmax": 1000,
-                    "audiobookmin": 50,
+                    "audioookmin": 50,
                     "audiomax": 2000,
                     "audiomin": 1,
                     "comicmax": 250,
@@ -113,8 +113,7 @@ class TestConfig(unittest.TestCase):
                     "movieshdmin": 3000,
                     "moviesmax": 20000,
                     "moviesmin": 500,
-                    "moviessdmax": 3000,
-                    "moviessdmin": 500,
+                    "moviessdmin": 3000,
                     "mp3max": 500,
                     "mp3min": 1,
                     "pcmax": 50000,
