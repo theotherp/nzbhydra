@@ -6,6 +6,8 @@ Fixed: Forbidden and ignored words not displayed in config.
 
 Fixed: Download of bugreport would not work with auth type "Form".
 
+Fixed: Error with API search and categories due to stupid mistake but caused by fucking Python 2.7.
+
 ### 0.2.105
 Fixed: Set appropriate categories when API searches are done ("Movies" for movie search, etc.) 
 

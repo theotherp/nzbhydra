@@ -41,6 +41,10 @@ class TestCategories(unittest.TestCase):
         result = categories.getByNewznabCats(cats)
         self.assertEqual("movieshd", result.name)
 
+        cats = u"2050,2040"
+        result = categories.getByNewznabCats(cats)
+        self.assertEqual("movieshd", result.name)
+
         cats = [2050, 2040]
         result = categories.getByNewznabCats(cats)
         self.assertEqual("movieshd", result.name)

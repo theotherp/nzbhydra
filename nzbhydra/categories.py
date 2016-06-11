@@ -46,7 +46,7 @@ def getListFromNewznabCats(cats):
         return []
     if representsInt(cats):
         cats = [cats]
-    if isinstance(cats, str):
+    if isinstance(cats, str) or isinstance(cats, unicode):
         cats = cats.split(",")
     cats = [int(x) for x in cats]
     return cats
