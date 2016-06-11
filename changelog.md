@@ -12,6 +12,8 @@ Decide for every category if you want to ignore results from it for external and
 
 Added: Online help in the configuration.
 
+Added: Improved test coverage and started to write more integration tests. Should somewhat decrease chance of breaking bugs, at least for API. I still don't have frontend tests.
+
 Changed: Login and logout functionality. The navigation only shows links to sections the current user is allowed to visit. Click the login button in the upper right to login. Click it again to logout.
 If you use basic auth and logged out make sure to close the browser so that the auth header is removed.
  

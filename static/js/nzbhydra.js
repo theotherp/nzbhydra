@@ -3534,7 +3534,7 @@ function ConfigFields($injector) {
                                 {name: 'Always', value: 'always'},
                                 {name: 'Never', value: 'never'}
                             ],
-                            help: "Ignore results from this category (if not explicitly selected)"
+                            help: "Ignore results from this category"
                         }
                     });
 
