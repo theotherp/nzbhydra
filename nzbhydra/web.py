@@ -311,7 +311,7 @@ def isAllowed(authType):
     return False
 
 
-def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False, isIndex=False):
+def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False, disableAuthForForm=False):
     def decorator(f):
         def wrapped_function(*args, **kwargs):
             logger.debug("Call to method %s" % f.__name__)
@@ -326,7 +326,7 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False, isI
                     allowed = True
                 else:
                     logger.warn("API access with invalid API key from %s" % getIp())
-            elif isIndex and (config.settings.auth.authType == "form" or not config.settings.auth.restrictSearch):  # Users need to be able to visit the main page without having to auth 
+            elif disableAuthForForm and (config.settings.auth.authType == "form" or not config.settings.auth.restrictSearch):  # Users need to be able to visit the main page without having to auth 
                 allowed = True
             elif config.settings.auth.authType == "none":
                 allowed = True
@@ -368,7 +368,7 @@ def login():
 
 @app.route('/<path:path>')
 @app.route('/', defaults={"path": None})
-@requires_auth("main", isIndex=True)
+@requires_auth("main", disableAuthForForm=True)
 def base(path):
     logger.debug("Sending index.html")
     base_url = ("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/"
@@ -582,7 +582,7 @@ api_search.make_cache_key = make_request_cache_key
 
 
 @app.route("/details/<path:guid>")
-@requires_auth("main")
+@requires_auth("main", disableAuthForForm=True)
 def get_details(guid):
     searchResultId = int(guid[len("nzbhydrasearchresult"):])
     searchResult = SearchResult.get(SearchResult.id == searchResultId)
@@ -1021,7 +1021,7 @@ def internalapi_getconfig():
 
 
 @app.route('/internalapi/getsafeconfig')
-@requires_auth("main", isIndex=True)
+@requires_auth("main", disableAuthForForm=True)
 def internalapi_getsafeconfig():
     return jsonify(config.getSafeConfig())
 

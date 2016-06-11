@@ -10,6 +10,8 @@ Define newznab categories for every Hydra category. These categories will be use
 
 Decide for every category if you want to ignore results from it for external and/or internal searches.
  
+Changed: Don't require auth for NZB details links when form based auth is enabled. Should prevent troubles with viewing details from external tools like CP and the security risks are negligible. 
+
 Fixed: Don't display an NZB download as failed if it was only redirected (then we don't know if it was successful).
 
 Fixed: Error where indexers tab in config could not be opened.
