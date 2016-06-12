@@ -91,7 +91,7 @@ def run(arguments):
         traceback.print_exc(file=sys.stdout)
         print("Trying to log messages from migration...")
         config.logLogMessages()
-        exit(-5)
+        os._exit(-5)
 
     try:
         logger.info("Started")

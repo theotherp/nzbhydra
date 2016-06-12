@@ -130,7 +130,6 @@ class TestConfig(unittest.TestCase):
             }
         }
         cfg = config.migrateConfig(testCfg)
-        print(cfg)
 
         self.assertTrue(cfg["categories"]["enableCategorySizes"])
         self.assertFalse(cfg["categories"]["categories"]["movies"]["requiredWords"])
@@ -139,3 +138,57 @@ class TestConfig(unittest.TestCase):
         self.assertEqual("forbidden", cfg["searching"]["forbiddenWords"])
         self.assertEqual("required", cfg["searching"]["requiredWords"])
         self.assertEqual("", cfg["downloaders"][0]["iconCssClass"])
+
+    def testMigration18to19WithMissingComicSection(self):
+        testCfg = {
+            "main":
+                {
+                    "configVersion": 18,
+                },
+            "downloaders": [
+                {}
+            ],
+            "searching": {
+                "alwaysShowDuplicates": True,
+                "ignoreWords": "forbidden",
+                "requireWords": "required",
+                "categorysizes": {
+                    "audiobookmax": 1000,
+                    "audioookmin": 50,
+                    "audiomax": 2000,
+                    "audiomin": 1,
+                    "consolemax": 40000,
+                    "consolemin": 100,
+                    "ebookmax": 100,
+                    "ebookmin": None,
+                    "enable_category_sizes": True,
+                    "flacmax": 2000,
+                    "flacmin": 10,
+                    "movieshdmax": 20000,
+                    "movieshdmin": 3000,
+                    "moviesmax": 20000,
+                    "moviesmin": 500,
+                    "moviessdmin": 3000,
+                    "mp3max": 500,
+                    "mp3min": 1,
+                    "pcmax": 50000,
+                    "pcmin": 100,
+                    "tvhdmax": 3000,
+                    "tvhdmin": 300,
+                    "tvmax": 5000,
+                    "tvmin": 50,
+                    "tvsdmax": 1000,
+                    "tvsdmin": 50,
+                    "xxxmax": 10000,
+                    "xxxmin": 100
+                }
+            }
+        }
+        cfg = config.migrateConfig(testCfg)
+        print(cfg)
+
+        self.assertTrue(cfg["categories"]["enableCategorySizes"])
+        self.assertTrue("min" in cfg["categories"]["categories"]["comic"])
+        
+        
+        

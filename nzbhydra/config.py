@@ -517,7 +517,6 @@ def migrateConfig(config):
 
         if config["main"]["configVersion"] == 18:
             with version_update(config, 19):
-                from nzbhydra import search
                 addLogMessage(20, "Moving category sizes")
                 categoriesToMigrate = ["movies", "movieshd", "moviessd", "tv", "tvsd", "tvhd", "audio", "flac", "mp3", "audiobook", "console", "pc", "xxx", "ebook", "comic"]
                 config["categories"] = {
@@ -525,15 +524,17 @@ def migrateConfig(config):
                     "enableCategorySizes": config["searching"]["categorysizes"]["enable_category_sizes"]
                 }
                 for category in categoriesToMigrate:
-                    if category == "audiobook": #was saved as "audioookmin"
-                        config["categories"]["categories"][category]["min"] = config["searching"]["categorysizes"]["audioookmin"]
-                    else:
-                        config["categories"]["categories"][category]["min"] = config["searching"]["categorysizes"][category + "min"]
-                    
-                    if category != "moviessd":  # Movies SD Max was not set in older versions
-                        config["categories"]["categories"][category]["max"] = config["searching"]["categorysizes"][category + "max"]
-                    else:
-                        config["categories"]["categories"][category]["max"] = 3000
+                    if category + "min" in config["searching"]["categorysizes"]:
+                        if category == "audiobook": #was saved as "audioookmin"
+                            config["categories"]["categories"][category]["min"] = config["searching"]["categorysizes"]["audioookmin"]
+                        else:
+                            config["categories"]["categories"][category]["min"] = config["searching"]["categorysizes"][category + "min"]
+
+                    if category + "max" in config["searching"]["categorysizes"]:
+                        if category != "moviessd":  # Movies SD Max was not set in older versions
+                            config["categories"]["categories"][category]["max"] = config["searching"]["categorysizes"][category + "max"]
+                        else:
+                            config["categories"]["categories"][category]["max"] = 3000
 
                 config["searching"].pop("categorysizes")
                 config["searching"]["forbiddenWords"] = config["searching"]["ignoreWords"]
