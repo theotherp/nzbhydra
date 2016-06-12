@@ -68,7 +68,7 @@ class TestWeb(UrlTestCase):
             path = "/"
         return path
 
-    def testAuth(self):
+    def testBasicAuth(self):
         with web.app.test_request_context('/'):
             config.settings.auth = Bunch.fromDict({
                 "authType": "none",
@@ -291,6 +291,50 @@ class TestWeb(UrlTestCase):
             self.checkAreaAccess("main", True, "x", "y", "post")
             self.checkAreaAccess("admin", False, "x", "y", "post")
             self.checkAreaAccess("stats", False, "x", "y", "post")
+
+
+    def testAuthFallback(self):
+        with web.app.test_request_context('/'):
+            config.settings.auth = Bunch.fromDict({
+                "authType": "form",
+                "restrictAdmin": True,
+                "restrictSearch": True,
+                "restrictStats": True,
+                "users": [
+                    {
+                        "maySeeAdmin": True,
+                        "maySeeStats": True,
+                        "username": "a",
+                        "password": "b"
+                    }
+                ]
+            })
+            flask.request.authorization = None
+
+            # When sending an auth header with valid credentials we should allow that even when form auth is enabled (for fallback or such)
+            self.checkAreaAccess("main", True, "a", "b")
+            self.checkAreaAccess("stats", True, "a", "b")
+            self.checkAreaAccess("admin", True, "a", "b")
+
+            # And the other way around
+            config.settings.auth = Bunch.fromDict({
+                "authType": "basic",
+                "restrictAdmin": True,
+                "restrictSearch": True,
+                "restrictStats": True,
+                "users": [
+                    {
+                        "maySeeAdmin": True,
+                        "maySeeStats": True,
+                        "username": "a",
+                        "password": "b"
+                    }
+                ]
+            })
+
+            self.checkAreaAccess("main", True, "a", "b", "post")
+            self.checkAreaAccess("admin", True, "a", "b", "post")
+            self.checkAreaAccess("stats", True, "a", "b", "post")
 
     @patch("nzbhydra.search.search")
     def testApiSearch(self, searchMock):

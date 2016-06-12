@@ -301,7 +301,7 @@ class NewzNab(SearchModule):
 
     def addExcludedWords(self, query, search_request):
         if "nzbgeek" in self.settings.host and search_request.forbiddenWords:  # NZBGeek isn't newznab but sticks to its standards in most ways but not in this. Instead of adding a new search module just for this small part I added this small POC here
-            query += " !" + " ".join([x for x in search_request.forbiddenWords if not (" " in x or "-" in x or "." in x)])
+            query += " ".join(["--%s" % x for x in search_request.forbiddenWords if not (" " in x or "-" in x or "." in x)])
         else:
             for word in search_request.forbiddenWords:
                 if " " in word or "-" in word or "." in word:

@@ -1271,8 +1271,6 @@ function UpdateFooterController($scope, UpdateService, HydraAuthService, bootstr
     $scope.mayUpdate = HydraAuthService.getUserRights().maySeeAdmin || bootstrapped.maySeeAdmin;
 
     $scope.$on("user:loggedIn", function (event, data) {
-        console.log("loggedIn event");
-        console.log(data);
         if (data.maySeeAdmin && !$scope.checked) {
             retrieveUpdateInfos();
         }
@@ -1285,7 +1283,6 @@ function UpdateFooterController($scope, UpdateService, HydraAuthService, bootstr
 
     function retrieveUpdateInfos() {
         $scope.checked = true;
-        console.log("Getting update infos");
         UpdateService.getVersions().then(function (data) {
             $scope.currentVersion = data.data.currentVersion;
             $scope.repVersion = data.data.repVersion;
@@ -2575,18 +2572,26 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService, Config
         }
     }
 
-    $scope.$on("user:loggedIn", function (event, data) {
+    function onLogin(data) {
         $scope.showAdmin = data.maySeeAdmin;
         $scope.showStats = data.maySeeStats;
         $scope.showLoginout = true;
         $scope.loginlogoutText = "Logout";
+    }
+
+    $scope.$on("user:loggedIn", function (event, data) {
+        onLogin(data);
     });
 
-    $scope.$on("user:loggedOut", function (event, data) {
+    function onLogout() {
         $scope.showAdmin = !bootstrapped.adminRestricted;
         $scope.showStats = !bootstrapped.statsRestricted;
         $scope.loginlogoutText = "Login";
         $scope.showLoginout = bootstrapped.adminRestricted || bootstrapped.statsRestricted || bootstrapped.searchRestricted;
+    }
+
+    $scope.$on("user:loggedOut", function (event, data) {
+        onLogout();
     });
 
     $scope.loginout = function () {
@@ -2598,7 +2603,8 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService, Config
             }
             else if (ConfigService.getSafe().authType == "form") {
                 growl.info("Logged out");
-            } 
+            }
+            onLogout();
             $state.go("root.search");
         } else {
             if (ConfigService.getSafe().authType == "basic") {
@@ -2610,6 +2616,7 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService, Config
                 } 
                 $http.get("internalapi/askforpassword", {params: params}).then(function () {
                     growl.info("Login successful!");
+                    //onLogin();
                     $state.go("root.search");
                 })
             } else if (ConfigService.getSafe().authType == "form") {
@@ -2617,11 +2624,8 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService, Config
             } else {
                 growl.info("You shouldn't need to login but here you go!");
             }
-
         }
-
     }
-
 }
 HeaderController.$inject = ["$scope", "$state", "$http", "growl", "HydraAuthService", "ConfigService", "bootstrapped"];
 

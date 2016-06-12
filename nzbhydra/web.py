@@ -174,7 +174,7 @@ def handle_bad_request(err):
     }), 422
 
 
-def authenticate():
+def returnBasicAuth401():
     # Only if the request actually contains auth data we consider this a login try
     if request.authorization:
         global failedLogins
@@ -231,13 +231,11 @@ def create_token(user):
 
 
 def parse_token(req):
-    token = req.headers.get('TokenAuthorization').split()[1]
+    token = req.headers.get('TokenAuthorization')
+    if token is None:
+        return None
+    token = token.split()[1]
     return jwt.decode(token, config.settings.main.secret)
-
-
-# TODO: use this to create generic responses. the gui should have a service to intercept this and forward only the data (if it was successful) or else show the error, possibly log it
-def create_json_response(success=True, data=None, error_message=None):
-    return jsonify({"success": success, "data": data, "error_message": error_message})
 
 
 def isAdminLoggedIn():
@@ -245,35 +243,47 @@ def isAdminLoggedIn():
     return len(config.settings.auth.users) == 0 or (auth is not None and any([x.maySeeAdmin and x.username == auth.username and x.password == auth.password for x in config.settings.auth.users]))
 
 
-def verifyAuthHeader(authType):
+def getUserFromToken():
+    try:
+        payload = parse_token(request)
+        if payload is None:
+            return None
+        user = None
+        for u in config.settings.auth.users:
+            if u.username == payload["username"]:
+                g.user = u
+                user = u
+                break
+        
+        if user is not None:
+            return user
+        else:
+            logger.warn("Token is invalid, user is unknown")
+            return None
+    except DecodeError:
+        logger.warn('Token is invalid')
+        return None
+    except ExpiredSignature:
+        logger.warn("Token has expired")
+        return None
+
+
+def getUserFromBasicAuth():
     auth = Bunch.fromDict(request.authorization)
-    if not auth:
-        logger.warn("Missing basic auth header")
-        return False
-    if not auth.username or not auth.password:
+    if auth is None or "username" not in auth or "password" not in auth:
         logger.warn("No username or password provided")
-        return False
+        return None
     for u in config.settings.auth.users:
         if auth.username == u.username:
             if auth.password != u.password:
+                logger.warn("Login attempt with user %s and invalid password" % u.username)
                 return False
-            g.user = u
-            if authType == "stats":
-                maySee = u.maySeeAdmin or u.maySeeStats
-                if not maySee:
-                    logger.warn("User %s may not see the stats" % u.username)
-                return maySee
-            if authType == "admin":
-                if not u.maySeeAdmin:
-                    logger.warn("User %s may not see the admin area" % u.username)
-                return u.maySeeAdmin
-            return True
-    else:
-        logger.warn("Unable to find a user with name %s" % auth.username)
-    return False
+            return u
+    return None
+
 
 def isAllowed(authType):
-    if len(config.settings.auth.users) == 0:
+    if len(config.settings.auth.users) == 0 or config.settings.auth.authType == "none":
         return True
     if authType == "main" and not config.settings.auth.restrictSearch:
         logger.debug("Access to main area is not restricted")
@@ -285,36 +295,29 @@ def isAllowed(authType):
         logger.debug("Access to stats area is not restricted")
         return True
 
-    if config.settings.auth.authType == "form":
-        if not request.headers.get('TokenAuthorization'):
-            logger.warn('Missing token authorization header')
-            return False
-        try:
-            payload = parse_token(request)
-            for u in config.settings.auth.users:
-                if u.username == payload["username"]:
-                    g.user = u
-                    if authType == "stats":
-                        maySee = u.maySeeAdmin or u.maySeeStats
-                        if not maySee:
-                            logger.warn("User %s may not see the stats" % u.username)
-                        return maySee
-                    if authType == "admin":
-                        if not u.maySeeAdmin:
-                            logger.warn("User %s may not see the admin area" % u.username)
-                        return u.maySeeAdmin
-                    return True
-            else:
-                logger.warn("Token is invalid, user %s is unknown" % payload["username"])
-                return False
-        except DecodeError:
-            logger.warn('Token is invalid')
-            return False
-        except ExpiredSignature:
-            logger.warn("Token has expired")
-            return False
-    else:
-        return verifyAuthHeader(authType)
+    user = None
+    #Try to find token header
+    if request.headers.get('TokenAuthorization'):
+        logger.debug("Found auth token in headers")
+        user = getUserFromToken()
+ 
+    #No user found in token. Check if basic auth header is set
+    if user is None:
+        user = getUserFromBasicAuth()
+    if user is None:
+        logger.warn("Unable to find authorization information")
+        return False
+    g.user = user
+    if authType == "stats":
+        maySee = user.maySeeAdmin or user.maySeeStats
+        if not maySee:
+            logger.warn("User %s may not see the stats" % user.username)
+        return maySee
+    if authType == "admin":
+        if not user.maySeeAdmin:
+            logger.warn("User %s may not see the admin area" % user.username)
+        return user.maySeeAdmin
+    return True
     
     
 
@@ -329,14 +332,12 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False, dis
                     logger.debug("Access granted by secret access key")
                     allowed = True
             elif allowWithApiKey and "apikey" in request.args:
-                if request.args.get("apikey") == config.settings.main.apikey:
+                if not config.settings.main.apikey or request.args.get("apikey") == config.settings.main.apikey:
                     logger.debug("Access granted by API key")
                     allowed = True
                 else:
                     logger.warn("API access with invalid API key from %s" % getIp())
             elif disableAuthForForm and (config.settings.auth.authType == "form" or not config.settings.auth.restrictSearch):  # Users need to be able to visit the main page without having to auth 
-                allowed = True
-            elif config.settings.auth.authType == "none":
                 allowed = True
             else:
                 logger.debug("Requiring auth for method %s" % f.__name__)
@@ -352,7 +353,7 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False, dis
                     pass
                 return f(*args, **kwargs)
             else:
-                return authenticate()
+                return returnBasicAuth401()
 
         return update_wrapper(wrapped_function, f)
 
@@ -389,6 +390,8 @@ def base(path):
         "statsRestricted": config.settings.auth.restrictStats and len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none",
         "searchRestricted": config.settings.auth.restrictSearch and len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none",
     }
+    
+    getUserFromToken() #Just see if the token is there
     if request.authorization:
         for u in config.settings.auth.users:
             if u.username == request.authorization.username:
@@ -1065,16 +1068,30 @@ internalapi__askforpassword_args = {
 }
 
 
+
+countAskForPasswordRequests = {}
+
+
 @app.route('/internalapi/askforpassword')
 @use_args(internalapi__askforpassword_args)
 def internalapi_askforadmin(args):
+    """
+    When basic auth is used and a user logs out the auth information is still stored by the browser. When the user wants to login again the same information is used, but the user may want to choose another username.
+    Then we must force a 401 so the basic auth window is opened. The user enters his credentials and the browser sends a second request to this method, with the changed credentials. Now we must check them.
+    But we must also make sure that the user can login using the same username as before, so for every username we count the calls to this method. Only the first time we must return 401, after that we must check
+    the credentials.
+    :param args: 
+    :return: 
+    """
+    global countAskForPasswordRequests
     logger.debug("Get askforpassword request")
     if not request.authorization:
         logger.debug("Authorization header not set, asking for credentials")
         return Response(
             'Asking for password', 401,
             {'WWW-Authenticate': 'Basic realm="Login Required"'})
-    elif request.authorization.username == args["old_username"]:
+    elif request.authorization.username == args["old_username"] and (request.authorization.username not in countAskForPasswordRequests or countAskForPasswordRequests[request.authorization.username] == 0):
+        countAskForPasswordRequests[request.authorization.username] = 1
         logger.info("Authorization header contains the same username as one that logged out. Returning 401 so user can login with a different username")
         return Response(
             'Asking for password', 401,
@@ -1082,10 +1099,13 @@ def internalapi_askforadmin(args):
     else:
         if args["old_username"]:
             logger.debug("Authorization header set and contains a username other than the one that logged out")
-        if verifyAuthHeader("any"):
-            return "Ok"
+        user = getUserFromBasicAuth()
+        g.user = user
+        if user:
+            countAskForPasswordRequests[request.authorization.username] = 0
+            return "OK"
         else:
-            return authenticate()
+            return returnBasicAuth401()
     
     
 

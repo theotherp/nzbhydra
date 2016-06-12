@@ -10,8 +10,6 @@ function UpdateFooterController($scope, UpdateService, HydraAuthService, bootstr
     $scope.mayUpdate = HydraAuthService.getUserRights().maySeeAdmin || bootstrapped.maySeeAdmin;
 
     $scope.$on("user:loggedIn", function (event, data) {
-        console.log("loggedIn event");
-        console.log(data);
         if (data.maySeeAdmin && !$scope.checked) {
             retrieveUpdateInfos();
         }
@@ -24,7 +22,6 @@ function UpdateFooterController($scope, UpdateService, HydraAuthService, bootstr
 
     function retrieveUpdateInfos() {
         $scope.checked = true;
-        console.log("Getting update infos");
         UpdateService.getVersions().then(function (data) {
             $scope.currentVersion = data.data.currentVersion;
             $scope.repVersion = data.data.repVersion;
