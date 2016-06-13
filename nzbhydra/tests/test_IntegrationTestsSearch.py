@@ -30,10 +30,6 @@ logging.getLogger("root").addHandler(logging.StreamHandler(sys.stdout))
 logging.getLogger("root").setLevel("DEBUG")
 
 
-def mock(x, y, z=True):
-    return True
-
-
 class IntegrationApiSearchTests(unittest.TestCase):
     def prepareIndexers(self, indexerCount):
         config.settings.indexers = []
@@ -228,7 +224,6 @@ class IntegrationApiSearchTests(unittest.TestCase):
     @requests_mock.Mocker()
     def testFullStack(self, requestsMock):
         web.app.template_folder = "../templates"
-
         
         expectedItems = self.prepareSearchMocks(requestsMock, 1, 1)
         with web.app.test_request_context('/'):
@@ -237,6 +232,7 @@ class IntegrationApiSearchTests(unittest.TestCase):
             self.assertSearchResults(entries, expectedItems)
             calledUrls = sorted([x.url for x in requestsMock.request_history])
             self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query', calledUrls[0]))
+            self.assertEqual("http://localhost/getnzb?searchresultid=1", entries[0].link)
         
             #Download NZB
             config.settings.searching.nzbAccessType = "redirect"
@@ -262,4 +258,16 @@ class IntegrationApiSearchTests(unittest.TestCase):
             self.assertIsNone(downloads[2]["response_successful"]) #Don't know if redirection went well
 
 
-            
+    @requests_mock.Mocker()
+    def testBaseUrl(self, requestsMock):
+        web.app.template_folder = "../templates"
+        config.settings.main.urlBase = "/nzbhydra"
+
+        expectedItems = self.prepareSearchMocks(requestsMock, 1, 1)
+        with web.app.test_request_context('/nzbhydra/'):
+            response = self.app.get("/nzbhydra/api?t=search&q=query")
+            entries, _, _ = newznab.NewzNab(Bunch.fromDict({"name": "forTest", "score": 0, "host": "host"})).parseXml(response.data)
+            self.assertSearchResults(entries, expectedItems)
+            calledUrls = sorted([x.url for x in requestsMock.request_history])
+            self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query', calledUrls[0]))
+            self.assertEqual("http://localhost/nzbhydra/getnzb?searchresultid=1", entries[0].link)

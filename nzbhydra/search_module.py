@@ -199,10 +199,10 @@ class SearchModule(object):
                 reason = "always"
                 ignore = True
             if nzbSearchResult.category.ignoreResults == "internal" and searchRequest.internal:
-                reason = " for internal searches"
+                reason = "for internal searches"
                 ignore = True
             if nzbSearchResult.category.ignoreResults == "external" and not searchRequest.internal:
-                reason = " for API searches"
+                reason = "for API searches"
                 ignore = True
             if ignore:
                 return False, "Results from category %s are configured to be ignored %s" % (nzbSearchResult.category.pretty, reason)

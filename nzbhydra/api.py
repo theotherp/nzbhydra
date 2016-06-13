@@ -95,6 +95,11 @@ class IndexerSearchSchema(Schema):
 
 
 def get_root_url():
+    if config.settings.main.urlBase:
+        rootUrl = request.url_root[:-1] + config.settings.main.urlBase
+        if not rootUrl.endswith("/"):
+            rootUrl += "/"
+        return rootUrl   
     return request.url_root
 
 

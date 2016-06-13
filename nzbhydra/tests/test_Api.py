@@ -12,7 +12,7 @@ import pytest
 import unittest
 
 from nzbhydra import config
-from nzbhydra import api
+from nzbhydra import api, web
 from nzbhydra.tests.UrlTestCase import UrlTestCase
 
 
@@ -75,4 +75,11 @@ class TestApi(UrlTestCase):
                 self.assertTrue("192.168.1.1" in url, "Uses getnzb but not external IP")
            
         
-        
+    
+    def testGetRootUrl(self):
+        with web.app.test_request_context('/nzbhydra/'):
+            config.settings.main.urlBase = None
+            self.assertEqual("http://localhost/", api.get_root_url())
+
+            config.settings.main.urlBase = "/nzbhydra"
+            self.assertEqual("http://localhost/nzbhydra/", api.get_root_url())
