@@ -131,7 +131,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 19,
+        "configVersion": 20,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -539,7 +539,9 @@ def migrateConfig(config):
                 config["searching"].pop("categorysizes")
                 config["searching"]["forbiddenWords"] = config["searching"]["ignoreWords"]
                 config["searching"]["requiredWords"] = config["searching"]["requireWords"]
-                
+    
+        if config["main"]["configVersion"] == 19:
+            with version_update(config, 20):
                 for downloader in config["downloaders"]:
                     if "iconCssClass" not in downloader.keys():
                         addLogMessage(20, "Adding icon CSS class to downloader")
