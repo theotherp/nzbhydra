@@ -94,13 +94,14 @@ class IndexerSearchSchema(Schema):
     apiAccesses = fields.Nested(IndexerApiAccessSchema, many=True)
 
 
-def get_root_url():
+def get_root_url(): 
+    f = furl()
+    f.scheme = request.scheme
+    f.host = furl(request.host_url).host
+    f.port = config.settings.main.port
     if config.settings.main.urlBase:
-        rootUrl = request.url_root[:-1] + config.settings.main.urlBase
-        if not rootUrl.endswith("/"):
-            rootUrl += "/"
-        return rootUrl   
-    return request.url_root
+        f.path = config.settings.main.urlBase
+    return str(f) + "/"
 
 
 def get_nzb_link_and_guid(searchResultId, external, downloader=None):

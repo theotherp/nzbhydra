@@ -79,7 +79,8 @@ class TestApi(UrlTestCase):
     def testGetRootUrl(self):
         with web.app.test_request_context('/nzbhydra/'):
             config.settings.main.urlBase = None
-            self.assertEqual("http://localhost/", api.get_root_url())
+            config.settings.main.port = 5075
+            self.assertEqual("http://localhost:5075/", api.get_root_url())
 
             config.settings.main.urlBase = "/nzbhydra"
-            self.assertEqual("http://localhost/nzbhydra/", api.get_root_url())
+            self.assertEqual("http://localhost:5075/nzbhydra/", api.get_root_url())

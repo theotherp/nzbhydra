@@ -1293,6 +1293,15 @@ def internalapi_update():
     return jsonify({"success": True})
 
 
+@app.route("/internalapi/urlroot")
+def internalapi_geturlroot():
+    
+    from nzbhydra.api import get_root_url
+    urlroot = get_root_url()
+    
+    return "This is the URL root: %s" % urlroot 
+
+
 def run(host, port, basepath):
     # type: (str, int, str) -> object
     context = create_context()

@@ -232,7 +232,7 @@ class IntegrationApiSearchTests(unittest.TestCase):
             self.assertSearchResults(entries, expectedItems)
             calledUrls = sorted([x.url for x in requestsMock.request_history])
             self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query', calledUrls[0]))
-            self.assertEqual("http://localhost/getnzb?searchresultid=1", entries[0].link)
+            self.assertEqual("http://localhost:5075/getnzb?searchresultid=1", entries[0].link)
         
             #Download NZB
             config.settings.searching.nzbAccessType = "redirect"
@@ -270,4 +270,4 @@ class IntegrationApiSearchTests(unittest.TestCase):
             self.assertSearchResults(entries, expectedItems)
             calledUrls = sorted([x.url for x in requestsMock.request_history])
             self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query', calledUrls[0]))
-            self.assertEqual("http://localhost/nzbhydra/getnzb?searchresultid=1", entries[0].link)
+            self.assertEqual("http://localhost:5075/nzbhydra/getnzb?searchresultid=1", entries[0].link)

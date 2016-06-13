@@ -229,7 +229,7 @@ def search(search_request):
         
         
         if search_request.query:
-            forbiddenWords = [str(x) for x in re.findall(r"[\s|\b](\-\-|!)(?P<term>\w+)", search_request.query)]
+            forbiddenWords = [str(x[1]) for x in re.findall(r"[\s|\b](\-\-|!)(?P<term>\w+)", search_request.query)]
             if len(forbiddenWords) > 0:
                 logger.debug("Query before removing NOT terms: %s" % search_request.query)
                 search_request.query = re.sub(r"[\s|\b](\-\-|!)(?P<term>\w+)", "", search_request.query)

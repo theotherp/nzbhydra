@@ -4,7 +4,12 @@
 ### 0.2.109
 Fixed: Category mapping wouldn't work with omgwtf.
 
-Fixed: URL base was not included in NZB links when external URL was not set.
+Fixed: URL base was not included in NZB links when external URL was not set. Now the local IP address, configured port and scheme are used. Tools on your computer (and inside your network) should be able to use the generated links.
+  If you need to send links to tools outside your network you have to set the external URL.
+  
+Fixed: Excluding words with "--" in the search field didn't work.
+
+
 
 ### 0.2.108
 Changed: Rewrote auth handling. Unfortunately form based auth only works when calls from the GUI are done, as soon as you call any function from outside (e.g. CP) the token header is

@@ -22,7 +22,7 @@
             "consolelevel": "ERROR",
             "logfile-filename": "nzbhydra.log"
         },
-        "port": 5053,
+        "port": 5075,
         "enableAuth": true,
         "enableCache": true,
         "password": "",
