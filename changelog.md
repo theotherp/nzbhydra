@@ -10,7 +10,6 @@ Fixed: URL base was not included in NZB links when external URL was not set. Now
 Fixed: Excluding words with "--" in the search field didn't work.
 
 
-
 ### 0.2.108
 Changed: Rewrote auth handling. Unfortunately form based auth only works when calls from the GUI are done, as soon as you call any function from outside (e.g. CP) the token header is
  missing and you will be asked for credentials using basic auth. Now, when you enter them, hydra will accept them even with form based auth enabled.

@@ -271,3 +271,31 @@ class IntegrationApiSearchTests(unittest.TestCase):
             calledUrls = sorted([x.url for x in requestsMock.request_history])
             self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query', calledUrls[0]))
             self.assertEqual("http://localhost:5075/nzbhydra/getnzb?searchresultid=1", entries[0].link)
+
+    @requests_mock.Mocker()
+    def testExcludeWordsInQuery(self, requestsMock):
+        web.app.template_folder = "../templates"
+
+        expectedItems = self.prepareSearchMocks(requestsMock, 1, 1)
+        with web.app.test_request_context('/'):
+            response = self.app.get("/api?t=search&q=query+!excluded")
+            entries, _, _ = newznab.NewzNab(Bunch.fromDict({"name": "forTest", "score": 0, "host": "host"})).parseXml(response.data)
+            self.assertSearchResults(entries, expectedItems)
+            calledUrls = sorted([x.url for x in requestsMock.request_history])
+            self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query+!excluded', calledUrls[0]))
+
+            response = self.app.get("/api?t=search&q=query+--excluded")
+            entries, _, _ = newznab.NewzNab(Bunch.fromDict({"name": "forTest", "score": 0, "host": "host"})).parseXml(response.data)
+            self.assertSearchResults(entries, expectedItems)
+            calledUrls = sorted([x.url for x in requestsMock.request_history])
+            self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query+!excluded', calledUrls[0]))
+
+            self.app.get("/internalapi/search?query=query+!excluded&category=all")
+            calledUrls = sorted([x.url for x in requestsMock.request_history])
+            self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query+!excluded', calledUrls[0]))
+
+            self.app.get("/internalapi/search?query=query+--excluded&category=all")
+            calledUrls = sorted([x.url for x in requestsMock.request_history])
+            self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query+!excluded', calledUrls[0]))
+
+            
