@@ -131,3 +131,4 @@ class MyTestCase(unittest.TestCase):
         link = self.omgwtf.get_nzb_link("guid", "title")
         self.assertEqual("https://api.omgwtfnzbs.org/nzb?api=apikey&id=guid&user=anuser", link)
         
+

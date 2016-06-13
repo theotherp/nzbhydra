@@ -111,11 +111,11 @@ def map_category(category):
             return []
         logger.debug("Mapped category %s to %s" % (category.category.name, categories_to_omgwtf[category.category.name]))
         return categories_to_omgwtf[category.category.name]
-    return [newznab_to_omgwtf[x] for x in category.category.newznabCategories]
-    
-    
-    
-
+    cats = []
+    for x in category.category.newznabCategories:
+        if str(x) in newznab_to_omgwtf.keys():
+            cats.extend(newznab_to_omgwtf[str(x)])
+    return cats
 
 def test_connection(apikey, username):
     logger.info("Testing connection for omgwtfnzbs")
@@ -306,7 +306,7 @@ class OmgWtf(SearchModule):
                 categoryid = item.find("categoryid").text
                 entry.details_link = self.get_details_link(entry.indexerguid)
                 if categoryid in omgwtf_to_categories.keys():
-                    entry.category = omgwtf_to_categories[categoryid]
+                    entry.category = getCategoryByName(omgwtf_to_categories[categoryid])
                 else:
                     entry.category = getUnknownCategory()
                 accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)

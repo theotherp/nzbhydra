@@ -126,6 +126,8 @@ class Binsearch(SearchModule):
         entries = Set([])
         countRejected = 0        
         self.debug("Using HTML parser %s" % config.settings.searching.htmlParser)
+        import lxml
+        from lxml import etree
         soup = BeautifulSoup(html, config.settings.searching.htmlParser)
 
         if "No results in most popular groups" in soup.text:
