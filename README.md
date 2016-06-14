@@ -6,19 +6,22 @@ NZBHydra is a meta search for NZB indexers and the "spiritual successor" to [NZB
 * Searches Binsearch, NZBIndex, NZBClub, omgwtfnzbs.org, Womble and most newznab compatible indexers (see https://github.com/theotherp/nzbhydra/issues/20 and https://github.com/theotherp/nzbhydra/wiki/Supported-Search-Types-And-Indexer-Hosts )
 * Search by IMDB, TMDB, TVDB, TVRage and TVMaze ID (including season and episode) and filter by age and size. If an ID is not supported by an indexer it is attempted to be converted (e.g. TMDB to IMDB)
 * Query generation, meaning when you search for a movie using e.g. an IMDB ID a query will be generated for raw indexers. Searching for a series season 1 episode 2 will also generate queries for raw indexers, like s01e02 and 1x02
-* Grouping of results with the same title and of duplicate results, accounting for result posting time, size, group and poster. By default only one of the duplicates is shown. You can provide an indexer score to influence which one that might be.
-* Compatible with Sonarr, CP, NZB 360, SickBeard, Mylar and Lazy Librarian.
+* Grouping of results with the same title and of duplicate results, accounting for result posting time, size, group and poster. By default only one of the duplicates is shown. You can provide an indexer score to influence which one that might be
+* Compatible with Sonarr, CP, NZB 360, SickBeard, Mylar and Lazy Librarian (and others)
 * Either proxy the NZBs from the indexers (keeping all X-NZB headers), redirect or use direct links in search results
-* Included function to add results (single or a bunch) to SABnzbd or NZBGet(v13+) and show NFOs where available. Option to decide if links are added as links or the NZBs are uploaded. Select category in GUI or define a default.
+* Included function to add results (single or a bunch) to multiple instances of SABnzbd or NZBGet(v13+) and show NFOs where available. Option to decide if links are added as links or the NZBs are uploaded. Select category in GUI or define a default.
 * Statistics on indexers (average response time, share of results, access errors), NZB download history and search history (both via internal GUI and API). Indexers with problems are paused for an increasing time span (like in sonarr)
-* Multi user capabilities so that you can share with your friends but keep the config safe.
+* Multi user capabilities so that you can share with your friends but keep the config safe
+* Login by HTTP basic auth or form
+* Define required and forbidden words
+* Fine tune categories with separate required and forbidden words. Completely ignore categories in search results. Map newznab categories to internal categories
 * Reverse proxy compatible. See https://github.com/theotherp/nzbhydra/wiki/Reverse-proxy
-* See https://imgur.com/a/lBq9n for screenshots (which might be slightly out of date)
+* [Dark theme](http://imgur.com/a/iCzL0) and [Bright theme](https://imgur.com/a/lBq9n) (slightly out of date)
 
 ##  How to run
 If you downloaded the source run with Python 2.7.9+. Runs on http://0.0.0.0:5075 by default. See the console output on how to choose the port and host using command line parameters.
 
-If you downloaded the windows release just start with NzbHydraTray.exe. Your default browser should open to the NZBHydra web interface.
+If you downloaded the [windows release](https://github.com/theotherp/nzbhydra-windows-releases) just start with NzbHydraTray.exe. Your default browser should open to the NZBHydra web interface.
 
 You're also free to use the [docker container by linuxserver.io](https://hub.docker.com/r/linuxserver/hydra/). 
 Although I do my best to keep that container nice and working please [use their forum](https://forum.linuxserver.io/index.php?threads/support-linuxserver-io-hydra.499/) for support regarding that container.
