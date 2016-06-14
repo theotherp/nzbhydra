@@ -1,3 +1,4 @@
+# coding=utf-8
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -1293,13 +1294,11 @@ def internalapi_update():
     return jsonify({"success": True})
 
 
-@app.route("/internalapi/urlroot")
-def internalapi_geturlroot():
-    
-    from nzbhydra.api import get_root_url
-    urlroot = get_root_url()
-    
-    return "This is the URL root: %s" % urlroot 
+@app.route("/internalapi/teststuff")
+def internalapi_teststuff():
+    #Used to trigger execution of test code
+    logger.error(u"äöü")
+    return "OK" 
 
 
 def run(host, port, basepath):
