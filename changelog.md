@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.110
+Fixed: Make sure iconCssClass is set.
+
 ### 0.2.109
 Fixed: Category mapping wouldn't work with omgwtf.
 

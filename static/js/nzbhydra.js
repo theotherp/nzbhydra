@@ -4797,14 +4797,16 @@ function getDownloaderPresets() {
             type: "nzbget",
             username: "nzbgetx",
             nzbAddingType: "link",
-            nzbaccesstype: "serve"
+            nzbaccesstype: "redirect",
+            iconCssClass: ""
         },
         {
             url: "http://localhost:8086",
             type: "sabnzbd",
             name: "SABnzbd",
             nzbAddingType: "link",
-            nzbaccesstype: "redirect"
+            nzbaccesstype: "redirect",
+            iconCssClass: ""
         }
     ];
 }
