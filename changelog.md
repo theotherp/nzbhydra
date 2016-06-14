@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.111
+Fixed: Lxml wouldn't load even if installed properly.
+
 ### 0.2.110
 Fixed: Make sure iconCssClass is set.
 
