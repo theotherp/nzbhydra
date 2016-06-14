@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.112
+Fixed: Return correct NZBGeek details links.
+
 ### 0.2.111
 Fixed: Lxml wouldn't load even if installed properly.
 

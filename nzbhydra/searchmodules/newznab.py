@@ -389,7 +389,11 @@ class NewzNab(SearchModule):
         return self.get_search_urls(search_request)
 
     def get_details_link(self, guid):
-        f = furl(self.settings.host.replace("api.", "www.")) #Quick and dirty fix so it doesn't link to the API
+        if "nzbgeek" in self.settings.host:
+            f = furl(self.settings.host)
+        else:
+            f = furl(self.settings.host.replace("api.", "www.")) #Quick and dirty fix so it doesn't link to the API
+            
         f.path.add("details")
         f.path.add(guid)
         return f.url
