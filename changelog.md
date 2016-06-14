@@ -4,6 +4,8 @@
 ### 0.2.111
 Fixed: Lxml wouldn't load even if installed properly.
 
+Fixed: Download of debug infos wouldn't work in firefox.
+
 ### 0.2.110
 Fixed: Make sure iconCssClass is set.
 

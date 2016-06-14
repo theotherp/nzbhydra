@@ -1367,14 +1367,16 @@ function SystemController($scope, $state, $http, growl, RestartService, NzbHydra
     $scope.downloadDebuggingInfos = function() {
         $http({method: 'GET', url: '/internalapi/getdebugginginfos', responseType: 'arraybuffer'}).success(function (data, status, headers, config) {
             var a = document.createElement('a');
-            console.log(data);
             var blob = new Blob([data], {'type': "application/octet-stream"});
             a.href = URL.createObjectURL(blob);
             var filename = "nzbhydra-debuginfo-" + moment().format("YYYY-MM-DD-HH-mm") + ".zip";
             a.download = filename;
+            
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
         }).error(function (data, status, headers, config) {
-            // handle error
+            console.log("Error:" + status);
         });
     }
     
