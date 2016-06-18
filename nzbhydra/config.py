@@ -151,6 +151,7 @@ initialConfig = {
         "ssl": False,
         "sslcert": None,
         "sslkey": None,
+        "socksProxy": None,
         "startupBrowser": True,
         "theme": "default",
         "urlBase": None,

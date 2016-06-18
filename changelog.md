@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.113
+Added: SOCKS proxy support by sanderjo
+
 ### 0.2.112
 Fixed: Return correct NZBGeek details links.
 

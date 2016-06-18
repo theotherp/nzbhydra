@@ -61,19 +61,17 @@ As I said query generation is very basic. When selecting a category and doing a 
 
 Newznab providers don't send information on NFO availablity. If the search results show an NFO link for such an indexer you will need to just try if you can get one.
 
-Not all newznab indexers support search by imdbid, tvdbid and rageid. Use the "Check caps" button to find out which IDs the indexer supports.
 
-
-The program is currently in alpha. Upgrading to an new version might cause loss of the configuration, stats or history. The console will contain debug information. It will crash. It is definitely not ready for general use.
+The program is currently in beta. Upgrading to an new version might cause loss of the configuration, stats or history. The console will contain debug information. It will crash. It is definitely not ready for general use.
 
 ## Development and how you can help
 Generally testing and any bug reports are very welcome.
 
-If you know LESS/CSS feel free to design a dark theme. Contact me if you need any changes in the code base / templates.
-
 Any pull requests are also welcome, but I feel I and the program would mostly profit from:
 * Unicode handling. I have no idea what I'm doing. 
 * Advice regarding stability, error handling, net code (I program Java by day and it shows) and performance
+
+Please send merge requests to the develop branch!
 
 ### Contact ###
 Send me an email at TheOtherP@gmx.de or a PM at https://www.reddit.com/user/TheOtherP

@@ -277,6 +277,19 @@ function ConfigFields($injector) {
                             }
                         },
                         {
+                            key: 'socksProxy',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'SOCKS proxy',
+                                placeholder: '127.0.0.1:1080',
+                                help: "IPv4 only"
+                            },
+                            watcher: {
+                                listener: restartListener
+                            }
+                        },
+                        {
                             key: 'sslcert',
                             hideExpression: '!model.ssl',
                             type: 'horizontalInput',

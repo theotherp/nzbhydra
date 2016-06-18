@@ -28,9 +28,11 @@ from nzbhydra import socks_proxy
 import nzbhydra.config as config
 
 import requests
+
 requests.packages.urllib3.disable_warnings()
 
 from nzbhydra.log import logger
+
 
 def daemonize(pidfile):
     # Make a non-session-leader child process
@@ -58,7 +60,7 @@ def daemonize(pidfile):
         sys.exit(1)
 
     # Write pid
-    
+
     pid = str(os.getpid())
     try:
         file(pidfile, 'w').write("%s\n" % pid)
@@ -129,22 +131,22 @@ def run(arguments):
 
         host = config.settings.main.host if arguments.host is None else arguments.host
         port = config.settings.main.port if arguments.port is None else arguments.port
-
+        socksproxy = config.settings.main.socksProxy if arguments.socksproxy is None else arguments.socksproxy
 
         # SOCKS proxy settings
-        if arguments.socksproxy:
+        if socksproxy:
             try:
-                sockshost, socksport = arguments.socksproxy.split(':')     # FWIW: this won't work for litteral IPv6 addresses
+                sockshost, socksport = socksproxy.split(':')  # FWIW: this won't work for literal IPv6 addresses
             except:
-                logger.notice("Incorrect input SOCKS proxy, so ignoring")
-                sockshost, socksport = [None,None]
+                logger.error('Incorrect SOCKS proxy settings "%s"' % socksproxy)
+                sockshost, socksport = [None, None]
             if sockshost:
-                logger.notice("SOCKS settings: host %s and port %s" % (sockshost, socksport) )
-                publicip = socks_proxy.setSOCKSproxy(sockshost,int(socksport))
+                logger.info("Using SOCKS proxy at host %s and port %s" % (sockshost, socksport))
+                publicip = socks_proxy.setSOCKSproxy(sockshost, int(socksport))
                 if publicip:
-                    logger.notice("Public IP address via SOCKS proxy is %s" % publicip)
+                    logger.info("Public IP address via SOCKS proxy: %s" % publicip)
                 else:
-                    logger.notice("Could not get public IP address. Is proxy working?")
+                    logger.error("Could not get public IP address. Is the proxy working?")
 
         logger.notice("Starting web app on %s:%d" % (host, port))
         if config.settings.main.externalUrl is not None and config.settings.main.externalUrl != "":
@@ -203,12 +205,12 @@ if __name__ == '__main__':
                 logger.debug("Shutting down with return code -2 to signal tray helper that it should only restart NZBHydra")
                 os._exit(-2)
         else:
-            #Otherwise we handle the restart ourself
-            os.environ["RESTART"] = "0"       
+            # Otherwise we handle the restart ourself
+            os.environ["RESTART"] = "0"
             if os.path.exists(args.pidfile):
                 logger.debug("Removing old PID file %s" % args.pidfile)
                 os.remove(args.pidfile)
-            
+
             args = [sys.executable]
             args.extend(sys.argv)
             if "--restarted" not in args:
