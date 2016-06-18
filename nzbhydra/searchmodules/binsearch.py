@@ -20,6 +20,7 @@ from bs4 import BeautifulSoup
 from furl import furl
 
 from nzbhydra import config
+from nzbhydra.categories import getUnknownCategory
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException, IndexerResultParsingRowException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
@@ -109,7 +110,9 @@ class Binsearch(SearchModule):
 
     def get_audiobook_urls(self, search_request):
         return self.get_search_urls(search_request)
-        
+
+    def get_comic_urls(self, search_request):
+        return self.get_search_urls(search_request)
     
     def get_details_link(self, guid):
         logger.info("Details for binsearch not yet implemented")
@@ -181,7 +184,7 @@ class Binsearch(SearchModule):
             entry.title = title
 
         entry.indexerguid = row.find("input", attrs={"type": "checkbox"})["name"]
-        entry.link = "https://www.binsearch.info/fcgi/nzb.fcgi?q=%s" % entry.indexerguid
+        entry.link = self.get_nzb_link(entry.indexerguid, None)
         info = row.find("span", attrs={"class": "d"})
         if info is None:
             self.debug("Ignored entry because it has no info")
@@ -214,7 +217,7 @@ class Binsearch(SearchModule):
 
             entry.size = int(size)
 
-        entry.category = "N/A"
+        entry.category = getUnknownCategory()
 
         if self.nfo_pattern.search(info.text):  # 1 nfo file is missing if there is no NFO
             entry.has_nfo = NzbSearchResult.HAS_NFO_YES

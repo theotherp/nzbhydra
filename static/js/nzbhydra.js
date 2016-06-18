@@ -1,321 +1,534 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title', 'satellizer', 'LocalStorageModule']);
 
-angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$locationProvider", "blockUIConfig", "$urlMatcherFactoryProvider", function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig, $urlMatcherFactoryProvider) {
+angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$locationProvider", "blockUIConfig", "$urlMatcherFactoryProvider", "$authProvider", "localStorageServiceProvider", "bootstrapped", function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig, $urlMatcherFactoryProvider, $authProvider, localStorageServiceProvider, bootstrapped) {
 
     blockUIConfig.autoBlock = false;
     $urlMatcherFactoryProvider.strictMode(false);
 
+    $urlRouterProvider.otherwise("/");
+
+
     $stateProvider
-        .state("search.results", {
-            templateUrl: "static/html/states/search-results.html",
-            controller: "SearchResultsController",
-            controllerAs: "srController",
-            options: {
-                inherit: false
+        .state('root', {
+            url: '',
+            abstract: true,
+            resolve: {
+                //loginRequired: loginRequired
             },
-            params: {
-                results: [],
-                indexersearches: [],
-                total: 0,
-                resultsCount: 0,
-                minsize: undefined,
-                maxsize: undefined,
-                minage: undefined,
-                maxage: undefined
-            }, resolve: {
-                $title: function () {
-                    return "Search results"
+            views: {
+                'header': {
+                    templateUrl: 'static/html/states/header.html',
+                    controller: 'HeaderController'
+                },
+                'footer': {
+                    templateUrl: 'footer.html'
                 }
             }
         })
-        .state("config", {
+        .state("root.config", {
             url: "/config",
-            templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            controllerAs: 'ctrl',
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function(){return "Config"}
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    controllerAs: 'ctrl',
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Config"
+                        }
+                    }
+                }
             }
         })
-        .state("config.auth", {
+        .state("root.config.auth", {
             url: "/auth",
-            templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Config (Auth)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Config (Auth)"
+                        }
+                    }
                 }
             }
         })
-        .state("config.searching", {
+        .state("root.config.searching", {
             url: "/searching",
-            templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Config (Searching)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Config (Searching)"
+                        }
+                    }
                 }
             }
         })
-        .state("config.downloader", {
+        .state("root.config.categories", {
+            url: "/categories",
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Config (Categories)"
+                        }
+                    }
+                }
+            }
+        })
+        .state("root.config.downloader", {
             url: "/downloader",
-            templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Config (Downloader)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Config (Downloader)"
+                        }
+                    }
                 }
             }
         })
-        .state("config.indexers", {
+        .state("root.config.indexers", {
             url: "/indexers",
-            templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Config (Indexers)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Config (Indexers)"
+                        }
+                    }
                 }
             }
         })
-        .state("config.system", {
+        .state("root.config.system", {
             url: "/system",
             templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System"
+            views: {
+                'container@': {
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System"
+                        }
+                    }
                 }
             }
         })
-        .state("config.log", {
+        .state("root.config.log", {
             url: "/log",
-            templateUrl: "static/html/states/config.html",
-            controller: "ConfigController",
-            resolve: {
-                config: ['ConfigService', function (ConfigService) {
-                    return ConfigService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System (Log)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/config.html",
+                    controller: "ConfigController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.get();
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System (Log)"
+                        }
+                    }
                 }
             }
         })
-        .state("stats", {
+        .state("root.stats", {
             url: "/stats",
-            templateUrl: "static/html/states/stats.html",
-            controller: "StatsController",
-            resolve: {
-                stats: ['StatsService', function (StatsService) {
-                    return StatsService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Stats"
+            abstract: true,
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/stats.html",
+                    controller: ["$scope", "$state", function($scope, $state) {
+                        $scope.$state = $state;
+                    }],
+                    resolve: {
+                        loginRequired: loginRequiredStats,
+                        $title: function () {
+                            return "Stats"
+                        }
+                    }
+                    
+                }
+            }            
+        })
+        .state("root.stats.main", {
+            url: "/stats",
+            views: {
+                'stats@root.stats': {
+                    templateUrl: "static/html/states/main-stats.html",
+                    controller: "StatsController",
+                    resolve: {
+                        loginRequired: loginRequiredStats,
+                        stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
+                            return StatsService.get();
+                        }],
+                        $title: function () {
+                            return "Stats"
+                        }
+                    }
                 }
             }
         })
-        .state("stats.indexers", {
+        .state("root.stats.indexers", {
             url: "/indexers",
-            templateUrl: "static/html/states/stats.html",
-            controller: "StatsController",
-            resolve: {
-                stats: ['StatsService', function (StatsService) {
-                    return StatsService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Stats (Indexers)"
+            views: {
+                'stats@root.stats': {
+                    templateUrl: "static/html/states/indexer-statuses.html",
+                    controller: IndexerStatusesController,
+                    resolve: {
+                        loginRequired: loginRequiredStats,
+                        statuses: ["$http", function($http) {
+                            return $http.get("internalapi/getindexerstatuses").success(function (response) {
+                                return response.indexerStatuses;
+                            });
+                        }],
+                        $title: function () {
+                            return "Stats (Indexers)"
+                        }
+                    }
                 }
             }
         })
-        .state("stats.searches", {
+        .state("root.stats.searches", {
             url: "/searches",
-            templateUrl: "static/html/states/stats.html",
-            controller: "StatsController",
-            resolve: {
-                stats: ['StatsService', function (StatsService) {
-                    return StatsService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Stats (Searches)"
+            views: {
+                'stats@root.stats': {
+                    templateUrl: "static/html/states/search-history.html",
+                    controller: SearchHistoryController,
+                    resolve: {
+                        loginRequired: loginRequiredStats,
+                        history: ["StatsService", function(StatsService) {
+                            return StatsService.getSearchHistory();
+                        }],
+                        $title: function () {
+                            return "Stats (Searches)"
+                        }
+                    }
                 }
             }
         })
-        .state("stats.downloads", {
+        .state("root.stats.downloads", {
             url: "/downloads",
-            templateUrl: "static/html/states/stats.html",
-            controller: "StatsController",
-            resolve: {
-                stats: ['StatsService', function (StatsService) {
-                    return StatsService.get();
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Stats (Downloads)"
+            views: {
+                'stats@root.stats': {
+                    templateUrl: 'static/html/states/download-history.html',
+                    controller: DownloadHistoryController,
+                    resolve: {
+                        loginRequired: loginRequiredStats,
+                        downloads: ["StatsService", function (StatsService) {
+                            return StatsService.getDownloadHistory();
+                        }],
+                        $title: function () {
+                            return "Stats (Downloads)"
+                        }
+                    }
                 }
             }
         })
-        .state("system", {
+        .state("root.system", {
             url: "/system",
-            templateUrl: "static/html/states/system.html",
-            controller: "SystemController",
-            resolve: {
-                foobar: ['$http', function ($http) {
-                    return $http.get("internalapi/askforadmin")
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/system.html",
+                    controller: "SystemController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        askAdmin: ['loginRequired', '$http', function (loginRequired, $http) {
+                            return $http.get("internalapi/askadmin");
+                        }],
+                        $title: function () {
+                            return "System"
+                        }
+                    }
                 }
             }
         })
-        .state("system.updates", {
+        .state("root.system.updates", {
             url: "/updates",
-            templateUrl: "static/html/states/system.html",
-            controller: "SystemController",
-            resolve: {
-                foobar: ['$http', function ($http) {
-                    return $http.get("internalapi/askforadmin")
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System (Updates)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/system.html",
+                    controller: "SystemController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System (Updates)"
+                        }
+                    }
                 }
             }
         })
-        .state("system.log", {
+        .state("root.system.log", {
             url: "/log",
-            templateUrl: "static/html/states/system.html",
-            controller: "SystemController",
-            resolve: {
-                foobar: ['$http', function ($http) {
-                    return $http.get("internalapi/askforadmin")
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System (Log)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/system.html",
+                    controller: "SystemController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System (Log)"
+                        }
+                    }
                 }
             }
         })
-        .state("system.backup", {
+        .state("root.system.backup", {
             url: "/backup",
-            templateUrl: "static/html/states/system.html",
-            controller: "SystemController",
-            resolve: {
-                foobar: ['$http', function ($http) {
-                    return $http.get("internalapi/askforadmin")
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System (Backup)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/system.html",
+                    controller: "SystemController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System (Backup)"
+                        }
+                    }
                 }
             }
         })
-        .state("system.about", {
+        .state("root.system.about", {
             url: "/about",
-            templateUrl: "static/html/states/system.html",
-            controller: "SystemController",
-            resolve: {
-                foobar: ['$http', function ($http) {
-                    return $http.get("internalapi/askforadmin")
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System (About)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/system.html",
+                    controller: "SystemController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System (About)"
+                        }
+                    }
                 }
             }
         })
-        .state("system.bugreport", {
+        .state("root.system.bugreport", {
             url: "/bugreport",
-            templateUrl: "static/html/states/system.html",
-            controller: "SystemController",
-            resolve: {
-                foobar: ['$http', function ($http) {
-                    return $http.get("internalapi/askforadmin")
-                }],
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "System (Bug report)"
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/system.html",
+                    controller: "SystemController",
+                    resolve: {
+                        loginRequired: loginRequiredAdmin,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "System (Bug report)"
+                        }
+                    }
                 }
             }
         })
-        .state("search", {
-            url: "/:search?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid&indexers",
-            templateUrl: "static/html/states/search.html",
-            controller: "SearchController",
-            resolve: {
-                safeConfig: ['ConfigService', function (ConfigService) {
-                    return ConfigService.getSafe();
-                }],
-                $title: function () {
-                    return "Search"
+        .state("root.search", {
+            url: "/?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid&indexers",
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/search.html",
+                    controller: "SearchController",
+                    resolve: {
+                        loginRequired: loginRequiredSearch,
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        $title: function () {
+                            return "Search"
+                        }
+                    }
+                }
+            }
+        })
+        .state("root.search.results", {
+            views: {
+                'results@root.search': {
+                    templateUrl: "static/html/states/search-results.html",
+                    controller: "SearchResultsController",
+                    controllerAs: "srController",
+                    options: {
+                        inherit: true
+                    },
+                    resolve: {
+                        loginRequired: loginRequiredSearch,
+                        $title: function () {
+                            return "Search results"
+                        }
+                    }
+                }
+            }
+        })
+        .state("root.login", {
+            url: "/login",
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/login.html",
+                    controller: "LoginController",
+                    resolve: {
+                        loginRequired: function () {
+                            return null;
+                        },
+                        $title: function () {
+                            return "Login"
+                        }
+                    }
                 }
             }
         })
     ;
 
+
     $locationProvider.html5Mode(true);
+
+    $authProvider.httpInterceptor = function () {
+        return true;
+    };
+    $authProvider.withCredentials = true;
+    $authProvider.tokenRoot = null;
+    $authProvider.baseUrl = bootstrapped.baseUrl;
+    $authProvider.loginUrl = '/auth/login';
+    $authProvider.signupUrl = '/auth/signup';
+    $authProvider.unlinkUrl = '/unlink/';
+    $authProvider.tokenName = 'token';
+    $authProvider.tokenPrefix = 'satellizer';
+    $authProvider.authHeader = 'TokenAuthorization';
+    $authProvider.authToken = 'Bearer';
+    $authProvider.storageType = 'localStorage';
+
+
+    //Because I don't know for what state the login is required / asked I have a function for each 
+
+    function loginRequiredSearch($q, $timeout, $auth, $state, bootstrapped) {
+        
+        var deferred = $q.defer();
+
+        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || !bootstrapped.searchRestricted) {
+            deferred.resolve();
+        } else {
+            $timeout(function () {
+                // This code runs after the authentication promise has been rejected.
+                // Go to the log-in page
+                $state.go("root.login");
+            })
+        }
+        return deferred.promise;
+    }
+    loginRequiredSearch.$inject = ["$q", "$timeout", "$auth", "$state", "bootstrapped"];
+
+    function loginRequiredStats($q, $timeout, $auth, $state, bootstrapped) {
+        var deferred = $q.defer();
+
+        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || !bootstrapped.statsRestricted) {
+            deferred.resolve();
+        } else {
+            $timeout(function () {
+                // This code runs after the authentication promise has been rejected.
+                // Go to the log-in page
+                $state.go("root.login");
+            })
+        }
+        return deferred.promise;
+    }
+    loginRequiredStats.$inject = ["$q", "$timeout", "$auth", "$state", "bootstrapped"];
+
+    function loginRequiredAdmin($q, $timeout, $auth, $state, bootstrapped) {
+        var deferred = $q.defer();
+
+        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || !bootstrapped.adminRestricted) {
+            deferred.resolve();
+        } else {
+            $timeout(function () {
+                // This code runs after the authentication promise has been rejected.
+                // Go to the log-in page
+                $state.go("root.login");
+            })
+        }
+        return deferred.promise;
+    }
+    loginRequiredAdmin.$inject = ["$q", "$timeout", "$auth", "$state", "bootstrapped"];
+
+    localStorageServiceProvider
+        .setPrefix('nzbhydra');
+    localStorageServiceProvider
+        .setNotify(true, false);
 }]);
+
 
 nzbhydraapp.config(["paginationTemplateProvider", function (paginationTemplateProvider) {
     paginationTemplateProvider.setPath('static/html/dirPagination.tpl.html');
@@ -347,10 +560,7 @@ nzbhydraapp.directive('ngEnter', function () {
 nzbhydraapp.filter('nzblink', function () {
     return function (resultItem) {
         var uri = new URI("internalapi/getnzb");
-        uri.addQuery("guid", resultItem.guid);
-        uri.addQuery("title", resultItem.title);
-        uri.addQuery("provider", resultItem.provider);
-
+        uri.addQuery("searchResultId", resultItem.searchResultId);
         return uri.toString();
     }
 });
@@ -362,6 +572,19 @@ nzbhydraapp.factory('focus', ["$rootScope", "$timeout", function ($rootScope, $t
         });
     }
 }]);
+
+nzbhydraapp.run(["$rootScope", function ($rootScope) {
+    $rootScope.$on('$stateChangeSuccess',
+        function (event, toState, toParams, fromState, fromParams) {
+            try {
+                $rootScope.title = toState.views[Object.keys(toState.views)[0]].resolve.$title();
+            } catch(e) {
+                
+            }
+                
+        });
+}]);
+
 
 nzbhydraapp.filter('unsafe', ["$sce", function ($sce) {
     return $sce.trustAsHtml;
@@ -378,7 +601,7 @@ nzbhydraapp.config(["$provide", function ($provide) {
                 });
                 stack = stack.join("\n");
                 $injector.get("$http").put("internalapi/logerror", {error: stack, cause: angular.isDefined(cause) ? cause.toString() : "No known cause"});
-                
+
 
             } catch (e) {
                 console.error("Unable to log JS exception to server", e);
@@ -393,6 +616,33 @@ _.mixin({
     }
 });
 
+nzbhydraapp.factory('sessionInjector', ["$injector", function ($injector) {
+    var sessionInjector = {
+        response: function (response) {
+            if (response.headers("Hydra-MaySeeAdmin") != null) {
+                $injector.get("HydraAuthService").setLoggedInByBasic(response.headers("Hydra-MaySeeStats") == "True", response.headers("Hydra-MaySeeAdmin") == "True", response.headers("Hydra-Username"))
+            }
+            
+            return response;
+        }
+    };
+    return sessionInjector;
+}]);
+
+nzbhydraapp.config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.interceptors.push('sessionInjector');
+}]);
+
+nzbhydraapp.directive('autoFocus', ["$timeout", function ($timeout) {
+    return {
+        restrict: 'AC',
+        link: function (_scope, _element) {
+            $timeout(function () {
+                _element[0].focus();
+            }, 0);
+        }
+    };
+}]);
 angular
     .module('nzbhydraApp')
     .directive('hydraupdates', hydraupdates);
@@ -410,11 +660,7 @@ function hydraupdates() {
             $scope.currentVersion = data.data.currentVersion;
             $scope.repVersion = data.data.repVersion;
             $scope.updateAvailable = data.data.updateAvailable;
-            if ($scope.repVersion > $scope.currentVersion) {
-                UpdateService.getChangelog().then(function(data) {
-                    $scope.changelog = data.data.changelog;
-                })
-            }
+            $scope.changelog = data.data.changelog;
         });
         
         UpdateService.getVersionHistory().then(function(data) {
@@ -515,15 +761,14 @@ function otherColumns($http, $templateCache, $compile, $window) {
     };
 
     function controller($scope, $http, $uibModal, growl) {
-
+        
         $scope.showNfo = showNfo;
         function showNfo(resultItem) {
             if (resultItem.has_nfo == 0) {
                 return;
             }
             var uri = new URI("internalapi/getnfo");
-            uri.addQuery("indexer", resultItem.indexer);
-            uri.addQuery("guid", resultItem.indexerguid);
+            uri.addQuery("searchresultid", resultItem.searchResultId);
             return $http.get(uri.toString()).then(function (response) {
                 if (response.data.has_nfo) {
                     $scope.openModal("lg", response.data.nfo)
@@ -560,7 +805,6 @@ function otherColumns($http, $templateCache, $compile, $window) {
             //href = "{{ result.link }}"
             $window.location.href = resultItem.link;
         }
-
     }
 }
 otherColumns.$inject = ["$http", "$templateCache", "$compile", "$window"];
@@ -582,94 +826,6 @@ function NfoModalInstanceCtrl($scope, $modalInstance, nfo) {
     };
 }
 NfoModalInstanceCtrl.$inject = ["$scope", "$modalInstance", "nfo"];
-angular
-    .module('nzbhydraApp')
-    .directive('searchHistory', searchHistory);
-
-
-function searchHistory() {
-    return {
-        templateUrl: 'static/html/directives/search-history.html',
-        controller: ['$scope', '$http','$state', controller],
-        scope: {}
-    };
-    
-    function controller($scope, $http, $state) {
-        $scope.type = "All";
-        $scope.limit = 100;
-        $scope.pagination = {
-            current: 1
-        };
-
-        getSearchRequestsPage(1);
-
-        $scope.pageChanged = function (newPage) {
-            getSearchRequestsPage(newPage);
-        };
-        
-        $scope.changeType = function(type) {
-            $scope.type = type;
-            getSearchRequestsPage($scope.pagination.current);
-        };
-
-        function getSearchRequestsPage(pageNumber) {
-            $http.get("internalapi/getsearchrequests", {params: {page: pageNumber, limit: $scope.limit, type: $scope.type}}).success(function (response) {
-                $scope.searchRequests = response.searchRequests;
-                $scope.totalRequests = response.totalRequests;
-            });
-        }
-        
-        $scope.openSearch = function (request) {
-            var stateParams = {};
-            if (request.identifier_key == "imdbid") {
-                stateParams.imdbid = request.identifier_value;
-            } else if (request.identifier_key == "tvdbid" || request.identifier_key == "rid") {
-                if (request.identifier_key == "rid" ) {
-                    stateParams.rid = request.identifier_value;
-                } else {
-                    stateParams.tvdbid = request.identifier_value;
-                } 
-                
-                if (request.season != "") {
-                    stateParams.season = request.season;
-                }
-                if (request.episode != "") {
-                    stateParams.episode = request.episode;
-                }
-            }
-            if (request.query != "") {
-                stateParams.query = request.query;
-            }
-            if (request.type == "tv") {
-                stateParams.mode = "tvsearch"
-            } else if (request.type == "tv") {
-                stateParams.mode = "moviesearch"
-            } else {
-                stateParams.mode = "search"
-            }
-            
-            if (request.category != "") {
-                stateParams.category = request.category;
-            }
-
-            stateParams.category = request.category;
-            
-            $state.go("search", stateParams, {inherit: false});
-        };
-        
-        $scope.formatQuery = function(request) {
-            if (request.movietitle != null) {
-                return request.movietitle; 
-            }
-            if (request.tvtitle != null) {
-                return request.tvtitle;
-            }
-            return request.query;
-        }
-
-
-    }
-}
 //Can be used in an ng-repeat directive to call a function when the last element was rendered
 //We use it to mark the end of sorting / filtering so we can stop blocking the UI
 
@@ -699,7 +855,7 @@ angular
 function hydralog() {
     controller.$inject = ["$scope", "$http", "$sce"];
     return {
-        template: '<div cg-busy="{promise:logPromise,message:\'Loading log file\'}"><pre ng-bind-html="log" style="text-align: left"></pre></div>',
+        template: '<div cg-busy="{promise:logPromise,message:\'Loading log file\'}"><pre ng-bind-html="log" style="text-align: left; height: 65vh; overflow-y: scroll"></pre></div>',
         controller: controller
     };
 
@@ -735,59 +891,6 @@ angular
 }])
 angular
     .module('nzbhydraApp')
-    .directive('indexerStatuses', indexerStatuses);
-
-function indexerStatuses() {
-    return {
-        templateUrl: 'static/html/directives/indexer-statuses.html',
-        controller: ['$scope', '$http', controller]
-    };
-
-    function controller($scope, $http) {
-        
-        getIndexerStatuses();
-        
-        function getIndexerStatuses() {
-            $http.get("internalapi/getindexerstatuses").success(function (response) {
-                $scope.indexerStatuses = response.indexerStatuses;
-            });
-        }
-        
-        $scope.isInPast = function (timestamp) {
-            return timestamp * 1000 < (new Date).getTime();
-        };
-        
-        $scope.enable = function(indexerName) {
-            $http.get("internalapi/enableindexer", {params: {name: indexerName}}).then(function(response){
-                $scope.indexerStatuses = response.data.indexerStatuses;
-            });
-        }
-
-    }
-}
-
-angular
-    .module('nzbhydraApp')
-    .filter('formatDate', formatDate);
-
-function formatDate(dateFilter) {
-    return function(timestamp, hidePast) {
-        if (timestamp) {
-            if (timestamp * 1000 < (new Date).getTime() && hidePast) {
-                return ""; //
-            }
-            
-            var t = timestamp * 1000;
-            t = dateFilter(t, 'yyyy-MM-dd HH:mm:ss Z');
-            return t;
-        } else {
-            return "";
-        }
-    }
-}
-formatDate.$inject = ["dateFilter"];
-angular
-    .module('nzbhydraApp')
     .directive('indexerInput', indexerInput);
 
 function indexerInput() {
@@ -796,6 +899,7 @@ function indexerInput() {
         templateUrl: 'static/html/directives/indexer-input.html',
         scope: {
             indexer: "=",
+            model: "=",
             onClick: "="
         },
         replace: true,
@@ -833,43 +937,49 @@ function focusOn() {
 
 angular
     .module('nzbhydraApp')
-    .directive('downloadHistory', downloadHistory);
+    .directive('downloadNzbsButton', downloadNzbsButton);
 
-function downloadHistory() {
+function downloadNzbsButton() {
+    controller.$inject = ["$scope", "NzbDownloadService", "growl"];
     return {
-        templateUrl: 'static/html/directives/download-history.html',
-        controller: ['$scope', '$http', controller],
-        scope: {}
+        templateUrl: 'static/html/directives/download-nzbs-button.html',
+        require: ['^searchResults'],
+        scope: {
+            searchResults: "="
+        },
+        controller: controller
     };
 
-    function controller($scope, $http) {
-        $scope.type = "All";
-        $scope.limit = 100;
-        $scope.pagination = {
-            current: 1
-        };
+    function controller($scope, NzbDownloadService, growl) {
 
-        $scope.changeType = function (type) {
-            $scope.type = type;
-            getDownloadsPage($scope.pagination.current);
-        };
+        $scope.downloaders = NzbDownloadService.getEnabledDownloaders();
 
-        getDownloadsPage(1);
+        $scope.download = function (downloader) {
+            if (angular.isUndefined($scope.searchResults) || $scope.searchResults.length == 0) {
+                growl.info("You should select at least one result...");
+            } else {
 
-        $scope.pageChanged = function (newPage) {
-            getDownloadsPage(newPage);
-        };
-        
-        function getDownloadsPage(pageNumber) {
-            $http.get("internalapi/getnzbdownloads", {params:{page: pageNumber, limit: $scope.limit, type: $scope.type}}).success(function (response) {
-                $scope.nzbDownloads = response.nzbDownloads;
-                $scope.totalDownloads = response.totalDownloads;
-            });
+                var values = _.map($scope.searchResults, function (value) {
+                    return value.searchResultId;
+                });
+
+                NzbDownloadService.download(downloader, values).then(function (response) {
+                    if (response.data.success) {
+                        growl.info("Successfully added " + response.data.added + " of " + response.data.of + " NZBs");
+                    } else {
+                        growl.error("Error while adding NZBs");
+                    }
+                }, function () {
+                    growl.error("Error while adding NZBs");
+                });
+            }
         }
 
 
     }
 }
+
+
 angular
     .module('nzbhydraApp')
     .directive('connectionTest', connectionTest);
@@ -996,53 +1106,65 @@ function hydrabackup() {
 
 angular
     .module('nzbhydraApp')
-    .directive('addableNzb', addableNzb);
+    .directive('addableNzbs', addableNzbs);
 
-function addableNzb() {
-    controller.$inject = ["$scope", "ConfigService", "NzbDownloadService", "growl"];
+function addableNzbs() {
+    controller.$inject = ["$scope", "NzbDownloadService"];
     return {
-        templateUrl: 'static/html/directives/addable-nzb.html',
-        require: ['^indexerguid', '^title', '^indexer', '^dbsearchid'],
+        templateUrl: 'static/html/directives/addable-nzbs.html',
+        require: ['^searchResultId'],
         scope: {
-            indexerguid: "=",
-            title: "=",
-            indexer: "=",
-            dbsearchid: "="
+            searchResultId: "="
         },
         controller: controller
     };
 
-    function controller($scope, ConfigService, NzbDownloadService, growl) {
-        $scope.classname = "";
-        var settings = ConfigService.getSafe();
-        
-        $scope.downloader = settings.downloader.downloader;
-        if ($scope.downloader != "none") {
-            $scope.enabled = true;
-            $scope.classname = $scope.downloader == "sabnzbd" ? "sabnzbd" : "nzbget";
-        } else {
-            $scope.enabled = false;
-        }
-
-
-        $scope.add = function () {
-            $scope.classname = "nzb-spinning";
-            NzbDownloadService.download([{"indexerguid": $scope.indexerguid, "title": $scope.title, "indexer": $scope.indexer, "dbsearchid": $scope.dbsearchid}]).then(function (response) {
-                if (response.data.success) {
-                    $scope.classname = $scope.downloader == "sabnzbd" ? "sabnzbd-success" : "nzbget-success";
-                } else {
-                    $scope.classname = $scope.downloader == "sabnzbd" ? "sabnzbd-error" : "nzbget-error";
-                    growl.error("Unable to add NZB. Make sure the downloader is running and properly configured.");
-                }
-            }, function () {
-                $scope.classname = $scope.downloader == "sabnzbd" ? "sabnzbd-error" : "nzbget-error";
-                growl.error("An unexpected error occurred while trying to contact NZB Hydra or add the NZB.");
-            })
-        };
-
+    function controller($scope, NzbDownloadService) {
+        $scope.downloaders = NzbDownloadService.getEnabledDownloaders();
     }
 }
 
+angular
+    .module('nzbhydraApp')
+    .directive('addableNzb', addableNzb);
+
+function addableNzb() {
+    controller.$inject = ["$scope", "NzbDownloadService", "growl"];
+    return {
+        templateUrl: 'static/html/directives/addable-nzb.html',
+        scope: {
+            searchResultId: "=",
+            downloader: "="
+        },
+        controller: controller
+    };
+
+    function controller($scope, NzbDownloadService, growl) {
+        if ($scope.downloader.iconCssClass) {
+            $scope.cssClass = "fa fa-" + $scope.downloader.iconCssClass.replace("fa-","").replace("fa ", ""); 
+        } else {
+            $scope.cssClass = $scope.downloader.type == "sabnzbd" ? "sabnzbd" : "nzbget";
+        }
+            
+        $scope.add = function () {
+            $scope.cssClass = "nzb-spinning";
+            NzbDownloadService.download($scope.downloader, [$scope.searchResultId]).then(function (response) {
+                if (response.data.success) {
+                    $scope.cssClass = $scope.downloader.type == "sabnzbd" ? "sabnzbd-success" : "nzbget-success";
+                } else {
+                    $scope.cssClass = $scope.downloader.type == "sabnzbd" ? "sabnzbd-error" : "nzbget-error";
+                    growl.error("Unable to add NZB. Make sure the downloader is running and properly configured.");
+                }
+            }, function () {
+                $scope.cssClass = $scope.downloader.type == "sabnzbd" ? "sabnzbd-error" : "nzbget-error";
+                growl.error("An unexpected error occurred while trying to contact NZB Hydra or add the NZB.");
+            })
+        };
+        
+        
+
+    }
+}
 
 angular
     .module('nzbhydraApp')
@@ -1076,7 +1198,7 @@ function UpdateService($http, growl, blockUI, RestartService) {
     }
 
     function getChangelog() {
-        return $http.get("internalapi/get_changelog").then(function (data) {
+        return $http.get("internalapi/get_changelog", {currentVersion: currentVersion, repVersion: repVersion}).then(function (data) {
             changelog = data.data.changelog;
             return data;
         });
@@ -1089,7 +1211,7 @@ function UpdateService($http, growl, blockUI, RestartService) {
         });
     }
 
-    function showChanges() {
+    function showChanges(changelog) {
 
         var myInjector = angular.injector(["ng", "ui.bootstrap"]);
         var $uibModal = myInjector.get("$uibModal");
@@ -1141,27 +1263,34 @@ angular
     .module('nzbhydraApp')
     .controller('UpdateFooterController', UpdateFooterController);
 
-function UpdateFooterController($scope, $http, UpdateService) {
+function UpdateFooterController($scope, UpdateService, HydraAuthService, bootstrapped) {
 
     $scope.updateAvailable = false;
-    
-    $http.get("internalapi/mayseeadminarea").then(function(data) {
-       if (data.data.maySeeAdminArea) {
-           UpdateService.getVersions().then(function (data) {
-               $scope.currentVersion = data.data.currentVersion;
-               $scope.repVersion = data.data.repVersion;
-               $scope.updateAvailable = data.data.updateAvailable;
-               if ($scope.repVersion > $scope.currentVersion) {
-                   UpdateService.getChangelog().then(function (data) {
-                       $scope.changelog = data.data.changelog;
-                   })
-               }
-           });
-       } 
+    $scope.checked = false;
+
+    $scope.mayUpdate = HydraAuthService.getUserRights().maySeeAdmin || bootstrapped.maySeeAdmin;
+
+    $scope.$on("user:loggedIn", function (event, data) {
+        if (data.maySeeAdmin && !$scope.checked) {
+            retrieveUpdateInfos();
+        }
     });
-    
-    
-    
+
+
+    if ($scope.mayUpdate) {
+        retrieveUpdateInfos();
+    }
+
+    function retrieveUpdateInfos() {
+        $scope.checked = true;
+        UpdateService.getVersions().then(function (data) {
+            $scope.currentVersion = data.data.currentVersion;
+            $scope.repVersion = data.data.repVersion;
+            $scope.updateAvailable = data.data.updateAvailable;
+            $scope.changelog = data.data.changelog;
+        });
+    }
+
 
     $scope.update = function () {
         UpdateService.update();
@@ -1172,13 +1301,13 @@ function UpdateFooterController($scope, $http, UpdateService) {
     }
 
 }
-UpdateFooterController.$inject = ["$scope", "$http", "UpdateService"];
+UpdateFooterController.$inject = ["$scope", "UpdateService", "HydraAuthService", "bootstrapped"];
 
 angular
     .module('nzbhydraApp')
     .controller('SystemController', SystemController);
 
-function SystemController($scope, $state, growl, RestartService, NzbHydraControlService) {
+function SystemController($scope, $state, $http, growl, RestartService, NzbHydraControlService) {
 
 
     $scope.shutdown = function () {
@@ -1198,27 +1327,27 @@ function SystemController($scope, $state, growl, RestartService, NzbHydraControl
     $scope.tabs = [
         {
             active: false,
-            state: 'system'
+            state: 'root.system'
         },
         {
             active: false,
-            state: 'system.updates'
+            state: 'root.system.updates'
         },
         {
             active: false,
-            state: 'system.log'
+            state: 'root.system.log'
         },
         {
             active: false,
-            state: 'system.backup'
+            state: 'root.system.backup'
         },
         {
             active: false,
-            state: 'system.bugreport'
+            state: 'root.system.bugreport'
         },
         {
             active: false,
-            state: 'system.about'
+            state: 'root.system.about'
         }
     ];
 
@@ -1232,27 +1361,83 @@ function SystemController($scope, $state, growl, RestartService, NzbHydraControl
 
     $scope.goToState = function (index) {
         $state.go($scope.tabs[index].state);
+    
+    };
+
+    $scope.downloadDebuggingInfos = function() {
+        $http({method: 'GET', url: '/internalapi/getdebugginginfos', responseType: 'arraybuffer'}).success(function (data, status, headers, config) {
+            var a = document.createElement('a');
+            var blob = new Blob([data], {'type': "application/octet-stream"});
+            a.href = URL.createObjectURL(blob);
+            var filename = "nzbhydra-debuginfo-" + moment().format("YYYY-MM-DD-HH-mm") + ".zip";
+            a.download = filename;
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }).error(function (data, status, headers, config) {
+            console.log("Error:" + status);
+        });
     }
     
-    
 }
-SystemController.$inject = ["$scope", "$state", "growl", "RestartService", "NzbHydraControlService"];
+SystemController.$inject = ["$scope", "$state", "$http", "growl", "RestartService", "NzbHydraControlService"];
 
 angular
     .module('nzbhydraApp')
     .factory('StatsService', StatsService);
 
 function StatsService($http) {
-    
+
     return {
-        get: getStats
+        get: getStats,
+        getSearchHistory: getSearchHistory,
+        getDownloadHistory: getDownloadHistory
     };
 
     function getStats() {
-            return $http.get("internalapi/getstats").success(function (response) {
-               return response.data;
-            });
+        return $http.get("internalapi/getstats").success(function (response) {
+            return response.data;
+        });
+    }
 
+    function getSearchHistory(pageNumber, limit, type) {
+        if (angular.isUndefined(pageNumber)) {
+            pageNumber = 1;
+        }
+        if (angular.isUndefined(limit)) {
+            limit = 100;
+        }
+        if (angular.isUndefined(type)) {
+            type = "All";
+        }
+        return $http.get("internalapi/getsearchrequests", {params: {page: pageNumber, limit: limit, type: type}}).success(function (response) {
+            return {
+                searchRequests: response.searchRequests,
+                totalRequests: response.totalRequests
+            }
+        });
+    }
+    
+    function getDownloadHistory(pageNumber, limit, type) {
+        if (angular.isUndefined(pageNumber)) {
+            pageNumber = 1;
+        }
+        if (angular.isUndefined(limit)) {
+            limit = 100;
+        }
+        if (angular.isUndefined(type)) {
+            type = "All";
+        }
+        console.log(1);
+        return $http.get("internalapi/getnzbdownloads", {params: {page: pageNumber, limit: limit, type: type}}).success(function (response) {
+            console.log(2);
+            return {
+                nzbDownloads: response.nzbDownloads,
+                totalDownloads: response.totalDownloads
+            };
+            
+        });
     }
 
 }
@@ -1261,7 +1446,7 @@ angular
     .module('nzbhydraApp')
     .controller('StatsController', StatsController);
 
-function StatsController($scope, stats, $state) {
+function StatsController($scope, stats) {
 
     stats = stats.data;
     $scope.nzbDownloads = null;
@@ -1270,41 +1455,8 @@ function StatsController($scope, stats, $state) {
     $scope.avgIndexerAccessSuccesses = stats.avgIndexerAccessSuccesses;
     $scope.indexerDownloadShares = stats.indexerDownloadShares;
     
-
-    $scope.tabs = [
-        {
-            active: false,
-            state: 'stats'
-        },
-        {
-            active: false,
-            state: 'stats.indexers'
-        },
-        {
-            active: false,
-            state: 'stats.searches'
-        },
-        {
-            active: false,
-            state: 'stats.downloads'
-        }
-    ];
-
-
-    for (var i = 0; i < $scope.tabs.length; i++) {
-        if ($state.is($scope.tabs[i].state)) {
-            $scope.tabs[i].active = true;
-        }
-    }
-    
-
-    $scope.goToState = function (index) {
-        $state.go($scope.tabs[index].state);
-    }
-
-
 }
-StatsController.$inject = ["$scope", "stats", "$state"];
+StatsController.$inject = ["$scope", "stats"];
 
 //
 angular
@@ -1315,48 +1467,54 @@ function SearchService($http) {
 
 
     var lastExecutedQuery;
+    var lastResults;
 
-    var service = {search: search, loadMore: loadMore};
-    return service;
+    return {
+        search: search,
+        getLastResults: getLastResults,
+        loadMore: loadMore
+    };
+    
 
-    function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, indexers) {
-        console.log("Category: " + category);
+    function search(category, query, tmdbid, title, tvdbid, rid, season, episode, minsize, maxsize, minage, maxage, indexers, mode) {
         var uri;
-        if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
+        if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0) || mode == "movie") {
             console.log("Search for movies");
             uri = new URI("internalapi/moviesearch");
-            if (!_.isUndefined(tmdbid)) {
+            if (angular.isDefined(tmdbid)) {
                 console.log("moviesearch per tmdbid");
                 uri.addQuery("tmdbid", tmdbid);
-                uri.addQuery("title", title);
             } else {
                 console.log("moviesearch per query");
                 uri.addQuery("query", query);
             }
 
-        } else if (category.indexOf("TV") > -1 || (category.indexOf("50") == 0)) {
+        } else if (category.indexOf("TV") > -1 || (category.indexOf("50") == 0) || mode == "tvsearch") {
             console.log("Search for shows");
             uri = new URI("internalapi/tvsearch");
-            if (!_.isUndefined(tvdbid)) {
+            if (angular.isDefined(tvdbid)) {
                 uri.addQuery("tvdbid", tvdbid);
-                uri.addQuery("title", title);
+            }
+            if (angular.isDefined(rid)) {
+                uri.addQuery("rid", rid);
             } else {
                 console.log("tvsearch per query");
                 uri.addQuery("query", query);
             }
 
-            if (!_.isUndefined(season)) {
+            if (angular.isDefined(season)) {
                 uri.addQuery("season", season);
             }
-            if (!_.isUndefined(episode)) {
+            if (angular.isDefined(episode)) {
                 uri.addQuery("episode", episode);
             }
         } else {
-            console.log("Search for all");
             uri = new URI("internalapi/search");
             uri.addQuery("query", query);
         }
-
+        if (angular.isDefined(title)) {
+            uri.addQuery("title", title);
+        }
         if (_.isNumber(minsize)) {
             uri.addQuery("minsize", minsize);
         }
@@ -1375,7 +1533,6 @@ function SearchService($http) {
         
 
         uri.addQuery("category", category);
-        console.log("Calling " + uri.toString());
         lastExecutedQuery = uri;
         return $http.get(uri.toString()).then(processData);
 
@@ -1385,7 +1542,6 @@ function SearchService($http) {
         lastExecutedQuery.removeQuery("offset");
         lastExecutedQuery.addQuery("offset", offset);
 
-        console.log("Calling " + lastExecutedQuery);
         return $http.get(lastExecutedQuery.toString()).then(processData);
     }
 
@@ -1400,15 +1556,19 @@ function SearchService($http) {
         //TODO: Move this to search result controller because we need to update it every time we loaded more results
         _.each(indexersearches, function (ps) {
             if (ps.did_search) {
-                ps.averageResponseTime = _.reduce(ps.api_accesses, function (memo, rp) {
+                ps.averageResponseTime = _.reduce(ps.apiAccesses, function (memo, rp) {
                     return memo + rp.response_time;
                 }, 0);
-                ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
+                ps.averageResponseTime = ps.averageResponseTime / ps.apiAccesses.length;
             }
         });
         
-
-        return {"results": results, "indexersearches": indexersearches, "total": total, "resultsCount": resultsCount}
+        lastResults = {"results": results, "indexersearches": indexersearches, "total": total, "resultsCount": resultsCount};
+        return lastResults;
+    }
+    
+    function getLastResults() {
+        return lastResults;
     }
 }
 SearchService.$inject = ["$http"];
@@ -1417,21 +1577,29 @@ angular
     .controller('SearchResultsController', SearchResultsController);
 
 //SearchResultsController.$inject = ['blockUi'];
-function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, NzbDownloadService, SearchService, ConfigService) {
+function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, localStorageService, SearchService, ConfigService) {
 
-    $scope.sortPredicate = "epoch";
-    $scope.sortReversed = true;
+    
+    if (localStorageService.get("sorting") != null) {
+        var sorting = localStorageService.get("sorting");
+        $scope.sortPredicate = sorting.predicate;
+        $scope.sortReversed = sorting.reversed;
+    } else {
+        $scope.sortPredicate = "epoch";
+        $scope.sortReversed = true;
+    }
     $scope.limitTo = 100;
     $scope.offset = 0;
     //Handle incoming data
-    $scope.indexersearches = $stateParams.indexersearches;
+    
+    $scope.indexersearches = SearchService.getLastResults().indexersearches;
     $scope.indexerDisplayState = []; //Stores if a indexer's results should be displayed or not
     $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
     $scope.groupExpanded = {};
     $scope.doShowDuplicates = ConfigService.getSafe().searching.alwaysShowDuplicates;
-    console.log(ConfigService.getSafe().alwaysShowDuplicates);
     $scope.selected = [];
-    $scope.indexerStatusesExpanded = false;
+    
+    $scope.indexerStatusesExpanded = localStorageService.get("indexerStatusesExpanded") != null ? localStorageService.get("indexerStatusesExpanded") : false;
     
     $scope.countFilteredOut = 0;
 
@@ -1444,14 +1612,12 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         $scope.indexerResultsInfo[ps.indexer.toLowerCase()] = {loadedResults: ps.loaded_results};
     });
     
-
     //Process results
-    $scope.results = $stateParams.results;
-    $scope.total = $stateParams.total;
-    $scope.resultsCount = $stateParams.resultsCount;
+    $scope.results = SearchService.getLastResults().results;
+    $scope.total = SearchService.getLastResults().total;
+    $scope.resultsCount = SearchService.getLastResults().resultsCount;
     $scope.filteredResults = sortAndFilter($scope.results);
     stopBlocking();
-
 
     //Returns the content of the property (defined by the current sortPredicate) of the first group element 
     $scope.firstResultPredicate = firstResultPredicate;
@@ -1462,7 +1628,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     //Returns the unique group identifier which allows angular to keep track of the grouped search results even after filtering, making filtering by indexers a lot faster (albeit still somewhat slow...)  
     $scope.groupId = groupId;
     function groupId(item) {
-        return item[0][0].guid;
+        return item[0][0].searchResultId;
     }
 
     //Block the UI and return after timeout. This way we make sure that the blocking is done before angular starts updating the model/view. There's probably a better way to achieve that?
@@ -1488,6 +1654,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
             }
             $scope.sortPredicate = predicate;
             $scope.filteredResults = sortAndFilter($scope.results);
+            localStorageService.set("sorting", {predicate: predicate, reversed: $scope.sortReversed});
             blockUI.reset();
         });
     }
@@ -1544,8 +1711,14 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         }
 
         function getTitleGroupFirstElementsSortPredicate(titleGroup) {
-            var sortPredicateValue = titleGroup[0][0][$scope.sortPredicate];
-            return $scope.sortReversed ? -sortPredicateValue : sortPredicateValue;
+            var sortPredicateValue;
+            if ($scope.sortPredicate == "title") {
+                sortPredicateValue = titleGroup[0][0].title.toLowerCase();
+            } else {
+                sortPredicateValue = titleGroup[0][0][$scope.sortPredicate];
+            }
+            
+            return sortPredicateValue;
         }
 
         var filtered = _.chain(results)
@@ -1558,6 +1731,9 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
             //And then sort the title group using its first hashgroup's first item (the group itself is already sorted and so are the hash groups)    
             .sortBy(getTitleGroupFirstElementsSortPredicate)
             .value();
+        if ($scope.sortReversed) {
+            filtered = filtered.reverse();
+        }
         if ($scope.countFilteredOut > 0) {
             growl.info("Filtered " + $scope.countFilteredOut + " of the retrieved results");
         }
@@ -1606,41 +1782,116 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     function countResults() {
         return $scope.results.length;
     }
-
-    $scope.downloadSelected = downloadSelected;
-    function downloadSelected() {
-
-        if (angular.isUndefined($scope.selected) || $scope.selected.length == 0) {
-            growl.info("You should select at least one result...");
-        } else {
-
-            var values = _.map($scope.selected, function (value) {
-                return {"indexerguid": value.indexerguid, "title": value.title, "indexer": value.indexer, "dbsearchid": value.dbsearchid}
-            });
-
-            NzbDownloadService.download(values).then(function (response) {
-                if (response.data.success) {
-                    growl.info("Successfully added " + response.data.added + " of " + response.data.of + " NZBs");
-                } else {
-                    growl.error("Error while adding NZBs");
-                }
-            }, function () {
-                growl.error("Error while adding NZBs");
-            });
-        }
-    }
+    
     
     $scope.invertSelection = function invertSelection() {
         $scope.selected = _.difference($scope.results, $scope.selected);
+    };
+    
+    $scope.toggleIndexerStatuses = function() {
+        $scope.indexerStatusesExpanded = !$scope.indexerStatusesExpanded;
+        localStorageService.set("indexerStatusesExpanded", $scope.indexerStatusesExpanded);
     }
 
 }
-SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "growl", "NzbDownloadService", "SearchService", "ConfigService"];
+SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "growl", "localStorageService", "SearchService", "ConfigService"];
+angular
+    .module('nzbhydraApp')
+    .controller('SearchHistoryController', SearchHistoryController);
+
+
+function SearchHistoryController($scope, $state, StatsService, history) {
+    $scope.type = "All";
+    $scope.limit = 100;
+    $scope.pagination = {
+        current: 1
+    };
+    $scope.isLoaded = true;
+    $scope.searchRequests = history.data.searchRequests;
+    $scope.totalRequests = history.data.totalRequests;
+
+
+    $scope.pageChanged = function (newPage) {
+        getSearchRequestsPage(newPage);
+    };
+
+    $scope.changeType = function (type) {
+        $scope.type = type;
+        getSearchRequestsPage($scope.pagination.current);
+    };
+
+    function getSearchRequestsPage(pageNumber) {
+        StatsService.getSearchHistory(pageNumber, $scope.limit, $scope.type).then(function (history) {
+            $scope.searchRequests = history.data.searchRequests;
+            $scope.totalRequests = history.data.totalRequests;
+            $scope.isLoaded = true;
+        });
+    }
+
+    $scope.openSearch = function (request) {
+        var stateParams = {};
+        if (request.identifier_key == "imdbid") {
+            stateParams.imdbid = request.identifier_value;
+        } else if (request.identifier_key == "tvdbid" || request.identifier_key == "rid") {
+            if (request.identifier_key == "rid") {
+                stateParams.rid = request.identifier_value;
+            } else {
+                stateParams.tvdbid = request.identifier_value;
+            }
+
+            if (request.season != "") {
+                stateParams.season = request.season;
+            }
+            if (request.episode != "") {
+                stateParams.episode = request.episode;
+            }
+        }
+        if (request.query != "") {
+            stateParams.query = request.query;
+        }
+        if (request.type == "tv") {
+            stateParams.mode = "tvsearch"
+        } else if (request.type == "tv") {
+            stateParams.mode = "movie"
+        } else {
+            stateParams.mode = "search"
+        }
+
+        if (request.movietitle != null) {
+            stateParams.title = request.movietitle;
+        }
+        if (request.tvtitle != null) {
+            stateParams.title = request.tvtitle;
+        }
+
+        if (request.category) {
+            stateParams.category = request.category;
+        }
+
+        stateParams.category = request.category;
+
+        $state.go("root.search", stateParams, {inherit: false});
+    };
+
+    $scope.formatQuery = function (request) {
+        if (request.movietitle != null) {
+            return request.movietitle;
+        }
+        if (request.tvtitle != null) {
+            return request.tvtitle;
+        }
+        return request.query;
+    }
+
+
+}
+SearchHistoryController.$inject = ["$scope", "$state", "StatsService", "history"];
+
 angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
 
-function SearchController($scope, $http, $stateParams, $state, SearchService, focus, ConfigService, blockUI) {
+function SearchController($scope, $http, $stateParams, $state, SearchService, focus, ConfigService, CategoriesService, blockUI, $element) {
     
     function getNumberOrUndefined(number) {
         if (_.isUndefined(number) || _.isNaN(number) || number == "") {
@@ -1656,8 +1907,15 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
     //Fill the form with the search values we got from the state params (so that their values are the same as in the current url)
     $scope.mode = $stateParams.mode;
-    
-    $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? "All" : $stateParams.category;
+    $scope.categories = _.filter(CategoriesService.getAll(), function(c) { 
+        return c.mayBeSelected && (c.ignoreResults == "never" || c.ignoreResults == "external"); 
+    });
+    if (angular.isDefined($stateParams.category) && $stateParams.category) {
+        $scope.category = CategoriesService.getByName($stateParams.category);
+    } else {
+        $scope.category = CategoriesService.getDefault();
+    }
+    $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? CategoriesService.getDefault() : CategoriesService.getByName($stateParams.category);
     $scope.tmdbid = $stateParams.tmdbid;
     $scope.tvdbid = $stateParams.tvdbid;
     $scope.rid = $stateParams.rid;
@@ -1684,7 +1942,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.typeAheadWait = 300;
     $scope.selectedItem = "";
     $scope.autocompleteLoading = false;
-    $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 ); //If true a check box will be shown asking the user if he wants to search by ID 
+    $scope.isAskById = $scope.category.supportsById; 
     $scope.isById = {value: true}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
     $scope.availableIndexers = [];
     $scope.autocompleteClass = "autocompletePosterMovies";
@@ -1693,14 +1951,19 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         $scope.category = searchCategory;
 
         //Show checkbox to ask if the user wants to search by ID (using autocomplete)
-        $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 );
+        $scope.isAskById = $scope.category.supportsById;
 
         focus('focus-query-box');
-        $scope.query = "";
+        
+        //Hacky way of triggering the autocomplete loading
+        var searchModel = $element.find("#searchfield").controller("ngModel");
+        if (angular.isDefined(searchModel.$viewValue)) {
+            searchModel.$setViewValue(searchModel.$viewValue + " ");
+        }
 
-        if (safeConfig.searching.categorysizes.enable_category_sizes) {
-            var min = safeConfig.searching.categorysizes[(searchCategory + " min").toLowerCase().replace(" ", "")];
-            var max = safeConfig.searching.categorysizes[(searchCategory + " max").toLowerCase().replace(" ", "")];
+        if (safeConfig.searching.enableCategorySizes) {
+            var min = searchCategory.min;
+            var max = searchCategory.max;
             if (_.isNumber(min)) {
                 $scope.minsize = min;
             } else {
@@ -1729,7 +1992,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
             return {};
         }
 
-        if ($scope.category.indexOf("Movies") > -1) {
+        if ($scope.category.name.indexOf("movies") > -1) {
             return $http.get('internalapi/autocomplete?type=movie', {
                 params: {
                     input: val
@@ -1738,7 +2001,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
                 $scope.autocompleteLoading = false;
                 return response.data.results;
             });
-        } else if ($scope.category.indexOf("TV") > -1) {
+        } else if ($scope.category.name.indexOf("tv") > -1) {
 
             return $http.get('internalapi/autocomplete?type=tv', {
                 params: {
@@ -1757,12 +2020,8 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.startSearch = function () {
         blockUI.start("Searching...");
         var indexers = angular.isUndefined($scope.indexers) ? undefined : $scope.indexers.join("|");
-        SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers).then(function (searchResult) {
-            $state.go("search.results", {
-                results: searchResult.results,
-                indexersearches: searchResult.indexersearches,
-                total: searchResult.total,
-                resultsCount: searchResult.resultsCount,
+        SearchService.search($scope.category.name, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.rid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers, $scope.mode).then(function () {
+            $state.go("root.search.results", {
                 minsize: $scope.minsize,
                 maxsize: $scope.maxsize,
                 minage: $scope.minage,
@@ -1785,14 +2044,13 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
     $scope.goToSearchUrl = function () {
         var stateParams = {};
-        if ($scope.category.indexOf("Movies") > -1) {
-            stateParams.mode = "moviesearch";
+        if ($scope.category.name.indexOf("movies") > -1) {
             stateParams.title = $scope.title;
-            stateParams.mode = "moviesearch";
-        } else if ($scope.category.indexOf("TV") > -1) {
+            stateParams.mode = "movie";
+        } else if ($scope.category.name.indexOf("tv") > -1) {
             stateParams.mode = "tvsearch";
             stateParams.title = $scope.title;
-        } else if ($scope.category == "Ebook") {
+        } else if ($scope.category.name == "ebook") {
             stateParams.mode = "ebook";
         } else {
             stateParams.mode = "search";
@@ -1808,19 +2066,19 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         stateParams.maxsize = $scope.maxsize;
         stateParams.minage = $scope.minage;
         stateParams.maxage = $scope.maxage;
-        stateParams.category = $scope.category;
+        stateParams.category = $scope.category.name;
         stateParams.indexers = encodeURIComponent(getSelectedIndexers());
         
-        $state.go("search", stateParams, {inherit: false, notify: true, reload: true});
+        $state.go("root.search", stateParams, {inherit: false, notify: true, reload: true});
     };
 
 
     $scope.selectAutocompleteItem = function ($item) {
         $scope.selectedItem = $item;
         $scope.title = $item.title;
-        if ($scope.category.indexOf("Movies") > -1) {
+        if ($scope.category.name.indexOf("movies") > -1) {
             $scope.tmdbid = $item.value;
-        } else if ($scope.category.indexOf("TV") > -1) {
+        } else if ($scope.category.name.indexOf("tv") > -1) {
             $scope.tvdbid = $item.value;
         }
         $scope.query = "";
@@ -1837,11 +2095,11 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
 
     $scope.autocompleteActive = function () {
-        return ($scope.category.indexOf("TV") > -1) || ($scope.category.indexOf("Movies") > -1)
+        return $scope.category.supportsById;
     };
 
     $scope.seriesSelected = function () {
-        return ($scope.category.indexOf("TV") > -1);
+        return $scope.category.name.indexOf("tv") > -1;
     };
     
     $scope.toggleIndexer = function(indexer) {
@@ -1865,7 +2123,6 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         .map(function (indexer) {
         return {name: indexer.name, activated: isIndexerPreselected(indexer)};
     }).value();
-        
     
 
     if ($scope.mode) {
@@ -1874,7 +2131,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     }
     
 }
-SearchController.$inject = ["$scope", "$http", "$stateParams", "$state", "SearchService", "focus", "ConfigService", "blockUI"];
+SearchController.$inject = ["$scope", "$http", "$stateParams", "$state", "SearchService", "focus", "ConfigService", "CategoriesService", "blockUI", "$element"];
 
 angular
     .module('nzbhydraApp')
@@ -1944,42 +2201,39 @@ angular
     .module('nzbhydraApp')
     .factory('NzbDownloadService', NzbDownloadService);
 
-function NzbDownloadService($http, ConfigService, CategoriesService) {
+function NzbDownloadService($http, ConfigService, DownloaderCategoriesService) {
 
     var service = {
-        download: download
+        download: download,
+        getEnabledDownloaders: getEnabledDownloaders
     };
 
     return service;
 
-
-    function sendNzbAddCommand(items, category) {
-        console.log("Now add nzb with category " + category);
-        return $http.put("internalapi/addnzbs", {items: angular.toJson(items), category: category});
+    function sendNzbAddCommand(downloader, searchresultids, category) {
+        return $http.put("internalapi/addnzbs", {downloader: downloader.name, searchresultids: angular.toJson(searchresultids), category: category});
     }
-
-    function download(items) {
-        var settings = ConfigService.getSafe();
-
-        var category;
-        if (settings.downloader.downloader == "nzbget") {
-            category = settings.downloader.nzbget.defaultCategory
-        } else {
-            category = settings.downloader.sabnzbd.defaultCategory
-        }
-
+    
+    function download(downloader, searchresultids) {
+        
+        var category = downloader.defaultCategory;
+        
         if (_.isUndefined(category) || category == "" || category == null) {
-            return CategoriesService.openCategorySelection().then(function (category) {
-                return sendNzbAddCommand(items, category)
+            return DownloaderCategoriesService.openCategorySelection(downloader).then(function (category) {
+                return sendNzbAddCommand(downloader, searchresultids, category)
             }, function (error) {
                 throw error;
             });
         } else {
-            return sendNzbAddCommand(items, category)
+            return sendNzbAddCommand(downloader, searchresultids, category)
         }
     }
+    
+    function getEnabledDownloaders() {
+        return _.filter(ConfigService.getSafe().downloaders, "enabled");
+    }
 }
-NzbDownloadService.$inject = ["$http", "ConfigService", "CategoriesService"];
+NzbDownloadService.$inject = ["$http", "ConfigService", "DownloaderCategoriesService"];
 
 
 angular
@@ -1992,7 +2246,7 @@ function ModalService($uibModal, $q) {
         open: open
     };
     
-    function open(headline, message, params) {
+    function open(headline, message, params, size) {
         //params example:
         /*
         var p =
@@ -2016,7 +2270,7 @@ function ModalService($uibModal, $q) {
         var modalInstance = $uibModal.open({
             templateUrl: 'static/html/modal.html',
             controller: 'ModalInstanceCtrl',
-            size: 'md',
+            size: angular.isDefined(size) ? size : "md",
             resolve: {
                 headline: function () {
                     return headline;
@@ -2049,39 +2303,45 @@ function ModalInstanceCtrl($scope, $uibModalInstance, headline, message, params)
     $scope.message = message;
     $scope.headline = headline;
     $scope.params = params;
-    $scope.showCancel = angular.isDefined(params.cancel);
-    $scope.showNo = angular.isDefined(params.no);
+    $scope.showCancel = angular.isDefined(params) && angular.isDefined(params.cancel);
+    $scope.showNo = angular.isDefined(params) && angular.isDefined(params.no);
 
-    if (angular.isDefined(params.yes) && angular.isUndefined(params.yes.text)) {
+    if (angular.isUndefined(params) || angular.isUndefined(params.yes)) {
+        $scope.params = {
+            yes: {
+                text: "Ok"
+            }
+        }
+    } else if (angular.isUndefined(params.yes.text)) {
         params.yes.text = "Yes";
     }
     
-    if (angular.isDefined(params.no) && angular.isUndefined(params.no.text)) {
-        params.no.text = "No";
+    if (angular.isDefined(params) && angular.isDefined(params.no) && angular.isUndefined($scope.params.no.text)) {
+        $scope.params.no.text = "No";
     }
     
-    if (angular.isDefined(params.cancel) && angular.isUndefined(params.cancel.text)) {
-        params.cancel.text = "Cancel";
+    if (angular.isDefined(params) && angular.isDefined(params.cancel) && angular.isUndefined($scope.params.cancel.text)) {
+        $scope.params.cancel.text = "Cancel";
     }
 
     $scope.yes = function () {
         $uibModalInstance.close();
-        if(angular.isDefined(params.yes) && angular.isDefined(params.yes.onYes)) {
-            params.yes.onYes();
+        if(angular.isDefined(params) && angular.isDefined(params.yes) && angular.isDefined($scope.params.yes.onYes)) {
+            $scope.params.yes.onYes();
         }
     };
 
     $scope.no = function () {
         $uibModalInstance.close();
-        if (angular.isDefined(params.no) && angular.isDefined(params.no.onNo)) {
-            params.no.onNo();
+        if (angular.isDefined(params) && angular.isDefined(params.no) && angular.isDefined($scope.params.no.onNo)) {
+            $scope.params.no.onNo();
         }
     };
 
     $scope.cancel = function () {
         $uibModalInstance.dismiss();
-        if (angular.isDefined(params.cancel) && angular.isDefined(params.cancel.onCancel)) {
-            params.cancel.onCancel();
+        if (angular.isDefined(params.cancel) && angular.isDefined($scope.params.cancel.onCancel)) {
+            $scope.params.cancel.onCancel();
         }
     };
 
@@ -2134,6 +2394,243 @@ function GeneralModalService() {
     
    
 }
+angular
+    .module('nzbhydraApp')
+    .controller('LoginController', LoginController);
+
+function LoginController($scope, RequestsErrorHandler, $state, HydraAuthService, $auth, growl) {
+    $scope.user = {};
+    $scope.login = function () {
+        RequestsErrorHandler.specificallyHandled(function () {
+            $auth.login($scope.user).then(function (data) {
+                HydraAuthService.setLoggedInByForm();
+                growl.info("Login successful!");
+                $state.go("root.search");
+            }, function () {
+                growl.error("Login failed!")
+            });
+        });
+    }
+}
+LoginController.$inject = ["$scope", "RequestsErrorHandler", "$state", "HydraAuthService", "$auth", "growl"];
+
+angular
+    .module('nzbhydraApp')
+    .controller('IndexerStatusesController', IndexerStatusesController);
+
+    function IndexerStatusesController($scope, $http, statuses) {
+        $scope.statuses = statuses.data.indexerStatuses;
+        
+        $scope.isInPast = function (timestamp) {
+            return timestamp * 1000 < (new Date).getTime();
+        };
+        
+        $scope.enable = function(indexerName) {
+            $http.get("internalapi/enableindexer", {params: {name: indexerName}}).then(function(response){
+                $scope.statuses = response.data.indexerStatuses;
+            });
+        }
+
+    }
+    IndexerStatusesController.$inject = ["$scope", "$http", "statuses"];
+
+
+angular
+    .module('nzbhydraApp')
+    .filter('formatDate', formatDate);
+
+function formatDate(dateFilter) {
+    return function(timestamp, hidePast) {
+        if (timestamp) {
+            if (timestamp * 1000 < (new Date).getTime() && hidePast) {
+                return ""; //
+            }
+            
+            var t = timestamp * 1000;
+            t = dateFilter(t, 'yyyy-MM-dd HH:mm');
+            return t;
+        } else {
+            return "";
+        }
+    }
+}
+formatDate.$inject = ["dateFilter"];
+
+angular
+    .module('nzbhydraApp')
+    .filter('reformatDate', reformatDate);
+
+function reformatDate() {
+    return function (date) {
+        //Date in database is saved as UTC without timezone information
+        return moment.utc(date, "ddd, D MMM YYYY HH:mm:ss z").local().format("YYYY-MM-DD HH:mm");
+        
+    }
+}
+angular
+    .module('nzbhydraApp')
+    .controller('IndexController', IndexController);
+
+function IndexController($scope, $http, $stateParams, $state) {
+    console.log("Index");
+    $state.go("root.search");
+}
+IndexController.$inject = ["$scope", "$http", "$stateParams", "$state"];
+
+angular
+    .module('nzbhydraApp')
+    .factory('HydraAuthService', HydraAuthService);
+
+function HydraAuthService($auth, $q, $rootScope, ConfigService, bootstrapped) {
+
+    var loggedIn = false;
+    var username;
+    var maySeeAdmin = bootstrapped.maySeeAdmin;
+    var maySeeStats = bootstrapped.maySeeStats;
+    
+    return {
+        isLoggedIn: isLoggedIn,
+        login: login,
+        logout: logout,
+        setLoggedInByForm: setLoggedInByForm,
+        getUserRights: getUserRights,
+        setLoggedInByBasic: setLoggedInByBasic,
+        getUserName: getUserName
+    };
+    
+    function isLoggedIn() {
+        return loggedIn || (ConfigService.getSafe().authType == "form" && $auth.isAuthenticated()) || ConfigService.getSafe().authType == "none";
+    }
+    
+    function setLoggedInByForm() {
+        maySeeStats = $auth.getPayload().maySeeStats;
+        maySeeAdmin = $auth.getPayload().maySeeAdmin;
+        username = $auth.getPayload().username;
+        loggedIn = true;
+        $rootScope.$broadcast("user:loggedIn", {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin});
+    }
+
+    function setLoggedInByBasic(_maySeeStats, _maySeeAdmin, _username) {
+        maySeeAdmin = _maySeeAdmin;
+        maySeeStats = _maySeeStats;
+        username = _username;
+        loggedIn = true;
+        $rootScope.$broadcast("user:loggedIn", {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin});
+    }
+    
+    function login(user) {
+        var deferred = $q.defer();
+        $auth.login(user).then(function (data) {
+            
+            $rootScope.$broadcast("user:loggedIn", data);
+           deferred.resolve();
+        });
+        return deferred;
+    }
+    
+    function logout() {
+        $auth.logout();
+        loggedIn = false;
+        $rootScope.$broadcast("user:loggedOut");
+    }
+    
+    function getUserRights() {
+        return {maySeeStats: maySeeStats, maySeeAdmin: maySeeAdmin};
+    }
+    
+    function getUserName() {
+        return username;
+    }
+    
+    
+    
+   
+}
+HydraAuthService.$inject = ["$auth", "$q", "$rootScope", "ConfigService", "bootstrapped"];
+angular
+    .module('nzbhydraApp')
+    .controller('HeaderController', HeaderController);
+
+function HeaderController($scope, $state, $http, growl, HydraAuthService, ConfigService, bootstrapped) {
+
+    $scope.showLoginout = false;
+
+    if (ConfigService.getSafe().authType == "none") {
+        $scope.showAdmin = true;
+        $scope.showStats = true;
+        $scope.showLoginout = false;
+    } else {
+        if (HydraAuthService.isLoggedIn()) {
+            var rights = HydraAuthService.getUserRights();
+            $scope.showAdmin = rights.maySeeAdmin;
+            $scope.showStats = rights.maySeeStats;
+            $scope.loginlogoutText = "Logout";
+            $scope.showLoginout = true;
+        } else {
+            $scope.showAdmin = !bootstrapped.adminRestricted;
+            $scope.showStats = !bootstrapped.statsRestricted;
+            $scope.loginlogoutText = "Login";
+            $scope.showLoginout = bootstrapped.adminRestricted || bootstrapped.statsRestricted || bootstrapped.searchRestricted;
+        }
+    }
+
+    function onLogin(data) {
+        $scope.showAdmin = data.maySeeAdmin;
+        $scope.showStats = data.maySeeStats;
+        $scope.showLoginout = true;
+        $scope.loginlogoutText = "Logout";
+    }
+
+    $scope.$on("user:loggedIn", function (event, data) {
+        onLogin(data);
+    });
+
+    function onLogout() {
+        $scope.showAdmin = !bootstrapped.adminRestricted;
+        $scope.showStats = !bootstrapped.statsRestricted;
+        $scope.loginlogoutText = "Login";
+        $scope.showLoginout = bootstrapped.adminRestricted || bootstrapped.statsRestricted || bootstrapped.searchRestricted;
+    }
+
+    $scope.$on("user:loggedOut", function (event, data) {
+        onLogout();
+    });
+
+    $scope.loginout = function () {
+        if (HydraAuthService.isLoggedIn()) {
+            HydraAuthService.logout();
+
+            if (ConfigService.getSafe().authType == "basic") {
+                growl.info("Logged out. Close your browser to make sure session is closed.");
+            }
+            else if (ConfigService.getSafe().authType == "form") {
+                growl.info("Logged out");
+            }
+            onLogout();
+            $state.go("root.search");
+        } else {
+            if (ConfigService.getSafe().authType == "basic") {
+                var params = {};
+                if (HydraAuthService.getUserName()) {
+                    params = {
+                        old_username: HydraAuthService.getUserName()
+                    }
+                } 
+                $http.get("internalapi/askforpassword", {params: params}).then(function () {
+                    growl.info("Login successful!");
+                    //onLogin();
+                    $state.go("root.search");
+                })
+            } else if (ConfigService.getSafe().authType == "form") {
+                $state.go("root.login");
+            } else {
+                growl.info("You shouldn't need to login but here you go!");
+            }
+        }
+    }
+}
+HeaderController.$inject = ["$scope", "$state", "$http", "growl", "HydraAuthService", "ConfigService", "bootstrapped"];
+
 var HEADER_NAME = 'MyApp-Handle-Errors-Generically';
 var specificallyHandleInProgress = false;
 
@@ -2240,6 +2737,13 @@ hashCode = function (s) {
 };
 
 angular
+    .module('nzbhydraApp').run(["formlyConfig", "formlyValidationMessages", function (formlyConfig, formlyValidationMessages) {
+    formlyValidationMessages.addStringMessage('required', 'This field is required');
+    formlyConfig.extras.errorExistsAndShouldBeVisibleExpression = 'fc.$touched || form.$submitted';
+
+}]);
+
+angular
     .module('nzbhydraApp')
     .config(["formlyConfigProvider", function config(formlyConfigProvider) {
         formlyConfigProvider.extras.removeChromeAutoComplete = true;
@@ -2325,10 +2829,17 @@ angular
             templateUrl: 'button-test-connection.html'
         });
 
+
+        formlyConfigProvider.setType({
+            name: 'horizontalTestConnection',
+            extends: 'testConnection',
+            wrapper: ['settingWrapper', 'bootstrapHasError']
+        });
+
         formlyConfigProvider.setType({
             name: 'checkCaps',
             templateUrl: 'button-check-caps.html',
-            controller: function ($scope) {
+            controller: function ($scope, ConfigBoxService) {
                 $scope.message = "";
                 $scope.uniqueId = hashCode($scope.model.name) + hashCode($scope.model.host);
 
@@ -2349,42 +2860,22 @@ angular
 
                 $scope.checkCaps = function () {
                     angular.element(testButton).addClass("glyphicon-refresh-animate");
-                    var myInjector = angular.injector(["ng"]);
-                    var $http = myInjector.get("$http");
-                    var url;
-                    var params;
 
-                    url = "internalapi/test_caps";
-                    params = {indexer: $scope.model.name, apikey: $scope.model.apikey, host: $scope.model.host};
-                    $http.get(url, {params: params}).success(function (result) {
-                        //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
-                        if (result.success) {
-                            angular.element(testMessage).text("Supports: " + result.ids + "," + result.types);
-                            $scope.$apply(function () {
-                                $scope.model.search_ids = result.ids;
-                                $scope.model.searchTypes = result.types;
-                            });
-                            showSuccess();
-                        } else {
-                            angular.element(testMessage).text(result.message);
-                            showError();
-                        }
-
-                    }).error(function () {
-                        angular.element(testMessage).text(result.message);
+                    var url = "internalapi/test_caps";
+                    var params = {indexer: $scope.model.name, apikey: $scope.model.apikey, host: $scope.model.host};
+                    ConfigBoxService.checkCaps(url, params).then(function (data) {
+                        angular.element(testMessage).text("Supports: " + data.ids + "," + data.types);
+                        $scope.model.search_ids = data.ids;
+                        $scope.model.searchTypes = data.types;
+                        showSuccess();
+                    }, function (message) {
+                        angular.element(testMessage).text(message);
                         showError();
                     }).finally(function () {
                         angular.element(testButton).removeClass("glyphicon-refresh-animate");
-                    })
+                    });
                 }
             }
-        });
-
-
-        formlyConfigProvider.setType({
-            name: 'horizontalTestConnection',
-            extends: 'testConnection',
-            wrapper: ['settingWrapper', 'bootstrapHasError']
         });
 
         formlyConfigProvider.setType({
@@ -2409,10 +2900,8 @@ angular
 
         formlyConfigProvider.setType({
             name: 'switch',
-            template: [
+            template: 
                 '<div style="text-align:left"><input bs-switch type="checkbox" ng-model="model[options.key]"/></div>'
-            ].join(' ')
-
         });
 
 
@@ -2440,7 +2929,6 @@ angular
             extends: 'select',
             wrapper: ['settingWrapper', 'bootstrapHasError']
         });
-
 
         formlyConfigProvider.setType({
             name: 'horizontalMultiselect',
@@ -2513,357 +3001,40 @@ angular
         });
 
         formlyConfigProvider.setType({
-            name: 'indexers',
-            templateUrl: 'indexers.html',
+            name: 'arrayConfig',
+            templateUrl: 'arrayConfig.html',
             controller: function ($scope, $uibModal) {
                 $scope.formOptions = {formState: $scope.formState};
-                $scope._showIndexerBox = _showIndexerBox;
-                $scope.showIndexerBox = showIndexerBox;
-                $scope.orderIndexer = orderIndexer;
+                $scope._showBox = _showBox;
+                $scope.showBox = showBox;
                 $scope.isInitial = false;
 
-                $scope.presets = [
-                    {
-                        name: "6box",
-                        host: "https://6box.me",
-                        searchIds: ["imdbid"]
-                    },
-                    {
-                        name: "6box nzedb",
-                        host: "https://nzedb.6box.me",
-                        searchIds: ["rid", "imdbid"]
-                    },
-                    {
-                        name: "6box nntmux",
-                        host: "https://nn-tmux.6box.me",
-                        searchIds: ["tvdbid", "rid", "imdbid"]
-                    },
-                    {
-                        name: "DogNZB",
-                        host: "https://api.dognzb.cr",
-                        searchIds: ["tvdbid", "rid", "imdbid"]
-                    },
-                    {
-                        name: "Drunken Slug",
-                        host: "https://drunkenslug.com",
-                        searchIds: ["tvdbid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
-                    },
-                    {
-                        name: "NZB Finder",
-                        host: "https://nzbfinder.ws",
-                        searchIds: ["tvdbid", "rid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
-                    },
-                    {
-                        name: "NZBs.org",
-                        host: "https://nzbs.org",
-                        searchIds: ["tvdbid", "rid", "imdbid", "tvmazeid"]
-                    },
-                    {
-                        name: "nzb.su",
-                        host: "https://api.nzb.su",
-                        searchIds: ["rid", "imdbid"]
-                    },
-                    {
-                        name: "NZBGeek",
-                        host: "https://api.nzbgeek.info",
-                        searchIds: ["tvdbid", "rid", "imdbid"]
-                    }
-                ];
+                $scope.presets = $scope.options.data.presets;
 
-                function _showIndexerBox(model, parentModel, isInitial, callback) {
+                function _showBox(model, parentModel, isInitial, callback) {
                     var modalInstance = $uibModal.open({
-                        templateUrl: 'indexerModal.html',
-                        controller: 'IndexerModalInstanceController',
+                        templateUrl: 'configBox.html',
+                        controller: 'ConfigBoxInstanceController',
                         size: 'lg',
                         resolve: {
                             model: function () {
                                 return model;
                             },
                             fields: function () {
-                                var fieldset = [];
-
-
-                                fieldset.push({
-                                    key: 'enabled',
-                                    type: 'horizontalSwitch',
-                                    templateOptions: {
-                                        type: 'switch',
-                                        label: 'Enabled'
-                                    }
-                                });
-
-                                if (model.type == 'newznab') {
-                                    fieldset.push(
-                                        {
-                                            key: 'name',
-                                            type: 'horizontalInput',
-                                            hideExpression: '!model.enabled',
-                                            templateOptions: {
-                                                type: 'text',
-                                                label: 'Name',
-                                                required: true,
-                                                help: 'Used for identification. Changing the name will lose all history and stats!'
-                                            }
-                                        })
-                                }
-                                if (model.type == 'newznab') {
-                                    fieldset.push(
-                                        {
-                                            key: 'host',
-                                            type: 'horizontalInput',
-                                            hideExpression: '!model.enabled',
-                                            templateOptions: {
-                                                type: 'text',
-                                                label: 'Host',
-                                                required: true,
-                                                placeholder: 'http://www.someindexer.com'
-                                            },
-                                            watcher: {
-                                                listener: function (field, newValue, oldValue, scope) {
-                                                    if (newValue != oldValue) {
-                                                        scope.$parent.needsConnectionTest = true;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    )
-                                }
-
-                                if (model.type == 'newznab' || model.type == 'omgwtf') {
-                                    fieldset.push(
-                                        {
-                                            key: 'apikey',
-                                            type: 'horizontalInput',
-                                            hideExpression: '!model.enabled',
-                                            templateOptions: {
-                                                type: 'text',
-                                                required: true,
-                                                label: 'API Key'
-                                            },
-                                            watcher: {
-                                                listener: function (field, newValue, oldValue, scope) {
-                                                    if (newValue != oldValue) {
-                                                        scope.$parent.needsConnectionTest = true;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    )
-                                }
-
-                                if (model.type == 'omgwtf') {
-                                    fieldset.push(
-                                        {
-                                            key: 'username',
-                                            type: 'horizontalInput',
-                                            hideExpression: '!model.enabled',
-                                            templateOptions: {
-                                                type: 'text',
-                                                required: true,
-                                                label: 'Username'
-                                            },
-                                            watcher: {
-                                                listener: function (field, newValue, oldValue, scope) {
-                                                    if (newValue != oldValue) {
-                                                        scope.$parent.needsConnectionTest = true;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    )
-                                }
-
-                                fieldset.push(
-                                    {
-                                        key: 'score',
-                                        type: 'horizontalInput',
-                                        hideExpression: '!model.enabled',
-                                        templateOptions: {
-                                            type: 'number',
-                                            label: 'Priority',
-                                            required: true,
-                                            help: 'When duplicate search results are found the result from the indexer with the highest number will be selected'
-                                        }
-                                    });
-
-                                fieldset.push(
-                                    {
-                                        key: 'timeout',
-                                        type: 'horizontalInput',
-                                        hideExpression: '!model.enabled',
-                                        templateOptions: {
-                                            type: 'number',
-                                            label: 'Timeout',
-                                            help: 'Supercedes the general timeout in "Searching"'
-                                        }
-                                    });
-
-                                if (model.type == "newznab") {
-                                    fieldset.push(
-                                        {
-                                            key: 'hitLimit',
-                                            type: 'horizontalInput',
-                                            hideExpression: '!model.enabled',
-                                            templateOptions: {
-                                                type: 'number',
-                                                label: 'API hit limit',
-                                                help: 'Maximum number of API hits since "API hit reset time"'
-                                            }
-                                        }
-                                    );
-                                    fieldset.push(
-                                        {
-                                            key: 'hitLimitResetTime',
-                                            type: 'timeOfDay',
-                                            hideExpression: '!model.enabled || !model.hitLimit',
-                                            templateOptions: {
-                                                type: 'time',
-                                                label: 'API hit reset time',
-                                                help: 'UTC time at which the API hit counter is reset'
-                                            }
-                                        });
-                                    fieldset.push(
-                                        {
-                                            key: 'username',
-                                            type: 'horizontalInput',
-                                            hideExpression: '!model.enabled',
-                                            templateOptions: {
-                                                type: 'text',
-                                                required: false,
-                                                label: 'Username',
-                                                help: 'Only needed if indexer requires HTTP auth for API access (rare)'
-                                            },
-                                            watcher: {
-                                                listener: function (field, newValue, oldValue, scope) {
-                                                    if (newValue != oldValue) {
-                                                        scope.$parent.needsConnectionTest = true;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    );
-                                    fieldset.push(
-                                        {
-                                            key: 'password',
-                                            type: 'horizontalInput',
-                                            hideExpression: '!model.enabled || !model.username',
-                                            templateOptions: {
-                                                type: 'text',
-                                                required: false,
-                                                label: 'Password',
-                                                help: 'Only needed if indexer requires HTTP auth for API access (rare)'
-                                            }
-                                        }
-                                    )
-
-                                }
-
-
-                                if (model.type != "womble") {
-                                    fieldset.push(
-                                        {
-                                            key: 'preselect',
-                                            type: 'horizontalSwitch',
-                                            hideExpression: '!model.enabled || model.accessType == "external"',
-                                            templateOptions: {
-                                                type: 'switch',
-                                                label: 'Preselect',
-                                                help: 'Preselect this indexer on the search page'
-                                            }
-                                        }
-                                    );
-                                    fieldset.push(
-                                        {
-                                            key: 'accessType',
-                                            type: 'horizontalSelect',
-                                            hideExpression: '!model.enabled',
-                                            templateOptions: {
-                                                label: 'Enable for...',
-                                                options: [
-                                                    {name: 'Internal searches only', value: 'internal'},
-                                                    {name: 'API searches only', value: 'external'},
-                                                    {name: 'Internal and API searches', value: 'both'}
-                                                ]
-                                            }
-                                        }
-                                    )
-                                }
-
-                                if (model.type == 'newznab') {
-                                    fieldset.push(
-                                        {
-                                            key: 'search_ids',
-                                            type: 'horizontalMultiselect',
-                                            hideExpression: '!model.enabled',
-                                            templateOptions: {
-                                                label: 'Search IDs',
-                                                options: [
-                                                    {label: 'TVDB', id: 'tvdbid'},
-                                                    {label: 'TVRage', id: 'rid'},
-                                                    {label: 'IMDB', id: 'imdbid'},
-                                                    {label: 'Trakt', id: 'traktid'},
-                                                    {label: 'TVMaze', id: 'tvmazeid'},
-                                                    {label: 'TMDB', id: 'tmdbid'}
-                                                ]
-                                            }
-                                        }
-                                    );
-                                    fieldset.push(
-                                        {
-                                            key: 'searchTypes',
-                                            type: 'horizontalMultiselect',
-                                            hideExpression: '!model.enabled',
-                                            templateOptions: {
-                                                label: 'Search types',
-                                                options: [
-                                                    {label: 'Movies', id: 'movie'},
-                                                    {label: 'TV', id: 'tvsearch'},
-                                                    {label: 'Ebooks', id: 'book'},
-                                                    {label: 'Audio', id: 'audio'}
-                                                ]
-                                            }
-                                        }
-                                    )
-                                }
-
-                                if (model.type == 'newznab') {
-                                    fieldset.push(
-                                        {
-                                            type: 'horizontalCheckCaps',
-                                            hideExpression: '!model.enabled || !model.host || !model.apikey || !model.name || angular.isUndefined(model.searchTypes)',
-                                            templateOptions: {
-                                                label: 'Check search types',
-                                                help: 'Find out what search types the indexer supports. Done automatically for new indexers.'
-                                            }
-                                        }
-                                    )
-                                }
-
-                                if (model.type == 'nzbindex') {
-                                    fieldset.push(
-                                        {
-                                            key: 'generalMinSize',
-                                            type: 'horizontalInput',
-                                            hideExpression: '!model.enabled',
-                                            templateOptions: {
-                                                type: 'number',
-                                                label: 'Min size',
-                                                help: 'NZBIndex returns a lot of crap with small file sizes. Set this value and all smaller results will be filtered out no matter the category'
-                                            }
-                                        }
-                                    );
-                                }
-
-                                return fieldset;
+                                return $scope.options.data.fieldsFunction(model, parentModel, isInitial);
                             },
                             isInitial: function () {
                                 return isInitial
                             },
                             parentModel: function () {
                                 return parentModel;
+                            },
+                            data: function () {
+                                return $scope.options.data;
                             }
                         }
                     });
+
 
                     modalInstance.result.then(function () {
                         $scope.form.$setDirty(true);
@@ -2871,59 +3042,27 @@ angular
                             callback(true);
                         }
                     }, function () {
-                        console.log("Indexer cancelled");
                         if (angular.isDefined(callback)) {
                             callback(false);
                         }
                     });
                 }
 
-                function showIndexerBox(model, parentModel) {
-                    $scope._showIndexerBox(model, parentModel, false)
-                }
-                
-                function orderIndexer(a, b) {
-                    console.log(a);
-                    console.log(b);
-                    // if (a.score = b.score) {
-                    //     return a.name < b.name;
-                    // } else {
-                    //     return a.score < b.score;
-                    // }
-                    return 0;
+                function showBox(model, parentModel) {
+                    $scope._showBox(model, parentModel, false)
                 }
 
-                $scope.addIndexer = function (indexers, preset) {
-                    var model = {
-                        enabled: true,
-                        host: null,
-                        apikey: null,
-                        hitLimit: null,
-                        hitLimitResetTime: new Date(0),
-                        timeout: null,
-                        name: null,
-                        showOnSearch: true,
-                        score: 0,
-                        username: null,
-                        password: null,
-                        preselect: true,
-                        type: 'newznab',
-                        accessType: "both",
-                        search_ids: undefined, //["imdbid", "rid", "tvdbid"],
-                        searchTypes: undefined, //["tvsearch", "movie"]
-                    };
+                $scope.addEntry = function (entriesCollection, preset) {
+                    var model = angular.copy($scope.options.data.defaultModel);
                     if (angular.isDefined(preset)) {
-                        model.name = preset.name;
-                        model.host = preset.host;
-                        model.search_ids = preset.searchIds;
+                        _.extend(model, preset);
                     }
 
                     $scope.isInitial = true;
 
-                    $scope._showIndexerBox(model, indexers, true, function (isSubmitted) {
+                    $scope._showBox(model, entriesCollection, true, function (isSubmitted) {
                         if (isSubmitted) {
-                            console.log("Pusing to model");
-                            indexers.push(model);
+                            entriesCollection.push(model);
                         }
                     });
                 };
@@ -2934,185 +3073,107 @@ angular
 
     }]);
 
-angular
-    .module('nzbhydraApp').run(["formlyConfig", "formlyValidationMessages", function (formlyConfig, formlyValidationMessages) {
 
-    formlyValidationMessages.addStringMessage('required', 'This field is required');
-
-    formlyConfig.extras.errorExistsAndShouldBeVisibleExpression = 'fc.$touched || form.$submitted';
-
-}]);
-
-
-angular.module('nzbhydraApp').controller('IndexerModalInstanceController', ["$scope", "$uibModalInstance", "$http", "model", "fields", "isInitial", "parentModel", "growl", "ModalService", "blockUI", function ($scope, $uibModalInstance, $http, model, fields, isInitial, parentModel, growl, ModalService, blockUI) {
+angular.module('nzbhydraApp').controller('ConfigBoxInstanceController', ["$scope", "$q", "$uibModalInstance", "$http", "model", "fields", "isInitial", "parentModel", "data", "growl", function ($scope, $q, $uibModalInstance, $http, model, fields, isInitial, parentModel, data, growl) {
 
     $scope.model = model;
     $scope.fields = fields;
     $scope.isInitial = isInitial;
+    $scope.allowDelete = data.allowDeleteFunction(model);
     $scope.spinnerActive = false;
     $scope.needsConnectionTest = false;
-
-    console.log($uibModalInstance);
-
-
-    function checkConnection(onSuccess, onUnsuccessful, onError) {
-        console.log("Connection test needed");
-        $scope.spinnerActive = true;
-        var url;
-        var params;
-        if (model.type == "newznab") {
-            url = "internalapi/test_newznab";
-            params = {host: model.host, apikey: model.apikey};
-        } else if (model.type == "omgwtf") {
-            url = "internalapi/test_omgwtf";
-            params = {username: model.username, apikey: model.apikey};
-        }
-
-        $http.get(url, {params: params}).success(function (result) {
-            //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
-            if (result.result) {
-                if (angular.isDefined(onSuccess)) {
-                    onSuccess();
-                }
-            } else {
-                if (angular.isDefined(onUnsuccessful)) {
-                    onUnsuccessful(result.message);
-                }
-            }
-
-        }).error(function (result) {
-            if (angular.isDefined(onError)) {
-                onError(result.message);
-            }
-        }).finally(function () {
-            $scope.spinnerActive = false;
-        });
-    }
-
-    function checkCaps(onSuccess, onError) {
-        $scope.spinnerActive = true;
-        var url;
-        var params;
-
-        url = "internalapi/test_caps";
-        params = {indexer: model.name, apikey: model.apikey, host: model.host};
-        $http.get(url, {params: params}).success(function (result) {
-            //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
-            if (result.success) {
-                if (angular.isDefined(onSuccess)) {
-                    onSuccess(result.ids, result.types);
-                }
-            } else {
-                if (angular.isDefined(onError)) {
-                    onError();
-                }
-            }
-
-        }).error(function () {
-            if (angular.isDefined(onError)) {
-                onError(result.message);
-            }
-        }).finally(function () {
-            $scope.spinnerActive = false;
-        })
-    }
-
-    function checkCapsOrSubmit() {
-        if (angular.isUndefined(model.search_ids) || angular.isUndefined(model.searchTypes)) {
-            console.log("We need to check the caps first");
-            blockUI.start("New indexer found. Testing its capabilities. This may take a bit...");
-            checkCaps(
-                function (ids, types) {
-                    blockUI.reset();
-                    growl.info("Successfully tested capabilites of indexer. Supports: " + ids + "," + types);
-                    model.search_ids = ids;
-                    model.searchTypes = types;
-                    $uibModalInstance.close($scope);
-                },
-                function () {
-                    blockUI.reset();
-                    ModalService.open("Error testing capabilities", "The capabilities of the indexer could not be checked. The indexer won't be used for ID based searches (IMDB, TVDB, etc.). You may repeat the check manually at any time.", function () {
-                        $uibModalInstance.close($scope);
-                    });
-                    model.search_ids = [];
-                    model.searchTypes = [];
-                })
-        } else {
-            $uibModalInstance.close($scope);
-        }
-    }
-
+    
     $scope.obSubmit = function () {
+        console.log($scope);
         if ($scope.form.$valid) {
-            if ($scope.needsConnectionTest) {
-                checkConnection(
-                    function () {
-                        console.log("Form is valid and connection was tested successfully");
-                        checkCapsOrSubmit();
-                    },
-                    function (message) {
-                        console.log("Form is valid but connection was not tested successfully");
-                        growl.error("The connection to the indexer failed: " + message);
-                    },
-                    function () {
-                        console.log("Form is valid but connection was not tested successfully");
-                        growl.error("The connection to the indexer could not be tested, sorry");
-                    });
-            } else {
-                console.log("No connection test needed");
-                checkCapsOrSubmit();
-            }
+            
+            var a = data.checkBeforeClose($scope, model).then(function() {
+                $uibModalInstance.close($scope);
+            });
         } else {
             growl.error("Config invalid. Please check your settings.");
-            console.log($scope);
-            angular.forEach($scope.form.$error.required, function (field) {
-                field.$setTouched();
+            angular.forEach($scope.form.$error, function (error) {
+                angular.forEach(error, function (field) {
+                    field.$setTouched();
+                });
             });
         }
     };
 
     $scope.reset = function () {
-        console.log("Cancelling");
         $scope.reset();
     };
 
-    $scope.deleteIndexer = function () {
+    $scope.deleteEntry = function () {
         parentModel.splice(parentModel.indexOf(model), 1);
         $uibModalInstance.close($scope);
     };
 
     $scope.reset = function () {
-        //Resetting causes some troubles with the date and the multiselects 
-        
-        //So we save the reset time first
-        var date;
-        for (var i = 0; i < $scope.fields.length; i++) {
-            var field = $scope.fields[i];
-            if (field.key == "hitLimitResetTime") {
-                date = new Date(field.initialValue);
-                date = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
-            }
+        if (angular.isDefined(data.resetFunction)) {
+            data.resetFunction($scope);
         }
-        
-        
-        //Then reset the model twice (for some reason when we do it once the search types / ids fields are empty, resetting again fixes that... (wtf))
-        $scope.options.resetModel();
-        $scope.options.resetModel();
-        
-        //and set the date back
-        $scope.model.hitLimitResetTime = date;
-        
-
     };
 
-    $scope.$on("modal.closing", function (targetScope, reason, c) {
-        console.log("Closing");
-
+    $scope.$on("modal.closing", function (targetScope, reason) {
         if (reason == "backdrop click") {
-            $scope.reset();
+            $scope.reset($scope);
         }
     });
 }]);
+
+angular
+    .module('nzbhydraApp')
+    .factory('ConfigBoxService', ConfigBoxService);
+
+function ConfigBoxService($http, $q) {
+
+    return {
+        checkConnection: checkConnection,
+        checkCaps: checkCaps
+    };
+
+    function checkConnection(url, settings) {
+        var deferred = $q.defer();
+
+        $http.post(url, settings).success(function (result) {
+            //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
+            if (result.result) {
+                deferred.resolve();
+            } else {
+                deferred.reject({checked: true, message: result.message});
+            }
+        }).error(function (result) {
+            deferred.reject({checked: false, message: result.message});
+        });
+
+        return deferred.promise;
+    }
+
+    function checkCaps(url, params) {
+        var deferred = $q.defer();
+
+        $http.post(url, params).success(function (result) {
+            //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
+            if (result.success) {
+                deferred.resolve({ids: result.ids, types: result.types});
+            } else {
+                deferred.reject(result.message);
+            }
+        }).error(function () {
+            deferred.reject("Unknown error");
+        });
+
+        return deferred.promise;
+    }
+
+}
+ConfigBoxService.$inject = ["$http", "$q"];
+
+
+
+
+
 var filters = angular.module('filters', []);
 
 filters.filter('bytes', function() {
@@ -3133,6 +3194,130 @@ filters.filter('unsafe',
 		};
 	}]
 );
+angular
+    .module('nzbhydraApp')
+    .factory('DownloaderCategoriesService', DownloaderCategoriesService);
+
+function DownloaderCategoriesService($http, $q, $uibModal) {
+
+    var categories = {};
+    var selectedCategory = {};
+
+    var service = {
+        get: getCategories,
+        invalidate: invalidate,
+        select: select,
+        openCategorySelection: openCategorySelection
+    };
+
+    var deferred;
+
+    return service;
+
+
+    function getCategories(downloader) {
+
+        function loadAll() {
+            if (angular.isDefined(categories) && angular.isDefined(categories.downloader)) {
+                var deferred = $q.defer();
+                deferred.resolve(categories.downloader);
+                return deferred.promise;
+            }
+            
+            return $http.get('internalapi/getcategories', {params: {downloader: downloader.name}})
+                .then(function (categoriesResponse) {
+                    
+                    console.log("Updating downloader categories cache");
+                    var categories = {downloader: categoriesResponse.data.categories};
+                    return categoriesResponse.data.categories;
+
+                }, function (error) {
+                    throw error;
+                });
+        }
+
+        return loadAll().then(function (categories) {
+            return categories;
+        }, function (error) {
+            throw error;
+        });
+    }
+
+
+    function openCategorySelection(downloader) {
+        $uibModal.open({
+            templateUrl: 'static/html/directives/addable-nzb-modal.html',
+            controller: 'DownloaderCategorySelectionController',
+            size: "sm",
+            resolve: {
+                categories: function () {
+                    return getCategories(downloader)
+                }
+            }
+        });
+        deferred = $q.defer();
+        return deferred.promise;
+    }
+
+    function select(category) {
+        selectedCategory = category;
+        console.log("Selected category " + category);
+        deferred.resolve(category);
+    }
+
+    function invalidate() {
+        console.log("Invalidating categories");
+        categories = undefined;
+    }
+}
+DownloaderCategoriesService.$inject = ["$http", "$q", "$uibModal"];
+
+angular
+    .module('nzbhydraApp').controller('DownloaderCategorySelectionController', ["$scope", "$uibModalInstance", "DownloaderCategoriesService", "categories", function ($scope, $uibModalInstance, DownloaderCategoriesService, categories) {
+    console.log(categories);
+    $scope.categories = categories;
+    $scope.select = function (category) {
+        DownloaderCategoriesService.select(category);
+        $uibModalInstance.close($scope);
+    }
+}]);
+angular
+    .module('nzbhydraApp')
+    .controller('DownloadHistoryController', DownloadHistoryController);
+
+
+function DownloadHistoryController($scope, StatsService, downloads) {
+    $scope.type = "All";
+    $scope.limit = 100;
+    $scope.pagination = {
+        current: 1
+    };
+
+    $scope.nzbDownloads = downloads.data.nzbDownloads;
+    $scope.totalDownloads = downloads.data.totalDownloads;
+
+    $scope.changeType = function (type) {
+        $scope.type = type;
+        getDownloadsPage($scope.pagination.current);
+    };
+
+
+    $scope.pageChanged = function (newPage) {
+        getDownloadsPage(newPage);
+    };
+
+    function getDownloadsPage(pageNumber) {
+        StatsService.getDownloadHistory(pageNumber, $scope.limit, $scope.type).then(function(downloads) {
+            $scope.nzbDownloads = downloads.data.nzbDownloads;
+            $scope.totalDownloads = downloads.data.totalDownloads;
+        });
+        
+    }
+
+
+}
+DownloadHistoryController.$inject = ["$scope", "StatsService", "downloads"];
+
 angular
     .module('nzbhydraApp')
     .factory('ConfigService', ConfigService);
@@ -3191,6 +3376,8 @@ function ConfigService($http, $q, $cacheFactory) {
     }
 
     function maySeeAdminArea() {
+        console.log("MAYSEEADMINAREA IS SET TO TRUE FOR DEBUGGING");
+        return true;
         function loadAll() {
             var maySeeAdminArea = cache.get("maySeeAdminArea");
             if (!angular.isUndefined(maySeeAdminArea)) {
@@ -3217,7 +3404,7 @@ angular
     .module('nzbhydraApp')
     .factory('ConfigFields', ConfigFields);
 
-function ConfigFields() {
+function ConfigFields($injector) {
 
     var restartWatcher;
 
@@ -3237,7 +3424,6 @@ function ConfigFields() {
         }
     }
 
-    
 
     function ipValidator() {
         return {
@@ -3280,9 +3466,130 @@ function ConfigFields() {
                 }
                 return true;
             },
-
             message: (prefixViewValue ? '$viewValue + " ' : '" ') + message + '"'
         };
+    }
+
+    function getCategoryFields() {
+        var fields = [];
+        var ConfigService = $injector.get("ConfigService");
+        var categories = ConfigService.getSafe().categories;
+        fields.push({
+            key: 'enableCategorySizes',
+            type: 'horizontalSwitch',
+            templateOptions: {
+                type: 'switch',
+                label: 'Category sizes',
+                help: "Preset min and max sizes depending on the selected category"
+            }
+        });
+        _.each(categories, function (category) {
+                if (category.name != "all" && category.name != "na") {
+                    var categoryFields = [
+                        {
+                            key: "categories." + category.name + '.requiredWords',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Required words',
+                                placeholder: 'separate, with, commas, like, this'
+                            }
+                        },
+                        {
+                            key: "categories." + category.name + '.forbiddenWords',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Forbidden words',
+                                placeholder: 'separate, with, commas, like, this'
+                            }
+                        }
+                        ,
+                        {
+                            key: "categories." + category.name + '.applyRestrictions',
+                            type: 'horizontalSelect',
+                            templateOptions: {
+                                label: 'Apply restrictions',
+                                options: [
+                                    {name: 'Internal searches', value: 'internal'},
+                                    {name: 'API searches', value: 'external'},
+                                    {name: 'All searches', value: 'both'}
+                                ],
+                                help: "For which type of search word restrictions will be applied"
+                            }
+                        }
+                    ];
+                    categoryFields.push({
+                        wrapper: 'settingWrapper',
+                        templateOptions: {
+                            label: 'Size preset'
+                        },
+                        fieldGroup: [
+                            {
+                                key: "categories." + category.name + '.min',
+                                type: 'duoSetting',
+                                templateOptions: {
+                                    addonRight: {
+                                        text: 'MB'
+                                    }
+                                }
+                            },
+                            {
+                                type: 'duolabel'
+                            },
+                            {
+                                key: "categories." + category.name + '.max',
+                                type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
+                            }
+                        ]
+                    });
+                    categoryFields.push({
+                        key: "categories." + category.name + '.newznabCategories',
+                        type: 'horizontalInput',
+                        templateOptions: {
+                            type: 'text',
+                            label: 'Newznab categories',
+                            help: 'Map newznab categories to hydra categories',
+                            required: true
+                        },
+                        parsers: [function(value) {
+                            if (!value) {
+                                return value;
+                            }
+                            var arr = [];
+                            arr.push.apply(arr, value.split(",").map(Number));
+                            return arr;
+                            
+                        }]
+                    });
+                    categoryFields.push({
+                        key: "categories." + category.name + '.ignoreResults',
+                        type: 'horizontalSelect',
+                        templateOptions: {
+                            label: 'Ignore results',
+                            options: [
+                                {name: 'For internal searches', value: 'internal'},
+                                {name: 'For API searches', value: 'external'},
+                                {name: 'Always', value: 'always'},
+                                {name: 'Never', value: 'never'}
+                            ],
+                            help: "Ignore results from this category"
+                        }
+                    });
+
+                    fields.push({
+                        wrapper: 'fieldset',
+                        templateOptions: {
+                            label: category.pretty
+                        },
+                        fieldGroup: categoryFields
+
+                    })
+                }
+            }
+        );
+        console.log(fields);
+        return fields;
     }
 
     function getFields(rootModel) {
@@ -3493,6 +3800,14 @@ function ConfigFields() {
                             watcher: {
                                 listener: restartListener
                             }
+                        },
+                        {
+                            key: 'logIpAddresses',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Log IP addresses'
+                            }
                         }
 
 
@@ -3528,6 +3843,18 @@ function ConfigFields() {
                     wrapper: 'fieldset',
                     templateOptions: {label: 'Other'},
                     fieldGroup: [
+                        {
+                            key: 'keepSearchResultsForDays',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'number',
+                                label: 'Store results for ...',
+                                addonRight: {
+                                    text: 'days'
+                                },
+                                help: 'Meta data from searches is stored in the database. When they\'re deleted links to hydra become invalid.'
+                            }
+                        },
                         {
                             key: 'debug',
                             type: 'horizontalSwitch',
@@ -3567,6 +3894,7 @@ function ConfigFields() {
                     templateOptions: {
                         label: 'Indexer access'
                     },
+
                     fieldGroup: [
                         {
                             key: 'timeout',
@@ -3598,21 +3926,21 @@ function ConfigFields() {
                             }
                         },
                         {
-                            key: 'ignoreWords',
+                            key: 'forbiddenWords',
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
-                                label: 'Ignore results with ...',
+                                label: 'Forbidden words',
                                 placeholder: 'separate, with, commas, like, this',
                                 help: "Results with any of these words in the title will be ignored"
                             }
                         },
                         {
-                            key: 'requireWords',
+                            key: 'requiredWords',
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
-                                label: 'Only accept results with ...',
+                                label: 'Required words',
                                 placeholder: 'separate, with, commas, like, this',
                                 help: "Only results with at least of these words in the title will be displayed"
                             }
@@ -3713,510 +4041,161 @@ function ConfigFields() {
                                 label: 'Always show duplicates',
                                 help: 'Activate to show duplicates in search results by default'
                             }
-                        }
-                    ]
-                },
-
-                {
-                    wrapper: 'fieldset',
-                    key: 'categorysizes',
-                    templateOptions: {label: 'Category sizes'},
-                    fieldGroup: [
-
-                        {
-                            key: 'enable_category_sizes',
-                            type: 'horizontalSwitch',
-                            templateOptions: {
-                                type: 'switch',
-                                label: 'Category sizes',
-                                help: "Preset min and max sizes depending on the selected category"
-                            }
                         },
                         {
-                            wrapper: 'logicalGroup',
-                            hideExpression: '!model.enable_category_sizes',
-                            fieldGroup: [
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Movies'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'moviesmin',
-                                            type: 'duoSetting',
-                                            templateOptions: {
-                                                addonRight: {
-                                                    text: 'MB'
-                                                }
-                                            }
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'moviesmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Movies HD'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'movieshdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'movieshdmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Movies SD'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'moviessdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'movieshdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'TV'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'tvmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'tvmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'TV HD'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'tvhdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'tvhdmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'TV SD'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'tvsdmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'tvsdmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Audio'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'audiomin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'audiomax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Audio FLAC'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'flacmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'flacmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Audio MP3'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'mp3min',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'mp3max',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Audiobook'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'audiobookmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'audiobookmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Console'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'consolemin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'consolemax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'PC'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'pcmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'pcmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'XXX'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'xxxmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'xxxmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                },
-
-                                {
-                                    wrapper: 'settingWrapper',
-                                    templateOptions: {
-                                        label: 'Ebook'
-                                    },
-                                    fieldGroup: [
-                                        {
-                                            key: 'ebookmin',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        },
-                                        {
-                                            type: 'duolabel'
-                                        },
-                                        {
-                                            key: 'ebookmax',
-                                            type: 'duoSetting', templateOptions: {addonRight: {text: 'MB'}}
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-
-                    ]
-                }
-
-            ],
-
-            downloader: [
-                {
-                    key: 'downloader',
-                    type: 'horizontalSelect',
-                    templateOptions: {
-                        type: 'select',
-                        label: 'Downloader',
-                        options: [
-                            {name: 'None', value: 'none'},
-                            {name: 'NZBGet', value: 'nzbget'},
-                            {name: 'SABnzbd', value: 'sabnzbd'}
-                        ]
-                    }
-                },
-                {
-                    key: 'nzbaccesstype',
-                    type: 'horizontalSelect',
-                    templateOptions: {
-                        type: 'select',
-                        label: 'NZB access type',
-                        options: [
-                            {name: 'Proxy NZBs from indexer', value: 'serve'},
-                            {name: 'Redirect to the indexer', value: 'redirect'}
-                        ],
-                        help: "How external access to NZBs is provided. Redirecting is recommended."
-                    }
-                },
-                {
-                    key: 'nzbAddingType',
-                    type: 'horizontalSelect',
-                    templateOptions: {
-                        type: 'select',
-                        label: 'NZB adding type',
-                        options: [
-                            {name: 'Send link', value: 'link'},
-                            {name: 'Upload NZB', value: 'nzb'}
-                        ],
-                        help: "How NZBs are added to the downloader, either by sending a link to the NZB or by uploading the NZB data"
-                    }
-                },
-                {
-                    wrapper: 'fieldset',
-                    key: 'nzbget',
-                    hideExpression: 'model.downloader!="nzbget"',
-                    templateOptions: {label: 'NZBGet'},
-                    fieldGroup: [
-                        {
-                            key: 'host',
-                            type: 'horizontalInput',
+                            key: 'nzbAccessType',
+                            type: 'horizontalSelect',
                             templateOptions: {
-                                type: 'text',
-                                label: 'Host',
-                                required: true
-                            }
-                        },
-                        {
-                            key: 'port',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'number',
-                                label: 'Port',
-                                placeholder: '5050',
-                                required: true
-                            }
-                        },
-                        {
-                            key: 'ssl',
-                            type: 'horizontalSwitch',
-                            templateOptions: {
-                                type: 'switch',
-                                label: 'Use SSL'
-                            }
-                        },
-                        {
-                            key: 'username',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'Username'
-                            }
-                        },
-                        {
-                            key: 'password',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'password',
-                                label: 'Password'
-                            }
-                        },
-                        {
-                            key: 'defaultCategory',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'Default category',
-                                help: 'When adding NZBs this category will be used instead of asking for the category'
-                            }
-                        },
-                        {
-                            type: 'horizontalTestConnection',
-                            templateOptions: {
-                                label: 'Test connection',
-                                testType: 'downloader',
-                                downloader: 'nzbget'
+                                type: 'select',
+                                label: 'NZB access type',
+                                options: [
+                                    {name: 'Proxy NZBs from indexer', value: 'serve'},
+                                    {name: 'Redirect to the indexer', value: 'redirect'}
+                                ],
+                                help: "How access to NZBs is provided when NZBs are downloaded (by the user or external tools). Redirecting is recommended."
                             }
                         }
-
-
-                    ]
-                },
-                {
-                    wrapper: 'fieldset',
-                    key: 'sabnzbd',
-                    hideExpression: 'model.downloader!="sabnzbd"',
-                    templateOptions: {label: 'SABnzbd'},
-                    fieldGroup: [
-                        {
-                            key: 'url',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'URL',
-                                required: true
-                            }
-                        },
-                        {
-                            key: 'username',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'Username',
-                                help: 'Usually not needed when an API key is used'
-                            }
-                        },
-                        {
-                            key: 'password',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'password',
-                                label: 'Password',
-                                help: 'Usually not needed when an API key is used'
-                            }
-                        },
-                        {
-                            key: 'apikey',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'API Key'
-                            }
-                        },
-                        {
-                            key: 'defaultCategory',
-                            type: 'horizontalInput',
-                            templateOptions: {
-                                type: 'text',
-                                label: 'Default category',
-                                help: 'When adding NZBs this category will be used instead of asking for the category'
-                            }
-                        },
-                        {
-                            type: 'horizontalTestConnection',
-                            templateOptions: {
-                                label: 'Test connection',
-                                testType: 'downloader',
-                                downloader: 'sabnzbd'
-                            }
-                        }
-
-
                     ]
                 }
             ],
 
-        
-            
+            categories: getCategoryFields(),
+
+            downloaders: [
+                {
+                    type: "arrayConfig",
+                    data: {
+                        defaultModel: {
+                            enabled: true
+                        },
+                        entryTemplateUrl: 'downloaderEntry.html',
+                        presets: getDownloaderPresets(),
+                        presetsOnly: true,
+                        addNewText: 'Add new downloader',
+                        fieldsFunction: getDownloaderBoxFields,
+                        allowDeleteFunction: function () {
+                            return true;
+                        },
+                        checkBeforeClose: function (scope, model) {
+                            var DownloaderCheckBeforeCloseService = $injector.get("DownloaderCheckBeforeCloseService");
+                            return DownloaderCheckBeforeCloseService.check(scope, model);
+                        },
+                        resetFunction: function (scope) {
+                            scope.options.resetModel();
+                            scope.options.resetModel();
+                        }
+
+                    }
+                }
+            ],
+
+
             indexers: [
                 {
-                    type: "indexers"
+                    type: "arrayConfig",
+                    data: {
+                        defaultModel: {
+                            enabled: true,
+                            host: null,
+                            apikey: null,
+                            hitLimit: null,
+                            hitLimitResetTime: new Date(0),
+                            timeout: null,
+                            name: null,
+                            showOnSearch: true,
+                            score: 0,
+                            username: null,
+                            password: null,
+                            preselect: true,
+                            type: 'newznab',
+                            accessType: "both",
+                            search_ids: undefined, //["imdbid", "rid", "tvdbid"],
+                            searchTypes: undefined //["tvsearch", "movie"]
+                        },
+                        addNewText: 'Add new indexer',
+                        entryTemplateUrl: 'indexerEntry.html',
+                        presets: getIndexerPresets(),
+                        fieldsFunction: getIndexerBoxFields,
+                        allowDeleteFunction: function (model) {
+                            return model.type == 'newznab';
+                        },
+                        checkBeforeClose: function (scope, model) {
+                            var IndexerCheckBeforeCloseService = $injector.get("IndexerCheckBeforeCloseService");
+                            return IndexerCheckBeforeCloseService.check(scope, model);
+                        },
+                        resetFunction: function (scope) {
+                            //Resetting causes some troubles with the date and the multiselects 
+
+                            //So we save the reset time first
+                            var date;
+                            for (var i = 0; i < scope.fields.length; i++) {
+                                var field = scope.fields[i];
+                                if (field.key == "hitLimitResetTime") {
+                                    date = new Date(field.initialValue);
+                                    date = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+                                }
+                            }
+
+                            //Then reset the model twice (for some reason when we do it once the search types / ids fields are empty, resetting again fixes that... (wtf))
+                            scope.options.resetModel();
+                            scope.options.resetModel();
+
+                            //and set the date back
+                            scope.model.hitLimitResetTime = date;
+                        }
+
+                    }
                 }
             ],
 
             auth: [
                 {
-                    type: 'help',
+                    key: 'authType',
+                    type: 'horizontalSelect',
                     templateOptions: {
-                        lines: [
-                            'To require login only for admin access create a user with empty username and password and add a user with username and password and admin rights.',
-                            'To have a simple and an admin user remove the authless user and create two users, one without and one with admin rights.',
-                            'Leave empty to disable authorization.'
+                        label: 'Auth type',
+                        options: [
+                            {name: 'None', value: 'none'},
+                            {name: 'HTTP Basic auth', value: 'basic'},
+                            {name: 'Login form', value: 'form'}
                         ]
+
+                    }
+                },
+                {
+                    key: 'restrictSearch',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Restrict searching',
+                        help: 'Restrict access to searching'
+                    },
+                    hideExpression: function () {
+                        return rootModel.auth.authType == "none";
+                    }
+                },
+                {
+                    key: 'restrictStats',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Restrict stats',
+                        help: 'Restrict access to stats'
+                    },
+                    hideExpression: function () {
+                        return rootModel.auth.authType == "none";
+                    }
+                },
+                {
+                    key: 'restrictAdmin',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Restrict admin',
+                        help: 'Restrict access to admin functions'
+                    },
+                    hideExpression: function () {
+                        return rootModel.auth.authType == "none";
                     }
                 },
                 {
@@ -4232,23 +4211,18 @@ function ConfigFields() {
                                 type: 'horizontalInput',
                                 templateOptions: {
                                     type: 'text',
-                                    label: 'Username'
+                                    label: 'Username',
+                                    required: true
                                 }
+
                             },
                             {
                                 key: 'password',
                                 type: 'horizontalInput',
                                 templateOptions: {
                                     type: 'password',
-                                    label: 'Password'
-                                }
-                            },
-                            {
-                                key: 'maySeeStats',
-                                type: 'horizontalSwitch',
-                                templateOptions: {
-                                    type: 'switch',
-                                    label: 'May see stats'
+                                    label: 'Password',
+                                    required: true
                                 }
                             },
                             {
@@ -4257,13 +4231,16 @@ function ConfigFields() {
                                 templateOptions: {
                                     type: 'switch',
                                     label: 'May see admin area'
-                                },
-                                validators: {
-                                    dontLockYourselfOut: authValidatorDontLockYourselfOut(rootModel)
-                                },
-                                data: {
-                                    rootModel: rootModel
                                 }
+                            },
+                            {
+                                key: 'maySeeStats',
+                                type: 'horizontalSwitch',
+                                templateOptions: {
+                                    type: 'switch',
+                                    label: 'May see stats'
+                                },
+                                hideExpression: 'model.maySeeAdmin'
                             }
 
                         ],
@@ -4279,6 +4256,729 @@ function ConfigFields() {
         };
     }
 }
+ConfigFields.$inject = ["$injector"];
+
+function getIndexerPresets() {
+    return [
+        {
+            name: "6box",
+            host: "https://6box.me",
+            search_ids: ["imdbid"]
+        },
+        {
+            name: "6box nzedb",
+            host: "https://nzedb.6box.me",
+            search_ids: ["rid", "imdbid"]
+        },
+        {
+            name: "6box nntmux",
+            host: "https://nn-tmux.6box.me",
+            search_ids: ["tvdbid", "rid", "imdbid"]
+        },
+        {
+            name: "DogNZB",
+            host: "https://api.dognzb.cr",
+            search_ids: ["tvdbid", "rid", "imdbid"]
+        },
+        {
+            name: "Drunken Slug",
+            host: "https://drunkenslug.com",
+            search_ids: ["tvdbid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
+        },
+        {
+            name: "NZB Finder",
+            host: "https://nzbfinder.ws",
+            search_ids: ["tvdbid", "rid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
+        },
+        {
+            name: "NZBs.org",
+            host: "https://nzbs.org",
+            search_ids: ["tvdbid", "rid", "imdbid", "tvmazeid"]
+        },
+        {
+            name: "nzb.su",
+            host: "https://api.nzb.su",
+            search_ids: ["rid", "imdbid"]
+        },
+        {
+            name: "NZBGeek",
+            host: "https://api.nzbgeek.info",
+            search_ids: ["tvdbid", "rid", "imdbid"]
+        },
+        {
+            name: "SimplyNZBs",
+            host: "https://simplynzbs.com",
+            search_ids: ["imdbid", "rid", "tmdbid", "tvdbid", "tvmazeid"],
+            searchTypes: ["tvsearch", "movie"]
+
+        }
+    ];
+}
+
+function getIndexerBoxFields(model, parentModel, isInitial) {
+    var fieldset = [];
+
+    fieldset.push({
+        key: 'enabled',
+        type: 'horizontalSwitch',
+        templateOptions: {
+            type: 'switch',
+            label: 'Enabled'
+        }
+    });
+
+    if (model.type == 'newznab') {
+        fieldset.push(
+            {
+                key: 'name',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'text',
+                    label: 'Name',
+                    required: true,
+                    help: 'Used for identification. Changing the name will lose all history and stats!'
+                },
+                validators: {
+                    uniqueName: {
+                        expression: function (viewValue) {
+                            if (isInitial || viewValue != model.name) {
+                                return _.pluck(parentModel, "name").indexOf(viewValue) == -1;
+                            }
+                            return true;
+                        },
+                        message: '"Indexer \\"" + $viewValue + "\\" already exists"'
+                    }
+                }
+            })
+    }
+    if (model.type == 'newznab') {
+        fieldset.push(
+            {
+                key: 'host',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'text',
+                    label: 'Host',
+                    required: true,
+                    placeholder: 'http://www.someindexer.com'
+                },
+                watcher: {
+                    listener: function (field, newValue, oldValue, scope) {
+                        if (newValue != oldValue) {
+                            scope.$parent.needsConnectionTest = true;
+                        }
+                    }
+                }
+            }
+        )
+    }
+
+    if (model.type == 'newznab' || model.type == 'omgwtf') {
+        fieldset.push(
+            {
+                key: 'apikey',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'text',
+                    required: true,
+                    label: 'API Key'
+                },
+                watcher: {
+                    listener: function (field, newValue, oldValue, scope) {
+                        if (newValue != oldValue) {
+                            scope.$parent.needsConnectionTest = true;
+                        }
+                    }
+                }
+            }
+        )
+    }
+
+    if (model.type == 'omgwtf') {
+        fieldset.push(
+            {
+                key: 'username',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'text',
+                    required: true,
+                    label: 'Username'
+                },
+                watcher: {
+                    listener: function (field, newValue, oldValue, scope) {
+                        if (newValue != oldValue) {
+                            scope.$parent.needsConnectionTest = true;
+                        }
+                    }
+                }
+            }
+        )
+    }
+
+    fieldset.push(
+        {
+            key: 'score',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'number',
+                label: 'Priority',
+                required: true,
+                help: 'When duplicate search results are found the result from the indexer with the highest number will be selected'
+            }
+        });
+
+    fieldset.push(
+        {
+            key: 'timeout',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'number',
+                label: 'Timeout',
+                help: 'Supercedes the general timeout in "Searching"'
+            }
+        });
+
+    if (model.type == "newznab") {
+        fieldset.push(
+            {
+                key: 'hitLimit',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'number',
+                    label: 'API hit limit',
+                    help: 'Maximum number of API hits since "API hit reset time"'
+                }
+            }
+        );
+        fieldset.push(
+            {
+                key: 'hitLimitResetTime',
+                type: 'timeOfDay',
+                hideExpression: '!model.hitLimit',
+                templateOptions: {
+                    type: 'time',
+                    label: 'API hit reset time',
+                    help: 'UTC time at which the API hit counter is reset'
+                }
+            });
+        fieldset.push(
+            {
+                key: 'username',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'text',
+                    required: false,
+                    label: 'Username',
+                    help: 'Only needed if indexer requires HTTP auth for API access (rare)'
+                },
+                watcher: {
+                    listener: function (field, newValue, oldValue, scope) {
+                        if (newValue != oldValue) {
+                            scope.$parent.needsConnectionTest = true;
+                        }
+                    }
+                }
+            }
+        );
+        fieldset.push(
+            {
+                key: 'password',
+                type: 'horizontalInput',
+                hideExpression: '!model.username',
+                templateOptions: {
+                    type: 'text',
+                    required: false,
+                    label: 'Password',
+                    help: 'Only needed if indexer requires HTTP auth for API access (rare)'
+                }
+            }
+        )
+
+    }
+
+
+    if (model.type != "womble") {
+        fieldset.push(
+            {
+                key: 'preselect',
+                type: 'horizontalSwitch',
+                hideExpression: 'model.accessType == "external"',
+                templateOptions: {
+                    type: 'switch',
+                    label: 'Preselect',
+                    help: 'Preselect this indexer on the search page'
+                }
+            }
+        );
+        fieldset.push(
+            {
+                key: 'accessType',
+                type: 'horizontalSelect',
+                templateOptions: {
+                    label: 'Enable for...',
+                    options: [
+                        {name: 'Internal searches only', value: 'internal'},
+                        {name: 'API searches only', value: 'external'},
+                        {name: 'Internal and API searches', value: 'both'}
+                    ]
+                }
+            }
+        )
+    }
+
+    if (model.type == 'newznab') {
+        fieldset.push(
+            {
+                key: 'search_ids',
+                type: 'horizontalMultiselect',
+                templateOptions: {
+                    label: 'Search IDs',
+                    options: [
+                        {label: 'TVDB', id: 'tvdbid'},
+                        {label: 'TVRage', id: 'rid'},
+                        {label: 'IMDB', id: 'imdbid'},
+                        {label: 'Trakt', id: 'traktid'},
+                        {label: 'TVMaze', id: 'tvmazeid'},
+                        {label: 'TMDB', id: 'tmdbid'}
+                    ]
+                }
+            }
+        );
+        fieldset.push(
+            {
+                key: 'searchTypes',
+                type: 'horizontalMultiselect',
+                templateOptions: {
+                    label: 'Search types',
+                    options: [
+                        {label: 'Movies', id: 'movie'},
+                        {label: 'TV', id: 'tvsearch'},
+                        {label: 'Ebooks', id: 'book'},
+                        {label: 'Audio', id: 'audio'}
+                    ]
+                }
+            }
+        )
+    }
+
+    if (model.type == 'newznab') {
+        fieldset.push(
+            {
+                type: 'horizontalCheckCaps',
+                hideExpression: '!model.host || !model.apikey || !model.name || angular.isUndefined(model.searchTypes)',
+                templateOptions: {
+                    label: 'Check search types',
+                    help: 'Find out what search types the indexer supports. Done automatically for new indexers.'
+                }
+            }
+        )
+    }
+
+    if (model.type == 'nzbindex') {
+        fieldset.push(
+            {
+                key: 'generalMinSize',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'number',
+                    label: 'Min size',
+                    help: 'NZBIndex returns a lot of crap with small file sizes. Set this value and all smaller results will be filtered out no matter the category'
+                }
+            }
+        );
+    }
+
+    return fieldset;
+}
+
+
+function getDownloaderBoxFields(model, parentModel, isInitial) {
+    var fieldset = [];
+
+    fieldset = _.union(fieldset, [
+        {
+            key: 'enabled',
+            type: 'horizontalSwitch',
+            templateOptions: {
+                type: 'switch',
+                label: 'Enabled'
+            }
+        },
+        {
+            key: 'name',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'Name',
+                required: true
+            },
+            validators: {
+                uniqueName: {
+                    expression: function (viewValue) {
+                        if (isInitial || viewValue != model.name) {
+                            return _.pluck(parentModel, "name").indexOf(viewValue) == -1;
+                        }
+                        return true;
+                    },
+                    message: '"Downloader \\"" + $viewValue + "\\" already exists"'
+                }
+            }
+
+        }]);
+
+    if (model.type == "nzbget") {
+        fieldset = _.union(fieldset, [{
+            key: 'host',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'Host',
+                required: true
+            },
+            watcher: {
+                listener: function (field, newValue, oldValue, scope) {
+                    if (newValue != oldValue) {
+                        scope.$parent.needsConnectionTest = true;
+                    }
+                }
+            }
+
+        },
+            {
+                key: 'port',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'number',
+                    label: 'Port',
+                    placeholder: '5050',
+                    required: true
+                },
+                watcher: {
+                    listener: function (field, newValue, oldValue, scope) {
+                        if (newValue != oldValue) {
+                            scope.$parent.needsConnectionTest = true;
+                        }
+                    }
+                }
+            }, {
+                key: 'ssl',
+                type: 'horizontalSwitch',
+                templateOptions: {
+                    type: 'switch',
+                    label: 'Use SSL'
+                }
+            }]);
+    } else if (model.type == "sabnzbd") {
+        fieldset.push({
+            key: 'url',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'URL',
+                required: true
+            },
+            watcher: {
+                listener: function (field, newValue, oldValue, scope) {
+                    if (newValue != oldValue) {
+                        scope.$parent.needsConnectionTest = true;
+                    }
+                }
+            }
+        });
+    }
+    fieldset = _.union(fieldset, [
+        {
+            key: 'username',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'Username'
+            },
+            watcher: {
+                listener: function (field, newValue, oldValue, scope) {
+                    if (newValue != oldValue) {
+                        scope.$parent.needsConnectionTest = true;
+                    }
+                }
+            }
+        },
+        {
+            key: 'password',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'password',
+                label: 'Password'
+            },
+            watcher: {
+                listener: function (field, newValue, oldValue, scope) {
+                    if (newValue != oldValue) {
+                        scope.$parent.needsConnectionTest = true;
+                    }
+                }
+            }
+        }
+    ]);
+
+
+    if (model.type == "sabnzbd") {
+        fieldset.push({
+            key: 'apikey',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'API Key'
+            },
+            watcher: {
+                listener: function (field, newValue, oldValue, scope) {
+                    if (newValue != oldValue) {
+                        scope.$parent.needsConnectionTest = true;
+                    }
+                }
+            }
+        })
+    }
+
+    fieldset = _.union(fieldset, [
+        {
+            key: 'defaultCategory',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'Default category',
+                help: 'When adding NZBs this category will be used instead of asking for the category'
+            }
+        },
+        {
+            key: 'nzbaccesstype',
+            type: 'horizontalSelect',
+            templateOptions: {
+                type: 'select',
+                label: 'NZB access type',
+                options: [
+                    {name: 'Proxy NZBs from indexer', value: 'serve'},
+                    {name: 'Redirect to the indexer', value: 'redirect'}
+                ],
+                help: "How external access to NZBs is provided. Redirecting is recommended."
+            }
+        },
+        {
+            key: 'nzbAddingType',
+            type: 'horizontalSelect',
+            templateOptions: {
+                type: 'select',
+                label: 'NZB adding type',
+                options: [
+                    {name: 'Send link', value: 'link'},
+                    {name: 'Upload NZB', value: 'nzb'}
+                ],
+                help: "How NZBs are added to the downloader, either by sending a link to the NZB or by uploading the NZB data"
+            }
+        },
+        {
+            key: 'iconCssClass',
+            type: 'horizontalInput',
+            templateOptions: {
+                type: 'text',
+                label: 'Icon CSS class',
+                help: 'Copy an icon name from http://fontawesome.io/examples/ (e.g. "film")'
+            }
+        }
+    ]);
+
+    return fieldset;
+}
+
+function getDownloaderPresets() {
+    return [
+        {
+            host: "127.0.0.1",
+            name: "NZBGet",
+            password: "tegbzn6789x",
+            port: 6789,
+            ssl: false,
+            type: "nzbget",
+            username: "nzbgetx",
+            nzbAddingType: "link",
+            nzbaccesstype: "redirect",
+            iconCssClass: ""
+        },
+        {
+            url: "http://localhost:8086",
+            type: "sabnzbd",
+            name: "SABnzbd",
+            nzbAddingType: "link",
+            nzbaccesstype: "redirect",
+            iconCssClass: ""
+        }
+    ];
+}
+
+
+function handleConnectionCheckFail(ModalService, data, model, whatFailed, deferred) {
+    var message;
+    var yesText;
+    if (data.checked) {
+        message = "The connection to the " + whatFailed + " failed: " + data.message + "<br>Do you want to add it anyway?";
+        yesText = "I know what I'm doing";
+    } else {
+        message = "The connection to the " + whatFailed + " could not be tested, sorry";
+        yesText = "I'll risk it";
+    }
+    ModalService.open("Connection check failed", message, {
+        yes: {
+            onYes: function () {
+                deferred.resolve();
+            },
+            text: yesText
+        },
+        no: {
+            onNo: function () {
+                model.enabled = false;
+                deferred.resolve();
+            },
+            text: "Add it, but disabled"
+        },
+        cancel: {
+            onCancel: function () {
+                deferred.reject();
+            },
+            text: "Aahh, let me try again"
+        }
+    });
+
+}
+
+
+angular
+    .module('nzbhydraApp')
+    .factory('IndexerCheckBeforeCloseService', IndexerCheckBeforeCloseService);
+
+function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, blockUI, growl) {
+
+    return {
+        check: checkBeforeClose
+    };
+
+    function checkBeforeClose(scope, model) {
+        var deferred = $q.defer();
+        if (!scope.needsConnectionTest) {
+            checkCaps(scope, model).then(function () {
+                deferred.resolve();
+            }, function () {
+                deferred.reject();
+            });
+        } else {
+            blockUI.start("Testing connection...");
+            scope.spinnerActive = true;
+            var url;
+            var settings;
+            if (model.type == "newznab") {
+                url = "internalapi/test_newznab";
+                settings = {host: model.host, apikey: model.apikey};
+            } else if (model.type == "omgwtf") {
+                url = "internalapi/test_omgwtf";
+                settings = {username: model.username, apikey: model.apikey};
+            }
+
+            ConfigBoxService.checkConnection(url, JSON.stringify(settings)).then(function () {
+                    checkCaps(scope, model).then(function () {
+                        blockUI.reset();
+                        scope.spinnerActive = false;
+                        growl.info("Connection to the indexer tested successfully");
+                        deferred.resolve();
+                    }, function () {
+                        blockUI.reset();
+                        scope.spinnerActive = false;
+                        deferred.reject();
+                    });
+                },
+                function (data) {
+                    blockUI.reset();
+                    handleConnectionCheckFail(ModalService, data, model, "indexer", deferred);
+                }).finally(function () {
+                scope.spinnerActive = false;
+                blockUI.reset();
+            });
+        }
+        return deferred.promise;
+
+    }
+
+    function checkCaps(scope, model) {
+        var deferred = $q.defer();
+        var url = "internalapi/test_caps";
+        var settings = {indexer: model.name, apikey: model.apikey, host: model.host};
+        if (angular.isUndefined(model.search_ids) || angular.isUndefined(model.searchTypes)) {
+
+            blockUI.start("New indexer found. Testing its capabilities. This may take a bit...");
+            ConfigBoxService.checkCaps(url, JSON.stringify(settings)).then(
+                function (data) {
+                    blockUI.reset();
+                    scope.spinnerActive = false;
+                    growl.info("Successfully tested capabilites of indexer. Supports: " + data.ids + "," + data.types);
+                    model.search_ids = data.ids;
+                    model.searchTypes = data.types;
+                    deferred.resolve();
+                },
+                function () {
+                    blockUI.reset();
+                    scope.spinnerActive = false;
+                    model.search_ids = [];
+                    model.searchTypes = [];
+                    ModalService.open("Error testing capabilities", "The capabilities of the indexer could not be checked. The indexer won't be used for ID based searches (IMDB, TVDB, etc.). You may repeat the check manually at any time.");
+                    deferred.resolve();
+                }).finally(
+                function () {
+                    scope.spinnerActive = false;
+                })
+        } else {
+            deferred.resolve();
+        }
+        return deferred.promise;
+
+    }
+}
+IndexerCheckBeforeCloseService.$inject = ["$q", "ModalService", "ConfigBoxService", "blockUI", "growl"];
+
+
+angular
+    .module('nzbhydraApp')
+    .factory('DownloaderCheckBeforeCloseService', DownloaderCheckBeforeCloseService);
+
+function DownloaderCheckBeforeCloseService($q, ConfigBoxService, growl, ModalService, blockUI) {
+
+    return {
+        check: checkBeforeClose
+    };
+
+    function checkBeforeClose(scope, model) {
+        var deferred = $q.defer();
+        if (!scope.isInitial && !scope.needsConnectionTest) {
+            deferred.resolve();
+        } else {
+            scope.spinnerActive = true;
+            blockUI.start("Testing connection...");
+            var url = "internalapi/test_downloader";
+            ConfigBoxService.checkConnection(url, JSON.stringify(model)).then(function () {
+                    blockUI.reset();
+                    scope.spinnerActive = false;
+                    growl.info("Connection to the downloader tested successfully");
+                    deferred.resolve();
+                },
+                function (data) {
+                    blockUI.reset();
+                    scope.spinnerActive = false;
+                    handleConnectionCheckFail(ModalService, data, model, "downloader", deferred);
+                }).finally(function () {
+                scope.spinnerActive = false;
+                blockUI.reset();
+            });
+        }
+        return deferred.promise;
+    }
+
+}
+DownloaderCheckBeforeCloseService.$inject = ["$q", "ConfigBoxService", "growl", "ModalService", "blockUI"];
 angular
     .module('nzbhydraApp')
     .factory('ConfigModel', function () {
@@ -4306,9 +5006,10 @@ angular
     .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
 
-function ConfigController($scope, ConfigService, config, CategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl) {
+function ConfigController($scope, $http, ConfigService, config, DownloaderCategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl, $rootScope) {
     $scope.config = config;
     $scope.submit = submit;
+    $scope.activeTab = undefined;
 
     $scope.restartRequired = false;
     $scope.ignoreSaveNeeded = false;
@@ -4324,7 +5025,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             ConfigService.set($scope.config);
             ConfigService.invalidateSafe();
             $scope.form.$setPristine();
-            CategoriesService.invalidate();
+            DownloaderCategoriesService.invalidate();
             if ($scope.restartRequired) {
                 ModalService.open("Restart required", "The changes you have made may require a restart to be effective.<br>Do you want to restart now?", {
                     yes: {
@@ -4366,61 +5067,56 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
     ConfigModel = config;
 
     $scope.fields = ConfigFields.getFields($scope.config);
-
-    $scope.formTabs = [
+    
+    $scope.allTabs = [
         {
+            active: false,
+            state: 'root.config',
             name: 'Main',
             model: ConfigModel.main,
             fields: $scope.fields.main
         },
         {
+            active: false,
+            state: 'root.config.auth',
             name: 'Authorization',
             model: ConfigModel.auth,
             fields: $scope.fields.auth
         },
         {
+            active: false,
+            state: 'root.config.searching',
             name: 'Searching',
             model: ConfigModel.searching,
             fields: $scope.fields.searching
         },
         {
-            name: 'Downloader',
-            model: ConfigModel.downloader,
-            fields: $scope.fields.downloader
+            active: false,
+            state: 'root.config.categories',
+            name: 'Categories',
+            model: ConfigModel.categories,
+            fields: $scope.fields.categories
         },
         {
+            active: false,
+            state: 'root.config.downloader',
+            name: 'Downloaders',
+            model: ConfigModel.downloaders,
+            fields: $scope.fields.downloaders
+        },
+        {
+            active: false,
+            state: 'root.config.indexers',
             name: 'Indexers',
             model: ConfigModel.indexers,
             fields: $scope.fields.indexers
         }
     ];
 
-    $scope.allTabs = [
-        {
-            active: false,
-            state: 'config'
-        },
-        {
-            active: false,
-            state: 'config.auth'
-        },
-        {
-            active: false,
-            state: 'config.searching'
-        },
-        {
-            active: false,
-            state: 'config.downloader'
-        },
-        {
-            active: false,
-            state: 'config.indexers'
-        }
-    ];
-
     for (var i = 0; i < $scope.allTabs.length; i++) {
         if ($state.is($scope.allTabs[i].state)) {
             $scope.allTabs[i].active = true;
+            $scope.activeTab = $scope.allTabs[i];
         }
     }
 
@@ -4430,9 +5126,17 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
 
     $scope.goToConfigState = function (index) {
         $state.go($scope.allTabs[index].state);
-        if (index == 5) {
-            $scope.downloadLog();
-        }
+        $scope.activeTab = $scope.allTabs[index]; 
+    };
+    
+    $scope.help = function() {
+        $http.get("internalapi/gethelp", {params: {id: $scope.activeTab.name}}).then(function(result) {
+                var html = '<span style="text-align: left;">' + result.data + "</span>";
+                ModalService.open($scope.activeTab.name + " - Help", html, {}, "lg");
+        },
+        function() {
+            growl.error("Error while loading help")
+        })
     };
 
     $scope.$on('$stateChangeStart',
@@ -4465,7 +5169,7 @@ function ConfigController($scope, ConfigService, config, CategoriesService, Conf
             }            
         })
 }
-ConfigController.$inject = ["$scope", "ConfigService", "config", "CategoriesService", "ConfigFields", "ConfigModel", "ModalService", "RestartService", "$state", "growl"];
+ConfigController.$inject = ["$scope", "$http", "ConfigService", "config", "DownloaderCategoriesService", "ConfigFields", "ConfigModel", "ModalService", "RestartService", "$state", "growl", "$rootScope"];
 
 
 
@@ -4473,87 +5177,34 @@ angular
     .module('nzbhydraApp')
     .factory('CategoriesService', CategoriesService);
 
-function CategoriesService($http, $q, $uibModal) {
+function CategoriesService(ConfigService) {
 
-    var categories;
-    var selectedCategory;
-    
-    var service = {
-        get: getCategories,
-        invalidate: invalidate,
-        select : select,
-        openCategorySelection: openCategorySelection 
+    return {
+        getByName: getByName,
+        getAll: getAll,
+        getDefault: getDefault
     };
-    
-    return service;
-    
 
-    function getCategories() {
 
-        function loadAll() {
-            if (!angular.isUndefined(categories)) {
-                var deferred = $q.defer();
-                deferred.resolve(categories);
-                return deferred.promise;
+    function getByName(name) {
+        for (var category in ConfigService.getSafe().categories) {
+            category = ConfigService.getSafe().categories[category];
+            if (category.name == name || category.pretty == name) {
+                return category;
             }
-
-            return $http.get('internalapi/getcategories')
-                .then(function (categoriesResponse) {
-                    
-                        console.log("Updating downloader categories cache");
-                        categories = categoriesResponse.data;
-                        return categoriesResponse.data;
-                    
-                }, function(error) {
-                    throw error;
-                });
         }
-
-        return loadAll().then(function (categories) {
-            return categories.categories;
-        }, function (error) {
-            throw error;
-        });
+    }
+    
+    function getAll() {
+        return ConfigService.getSafe().categories;
+    }
+    
+    function getDefault() {
+        return getAll()[1];
     }
 
-    
-    var deferred;
-    
-    function openCategorySelection() {
-        $uibModal.open({
-            templateUrl: 'static/html/directives/addable-nzb-modal.html',
-            controller: 'CategorySelectionController',
-            size: "sm",
-            resolve: {
-                categories: getCategories
-            }
-        });
-        deferred = $q.defer();
-        return deferred.promise;
-    }
-    
-    function select(category) {
-        selectedCategory = category;
-        console.log("Selected category " + category);
-        deferred.resolve(category);
-    }
-    
-    function invalidate() {
-        console.log("Invalidating categories");
-        categories = undefined;
-    }
 }
-CategoriesService.$inject = ["$http", "$q", "$uibModal"];
-
-angular
-    .module('nzbhydraApp').controller('CategorySelectionController', ["$scope", "$uibModalInstance", "CategoriesService", "categories", function ($scope, $uibModalInstance, CategoriesService, categories) {
-    console.log(categories);
-    $scope.categories = categories;
-    $scope.select = function (category) {
-        CategoriesService.select(category);
-        $uibModalInstance.close($scope);
-    }
-}]);
+CategoriesService.$inject = ["ConfigService"];
 angular
     .module('nzbhydraApp')
     .factory('BackupService', BackupService);

@@ -80,7 +80,7 @@ def getDebuggingInfos():
     logger.debug("Writing debugging info to file %s" % debuginfo_file)
     logger.debug("Compressing ZIP file" if compression == zipfile.ZIP_DEFLATED else "zlib not found. Not compressing ZIP file")
 
-    al = log.getAnonymizedLogFile(config.getSettingsToHide()).encode("utf-8")
+    al = log.getAnonymizedLogFile(config.getSettingsToHide())
     al_file = os.path.join(debug_folder, "logfile.txt")
     logger.debug("Writing log to temp file %s" % al_file)
     with codecs.open(al_file, "w", "utf-8") as textfile:

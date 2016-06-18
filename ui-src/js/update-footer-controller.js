@@ -2,27 +2,34 @@ angular
     .module('nzbhydraApp')
     .controller('UpdateFooterController', UpdateFooterController);
 
-function UpdateFooterController($scope, $http, UpdateService) {
+function UpdateFooterController($scope, UpdateService, HydraAuthService, bootstrapped) {
 
     $scope.updateAvailable = false;
-    
-    $http.get("internalapi/mayseeadminarea").then(function(data) {
-       if (data.data.maySeeAdminArea) {
-           UpdateService.getVersions().then(function (data) {
-               $scope.currentVersion = data.data.currentVersion;
-               $scope.repVersion = data.data.repVersion;
-               $scope.updateAvailable = data.data.updateAvailable;
-               if ($scope.repVersion > $scope.currentVersion) {
-                   UpdateService.getChangelog().then(function (data) {
-                       $scope.changelog = data.data.changelog;
-                   })
-               }
-           });
-       } 
+    $scope.checked = false;
+
+    $scope.mayUpdate = HydraAuthService.getUserRights().maySeeAdmin || bootstrapped.maySeeAdmin;
+
+    $scope.$on("user:loggedIn", function (event, data) {
+        if (data.maySeeAdmin && !$scope.checked) {
+            retrieveUpdateInfos();
+        }
     });
-    
-    
-    
+
+
+    if ($scope.mayUpdate) {
+        retrieveUpdateInfos();
+    }
+
+    function retrieveUpdateInfos() {
+        $scope.checked = true;
+        UpdateService.getVersions().then(function (data) {
+            $scope.currentVersion = data.data.currentVersion;
+            $scope.repVersion = data.data.repVersion;
+            $scope.updateAvailable = data.data.updateAvailable;
+            $scope.changelog = data.data.changelog;
+        });
+    }
+
 
     $scope.update = function () {
         UpdateService.update();

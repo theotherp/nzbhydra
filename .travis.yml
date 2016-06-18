@@ -4,7 +4,7 @@ language: python
 python:
     - "2.7"
 before_install:
-    - pip install pytest pytest-travis-fold responses freezegun vcrpy jsonpickle
+    - pip install pytest pytest-travis-fold responses freezegun vcrpy jsonpickle requests-mock urltools
     
 #install: pip install -r requirements.txt
 before_script: cd ./nzbhydra/tests

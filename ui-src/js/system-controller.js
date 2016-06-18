@@ -2,7 +2,7 @@ angular
     .module('nzbhydraApp')
     .controller('SystemController', SystemController);
 
-function SystemController($scope, $state, growl, RestartService, NzbHydraControlService) {
+function SystemController($scope, $state, $http, growl, RestartService, NzbHydraControlService) {
 
 
     $scope.shutdown = function () {
@@ -22,27 +22,27 @@ function SystemController($scope, $state, growl, RestartService, NzbHydraControl
     $scope.tabs = [
         {
             active: false,
-            state: 'system'
+            state: 'root.system'
         },
         {
             active: false,
-            state: 'system.updates'
+            state: 'root.system.updates'
         },
         {
             active: false,
-            state: 'system.log'
+            state: 'root.system.log'
         },
         {
             active: false,
-            state: 'system.backup'
+            state: 'root.system.backup'
         },
         {
             active: false,
-            state: 'system.bugreport'
+            state: 'root.system.bugreport'
         },
         {
             active: false,
-            state: 'system.about'
+            state: 'root.system.about'
         }
     ];
 
@@ -56,7 +56,23 @@ function SystemController($scope, $state, growl, RestartService, NzbHydraControl
 
     $scope.goToState = function (index) {
         $state.go($scope.tabs[index].state);
-    }
     
+    };
+
+    $scope.downloadDebuggingInfos = function() {
+        $http({method: 'GET', url: '/internalapi/getdebugginginfos', responseType: 'arraybuffer'}).success(function (data, status, headers, config) {
+            var a = document.createElement('a');
+            var blob = new Blob([data], {'type': "application/octet-stream"});
+            a.href = URL.createObjectURL(blob);
+            var filename = "nzbhydra-debuginfo-" + moment().format("YYYY-MM-DD-HH-mm") + ".zip";
+            a.download = filename;
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }).error(function (data, status, headers, config) {
+            console.log("Error:" + status);
+        });
+    }
     
 }

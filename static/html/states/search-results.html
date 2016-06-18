@@ -4,9 +4,9 @@
     <div class="col-md-10" style="padding-right: 0px">
         <!-- TODO: Make box smaller if no error messages exist-->
         <uib-accordion close-others="oneAtATime">
-            <uib-accordion-group panel-class="panel-indexer-statuses">
+            <uib-accordion-group panel-class="panel-indexer-statuses" is-open="indexerStatusesExpanded">
                 <uib-accordion-heading>
-                    Indexer statuses <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': indexerStatusesExpanded, 'glyphicon-chevron-right': !indexerStatusesExpanded}" ng-click="indexerStatusesExpanded=!indexerStatusesExpanded"></i>
+                    Indexer statuses <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': indexerStatusesExpanded, 'glyphicon-chevron-right': !indexerStatusesExpanded}" ng-click="toggleIndexerStatuses()"></i>
                 </uib-accordion-heading>
 
                 <table class="table" style="margin-bottom: 0px">
@@ -52,7 +52,7 @@
                         <td class="text-left">
                     <span ng-if="ps.did_search">
                         <span class="glyphicon" ng-class="{'glyphicon-ok' : ps.successful, 'glyphicon-remove' : !ps.successful}"></span>
-                        <span ng-repeat="apiaccess in ps.api_accesses">
+                        <span ng-repeat="apiaccess in ps.apiAccesses">
                             <span ng-if="$index == 0">{{ apiaccess.error }}</span>
                             <div ng-if="$index > 0">{{ apiaccess.error }}</div>
                         </span>
@@ -69,14 +69,12 @@
             </uib-accordion-group>
         </uib-accordion>
     </div>
-
-
 </div>
 
 <div class="row" ng-if="indexersearches" style="margin-top: 30px">
     <div class="col-md-6" style="text-align: left;">
         <input style="margin-top:20px; margin-bottom:20px;" type="checkbox" ng-model="doShowDuplicates" class="btn btn-default">Include duplicates</input>
-        <button style="margin-top:20px; margin-bottom:20px;" type="button" ng-click="downloadSelected()" class="btn btn-default">Download selected</button>
+        <download-nzbs-button search-results="selected"></download-nzbs-button>
     </div>
 
     <div class="col-md-8">
@@ -94,20 +92,20 @@
                 <!--<input type="checkbox" ng-click="invertSelection()" display="float:left; width:1%" uib-tooltip="Invert selection." tooltip-placement="top" tooltip-trigger="mouseenter"/>-->
                 
                 <span ng-click="setSorting('title', false)" style="vertical-align: top; float:right; width:98%">
-                Title <span ng-show="predicate=='title'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                Title <span ng-show="sortPredicate=='title'" class="caret" ng-class="{'caret-reversed': !sortReversed}"></span>
                     </span>
             </th>
             <th class="col-md-1 cursor-default search-results-cell" ng-click="setSorting('indexer', false)">
-                Indexer <span ng-show="predicate=='indexer'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                Indexer <span ng-show="sortPredicate=='indexer'" class="caret" ng-class="{'caret-reversed': !sortReversed}"></span>
             </th>
             <th class="col-md-2 cursor-default search-results-cell" ng-click="setSorting('category', false)" style="vertical-align: top">
-                Category <span ng-show="predicate=='category'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                Category <span ng-show="sortPredicate=='category'" class="caret" ng-class="{'caret-reversed': !sortReversed}"></span>
             </th>
             <th class="col-md-1 cursor-default search-results-cell" ng-click="setSorting('size', true)" style="vertical-align: top">
-                Size <span ng-show="predicate=='size'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                Size <span ng-show="sortPredicate=='size'" class="caret" ng-class="{'caret-reversed': !sortReversed}"></span>
             </th>
             <th class="col-md-1 cursor-default search-results-cell" ng-click="setSorting('epoch', true)" style="vertical-align: top">
-                Age <span ng-show="predicate=='age_days'" class="caret" ng-class="{'caret-reversed': !reversed}"></span>
+                Age <span ng-show="sortPredicate=='epoch'" class="caret" ng-class="{'caret-reversed': sortReversed}"></span>
             </th>
             <th class="col-md-3 search-results-cell" style="vertical-align: top">
                 Links

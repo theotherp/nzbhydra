@@ -1,6 +1,223 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.112
+Fixed: Return correct NZBGeek details links.
+
+### 0.2.111
+Fixed: Lxml wouldn't load even if installed properly.
+
+Fixed: Download of debug infos wouldn't work in firefox.
+
+### 0.2.110
+Fixed: Make sure iconCssClass is set.
+
+### 0.2.109
+Fixed: Category mapping wouldn't work with omgwtf.
+
+Fixed: URL base was not included in NZB links when external URL was not set. Now the local IP address, configured port and scheme are used. Tools on your computer (and inside your network) should be able to use the generated links.
+  If you need to send links to tools outside your network you have to set the external URL.
+  
+Fixed: Excluding words with "--" in the search field didn't work.
+
+Fixed: Total number of results was not put into API search result if offset was 0.
+
+
+### 0.2.108
+Changed: Rewrote auth handling. Unfortunately form based auth only works when calls from the GUI are done, as soon as you call any function from outside (e.g. CP) the token header is
+ missing and you will be asked for credentials using basic auth. Now, when you enter them, hydra will accept them even with form based auth enabled.
+  I might change that behavior in the future but for now it stands.
+
+### 0.2.107
+Fixed: Repeating search from history wouldn't work (in multiple ways).
+
+Fixed: ID based search from the GUI didn't work.
+
+### 0.2.106
+Fixed: Forbidden and ignored words not displayed in config.
+
+Fixed: Download of bugreport would not work with auth type "Form".
+
+Fixed: Error with API search and categories due to stupid mistake but caused by fucking Python 2.7.
+
+### 0.2.105
+Fixed: Set appropriate categories when API searches are done ("Movies" for movie search, etc.) 
+
+### 0.2.104
+Fixed: Stats and config invisible with no auth enabled.
+
+### 0.2.103
+Added: Several changes in the handling and configuration of categories.
+
+* New category section in the config. Define required and forbidden words for every category and if they should be applied for external and/or internal searches.  This allows you to finetune results for CP or Sonarr, for example.
+
+* Define newznab categories for every Hydra category. These categories will be used when you search with that category from the GUI. That way you can control if foreign movies should be included in movie searches, for example.
+
+* Decide for every category if you want to ignore results from it for external and/or internal searches.
+
+Added: Online help in the configuration.
+
+Added: Improved test coverage and started to write more integration tests. Should somewhat decrease chance of breaking bugs, at least for API. I still don't have frontend tests.
+
+Changed: Login and logout functionality. The navigation only shows links to sections the current user is allowed to visit. Click the login button in the upper right to login. Click it again to logout.
+If you use basic auth and logged out make sure to close the browser so that the auth header is removed.
+ 
+Changed: Don't require auth for NZB details links when form based auth is enabled. Should prevent troubles with viewing details from external tools like CP and the security risks are negligible. 
+
+Fixed: Don't display an NZB download as failed if it was only redirected (then we don't know if it was successful).
+
+Fixed: Error where indexers tab in config could not be opened.
+
+Fixed: When migration of old config fails keep the config instead of overwriting it. Provide feedback and stop program.
+
+Fixed: Support for custom downloader icons was broken.
+
+### 0.2.102
+Changed: Using ! to exclude words when querying newznab indexers. This should be compatible with more indexers and provide the wanted results. Thanks to judhat2 for the research and tests.
+
+Fixed: Fallback to pubdate when usenet date cannot be parsed.
+
+### 0.2.101
+Added: Return category in API search results.
+
+Fixed: If log file name is provided in command line show that in GUI instead of the configured one.
+
+### 0.2.100
+Added: Show log in scrollable area.
+
+Added: Comic category. Searches in newznab comic category if available, otherwise in general ebook category or just for the query in case of raw search engines.
+
+Added: Link to indexer details page for entries in download history.
+
+Fixed: Selecting search results from duplicates / same name rows wouldn't work.
+
+Fixed: Search would ask for auth even if access wasn't restricted.
+
+### 0.2.99
+Fixed: Downloader default category wouldn't be used.
+
+### 0.2.98
+Changed: Provide a bit better info when auth fails.
+
+Changed: Provide better feedback when the connection test to an indexer fails.
+
+Fixed: Form based auth wouldn't work with subdirectories on reverse proxies.
+
+### 0.2.97
+Fixed: Indexer status box state wasn't remembered.
+
+Fixed: Changelog would either show too much or not enough...
+
+### 0.2.96
+Fixed: Search box would disappear when showing search results.
+
+Fixed: Sensitive downloader data would be sent to non-admins. Sorry. 
+
+Fixed: Changelog would be shown empty.
+
+### 0.2.95
+Added: Decide if you want to authenticate using HTTP basic auth or a login form. If you have users configured please make sure that everything is in order.
+
+Added: SimplyNZBs added to the presets.
+
+Fixed: Displayed times in stats were all sorts of wrong.  
+
+### 0.2.94
+Probably not fixed but less likely: Database is locked.
+ 
+Fixed: Details link would point to "http://api.indexer.com/details/..." and not work.
+ 
+Fixed: When adding multiple indexers one after the other the data from the old indexer would be still there.
+
+Added: Option if IP addresses should be logged. Failed logins will still be logged with the used IP address.   
+
+### 0.2.93
+
+Fixed: /details links wouldn't work.
+
+### 0.2.92
+
+Fixed: Bug report info generating should work again.
+
+### 0.2.91
+Fixed even more: Allow special characters in NZBGet username and password.
+
+Changed: Jumped to version 0.2.91 because I'm an idiot and the version check did a string comparison, so 0.2.91 was the next minor version that would be found as an update. Also fixed some bugs in the changelog retrieval. 
+
+Added: Make sure that indexers' and downloaders' names are unique.
+
+Added: Remember state of indexer status box on search results page and remember sorting.
+
+Added: Popover name of downloader and allow to select an icon from http://fontawesome.io/icons/ instead of the default icon.
+
+### 0.2.9
+Fixed: NZB link should work with URL base.
+
+Fixed: Details link for nZEDb based indexers should link to details pages instead of info pages.
+
+Fixed: Stats and history should display times in proper timezone.
+
+### 0.2.8 
+Yeah, well, 0.2.7 changed a lot and broke a lot. Sorry for the problems, I'm trying to get most of them fixed in the coming days.
+
+Fixed: omgwtfnzbs.org results are parsed correctly and will not be skipped.
+
+Fixed: If results are incomplete and not added to the database they're not included in the results either.
+
+Fixed: Config did not like downloader passwords with certain special characters.  
+
+Fixed: Clicking on downloader button would fail.
+
+Changed: Try to prevent "database is locked error" or at least get better logs.
+
+### 0.2.7
+Added: Support multiple downloaders.
+
+Added: When the connection test for a downloader or indexer fails you can decide if you want to add it anyway.
+
+Changed: Don't wipe the search field when changing the category. If you already entered something and you select a movie or TV category the autocomplete function is triggered automatically.
+
+Added: Hide disabled indexers in statistics. This only affects the visibility, they're still calculated. If an indexer was never enabled this might skew the statistics, but for now I can't do better.
+
+Fixed: Statistics for downloads and results share were not generated.
+
+People are getting more database locked errors. If you have found a realiable way of reproducing it please let me know. As a test I configured a database timeout. Send me a message if it causes troubles.
+
+### 0.2.6
+Fixed: Binsearch downloads would fail after binsearch changed their API.
+
+### 0.2.5
+Fixed: Downloading and NFO and details retrieval via API didn't work since 0.2.0. 
+
+Changed: Made sure that the GUID of the returned results is unique ("nzbhydrasearchresult" + internal ID). This may cause some issues with tools that already retrieved results and stored them, but nothing too serious.
+
+### 0.2.4
+Fixed: API search results would contain no GUID so sonarr thought they were all the same. This is a quick fix to get things back to running, will improve this later.  
+
+### 0.2.3
+Bump version to make sure update is executed. Jump to 0.2.x seems to have caused some troubles.
+
+### 0.2.2
+Fixed: Constraint errors handling search results.
+
+### 0.2.1
+Fixed: Small problem with last update and empty details links.
+
+### 0.2.0
+Changed: Moved minor version to 0.2.0. I would like to say that's because I feel Hydra is more mature now but it's actually because my versioning algorithm thought that 0.0.1a103 < 0.0.1a99...
+
+Changed: From now on hydra will save all found search results to the database for a certain amount of time. This allows easier communication between server and client and some features that I'm planning. This also means that for the first time I need to do a bit
+    of data migration. The download history should remain intact, but there's the chance that in some circumstances the migration fails. Sorry...!
+
+### 0.0.1a103
+Fixed: Indexers couldn't be deleted in config.
+
+### 0.0.1a101
+Fixed: NZBGeek queries contained a superfluous "--".
+
+### 0.0.1a100
+Fixed: Bugreport wouldn't work.
+
 ### 0.0.1a99
 Added: When leaving the config page with unsaved changes ask if the user wants to save, discard or stay on the config page.
 

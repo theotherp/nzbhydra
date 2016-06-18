@@ -19,15 +19,14 @@ function otherColumns($http, $templateCache, $compile, $window) {
     };
 
     function controller($scope, $http, $uibModal, growl) {
-
+        
         $scope.showNfo = showNfo;
         function showNfo(resultItem) {
             if (resultItem.has_nfo == 0) {
                 return;
             }
             var uri = new URI("internalapi/getnfo");
-            uri.addQuery("indexer", resultItem.indexer);
-            uri.addQuery("guid", resultItem.indexerguid);
+            uri.addQuery("searchresultid", resultItem.searchResultId);
             return $http.get(uri.toString()).then(function (response) {
                 if (response.data.has_nfo) {
                     $scope.openModal("lg", response.data.nfo)
@@ -64,7 +63,6 @@ function otherColumns($http, $templateCache, $compile, $window) {
             //href = "{{ result.link }}"
             $window.location.href = resultItem.link;
         }
-
     }
 }
 

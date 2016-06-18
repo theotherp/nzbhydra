@@ -1,0 +1,20 @@
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li ui-sref-active="active"><a ui-sref="root.search" ui-sref-opts="{inherit: false, reload: true}">Search</a></li>
+                <li ui-sref-active="active" ng-if="showStats"><a ui-sref="root.stats.main">History & Stats</a></li>
+                <li ui-sref-active="active" ng-if="showAdmin"><a ui-sref="root.config">Config</a></li>
+                <li ui-sref-active="active" ng-if="showAdmin"><a ui-sref="root.system">System</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right" ng-if="showLoginout">
+                <li><a href="" ng-click="loginout()"
+                       uib-tooltip="{{ loginlogoutText}}"
+                       tooltip-placement="bottom"
+                       tooltip-trigger="mouseenter"
+                ><span class="glyphicon glyphicon-off"></span></a></li>
+            </ul>
+
+        </div>
+    </div>
+</nav>

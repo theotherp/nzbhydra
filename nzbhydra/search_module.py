@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import json
 import time
 from builtins import str
 from flask import request
@@ -17,7 +18,7 @@ import logging
 import collections
 import arrow
 import requests
-from peewee import fn
+from peewee import fn, OperationalError
 from requests import RequestException
 from nzbhydra import config
 from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, Indexer
@@ -76,7 +77,7 @@ class SearchModule(object):
     def generate_queries(self):
         return True  # TODO pass when used check for internal vs external
         # return self.indexer.settings.get("generate_queries", True)  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for indexers which don't support id-based searches
-
+    
     def search(self, search_request):
         if search_request.type == "tv":
             if search_request.query is None and search_request.identifier_key is None and self.needs_queries:
@@ -120,6 +121,8 @@ class SearchModule(object):
             urls = self.get_ebook_urls(search_request)
         elif search_request.type == "audiobook":
             urls = self.get_audiobook_urls(search_request)
+        elif search_request.type == "comic":
+            urls = self.get_comic_urls(search_request)
         else:
             urls = self.get_search_urls(search_request)
         queries_execution_result = self.execute_queries(urls, search_request)
@@ -153,6 +156,11 @@ class SearchModule(object):
         # if module doesnt support it possibly use (configurable) size restrictions when searching
         return []
 
+    def get_comic_urls(self, search_request):
+        # to extend
+        # if module doesnt support it possibly use (configurable) size restrictions when searching
+        return []
+
     def get_details_link(self, guid):
         return ""
     
@@ -168,12 +176,11 @@ class SearchModule(object):
         #Allows the implementations to check against one general rule if the search result is ok or shall be discarded
         if config.settings.searching.ignorePassworded and nzbSearchResult.passworded:
             return False, "Passworded results shall be ignored"
-        for word in searchRequest.ignoreWords:
+        for word in searchRequest.forbiddenWords:
             word = word.strip().lower()
             if word in nzbSearchResult.title.lower():
                 return False, '"%s" is in the list of ignored words or excluded by the query' % word
-        requireWords = [word.lower().strip() for word in filter(bool, config.settings.searching.requireWords.split(","))]
-        if len(requireWords) > 0 and not any(word in nzbSearchResult.title.lower() for word in requireWords):
+        if searchRequest.requiredWords and len(searchRequest.requiredWords) > 0 and not any(word.strip().lower() in nzbSearchResult.title.lower() for word in searchRequest.requiredWords):
             return False, 'None of the required words is contained in the title "%s"' % nzbSearchResult.title
         if searchRequest.minsize and nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
                 return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize)
@@ -185,6 +192,20 @@ class SearchModule(object):
             return False, "Older than requested maximum age: %dd > %dd" % (nzbSearchResult.age_days, searchRequest.maxage)
         if nzbSearchResult.pubdate_utc is None:
             return False, "Unknown age"
+        if nzbSearchResult.category:
+            ignore = False
+            reason = ""
+            if nzbSearchResult.category.ignoreResults == "always":
+                reason = "always"
+                ignore = True
+            if nzbSearchResult.category.ignoreResults == "internal" and searchRequest.internal:
+                reason = "for internal searches"
+                ignore = True
+            if nzbSearchResult.category.ignoreResults == "external" and not searchRequest.internal:
+                reason = "for API searches"
+                ignore = True
+            if ignore:
+                return False, "Results from category %s are configured to be ignored %s" % (nzbSearchResult.category.pretty, reason)
         return True, None
         
 
@@ -306,7 +327,7 @@ class SearchModule(object):
                 continue
 
             try:
-                request, papiaccess, indexerStatus = self.get_url_with_papi_access(query, "search", False)
+                request, papiaccess, indexerStatus = self.get_url_with_papi_access(query, "search", saveToDb=False)
                 papiaccess.indexer_search = psearch
 
                 executed_queries.add(query)
@@ -356,7 +377,7 @@ class SearchModule(object):
                     psearch.successful = papiaccess.response_successful
                 else:
                     self.error("Unable to save API response to database")
-                psearch.results = total_results
+                psearch.resultsCount = total_results
                 #psearch.save()
         return QueriesExecutionResult(didsearch= True, results=results, indexerSearchEntry=psearch, indexerApiAccessEntry=papiaccess, indexerStatus=indexerStatus, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)
 

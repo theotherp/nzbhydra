@@ -12,7 +12,7 @@ import pytest
 import unittest
 
 from nzbhydra import config
-from nzbhydra import api
+from nzbhydra import api, web
 from nzbhydra.tests.UrlTestCase import UrlTestCase
 
 
@@ -33,30 +33,30 @@ class TestApi(UrlTestCase):
             #With external URL
             config.settings.main.externalUrl = "https://192.168.1.1/nzbhydra"
             config.settings.main.useLocalUrlForApiAccess = False
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=True)
+            link = api.get_nzb_link_and_guid(1, external=True)
             self.assertApiUrl(link, shouldBeExternal=True, shouldbeLocal=False)
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=False)
+            link = api.get_nzb_link_and_guid(1, external=False)
             self.assertApiUrl(link, shouldBeExternal=False, shouldbeLocal=False)
     
             config.settings.main.useLocalUrlForApiAccess = True
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=True)
+            link = api.get_nzb_link_and_guid(1, external=True)
             self.assertApiUrl(link, shouldBeExternal=True, shouldbeLocal=True)
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=False)
+            link = api.get_nzb_link_and_guid(1, external=False)
             self.assertApiUrl(link, shouldBeExternal=False, shouldbeLocal=False)
 
             #Without external URL
             config.settings.main.externalUrl = None
 
             config.settings.main.useLocalUrlForApiAccess = False
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=True)
+            link = api.get_nzb_link_and_guid(1, external=True)
             self.assertApiUrl(link, shouldBeExternal=True, shouldbeLocal=True)
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=False)
+            link = api.get_nzb_link_and_guid(1, external=False)
             self.assertApiUrl(link, shouldBeExternal=False, shouldbeLocal=True)
 
             config.settings.main.useLocalUrlForApiAccess = True
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=True)
+            link = api.get_nzb_link_and_guid(1, external=True)
             self.assertApiUrl(link, shouldBeExternal=True, shouldbeLocal=True)
-            link, _ = api.get_nzb_link_and_guid("indexer", "guid", 1, "title", external=False)
+            link = api.get_nzb_link_and_guid(1, external=False)
             self.assertApiUrl(link, shouldBeExternal=False, shouldbeLocal=True)
             
     def assertApiUrl(self, url, shouldBeExternal, shouldbeLocal):
@@ -75,4 +75,12 @@ class TestApi(UrlTestCase):
                 self.assertTrue("192.168.1.1" in url, "Uses getnzb but not external IP")
            
         
-        
+    
+    def testGetRootUrl(self):
+        with web.app.test_request_context('/nzbhydra/'):
+            config.settings.main.urlBase = None
+            config.settings.main.port = 5075
+            self.assertEqual("http://localhost:5075/", api.get_root_url())
+
+            config.settings.main.urlBase = "/nzbhydra"
+            self.assertEqual("http://localhost:5075/nzbhydra/", api.get_root_url())

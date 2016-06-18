@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="nzbhydraApp">
 <head>
-    <title ng-bind="'NZB Hydra' + (' - ' + $title || '')">NZB Hydra</title>
+    <title ng-bind="'NZB Hydra' + ((' - ' + title) || '')">NZB Hydra</title>
     <base href="{{ base_url }}"/>
     <meta name="robots" content="noindex"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,30 +15,18 @@
 <body style="text-align: center">
 <div growl></div>
 
-<div id="wrap">
+    <div id="wrap" ng-cloak>
 
-    <nav class="navbar navbar-default navbar-static-top">
-        <div class="container">
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li ui-sref-active="active"><a ui-sref="search" ui-sref-opts="{inherit: false}">Search</a></li>
-                    <li ui-sref-active="active"><a ui-sref="stats">History & Stats</a></li>
-                    <li ui-sref-active="active"><a ui-sref="config">Config</a></li>
-                    <li ui-sref-active="active"><a ui-sref="system">System</a></li>
-                </ul>
+        <div ui-view="header"></div>
 
+
+        <div style="margin: auto; max-width: 1400px;">
+            <div id="banner"></div>
+            <div class="container-fluid" block-ui="main" ui-view="container">
             </div>
         </div>
-    </nav>
-
-
-    <div style="margin: auto; max-width: 1400px;">
-        <div id="banner"></div>
-        <div ui-view class="container-fluid" block-ui="main">
-        </div>
+        <div id="push"></div>
     </div>
-    <div id="push"></div>
-</div>
 
 <span ng-controller="UpdateFooterController">
     <div id="footer" ng-if="updateAvailable" ng-cloak>
@@ -50,6 +38,9 @@
 
     </div>
 </span>
+
+
+
 </body>
 
 <script src="static/js/alllibs.js"></script>
@@ -57,6 +48,7 @@
 <script type="application/javascript">
     apiCheck.globalConfig.disabled = true;
     window.onProd = {{ onProd }};
+    angular.module("nzbhydraApp").constant("bootstrapped", {{ bootstrapped | safe}});
 </script>
 
 

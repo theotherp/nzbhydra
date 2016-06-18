@@ -67,7 +67,7 @@ class TestBinsearch(UrlTestCase):
             result = w.process_query_result(body, SearchRequest())
             entries = list(result.entries)
             self.assertEqual('testtitle1.TrueFrench.1080p.X264.AC3.5.1-JKF.mkv', entries[0].title)
-            self.assertEqual("https://www.binsearch.info/fcgi/nzb.fcgi?q=176073735", entries[0].link)
+            self.assertEqual("https://binsearch.info?action=nzb&176073735=1", entries[0].link)
             self.assertEqual(13110387671, entries[0].size)
             self.assertEqual("176073735", entries[0].indexerguid)
             self.assertEqual(1443312000, entries[0].epoch)

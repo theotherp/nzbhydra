@@ -23,12 +23,17 @@ currentVersion = None
 currentVersionText = None
 updateManager = None
 
+changelogCache = (None, None)
+
 
 def versiontuple(v):
     filled = []
     for point in v.split("."):
         filled.append(point.zfill(8))
     return tuple(filled)
+
+
+
 
 
 def check_for_new_version():
@@ -47,7 +52,7 @@ def get_current_version():
     if currentVersion is None:
         try:
             with open("version.txt", "r") as f:
-                version = f.read()
+                version = f.read().strip()
             currentVersion = versiontuple(version)
             currentVersionText = version
             return currentVersion, currentVersionText
@@ -70,11 +75,18 @@ def is_new_version_available():
 
 
 
-def getChangelog(currentVersion):
-    changelog = getUpdateManager().getChangelogFromRepository()
-    if changelog is None:
+def getChangelog(currentVersion, repVersion):
+    global changelogCache
+    if repVersion == changelogCache[0]:
+        wholeChangelog = changelogCache[1]
+    else:
+        wholeChangelog = getUpdateManager().getChangelogFromRepository()
+        changelogCache = (repVersion, wholeChangelog)
+    if wholeChangelog is None:
         return None
-    return getChangesSince(changelog, currentVersion)
+    
+    changelog = getChangesSince(wholeChangelog, currentVersion)
+    return changelog
 
 
 def getVersionHistory():
@@ -143,7 +155,7 @@ class UpdateManager():
         try:
             r = requests.get(url, verify=False)
             r.raise_for_status()
-            return versiontuple(r.text), r.text
+            return versiontuple(r.text.strip()), r.text.strip()
         except requests.RequestException as e:
             logger.error("Error downloading version.txt from %s to check new updates: %s" % (url if url is not None else " Github", e))
             return None, None
@@ -268,9 +280,13 @@ class GitUpdateManager(UpdateManager):
 
     def update(self):
         self.backup()
-        
+
+        logger.debug('Calling "%s" %s' % (self._git_path, 'reset --hard'))
+        output, err, exit_status = self._run_git(self._git_path, 'reset --hard')
+        logger.debug(output)
         logger.debug('Calling "%s" %s' % (self._git_path, 'pull origin ' + self.branch))
-        output, err, exit_status = self._run_git(self._git_path, 'pull origin ' + self.branch)  
+        output, err, exit_status = self._run_git(self._git_path, 'pull origin ' + self.branch)
+        logger.debug(output)
         
         if exit_status == 0:
             return True

@@ -43,7 +43,7 @@ class NzbIndexTests(UrlTestCase):
         self.assertEqual(1, len(urls))
         self.assertEqual('a showtitle s01 | "season 1"', furl(urls[0]).args["q"])
 
-        self.args = SearchRequest(query="aquery", ignoreWords=["ignorethis"])
+        self.args = SearchRequest(query="aquery", forbiddenWords=["ignorethis"])
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))
         self.assertEqual("https://nzbindex.com/search?max=100&hidecross=1&more=1&q=aquery+-ignorethis", urls[0])
@@ -76,12 +76,7 @@ class NzbIndexTests(UrlTestCase):
 
             self.assertEqual(1000, processing_result.total)
             self.assertTrue(processing_result.has_more)
-
-    def testCookies(self):
-        url = "https://nzbindex.com/search/?q=testtitle&age=&max=250&minage=&sort=agedesc&minsize=1&maxsize=&dq=&poster=&nfo=&hidecross=1&complete=1&hidespam=0&hidespam=1&more=1"
-        r = requests.get(url, cookies={"agreed": "true"}, timeout=5)
-        text = r.text
-        assert "I agree" not in text
+   
 
     def testGetNzbLink(self):
         n = NzbIndex(getIndexerSettingByName("nzbindex"))

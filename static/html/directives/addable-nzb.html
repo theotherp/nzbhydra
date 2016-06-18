@@ -1,1 +1,5 @@
-<a ng-if="enabled" href="#" ng-click="add()"><div ng-class="classname" class="icon addable-nzb"></div></a>
+<a href="#" ng-click="add()"><div class="icon addable-nzb {{ cssClass }}" 
+                                  uib-tooltip="{{ downloader.name }}"
+                                  tooltip-placement="top"
+                                  tooltip-trigger="mouseenter"
+></div></a>

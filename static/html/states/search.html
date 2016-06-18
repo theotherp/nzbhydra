@@ -17,24 +17,13 @@
                     <div class="input-group">
                         <span class="input-group-btn input-group-btn2">
                               <button type="button" class="btn btn-default dropdown-toggle search-category-button" data-toggle="dropdown" aria-expanded="false" id="searchCategoryDropdownButton" ng-cloak>
-                                  {{ category }} <span class="caret"></span>
+                                  {{ category.pretty }} <span class="caret"></span>
                               </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu" style="right: auto; top:initial; margin:0px;">
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="all" ng-click="toggle('All')">All</a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="Movies" ng-click="toggle('Movies')">Movies</a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="Movies HD" ng-click="toggle('Movies HD')">Movies HD</a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="Movies SD" ng-click="toggle('Movies SD')">Movies SD</a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="TV" ng-click="toggle('TV')">TV</a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="TV HD" ng-click="toggle('TV HD')">TV HD </a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="TV SD" ng-click="toggle('TV SD')">TV SD</a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="Audio" ng-click="toggle('Audio')">Audio</a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="Audio FLAC" ng-click="toggle('Audio FLAC')">Audio FLAC</a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="Audio MP3" ng-click="toggle('Audio MP3')">Audio MP3</a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="Audiobook" ng-click="toggle('Audiobook')">Audiobook</a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="Console" ng-click="toggle('Console')">Console</a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="PC" ng-click="toggle('PC')">PC</a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="XXX" ng-click="toggle('XXX')">XXX</a></li>
-                                    <li><a href="" class="searchCategoryButton" data-searchcategory="Ebook" ng-click="toggle('Ebook')">Ebook</a></li>
+                                    
+                                    <li ng-repeat="category in categories">
+                                        <a href="" class="searchCategoryButton" ng-click="toggle(category)">{{ category.pretty }}</a>
+                                    </li>
                                 </ul>
                               
                             </span>
@@ -65,7 +54,7 @@
                         <script type="text/ng-template" id="movieAutocompleteEntry">
                             <a>{{ match.label }}</a>
                         </script>
-                        <input type="search" ngtype="search" ng-model="query" placeholder="Search" typeahead-min-length="2" typeahead-wait-ms="typeAheadWait" uib-typeahead="item as item.label for item in getAutocomplete($viewValue)" typeahead-template-url="autocompleteTemplate.html"
+                        <input id="searchfield" type="search" ngtype="search" ng-model="query" placeholder="Search" typeahead-min-length="2" typeahead-wait-ms="typeAheadWait" uib-typeahead="item as item.label for item in getAutocomplete($viewValue)" typeahead-template-url="autocompleteTemplate.html"
                                ng-class="{'autocompleteLoading': (loadingItems && autocompleteActive), 'search-border': !seriesSelected}" typeahead-loading="loadingItems" typeahead-on-select="selectAutocompleteItem($item)" ng-enter="startQuerySearch()" class="form-control"
                                focus-on="focus-query-box"
                                uib-tooltip="Prefix terms with -- to exclude"
@@ -139,4 +128,4 @@
 </div>
 
 <!-- Search results go here -->
-<div ui-view></div>
+<div ui-view="results"></div>

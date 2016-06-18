@@ -7,48 +7,54 @@ function SearchService($http) {
 
 
     var lastExecutedQuery;
+    var lastResults;
 
-    var service = {search: search, loadMore: loadMore};
-    return service;
+    return {
+        search: search,
+        getLastResults: getLastResults,
+        loadMore: loadMore
+    };
+    
 
-    function search(category, query, tmdbid, title, tvdbid, season, episode, minsize, maxsize, minage, maxage, indexers) {
-        console.log("Category: " + category);
+    function search(category, query, tmdbid, title, tvdbid, rid, season, episode, minsize, maxsize, minage, maxage, indexers, mode) {
         var uri;
-        if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0)) {
+        if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0) || mode == "movie") {
             console.log("Search for movies");
             uri = new URI("internalapi/moviesearch");
-            if (!_.isUndefined(tmdbid)) {
+            if (angular.isDefined(tmdbid)) {
                 console.log("moviesearch per tmdbid");
                 uri.addQuery("tmdbid", tmdbid);
-                uri.addQuery("title", title);
             } else {
                 console.log("moviesearch per query");
                 uri.addQuery("query", query);
             }
 
-        } else if (category.indexOf("TV") > -1 || (category.indexOf("50") == 0)) {
+        } else if (category.indexOf("TV") > -1 || (category.indexOf("50") == 0) || mode == "tvsearch") {
             console.log("Search for shows");
             uri = new URI("internalapi/tvsearch");
-            if (!_.isUndefined(tvdbid)) {
+            if (angular.isDefined(tvdbid)) {
                 uri.addQuery("tvdbid", tvdbid);
-                uri.addQuery("title", title);
+            }
+            if (angular.isDefined(rid)) {
+                uri.addQuery("rid", rid);
             } else {
                 console.log("tvsearch per query");
                 uri.addQuery("query", query);
             }
 
-            if (!_.isUndefined(season)) {
+            if (angular.isDefined(season)) {
                 uri.addQuery("season", season);
             }
-            if (!_.isUndefined(episode)) {
+            if (angular.isDefined(episode)) {
                 uri.addQuery("episode", episode);
             }
         } else {
-            console.log("Search for all");
             uri = new URI("internalapi/search");
             uri.addQuery("query", query);
         }
-
+        if (angular.isDefined(title)) {
+            uri.addQuery("title", title);
+        }
         if (_.isNumber(minsize)) {
             uri.addQuery("minsize", minsize);
         }
@@ -67,7 +73,6 @@ function SearchService($http) {
         
 
         uri.addQuery("category", category);
-        console.log("Calling " + uri.toString());
         lastExecutedQuery = uri;
         return $http.get(uri.toString()).then(processData);
 
@@ -77,7 +82,6 @@ function SearchService($http) {
         lastExecutedQuery.removeQuery("offset");
         lastExecutedQuery.addQuery("offset", offset);
 
-        console.log("Calling " + lastExecutedQuery);
         return $http.get(lastExecutedQuery.toString()).then(processData);
     }
 
@@ -92,14 +96,18 @@ function SearchService($http) {
         //TODO: Move this to search result controller because we need to update it every time we loaded more results
         _.each(indexersearches, function (ps) {
             if (ps.did_search) {
-                ps.averageResponseTime = _.reduce(ps.api_accesses, function (memo, rp) {
+                ps.averageResponseTime = _.reduce(ps.apiAccesses, function (memo, rp) {
                     return memo + rp.response_time;
                 }, 0);
-                ps.averageResponseTime = ps.averageResponseTime / ps.api_accesses.length;
+                ps.averageResponseTime = ps.averageResponseTime / ps.apiAccesses.length;
             }
         });
         
-
-        return {"results": results, "indexersearches": indexersearches, "total": total, "resultsCount": resultsCount}
+        lastResults = {"results": results, "indexersearches": indexersearches, "total": total, "resultsCount": resultsCount};
+        return lastResults;
+    }
+    
+    function getLastResults() {
+        return lastResults;
     }
 }

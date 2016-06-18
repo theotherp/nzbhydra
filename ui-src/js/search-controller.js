@@ -2,7 +2,7 @@ angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
 
-function SearchController($scope, $http, $stateParams, $state, SearchService, focus, ConfigService, blockUI) {
+function SearchController($scope, $http, $stateParams, $state, SearchService, focus, ConfigService, CategoriesService, blockUI, $element) {
     
     function getNumberOrUndefined(number) {
         if (_.isUndefined(number) || _.isNaN(number) || number == "") {
@@ -18,8 +18,15 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
     //Fill the form with the search values we got from the state params (so that their values are the same as in the current url)
     $scope.mode = $stateParams.mode;
-    
-    $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? "All" : $stateParams.category;
+    $scope.categories = _.filter(CategoriesService.getAll(), function(c) { 
+        return c.mayBeSelected && (c.ignoreResults == "never" || c.ignoreResults == "external"); 
+    });
+    if (angular.isDefined($stateParams.category) && $stateParams.category) {
+        $scope.category = CategoriesService.getByName($stateParams.category);
+    } else {
+        $scope.category = CategoriesService.getDefault();
+    }
+    $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? CategoriesService.getDefault() : CategoriesService.getByName($stateParams.category);
     $scope.tmdbid = $stateParams.tmdbid;
     $scope.tvdbid = $stateParams.tvdbid;
     $scope.rid = $stateParams.rid;
@@ -46,7 +53,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.typeAheadWait = 300;
     $scope.selectedItem = "";
     $scope.autocompleteLoading = false;
-    $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 ); //If true a check box will be shown asking the user if he wants to search by ID 
+    $scope.isAskById = $scope.category.supportsById; 
     $scope.isById = {value: true}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
     $scope.availableIndexers = [];
     $scope.autocompleteClass = "autocompletePosterMovies";
@@ -55,14 +62,19 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         $scope.category = searchCategory;
 
         //Show checkbox to ask if the user wants to search by ID (using autocomplete)
-        $scope.isAskById = ($scope.category.indexOf("TV") > -1 || $scope.category.indexOf("Movies") > -1 );
+        $scope.isAskById = $scope.category.supportsById;
 
         focus('focus-query-box');
-        $scope.query = "";
+        
+        //Hacky way of triggering the autocomplete loading
+        var searchModel = $element.find("#searchfield").controller("ngModel");
+        if (angular.isDefined(searchModel.$viewValue)) {
+            searchModel.$setViewValue(searchModel.$viewValue + " ");
+        }
 
-        if (safeConfig.searching.categorysizes.enable_category_sizes) {
-            var min = safeConfig.searching.categorysizes[(searchCategory + " min").toLowerCase().replace(" ", "")];
-            var max = safeConfig.searching.categorysizes[(searchCategory + " max").toLowerCase().replace(" ", "")];
+        if (safeConfig.searching.enableCategorySizes) {
+            var min = searchCategory.min;
+            var max = searchCategory.max;
             if (_.isNumber(min)) {
                 $scope.minsize = min;
             } else {
@@ -91,7 +103,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
             return {};
         }
 
-        if ($scope.category.indexOf("Movies") > -1) {
+        if ($scope.category.name.indexOf("movies") > -1) {
             return $http.get('internalapi/autocomplete?type=movie', {
                 params: {
                     input: val
@@ -100,7 +112,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
                 $scope.autocompleteLoading = false;
                 return response.data.results;
             });
-        } else if ($scope.category.indexOf("TV") > -1) {
+        } else if ($scope.category.name.indexOf("tv") > -1) {
 
             return $http.get('internalapi/autocomplete?type=tv', {
                 params: {
@@ -119,12 +131,8 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.startSearch = function () {
         blockUI.start("Searching...");
         var indexers = angular.isUndefined($scope.indexers) ? undefined : $scope.indexers.join("|");
-        SearchService.search($scope.category, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers).then(function (searchResult) {
-            $state.go("search.results", {
-                results: searchResult.results,
-                indexersearches: searchResult.indexersearches,
-                total: searchResult.total,
-                resultsCount: searchResult.resultsCount,
+        SearchService.search($scope.category.name, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.rid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers, $scope.mode).then(function () {
+            $state.go("root.search.results", {
                 minsize: $scope.minsize,
                 maxsize: $scope.maxsize,
                 minage: $scope.minage,
@@ -147,14 +155,13 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
     $scope.goToSearchUrl = function () {
         var stateParams = {};
-        if ($scope.category.indexOf("Movies") > -1) {
-            stateParams.mode = "moviesearch";
+        if ($scope.category.name.indexOf("movies") > -1) {
             stateParams.title = $scope.title;
-            stateParams.mode = "moviesearch";
-        } else if ($scope.category.indexOf("TV") > -1) {
+            stateParams.mode = "movie";
+        } else if ($scope.category.name.indexOf("tv") > -1) {
             stateParams.mode = "tvsearch";
             stateParams.title = $scope.title;
-        } else if ($scope.category == "Ebook") {
+        } else if ($scope.category.name == "ebook") {
             stateParams.mode = "ebook";
         } else {
             stateParams.mode = "search";
@@ -170,19 +177,19 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         stateParams.maxsize = $scope.maxsize;
         stateParams.minage = $scope.minage;
         stateParams.maxage = $scope.maxage;
-        stateParams.category = $scope.category;
+        stateParams.category = $scope.category.name;
         stateParams.indexers = encodeURIComponent(getSelectedIndexers());
         
-        $state.go("search", stateParams, {inherit: false, notify: true, reload: true});
+        $state.go("root.search", stateParams, {inherit: false, notify: true, reload: true});
     };
 
 
     $scope.selectAutocompleteItem = function ($item) {
         $scope.selectedItem = $item;
         $scope.title = $item.title;
-        if ($scope.category.indexOf("Movies") > -1) {
+        if ($scope.category.name.indexOf("movies") > -1) {
             $scope.tmdbid = $item.value;
-        } else if ($scope.category.indexOf("TV") > -1) {
+        } else if ($scope.category.name.indexOf("tv") > -1) {
             $scope.tvdbid = $item.value;
         }
         $scope.query = "";
@@ -199,11 +206,11 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
 
     $scope.autocompleteActive = function () {
-        return ($scope.category.indexOf("TV") > -1) || ($scope.category.indexOf("Movies") > -1)
+        return $scope.category.supportsById;
     };
 
     $scope.seriesSelected = function () {
-        return ($scope.category.indexOf("TV") > -1);
+        return $scope.category.name.indexOf("tv") > -1;
     };
     
     $scope.toggleIndexer = function(indexer) {
@@ -227,7 +234,6 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         .map(function (indexer) {
         return {name: indexer.name, activated: isIndexerPreselected(indexer)};
     }).value();
-        
     
 
     if ($scope.mode) {

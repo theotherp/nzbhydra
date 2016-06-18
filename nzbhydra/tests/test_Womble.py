@@ -7,6 +7,7 @@ import pytest
 from builtins import open
 from future import standard_library
 
+from nzbhydra.categories import getCategoryByName
 from nzbhydra.indexers import getIndexerSettingByName
 from nzbhydra.search import SearchRequest
 
@@ -54,7 +55,7 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual("testtitle1", entries[0].title)
             self.assertEqual("http://www.newshost.co.za/nzb/79d/testtitle1.nzb", entries[0].link)
             self.assertEqual(336592896, entries[0].size)
-            self.assertEqual("TV SD", entries[0].category)
+            self.assertEqual(getCategoryByName("tvsd").name, entries[0].category.name)
             self.assertEqual("79d/testtitle1.nzb", entries[0].indexerguid)
             self.assertEqual(1442790103, entries[0].epoch)
             self.assertEqual("2015-09-20T23:01:43+00:00", entries[0].pubdate_utc)

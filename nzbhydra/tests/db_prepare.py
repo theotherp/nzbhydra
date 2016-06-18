@@ -10,13 +10,13 @@ from future import standard_library
 #standard_library.install_aliases()
 from builtins import *
 from peewee import OperationalError
-from nzbhydra.database import Indexer, IndexerApiAccess, IndexerSearch, IndexerStatus, Search, IndexerNzbDownload, TvIdCache, MovieIdCache
+from nzbhydra.database import Indexer, IndexerApiAccess, IndexerSearch, IndexerStatus, Search, IndexerNzbDownload, TvIdCache, MovieIdCache, SearchResult
 from nzbhydra import database, config
 
 
 def set_and_drop(dbfile="tests.db", tables=None):
     if tables is None:
-        tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, TvIdCache, MovieIdCache]
+        tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, TvIdCache, MovieIdCache, SearchResult]
     database.db.init(dbfile)
     database.db.connect()
 

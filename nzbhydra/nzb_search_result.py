@@ -7,6 +7,8 @@ from future import standard_library
 from builtins import *
 from builtins import object
 
+from nzbhydra import categories
+
 
 class NzbSearchResult(object):
     HAS_NFO_NO = 0
@@ -14,7 +16,7 @@ class NzbSearchResult(object):
     HAS_NFO_MAYBE = 2
 
 
-    def __init__(self, title=None, link=None, indexer=None, guid=None, size=None, category="N/A", attributes=None, epoch=None, pubDate=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=HAS_NFO_YES, indexerguid=None, details_link=None, group=None, indexerscore=0, dbsearchid=None, passworded=False):
+    def __init__(self, title=None, link=None, indexer=None, guid=None, size=None, category=None, attributes=None, epoch=None, pubDate=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=HAS_NFO_YES, indexerguid=None, details_link=None, group=None, indexerscore=0, dbsearchid=None, passworded=False):
     
         self.title = title
         self.link = link
@@ -26,7 +28,7 @@ class NzbSearchResult(object):
         self.guid = guid
         self.indexerguid = indexerguid #The GUID of the indexer which we will later need to download the actual NZB 
         self.size = size
-        self.category = category
+        self.category = category if category is not None else categories.getUnknownCategory()
         self.description = None
         self.comments = None
         self.attributes = attributes if attributes is not None else []

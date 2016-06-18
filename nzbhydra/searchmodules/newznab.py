@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-
+from arrow.parser import ParserError
 from future import standard_library
 
 from nzbhydra import config
@@ -22,6 +22,9 @@ from furl import furl
 import requests
 import concurrent
 from requests.exceptions import RequestException, HTTPError
+
+from nzbhydra.categories import getByNewznabCats, getCategoryByName, getCategoryByAnyInput
+from nzbhydra.config import getCategorySettingByName
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.datestuff import now
 from nzbhydra import infos
@@ -29,27 +32,6 @@ from nzbhydra.exceptions import IndexerAuthException, IndexerAccessException, In
 from nzbhydra.search_module import SearchModule, IndexerProcessingResult
 
 logger = logging.getLogger('root')
-
-categories_to_newznab = {
-    # Used to map sabnzbd categories to our categories. newznab results always return a general category and optionally a more specific one, for example 2000,2030. In that case we know it's an SD movie. 
-    # If it would return 2000,2010 (=foreign) we could still map it to ourt general movies category 
-    'All': [],
-    'Movies': [2000],
-    'Movies HD': [2040, 2050, 2060],
-    'Movies SD': [2030],
-    'TV': [5000],
-    'TV SD': [5030],
-    'TV HD': [5040],
-    'Audio': [3000],
-    'Audio FLAC': [3040],
-    'Audio MP3': [3010],
-    'Audiobook': [3030],
-    'Console': [1000],
-    'PC': [4000],
-    'XXX': [6000],
-    'Other': [7000],
-    'Ebook': [7020, 8010]
-}
 
 
 def get_age_from_pubdate(pubdate):
@@ -61,28 +43,6 @@ def get_age_from_pubdate(pubdate):
     age_days = int(dt.days)
     return epoch, pubdate_utc, int(age_days)
 
-
-def map_category(category):
-    # This is somewhat hack, will need to fix this later (or never)
-    # We check if the category string looks like a typical newznab string (e.g. "2030,2040") and if yes just return it. If not we map it because it probably/hopefully came from us
-
-    if category is None:
-        return []
-    catparts = category.split(",")
-    try:
-        cats = []
-        for cat in catparts:
-            intcat = int(cat)
-            cats.append(intcat)
-        return cats
-    except ValueError:
-        # Apparently no newznab category string
-        # If we know this category we return a list of newznab categories
-        if category in categories_to_newznab.keys():
-            return categories_to_newznab[category]
-        else:
-            # If not we return an empty list so that we search in all categories
-            return []
 
 
 def check_auth(body, indexer):
@@ -123,9 +83,9 @@ def test_connection(host, apikey):
     except RequestException as e:
         logger.info("Unable to connect to indexer using URL %s: %s" % (f.url, str(e)))
         return False, "Unable to connect to host"
-    except IndexerAuthException:
-        logger.info("Unable to log in to indexer %s due to wrong credentials" % host)
-        return False, "Wrong credentials"
+    except IndexerAuthException as e:
+        logger.info("Unable to log in to indexer %s due to wrong credentials: %s" % (host, e.message))
+        return False, e.message 
     except IndexerAccessException as e:
         logger.info("Unable to log in to indexer %s. Unknown error %s." % (host, str(e)))
         return False, "Host reachable but unknown error returned"
@@ -297,7 +257,12 @@ def _build_base_url(host, apikey, action, category, limit=None, offset=0):
         f.query.add({"limit": limit})
     
     if category is not None:
-        categories = map_category(category)
+        #If the categories were originally provided as newznab categories use that one
+        if category.type == "newznab":
+            categories = category.original
+        else:
+            #Instead use the ones configured for this hydra category
+            categories = category.category.newznabCategories
         if len(categories) > 0:
             f.query.add({"cat": ",".join(str(x) for x in categories)})
     return f
@@ -335,19 +300,21 @@ class NewzNab(SearchModule):
         return [f.url]
 
     def addExcludedWords(self, query, search_request):
+        if not search_request.forbiddenWords:
+            return query
         if "nzbgeek" in self.settings.host:  # NZBGeek isn't newznab but sticks to its standards in most ways but not in this. Instead of adding a new search module just for this small part I added this small POC here
-            query += " --" + " ".join([x for x in search_request.ignoreWords if not (" " in x or "-" in x or "." in x)])
+            query += " ".join(["--%s" % x for x in search_request.forbiddenWords if not (" " in x or "-" in x or "." in x)])
         else:
-            for word in search_request.ignoreWords:
+            for word in search_request.forbiddenWords:
                 if " " in word or "-" in word or "." in word:
                     logger.debug('Not using ignored word "%s" in query because it contains a space, dash or dot which is not supported by newznab queries' % word)
                     continue
-                query += " --" + word
+                query += " !" + word
         return query
 
     def get_showsearch_urls(self, search_request):
         if search_request.category is None:
-            search_request.category = "TV"
+            search_request.category = getCategoryByAnyInput("tv")
 
         url = self.build_base_url("tvsearch", search_request.category, offset=search_request.offset)
         if search_request.identifier_key:
@@ -371,7 +338,7 @@ class NewzNab(SearchModule):
 
     def get_moviesearch_urls(self, search_request):
         if search_request.category is None:
-            search_request.category = "Movies"
+            search_request.category = getCategoryByAnyInput("movies")
         
         #A lot of indexers seem to disregard the "q" parameter for "movie" search, so if we have a query use regular search instead 
         if search_request.query:
@@ -394,7 +361,7 @@ class NewzNab(SearchModule):
 
     def get_ebook_urls(self, search_request):
         if not search_request.category:
-            search_request.category = "Ebook"
+            search_request.category = getCategoryByAnyInput("ebook")
         if search_request.author or search_request.title:
             if "book" in self.searchTypes:
                 #API search
@@ -410,16 +377,23 @@ class NewzNab(SearchModule):
         else:
             #internal search
             return self.get_search_urls(search_request)
-        
-            
 
     def get_audiobook_urls(self, search_request):
         if not search_request.category:
-            search_request.category = "Audiobook"
+            search_request.category = getCategoryByAnyInput("audiobook")
+        return self.get_search_urls(search_request)
+
+    def get_comic_urls(self, search_request):
+        if not search_request.category:
+            search_request.category = getCategoryByAnyInput("comic")
         return self.get_search_urls(search_request)
 
     def get_details_link(self, guid):
-        f = furl(self.settings.host)
+        if "nzbgeek" in self.settings.host:
+            f = furl(self.settings.host)
+        else:
+            f = furl(self.settings.host.replace("api.", "www.")) #Quick and dirty fix so it doesn't link to the API
+            
         f.path.add("details")
         f.path.add(guid)
         return f.url
@@ -444,24 +418,35 @@ class NewzNab(SearchModule):
 
     def process_query_result(self, xml_response, searchRequest, maxResults=None):
         self.debug("Started processing results")
-
-        entries = []
         countRejected = 0
-
-        try:
-            tree = ET.fromstring(xml_response)
-        except Exception:
-            self.exception("Error parsing XML: %s..." % xml_response[:500])
-            raise IndexerResultParsingException("Error parsing XML", self)
-        for item in tree.find("channel").findall("item"):
-            entry = self.parseItem(item)
-
+        acceptedEntries = []
+        entries, total, offset = self.parseXml(xml_response, maxResults)
+        
+        for entry in entries:
             accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
-                entries.append(entry)
+                acceptedEntries.append(entry)
             else:
                 countRejected += 1
                 self.debug("Rejected search result. Reason: %s" % reason)
+       
+        if total == 0 or len(acceptedEntries) == 0:
+            self.info("Query returned no results")
+            return IndexerProcessingResult(entries=acceptedEntries, queries=[], total=0, total_known=True, has_more=False, rejected=0)
+        else:
+            return IndexerProcessingResult(entries=acceptedEntries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total, rejected=countRejected)
+    
+    def parseXml(self, xmlResponse, maxResults=None):
+        entries = []
+        
+        try:
+            tree = ET.fromstring(xmlResponse)
+        except Exception:
+            self.exception("Error parsing XML: %s..." % xmlResponse[:500])
+            raise IndexerResultParsingException("Error parsing XML", self)
+        for item in tree.find("channel").findall("item"):
+            entry = self.parseItem(item)
+            entries.append(entry)
             if maxResults is not None and len(entries) == maxResults:
                 break
 
@@ -473,11 +458,7 @@ class NewzNab(SearchModule):
         else:
             total = int(response_total_offset.attrib["total"])
             offset = int(response_total_offset.attrib["offset"])
-        if total == 0 or len(entries) == 0:
-            self.info("Query returned no results")
-            return IndexerProcessingResult(entries=entries, queries=[], total=0, total_known=True, has_more=False, rejected=0)
-
-        return IndexerProcessingResult(entries=entries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total, rejected=countRejected)
+        return entries, total, offset
 
     def parseItem(self, item):
         usenetdate = None
@@ -488,10 +469,11 @@ class NewzNab(SearchModule):
         entry.attributes = []
         entry.pubDate = item.find("pubDate").text
         entry.indexerguid = item.find("guid").text
+        if entry.indexerguid:
+            m = self.guidpattern.search(entry.indexerguid)
+            if m:
+                entry.indexerguid = m.group(2)
         entry.has_nfo = NzbSearchResult.HAS_NFO_MAYBE
-        m = self.guidpattern.search(entry.indexerguid)
-        if m:
-            entry.indexerguid = m.group(2)
         description = item.find("description")
         if description is not None:
             description = description.text
@@ -514,33 +496,27 @@ class NewzNab(SearchModule):
                     self.error("Unable to parse category %s" % attribute_value)
             elif attribute_name == "poster":
                 entry.poster = attribute_value
-            elif attribute_name == "info":
-                entry.details_link = attribute_value
             elif attribute_name == "password" and attribute_value != "0":
                 entry.passworded = True
             elif attribute_name == "group" and attribute_value != "not available":
                 entry.group = attribute_value
             elif attribute_name == "usenetdate":
-                usenetdate = arrow.get(attribute_value, 'ddd, DD MMM YYYY HH:mm:ss Z')
+                try: 
+                    usenetdate = arrow.get(attribute_value, 'ddd, DD MMM YYYY HH:mm:ss Z')
+                except ParserError:
+                    logger.debug("Unable to parse usenet date format: %s" % attribute_value)
+                    usenetdate = None
             # Store all the extra attributes, we will return them later for external apis
             entry.attributes.append({"name": attribute_name, "value": attribute_value})
-        if entry.details_link is None:
-            entry.details_link = self.get_details_link(entry.indexerguid)
+        entry.details_link = self.get_details_link(entry.indexerguid)
         if usenetdate is None:
             # Not provided by attributes, use pubDate instead
             usenetdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
         entry.epoch = usenetdate.timestamp
         entry.pubdate_utc = str(usenetdate)
         entry.age_days = (arrow.utcnow() - usenetdate).days
-        entry.precise_date = True
-        # Map category. Try to find the most specific category (like 2040), then the more general one (like 2000)
-        categories = sorted(categories, reverse=True)  # Sort to make the most specific category appear first
-        if len(categories) > 0:
-            for k, v in categories_to_newznab.items():
-                for c in categories:
-                    if c in v:
-                        entry.category = k
-                        break
+        entry.precise_date = True 
+        entry.category = getByNewznabCats(categories)
         return entry
 
     def check_auth(self, body):

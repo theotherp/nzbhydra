@@ -27,7 +27,8 @@ from requests import RequestException
 
 from nzbhydra import config
 from nzbhydra import indexers
-from nzbhydra.database import IndexerApiAccess, IndexerNzbDownload, Indexer, IndexerSearch
+from nzbhydra.database import IndexerApiAccess, IndexerNzbDownload, Indexer, IndexerSearch, SearchResult
+from nzbhydra.exceptions import IndexerNotFoundException
 
 logger = logging.getLogger('root')
 
@@ -63,7 +64,7 @@ class NzbSearchResultSchema(Schema):
     age_precise = fields.Boolean()
     indexer = fields.String()
     indexerscore = fields.String()
-    guid = fields.String()
+    searchResultId = fields.String()
     indexerguid = fields.String()
     size = fields.Integer()
     category = fields.String()
@@ -90,59 +91,61 @@ class IndexerSearchSchema(Schema):
     results = fields.Integer()
     did_search = fields.Boolean()
 
-    api_accesses = fields.Nested(IndexerApiAccessSchema, many=True)
+    apiAccesses = fields.Nested(IndexerApiAccessSchema, many=True)
 
 
-def get_root_url():
-    return request.url_root
+def get_root_url(): 
+    f = furl()
+    f.scheme = request.scheme
+    f.host = furl(request.host_url).host
+    f.port = config.settings.main.port
+    if config.settings.main.urlBase:
+        f.path = config.settings.main.urlBase
+    return str(f) + "/"
 
 
-def get_nzb_link_and_guid(indexer, indexerguid, searchid, title, external):
-    data_getnzb = {"indexer": indexer, "indexerguid": indexerguid, "searchid": searchid, "title": title}
-    guid_rison = rison.dumps(data_getnzb)
-    
+def get_nzb_link_and_guid(searchResultId, external, downloader=None):
     externalUrl = config.settings.main.externalUrl
     if externalUrl and not (external and config.settings.main.useLocalUrlForApiAccess):
         f = furl(externalUrl)
     else:
         f = furl(get_root_url())
     f.path.add("getnzb")
-    args = {"id": guid_rison}
+    args = {"searchresultid": searchResultId}
         
     if external:
         apikey = config.settings.main.apikey
         if apikey is not None:
             args["apikey"] = apikey
+    if downloader:
+        args["downloader"] = downloader
     f.set(args=args)
-    return f.url, guid_rison
+    return f.url
 
 
-def transform_results(results, dbsearch, external):
+def transform_results(results, external):
     transformed = []
     for j in results:
+        if j.searchResultId is None: #Quick fix
+            continue
         i = copy.copy(j)
-        i.dbsearchid = dbsearch
-        nzb_link, guid_json = get_nzb_link_and_guid(i.indexer, i.indexerguid, dbsearch, i.title, external)
-        i.link = nzb_link
-        i.guid = guid_json
-
-        # Add our internal guid (like the link above but only the identifying part) to the newznab attributes so that when any external tool uses it together with g=get or t=getnfo we can identify it
+        i.link = get_nzb_link_and_guid(i.searchResultId, external)
+        i.guid = "nzbhydrasearchresult%d" % i.searchResultId
         has_guid = False
         has_size = False
-        
         for a in i.attributes:
             if a["name"] == "guid":
-                a["value"] = guid_json
+                a["value"] = i.guid
                 has_guid = True
             if a["name"] == "size":
                 has_size = True
         if not has_guid:
-            i.attributes.append({"name": "guid", "value": guid_json})  # If it wasn't set before now it is (for results from newznab-indexers)
+            i.attributes.append({"name": "guid", "value": i.guid})  # If it wasn't set before now it is (for results from newznab-indexers)
         if not has_size:
             i.attributes.append({"name": "size", "value": i.size})  # If it wasn't set before now it is (for results from newznab-indexers)
+        i.category = i.category.pretty
         transformed.append(i)
-        
-    
+
     return transformed
 
 
@@ -155,7 +158,7 @@ def sizeof_fmt(num, suffix='B'):
 
 
 def process_for_external_api(results):
-    results = transform_results(results["results"], results["dbsearchid"], True)
+    results = transform_results(results["results"], True)
     return results
 
 
@@ -173,7 +176,7 @@ def process_for_internal_api(search_result):
         indexer_search_info["indexer"] = indexer_info["indexer"]
         indexersearchdbentries.append(indexer_search_info)
 
-    nzbsearchresults = transform_results(nzbsearchresults, search_result["dbsearchid"], False)
+    nzbsearchresults = transform_results(nzbsearchresults, False)
     nzbsearchresults = serialize_nzb_search_result(nzbsearchresults)
 
     return {"results": nzbsearchresults, "indexersearches": indexersearchdbentries, "searchentryid": search_result["dbsearchid"], "total": search_result["total"]}
@@ -183,15 +186,16 @@ def serialize_nzb_search_result(results):
     return NzbSearchResultSchema(many=True).dump(results).data
 
 
-def get_nfo(indexer_name, guid):
-    for p in indexers.enabled_indexers:
-        if p.name == indexer_name:
-            has_nfo, nfo, message = p.get_nfo(guid)
-            break
-    else:
-        logger.error("Did not find indexer with name %s" % indexer_name)
+def get_nfo(searchresultid):
+    try:
+        searchResult = SearchResult.get(SearchResult.id == searchresultid)
+        indexer = indexers.getIndexerByName(searchResult.indexer.name)
+        has_nfo, nfo, message = indexer.get_nfo(searchResult.guid)
+        return {"has_nfo": has_nfo, "nfo": nfo, "message": message}
+    except IndexerNotFoundException as e:
+        logger.error(e.message)
         return {"has_nfo": False, "error": "Unable to find indexer"}
-    return {"has_nfo": has_nfo, "nfo": nfo, "message": message}
+    
 
 
 def get_details_link(indexer_name, guid):
@@ -212,72 +216,69 @@ def get_entry_by_id(indexer_name, guid, title):
         return None
 
 
-def get_indexer_nzb_link(indexer_name, indexerguid, title, searchid, mode, log_api_access):
+def get_indexer_nzb_link(searchResultId, mode, log_api_access):
     """
     Build a link that leads to the actual NZB of the indexer using the given informations. We log this as indexer API access and NZB download because this is only called
     when the NZB will be actually downloaded later (by us or a downloader) 
     :return: str
     """
-    for p in indexers.enabled_indexers:
-        if p.name.strip() == indexer_name.strip():
-            link = p.get_nzb_link(indexerguid, title)
+    searchResult = SearchResult.get(SearchResult.id == searchResultId)
+    indexerName = searchResult.indexer.name
+    indexer = indexers.getIndexerByName(indexerName)
+    link = searchResult.link
 
-            # Log to database
-            indexer = Indexer.get(fn.lower(Indexer.name) == indexer_name.lower())
-            papiaccess = IndexerApiAccess(indexer=p.indexer, type="nzb", url=link, response_successful=None, indexer_search=searchid) if log_api_access else None
-            try:
-                papiaccess.username = request.authorization.username if request.authorization is not None else None
-            except RuntimeError:
-                pass
-            papiaccess.save()
-            pnzbdl = IndexerNzbDownload(indexer=indexer, indexer_search=searchid, api_access=papiaccess, mode=mode, title=title, guid=indexerguid)
-            pnzbdl.save()
+    # Log to database
+    papiaccess = IndexerApiAccess(indexer=indexer.indexer, type="nzb", url=link, response_successful=None) if log_api_access else None
+    try:
+        papiaccess.username = request.authorization.username if request.authorization is not None else None
+    except RuntimeError:
+        pass
+    papiaccess.save()
+    pnzbdl = IndexerNzbDownload(searchResult=searchResult, apiAccess=papiaccess, mode=mode, title=searchResult.title)
+    pnzbdl.save()
 
-            return link, papiaccess, pnzbdl
-
-    else:
-        logger.error("Did not find indexer with name %s" % indexer_name)
-        return None, None, None
+    return link, papiaccess, pnzbdl
 
 
 IndexerNzbDownloadResult = namedtuple("IndexerNzbDownload", "content headers")
 
 
-def download_nzb_and_log(indexer_name, indexerguid, title, searchid):
-    link, papiaccess, _ = get_indexer_nzb_link(indexer_name, indexerguid, title, searchid, "serve", True)
-    for p in indexers.enabled_indexers:
-        if p.name == indexer_name:
-            try:
-                r = p.get(link, timeout=10)
-                r.raise_for_status()
+def download_nzb_and_log(searchResultId):
+    link, papiaccess, _ = get_indexer_nzb_link(searchResultId, "serve", True)
+    try:
+        indexer = indexers.getIndexerByName(SearchResult.get(SearchResult.id == searchResultId).indexer.name)
+        r = indexer.get(link, timeout=10)
+        r.raise_for_status()
 
-                papiaccess.response_successful = True
-                papiaccess.response_time = r.elapsed.microseconds / 1000
+        papiaccess.response_successful = True
+        papiaccess.response_time = r.elapsed.microseconds / 1000
 
-                return IndexerNzbDownloadResult(content=r.content, headers=r.headers)
-            except RequestException as e:
-                logger.error("Error while connecting to URL %s: %s" % (link, str(e)))
-                papiaccess.error = str(e)
-                return None
-            finally:
-                papiaccess.save()
-    else:
-        return "Unable to find NZB link"
+        return IndexerNzbDownloadResult(content=r.content, headers=r.headers)
+    except IndexerNotFoundException as e:
+        logger.error(e.message)
+    except RequestException as e:
+        logger.error("Error while connecting to URL %s: %s" % (link, str(e)))
+        papiaccess.error = str(e)
+        return None
+    finally:
+        papiaccess.save()
 
 
-def get_nzb_response(indexer_name, guid, title, searchid):
-    nzbdownloadresult = download_nzb_and_log(indexer_name, guid, title, searchid)
+
+def get_nzb_response(searchResultId):
+    searchResult = SearchResult.get(SearchResult.id == searchResultId)
+    nzbdownloadresult = download_nzb_and_log(searchResultId)
     if nzbdownloadresult is not None:
         bio = BytesIO(nzbdownloadresult.content)
-        filename = title + ".nzb" if title is not None else "nzbhydra.nzb"
+        filename = searchResult.title + ".nzb" if searchResult.title is not None else "nzbhydra.nzb"
         response = send_file(bio, mimetype='application/x-nzb;', as_attachment=True, attachment_filename=filename, add_etags=False)
         response.headers["content-length"] = len(nzbdownloadresult.content)
 
         for header in nzbdownloadresult.headers.keys():
             if header.lower().startswith("x-dnzb") or header.lower() in ("content-disposition", "content-type"):
                 response.headers[header] = nzbdownloadresult.headers[header]
-        logger.info("Returning downloaded NZB %s from %s" % (title, indexer_name))
+        logger.info("Returning downloaded NZB %s from %s" % (searchResult.title, searchResult.indexer.name))
         return response
     else:
-        logger.error("Error while trying to download NZB %s from %s" % (title, indexer_name))
+        logger.error("Error while trying to download NZB %s from %s" % (searchResult.title, searchResult.indexer.name))
         return "Unable to download NZB", 500

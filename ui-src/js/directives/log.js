@@ -4,7 +4,7 @@ angular
 
 function hydralog() {
     return {
-        template: '<div cg-busy="{promise:logPromise,message:\'Loading log file\'}"><pre ng-bind-html="log" style="text-align: left"></pre></div>',
+        template: '<div cg-busy="{promise:logPromise,message:\'Loading log file\'}"><pre ng-bind-html="log" style="text-align: left; height: 65vh; overflow-y: scroll"></pre></div>',
         controller: controller
     };
 

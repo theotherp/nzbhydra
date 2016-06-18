@@ -4,309 +4,25 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 # standard_library.install_aliases()
-import json
 import logging
 import unittest
-from pprint import pprint
 
-import arrow
 import pytest
 from builtins import *
-import os
-import copy
-import shutil
 
 from bunch import Bunch
 
 from nzbhydra import config
 
-print("Loading config from testsettings.cfg")
-
 
 class TestConfig(unittest.TestCase):
     @pytest.fixture
     def setUp(self):
-        if os.path.exists("testsettings.cfg"):
-            os.remove("testsettings.cfg")
-        shutil.copy("testsettings.cfg.orig", "testsettings.cfg")
-        
         formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
         stream_handler = logging.StreamHandler(sys.stdout)
         stream_handler.setLevel("DEBUG")
         stream_handler.setFormatter(formatter)
         logging.getLogger("root").setLevel("DEBUG")
-
-    def testMigration3to4(self):
-        testCfg = {
-            "main":
-                {
-                    "configVersion": 3,
-                    u"baseUrl": u"https://www.somedomain.com/nzbhydra"
-
-                },
-            "downloader": {
-                "nzbAddingType": "redirect"
-            }}
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = testCfg
-            cfg["main"]["baseUrl"] = u"https://www.somedomain.com/nzbhydra"
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(cfg["main"]["externalUrl"], "https://www.somedomain.com/nzbhydra", json.dumps(cfg))
-        self.assertEqual(cfg["main"]["urlBase"], "/nzbhydra")
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = testCfg
-            cfg["main"]["baseUrl"] = u"https://127.0.0.1/nzbhydra/"
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(cfg["main"]["externalUrl"], "https://127.0.0.1/nzbhydra")
-        self.assertEqual(cfg["main"]["urlBase"], "/nzbhydra")
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = testCfg
-            cfg["main"]["baseUrl"] = u"https://www.somedomain.com/"
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(cfg["main"]["externalUrl"], "https://www.somedomain.com")
-        self.assertIsNone(cfg["main"]["urlBase"])
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = testCfg
-            cfg["main"]["baseUrl"] = None
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        self.assertIsNone(cfg["main"]["externalUrl"])
-        self.assertIsNone(cfg["main"]["urlBase"])
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = testCfg
-            cfg["main"]["nzbAddingType"] = "direct"
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        self.assertEqual("redirect", cfg["downloader"]["nzbAddingType"])
-
-    def testMigration7to8(self):
-        testCfg = {
-            "main":
-                {
-                    "configVersion": 7,
-                    "logging": {
-                        "logfile-level": "",
-                        "logfile-filename": 22
-                    }
-                },
-            "indexers": {
-                "Binsearch": {},
-                "NZBClub": {},
-                "NZBIndex": {},
-                "Womble": {},
-                "newznab1": {
-                    "accessType": "both",
-                    "apikey": "apikey1",
-                    "name": "newznab1",
-                    "enabled": False
-                },
-                "newznab2": {
-                    "apikey": "apikey2",
-                    "name": "newznab2",
-                    "enabled": False
-                }
-            }
-        }
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = copy.copy(testCfg)
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(2, len(cfg["indexers"]["newznab"]), json.dumps(cfg))
-        self.assertEqual("newznab1", cfg["indexers"]["newznab"][0]["name"])
-        self.assertEqual("newznab2", cfg["indexers"]["newznab"][1]["name"])
-        self.assertTrue("accessType" in cfg["indexers"]["newznab"][0].keys())
-        self.assertTrue("accessType" in cfg["indexers"]["newznab"][1].keys())
-
-    def testMigration8to9(self):
-        testCfg = {
-            "main": {
-                "adminPassword": None,
-                "adminUsername": None,
-                "configVersion": 8,
-                "enableAdminAuth": False,
-                "enableAdminAuthForStats": False,
-                "enableAuth": False,
-                "password": None,
-                "username": None
-            }
-        }
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = copy.copy(testCfg)
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(1, len(cfg["auth"]["users"]), json.dumps(cfg))
-        self.assertIsNone(cfg["auth"]["users"][0]["username"])
-        self.assertIsNone(cfg["auth"]["users"][0]["password"])
-        self.assertTrue(cfg["auth"]["users"][0]["maySeeStats"])
-        self.assertTrue(cfg["auth"]["users"][0]["maySeeAdmin"])
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = copy.copy(testCfg)
-            cfg["main"]["enableAuth"] = True
-            cfg["main"]["username"] = "u"
-            cfg["main"]["password"] = "p"
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(1, len(cfg["auth"]["users"]))
-        self.assertEqual("u", cfg["auth"]["users"][0]["username"])
-        self.assertEqual("p", cfg["auth"]["users"][0]["password"])
-        self.assertTrue(cfg["auth"]["users"][0]["maySeeStats"])
-        self.assertTrue(cfg["auth"]["users"][0]["maySeeAdmin"])
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = copy.copy(testCfg)
-            cfg["main"]["enableAuth"] = True
-            cfg["main"]["username"] = "u"
-            cfg["main"]["password"] = "p"
-            cfg["main"]["enableAdminAuth"] = True
-            cfg["main"]["adminUsername"] = "au"
-            cfg["main"]["adminPassword"] = "ap"
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(2, len(cfg["auth"]["users"]))
-        self.assertEqual("u", cfg["auth"]["users"][0]["username"])
-        self.assertEqual("p", cfg["auth"]["users"][0]["password"])
-        self.assertTrue(cfg["auth"]["users"][0]["maySeeStats"])
-        self.assertEqual(False, cfg["auth"]["users"][0]["maySeeAdmin"])
-        self.assertEqual("au", cfg["auth"]["users"][1]["username"])
-        self.assertEqual("ap", cfg["auth"]["users"][1]["password"])
-        self.assertTrue(cfg["auth"]["users"][1]["maySeeStats"])
-        self.assertTrue(cfg["auth"]["users"][1]["maySeeAdmin"])
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = copy.copy(testCfg)
-            cfg["main"]["enableAuth"] = True
-            cfg["main"]["username"] = "u"
-            cfg["main"]["password"] = "p"
-            cfg["main"]["enableAdminAuth"] = True
-            cfg["main"]["enableAdminAuthForStats"] = True
-            cfg["main"]["adminUsername"] = "au"
-            cfg["main"]["adminPassword"] = "ap"
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(2, len(cfg["auth"]["users"]))
-        self.assertEqual("u", cfg["auth"]["users"][0]["username"])
-        self.assertEqual("p", cfg["auth"]["users"][0]["password"])
-        self.assertEqual(False, cfg["auth"]["users"][0]["maySeeStats"])
-        self.assertEqual(False, cfg["auth"]["users"][0]["maySeeAdmin"])
-        self.assertEqual("au", cfg["auth"]["users"][1]["username"])
-        self.assertEqual("ap", cfg["auth"]["users"][1]["password"])
-        self.assertTrue(cfg["auth"]["users"][1]["maySeeStats"])
-        self.assertTrue(cfg["auth"]["users"][1]["maySeeAdmin"])
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = copy.copy(testCfg)
-            cfg["main"]["enableAuth"] = False
-            cfg["main"]["enableAdminAuthForStats"] = False
-            cfg["main"]["enableAdminAuth"] = True
-            cfg["main"]["adminUsername"] = "au"
-            cfg["main"]["adminPassword"] = "ap"
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(2, len(cfg["auth"]["users"]))
-        self.assertIsNone(cfg["auth"]["users"][0]["username"])
-        self.assertIsNone(cfg["auth"]["users"][0]["password"])
-        self.assertTrue(cfg["auth"]["users"][0]["maySeeStats"])
-        self.assertFalse(cfg["auth"]["users"][0]["maySeeAdmin"])
-        self.assertEqual("au", cfg["auth"]["users"][1]["username"])
-        self.assertEqual("ap", cfg["auth"]["users"][1]["password"])
-        self.assertTrue(cfg["auth"]["users"][1]["maySeeStats"])
-        self.assertTrue(cfg["auth"]["users"][1]["maySeeAdmin"])
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = copy.copy(testCfg)
-            cfg["main"]["enableAuth"] = False
-            cfg["main"]["enableAdminAuth"] = True
-            cfg["main"]["enableAdminAuthForStats"] = True
-            cfg["main"]["adminUsername"] = "au"
-            cfg["main"]["adminPassword"] = "ap"
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(2, len(cfg["auth"]["users"]))
-        self.assertIsNone(cfg["auth"]["users"][0]["username"])
-        self.assertIsNone(cfg["auth"]["users"][0]["password"])
-        self.assertFalse(cfg["auth"]["users"][0]["maySeeStats"])
-        self.assertFalse(cfg["auth"]["users"][0]["maySeeAdmin"])
-        self.assertEqual("au", cfg["auth"]["users"][1]["username"])
-        self.assertEqual("ap", cfg["auth"]["users"][1]["password"])
-        self.assertTrue(cfg["auth"]["users"][1]["maySeeStats"])
-        self.assertTrue(cfg["auth"]["users"][1]["maySeeAdmin"])
-
-    def testMigration10to11(self):
-        testCfg = {
-            "main": {
-                "configVersion": 10
-            },
-            "auth": {
-                "users": [
-                    {
-                        "name": None
-                    },
-                    {
-                        "name": "whatever"
-                    }
-                ]
-            }
-        }
-        self.assertTrue("name" in testCfg["auth"]["users"][0].keys())
-        self.assertTrue("name" in testCfg["auth"]["users"][1].keys())
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = copy.copy(testCfg)
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        self.assertEqual(2, len(cfg["auth"]["users"]))
-        self.assertIsNone(cfg["auth"]["users"][0]["username"])
-        self.assertEqual("whatever", cfg["auth"]["users"][1]["username"])
-        self.assertFalse("name" in cfg["auth"]["users"][0].keys())
-        self.assertFalse("name" in cfg["auth"]["users"][1].keys())
-
-    def testMigration12to13(self):
-        testCfg = {
-            "main":
-                {
-                    "configVersion": 12,
-                },
-            "indexers": {
-                "binsearch": {},
-                "nzbclub": {},
-                "nzbindex": {},
-                "omgwtfnzbs": {},
-                "womble": {},
-                "newznab": [
-                    {},
-                    {}
-
-                ]
-
-            }
-        }
-
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = copy.copy(testCfg)
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        print(json.dumps(cfg))
-        config.logLogMessages()
-        self.assertIsNone(cfg["indexers"]["binsearch"]["hitLimit"])
-        self.assertIsNone(cfg["indexers"]["nzbclub"]["hitLimit"])
-        self.assertIsNone(cfg["indexers"]["nzbindex"]["hitLimit"])
-        self.assertIsNone(cfg["indexers"]["omgwtfnzbs"]["hitLimit"])
-        self.assertIsNone(cfg["indexers"]["womble"]["hitLimit"])
-        self.assertIsNone(cfg["indexers"]["newznab"][0]["hitLimit"])
-        self.assertIsNone(cfg["indexers"]["newznab"][1]["hitLimit"])
-        self.assertEqual(arrow.get(0), cfg["indexers"]["newznab"][0]["hitLimitResetTime"])
-        self.assertEqual(arrow.get(0), cfg["indexers"]["newznab"][1]["hitLimitResetTime"])
 
     def testGetAnonymizedConfig(self):
         config.settings = {
@@ -366,30 +82,113 @@ class TestConfig(unittest.TestCase):
         self.assertEqual("<APIKEY:f5095bc1520183e76be64af1c5f9e7e3>", ac.downloader.sabnzbd.apikey)
         self.assertEqual("<PASSWORD:4c471a175d85451486af666d7eebe4f8>", ac.downloader.sabnzbd.password)
 
-    def testMigration15to16(self):
+    def testMigration18to19(self):
         testCfg = {
             "main":
                 {
-                    "configVersion": 15,
+                    "configVersion": 18,
                 },
-            "indexers": {
-                "binsearch": {"name": "binsearch", "type": "binsearch"},
-                "nzbclub": {"name": "nzbclub", "type": "nzbclub"},
-                "nzbindex": {"name": "nzbindex", "type": "nzbindex"},
-                "omgwtfnzbs": {"name": "omgwtf", "type": "omgwtf"},
-                "womble": {"name": "womble", "type": "womble"},
-                "newznab": [
-                    {"name": "newznab1", "type": "newznab1"},
-                    {"name": "newznab2", "type": "newznab2"}
-
-                ]
-
+            "downloaders": [
+                {}
+            ],
+            "searching": {
+                "alwaysShowDuplicates": True,
+                "ignoreWords": "forbidden",
+                "requireWords": "required",
+                "categorysizes": {
+                    "audiobookmax": 1000,
+                    "audioookmin": 50,
+                    "audiomax": 2000,
+                    "audiomin": 1,
+                    "comicmax": 250,
+                    "comicmin": 1,
+                    "consolemax": 40000,
+                    "consolemin": 100,
+                    "ebookmax": 100,
+                    "ebookmin": None,
+                    "enable_category_sizes": True,
+                    "flacmax": 2000,
+                    "flacmin": 10,
+                    "movieshdmax": 20000,
+                    "movieshdmin": 3000,
+                    "moviesmax": 20000,
+                    "moviesmin": 500,
+                    "moviessdmin": 3000,
+                    "mp3max": 500,
+                    "mp3min": 1,
+                    "pcmax": 50000,
+                    "pcmin": 100,
+                    "tvhdmax": 3000,
+                    "tvhdmin": 300,
+                    "tvmax": 5000,
+                    "tvmin": 50,
+                    "tvsdmax": 1000,
+                    "tvsdmin": 50,
+                    "xxxmax": 10000,
+                    "xxxmin": 100
+                }
             }
         }
-        with open("testsettings.cfg", "wb") as settingsfile:
-            cfg = copy.copy(testCfg)
-            json.dump(cfg, settingsfile)
-        cfg = config.migrate("testsettings.cfg")
-        pprint(cfg)
-        indexers = list(sorted(cfg["indexers"], key=lambda x: x["name"]))
-        self.assertEqual(indexers[0]["name"], "binsearch")
+        cfg = config.migrateConfig(testCfg)
+
+        self.assertTrue(cfg["categories"]["enableCategorySizes"])
+        self.assertFalse(cfg["categories"]["categories"]["movies"]["requiredWords"])
+        self.assertFalse(cfg["categories"]["categories"]["movies"]["forbiddenWords"])
+        self.assertEqual(2000, cfg["categories"]["categories"]["movies"]["newznabCategories"][0])
+        self.assertEqual("forbidden", cfg["searching"]["forbiddenWords"])
+        self.assertEqual("required", cfg["searching"]["requiredWords"])
+        self.assertEqual("", cfg["downloaders"][0]["iconCssClass"])
+
+    def testMigration18to19WithMissingComicSection(self):
+        testCfg = {
+            "main":
+                {
+                    "configVersion": 18,
+                },
+            "downloaders": [
+                {}
+            ],
+            "searching": {
+                "alwaysShowDuplicates": True,
+                "ignoreWords": "forbidden",
+                "requireWords": "required",
+                "categorysizes": {
+                    "audiobookmax": 1000,
+                    "audioookmin": 50,
+                    "audiomax": 2000,
+                    "audiomin": 1,
+                    "consolemax": 40000,
+                    "consolemin": 100,
+                    "ebookmax": 100,
+                    "ebookmin": None,
+                    "enable_category_sizes": True,
+                    "flacmax": 2000,
+                    "flacmin": 10,
+                    "movieshdmax": 20000,
+                    "movieshdmin": 3000,
+                    "moviesmax": 20000,
+                    "moviesmin": 500,
+                    "moviessdmin": 3000,
+                    "mp3max": 500,
+                    "mp3min": 1,
+                    "pcmax": 50000,
+                    "pcmin": 100,
+                    "tvhdmax": 3000,
+                    "tvhdmin": 300,
+                    "tvmax": 5000,
+                    "tvmin": 50,
+                    "tvsdmax": 1000,
+                    "tvsdmin": 50,
+                    "xxxmax": 10000,
+                    "xxxmin": 100
+                }
+            }
+        }
+        cfg = config.migrateConfig(testCfg)
+        print(cfg)
+
+        self.assertTrue(cfg["categories"]["enableCategorySizes"])
+        self.assertTrue("min" in cfg["categories"]["categories"]["comic"])
+        
+        
+        

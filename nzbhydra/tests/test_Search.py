@@ -12,9 +12,12 @@ import pytest
 import time
 from bunch import Bunch
 from future import standard_library
+from mock import patch, MagicMock
 
+from nzbhydra.categories import getCategoryByName
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search import SearchRequest
+from nzbhydra.searchmodules.newznab import NewzNab
 from nzbhydra.tests import mockbuilder
 
 #standard_library.install_aliases()
@@ -49,7 +52,7 @@ def mock(x, y, z=True):
 class SearchTests(unittest.TestCase):
 
     def prepareIndexers(self, indexerCount):
-        #config.settings.indexers = []
+        config.settings.indexers = []
         for i in range(1, indexerCount + 1):
             nn = Bunch()
             nn.enabled = True
@@ -116,6 +119,7 @@ class SearchTests(unittest.TestCase):
         self.newznab1.timeout = None
         self.newznab1.hitLimit = None
         self.newznab1.score = 0
+        self.newznab1.type = "newznab"
         self.newznab1.accessType = "both"
         self.newznab1.search_ids = ["imdbid", "rid", "tvdbid"]
         self.newznab1.searchTypes = ["book", "tvsearch", "movie"]
@@ -129,10 +133,11 @@ class SearchTests(unittest.TestCase):
         self.newznab2.hitLimit = None
         self.newznab2.accessType = "both"
         self.newznab2.score = 0
+        self.newznab2.type = "newznab"
         self.newznab2.search_ids = ["rid", "tvdbid"]
         self.newznab2.searchTypes = ["tvsearch", "movie"]
         
-        config.settings.indexers = [self.newznab1, self.newznab2]
+        #config.settings.indexers = [self.newznab1, self.newznab2]
 
         self.oldExecute_search_queries = search.start_search_futures
         database.IndexerStatus.delete().execute()
@@ -144,15 +149,17 @@ class SearchTests(unittest.TestCase):
 
     def tearDown(self):
         search.start_search_futures = self.oldExecute_search_queries
-        config.settings.searching.requireWords = None
+        config.settings.searching.requiredWords = None
             
             
 
     def test_pick_indexers(self):
         config.settings.searching.generate_queries = []
+        config.settings.indexers.extend([self.newznab1, self.newznab2])
         getIndexerSettingByName("womble").enabled = True
         getIndexerSettingByName("womble").accessType = "both"
         getIndexerSettingByName("nzbclub").enabled = True
+        getIndexerSettingByName("nzbclub").accessType = "both"
         read_indexers_from_config()
         search_request = SearchRequest()
     
@@ -176,7 +183,7 @@ class SearchTests(unittest.TestCase):
         self.assertEqual("newznab2", indexers[1].name)
     
         search_request.identifier_key = "imdbid"
-        search_request.category = "tv"
+        search_request.category = getCategoryByName("movies")
         indexers = search.pick_indexers(search_request)
         self.assertEqual(1, len(indexers))
         self.assertEqual("newznab1", indexers[0].name)
@@ -199,21 +206,30 @@ class SearchTests(unittest.TestCase):
         getIndexerSettingByName("nzbclub").enabled = False
     
         getIndexerSettingByName("newznab1").accessType = "both"
-        indexers = search.pick_indexers(search_request, internal=True)
+        search_request.internal = True
+        indexers = search.pick_indexers(search_request)
         self.assertEqual(2, len(indexers))
-        indexers = search.pick_indexers(search_request, internal=False)
+        search_request.internal = False
+        indexers = search.pick_indexers(search_request)
         self.assertEqual(2, len(indexers))
-    
+
+        config.settings.indexers = [self.newznab1, self.newznab2]
         getIndexerSettingByName("newznab1").accessType = "external"
-        indexers = search.pick_indexers(search_request, internal=True)
+        read_indexers_from_config()
+        search_request.internal = True
+        indexers = search.pick_indexers(search_request)
         self.assertEqual(1, len(indexers))
-        indexers = search.pick_indexers(search_request, internal=False)
+        search_request.internal = False
+        indexers = search.pick_indexers(search_request)
         self.assertEqual(2, len(indexers))
     
-        getIndexerSettingByName("newznab").accessType = "internal"
-        indexers = search.pick_indexers(search_request, internal=True)
+        getIndexerSettingByName("newznab1").accessType = "internal"
+        read_indexers_from_config()
+        search_request.internal = True
+        indexers = search.pick_indexers(search_request)
         self.assertEqual(2, len(indexers))
-        indexers = search.pick_indexers(search_request, internal=False)
+        search_request.internal = False
+        indexers = search.pick_indexers(search_request)
         self.assertEqual(1, len(indexers))
     
         
@@ -474,20 +490,6 @@ class SearchTests(unittest.TestCase):
     
     
     @responses.activate
-    def testSimpleSearch(self):
-        with self.app.test_request_context('/'):
-            # Only use newznab indexers
-            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-                self.prepareSearchMocks(rsps, 2, 1)
-        
-                searchRequest = SearchRequest(type="search")
-                result = search.search(True, searchRequest)
-                results = result["results"]
-                self.assertEqual(2, len(results))
-                self.assertEqual("newznab1", results[0].indexer)
-                self.assertEqual("newznab2", results[1].indexer)
-    
-    @responses.activate
     def testLimitAndOffset(self):
         with self.app.test_request_context('/'):
             # Only use newznab indexers
@@ -495,16 +497,16 @@ class SearchTests(unittest.TestCase):
                 # Prepare 12 results
                 self.prepareSearchMocks(rsps, 2, 6)
                 # Search with a limit of 6        
-                searchRequest = SearchRequest(limit=6, type="search")
-                result = search.search(False, searchRequest)
+                searchRequest = SearchRequest(limit=6, type="search", internal=False)
+                result = search.search(searchRequest)
                 results = result["results"]
                 self.assertEqual(6, len(results), "Expected the limit of 6 to be respected")
                 self.assertEqual("newznab1result1.title", results[0].title)
                 self.assertEqual("newznab1result6.title", results[5].title)
         
                 # Search again with an offset, expect the next (and last ) 6 results
-                searchRequest = SearchRequest(offset=6, limit=100, type="search")
-                result = search.search(False, searchRequest)
+                searchRequest = SearchRequest(offset=6, limit=100, type="search", internal=False)
+                result = search.search(searchRequest)
                 results = result["results"]
                 self.assertEqual(6, len(results), "Expected the limit of 6 to be respected")
                 self.assertEqual("newznab2result1.title", results[0].title)
@@ -524,8 +526,8 @@ class SearchTests(unittest.TestCase):
                 self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
         
                 # Test that the newest result is chosen if all scores are equal
-                searchRequest = SearchRequest(type="search")
-                result = search.search(False, searchRequest)
+                searchRequest = SearchRequest(type="search", internal=False)
+                result = search.search(searchRequest)
                 results = result["results"]
                 self.assertEqual(1, len(results))
                 self.assertEqual("newznab3", results[0].indexer)            
@@ -533,8 +535,8 @@ class SearchTests(unittest.TestCase):
                 # Test that results from an indexer with a higher score are preferred
                 self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
                 getIndexerSettingByName("newznab2").score = 99
-                searchRequest = SearchRequest(type="search")
-                result = search.search(False, searchRequest)
+                searchRequest = SearchRequest(type="search", internal=False)
+                result = search.search(searchRequest)
                 results = result["results"]
                 self.assertEqual(1, len(results))
                 self.assertEqual("newznab2", results[0].indexer)
@@ -553,7 +555,7 @@ class SearchTests(unittest.TestCase):
                 self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
         
                 searchRequest = SearchRequest(type="search")
-                result = search.search(True, searchRequest)
+                result = search.search(searchRequest)
                 results = result["results"]
                 self.assertEqual(4, len(results))
                 results = sorted(results, key=lambda x: x.hash)
@@ -575,7 +577,7 @@ class SearchTests(unittest.TestCase):
                 self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
         
                 searchRequest = SearchRequest(type="search")
-                result = search.search(True, searchRequest)
+                result = search.search(searchRequest)
                 results = result["results"]
                 self.assertEqual("title4", results[0].title)
                 self.assertEqual("title3", results[1].title)
@@ -602,14 +604,14 @@ class SearchTests(unittest.TestCase):
                          content_type='application/x-html')
         
                 searchRequest = SearchRequest(type="search", query="aquery", category="acategory", identifier_key="imdbid", identifier_value="animdbid", season=1, episode=2, indexers="newznab1|newznab2")
-                result = search.search(True, searchRequest)
+                result = search.search(searchRequest)
                 results = result["results"]
                 self.assertEqual(1, len(results))
                 
                 dbSearch = Search().get()
                 self.assertEqual(True, dbSearch.internal)
                 self.assertEqual("aquery", dbSearch.query)
-                self.assertEqual("acategory", dbSearch.category)
+                self.assertEqual("All", dbSearch.category)
                 self.assertEqual("imdbid", dbSearch.identifier_key)
                 self.assertEqual("animdbid", dbSearch.identifier_value)
                 self.assertEqual(1, dbSearch.season)
@@ -649,70 +651,6 @@ class SearchTests(unittest.TestCase):
                 self.assertEqual(1, indexerStatus2.level)
                 self.assertTrue("Connection refused" in indexerStatus2.reason)
     
-    @responses.activate
-    @pytest.mark.current
-    def test20Searches(self):
-        with self.app.test_request_context('/'):
-            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-                self.prepareSearchMocks(rsps, indexerCount=20, resultsPerIndexers=1, sleep=5)
-        
-                searchRequest = SearchRequest(type="search")
-                result = search.search(True, searchRequest)
-                results = result["results"]
-                self.assertEqual(20, len(results))
-    
-    
-    @responses.activate
-    def testIgnoreWords(self):
-        with self.app.test_request_context('/'):
-            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-                self.prepareSearchMocks(rsps, 2, 2)
-                config.settings.searching.ignoreWords = "newznab1"
-                searchRequest = SearchRequest(type="search")
-                result = search.search(True, searchRequest)
-                config.settings.searching.ignoreWords = None
-                results = result["results"]
-                self.assertEqual(2, len(results))
-            
-            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-                self.prepareSearchMocks(rsps, 2, 2)
-                config.settings.searching.ignoreWords = "newznab1, something, else"
-                searchRequest = SearchRequest(type="search")
-                result = search.search(True, searchRequest)
-                config.settings.searching.ignoreWords = None
-                results = result["results"]
-                self.assertEqual(2, len(results))
-        
-            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-                self.prepareSearchMocks(rsps, 2, 2)
-                config.settings.searching.ignoreWords = "newznab1, newznab2"
-                searchRequest = SearchRequest(type="search")
-                result = search.search(True, searchRequest)
-                config.settings.searching.ignoreWords = None
-                results = result["results"]
-                self.assertEqual(0, len(results))
-        
-            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-                self.prepareSearchMocks(rsps, 2, 2, "newznab %d result%d.title")
-                config.settings.searching.ignoreWords = "newznab1, newznab2"
-                searchRequest = SearchRequest(type="search")
-                result = search.search(True, searchRequest)
-                config.settings.searching.ignoreWords = None
-                results = result["results"]
-                self.assertEqual(0, len(results))
-    
-    @responses.activate
-    def testRequireWords(self):
-        with self.app.test_request_context('/'):
-            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-                self.prepareSearchMocks(rsps, 2, 2)
-                config.settings.searching.requireWords = "newznab1"
-                searchRequest = SearchRequest(type="search")
-                result = search.search(True, searchRequest)
-                config.settings.searching.requireWords = None
-                results = result["results"]
-                self.assertEqual(2, len(results))
-    
     
     def testFindDuplicatesWithDD(self):
         import jsonpickle
@@ -735,3 +673,65 @@ class SearchTests(unittest.TestCase):
         a = search.find_duplicates(results)
         assert 6 == len(a)
         print(a)
+
+    def testSearchCategoryWords(self):
+        pi = search.pick_indexers
+        sahd = search.search_and_handle_db
+        #Set forbidden and required category words if configured and the category matches
+        config.settings.categories.categories["movies"].forbiddenWords = "forbidden1, forbidden2"
+        config.settings.categories.categories["movies"].requiredWords = "required1, required2"
+        searchRequest = SearchRequest(type="search", category="movies")
+
+        search.pick_indexers = MagicMock(return_value=[NewzNab(self.newznab1)])
+        search.search_and_handle_db = MagicMock(return_value={"results": {}})
+        
+        search.search(searchRequest)
+        
+        updatedSearchRequest = search.search_and_handle_db.mock_calls[0][1][1].values()[0]
+        self.assertEqual(["forbidden1", "forbidden2"], updatedSearchRequest.forbiddenWords)
+        self.assertEqual(["required1", "required2"], updatedSearchRequest.requiredWords)
+
+
+        #Don't set if category doesn't match
+        searchRequest = SearchRequest(type="search", category="audio")
+        search.search_and_handle_db.reset_mock()
+        
+        search.search(searchRequest)
+        
+        updatedSearchRequest = search.search_and_handle_db.mock_calls[0][1][1].values()[0]
+        self.assertEqual(0, len(updatedSearchRequest.forbiddenWords))
+        self.assertEqual(0, len(updatedSearchRequest.requiredWords))
+
+        # Don't set when fallback to "all" category 
+        searchRequest = SearchRequest(type="search", category="7890")
+        search.search_and_handle_db.reset_mock()
+
+        search.search(searchRequest)
+
+        updatedSearchRequest = search.search_and_handle_db.mock_calls[0][1][1].values()[0]
+        self.assertEqual(0, len(updatedSearchRequest.forbiddenWords))
+        self.assertEqual(0, len(updatedSearchRequest.requiredWords))
+        self.assertEqual("na", updatedSearchRequest.category.category.name)
+
+
+        # Use globally configured words and category words
+        config.settings.searching.forbiddenWords = "globalforbidden1, globalforbidden2"
+        config.settings.searching.requiredWords = "globalrequired1, globalrequired2"
+        config.settings.categories.categories["movies"].forbiddenWords = "forbidden1, forbidden2"
+        config.settings.categories.categories["movies"].requiredWords = "required1, required2"
+        searchRequest = SearchRequest(type="search", category="movies")
+        search.search_and_handle_db.reset_mock()
+        search.pick_indexers = MagicMock(return_value=[NewzNab(self.newznab1)])
+        search.search_and_handle_db = MagicMock(return_value={"results": {}})
+
+        search.search(searchRequest)
+
+        updatedSearchRequest = search.search_and_handle_db.mock_calls[0][1][1].values()[0]
+        
+        self.assertEqual(["globalforbidden1", "globalforbidden2", "forbidden1", "forbidden2"], updatedSearchRequest.forbiddenWords)
+        self.assertEqual(["globalrequired1", "globalrequired2", "required1", "required2"], updatedSearchRequest.requiredWords)
+
+        search.pick_indexers = pi
+        search.search_and_handle_db = sahd
+    
+    

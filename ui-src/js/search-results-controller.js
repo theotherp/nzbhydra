@@ -3,21 +3,29 @@ angular
     .controller('SearchResultsController', SearchResultsController);
 
 //SearchResultsController.$inject = ['blockUi'];
-function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, NzbDownloadService, SearchService, ConfigService) {
+function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, localStorageService, SearchService, ConfigService) {
 
-    $scope.sortPredicate = "epoch";
-    $scope.sortReversed = true;
+    
+    if (localStorageService.get("sorting") != null) {
+        var sorting = localStorageService.get("sorting");
+        $scope.sortPredicate = sorting.predicate;
+        $scope.sortReversed = sorting.reversed;
+    } else {
+        $scope.sortPredicate = "epoch";
+        $scope.sortReversed = true;
+    }
     $scope.limitTo = 100;
     $scope.offset = 0;
     //Handle incoming data
-    $scope.indexersearches = $stateParams.indexersearches;
+    
+    $scope.indexersearches = SearchService.getLastResults().indexersearches;
     $scope.indexerDisplayState = []; //Stores if a indexer's results should be displayed or not
     $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
     $scope.groupExpanded = {};
     $scope.doShowDuplicates = ConfigService.getSafe().searching.alwaysShowDuplicates;
-    console.log(ConfigService.getSafe().alwaysShowDuplicates);
     $scope.selected = [];
-    $scope.indexerStatusesExpanded = false;
+    
+    $scope.indexerStatusesExpanded = localStorageService.get("indexerStatusesExpanded") != null ? localStorageService.get("indexerStatusesExpanded") : false;
     
     $scope.countFilteredOut = 0;
 
@@ -30,14 +38,12 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         $scope.indexerResultsInfo[ps.indexer.toLowerCase()] = {loadedResults: ps.loaded_results};
     });
     
-
     //Process results
-    $scope.results = $stateParams.results;
-    $scope.total = $stateParams.total;
-    $scope.resultsCount = $stateParams.resultsCount;
+    $scope.results = SearchService.getLastResults().results;
+    $scope.total = SearchService.getLastResults().total;
+    $scope.resultsCount = SearchService.getLastResults().resultsCount;
     $scope.filteredResults = sortAndFilter($scope.results);
     stopBlocking();
-
 
     //Returns the content of the property (defined by the current sortPredicate) of the first group element 
     $scope.firstResultPredicate = firstResultPredicate;
@@ -48,7 +54,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     //Returns the unique group identifier which allows angular to keep track of the grouped search results even after filtering, making filtering by indexers a lot faster (albeit still somewhat slow...)  
     $scope.groupId = groupId;
     function groupId(item) {
-        return item[0][0].guid;
+        return item[0][0].searchResultId;
     }
 
     //Block the UI and return after timeout. This way we make sure that the blocking is done before angular starts updating the model/view. There's probably a better way to achieve that?
@@ -74,6 +80,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
             }
             $scope.sortPredicate = predicate;
             $scope.filteredResults = sortAndFilter($scope.results);
+            localStorageService.set("sorting", {predicate: predicate, reversed: $scope.sortReversed});
             blockUI.reset();
         });
     }
@@ -130,8 +137,14 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         }
 
         function getTitleGroupFirstElementsSortPredicate(titleGroup) {
-            var sortPredicateValue = titleGroup[0][0][$scope.sortPredicate];
-            return $scope.sortReversed ? -sortPredicateValue : sortPredicateValue;
+            var sortPredicateValue;
+            if ($scope.sortPredicate == "title") {
+                sortPredicateValue = titleGroup[0][0].title.toLowerCase();
+            } else {
+                sortPredicateValue = titleGroup[0][0][$scope.sortPredicate];
+            }
+            
+            return sortPredicateValue;
         }
 
         var filtered = _.chain(results)
@@ -144,6 +157,9 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
             //And then sort the title group using its first hashgroup's first item (the group itself is already sorted and so are the hash groups)    
             .sortBy(getTitleGroupFirstElementsSortPredicate)
             .value();
+        if ($scope.sortReversed) {
+            filtered = filtered.reverse();
+        }
         if ($scope.countFilteredOut > 0) {
             growl.info("Filtered " + $scope.countFilteredOut + " of the retrieved results");
         }
@@ -192,32 +208,15 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     function countResults() {
         return $scope.results.length;
     }
-
-    $scope.downloadSelected = downloadSelected;
-    function downloadSelected() {
-
-        if (angular.isUndefined($scope.selected) || $scope.selected.length == 0) {
-            growl.info("You should select at least one result...");
-        } else {
-
-            var values = _.map($scope.selected, function (value) {
-                return {"indexerguid": value.indexerguid, "title": value.title, "indexer": value.indexer, "dbsearchid": value.dbsearchid}
-            });
-
-            NzbDownloadService.download(values).then(function (response) {
-                if (response.data.success) {
-                    growl.info("Successfully added " + response.data.added + " of " + response.data.of + " NZBs");
-                } else {
-                    growl.error("Error while adding NZBs");
-                }
-            }, function () {
-                growl.error("Error while adding NZBs");
-            });
-        }
-    }
+    
     
     $scope.invertSelection = function invertSelection() {
         $scope.selected = _.difference($scope.results, $scope.selected);
+    };
+    
+    $scope.toggleIndexerStatuses = function() {
+        $scope.indexerStatusesExpanded = !$scope.indexerStatusesExpanded;
+        localStorageService.set("indexerStatusesExpanded", $scope.indexerStatusesExpanded);
     }
 
 }

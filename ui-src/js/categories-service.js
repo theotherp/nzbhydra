@@ -2,83 +2,30 @@ angular
     .module('nzbhydraApp')
     .factory('CategoriesService', CategoriesService);
 
-function CategoriesService($http, $q, $uibModal) {
+function CategoriesService(ConfigService) {
 
-    var categories;
-    var selectedCategory;
-    
-    var service = {
-        get: getCategories,
-        invalidate: invalidate,
-        select : select,
-        openCategorySelection: openCategorySelection 
+    return {
+        getByName: getByName,
+        getAll: getAll,
+        getDefault: getDefault
     };
-    
-    return service;
-    
 
-    function getCategories() {
 
-        function loadAll() {
-            if (!angular.isUndefined(categories)) {
-                var deferred = $q.defer();
-                deferred.resolve(categories);
-                return deferred.promise;
+    function getByName(name) {
+        for (var category in ConfigService.getSafe().categories) {
+            category = ConfigService.getSafe().categories[category];
+            if (category.name == name || category.pretty == name) {
+                return category;
             }
-
-            return $http.get('internalapi/getcategories')
-                .then(function (categoriesResponse) {
-                    
-                        console.log("Updating downloader categories cache");
-                        categories = categoriesResponse.data;
-                        return categoriesResponse.data;
-                    
-                }, function(error) {
-                    throw error;
-                });
         }
-
-        return loadAll().then(function (categories) {
-            return categories.categories;
-        }, function (error) {
-            throw error;
-        });
+    }
+    
+    function getAll() {
+        return ConfigService.getSafe().categories;
+    }
+    
+    function getDefault() {
+        return getAll()[1];
     }
 
-    
-    var deferred;
-    
-    function openCategorySelection() {
-        $uibModal.open({
-            templateUrl: 'static/html/directives/addable-nzb-modal.html',
-            controller: 'CategorySelectionController',
-            size: "sm",
-            resolve: {
-                categories: getCategories
-            }
-        });
-        deferred = $q.defer();
-        return deferred.promise;
-    }
-    
-    function select(category) {
-        selectedCategory = category;
-        console.log("Selected category " + category);
-        deferred.resolve(category);
-    }
-    
-    function invalidate() {
-        console.log("Invalidating categories");
-        categories = undefined;
-    }
 }
-
-angular
-    .module('nzbhydraApp').controller('CategorySelectionController', function ($scope, $uibModalInstance, CategoriesService, categories) {
-    console.log(categories);
-    $scope.categories = categories;
-    $scope.select = function (category) {
-        CategoriesService.select(category);
-        $uibModalInstance.close($scope);
-    }
-});

@@ -2,7 +2,7 @@ angular
     .module('nzbhydraApp')
     .controller('StatsController', StatsController);
 
-function StatsController($scope, stats, $state) {
+function StatsController($scope, stats) {
 
     stats = stats.data;
     $scope.nzbDownloads = null;
@@ -11,37 +11,4 @@ function StatsController($scope, stats, $state) {
     $scope.avgIndexerAccessSuccesses = stats.avgIndexerAccessSuccesses;
     $scope.indexerDownloadShares = stats.indexerDownloadShares;
     
-
-    $scope.tabs = [
-        {
-            active: false,
-            state: 'stats'
-        },
-        {
-            active: false,
-            state: 'stats.indexers'
-        },
-        {
-            active: false,
-            state: 'stats.searches'
-        },
-        {
-            active: false,
-            state: 'stats.downloads'
-        }
-    ];
-
-
-    for (var i = 0; i < $scope.tabs.length; i++) {
-        if ($state.is($scope.tabs[i].state)) {
-            $scope.tabs[i].active = true;
-        }
-    }
-    
-
-    $scope.goToState = function (index) {
-        $state.go($scope.tabs[index].state);
-    }
-
-
 }

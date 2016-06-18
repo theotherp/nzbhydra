@@ -6,7 +6,7 @@
         <link>https://github.com/theotherp/nzbhydra</link>
         <language>en-gb</language>
         <webMaster>TheOtherP@gmx.de (TheOtherP)</webMaster>
-        {% if offset %}
+        {% if total %}
         <newznab:response offset="{{ offset }}" total="{{ total }}"/>
         {% endif %}
         {% for row in items -%}
@@ -16,6 +16,7 @@
                 <link>{{ row['link'] }}</link>
                 <comments>{{ row['details_link'] }}</comments>
                 <pubDate>{{ row['pubDate'] }}</pubDate>
+                <category>{{ row['category'] }}</category>
                 <description>{{ row['title'] }} - {{ row['indexer'] }}</description>
                 <enclosure url="{{ row['link'] }}" length="{{ row['size'] }}" type="application/x-nzb"/>
 
