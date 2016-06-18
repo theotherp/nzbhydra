@@ -24,6 +24,7 @@ from nzbhydra import log
 from nzbhydra import indexers
 from nzbhydra import database
 from nzbhydra import web
+from nzbhydra import socks_proxy
 import nzbhydra.config as config
 
 import requests
@@ -129,6 +130,22 @@ def run(arguments):
         host = config.settings.main.host if arguments.host is None else arguments.host
         port = config.settings.main.port if arguments.port is None else arguments.port
 
+
+        # SOCKS proxy settings
+        if arguments.socksproxy:
+            try:
+                sockshost, socksport = arguments.socksproxy.split(':')     # FWIW: this won't work for litteral IPv6 addresses
+            except:
+                logger.notice("Incorrect input SOCKS proxy, so ignoring")
+                sockshost, socksport = [None,None]
+            if sockshost:
+                logger.notice("SOCKS settings: host %s and port %s" % (sockshost, socksport) )
+                publicip = socks_proxy.setSOCKSproxy(sockshost,int(socksport))
+                if publicip:
+                    logger.notice("Public IP address via SOCKS proxy is %s" % publicip)
+                else:
+                    logger.notice("Could not get public IP address. Is proxy working?")
+
         logger.notice("Starting web app on %s:%d" % (host, port))
         if config.settings.main.externalUrl is not None and config.settings.main.externalUrl != "":
             f = furl(config.settings.main.externalUrl)
@@ -164,6 +181,7 @@ if __name__ == '__main__':
     parser.add_argument('--quiet', '-q', action='store_true', help='Quiet (no output)', default=False)
     parser.add_argument('--pidfile', action='store', help='PID file. Only relevant with daemon argument', default="nzbhydra.pid")
     parser.add_argument('--restarted', action='store_true', help=argparse.SUPPRESS, default=False)
+    parser.add_argument('--socksproxy', action='store', help='SOCKS proxy to use in format host:port', default=None)
 
     args, unknown = parser.parse_known_args()
 
