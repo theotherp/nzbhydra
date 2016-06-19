@@ -16,4 +16,4 @@ Hydra tries to find duplicate results from different indexers using heuristics. 
 You can decide if you want to remove found duplicates from API search results or leave that to the tool. Usually tools do not expect to find duplicates in search results so you should leave this enabled.
  
 NZB downloads from Hydra can either be achieved by redirecting the requester to the original indexer or by downloading the NZB from the indexer and serving this.
-Redirecting has the advantage that it causes the least load on Hydra but also the disadvantage that the requester might be forwarded to an indexer link that contains the indexer's API key. To prevent that select "Serve".
+Redirecting has the advantage that it causes the least load on Hydra but also the disadvantage that the requester might be forwarded to an indexer link that contains the indexer's API key. To prevent that select to proxy NZBs.
