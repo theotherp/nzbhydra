@@ -1908,7 +1908,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     //Fill the form with the search values we got from the state params (so that their values are the same as in the current url)
     $scope.mode = $stateParams.mode;
     $scope.categories = _.filter(CategoriesService.getAll(), function(c) { 
-        return c.mayBeSelected && (c.ignoreResults == "never" || c.ignoreResults == "external"); 
+        return c.mayBeSelected && c.ignoreResults != "internal" && c.ignoreResults != "always"; 
     });
     if (angular.isDefined($stateParams.category) && $stateParams.category) {
         $scope.category = CategoriesService.getByName($stateParams.category);
