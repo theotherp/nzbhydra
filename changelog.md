@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.114
+Changed: Required words are now searched on a word basis instead of full-text, meaning that at least one of the required words needs to be a word in a result's title, not just be present anywhere in the title. 
+
 ### 0.2.113
 Added: SOCKS proxy support by sanderjo
 

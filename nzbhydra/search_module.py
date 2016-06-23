@@ -5,6 +5,8 @@ from __future__ import unicode_literals
 
 import json
 import time
+
+import re
 from builtins import str
 from flask import request
 from future import standard_library
@@ -27,6 +29,7 @@ from nzbhydra.nzb_search_result import NzbSearchResult
 
 QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "didsearch results indexerSearchEntry indexerApiAccessEntry indexerStatus total loaded_results total_known has_more")
 IndexerProcessingResult = collections.namedtuple("IndexerProcessingResult", "entries queries total total_known has_more rejected")
+titleRegex = re.compile("(\w[\w']*\w|\w)")
 
 
 class SearchModule(object):
@@ -173,6 +176,7 @@ class SearchModule(object):
         return NzbSearchResult(indexer=self.name, indexerscore=self.score)
     
     def accept_result(self, nzbSearchResult, searchRequest, supportedFilters):
+        global titleRegex
         #Allows the implementations to check against one general rule if the search result is ok or shall be discarded
         if config.settings.searching.ignorePassworded and nzbSearchResult.passworded:
             return False, "Passworded results shall be ignored"
@@ -180,7 +184,7 @@ class SearchModule(object):
             word = word.strip().lower()
             if word in nzbSearchResult.title.lower():
                 return False, '"%s" is in the list of ignored words or excluded by the query' % word
-        if searchRequest.requiredWords and len(searchRequest.requiredWords) > 0 and not any(word.strip().lower() in nzbSearchResult.title.lower() for word in searchRequest.requiredWords):
+        if searchRequest.requiredWords and len(searchRequest.requiredWords) > 0 and not any(word.strip().lower() in titleRegex.findall(nzbSearchResult.title.lower()) for word in searchRequest.requiredWords):
             return False, 'None of the required words is contained in the title "%s"' % nzbSearchResult.title
         if searchRequest.minsize and nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
                 return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize)
