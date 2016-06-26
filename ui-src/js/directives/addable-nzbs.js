@@ -7,12 +7,18 @@ function addableNzbs() {
         templateUrl: 'static/html/directives/addable-nzbs.html',
         require: ['^searchResultId'],
         scope: {
-            searchResultId: "="
+            searchResultId: "&",
+            downloadType: "&"
         },
         controller: controller
     };
 
     function controller($scope, NzbDownloadService) {
-        $scope.downloaders = NzbDownloadService.getEnabledDownloaders();
+        $scope.downloaders = _.filter(NzbDownloadService.getEnabledDownloaders(), function(downloader) {
+            if ($scope.downloadType != "nzb") {
+                return downloader.downloadType == $scope.downloadType
+            }
+            return true;
+        });
     }
 }

@@ -6,8 +6,8 @@ function addableNzb() {
     return {
         templateUrl: 'static/html/directives/addable-nzb.html',
         scope: {
-            searchResultId: "=",
-            downloader: "="
+            searchResultId: "&",
+            downloader: "&"
         },
         controller: controller
     };

@@ -80,7 +80,11 @@
                 <span class="sr-only">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu">
-                <li ng-repeat="preset in presets">
+                <li ng-repeat="preset in presets[0]">
+                    <a ng-click="addEntry(model, preset)">{{ preset.name }}</a>
+                </li>
+                <li ng-if="presets.length > 1" role="separator" class="divider"></li>
+                <li ng-repeat="preset in presets[1]">
                     <a ng-click="addEntry(model, preset)">{{ preset.name }}</a>
                 </li>
             </ul>

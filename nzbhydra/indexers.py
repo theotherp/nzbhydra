@@ -13,7 +13,7 @@ import logging
 from nzbhydra import config, database
 from nzbhydra.database import Indexer
 from nzbhydra.exceptions import IndexerNotFoundException
-from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch, omgwtf #Actually used but referenced dynamically
+from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch, omgwtf, jackett #Actually used but referenced dynamically
 
 logger = logging.getLogger('root')
 configured_indexers = []

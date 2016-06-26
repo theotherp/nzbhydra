@@ -72,6 +72,7 @@ class NzbSearchResultSchema(Schema):
     details_link = fields.String()
     hash = fields.Integer()
     dbsearchid = fields.Integer()
+    downloadType = fields.String()
 
 
 class IndexerApiAccessSchema(Schema):

@@ -16,8 +16,8 @@ class NzbSearchResult(object):
     HAS_NFO_MAYBE = 2
 
 
-    def __init__(self, title=None, link=None, indexer=None, guid=None, size=None, category=None, attributes=None, epoch=None, pubDate=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=HAS_NFO_YES, indexerguid=None, details_link=None, group=None, indexerscore=0, dbsearchid=None, passworded=False):
-    
+    def __init__(self, title=None, link=None, indexer=None, guid=None, size=None, category=None, attributes=None, epoch=None, pubDate=None, pubdate_utc=None, age_days=None, poster=None, has_nfo=HAS_NFO_YES, indexerguid=None, details_link=None, group=None, indexerscore=0, dbsearchid=None, passworded=False,
+                 downloadType="nzb"):
         self.title = title
         self.link = link
         self.epoch = epoch
@@ -43,8 +43,7 @@ class NzbSearchResult(object):
         self.dbsearchid = dbsearchid
         self.passworded = passworded
         self.pubDate = pubDate
-        
-        
+        self.downloadType = downloadType
         
 
     def __repr__(self):

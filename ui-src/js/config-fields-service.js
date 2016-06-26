@@ -150,14 +150,14 @@ function ConfigFields($injector) {
                             help: 'Map newznab categories to hydra categories',
                             required: true
                         },
-                        parsers: [function(value) {
+                        parsers: [function (value) {
                             if (!value) {
                                 return value;
                             }
                             var arr = [];
                             arr.push.apply(arr, value.split(",").map(Number));
                             return arr;
-                            
+
                         }]
                     });
                     categoryFields.push({
@@ -728,7 +728,7 @@ function ConfigFields($injector) {
                         presets: getIndexerPresets(),
                         fieldsFunction: getIndexerBoxFields,
                         allowDeleteFunction: function (model) {
-                            return model.type == 'newznab';
+                            return model.type == 'newznab' || model.type == 'jackett';
                         },
                         checkBeforeClose: function (scope, model) {
                             var IndexerCheckBeforeCloseService = $injector.get("IndexerCheckBeforeCloseService");
@@ -870,6 +870,7 @@ function ConfigFields($injector) {
 
 function getIndexerPresets() {
     return [
+        [
         {
             name: "6box",
             host: "https://6box.me",
@@ -922,6 +923,17 @@ function getIndexerPresets() {
             searchTypes: ["tvsearch", "movie"]
 
         }
+    ],
+        [
+            {
+                name: "Jackett",
+                host: "http://127.0.0.1:9117/torznab/YOURTRACKER",
+                search_ids: [],
+                searchTypes: [],
+                type: "jackett",
+                accessType: "internal"
+            }
+        ]
     ];
 }
 
@@ -937,7 +949,7 @@ function getIndexerBoxFields(model, parentModel, isInitial) {
         }
     });
 
-    if (model.type == 'newznab') {
+    if (model.type == 'newznab' || model.type == 'jackett') {
         fieldset.push(
             {
                 key: 'name',
@@ -961,7 +973,7 @@ function getIndexerBoxFields(model, parentModel, isInitial) {
                 }
             })
     }
-    if (model.type == 'newznab') {
+    if (model.type == 'newznab' || model.type == 'jackett') {
         fieldset.push(
             {
                 key: 'host',
@@ -983,7 +995,7 @@ function getIndexerBoxFields(model, parentModel, isInitial) {
         )
     }
 
-    if (model.type == 'newznab' || model.type == 'omgwtf') {
+    if (model.type == 'newznab' || model.type == 'jackett') {
         fieldset.push(
             {
                 key: 'apikey',
@@ -1048,7 +1060,7 @@ function getIndexerBoxFields(model, parentModel, isInitial) {
             }
         });
 
-    if (model.type == "newznab") {
+    if (model.type == 'newznab' || model.type == 'jackett') {
         fieldset.push(
             {
                 key: 'hitLimit',
@@ -1071,6 +1083,8 @@ function getIndexerBoxFields(model, parentModel, isInitial) {
                     help: 'UTC time at which the API hit counter is reset'
                 }
             });
+    }
+    if (model.type == 'newznab') {
         fieldset.push(
             {
                 key: 'username',
@@ -1107,7 +1121,7 @@ function getIndexerBoxFields(model, parentModel, isInitial) {
     }
 
 
-    if (model.type != "womble") {
+    if (model.type != "womble" && model.type != "jackett") {
         fieldset.push(
             {
                 key: 'preselect',
@@ -1154,6 +1168,8 @@ function getIndexerBoxFields(model, parentModel, isInitial) {
                 }
             }
         );
+    }
+    if (model.type == 'newznab' || model.type == 'jackett') {
         fieldset.push(
             {
                 key: 'searchTypes',
@@ -1171,7 +1187,7 @@ function getIndexerBoxFields(model, parentModel, isInitial) {
         )
     }
 
-    if (model.type == 'newznab') {
+    if (model.type == 'newznab' || model.type == 'jackett') {
         fieldset.push(
             {
                 type: 'horizontalCheckCaps',
@@ -1399,7 +1415,7 @@ function getDownloaderBoxFields(model, parentModel, isInitial) {
 }
 
 function getDownloaderPresets() {
-    return [
+    return [[
         {
             host: "127.0.0.1",
             name: "NZBGet",
@@ -1410,7 +1426,8 @@ function getDownloaderPresets() {
             username: "nzbgetx",
             nzbAddingType: "link",
             nzbaccesstype: "redirect",
-            iconCssClass: ""
+            iconCssClass: "",
+            downloadType: "nzb"
         },
         {
             url: "http://localhost:8086",
@@ -1418,9 +1435,10 @@ function getDownloaderPresets() {
             name: "SABnzbd",
             nzbAddingType: "link",
             nzbaccesstype: "redirect",
-            iconCssClass: ""
+            iconCssClass: "",
+            downloadType: "nzb"
         }
-    ];
+    ]];
 }
 
 
@@ -1482,7 +1500,7 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
             scope.spinnerActive = true;
             var url;
             var settings;
-            if (model.type == "newznab") {
+            if (model.type == "newznab" || model.type == "jackett") {
                 url = "internalapi/test_newznab";
                 settings = {host: model.host, apikey: model.apikey};
             } else if (model.type == "omgwtf") {

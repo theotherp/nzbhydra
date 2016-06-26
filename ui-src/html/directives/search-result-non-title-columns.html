@@ -18,7 +18,7 @@
        tooltip-enable="result.has_nfo == 2"
     >NFO</a>
     <a target="_blank" href="{{ result.details_link }}" ng-class="{'no-nfo': !result.details_link}">Details</a>
-    <a target="_self" href="getnzb?searchresultid={{ result.searchResultId }}">NZB</a>
+    <a target="_self" href="getnzb?searchresultid={{ result.searchResultId }}">{{ result.downloadType == 'nzb' ? 'NZB' : 'Torrent' }}</a>
     
-    <addable-nzbs search-result-id="result.searchResultId"></addable-nzbs>
+    <addable-nzbs search-result-id="result.searchResultId" download-type="result.type"></addable-nzbs>
 </td>
