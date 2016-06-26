@@ -1,6 +1,12 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.115
+Changed: Required and forbidden words are now handled a bit differently. If a word contains a dot or a dash (".", "-") then the word will be searched for anywhere in a result title. If it does not contain a dot or a dash then
+all the words in the title will be compared with the word. Example: Forbidding "abc" will dismiss the result "abc.def" or "abc def" but allow "abcdef" or "ab-cdef". Forbidding "ab-c" will dismis "ab-cdef".
+This way you'll be able, for example, to require release groups like "EA" without allowing a result like "Peachy-BOSS" and on the other hand forbidding "WEB-DL" without letting through "Spider.web-Dl.ist".
+I think this is the approach that will handle the most common cases.
+
 ### 0.2.114
 Changed: Required words are now searched on a word basis instead of full-text, meaning that at least one of the required words needs to be a word in a result's title, not just be present anywhere in the title.
  

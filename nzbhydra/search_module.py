@@ -180,12 +180,26 @@ class SearchModule(object):
         #Allows the implementations to check against one general rule if the search result is ok or shall be discarded
         if config.settings.searching.ignorePassworded and nzbSearchResult.passworded:
             return False, "Passworded results shall be ignored"
+        #Forbidden and required words are handled differently depending on if they contain a dash or dot. If yes we do a simple search, otherwise a word based comparison
         for word in searchRequest.forbiddenWords:
-            word = word.strip().lower()
-            if word in nzbSearchResult.title.lower():
+            if "-" in word or "." in word:
+                if word.strip().lower() in nzbSearchResult.title.lower():
+                    return False, '"%s" is in the list of ignored words or excluded by the query' % word
+            elif word.strip().lower() in titleRegex.findall(nzbSearchResult.title.lower()):
                 return False, '"%s" is in the list of ignored words or excluded by the query' % word
-        if searchRequest.requiredWords and len(searchRequest.requiredWords) > 0 and not any(word.strip().lower() in titleRegex.findall(nzbSearchResult.title.lower()) for word in searchRequest.requiredWords):
-            return False, 'None of the required words is contained in the title "%s"' % nzbSearchResult.title
+        if searchRequest.requiredWords and len(searchRequest.requiredWords) > 0:
+            foundRequiredWord = False
+            titleWords = titleRegex.findall(nzbSearchResult.title.lower())
+            for word in searchRequest.requiredWords:
+                if "-" in word or "." in word:
+                    if word.strip().lower() in nzbSearchResult.title.lower():
+                        foundRequiredWord = True
+                        break
+                elif word.strip().lower() in titleWords:
+                    foundRequiredWord = True
+                    break
+            if not foundRequiredWord:
+                return False, 'None of the required words is contained in the title "%s"' % nzbSearchResult.title
         if searchRequest.minsize and nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
                 return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize)
         if searchRequest.maxsize and nzbSearchResult.size / (1024 * 1024) > searchRequest.maxsize:

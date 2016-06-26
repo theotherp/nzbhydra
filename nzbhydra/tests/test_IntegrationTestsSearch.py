@@ -173,12 +173,12 @@ class IntegrationApiSearchTests(unittest.TestCase):
     def testRequiredAndForbiddenWords(self, m):
         web.app.template_folder = "../templates"
     
-        config.settings.searching.forbiddenWords = "newznab1result1.title"  # Will be removed from parsed results
-        config.settings.categories.categories["movies"].forbiddenWords = "newznab1result2.title"  # Will be removed from parsed results
+        config.settings.searching.forbiddenWords = "newznab1result1"  # Will be removed from parsed results
+        config.settings.categories.categories["movies"].forbiddenWords = "newznab1result2"  # Will be removed from parsed results
         config.settings.searching.forbiddenWords = "newznab1result3"  # Will be excluded in query
         config.settings.categories.categories["movies"].forbiddenWords = "newznab1result4"  # Will be excluded in query
-        config.settings.categories.categories["movies"].requiredWords = "newznab1result6.title"  # Will be left
-        config.settings.searching.requiredWords = "newznab1result7.title"  # Will be left
+        config.settings.categories.categories["movies"].requiredWords = "newznab1result6"  # Will be left
+        config.settings.searching.requiredWords = "newznab1result7"  # Will be left
     
         config.settings.categories.categories["movies"].applyRestrictions = "external"
     

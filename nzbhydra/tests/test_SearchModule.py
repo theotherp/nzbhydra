@@ -108,17 +108,43 @@ class SearchModuleTests(unittest.TestCase):
     
     def testWords(self):
         sm = SearchModule(None)
-        sr = SearchRequest(forbiddenWords=["a", "b"], requiredWords=["c", "d"])
 
-        nsr = NzbSearchResult(pubdate_utc="", title="xyz c")
+        #Required words
+        sr = SearchRequest(forbiddenWords=[], requiredWords=["rqa", "rqb", "rq-c", "rq.d"])
+        
+        nsr = NzbSearchResult(pubdate_utc="", title="xyz rqa")
         accepted, reason = sm.accept_result(nsr, sr, None)
         self.assertTrue(accepted)
 
-        nsr = NzbSearchResult(pubdate_utc="", title="xyz d")
+        nsr = NzbSearchResult(pubdate_utc="", title="rqa")
         accepted, reason = sm.accept_result(nsr, sr, None)
         self.assertTrue(accepted)
 
-        nsr = NzbSearchResult(pubdate_utc="", title="xyz cd")
+        nsr = NzbSearchResult(pubdate_utc="", title="a.title.rqa.xyz")
+        accepted, reason = sm.accept_result(nsr, sr, None)
+        self.assertTrue(accepted)
+
+        nsr = NzbSearchResult(pubdate_utc="", title="a title rqa xyz")
+        accepted, reason = sm.accept_result(nsr, sr, None)
+        self.assertTrue(accepted)
+
+        nsr = NzbSearchResult(pubdate_utc="", title="a-title-rq-c")
+        accepted, reason = sm.accept_result(nsr, sr, None)
+        self.assertTrue(accepted)
+
+        nsr = NzbSearchResult(pubdate_utc="", title="a title rq.d")
+        accepted, reason = sm.accept_result(nsr, sr, None)
+        self.assertTrue(accepted)
+
+        nsr = NzbSearchResult(pubdate_utc="", title="rqatsch") #"rqa" is not a word for itself
+        accepted, reason = sm.accept_result(nsr, sr, None)
+        self.assertFalse(accepted)
+
+        nsr = NzbSearchResult(pubdate_utc="", title="xyz.rqa")
+        accepted, reason = sm.accept_result(nsr, sr, None)
+        self.assertTrue(accepted)
+
+        nsr = NzbSearchResult(pubdate_utc="", title="xyz rqa rqb")
         accepted, reason = sm.accept_result(nsr, sr, None)
         self.assertTrue(accepted)
         
@@ -126,30 +152,52 @@ class SearchModuleTests(unittest.TestCase):
         accepted, reason = sm.accept_result(nsr, sr, None)
         self.assertFalse(accepted)
         self.assertTrue("None of the required" in reason)
+
+
+        #Forbidden words
+        sr = SearchRequest(forbiddenWords=["fba", "fbb", "fb-c", "fb.d"], requiredWords=[])
+        
+        nsr = NzbSearchResult(pubdate_utc="", title="xyz fba")
+        accepted, reason = sm.accept_result(nsr, sr, None)
+        self.assertFalse(accepted)
+        self.assertTrue("\"fba\" is in the list" in reason)
+
+        nsr = NzbSearchResult(pubdate_utc="", title="xyzfba")
+        accepted, reason = sm.accept_result(nsr, sr, None)
+        self.assertTrue(accepted)
         
 
+        nsr = NzbSearchResult(pubdate_utc="", title="xyzfb-ca")
+        accepted, reason = sm.accept_result(nsr, sr, None)
+        self.assertFalse(accepted)
+        self.assertTrue("\"fb-c\" is in the list" in reason)
+        
+
+        #Both
+        sr = SearchRequest(forbiddenWords=["fba", "fbb", "fb-c", "fb.d"], requiredWords=["rqa", "rqb", "rq-c", "rq.d"])
+
+        nsr = NzbSearchResult(pubdate_utc="", title="xyz fba rqa")
+        accepted, reason = sm.accept_result(nsr, sr, None)
+        self.assertFalse(accepted)
+        self.assertTrue("\"fba\" is in the list" in reason)
+
+        nsr = NzbSearchResult(pubdate_utc="", title="xyz FBA rqb")
+        accepted, reason = sm.accept_result(nsr, sr, None)
+        self.assertFalse(accepted)
+        self.assertTrue("\"fba\" is in the list" in reason)
+
+        nsr = NzbSearchResult(pubdate_utc="", title="xyz rqa.rqb.fbb")
+        accepted, reason = sm.accept_result(nsr, sr, None)
+        self.assertFalse(accepted)
+        self.assertTrue("\"fbb\" is in the list" in reason)
+
+        nsr = NzbSearchResult(pubdate_utc="", title="xyz rqa.rqb.fba.fbc")
+        accepted, reason = sm.accept_result(nsr, sr, None)
+        self.assertFalse(accepted)
+        self.assertTrue("\"fba\" is in the list" in reason)
+
         nsr = NzbSearchResult(pubdate_utc="", title="xyz acd")
+        sr = SearchRequest(forbiddenWords=["ACD"])
         accepted, reason = sm.accept_result(nsr, sr, None)
         self.assertFalse(accepted)
-        self.assertTrue("\"a\" is in the list" in reason)
-
-        nsr = NzbSearchResult(pubdate_utc="", title="xyz Acd")
-        accepted, reason = sm.accept_result(nsr, sr, None)
-        self.assertFalse(accepted)
-        self.assertTrue("\"a\" is in the list" in reason)
-
-        nsr = NzbSearchResult(pubdate_utc="", title="xyz bcd")
-        accepted, reason = sm.accept_result(nsr, sr, None)
-        self.assertFalse(accepted)
-        self.assertTrue("\"b\" is in the list" in reason)
-
-        nsr = NzbSearchResult(pubdate_utc="", title="xyz abcd")
-        accepted, reason = sm.accept_result(nsr, sr, None)
-        self.assertFalse(accepted)
-        self.assertTrue("\"a\" is in the list" in reason)
-
-        nsr = NzbSearchResult(pubdate_utc="", title="xyz acd")
-        sr = SearchRequest(forbiddenWords=["A"])
-        accepted, reason = sm.accept_result(nsr, sr, None)
-        self.assertFalse(accepted)
-        self.assertTrue("\"a\" is in the list" in reason)
+        self.assertTrue("\"ACD\" is in the list" in reason)
