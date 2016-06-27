@@ -17,7 +17,7 @@
 
 <script type="text/ng-template" id="ui-select-multiple.html">
     <ui-select multiple data-ng-model="model[options.key]" data-required="{{ to.required }}" data-disabled="{{ to.disabled }}" theme="bootstrap">
-        <ui-select-match class="ui-select-match" placeholder="{{ to.placeholder }}">{{$item[to.labelProp]}}</ui-select-match>
+        <ui-select-match class="ui-select-match" placeholder="{{ to.getPlaceholder(model[options.key]) }}">{{$item[to.labelProp]}}</ui-select-match>
         <ui-select-choices class="ui-select-choices" data-repeat="{{ to.ngOptions }}">
             <div ng-bind-html="option[to.labelProp] | highlight: $select.search"></div>
         </ui-select-choices>

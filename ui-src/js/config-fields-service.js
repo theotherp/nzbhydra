@@ -463,6 +463,7 @@ function ConfigFields($injector) {
                                 addonRight: {
                                     text: 'days'
                                 },
+                                required: true,
                                 help: 'Meta data from searches is stored in the database. When they\'re deleted links to hydra become invalid.'
                             }
                         },
@@ -505,7 +506,6 @@ function ConfigFields($injector) {
                     templateOptions: {
                         label: 'Indexer access'
                     },
-
                     fieldGroup: [
                         {
                             key: 'timeout',
@@ -553,7 +553,7 @@ function ConfigFields($injector) {
                                 type: 'text',
                                 label: 'Required words',
                                 placeholder: 'separate, with, commas, like, this',
-                                help: "Only results with at least of these words in the title will be displayed"
+                                help: "Only results with at least one of these words in the title will be used"
                             }
                         },
                         {
@@ -937,7 +937,7 @@ function getIndexerPresets() {
     ];
 }
 
-function getIndexerBoxFields(model, parentModel, isInitial) {
+function getIndexerBoxFields(model, parentModel, isInitial, injector) {
     var fieldset = [];
 
     fieldset.push({
@@ -1147,6 +1147,82 @@ function getIndexerBoxFields(model, parentModel, isInitial) {
                     ]
                 }
             }
+        );
+    }
+    if (model.type != "womble") {
+        fieldset.push(
+            {
+                key: 'categories',
+                type: 'horizontalMultiselect',
+                templateOptions: {
+                    label: 'Enable for...',
+                    help: 'You can decide that this indexer should only be used for certain categories',
+                    options: [
+                        {
+                            id: "movies",
+                            label: "Movies"
+                        },
+                        {
+                            id: "movieshd",
+                            label: "Movies HD"
+                        },
+                        {
+                            id: "moviessd",
+                            label: "Movies SD"
+                        },
+                        {
+                            id: "tv",
+                            label: "TV"
+                        },
+                        {
+                            id: "tvhd",
+                            label: "TV HD"
+                        },
+                        {
+                            id: "tvsd",
+                            label: "TV SD"
+                        },
+                        {
+                            id: "audio",
+                            label: "Audio"
+                        },
+                        {
+                            id: "flac",
+                            label: "Audio FLAC"
+                        },
+                        {
+                            id: "mp3",
+                            label: "Audio MP3"
+                        },
+                        {
+                            id: "audiobook",
+                            label: "Audiobook"
+                        },
+                        {
+                            id: "console",
+                            label: "Console"
+                        },
+                        {
+                            id: "pc",
+                            label: "PC"
+                        },
+                        {
+                            id: "xxx",
+                            label: "XXX"
+                        },
+                        {
+                            id: "ebook",
+                            label: "Ebook"
+                        },
+                        {
+                            id: "comic",
+                            label: "Comic"
+                        }],
+                    getPlaceholder: function () {
+                        return "All categories";
+                    }
+                }
+            }
         )
     }
 
@@ -1164,7 +1240,13 @@ function getIndexerBoxFields(model, parentModel, isInitial) {
                         {label: 'Trakt', id: 'traktid'},
                         {label: 'TVMaze', id: 'tvmazeid'},
                         {label: 'TMDB', id: 'tmdbid'}
-                    ]
+                    ],
+                    getPlaceholder: function (model) {
+                        if (angular.isUndefined(model)) {
+                            return "Unknown";
+                        }
+                        return "None";
+                    }
                 }
             }
         );
@@ -1181,7 +1263,13 @@ function getIndexerBoxFields(model, parentModel, isInitial) {
                         {label: 'TV', id: 'tvsearch'},
                         {label: 'Ebooks', id: 'book'},
                         {label: 'Audio', id: 'audio'}
-                    ]
+                    ],
+                    getPlaceholder: function (model) {
+                        if (angular.isUndefined(model)) {
+                            return "Unknown";
+                        }
+                        return "None";
+                    }
                 }
             }
         )
@@ -1191,9 +1279,9 @@ function getIndexerBoxFields(model, parentModel, isInitial) {
         fieldset.push(
             {
                 type: 'horizontalCheckCaps',
-                hideExpression: '!model.host || !model.apikey || !model.name || angular.isUndefined(model.searchTypes)',
+                hideExpression: '!model.host || !model.apikey || !model.name',
                 templateOptions: {
-                    label: 'Check search types',
+                    label: 'Check capabilities',
                     help: 'Find out what search types the indexer supports. Done automatically for new indexers.'
                 }
             }
@@ -1371,7 +1459,8 @@ function getDownloaderBoxFields(model, parentModel, isInitial) {
             templateOptions: {
                 type: 'text',
                 label: 'Default category',
-                help: 'When adding NZBs this category will be used instead of asking for the category'
+                help: 'When adding NZBs this category will be used instead of asking for the category',
+                placeholder: 'Ask when downloading'
             }
         },
         {
@@ -1406,7 +1495,8 @@ function getDownloaderBoxFields(model, parentModel, isInitial) {
             templateOptions: {
                 type: 'text',
                 label: 'Icon CSS class',
-                help: 'Copy an icon name from http://fontawesome.io/examples/ (e.g. "film")'
+                help: 'Copy an icon name from http://fontawesome.io/examples/ (e.g. "film")',
+                placeholder: 'Default'
             }
         }
     ]);

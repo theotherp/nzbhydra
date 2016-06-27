@@ -23,7 +23,6 @@ categories = Bunch.fromDict([{"name": 'na', "pretty": "N/A", "supportsById": Fal
 
 logger = logging.getLogger('root')
 
-
 def getUnknownCategory():
     return getCategories()[0]
 

@@ -4907,7 +4907,7 @@ Copyright (c) 2015 Daniel Eden
 /*!
  * ui-select
  * http://github.com/angular-ui/ui-select
- * Version: 0.13.2 - 2015-10-09T15:34:24.045Z
+ * Version: 0.17.1 - 2016-06-09T20:41:58.462Z
  * License: MIT
  */
 
@@ -5067,7 +5067,7 @@ body > .select2-container.open {
 }
 
 /* See Scrollable Menu with Bootstrap 3 http://stackoverflow.com/questions/19227496 */
-.ui-select-bootstrap > .ui-select-choices {
+.ui-select-bootstrap > .ui-select-choices ,.ui-select-bootstrap > .ui-select-no-choice {
   width: 100%;
   height: auto;
   max-height: 200px;
@@ -5106,7 +5106,11 @@ body > .ui-select-bootstrap.open {
   position: relative;
 }
 
-.ui-select-multiple .ui-select-match-item.dropping-before:before {
+.ui-select-multiple .ui-select-match-item.dropping .ui-select-match-close {
+  pointer-events: none;
+}
+
+.ui-select-multiple:hover .ui-select-match-item.dropping-before:before {
   content: "";
   position: absolute;
   top: 0;
@@ -5116,7 +5120,7 @@ body > .ui-select-bootstrap.open {
   border-left: 1px solid #428bca;
 }
 
-.ui-select-multiple .ui-select-match-item.dropping-after:after {
+.ui-select-multiple:hover .ui-select-match-item.dropping-after:after {
   content: "";
   position: absolute;
   top: 0;

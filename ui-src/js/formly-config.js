@@ -206,7 +206,8 @@ angular
                     optionsAttr: 'bs-options',
                     ngOptions: 'option[to.valueProp] as option in to.options | filter: $select.search',
                     valueProp: 'id',
-                    labelProp: 'label'
+                    labelProp: 'label',
+                    getPlaceholder: function() {return "";}
                 }
             },
             templateUrl: 'ui-select-multiple.html',
@@ -290,7 +291,7 @@ angular
                                 return model;
                             },
                             fields: function () {
-                                return $scope.options.data.fieldsFunction(model, parentModel, isInitial);
+                                return $scope.options.data.fieldsFunction(model, parentModel, isInitial, angular.injector());
                             },
                             isInitial: function () {
                                 return isInitial

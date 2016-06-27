@@ -7,10 +7,10 @@ function searchResult() {
         templateUrl: 'static/html/directives/search-result.html',
         require: '^titleGroup',
         scope: {
-            titleGroup: "=",
-            showDuplicates: "=",
-            selected: "=",
-            rowIndex: "="
+            titleGroup: "<",
+            showDuplicates: "<",
+            selected: "<",
+            rowIndex: "<"
         },
         controller: ['$scope', '$element', '$attrs', controller],
         multiElement: true

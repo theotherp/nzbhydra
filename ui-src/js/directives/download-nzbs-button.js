@@ -7,7 +7,7 @@ function downloadNzbsButton() {
         templateUrl: 'static/html/directives/download-nzbs-button.html',
         require: ['^searchResults'],
         scope: {
-            searchResults: "&"
+            searchResults: "<"
         },
         controller: controller
     };

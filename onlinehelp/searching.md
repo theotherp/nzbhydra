@@ -3,11 +3,14 @@ By default if access to an indexer fails the indexer is disabled for a certain a
 
 Some indexers provide information if a release is passworded. If you select to ignore these releases only those will be ignored of which I know for sure that they're actually passworded.
 
-You can provide a list of forbidden and required words. These will be applied to every search, internal or external. One forbidden word anywhere in a result title dismisses it. If none of the required words is found anywhere in a result title it's also dismissed. You can define forbidden and required words for categories in the next tab.
-
 Raw search engines like Binsearch don't support searches based on IDs (e.g. for a movie using an IMDB id). You can enable query generation for these. Hydra will then try to retrieve the movie's or show's title and generate a query, for example "showname s01e01".
  
 Some indexers don't seem to like Hydra and disable access based on the user agent. You can change it here if you want. Please leave it as it is if you have no problems. This allows indexers to gather better statistics on how their API services are used.
+
+### Forbidden and required words
+You can provide a list of forbidden and required words. These will be applied to every search, internal or external. One forbidden word in a result title dismisses the result. If none of the required words is found anywhere in a result title it's also dismissed. You can define forbidden and required words for categories in the next tab.
+Usually required or forbidden words are applied on a word base, so they must word a complete word in a title. Only they contain a dash or a dot they may appear anywhere in the title. Example:
+"ea" matches "something.from.ea" but not "release.from.other". "web-dl" matches "title.web-dl" and "someweb-dl".
 
 ## Result processing
 If you have LXML installed for python select it for faster parsing of results from indexers like Binsearch or NZB Club.

@@ -5,6 +5,8 @@
 Added: Basic torrent support via [Jackett](https://github.com/Jackett/Jackett). Add trackers using the "Jackett" preset in the configuration. They will be only used for internal searches. Torrent clients are not supported and will never be.
 You can search manually and download the torrent files. That should be enough for most.
 
+Added: Limit indexers to certain categories. Makes most sense when you have added specialized torrent trackers and don't want to use them for categories in which they don't have content anyway. 
+
 Changed: Required and forbidden words are now handled a bit differently. If a word contains a dot or a dash (".", "-") then the word will be searched for anywhere in a result title. If it does not contain a dot or a dash then
 all the words in the title will be compared with the word. Example: Forbidding "abc" will dismiss the result "abc.def" or "abc def" but allow "abcdef" or "ab-cdef". Forbidding "ab-c" will dismis "ab-cdef".
 This way you'll be able, for example, to require release groups like "EA" without allowing a result like "Peachy-BOSS" and on the other hand forbidding "WEB-DL" without letting through "Spider.web-Dl.ist".

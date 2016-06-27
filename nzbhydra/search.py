@@ -117,7 +117,10 @@ def pick_indexers(search_request):
                 continue
         except IndexerStatus.DoesNotExist:
             pass
-
+        if hasattr(p.settings, "categories") and len(p.settings.categories) > 0:
+            if search_request.category.category.name not in p.settings.categories:
+                logger.debug("Did not pick %s because it is not enabled for category %s" % (p, search_request.category.category.pretty))
+                continue
         if p.settings.hitLimit > 0:
             hitLimitResetTime = arrow.get(p.settings.hitLimitResetTime)
             if p.settings.hitLimitResetTime:
@@ -176,7 +179,6 @@ pseudo_cache = {}
 
 
 def search(search_request):
-    # type: (bool, nzbhydra.search.SearchRequest) -> Dict[unicode, future.types.newint.newint]
     if search_request.maxage is None and config.settings.searching.maxAge:
         search_request.maxage = config.settings.searching.maxAge
         logger.info("Will ignore results older than %d days" % search_request.maxage)
@@ -199,12 +201,13 @@ def search(search_request):
     if search_hash not in pseudo_cache.keys() or search_request.offset == 0:  # If it's a new search (which starts with offset 0) do it again instead of using the cached results
         logger.debug("Didn't find this query in cache or want to do a new search")
         cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0}
-        indexers_to_call = pick_indexers(search_request)
-        for p in indexers_to_call:
-            cache_entry["indexer_infos"][p] = {"has_more": True, "search_request": search_request, "total_included": False}
         categoryResult = categories.getCategoryByAnyInput(search_request.category)
         search_request.category = categoryResult
         category = categoryResult.category
+        indexers_to_call = pick_indexers(search_request)
+        for p in indexers_to_call:
+            cache_entry["indexer_infos"][p] = {"has_more": True, "search_request": search_request, "total_included": False}
+        
         dbsearch = Search(internal=search_request.internal, query=search_request.query, category=categoryResult.category.pretty, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode, type=search_request.type,
                           username=search_request.username)
         # dbsearch.save()

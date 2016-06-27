@@ -5,7 +5,7 @@ angular
 function otherColumns($http, $templateCache, $compile, $window) {
     return {
         scope: {
-            result: "="
+            result: "<"
         },
         multiElement: true,
 

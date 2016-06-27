@@ -7,8 +7,8 @@ function addableNzbs() {
         templateUrl: 'static/html/directives/addable-nzbs.html',
         require: ['^searchResultId'],
         scope: {
-            searchResultId: "&",
-            downloadType: "&"
+            searchResultId: "<",
+            downloadType: "<"
         },
         controller: controller
     };

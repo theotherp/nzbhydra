@@ -131,7 +131,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 20,
+        "configVersion": 21,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -547,6 +547,13 @@ def migrateConfig(config):
                     if "iconCssClass" not in downloader.keys():
                         addLogMessage(20, "Adding icon CSS class to downloader")
                         downloader["iconCssClass"] = ""
+
+        if config["main"]["configVersion"] == 20:
+            with version_update(config, 21):
+                for downloader in config["downloaders"]:
+                    downloader["downloadType"] = "nzb"
+                for indexer in config["indexers"]:
+                    indexer["categories"] = []
 
     return config
 
