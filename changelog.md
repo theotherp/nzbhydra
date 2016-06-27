@@ -2,7 +2,7 @@
 
 ----------
 ### 0.2.115
-Added: Basic torrent support via [Jackett](https://github.com/Jackett/Jackett). Add trackers using the "Jackett" preset in the configuration. They will be only used for internal searches. Torrent clients are not supported and will never be.
+Added: Basic torrent support. You need to run and configure [Jackett](https://github.com/Jackett/Jackett). Add trackers using the "Jackett" preset in the configuration. They will be only used for internal searches. Torrent clients are not supported and will never be.
 You can search manually and download the torrent files. That should be enough for most.
 
 Added: Limit indexers to certain categories. Makes most sense when you have added specialized torrent trackers and don't want to use them for categories in which they don't have content anyway. 
