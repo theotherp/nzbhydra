@@ -4531,7 +4531,7 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
     }
 
 
-    if (model.type != "womble" && model.type != "jackett") {
+    if (model.type != "womble") {
         fieldset.push(
             {
                 key: 'preselect',
@@ -4543,7 +4543,8 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                     help: 'Preselect this indexer on the search page'
                 }
             }
-        );
+        )}
+    if (model.type != "womble" || model.type != "jackett") {
         fieldset.push(
             {
                 key: 'accessType',
