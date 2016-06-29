@@ -257,6 +257,10 @@ class IntegrationApiSearchTests(unittest.TestCase):
             self.assertTrue(downloads[0]["response_successful"])
             self.assertIsNone(downloads[2]["response_successful"]) #Don't know if redirection went well
 
+            response = self.app.get("/api?t=search&q=query&offset=300")
+            entries, _, _ = newznab.NewzNab(Bunch.fromDict({"name": "forTest", "score": 0, "host": "host"})).parseXml(response.data)
+            self.assertSearchResults(entries, expectedItems)
+
 
     @requests_mock.Mocker()
     def testBaseUrl(self, requestsMock):

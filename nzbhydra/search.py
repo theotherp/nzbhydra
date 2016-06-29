@@ -198,11 +198,11 @@ def search(search_request):
     limit = search_request.limit
     external_offset = int(search_request.offset)
     search_hash = search_request.search_hash
+    categoryResult = categories.getCategoryByAnyInput(search_request.category)
+    search_request.category = categoryResult
     if search_hash not in pseudo_cache.keys() or search_request.offset == 0:  # If it's a new search (which starts with offset 0) do it again instead of using the cached results
         logger.debug("Didn't find this query in cache or want to do a new search")
         cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0}
-        categoryResult = categories.getCategoryByAnyInput(search_request.category)
-        search_request.category = categoryResult
         category = categoryResult.category
         indexers_to_call = pick_indexers(search_request)
         for p in indexers_to_call:

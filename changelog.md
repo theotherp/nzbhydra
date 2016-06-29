@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.116
+Fixed: Exception when API call with categories and offset > 0 was executed.
+
 ### 0.2.115
 Added: Basic torrent support. You need to run and configure [Jackett](https://github.com/Jackett/Jackett). Add trackers using the "Jackett" preset in the configuration. They will be only used for internal searches. Torrent clients are not supported and will never be.
 You can search manually and download the torrent files. That should be enough for most.
