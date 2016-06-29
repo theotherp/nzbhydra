@@ -227,11 +227,11 @@ class IntegrationApiSearchTests(unittest.TestCase):
         
         expectedItems = self.prepareSearchMocks(requestsMock, 1, 1)
         with web.app.test_request_context('/'):
-            response = self.app.get("/api?t=search&q=query")
+            response = self.app.get("/api?t=search&q=query&cat=5030")
             entries, _, _ = newznab.NewzNab(Bunch.fromDict({"name": "forTest", "score": 0, "host": "host"})).parseXml(response.data)
             self.assertSearchResults(entries, expectedItems)
             calledUrls = sorted([x.url for x in requestsMock.request_history])
-            self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query', calledUrls[0]))
+            self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query&cat=5030', calledUrls[0]))
             self.assertEqual("http://localhost:5075/getnzb?searchresultid=1", entries[0].link)
         
             #Download NZB
@@ -256,10 +256,6 @@ class IntegrationApiSearchTests(unittest.TestCase):
             self.assertEqual("http://www.newznab1.com/details/newznab1result1.guid", downloads[0]["detailsLink"])
             self.assertTrue(downloads[0]["response_successful"])
             self.assertIsNone(downloads[2]["response_successful"]) #Don't know if redirection went well
-
-            response = self.app.get("/api?t=search&q=query&offset=300")
-            entries, _, _ = newznab.NewzNab(Bunch.fromDict({"name": "forTest", "score": 0, "host": "host"})).parseXml(response.data)
-            self.assertSearchResults(entries, expectedItems)
 
 
     @requests_mock.Mocker()
