@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.117
+Fixed: API key wasn't displayed in omgwtf config.
+
 ### 0.2.116
 Fixed: Exception when API call with categories and offset > 0 was executed.
 

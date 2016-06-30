@@ -4405,7 +4405,7 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
         )
     }
 
-    if (model.type == 'newznab' || model.type == 'jackett') {
+    if (model.type == 'newznab' || model.type == 'jackett' || model.type == 'omgwtf') {
         fieldset.push(
             {
                 key: 'apikey',
@@ -4414,27 +4414,6 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                     type: 'text',
                     required: true,
                     label: 'API Key'
-                },
-                watcher: {
-                    listener: function (field, newValue, oldValue, scope) {
-                        if (newValue != oldValue) {
-                            scope.$parent.needsConnectionTest = true;
-                        }
-                    }
-                }
-            }
-        )
-    }
-
-    if (model.type == 'omgwtf') {
-        fieldset.push(
-            {
-                key: 'username',
-                type: 'horizontalInput',
-                templateOptions: {
-                    type: 'text',
-                    required: true,
-                    label: 'Username'
                 },
                 watcher: {
                     listener: function (field, newValue, oldValue, scope) {
@@ -4494,7 +4473,7 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                 }
             });
     }
-    if (model.type == 'newznab') {
+    if (model.type == 'newznab' || model.type == 'omgwtf') {
         fieldset.push(
             {
                 key: 'username',
@@ -4514,6 +4493,8 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                 }
             }
         );
+    }
+    if (model.type == 'newznab') {
         fieldset.push(
             {
                 key: 'password',
