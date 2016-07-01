@@ -2869,10 +2869,8 @@ angular
 
                     var url = "internalapi/test_caps";
                     var params = {indexer: $scope.model.name, apikey: $scope.model.apikey, host: $scope.model.host};
-                    ConfigBoxService.checkCaps(url, params).then(function (data) {
-                        angular.element(testMessage).text("Supports: " + data.ids + "," + data.types);
-                        $scope.model.search_ids = data.ids;
-                        $scope.model.searchTypes = data.types;
+                    ConfigBoxService.checkCaps(url, params, $scope.model).then(function (data, model) {
+                        angular.element(testMessage).text("Supports: " + data.supportedIds + "," ? data.supportedIds && data.supportedTypes : "" + data.supportedTypes);
                         showSuccess();
                     }, function (message) {
                         angular.element(testMessage).text(message);
@@ -3157,15 +3155,27 @@ function ConfigBoxService($http, $q) {
         return deferred.promise;
     }
 
-    function checkCaps(url, params) {
+    function checkCaps(url, params, model) {
         var deferred = $q.defer();
 
-        $http.post(url, params).success(function (result) {
+        $http.post(url, params).success(function (data) {
             //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
-            if (result.success) {
-                deferred.resolve({ids: result.ids, types: result.types});
+            if (data.success) {
+                model.search_ids = data.supportedIds;
+                model.searchTypes = data.supportedTypes;
+                if (data.supportsAllCategories) {   //Don't display all the categories, will be replaced with placeholder "All categories"
+                    model.categories = [];
+                } else {
+                    model.categories = data.supportedCategories;
+                }
+                model.animeCategory = data.animeCategory;
+                model.audiobookCategory = data.audiobookCategory;
+                model.comicCategory = data.comicCategory;
+                model.ebookCategory = data.ebookCategory;
+                model.magazineCategory = data.magazineCategory;
+                deferred.resolve({supportedIds: data.supportedIds, supportedTypes: data.supportedTypes}, model);
             } else {
-                deferred.reject(result.message);
+                deferred.reject(data.message);
             }
         }).error(function () {
             deferred.reject("Unknown error");
@@ -4115,6 +4125,11 @@ function ConfigFields($injector) {
                     type: "arrayConfig",
                     data: {
                         defaultModel: {
+                            animeCategory: null,
+                            comicCategory: null,
+                            audiobookCategory: null,
+                            magazineCategory: null,
+                            ebookCategory: null,
                             enabled: true,
                             host: null,
                             apikey: null,
@@ -4541,7 +4556,7 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
             }
         );
     }
-    if (model.type != "womble") {
+    if (model.type != "womble" && model.type != "anizb") {
         fieldset.push(
             {
                 key: 'categories',
@@ -4573,6 +4588,10 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                         {
                             id: "tvsd",
                             label: "TV SD"
+                        },
+                        {
+                            id: "anime",
+                            label: "Anime"
                         },
                         {
                             id: "audio",
@@ -5021,13 +5040,11 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
         if (angular.isUndefined(model.search_ids) || angular.isUndefined(model.searchTypes)) {
 
             blockUI.start("New indexer found. Testing its capabilities. This may take a bit...");
-            ConfigBoxService.checkCaps(url, JSON.stringify(settings)).then(
-                function (data) {
+            ConfigBoxService.checkCaps(url, JSON.stringify(settings), model).then(
+                function (data, model) {
                     blockUI.reset();
                     scope.spinnerActive = false;
-                    growl.info("Successfully tested capabilites of indexer. Supports: " + data.ids + "," + data.types);
-                    model.search_ids = data.ids;
-                    model.searchTypes = data.types;
+                    growl.info("Successfully tested capabilites of indexer. Supports: " + data.supportedIds + "," ? data.supportedIds && data.supportedTypes : "" + data.supportedTypes);
                     deferred.resolve();
                 },
                 function () {

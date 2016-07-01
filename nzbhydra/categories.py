@@ -10,6 +10,7 @@ categories = Bunch.fromDict([{"name": 'na', "pretty": "N/A", "supportsById": Fal
                              {"name": 'tv', "pretty": "TV", "supportsById": True, "mayBeSelected": True},
                              {"name": 'tvhd', "pretty": "TV HD", "supportsById": True, "mayBeSelected": True},
                              {"name": 'tvsd', "pretty": "TV SD", "supportsById": True, "mayBeSelected": True},
+                             {"name": 'anime', "pretty": "Anime", "supportsById": False, "mayBeSelected": True},
                              {"name": 'audio', "pretty": "Audio", "supportsById": False, "mayBeSelected": True},
                              {"name": 'flac', "pretty": "Audio FLAC", "supportsById": False, "mayBeSelected": True},
                              {"name": 'mp3', "pretty": "Audio MP3", "supportsById": False, "mayBeSelected": True},
@@ -22,6 +23,7 @@ categories = Bunch.fromDict([{"name": 'na', "pretty": "N/A", "supportsById": Fal
                              ])
 
 logger = logging.getLogger('root')
+
 
 def getUnknownCategory():
     return getCategories()[0]
@@ -114,3 +116,7 @@ def getCategories():
             if c["name"] == k:
                 c.update(v)
     return categories
+
+
+def getNumberOfSelectableCategories():
+    return len([x for x in categories if x.mayBeSelected])

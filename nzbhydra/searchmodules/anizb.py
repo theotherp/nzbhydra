@@ -23,43 +23,33 @@ from nzbhydra.search_module import SearchModule, IndexerProcessingResult
 logger = logging.getLogger('root')
 
 
-class Womble(SearchModule):
+class Anizb(SearchModule):
     # TODO init of config which is dynmic with its path
 
     def __init__(self, indexer):
-        super(Womble, self).__init__(indexer)
+        super(Anizb, self).__init__(indexer)
         self.module = "Womble"
         
-        self.settings.generate_queries = False
+        self.settings.generate_queries = True
         self.needs_queries = False
         self.category_search = True
-        self.supports_queries = False  # Only as support for general tv search
+        self.supports_queries = True  # Only as support for general tv search
+        
+        
 
     def build_base_url(self):
         f = furl(self.host)
-        f.path.add("rss")
-        url = f.add(args={"fr": "false"})
-        return url
+        f.path.add("api")
+        return f
 
     def get_search_urls(self, search_request):
-        self.error("This indexer does not support queries")
-        return []
+        f = self.build_base_url()
+        f = f.add({"q": search_request.query})
+        return [f.tostr()]
 
     def get_showsearch_urls(self, search_request):
-        urls = []
-        if search_request.query or search_request.identifier_key or search_request.identifier_value or search_request.season or search_request.episode:
-            self.error("This indexer does not support specific searches")
-            return []
-        if search_request.category is not None:
-            if search_request.category in("TV SD", "TV") or "5030" in search_request.category or "5000" in search_request.category:
-                urls.append(self.build_base_url().add({"sec": "tv-dvd"}).tostr())
-                urls.append(self.build_base_url().add({"sec": "tv-sd"}).tostr())
-            if search_request.category in ("TV HD", "TV") or "5040" in search_request.category or "5000" in search_request.category:
-                urls.append(self.build_base_url().add({"sec": "tv-x264"}).tostr())
-                urls.append(self.build_base_url().add({"sec": "tv-hd"}).tostr())
-        else:
-            urls.append(self.build_base_url().tostr())
-        return urls
+        self.error("This indexer does not support tv search")
+        return []
 
     def get_moviesearch_urls(self, search_request):
         self.error("This indexer does not support movie search")
@@ -78,13 +68,9 @@ class Womble(SearchModule):
         return []
 
     def get_anime_urls(self, search_request):
-        self.error("This indexer does not support anime search")
-        return []
+        return self.get_search_urls(search_request)
     
-    def get_details_link(self, guid):
-        self.info("This indexer does not provide details on releases")
-        return None
-
+    
 
     def process_query_result(self, xml, searchRequest, maxResults=None):
         entries = []
@@ -105,29 +91,17 @@ class Womble(SearchModule):
             entry = self.create_nzb_search_result()
             entry.title = title.text
             entry.link = url.attrib["url"]
+            entry.size = int(url.attrib["length"])
             entry.has_nfo = NzbSearchResult.HAS_NFO_NO
-            
-            p = re.compile("(.*)\(Size:(\d*)")
-            m = p.search(elem.find("description").text)
-            if m:
-                entry.description = m.group(1)
-                entry.size = int(m.group(2)) * 1024 * 1024 #megabyte to byte
-            if elem.find("category").text.lower() == "tv-dvdrip" or elem.find("category").text.lower() == "tv-sd":
-                entry.category = getCategoryByName("tvsd")
-            elif elem.find("category").text.lower() == "tv-x264" or elem.find("category").text.lower == "tv-hd":
-                entry.category = getCategoryByName("tvhd")
-            else:
-                entry.category = getUnknownCategory()
-                
-            
-            entry.indexerguid = elem.find("guid").text[30:] #39a/The.Almighty.Johnsons.S03E06.720p.BluRay.x264-YELLOWBiRD.nzb is the GUID, only the 39a doesn't work
-            
-            pubdate = arrow.get(pubdate.text, 'M/D/YYYY h:mm:ss A')
+            entry.category = getCategoryByName("anime")
+            entry.indexerguid = elem.find("guid").text 
+            entry.details_link = entry.link.replace("dl", "info")
+            pubdate = arrow.get(pubdate.text, 'ddd, DD MMM YYYY HH:mm:ss Z')
             entry.epoch = pubdate.timestamp
             entry.pubdate_utc = str(pubdate)
-            entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
+            entry.pubDate = pubdate
             entry.age_days = (arrow.utcnow() - pubdate).days
-
+            
             accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
                 entries.append(entry)
@@ -139,10 +113,10 @@ class Womble(SearchModule):
     
     def get_nzb_link(self, guid, title):
         f = furl(self.settings.host)
-        f.path.add("nzb")
+        f.path.add("dl")
         f.path.add(guid)
         return f.tostr()
 
 
 def get_instance(indexer):
-    return Womble(indexer)
+    return Anizb(indexer)

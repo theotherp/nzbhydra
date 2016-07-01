@@ -706,6 +706,11 @@ function ConfigFields($injector) {
                     type: "arrayConfig",
                     data: {
                         defaultModel: {
+                            animeCategory: null,
+                            comicCategory: null,
+                            audiobookCategory: null,
+                            magazineCategory: null,
+                            ebookCategory: null,
                             enabled: true,
                             host: null,
                             apikey: null,
@@ -1131,7 +1136,7 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
             }
         );
     }
-    if (model.type != "womble") {
+    if (model.type != "womble" && model.type != "anizb") {
         fieldset.push(
             {
                 key: 'categories',
@@ -1163,6 +1168,10 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                         {
                             id: "tvsd",
                             label: "TV SD"
+                        },
+                        {
+                            id: "anime",
+                            label: "Anime"
                         },
                         {
                             id: "audio",
@@ -1611,13 +1620,11 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
         if (angular.isUndefined(model.search_ids) || angular.isUndefined(model.searchTypes)) {
 
             blockUI.start("New indexer found. Testing its capabilities. This may take a bit...");
-            ConfigBoxService.checkCaps(url, JSON.stringify(settings)).then(
-                function (data) {
+            ConfigBoxService.checkCaps(url, JSON.stringify(settings), model).then(
+                function (data, model) {
                     blockUI.reset();
                     scope.spinnerActive = false;
-                    growl.info("Successfully tested capabilites of indexer. Supports: " + data.ids + "," + data.types);
-                    model.search_ids = data.ids;
-                    model.searchTypes = data.types;
+                    growl.info("Successfully tested capabilites of indexer. Supports: " + data.supportedIds + "," ? data.supportedIds && data.supportedTypes : "" + data.supportedTypes);
                     deferred.resolve();
                 },
                 function () {

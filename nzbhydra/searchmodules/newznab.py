@@ -4,11 +4,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from arrow.parser import ParserError
-from future import standard_library
 
 from nzbhydra import config
-
-#standard_library.install_aliases()
+# standard_library.install_aliases()
 from builtins import *
 import calendar
 import datetime
@@ -23,8 +21,7 @@ import requests
 import concurrent
 from requests.exceptions import RequestException, HTTPError
 
-from nzbhydra.categories import getByNewznabCats, getCategoryByName, getCategoryByAnyInput
-from nzbhydra.config import getCategorySettingByName
+from nzbhydra.categories import getByNewznabCats, getCategoryByAnyInput, getNumberOfSelectableCategories
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.datestuff import now
 from nzbhydra import infos
@@ -44,7 +41,6 @@ def get_age_from_pubdate(pubdate):
     return epoch, pubdate_utc, int(age_days)
 
 
-
 def check_auth(body, indexer):
     if '<error code="100"' in body:
         raise IndexerAuthException("The API key seems to be incorrect.", indexer)
@@ -55,17 +51,16 @@ def check_auth(body, indexer):
     if '<error code="910"' in body:
         raise IndexerAccessException("The API seems to be disabled for the moment.", indexer)
     if '<error code=' in body:
-        try:   
+        try:
             tree = ET.fromstring(body)
             code = tree.attrib["code"]
-            description = tree.attrib["description"] 
+            description = tree.attrib["description"]
             logger.error("Indexer %s returned unknown error code %s with description: %s" % (indexer, code, description))
             exception = IndexerAccessException("Unknown error while trying to access the indexer: %s" % description, indexer)
         except Exception:
             logger.error("Indexer %s returned an error page: %s" % (indexer, body))
             exception = IndexerAccessException("Unknown error while trying to access the indexer.", indexer)
         raise exception
-        
 
 
 def test_connection(host, apikey):
@@ -85,7 +80,7 @@ def test_connection(host, apikey):
         return False, "Unable to connect to host"
     except IndexerAuthException as e:
         logger.info("Unable to log in to indexer %s due to wrong credentials: %s" % (host, e.message))
-        return False, e.message 
+        return False, e.message
     except IndexerAccessException as e:
         logger.info("Unable to log in to indexer %s. Unknown error %s." % (host, str(e)))
         return False, "Host reachable but unknown error returned"
@@ -111,8 +106,7 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult):
         raise IndexerAccessException("Error getting or parsing XML", None)
     for item in tree.find("channel").findall("item"):
         titles.append(item.find("title").text)
-    
-    
+
     if len(titles) == 0:
         logger.debug("Search with t=%s and %s=%s returned no results" % (t, idkey, idvalue))
         return False, t
@@ -148,7 +142,15 @@ def checkCapsBruteForce(supportedTypes, toCheck, host, apikey):
     return sorted(list(set(supportedIds))), sorted(list(set(supportedTypes)))
 
 
-def check_caps(host, apikey, userAgent=None, timeout=None):
+def getCategoryNumberOrNone(categories, ids, names):
+    for id in ids:
+        if id in categories.keys() and categories[id].lower() in names:
+            logger.debug("Found category ID for %s: %s" % (names[0], id))
+            return id
+    return None
+
+
+def check_caps(host, apikey, userAgent=None, timeout=None, skipIdsAndTypes=False):
     toCheck = [
         {"t": "tvsearch",
          "id": "tvdbid",
@@ -184,7 +186,7 @@ def check_caps(host, apikey, userAgent=None, timeout=None):
     ]
     supportedIds = []
     supportedTypes = []
-    #Try to find out from caps first
+    # Try to find out from caps first
     try:
         url = _build_base_url(host, apikey, "caps", None)
         headers = {
@@ -193,11 +195,46 @@ def check_caps(host, apikey, userAgent=None, timeout=None):
         logger.debug("Requesting %s" % url)
         r = requests.get(url, verify=False, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers)
         r.raise_for_status()
-        
+
         tree = ET.fromstring(r.content)
+
+        categories = []
+        subCategories = {}
+        for xmlMainCategory in tree.find("categories").findall("category"):
+            categories.append(xmlMainCategory.attrib["name"].lower())
+            for subcat in xmlMainCategory.findall("subcat"):
+                subCategories[subcat.attrib["id"]] = subcat.attrib["name"]
+        animeCategory = getCategoryNumberOrNone(subCategories, ["5070", "7040"], ["anime", "tv/anime", "tv->anime"])
+        comicCategory = getCategoryNumberOrNone(subCategories, ["7030"], ["comic", "comics", "books/comics"])
+        magazineCategory = getCategoryNumberOrNone(subCategories, ["7010"], ["magazine", "mags", "magazines"])
+        audiobookCategory = getCategoryNumberOrNone(subCategories, ["3030"], ["audiobook", "audio", "audio/audiobook"])
+        ebookCategory = getCategoryNumberOrNone(subCategories, ["7020", "4050"], ["ebook"])
+        supportedCategories = []
+        if "movies" in categories:
+            supportedCategories.extend(["movies", "movieshd", "moviessd"])
+        if "tv" in categories:
+            supportedCategories.extend(["tv", "tvhd", "tvsd"])
+        if "audio" in categories:
+            supportedCategories.extend(["audio", "flac", "mp3"])
+        if "xxx" in categories or "adult" in categories:
+            supportedCategories.append("xxx")
+        if "console" in categories or "gaming" in categories:
+            supportedCategories.append("console")
+        if "apps" in categories or "pc" in categories:
+            supportedCategories.append("pc")
+        if animeCategory:
+            supportedCategories.append("anime")
+        if comicCategory:
+            supportedCategories.append("comic")
+        if audiobookCategory:
+            supportedCategories.append("audiobook")
+        if ebookCategory:
+            supportedCategories.append("ebook")
+        
+
         searching = tree.find("searching")
         doBruteForce = False
-        if searching is not None:
+        if searching is not None and not skipIdsAndTypes:
             tvsearch = searching.find("tv-search")
             if tvsearch is not None and tvsearch.attrib["available"] == "yes":
                 supportedTypes.append("tvsearch")
@@ -221,7 +258,7 @@ def check_caps(host, apikey, userAgent=None, timeout=None):
                     params = params.split(",")
                     for x in ["q", "genre"]:
                         if x in params:
-                            params.remove(x)         
+                            params.remove(x)
                     supportedIds.extend(params)
                     logger.debug("Found supported movie IDs: %s" % params)
                 else:
@@ -230,23 +267,31 @@ def check_caps(host, apikey, userAgent=None, timeout=None):
             if book_search is not None and book_search.attrib["available"] == "yes":
                 supportedTypes.append("movie")
                 logger.debug("Found supported book search")
-                
+
             can_handle = [y["id"] for y in toCheck]
-            supportedIds = [x for x in supportedIds if x in can_handle] #Only use those we can handle
-            supportedIds = set(supportedIds)  # Return a set because IMDB might be included for TV and movie search, for example
-            
-            if doBruteForce:
-                logger.info("Unable to read supported params from caps. Will continue with brute force")
-                return checkCapsBruteForce(supportedTypes, toCheck, host, apikey)
-            return sorted(list(set(supportedIds))), sorted(list(set(supportedTypes)))
-        
+            supportedIds = [x for x in supportedIds if x in can_handle]  # Only use those we can handle
+
+        if doBruteForce and not skipIdsAndTypes:
+            logger.info("Unable to read supported params from caps. Will continue with brute force")
+            supportedIds, supportedTypes = checkCapsBruteForce(supportedTypes, toCheck, host, apikey)
+        return {
+            "animeCategory": animeCategory, 
+            "comicCategory": comicCategory, 
+            "magazineCategory": magazineCategory, 
+            "audiobookCategory": audiobookCategory, 
+            "ebookCategory": ebookCategory, 
+            "supportedIds": sorted(list(set(supportedIds))), 
+            "supportedTypes": sorted(list(set(supportedTypes))),
+            "supportedCategories": supportedCategories,
+            "supportsAllCategories": len(supportedCategories) == getNumberOfSelectableCategories() - 1 #Without "all
+        }
+
     except HTTPError as e:
         logger.error("Error while trying to determine caps: %s" % e)
         raise IndexerResultParsingException("Unable to check caps: %s" % str(e), None)
     except Exception as e:
-        logger.error("Error getting or parsing caps XML. Will continue with brute force. Error message: %s" % e)
-        return checkCapsBruteForce(supportedTypes, toCheck, host, apikey)
-    
+        logger.error("Error getting or parsing caps XML. Error message: %s" % e)
+        return None
 
 
 def _build_base_url(host, apikey, action, category, limit=None, offset=0):
@@ -255,13 +300,13 @@ def _build_base_url(host, apikey, action, category, limit=None, offset=0):
     f.query.add({"apikey": apikey, "extended": 1, "t": action, "offset": offset})
     if limit is not None:
         f.query.add({"limit": limit})
-    
+
     if category is not None:
-        #If the categories were originally provided as newznab categories use that one
+        # If the categories were originally provided as newznab categories use that one
         if category.type == "newznab":
             categories = category.original
         else:
-            #Instead use the ones configured for this hydra category
+            # Instead use the ones configured for this hydra category
             categories = category.category.newznabCategories
         if len(categories) > 0:
             f.query.add({"cat": ",".join(str(x) for x in categories)})
@@ -271,7 +316,7 @@ def _build_base_url(host, apikey, action, category, limit=None, offset=0):
 class NewzNab(SearchModule):
     grouppattern = re.compile(r"Group:</b> ?([\w\.]+)<br ?/>")
     guidpattern = re.compile(r"(.*/)?([a-zA-Z0-9@\.]+)")
-    
+
     # todo feature: read caps from server on first run and store them in the config/database
     def __init__(self, settings):
         super(NewzNab, self).__init__(settings)
@@ -280,7 +325,6 @@ class NewzNab(SearchModule):
         self.category_search = True
         self.supportedFilters = ["maxage"]
         self.supportsNot = True
-    
 
     def build_base_url(self, action, category, offset=0):
         url = _build_base_url(self.settings.host, self.settings.apikey, action, category, self.limit, offset)
@@ -296,7 +340,7 @@ class NewzNab(SearchModule):
             f = f.add({"q": query})
         if search_request.maxage:
             f = f.add({"maxage": search_request.maxage})
-        
+
         return [f.url]
 
     def addExcludedWords(self, query, search_request):
@@ -340,7 +384,7 @@ class NewzNab(SearchModule):
         if search_request.category is None:
             search_request.category = getCategoryByAnyInput("movies")
         
-        #A lot of indexers seem to disregard the "q" parameter for "movie" search, so if we have a query use regular search instead 
+        # A lot of indexers seem to disregard the "q" parameter for "movie" search, so if we have a query use regular search instead 
         if search_request.query:
             url = self.build_base_url("search", search_request.category, offset=search_request.offset)
             url.add({"q": search_request.query})
@@ -354,7 +398,7 @@ class NewzNab(SearchModule):
                 else:
                     self.info("Unable to search using ID type %s" % search_request.identifier_key)
                     return []
-                
+
                 url.add({search_request.identifier_key: search_request.identifier_value})
 
         return [url.url]
@@ -362,9 +406,12 @@ class NewzNab(SearchModule):
     def get_ebook_urls(self, search_request):
         if not search_request.category:
             search_request.category = getCategoryByAnyInput("ebook")
+        if hasattr(self.settings, "ebookCategory") and self.settings.ebookCategory:
+            self.debug("Using %s as determinted newznab ebook category" % self.settings.ebookCategory)
+            search_request.category.category.newznabCategories = [self.settings.ebookCategory]
         if search_request.author or search_request.title:
             if "book" in self.searchTypes:
-                #API search
+                # API search
                 url = self.build_base_url("book", search_request.category, offset=search_request.offset)
                 if search_request.author:
                     url.add({"author": search_request.author})
@@ -375,25 +422,39 @@ class NewzNab(SearchModule):
                 search_request.query = "%s %s" % (search_request.author if search_request.author else "", search_request.title if search_request.title else "")
                 return self.get_search_urls(search_request)
         else:
-            #internal search
+            # internal search
             return self.get_search_urls(search_request)
 
     def get_audiobook_urls(self, search_request):
         if not search_request.category:
             search_request.category = getCategoryByAnyInput("audiobook")
+        if hasattr(self.settings, "audiobookCategory") and self.settings.audiobookCategory:
+            self.debug("Using %s as determinted newznab audiobook category" % self.settings.audiobookCategory)
+            search_request.category.category.newznabCategories = [self.settings.audiobookCategory]
         return self.get_search_urls(search_request)
 
     def get_comic_urls(self, search_request):
         if not search_request.category:
             search_request.category = getCategoryByAnyInput("comic")
+        if hasattr(self.settings, "comicCategory") and self.settings.comicCategory:
+            self.debug("Using %s as determinted newznab comic category" % self.settings.comicCategory)
+            search_request.category.category.newznabCategories = [self.settings.comicCategory] 
+        return self.get_search_urls(search_request)
+
+    def get_anime_urls(self, search_request):
+        if not search_request.category:
+            search_request.category = getCategoryByAnyInput("anime")
+        if hasattr(self.settings, "animeCategory") and self.settings.animeCategory:
+            self.debug("Using %s as determinted newznab anime category" % self.settings.animeCategory)
+            search_request.category.category.newznabCategories = [self.settings.animeCategory]
         return self.get_search_urls(search_request)
 
     def get_details_link(self, guid):
         if "nzbgeek" in self.settings.host:
             f = furl(self.settings.host)
         else:
-            f = furl(self.settings.host.replace("api.", "www.")) #Quick and dirty fix so it doesn't link to the API
-            
+            f = furl(self.settings.host.replace("api.", "www."))  # Quick and dirty fix so it doesn't link to the API
+
         f.path.add("details")
         f.path.add(guid)
         return f.url
@@ -413,15 +474,13 @@ class NewzNab(SearchModule):
         except ET.ParseError:
             self.error("Error parsing response for GUID %s" % guid)
             return None
-        
-        
 
     def process_query_result(self, xml_response, searchRequest, maxResults=None):
         self.debug("Started processing results")
         countRejected = 0
         acceptedEntries = []
         entries, total, offset = self.parseXml(xml_response, maxResults)
-        
+
         for entry in entries:
             accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
@@ -429,16 +488,16 @@ class NewzNab(SearchModule):
             else:
                 countRejected += 1
                 self.debug("Rejected search result. Reason: %s" % reason)
-       
+
         if total == 0 or len(acceptedEntries) == 0:
             self.info("Query returned no results")
             return IndexerProcessingResult(entries=acceptedEntries, queries=[], total=0, total_known=True, has_more=False, rejected=0)
         else:
             return IndexerProcessingResult(entries=acceptedEntries, queries=[], total=total, total_known=True, has_more=offset + len(entries) < total, rejected=countRejected)
-    
+
     def parseXml(self, xmlResponse, maxResults=None):
         entries = []
-        
+
         try:
             tree = ET.fromstring(xmlResponse)
         except Exception:
@@ -501,7 +560,7 @@ class NewzNab(SearchModule):
             elif attribute_name == "group" and attribute_value != "not available":
                 entry.group = attribute_value
             elif attribute_name == "usenetdate":
-                try: 
+                try:
                     usenetdate = arrow.get(attribute_value, 'ddd, DD MMM YYYY HH:mm:ss Z')
                 except ParserError:
                     logger.debug("Unable to parse usenet date format: %s" % attribute_value)
@@ -515,7 +574,7 @@ class NewzNab(SearchModule):
         entry.epoch = usenetdate.timestamp
         entry.pubdate_utc = str(usenetdate)
         entry.age_days = (arrow.utcnow() - usenetdate).days
-        entry.precise_date = True 
+        entry.precise_date = True
         entry.category = getByNewznabCats(categories)
         return entry
 

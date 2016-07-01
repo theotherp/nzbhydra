@@ -126,6 +126,8 @@ class SearchModule(object):
             urls = self.get_audiobook_urls(search_request)
         elif search_request.type == "comic":
             urls = self.get_comic_urls(search_request)
+        elif search_request.type == "anime":
+            urls = self.get_anime_urls(search_request)
         else:
             urls = self.get_search_urls(search_request)
         queries_execution_result = self.execute_queries(urls, search_request)
@@ -160,6 +162,11 @@ class SearchModule(object):
         return []
 
     def get_comic_urls(self, search_request):
+        # to extend
+        # if module doesnt support it possibly use (configurable) size restrictions when searching
+        return []
+
+    def get_anime_urls(self, search_request):
         # to extend
         # if module doesnt support it possibly use (configurable) size restrictions when searching
         return []

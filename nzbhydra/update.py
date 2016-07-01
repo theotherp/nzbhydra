@@ -17,6 +17,8 @@ import requests
 from nzbhydra import config, backup_debug
 from furl import furl
 
+from nzbhydra.exceptions import IndexerResultParsingException
+
 logger = logging.getLogger('root')
 
 currentVersion = None
@@ -470,4 +472,3 @@ class WindowsUpdateManager(SourceUpdateManager):
         logger.info("Update successful")
         return True
 
-    

@@ -187,6 +187,9 @@ class NzbClub(SearchModule):
     def get_comic_urls(self, search_request):
         return self.get_search_urls(search_request)
 
+    def get_anime_urls(self, search_request):
+        return self.get_search_urls(search_request)
+
     def get_details_link(self, guid):
         f = furl(self.host)
         f.path.add("nzb_view")

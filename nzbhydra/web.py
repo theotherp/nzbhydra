@@ -665,6 +665,8 @@ def internalapi_search(args):
         type = "audiobook"
     elif args["category"].lower() == "comic":
         type = "comic"
+    elif args["category"].lower() == "anime":
+        type = "anime"
     else:
         type = "general"
     indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None
@@ -923,11 +925,9 @@ def internalapi_testcaps(args):
     logger.debug("Check caps for %s" % indexer)
 
     try:
-        ids, types = check_caps(host, apikey)
-        ids = sorted(list(ids))
-        types = sorted(list(types))
-
-        return jsonify({"success": True, "ids": ids, "types": types})
+        caps = check_caps(host, apikey)
+        caps.update({"success": True})
+        return jsonify(caps)
     except IndexerResultParsingException as e:
         return jsonify({"success": False, "message": e.message})
 

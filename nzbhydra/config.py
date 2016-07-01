@@ -37,6 +37,24 @@ initialConfig = {
     "downloaders": [],
     "indexers": [
         {
+            "accessType": "both",
+            "categories": ["anime"],
+            "enabled": True,
+            "hitLimit": 0,
+            "hitLimitResetTime": None,
+            "host": "https://anizb.org",
+            "name": "anizb",
+            "password": None,
+            "preselect": True,
+            "score": 0,
+            "search_ids": [],
+            "searchTypes": [],
+            "showOnSearch": True,
+            "timeout": None,
+            "type": "anizb",
+            "username": None
+        },
+        {
             "accessType": "internal",
             "enabled": True,
             "hitLimit": 0,
@@ -131,7 +149,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 21,
+        "configVersion": 22,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -217,6 +235,17 @@ initialConfig = {
                 "max": 1000,
                 "newznabCategories": [
                     5030
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never"
+            },
+            "anime": {
+                "applyRestrictions": "both",
+                "min": 50,
+                "max": 15000,
+                "newznabCategories": [
+                    5070
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
@@ -555,6 +584,12 @@ def migrateConfig(config):
                 for indexer in config["indexers"]:
                     indexer["categories"] = []
 
+        if config["main"]["configVersion"] == 21:
+            with version_update(config, 22):
+                addLogMessage(20, "Adding anizb indexer")
+                anizb = [x for x in initialConfig["indexers"] if x["name"] == "anizb"][0]
+                config["indexers"].append(anizb)
+        
     return config
 
 

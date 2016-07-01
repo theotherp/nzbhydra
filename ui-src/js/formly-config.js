@@ -132,10 +132,8 @@ angular
 
                     var url = "internalapi/test_caps";
                     var params = {indexer: $scope.model.name, apikey: $scope.model.apikey, host: $scope.model.host};
-                    ConfigBoxService.checkCaps(url, params).then(function (data) {
-                        angular.element(testMessage).text("Supports: " + data.ids + "," + data.types);
-                        $scope.model.search_ids = data.ids;
-                        $scope.model.searchTypes = data.types;
+                    ConfigBoxService.checkCaps(url, params, $scope.model).then(function (data, model) {
+                        angular.element(testMessage).text("Supports: " + data.supportedIds + "," ? data.supportedIds && data.supportedTypes : "" + data.supportedTypes);
                         showSuccess();
                     }, function (message) {
                         angular.element(testMessage).text(message);
@@ -420,15 +418,27 @@ function ConfigBoxService($http, $q) {
         return deferred.promise;
     }
 
-    function checkCaps(url, params) {
+    function checkCaps(url, params, model) {
         var deferred = $q.defer();
 
-        $http.post(url, params).success(function (result) {
+        $http.post(url, params).success(function (data) {
             //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
-            if (result.success) {
-                deferred.resolve({ids: result.ids, types: result.types});
+            if (data.success) {
+                model.search_ids = data.supportedIds;
+                model.searchTypes = data.supportedTypes;
+                if (data.supportsAllCategories) {   //Don't display all the categories, will be replaced with placeholder "All categories"
+                    model.categories = [];
+                } else {
+                    model.categories = data.supportedCategories;
+                }
+                model.animeCategory = data.animeCategory;
+                model.audiobookCategory = data.audiobookCategory;
+                model.comicCategory = data.comicCategory;
+                model.ebookCategory = data.ebookCategory;
+                model.magazineCategory = data.magazineCategory;
+                deferred.resolve({supportedIds: data.supportedIds, supportedTypes: data.supportedTypes}, model);
             } else {
-                deferred.reject(result.message);
+                deferred.reject(data.message);
             }
         }).error(function () {
             deferred.reject("Unknown error");

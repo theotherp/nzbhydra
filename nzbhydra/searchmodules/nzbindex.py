@@ -113,6 +113,9 @@ class NzbIndex(SearchModule):
     def get_comic_urls(self, search_request):
         return self.get_search_urls(search_request)
 
+    def get_anime_urls(self, search_request):
+        return self.get_search_urls(search_request)
+
     def process_query_result(self, html, searchRequest, maxResults=None):
         self.debug("Started processing results")
 

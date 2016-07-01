@@ -25,6 +25,7 @@ from nzbhydra import indexers
 from nzbhydra import database
 from nzbhydra import web
 from nzbhydra import socks_proxy
+from nzbhydra import update
 import nzbhydra.config as config
 
 import requests
