@@ -769,7 +769,7 @@ def getCategorySettingByName(name):
 
 
 def getSafeConfig():
-    indexers = [{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "showOnSearch": x["showOnSearch"] and x["accessType"] != "external"} for x in settings["indexers"]]
+    indexers = [{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "categories": x["categories"], "showOnSearch": x["showOnSearch"] and x["accessType"] != "external"} for x in settings["indexers"]]
 
     return {
         "indexers": indexers,

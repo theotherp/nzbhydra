@@ -8,6 +8,8 @@ Added: Newznab indexers will now be checked for their supported categories and b
   
 Added: Anime category and anizb indexer.
 
+Added: When selecting a category on the search page only those indexers that are enabled for that category will be displayed.
+
 Fixed: Entries in stats and indexer statuses are sorted (either better to worse or by name).
 
 ### 0.2.117

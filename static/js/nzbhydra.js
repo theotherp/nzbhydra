@@ -1981,6 +1981,13 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
                 $scope.maxsize = "";
             }
         }
+        
+        // _.each($scope.availableIndexers, function(indexer) {
+        //     indexer.activated = angular.isUndefined(indexer.categories) || indexer.categories.length == 0 || indexer.categories.indexOf($scope.category.name) > -1;
+        // })
+        $scope.availableIndexers = getAvailableIndexers();
+        
+        
     };
 
 
@@ -2122,13 +2129,17 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         
     }
 
-    
-    $scope.availableIndexers = _.chain(safeConfig.indexers).filter(function (indexer) {
-        return indexer.enabled && indexer.showOnSearch;
-    }).sortBy("name")
-        .map(function (indexer) {
-        return {name: indexer.name, activated: isIndexerPreselected(indexer)};
-    }).value();
+
+    function getAvailableIndexers() {
+        return _.chain(safeConfig.indexers).filter(function (indexer) {
+            return indexer.enabled && indexer.showOnSearch && (angular.isUndefined(indexer.categories) || indexer.categories.length == 0 || $scope.category.name == "all" || indexer.categories.indexOf($scope.category.name) > -1);
+        }).sortBy("name")
+            .map(function (indexer) {
+                return {name: indexer.name, activated: isIndexerPreselected(indexer), categories: indexer.categories};
+            }).value();
+    }
+
+    $scope.availableIndexers = getAvailableIndexers();
     
 
     if ($scope.mode) {
