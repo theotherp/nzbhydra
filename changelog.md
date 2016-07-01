@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.118
+Fixed: Entries in stats and indexer statuses are sorted (either better to worse or by name).
+
 ### 0.2.117
 Fixed: API key wasn't displayed in omgwtf config.
 

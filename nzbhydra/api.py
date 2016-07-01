@@ -176,6 +176,7 @@ def process_for_internal_api(search_result):
         indexer_search_info["did_search"] = indexer_info["did_search"]
         indexer_search_info["indexer"] = indexer_info["indexer"]
         indexersearchdbentries.append(indexer_search_info)
+    indexersearchdbentries = sorted(indexersearchdbentries, key=lambda x: x["indexer"])
 
     nzbsearchresults = transform_results(nzbsearchresults, False)
     nzbsearchresults = serialize_nzb_search_result(nzbsearchresults)

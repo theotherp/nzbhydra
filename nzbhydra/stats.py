@@ -28,15 +28,24 @@ def get_avg_indexer_response_times():
     result = []
     response_times = []
     for p in Indexer.select().order_by(Indexer.name):
-
+        try:
+            indexer = getIndexerByName(p.name)
+            if not indexer.settings.enabled:
+                logger.debug("Skipping download stats for %s" % p.name)
+                continue
+        except IndexerNotFoundException:
+            logger.error("Unable to find indexer %s in configuration" % p.name)
+            continue
         avg_response_time = IndexerApiAccess().select(fn.AVG(IndexerApiAccess.response_time)).where((IndexerApiAccess.response_successful) & (IndexerApiAccess.indexer == p)).tuples()[0][0]
         if avg_response_time:
-            response_times.append({"name": p.name, "avgResponseTime": avg_response_time})
+            response_times.append({"name": p.name, "avgResponseTime": int(avg_response_time)})
     avg_response_time = IndexerApiAccess().select(fn.AVG(IndexerApiAccess.response_time)).where((IndexerApiAccess.response_successful) & (IndexerApiAccess.response_time is not None)).tuples()[0][0]
     for i in response_times:
         delta = i["avgResponseTime"] - avg_response_time
         i["delta"] = delta
         result.append(i)
+    result = sorted(result, key=lambda x: x["name"])
+    result = sorted(result, key=lambda x: x["avgResponseTime"])
 
     return result
 
@@ -55,12 +64,14 @@ def get_avg_indexer_search_results_share():
         result = database.db.execute_sql(
                 "select (100 * (select cast(sum(ps.resultsCount) as float) from indexersearch ps where ps.search_id in (select ps.search_id from indexersearch ps where ps.indexer_id == %d) and ps.indexer_id == %d)) / (select sum(ps.resultsCount) from indexersearch ps where ps.search_id in (select ps.search_id from indexersearch ps where ps.indexer_id == %d)) as sumAllResults" % (
                     p.id, p.id, p.id)).fetchone()
-        results.append({"name": p.name, "avgResultsShare": result[0] if result[0] is not None else "N/A"})
+        results.append({"name": p.name, "avgResultsShare": int(result[0]) if result[0] is not None else "N/A"})
+    results = sorted(results, key=lambda x: x["name"])
+    results = sorted(results, key=lambda x: 0 if x["avgResultsShare"] == "N/A" else x["avgResultsShare"], reverse=True)
     return results
 
 
 def get_avg_indexer_access_success():
-    results = database.db.execute_sql(
+    dbResults = database.db.execute_sql(
             """ 
             SELECT
               p.name,
@@ -80,8 +91,8 @@ def get_avg_indexer_access_success():
                             GROUP BY p.indexer_id) AS success
             on success.pid2 = p.id
             """).fetchall()
-    result = []
-    for i in results:
+    results = []
+    for i in dbResults:
         name = i[0]
         try:
             indexer = getIndexerByName(name)
@@ -96,9 +107,10 @@ def get_avg_indexer_access_success():
         sumall = failed + success
         failed_percent = (100 * failed) / sumall if sumall > 0 else "N/A"
         success_percent = (100 * success) / sumall if sumall > 0 else "N/A"
-        result.append({"name": name, "failed": failed, "success": success, "failedPercent": failed_percent, "successPercent": success_percent})
-
-    return result
+        results.append({"name": name, "failed": failed, "success": success, "failedPercent": failed_percent, "successPercent": success_percent})
+    results = sorted(results, key=lambda x: x["name"])
+    results = sorted(results, key=lambda x: x["successPercent"], reverse=True)
+    return results
 
 
 def getIndexerDownloadStats():
@@ -122,6 +134,8 @@ def getIndexerDownloadStats():
         results.append({"name": p.name,
                         "total": dlCount,
                         "share": 100 / (allDownloadsCount / dlCount) if allDownloadsCount > 0 and dlCount > 0 else 0})
+    results = sorted(results, key=lambda x: x["name"])
+    results = sorted(results, key=lambda x: x["share"], reverse=True)
     return results
 
 
