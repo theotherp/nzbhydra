@@ -149,7 +149,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 22,
+        "configVersion": 23,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -582,6 +582,7 @@ def migrateConfig(config):
                 for downloader in config["downloaders"]:
                     downloader["downloadType"] = "nzb"
                 for indexer in config["indexers"]:
+                    addLogMessage(20, "Enabling %s for all categories" % indexer["name"])
                     indexer["categories"] = []
 
         if config["main"]["configVersion"] == 21:
@@ -589,6 +590,14 @@ def migrateConfig(config):
                 addLogMessage(20, "Adding anizb indexer")
                 anizb = [x for x in initialConfig["indexers"] if x["name"] == "anizb"][0]
                 config["indexers"].append(anizb)
+
+        if config["main"]["configVersion"] == 22:
+            with version_update(config, 23):
+                for indexer in config["indexers"]:
+                    if "categories" not in indexer.keys():
+                        addLogMessage(20, "Enabling %s for all categories" % indexer["name"])
+                        indexer["categories"] = []
+
         
     return config
 
