@@ -3,7 +3,7 @@
 ----------
 
 ### 0.2.118
-Added: Newznab indexers will now be checked for their supported categories and by default only be enabled for those. For those categories that are not standardized by newznab (e.g. Anime, Ebooks, etc.). Hydra will try to determine the used category identifier for each indexer.
+Added: Newznab indexers will now be checked for their supported categories and by default only be enabled for those. For those categories that are not standardized by newznab (e.g. Anime, Ebooks, etc.) Hydra will try to determine the used category identifier for each indexer.
  Please note that unfortunately there is no automatic process to do this for indexers that were already added. Please click the "Check types" button for every indexer once and then save. Sorry about that.
   
 Added: Anime category and anizb indexer.

@@ -4304,60 +4304,77 @@ function ConfigFields($injector) {
 }
 ConfigFields.$inject = ["$injector"];
 
+
 function getIndexerPresets() {
     return [
         [
         {
             name: "6box",
-            host: "https://6box.me",
-            search_ids: ["imdbid"]
+            host: "https://6box.me"
         },
         {
             name: "6box nzedb",
-            host: "https://nzedb.6box.me",
-            search_ids: ["rid", "imdbid"]
+            host: "https://nzedb.6box.me"
         },
         {
             name: "6box nntmux",
-            host: "https://nn-tmux.6box.me",
-            search_ids: ["tvdbid", "rid", "imdbid"]
+            host: "https://nn-tmux.6box.me"
+        },
+        {
+            name: "CasstormNZB",
+            host: "https://nzb.casstormnzb.com"
         },
         {
             name: "DogNZB",
-            host: "https://api.dognzb.cr",
-            search_ids: ["tvdbid", "rid", "imdbid"]
+            host: "https://api.dognzb.cr"
         },
         {
             name: "Drunken Slug",
-            host: "https://drunkenslug.com",
-            search_ids: ["tvdbid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
+            host: "https://drunkenslug.com"
+        },
+        {
+            name: "miatrix",
+            host: "https://www.miatrix.com"
         },
         {
             name: "NZB Finder",
-            host: "https://nzbfinder.ws",
-            search_ids: ["tvdbid", "rid", "imdbid", "tvmazeid", "traktid", "tmdbid"]
+            host: "https://nzbfinder.ws"
         },
         {
             name: "NZBs.org",
-            host: "https://nzbs.org",
-            search_ids: ["tvdbid", "rid", "imdbid", "tvmazeid"]
+            host: "https://nzbs.org"
+        },
+        {
+            name: "nzb.is",
+            host: "https://nzb.is"
         },
         {
             name: "nzb.su",
-            host: "https://api.nzb.su",
-            search_ids: ["rid", "imdbid"]
+            host: "https://api.nzb.su"
         },
         {
             name: "NZBGeek",
-            host: "https://api.nzbgeek.info",
-            search_ids: ["tvdbid", "rid", "imdbid"]
+            host: "https://api.nzbgeek.info"
+        },
+        {
+            name: "NzbNdx",
+            host: "https://www.nzbndx.com"
+        },
+        {
+            name: "NzBNooB",
+            host: "https://www.nzbnoob.com"
+        },
+        {
+            name: "nzbplanet",
+            host: "https://nzbplanet.net"
+        },
+        {
+            name: "oznzb",
+            host: "https://api.oznzb.com/"
         },
         {
             name: "SimplyNZBs",
-            host: "https://simplynzbs.com",
-            search_ids: ["imdbid", "rid", "tmdbid", "tvdbid", "tvmazeid"],
-            searchTypes: ["tvsearch", "movie"]
-
+            host: "https://simplynzbs.com"
         }
     ],
         [
