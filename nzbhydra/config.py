@@ -154,7 +154,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 23,
+        "configVersion": 24,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -596,8 +596,8 @@ def migrateConfig(config):
                 anizb = [x for x in initialConfig["indexers"] if x["name"] == "anizb"][0]
                 config["indexers"].append(anizb)
 
-        if config["main"]["configVersion"] == 22:
-            with version_update(config, 23):
+        if config["main"]["configVersion"] < 24:
+            with version_update(config, 24):
                 for indexer in config["indexers"]:
                     if "categories" not in indexer.keys():
                         addLogMessage(20, "Enabling %s for all categories" % indexer["name"])
