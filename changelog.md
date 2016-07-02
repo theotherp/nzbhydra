@@ -1,6 +1,8 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.119
+Fixed: Problem with categories (I hope).
 
 ### 0.2.118
 Added: Newznab indexers will now be checked for their supported categories and by default only be enabled for those. For those categories that are not standardized by newznab (e.g. Anime, Ebooks, etc.) Hydra will try to determine the used category identifier for each indexer.

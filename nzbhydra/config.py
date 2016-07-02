@@ -56,6 +56,7 @@ initialConfig = {
         },
         {
             "accessType": "internal",
+            "categories": [],
             "enabled": True,
             "hitLimit": 0,
             "hitLimitResetTime": None,
@@ -73,6 +74,7 @@ initialConfig = {
         },
         {
             "accessType": "internal",
+            "categories": [],
             "enabled": True,
             "hitLimit": 0,
             "hitLimitResetTime": None,
@@ -91,6 +93,7 @@ initialConfig = {
         },
         {
             "accessType": "internal",
+            "categories": [],
             "enabled": True,
             "generalMinSize": 1,
             "hitLimit": 0,
@@ -110,6 +113,7 @@ initialConfig = {
         },
         {
             "accessType": "external",
+            "categories": [],
             "enabled": True,
             "hitLimit": 0,
             "hitLimitResetTime": None,
@@ -128,6 +132,7 @@ initialConfig = {
         {
             "accessType": "both",
             "apikey": "",
+            "categories": [],
             "enabled": False,
             "hitLimit": 0,
             "hitLimitResetTime": None,
