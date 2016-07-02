@@ -132,6 +132,7 @@ class SearchModule(object):
         else:
             urls = self.get_search_urls(search_request)
         queries_execution_result = self.execute_queries(urls, search_request)
+        database.db.close()
         return queries_execution_result
 
     # Access to most basic functions
