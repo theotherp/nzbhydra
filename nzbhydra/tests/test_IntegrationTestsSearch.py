@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import json
 import random
+import threading
 
 import pytest
 import requests_mock
@@ -30,7 +31,8 @@ logging.getLogger("root").addHandler(logging.StreamHandler(sys.stdout))
 logging.getLogger("root").setLevel("DEBUG")
 
 
-class IntegrationApiSearchTests(unittest.TestCase):
+class AbstractSearchTestCase(unittest.TestCase):
+
     def prepareIndexers(self, indexerCount):
         config.settings.indexers = []
         for i in range(1, indexerCount + 1):
@@ -105,16 +107,7 @@ class IntegrationApiSearchTests(unittest.TestCase):
         config.settings = Bunch.fromDict(config.initialConfig)
         self.app = web.app.test_client()
         config.settings.main.apikey = None
-        
-        
-        
-        # 
-        # getIndexerSettingByName("binsearch").enabled = False
-        # getIndexerSettingByName("nzbindex").enabled = False
-        # getIndexerSettingByName("omgwtf").enabled = False
-        # getIndexerSettingByName("womble").enabled = False
-        # getIndexerSettingByName("nzbclub").enabled = False
-        # 
+
         self.newznab1 = Bunch()
         self.newznab1.enabled = True
         self.newznab1.name = "newznab1"
@@ -143,9 +136,10 @@ class IntegrationApiSearchTests(unittest.TestCase):
 
         config.settings.indexers = [self.newznab1, self.newznab2]
         read_indexers_from_config()
-        
-        
 
+
+class IntegrationApiSearchTests(AbstractSearchTestCase):
+        
     @requests_mock.Mocker()
     def testSimpleQuerySearch(self, m):
         web.app.template_folder = "../templates"
@@ -297,5 +291,3 @@ class IntegrationApiSearchTests(unittest.TestCase):
             self.app.get("/internalapi/search?query=query+--excluded&category=all")
             calledUrls = sorted([x.url for x in requestsMock.request_history])
             self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query+!excluded', calledUrls[0]))
-
-            

@@ -118,7 +118,7 @@ def pick_indexers(search_request):
         except IndexerStatus.DoesNotExist:
             pass
         if hasattr(p.settings, "categories") and len(p.settings.categories) > 0:
-            if search_request.category.category.name not in p.settings.categories:
+            if search_request.category.category.name != "all" and search_request.category.category.name not in p.settings.categories:
                 logger.debug("Did not pick %s because it is not enabled for category %s" % (p, search_request.category.category.pretty))
                 continue
         if p.settings.hitLimit > 0:
@@ -346,10 +346,6 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
 
     logger.debug("Returning search results now")
     return {"results": results_by_indexer, "dbsearch": dbsearch}
-
-
-def execute(indexer, search_function, args):
-    return getattr(indexer, search_function)(args)
 
 
 def start_search_futures(indexers_and_search_requests):

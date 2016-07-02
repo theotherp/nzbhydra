@@ -10,6 +10,8 @@ Added: Anime category and anizb indexer.
 
 Added: When selecting a category on the search page only those indexers that are enabled for that category will be displayed.
 
+Fixed: It looks like I found a solution to the long-standing "database is locked" issue. If true, the fix was embarrassingly, hilariously simple and obvious.
+
 Fixed: Entries in stats and indexer statuses are sorted (either better to worse or by name).
 
 ### 0.2.117

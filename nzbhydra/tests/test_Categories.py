@@ -9,7 +9,7 @@ class TestCategories(unittest.TestCase):
     def testCategoryMerge(self):
         config.settings = Bunch.fromDict(config.initialConfig)
         cats = categories.getCategories()
-        self.assertEqual(17, len(cats))
+        self.assertEqual(18, len(cats))
         self.assertEqual("movies", cats[2].name)
         self.assertEqual([2000], cats[2].newznabCategories)
         self.assertEqual("movieshd", cats[3].name)
