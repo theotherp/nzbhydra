@@ -1598,7 +1598,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.offset = 0;
     //Handle incoming data
     
-    $scope.indexersearches = SearchService.getLastResults().indexersearches;
+    $scope.indexersearches = _.sortBy(SearchService.getLastResults().indexersearches, function(i) {return i.indexer.toLowerCase()});
     $scope.indexerDisplayState = []; //Stores if a indexer's results should be displayed or not
     $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
     $scope.groupExpanded = {};
@@ -2133,7 +2133,9 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     function getAvailableIndexers() {
         return _.chain(safeConfig.indexers).filter(function (indexer) {
             return indexer.enabled && indexer.showOnSearch && (angular.isUndefined(indexer.categories) || indexer.categories.length == 0 || $scope.category.name == "all" || indexer.categories.indexOf($scope.category.name) > -1);
-        }).sortBy("name")
+        }).sortBy(function(indexer) {
+            return indexer.name.toLowerCase();
+        })
             .map(function (indexer) {
                 return {name: indexer.name, activated: isIndexerPreselected(indexer), categories: indexer.categories};
             }).value();

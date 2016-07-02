@@ -18,7 +18,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.offset = 0;
     //Handle incoming data
     
-    $scope.indexersearches = SearchService.getLastResults().indexersearches;
+    $scope.indexersearches = _.sortBy(SearchService.getLastResults().indexersearches, function(i) {return i.indexer.toLowerCase()});
     $scope.indexerDisplayState = []; //Stores if a indexer's results should be displayed or not
     $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
     $scope.groupExpanded = {};

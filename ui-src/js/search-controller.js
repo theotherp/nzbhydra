@@ -238,7 +238,9 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     function getAvailableIndexers() {
         return _.chain(safeConfig.indexers).filter(function (indexer) {
             return indexer.enabled && indexer.showOnSearch && (angular.isUndefined(indexer.categories) || indexer.categories.length == 0 || $scope.category.name == "all" || indexer.categories.indexOf($scope.category.name) > -1);
-        }).sortBy("name")
+        }).sortBy(function(indexer) {
+            return indexer.name.toLowerCase();
+        })
             .map(function (indexer) {
                 return {name: indexer.name, activated: isIndexerPreselected(indexer), categories: indexer.categories};
             }).value();
