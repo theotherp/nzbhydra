@@ -385,9 +385,7 @@ def find_duplicates(results):
             foundGroup = False
             for group in grouped:
                 for other in group:
-                    same = i.indexer != other.indexer
-                    same = same and test_for_duplicate_age(i, other)
-                    same = same and test_for_duplicate_size(i, other)
+                    same = testForSameness(i, other)
                     if same:
                         foundGroup = True
                         group.append(i)
@@ -401,32 +399,49 @@ def find_duplicates(results):
     return grouped_by_sameness
 
 
-def test_for_duplicate_age(search_result_1, search_result_2):
-    if search_result_1.epoch is None or search_result_2.epoch is None:
-        return False
-    age_threshold = config.settings.searching.duplicateAgeThreshold
+def testForSameness(result1, result2):
+    group_known = result1.group is not None and result2.group is not None
+    same_group = result1.group == result2.group
+    poster_known = result1.poster is not None and result2.poster is not None
+    same_poster = result1.poster == result2.poster
 
-    group_known = search_result_1.group is not None and search_result_2.group is not None
-    same_group = search_result_1.group == search_result_2.group
-    poster_known = search_result_1.poster is not None and search_result_2.poster is not None
-    same_poster = search_result_1.poster == search_result_2.poster
+    age_threshold = config.settings.searching.duplicateAgeThreshold
+    size_threshold = config.settings.searching.duplicateSizeThresholdInPercent
     if (group_known and not same_group) or (poster_known and not same_poster):
         return False
     if (same_group and not poster_known) or (same_poster and not group_known):
-        age_threshold = 3
+        age_threshold = 4
+        size_threshold = 2
     if same_group and same_poster:
-        age_threshold = 8
+        age_threshold = 2
+        size_threshold = 1
+    
+    same = result1.indexer != result2.indexer
+    same = same and test_for_duplicate_age(result1, result2, age_threshold)
+    same = same and test_for_duplicate_size(result1, result2, size_threshold)
+    return same
 
-    same_age = abs(search_result_1.epoch - search_result_2.epoch) / (60 * 60) <= age_threshold  # epoch difference (seconds) to minutes    
+
+def test_for_duplicate_age(result1, result2, age_threshold):
+    if result1.epoch is None or result2.epoch is None:
+        return False
+    
+    group_known = result1.group is not None and result2.group is not None
+    same_group = result1.group == result2.group
+    poster_known = result1.poster is not None and result2.poster is not None
+    same_poster = result1.poster == result2.poster
+    if (group_known and not same_group) or (poster_known and not same_poster):
+        return False
+    
+    same_age = abs(result1.epoch - result2.epoch) / (60 * 60) <= age_threshold  # epoch difference (seconds) to minutes    
     return same_age
 
 
-def test_for_duplicate_size(search_result_1, search_result_2):
-    if not search_result_1.size or not search_result_2.size:
+def test_for_duplicate_size(result1, result2, size_threshold):
+    if not result1.size or not result2.size:
         return False
-    size_threshold = config.settings.searching.duplicateSizeThresholdInPercent
-    size_difference = search_result_1.size - search_result_2.size
-    size_average = (search_result_1.size + search_result_2.size) / 2
+    size_difference = result1.size - result2.size
+    size_average = (result1.size + result2.size) / 2
     size_difference_percent = abs(size_difference / size_average) * 100
     same_size = size_difference_percent <= size_threshold
 

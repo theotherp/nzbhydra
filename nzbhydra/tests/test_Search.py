@@ -318,45 +318,46 @@ class SearchTests(unittest.TestCase):
     def testTestForDuplicate(self):
         config.settings.searching.duplicateAgeThreshold = 120
         age_threshold = config.settings.searching.duplicateAgeThreshold
+        size_threshold = config.settings.searching.duplicateSizeThresholdInPercent
         config.settings.searching.duplicateSizeThresholdInPercent = 1
     
         # same title, age and size
         result1 = NzbSearchResult(title="A title", epoch=0, size=1, indexer="a")
         result2 = NzbSearchResult(title="A title", epoch=0, size=1, indexer="b")
-        assert search.test_for_duplicate_age(result1, result2)
-        assert search.test_for_duplicate_size(result1, result2)
+        assert search.test_for_duplicate_age(result1, result2, age_threshold)
+        assert search.test_for_duplicate_size(result1, result2, size_threshold)
     
         # size in threshold
         result1 = NzbSearchResult(title="A title", epoch=0, size=100, indexer="a")
         result2 = NzbSearchResult(title="A title", epoch=0, size=101, indexer="b")
-        assert search.test_for_duplicate_size(result1, result2)
+        assert search.test_for_duplicate_size(result1, result2, size_threshold)
     
         # age in threshold
         result1 = NzbSearchResult(title="A title", epoch=0, size=1, indexer="a")
         result2 = NzbSearchResult(title="A title", epoch=age_threshold * 120 - 1, size=1, indexer="b")
-        assert search.test_for_duplicate_age(result1, result2)
+        assert search.test_for_duplicate_age(result1, result2, age_threshold)
     
         # size outside of threshold -> duplicate
         result1 = NzbSearchResult(title="A title", epoch=0, size=1, indexer="a")
         result2 = NzbSearchResult(title="A title", epoch=0, size=2, indexer="b")
-        assert not search.test_for_duplicate_size(result1, result2)
+        assert not search.test_for_duplicate_size(result1, result2, size_threshold)
     
         # age outside of threshold -> duplicate
         result1 = NzbSearchResult(title="A title", epoch=0, size=1, indexer="a")
         result2 = NzbSearchResult(title="A title", epoch=age_threshold * 120 * 1000 + 1, size=0, indexer="b")
-        assert not search.test_for_duplicate_age(result1, result2)
+        assert not search.test_for_duplicate_age(result1, result2, age_threshold)
     
         # age and size inside of threshold
         result1 = NzbSearchResult(title="A title", epoch=0, size=101, indexer="a")
         result2 = NzbSearchResult(title="A title", epoch=age_threshold * 120 - 1, size=101, indexer="b")
-        assert search.test_for_duplicate_size(result1, result2)
-        assert search.test_for_duplicate_age(result1, result2)
+        assert search.test_for_duplicate_size(result1, result2, size_threshold)
+        assert search.test_for_duplicate_age(result1, result2, age_threshold)
     
         # age and size outside of threshold -> duplicate
         result1 = NzbSearchResult(title="A title", epoch=0, size=1, indexer="a")
         result2 = NzbSearchResult(title="A title", epoch=age_threshold * 120 * 1000 + 1, size=200, indexer="b")
-        assert not search.test_for_duplicate_size(result1, result2)
-        assert not search.test_for_duplicate_age(result1, result2)
+        assert not search.test_for_duplicate_size(result1, result2, size_threshold)
+        assert not search.test_for_duplicate_age(result1, result2, age_threshold)
     
     def testFindDuplicates(self):
         config.settings.searching.duplicateAgeThreshold = 3600
@@ -443,19 +444,7 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(1, len(results[0]))
         self.assertEqual(1, len(results[1]))
         self.assertEqual(1, len(results[2]))
-    
-        # Same poster and group posted inside of 24 hours
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1", poster="postera", group="groupa")
-        result2 = NzbSearchResult(title="Title1", epoch=60 * 60 * 4, size=1, indexer="2", indexerguid="2", poster="postera", group="groupa")
-        results = search.find_duplicates([result1, result2])
-        self.assertEqual(1, len(results))
-        self.assertEqual(2, len(results[0]))
-    
-        # Same poster and group posted outside of 24 hours
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1", poster="postera", group="groupa")
-        result2 = NzbSearchResult(title="Title1", epoch=1000 * 60 * 25, size=1, indexer="2", indexerguid="2", poster="postera", group="groupa")
-        results = search.find_duplicates([result1, result2])
-        self.assertEqual(2, len(results))
+
     
         # Same size and age and group but different posters (very unlikely) 
         result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1", poster="postera", group="groupa")
@@ -475,11 +464,6 @@ class SearchTests(unittest.TestCase):
         results = search.find_duplicates([result1, result2])
         self.assertEqual(1, len(results))
     
-        # Same size and age and poster but unknown group outside of 3 hours 
-        result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1", poster="postera")
-        result2 = NzbSearchResult(title="Title1", epoch=60 * 60 * 4, size=1, indexer="2", indexerguid="2", poster="postera", group="groupb")
-        results = search.find_duplicates([result1, result2])
-        self.assertEqual(2, len(results))
     
     def testFindDuplicatesNew(self):
         result1 = NzbSearchResult(title="Title1", epoch=0, size=1, indexer="1", indexerguid="1", poster="postera", group="groupa")

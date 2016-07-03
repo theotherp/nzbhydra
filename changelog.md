@@ -6,6 +6,8 @@ Added: Include newznab categories in API results where possible.
 
 Fixed: Use proper age threshold for duplicate detection when poster and group are unknown.
 
+Changed: Tweaked (and hopefully improved) duplicate detection. 
+
 ### 0.2.121
 Added: Include search query in title of search results page.
 

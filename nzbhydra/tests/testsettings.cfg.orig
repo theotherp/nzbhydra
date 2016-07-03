@@ -15,6 +15,7 @@
         "apikey": "hailhydra",
         "ssl": true,
         "cacheTimeout": 30,
+        "configVersion": 25,
         "host": "127.0.0.1",
         "cachethreshold": 25,
         "logging": {

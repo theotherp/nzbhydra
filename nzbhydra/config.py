@@ -182,8 +182,8 @@ initialConfig = {
     },
     "searching": {
         "alwaysShowDuplicates": False,
-        "duplicateAgeThreshold": 2,
-        "duplicateSizeThresholdInPercent": 0.1,
+        "duplicateAgeThreshold": 8,
+        "duplicateSizeThresholdInPercent": 1.0,
         "generate_queries": [
             "internal"
         ],
@@ -606,8 +606,11 @@ def migrateConfig(config):
         if config["main"]["configVersion"] == 24:
             with version_update(config, 25):
                 if config["searching"]["duplicateAgeThreshold"] == 3600:
-                    addLogMessage(20, "Setting duplicate age threshold to 2 hours")
-                    config["searching"]["duplicateAgeThreshold"] = 2
+                    addLogMessage(20, "Setting duplicate age threshold to 8 hours")
+                    config["searching"]["duplicateAgeThreshold"] = 8
+                if config["searching"]["duplicateSizeThresholdInPercent"] == 3600:
+                    addLogMessage(20, "Setting duplicate size threshold to 1 percent")
+                    config["searching"]["duplicateSizeThresholdInPercent"] = 1.0
 
         
     return config
