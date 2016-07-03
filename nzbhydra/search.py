@@ -296,7 +296,7 @@ def search(search_request):
                 if search_request.internal:
                     for i in group:
                         # We give each group of results a unique value by which they can be identified later
-                        i.hash = hash(group[0].guid)
+                        i.hash = hash(group[0].details_link)
                         allresults.append(i)
 
                 else:

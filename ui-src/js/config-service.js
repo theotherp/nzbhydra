@@ -56,8 +56,6 @@ function ConfigService($http, $q, $cacheFactory) {
     }
 
     function maySeeAdminArea() {
-        console.log("MAYSEEADMINAREA IS SET TO TRUE FOR DEBUGGING");
-        return true;
         function loadAll() {
             var maySeeAdminArea = cache.get("maySeeAdminArea");
             if (!angular.isUndefined(maySeeAdminArea)) {

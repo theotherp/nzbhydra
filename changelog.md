@@ -1,6 +1,11 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.120
+Added: Include search query in title of search results page.
+
+Fixed: Duplicates were not displayed properly.
+
 ### 0.2.119
 Fixed: Problem with categories (I hope).
 
