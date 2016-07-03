@@ -28,7 +28,7 @@ class ThreadedAccessTests(AbstractSearchTestCase):
     def testReproduceDatabaseIsLocked(self):
         web.app.template_folder = "../templates"
         threads = []
-        for i in range(5):
+        for i in range(15):
             t = threading.Thread(target=self.startTest)
             threads.append(t)
             t.start()

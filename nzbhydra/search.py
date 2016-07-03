@@ -261,15 +261,14 @@ def search(search_request):
         indexers_to_call = []
 
         for indexer, queries_execution_result in result["results"].items():
-            with db.atomic():
-                for result in queries_execution_result.results:
-                    if result.title is None or result.link is None or result.indexerguid is None:
-                        logger.info("Skipping result with missing data: %s" % result)
-                        continue
-                    searchResult = SearchResult().get_or_create(indexer=indexer.indexer, title=result.title, link=result.link, details=result.details_link, guid=result.indexerguid)
-                    searchResult = searchResult[0]  # Second is a boolean determining if the search result was created
-                    result.searchResultId = searchResult.id
-                    search_results.append(result)
+            for result in queries_execution_result.results:
+                if result.title is None or result.link is None or result.indexerguid is None:
+                    logger.info("Skipping result with missing data: %s" % result)
+                    continue
+                searchResult = SearchResult().get_or_create(indexer=indexer.indexer, title=result.title, link=result.link, details=result.details_link, guid=result.indexerguid)
+                searchResult = searchResult[0]  # Second is a boolean determining if the search result was created
+                result.searchResultId = searchResult.id
+                search_results.append(result)
 
             logger.debug("%s returned %d results" % (indexer, len(queries_execution_result.results)))
             cache_entry["indexer_infos"][indexer].update(
@@ -328,21 +327,19 @@ def search(search_request):
 def search_and_handle_db(dbsearch, indexers_and_search_requests):
     results_by_indexer = start_search_futures(indexers_and_search_requests)
     dbsearch.username = request.authorization.username if request.authorization is not None else None
-    with db.atomic():
-        dbsearch.save()
+    dbsearch.save()
     for indexer, result in results_by_indexer.items():
         if result.didsearch:
-            with db.atomic():
-                indexersearchentry = result.indexerSearchEntry
-                indexersearchentry.search = dbsearch
-                indexersearchentry.save()
-                result.indexerApiAccessEntry.username = request.authorization.username if request.authorization is not None else None
-                try:
-                    result.indexerApiAccessEntry.indexer = Indexer.get(Indexer.name == indexer)
-                    result.indexerApiAccessEntry.save()
-                    result.indexerStatus.save()
-                except Exception:
-                    logger.error("Error saving IndexerApiAccessEntry. Debug info: %s" % json.dumps(model_to_dict(result.indexerApiAccessEntry)))
+            indexersearchentry = result.indexerSearchEntry
+            indexersearchentry.search = dbsearch
+            indexersearchentry.save()
+            result.indexerApiAccessEntry.username = request.authorization.username if request.authorization is not None else None
+            try:
+                result.indexerApiAccessEntry.indexer = Indexer.get(Indexer.name == indexer)
+                result.indexerApiAccessEntry.save()
+                result.indexerStatus.save()
+            except Exception:
+                logger.error("Error saving IndexerApiAccessEntry. Debug info: %s" % json.dumps(model_to_dict(result.indexerApiAccessEntry)))
 
     logger.debug("Returning search results now")
     return {"results": results_by_indexer, "dbsearch": dbsearch}
