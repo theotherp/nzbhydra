@@ -182,7 +182,7 @@ initialConfig = {
     },
     "searching": {
         "alwaysShowDuplicates": False,
-        "duplicateAgeThreshold": 3600,
+        "duplicateAgeThreshold": 12,
         "duplicateSizeThresholdInPercent": 0.1,
         "generate_queries": [
             "internal"

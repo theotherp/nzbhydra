@@ -5,6 +5,7 @@ from __future__ import absolute_import
 
 import copy
 
+import arrow
 from builtins import range
 from builtins import str
 from builtins import *
@@ -132,18 +133,17 @@ def transform_results(results, external):
         i = copy.copy(j)
         i.link = get_nzb_link_and_guid(i.searchResultId, external)
         i.guid = "nzbhydrasearchresult%d" % i.searchResultId
-        has_guid = False
-        has_size = False
-        for a in i.attributes:
-            if a["name"] == "guid":
-                a["value"] = i.guid
-                has_guid = True
-            if a["name"] == "size":
-                has_size = True
-        if not has_guid:
-            i.attributes.append({"name": "guid", "value": i.guid})  # If it wasn't set before now it is (for results from newznab-indexers)
-        if not has_size:
-            i.attributes.append({"name": "size", "value": i.size})  # If it wasn't set before now it is (for results from newznab-indexers)
+        attributes = {x["name"]: x["value"] for x in i.attributes}
+        attributes["guid"] = i.guid
+        for attribute in ["size", "poster", "group"]:
+            if getattr(i, attribute)and attribute not in attributes.keys():
+                attributes[attribute] = getattr(i, attribute)
+        if i.passworded is not None:
+            attributes["password"] = 1 if i.passworded else 0
+        i.attributes = [{"name": key, "value": value} for key, value in attributes.iteritems()]
+        for category in i.category.newznabCategories:
+            i.attributes.append({"name": "category", "value": category})
+        
         i.category = i.category.pretty
         transformed.append(i)
 

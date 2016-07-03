@@ -1,7 +1,10 @@
 # NZB Hydra changelog
 
 ----------
-### 0.2.120
+### 0.2.121
+Added: Include newznab categories in API results where possible.
+
+### 0.2.121
 Added: Include search query in title of search results page.
 
 Fixed: Duplicates were not displayed properly.
