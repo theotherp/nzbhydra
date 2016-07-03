@@ -4072,7 +4072,7 @@ function ConfigFields($injector) {
                                 label: 'Duplicate age threshold',
                                 required: true,
                                 addonRight: {
-                                    text: 'seconds'
+                                    text: 'hours'
                                 }
                             }
                         },

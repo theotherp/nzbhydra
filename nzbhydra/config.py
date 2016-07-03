@@ -154,7 +154,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 24,
+        "configVersion": 25,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -182,7 +182,7 @@ initialConfig = {
     },
     "searching": {
         "alwaysShowDuplicates": False,
-        "duplicateAgeThreshold": 12,
+        "duplicateAgeThreshold": 2,
         "duplicateSizeThresholdInPercent": 0.1,
         "generate_queries": [
             "internal"
@@ -602,6 +602,12 @@ def migrateConfig(config):
                     if "categories" not in indexer.keys():
                         addLogMessage(20, "Enabling %s for all categories" % indexer["name"])
                         indexer["categories"] = []
+
+        if config["main"]["configVersion"] == 24:
+            with version_update(config, 25):
+                if config["searching"]["duplicateAgeThreshold"] == 3600:
+                    addLogMessage(20, "Setting duplicate age threshold to 2 hours")
+                    config["searching"]["duplicateAgeThreshold"] = 2
 
         
     return config
