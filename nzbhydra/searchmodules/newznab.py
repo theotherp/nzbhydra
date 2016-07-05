@@ -375,8 +375,9 @@ class NewzNab(SearchModule):
             url.add({"ep": search_request.episode})
         if search_request.season:
             url.add({"season": search_request.season})
-        if search_request.query:
-            url.add({"q": search_request.query})
+        # Adding the show name is not necessary, and it causes some indexers to return 0 results
+        #if search_request.query:
+        #    url.add({"q": search_request.query})
 
         return [url.url]
 
