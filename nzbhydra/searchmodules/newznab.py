@@ -371,13 +371,13 @@ class NewzNab(SearchModule):
                 return []
 
             url.add({search_request.identifier_key: search_request.identifier_value})
+        elif search_request.query:
+            url.add({"q": search_request.query})
+            
         if search_request.episode:
             url.add({"ep": search_request.episode})
         if search_request.season:
             url.add({"season": search_request.season})
-        # Adding the show name is not necessary, and it causes some indexers to return 0 results
-        #if search_request.query:
-        #    url.add({"q": search_request.query})
 
         return [url.url]
 
