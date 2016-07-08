@@ -1642,7 +1642,7 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
                 function (data, model) {
                     blockUI.reset();
                     scope.spinnerActive = false;
-                    growl.info("Successfully tested capabilites of indexer. Supports: " + data.supportedIds + "," ? data.supportedIds && data.supportedTypes : "" + data.supportedTypes);
+                    growl.info("Successfully tested capabilites of indexer");
                     deferred.resolve();
                 },
                 function () {
