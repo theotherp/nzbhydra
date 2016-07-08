@@ -712,6 +712,7 @@ function ConfigFields($injector) {
                             magazineCategory: null,
                             ebookCategory: null,
                             enabled: true,
+                            categories: [],
                             host: null,
                             apikey: null,
                             hitLimit: null,

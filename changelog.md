@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.123
+Fixed: Categories not set for new indexers not added by selecting a preset.
+
 ### 0.2.122
 Fixed: When searching TV shows or movies from the GUI using autocomplete don't use the title as query.
 
@@ -11,7 +14,7 @@ Fixed: Use proper age threshold for duplicate detection when poster and group ar
 
 Changed: Tweaked (and hopefully improved) duplicate detection. 
 
-### 0.2.121
+### 0.2.120
 Added: Include search query in title of search results page.
 
 Fixed: Duplicates were not displayed properly.
