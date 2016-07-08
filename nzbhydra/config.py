@@ -39,7 +39,7 @@ initialConfig = {
         {
             "accessType": "both",
             "categories": ["anime"],
-            "enabled": True,
+            "enabled": False,
             "hitLimit": 0,
             "hitLimitResetTime": None,
             "host": "https://anizb.org",
@@ -113,7 +113,7 @@ initialConfig = {
         },
         {
             "accessType": "external",
-            "categories": [],
+            "categories": ["tv", "tvhd", "tvsd"],
             "enabled": True,
             "hitLimit": 0,
             "hitLimitResetTime": None,
@@ -792,7 +792,7 @@ def getCategorySettingByName(name):
 
 
 def getSafeConfig():
-    indexers = [{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "categories": x["categories"], "showOnSearch": x["showOnSearch"] and x["accessType"] != "external"} for x in settings["indexers"]]
+    indexers = [{"name": x["name"], "preselect": x["preselect"], "enabled": x["enabled"], "categories": x["categories"] if "categories" in x.keys() else [], "showOnSearch": x["showOnSearch"] and x["accessType"] != "external"} for x in settings["indexers"]]
 
     return {
         "indexers": indexers,
