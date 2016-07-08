@@ -39,7 +39,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.minage = getNumberOrUndefined($stateParams.minage);
     $scope.maxage = getNumberOrUndefined($stateParams.maxage);
     if (!_.isUndefined($scope.title) && _.isUndefined($scope.query)) {
-        $scope.query = $scope.title;
+        //$scope.query = $scope.title;
     }
     if (!angular.isUndefined($stateParams.indexers)) {
         $scope.indexers = decodeURIComponent($stateParams.indexers).split("|");

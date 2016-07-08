@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.122
+Fixed: When searching TV shows or movies from the GUI using autocomplete don't use the title as query.
+
 ### 0.2.121
 Added: Include newznab categories in API results where possible.
 
