@@ -601,7 +601,7 @@ def migrateConfig(config):
                 if config["searching"]["duplicateAgeThreshold"] == 3600:
                     addLogMessage(20, "Setting duplicate age threshold to 8 hours")
                     config["searching"]["duplicateAgeThreshold"] = 8
-                if config["searching"]["duplicateSizeThresholdInPercent"] == 3600:
+                if config["searching"]["duplicateSizeThresholdInPercent"] == 0.1:
                     addLogMessage(20, "Setting duplicate size threshold to 1 percent")
                     config["searching"]["duplicateSizeThresholdInPercent"] = 1.0
 
