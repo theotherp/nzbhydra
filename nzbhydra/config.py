@@ -596,13 +596,6 @@ def migrateConfig(config):
                 anizb = [x for x in initialConfig["indexers"] if x["name"] == "anizb"][0]
                 config["indexers"].append(anizb)
 
-        if config["main"]["configVersion"] < 24:
-            with version_update(config, 24):
-                for indexer in config["indexers"]:
-                    if "categories" not in indexer.keys():
-                        addLogMessage(20, "Enabling %s for all categories" % indexer["name"])
-                        indexer["categories"] = []
-
         if config["main"]["configVersion"] == 24:
             with version_update(config, 25):
                 if config["searching"]["duplicateAgeThreshold"] == 3600:
@@ -611,6 +604,12 @@ def migrateConfig(config):
                 if config["searching"]["duplicateSizeThresholdInPercent"] == 3600:
                     addLogMessage(20, "Setting duplicate size threshold to 1 percent")
                     config["searching"]["duplicateSizeThresholdInPercent"] = 1.0
+
+        #Make super sure they're set...
+        for indexer in config["indexers"]:
+            if "categories" not in indexer.keys():
+                addLogMessage(20, "Enabling %s for all categories" % indexer["name"])
+                indexer["categories"] = []
 
         
     return config
