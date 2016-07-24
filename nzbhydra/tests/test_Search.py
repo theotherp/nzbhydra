@@ -225,7 +225,7 @@ class SearchTests(unittest.TestCase):
     def testIndexersApiLimits(self):
 
         config.settings.searching.generate_queries = []
-        self.newznab1.hitLimit = 2
+        self.newznab1.hitLimit = 3
         self.newznab1.hitLimitResetTime = None
         config.settings.indexers = [self.newznab1]
         read_indexers_from_config()

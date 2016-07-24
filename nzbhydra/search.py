@@ -131,7 +131,7 @@ def pick_indexers(search_request):
                 comparisonTime = arrow.get(arrow.utcnow().datetime - datetime.timedelta(days=1))
 
             apiHits = IndexerApiAccess().select().where((IndexerApiAccess.indexer == p.indexer) & (IndexerApiAccess.time > comparisonTime) & IndexerApiAccess.response_successful).count()
-            if apiHits > p.settings.hitLimit:
+            if apiHits >= p.settings.hitLimit:
                 if p.settings.hitLimitResetTime:
                     logger.info("Did not pick %s because its API hit limit of %d was reached. Will pick again after %02d:00" % (p, p.settings.hitLimit, p.settings.hitLimitResetTime))
                 else:
