@@ -1,3 +1,5 @@
 Hydra comes with a list of preconfigured search engines (like NZB Club and Binsearch for raw searches and Womble's index for TV releases)
 
 Most of you will want to use your newznab indexers here. The first time an indexer is added the connection is tested. When successful the supported search IDs and types are checked. These determine if indexers allow searching for movies, shows or ebooks using meta data like the IMDB id or the author and title.
+
+You can define a hit limit for an indexer. When the maximum number of API hits is reached the indexer isn't used anymore. Either define the time of day when the counter is reset by the indexer or leave it empty to use a rolling reset counter, i.e. the number of hits for the last 24 at the time of the search is limited.

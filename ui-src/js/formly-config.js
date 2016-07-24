@@ -65,8 +65,7 @@ angular
             name: 'timeOfDay',
             extends: 'horizontalInput',
             controller: ['$scope', function ($scope) {
-                var date = new Date($scope.model[$scope.options.key]);
-                $scope.model[$scope.options.key] = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+                $scope.model[$scope.options.key] = moment.utc($scope.model[$scope.options.key]).toDate();
             }]
         });
 

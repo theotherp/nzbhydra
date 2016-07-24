@@ -154,7 +154,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 25,
+        "configVersion": 26,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -610,6 +610,16 @@ def migrateConfig(config):
             if "categories" not in indexer.keys():
                 addLogMessage(20, "Enabling %s for all categories" % indexer["name"])
                 indexer["categories"] = []
+
+        if config["main"]["configVersion"] == 25:
+            with version_update(config, 26):
+                addLogMessage(20, "Migrating API hit limit reset times to hour of day")
+                for indexer in config["indexers"]:
+                    if "hitLimitResetTime" in indexer.keys() and indexer["hitLimitResetTime"]:
+                        t = arrow.get(indexer["hitLimitResetTime"])
+                        addLogMessage(20, "Setting API hit limit reset time for indexer %s to hour of day %d" % (indexer["name"], t.hour))
+                        indexer["hitLimitResetTime"] = t.hour
+                
 
         
     return config

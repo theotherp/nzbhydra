@@ -122,18 +122,25 @@ def pick_indexers(search_request):
                 logger.debug("Did not pick %s because it is not enabled for category %s" % (p, search_request.category.category.pretty))
                 continue
         if p.settings.hitLimit > 0:
-            hitLimitResetTime = arrow.get(p.settings.hitLimitResetTime)
             if p.settings.hitLimitResetTime:
-                comparisonTime = arrow.utcnow().replace(hour=hitLimitResetTime.hour, minute=hitLimitResetTime.minute, second=0)
+                comparisonTime = arrow.utcnow().replace(hour=p.settings.hitLimitResetTime, minute=0, second=0)
                 if comparisonTime > arrow.utcnow():
                     comparisonTime = arrow.get(comparisonTime.datetime - datetime.timedelta(days=1))  # Arrow is too dumb to properly subtract 1 day (throws an error on every first of the month)
             else:
-                # Use 00:00 as reset time when no reset time is set 
-                comparisonTime = arrow.now().replace(hour=0, minute=0, second=0)
+                # Use rolling time window
+                comparisonTime = arrow.get(arrow.utcnow().datetime - datetime.timedelta(days=1))
 
             apiHits = IndexerApiAccess().select().where((IndexerApiAccess.indexer == p.indexer) & (IndexerApiAccess.time > comparisonTime) & IndexerApiAccess.response_successful).count()
             if apiHits > p.settings.hitLimit:
-                logger.info("Did not pick %s because its API hit limit of %d was reached. Will pick again after %02d:%02d tomorrow" % (p, p.settings.hitLimit, hitLimitResetTime.hour, hitLimitResetTime.minute))
+                if p.settings.hitLimitResetTime:
+                    logger.info("Did not pick %s because its API hit limit of %d was reached. Will pick again after %02d:00" % (p, p.settings.hitLimit, p.settings.hitLimitResetTime))
+                else:
+                    try:
+                        firstHitTimeInWindow = IndexerApiAccess().select().where(IndexerApiAccess.indexer == p.indexer & IndexerApiAccess.response_successful).order_by(IndexerApiAccess.time.desc()).offset(p.settings.hitLimit).limit(1).get().time.datetime
+                        nextHitAfter = arrow.get(firstHitTimeInWindow + datetime.timedelta(days=1))
+                        logger.info("Did not pick %s because its API hit limit of %d was reached. Next possible hit at %s" % (p, p.settings.hitLimit, nextHitAfter.format('YYYY-MM-DD HH:mm')))
+                    except IndexerApiAccess.DoesNotExist:
+                        logger.info("Did not pick %s because its API hit limit of %d was reached" % (p, p.settings.hitLimit))
                 continue
             else:
                 logger.debug("%s has had %d of a maximum of %d API hits since %02d:%02d" % (p, apiHits, p.settings.hitLimit, comparisonTime.hour, comparisonTime.minute))

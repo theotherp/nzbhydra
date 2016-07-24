@@ -2826,8 +2826,7 @@ angular
             name: 'timeOfDay',
             extends: 'horizontalInput',
             controller: ['$scope', function ($scope) {
-                var date = new Date($scope.model[$scope.options.key]);
-                $scope.model[$scope.options.key] = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+                $scope.model[$scope.options.key] = moment.utc($scope.model[$scope.options.key]).toDate();
             }]
         });
 
@@ -3477,25 +3476,7 @@ function ConfigFields($injector) {
             message: '$viewValue + " is not a valid IP Address"'
         };
     }
-
-    function authValidatorDontLockYourselfOut(rootModel) {
-        return {
-            expression: function ($viewValue, $modelValue, scope) {
-                var value = $viewValue || $modelValue;
-                if (value) {
-                    return true;
-                }
-                if (rootModel.auth.users.length > 0) {
-                    return _.any(rootModel.auth.users, function (user) {
-                        return scope.model.username != user.username && user.maySeeAdmin;
-                    })
-                }
-                return true;
-            },
-            message: '"If you have users at least one should have admin rights or you lock yourself out"'
-        };
-    }
-
+    
     function regexValidator(regex, message, prefixViewValue) {
         return {
             expression: function ($viewValue, $modelValue) {
@@ -3508,6 +3489,7 @@ function ConfigFields($injector) {
             message: (prefixViewValue ? '$viewValue + " ' : '" ') + message + '"'
         };
     }
+    
 
     function getCategoryFields() {
         var fields = [];
@@ -4157,7 +4139,7 @@ function ConfigFields($injector) {
                             host: null,
                             apikey: null,
                             hitLimit: null,
-                            hitLimitResetTime: new Date(0),
+                            hitLimitResetTime: 0,
                             timeout: null,
                             name: null,
                             showOnSearch: true,
@@ -4182,24 +4164,9 @@ function ConfigFields($injector) {
                             return IndexerCheckBeforeCloseService.check(scope, model);
                         },
                         resetFunction: function (scope) {
-                            //Resetting causes some troubles with the date and the multiselects 
-
-                            //So we save the reset time first
-                            var date;
-                            for (var i = 0; i < scope.fields.length; i++) {
-                                var field = scope.fields[i];
-                                if (field.key == "hitLimitResetTime") {
-                                    date = new Date(field.initialValue);
-                                    date = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
-                                }
-                            }
-
                             //Then reset the model twice (for some reason when we do it once the search types / ids fields are empty, resetting again fixes that... (wtf))
                             scope.options.resetModel();
                             scope.options.resetModel();
-
-                            //and set the date back
-                            scope.model.hitLimitResetTime = date;
                         }
 
                     }
@@ -4519,12 +4486,22 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
         fieldset.push(
             {
                 key: 'hitLimitResetTime',
-                type: 'timeOfDay',
+                type: 'horizontalInput',
                 hideExpression: '!model.hitLimit',
                 templateOptions: {
-                    type: 'time',
+                    type: 'number',
                     label: 'API hit reset time',
-                    help: 'UTC time at which the API hit counter is reset'
+                    help: 'UTC hour of day at which the API hit counter is reset (0==24). Leave empty for a rolling reset counter'
+                },
+                validators: {
+                    timeOfDay: {
+                            expression: function ($viewValue, $modelValue) {
+                                var value = $modelValue || $viewValue;
+                                return value >= 0 && value <= 24;
+                            },
+                            message: '$viewValue + " is not a valid hour of day (0-24)"'
+                        }
+                    
                 }
             });
     }
