@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.124
+Added: Set "no referrer" tag
+
 ### 0.2.123
 Fixed: Categories not set for new indexers not added by selecting a preset.
 
