@@ -274,7 +274,7 @@ def search(search_request):
                     if result.title is None or result.link is None or result.indexerguid is None:
                         logger.info("Skipping result with missing data: %s" % result)
                         continue
-                    searchResult = SearchResult().get_or_create(indexer=indexer.indexer, title=result.title, link=result.link, details=result.details_link, guid=result.indexerguid)
+                    searchResult = SearchResult().get_or_create(indexer=indexer.indexer, guid=result.indexerguid, defaults={"title": result.title, "link": result.link, "details": result.details_link})
                     searchResult = searchResult[0]  # Second is a boolean determining if the search result was created
                     result.searchResultId = searchResult.id
                     search_results.append(result)
@@ -347,8 +347,10 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
                 result.indexerApiAccessEntry.indexer = Indexer.get(Indexer.name == indexer)
                 result.indexerApiAccessEntry.save()
                 result.indexerStatus.save()
-            except Exception:
-                logger.error("Error saving IndexerApiAccessEntry. Debug info: %s" % json.dumps(model_to_dict(result.indexerApiAccessEntry)))
+            except Indexer.DoesNotExist:
+                logger.error("Tried to save indexer API access but no indexer with name %s was found in the database" % indexer)
+            except Exception as e:
+                logger.error("Error saving IndexerApiAccessEntry", e)
 
     logger.debug("Returning search results now")
     return {"results": results_by_indexer, "dbsearch": dbsearch}

@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.126
+Changed: Better error message if an indexer API access could not be saved
+
 ### 0.2.125
 Changed: Drastically improved processing time. Duplicate detection is about 60% faster. Searches with a lot of new results (not already in the database) are up to 7 times faster (which only shows how bad it was before).
 
