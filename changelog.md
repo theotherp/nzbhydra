@@ -2,7 +2,7 @@
 
 ----------
 ### 0.2.125
-Changed: Drastically improved processing time. Duplicate detection is about 60% faster. Searches with a lot of new results (not already in the database) is up to 7 times faster (which only shows how bad it was before).
+Changed: Drastically improved processing time. Duplicate detection is about 60% faster. Searches with a lot of new results (not already in the database) are up to 7 times faster (which only shows how bad it was before).
 
 ### 0.2.124
 Added: Set "no referrer" tag.
