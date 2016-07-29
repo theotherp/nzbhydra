@@ -268,31 +268,33 @@ def search(search_request):
         indexers_to_call = []
 
         for indexer, queries_execution_result in result["results"].items():
-            for result in queries_execution_result.results:
-                if result.title is None or result.link is None or result.indexerguid is None:
-                    logger.info("Skipping result with missing data: %s" % result)
-                    continue
-                searchResult = SearchResult().get_or_create(indexer=indexer.indexer, title=result.title, link=result.link, details=result.details_link, guid=result.indexerguid)
-                searchResult = searchResult[0]  # Second is a boolean determining if the search result was created
-                result.searchResultId = searchResult.id
-                search_results.append(result)
-
-            logger.debug("%s returned %d results" % (indexer, len(queries_execution_result.results)))
-            cache_entry["indexer_infos"][indexer].update(
-                {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
-                 "indexer_search": queries_execution_result.indexerSearchEntry})
-            if queries_execution_result.has_more:
-                indexers_to_call.append(indexer)
-                logger.debug("%s still has more results so we could use it the next round" % indexer)
-
-            if queries_execution_result.total_known:
-                if not cache_entry["indexer_infos"][indexer]["total_included"]:
-                    cache_entry["total"] += queries_execution_result.total
-                    logger.debug("%s reports %d total results. We'll include in the total this time only" % (indexer, queries_execution_result.total))
-                    cache_entry["indexer_infos"][indexer]["total_included"] = True
-            elif queries_execution_result.has_more:
-                logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
-                cache_entry["total"] += 100
+            #Drastically improves db access time but means that if one database write fails all fail. That's a risk we need to take 
+            with db.atomic():
+                for result in queries_execution_result.results:
+                    if result.title is None or result.link is None or result.indexerguid is None:
+                        logger.info("Skipping result with missing data: %s" % result)
+                        continue
+                    searchResult = SearchResult().get_or_create(indexer=indexer.indexer, title=result.title, link=result.link, details=result.details_link, guid=result.indexerguid)
+                    searchResult = searchResult[0]  # Second is a boolean determining if the search result was created
+                    result.searchResultId = searchResult.id
+                    search_results.append(result)
+        
+                logger.debug("%s returned %d results" % (indexer, len(queries_execution_result.results)))
+                cache_entry["indexer_infos"][indexer].update(
+                    {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
+                     "indexer_search": queries_execution_result.indexerSearchEntry})
+                if queries_execution_result.has_more:
+                    indexers_to_call.append(indexer)
+                    logger.debug("%s still has more results so we could use it the next round" % indexer)
+        
+                if queries_execution_result.total_known:
+                    if not cache_entry["indexer_infos"][indexer]["total_included"]:
+                        cache_entry["total"] += queries_execution_result.total
+                        logger.debug("%s reports %d total results. We'll include in the total this time only" % (indexer, queries_execution_result.total))
+                        cache_entry["indexer_infos"][indexer]["total_included"] = True
+                elif queries_execution_result.has_more:
+                    logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
+                    cache_entry["total"] += 100
 
         if search_request.internal or config.settings.searching.removeDuplicatesExternal:
             countBefore = len(search_results)
@@ -409,8 +411,8 @@ def testForSameness(result1, result2):
     poster_known = result1.poster is not None and result2.poster is not None
     same_poster = result1.poster == result2.poster
 
-    age_threshold = config.settings.searching.duplicateAgeThreshold
-    size_threshold = config.settings.searching.duplicateSizeThresholdInPercent
+    age_threshold = config.settings["searching"]["duplicateAgeThreshold"]
+    size_threshold = config.settings["searching"]["duplicateSizeThresholdInPercent"]
     if (group_known and not same_group) or (poster_known and not same_poster):
         return False
     if (same_group and not poster_known) or (same_poster and not group_known):
