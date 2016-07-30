@@ -8,6 +8,8 @@ Fixed: Fallback if indexer capabilities settings are not properly set for some r
 
 Fixed: Allow empty username and password for sabnzbd.
 
+Changed: Remove "-Obfuscated" from NZBGeek results for better title pairing.
+
 ### 0.2.126
 Changed: Better error message if an indexer API access could not be saved
 

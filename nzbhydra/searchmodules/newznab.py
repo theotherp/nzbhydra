@@ -524,6 +524,8 @@ class NewzNab(SearchModule):
         entry = self.create_nzb_search_result()
         # These are the values that absolutely must be contained in the response
         entry.title = item.find("title").text
+        if entry.title and "nzbgeek" in self.settings.host:
+            entry.title = entry.title.replace("-Obfuscated", "")
         entry.link = item.find("link").text
         entry.attributes = []
         entry.pubDate = item.find("pubDate").text
