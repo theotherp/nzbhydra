@@ -348,7 +348,8 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
                 result.indexerApiAccessEntry.save()
                 result.indexerStatus.save()
             except Indexer.DoesNotExist:
-                logger.error("Tried to save indexer API access but no indexer with name %s was found in the database" % indexer)
+                logger.error("Tried to save indexer API access but no indexer with name %s was found in the database. Adding it now. This shouldn't've happened. If possible send a bug report with a full log." % indexer)
+                Indexer().create(name=indexer)
             except Exception as e:
                 logger.error("Error saving IndexerApiAccessEntry", e)
 
