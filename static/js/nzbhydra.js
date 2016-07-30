@@ -4954,7 +4954,9 @@ function getDownloaderPresets() {
             nzbAddingType: "link",
             nzbaccesstype: "redirect",
             iconCssClass: "",
-            downloadType: "nzb"
+            downloadType: "nzb",
+            username: null,
+            password: null
         }
     ]];
 }

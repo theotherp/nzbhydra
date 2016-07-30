@@ -4,7 +4,9 @@
 ### 0.2.127
 Fixed: Fallback if indexer was not properly added to the database.
 
-Fixed: Fallback if indexer capabilities settings are not properly set for some reason. 
+Fixed: Fallback if indexer capabilities settings are not properly set for some reason.
+
+Fixed: Allow empty username and password for sabnzbd.
 
 ### 0.2.126
 Changed: Better error message if an indexer API access could not be saved
