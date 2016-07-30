@@ -170,23 +170,15 @@ class SearchPerformanceTests(unittest.TestCase):
         with open(filename, "w") as file:
             file.write(r.text)
 
-    # @responses.activate
-    # def testDuplicateTaggingForInternalApi(self):
-    #     with self.app.test_request_context('/'):
-    #         with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-    #             newznabItems = [[mockbuilder.buildNewznabItem(title="title%d" % i, pubdate=arrow.get(4000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=i, indexer_name="newznab1", guid="newznab1result%d" % i) for i in range(1, 250)],
-    #                             [mockbuilder.buildNewznabItem(title="title%d" % i, pubdate=arrow.get(4000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=i, indexer_name="newznab2", guid="newznab2result%d" % i) for i in range(1, 250)]]
-    # 
-    #             self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
-    # 
-    #             searchRequest = SearchRequest(type="search")
-    #             result = search.search(searchRequest)
-    #     with self.app.test_request_context('/'):
-    #         with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-    #             newznabItems = [[mockbuilder.buildNewznabItem(title="title%d" % i, pubdate=arrow.get(4000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=i, indexer_name="newznab1", guid="newznab1result%d" % i) for i in range(1, 100)],
-    #                             [mockbuilder.buildNewznabItem(title="title%d" % i, pubdate=arrow.get(4000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=i, indexer_name="newznab2", guid="newznab2result%d" % i) for i in range(1, 100)]]
-    #     
-    #             self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
-    #     
-    #             searchRequest = SearchRequest(type="search")
-    #             result = search.search(searchRequest)
+    @responses.activate
+    def testDuplicateTaggingForInternalApi(self):
+        with self.app.test_request_context('/'):
+            with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+                newznabItems = [[mockbuilder.buildNewznabItem(title="title%d" % i, pubdate=arrow.get(4000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=i, indexer_name="newznab1", guid="newznab1result%d" % i) for i in range(1, 250)],
+                                [mockbuilder.buildNewznabItem(title="title%d" % i, pubdate=arrow.get(4000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=i, indexer_name="newznab2", guid="newznab2result%d" % i) for i in range(1, 250)],
+                                [mockbuilder.buildNewznabItem(title="title%d" % i, pubdate=arrow.get(4000).format("ddd, DD MMM YYYY HH:mm:ss Z"), size=i, indexer_name="newznab3", guid="newznab3result%d" % i) for i in range(1, 250)]]
+    
+                self.prepareSearchMocks(rsps, indexerCount=len(newznabItems), newznabItems=newznabItems)
+    
+                searchRequest = SearchRequest(type="search")
+                result = search.search(searchRequest)

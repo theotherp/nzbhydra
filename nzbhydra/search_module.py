@@ -70,10 +70,16 @@ class SearchModule(object):
 
     @property
     def search_ids(self):
+        if "search_ids" not in self.settings.keys():
+            self.error('Search IDs property not set. Please open the config for this indexer and click "Check capabilities"')
+            return []
         return self.settings.search_ids
 
     @property
     def searchTypes(self):
+        if "searchTypes" not in self.settings.keys():
+            self.error('Search types property not set. Please open the config for this indexer and click "Check capabilities"')
+            return []
         return self.settings.searchTypes
     
     @property
