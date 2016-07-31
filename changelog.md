@@ -2,6 +2,9 @@
 
 ----------
 ### 0.2.127
+Fixed: Better error handling with testing indexer caps.
+
+### 0.2.127
 Fixed: Fallback if indexer was not properly added to the database.
 
 Fixed: Fallback if indexer capabilities settings are not properly set for some reason.

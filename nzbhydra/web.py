@@ -928,7 +928,7 @@ def internalapi_testcaps(args):
         caps = check_caps(host, apikey)
         caps.update({"success": True})
         return jsonify(caps)
-    except IndexerResultParsingException as e:
+    except Exception as e:
         return jsonify({"success": False, "message": e.message})
 
 
