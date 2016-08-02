@@ -26,7 +26,7 @@ db = SqliteExtDatabase(None, pragmas=(
     
 ))
 
-DATABASE_VERSION = 8
+DATABASE_VERSION = 9
 
 
 class JSONField(TextField):
@@ -64,7 +64,7 @@ class Search(Model):
     identifier_value = CharField(null=True)
     category = TextField(null=True)
     season = IntegerField(null=True)
-    episode = IntegerField(null=True)
+    episode = TextField(null=True)
     type = CharField(default="general")
     username = CharField(null=True)
 
@@ -361,6 +361,26 @@ def update_db(dbfile):
             )
             vi.version = 8
             vi.save()
+
+        if vi.version == 8:
+            logger.info("Upgrading database to version 9")
+            migrator = SqliteMigrator(db)
+            cursor = db.execute_sql("select t.id, t.episode from search t where t.episode is not null")
+            id_episodes = list(cursor.fetchall())
+            logger.info("Changing column type of episode to text")
+            with db.transaction():
+                migrate(
+                    migrator.drop_column('search', 'episode'),
+                    migrator.add_column('search', 'episode', Search.episode),
+                )
+                logger.info("Writing text value of episode for %d entries" % len(id_episodes))
+                for id_episode in id_episodes:
+                    search = Search.get(id=id_episode[0])
+                    search.episode = str(id_episode[1])
+                    search.save()
+                
+                vi.version = 9
+                vi.save()
 
             
             

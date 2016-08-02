@@ -561,7 +561,7 @@ def api_search(args):
             search_request.identifier_key = identifier_key
             search_request.identifier_value = identifier_value
         search_request.season = int(args["season"]) if args["season"] else None
-        search_request.episode = int(args["episode"]) if args["episode"] else None
+        search_request.episode = args["episode"]
     elif args["t"] == "movie":
         if not args["cat"]:
             search_request.category = getCategoryByName("movies")

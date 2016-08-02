@@ -197,7 +197,11 @@ class OmgWtf(SearchModule):
             query = ""
         if search_request.season:
             if search_request.episode:
-                search_request.query = "{0} s{1:02d}e{2:02d}".format(query, int(search_request.season), int(search_request.episode))
+                if isinstance(search_request.episode, (int, long)):
+                    search_request.query = "{0} s{1:02d}e{2:02d}".format(query, int(search_request.season), int(search_request.episode))
+                else:
+                    search_request.query = '%s "%s %s"' % (search_request.query, search_request.season, search_request.episode.replace("/", " "))
+                    self.debug("Assuming we're searching for a daily show. Using query: " + search_request.query)
             else:
                 search_request.query = "{0} s{1:02d}".format(query, int(search_request.season))
             

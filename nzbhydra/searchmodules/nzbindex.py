@@ -76,7 +76,11 @@ class NzbIndex(SearchModule):
         if search_request.season is not None:
             # Restrict query if generated and season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
             if search_request.episode is not None:
-                search_request.query = "%s s%02de%02d | %dx%02d" % (search_request.query, search_request.season, search_request.episode, search_request.season, search_request.episode)
+                if isinstance(search_request.episode, (int, long)):
+                    search_request.query = "%s s%02de%02d | %dx%02d" % (search_request.query, search_request.season, search_request.episode, search_request.season, search_request.episode)
+                else:
+                    search_request.query = '%s "%s %s"' % (search_request.query, search_request.season, search_request.episode.replace("/", " "))
+                    self.debug("Assuming we're searching for a daily show. Using query: " + search_request.query)
             else:
                 search_request.query = '%s s%02d | "season %d"' % (search_request.query, search_request.season, search_request.season)
         return self.get_search_urls(search_request)
