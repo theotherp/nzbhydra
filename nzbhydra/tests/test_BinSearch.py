@@ -41,6 +41,11 @@ class TestBinsearch(UrlTestCase):
         self.assertEqual(2, len(urls))
         self.assertEqual('a showtitle s01', furl(urls[0]).args["q"])
         self.assertEqual('a showtitle "season 1"', furl(urls[1]).args["q"])
+
+        self.args = SearchRequest(query="a showtitle", season=2016, episode="08/08")
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertEqual('a showtitle "2016 08 08"', furl(urls[0]).args["q"])
         
     def testEbookUrlGeneration(self):
         getIndexerSettingByName("binsearch").searchTypes = []

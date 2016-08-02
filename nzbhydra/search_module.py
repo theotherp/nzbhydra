@@ -429,6 +429,12 @@ class SearchModule(object):
     def exception(self, msg, *args, **kwargs):
         self.logger.exception("%s: %s" % (self.name, msg), *args, **kwargs)
         
+    def isNumber(self, string):
+        try:
+            int(string)
+            return True
+        except ValueError:
+            return False
 
 
 def get_instance(indexer):

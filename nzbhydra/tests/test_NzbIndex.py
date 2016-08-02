@@ -43,6 +43,11 @@ class NzbIndexTests(UrlTestCase):
         self.assertEqual(1, len(urls))
         self.assertEqual('a showtitle s01 | "season 1"', furl(urls[0]).args["q"])
 
+        self.args = SearchRequest(query="a showtitle", season="2016", episode="08/08")
+        urls = w.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertEqual('a showtitle "2016 08 08"', furl(urls[0]).args["q"])
+
         self.args = SearchRequest(query="aquery", forbiddenWords=["ignorethis"])
         urls = w.get_showsearch_urls(self.args)
         self.assertEqual(1, len(urls))

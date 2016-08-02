@@ -560,8 +560,8 @@ def api_search(args):
             identifier_value = args[identifier_key]
             search_request.identifier_key = identifier_key
             search_request.identifier_value = identifier_value
-        search_request.season = int(args["season"]) if args["season"] else None
-        search_request.episode = args["episode"]
+        search_request.season = int(args["season"]) if isNumber(args["season"]) else args["season"]
+        search_request.episode = int(args["episode"]) if isNumber(args["episode"]) else args["episode"]
     elif args["t"] == "movie":
         if not args["cat"]:
             search_request.category = getCategoryByName("movies")
@@ -1327,3 +1327,11 @@ def create_context():
             context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
             context.load_cert_chain(config.settings.main.sslcert, config.settings.main.sslkey)
     return context
+
+
+def isNumber(string):
+    try:
+        int(string)
+        return True
+    except ValueError:
+        return False

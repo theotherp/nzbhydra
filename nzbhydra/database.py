@@ -63,7 +63,7 @@ class Search(Model):
     identifier_key = CharField(null=True)
     identifier_value = CharField(null=True)
     category = TextField(null=True)
-    season = IntegerField(null=True)
+    season = TextField(null=True)
     episode = TextField(null=True)
     type = CharField(default="general")
     username = CharField(null=True)
@@ -365,18 +365,21 @@ def update_db(dbfile):
         if vi.version == 8:
             logger.info("Upgrading database to version 9")
             migrator = SqliteMigrator(db)
-            cursor = db.execute_sql("select t.id, t.episode from search t where t.episode is not null")
-            id_episodes = list(cursor.fetchall())
-            logger.info("Changing column type of episode to text")
+            cursor = db.execute_sql("select t.id, t.season, t.episode from search t where t.episode is not null or t.season is not null")
+            rows = list(cursor.fetchall())
+            logger.info("Changing column type of season and episode to text")
             with db.transaction():
                 migrate(
+                    migrator.drop_column('search', 'season'),
                     migrator.drop_column('search', 'episode'),
+                    migrator.add_column('search', 'season', Search.season),
                     migrator.add_column('search', 'episode', Search.episode),
                 )
-                logger.info("Writing text value of episode for %d entries" % len(id_episodes))
-                for id_episode in id_episodes:
-                    search = Search.get(id=id_episode[0])
-                    search.episode = str(id_episode[1])
+                logger.info("Writing text value of season and episode for %d entries" % len(rows))
+                for row in rows:
+                    search = Search.get(id=row[0])
+                    search.season = str(row[1])
+                    search.episode = str(row[2])
                     search.save()
                 
                 vi.version = 9

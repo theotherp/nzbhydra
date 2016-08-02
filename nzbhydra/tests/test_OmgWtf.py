@@ -89,6 +89,11 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(1, len(urls))
         self.assertEqual("https://rss.omgwtfnzbs.org/rss-download.php?api=apikey&user=anuser&catid=19,20,21", urls[0])
 
+        self.args = SearchRequest(query="a showtitle", season="2016", episode="08/08")
+        urls = self.omgwtf.get_showsearch_urls(self.args)
+        self.assertEqual(1, len(urls))
+        self.assertEqual('a showtitle "2016 08 08"', furl(urls[0]).args["search"])
+
     def testGetMovieSearchUrls(self):
         self.args = SearchRequest(identifier_key="imdb", identifier_value="0169547")
         urls = self.omgwtf.get_moviesearch_urls(self.args)
