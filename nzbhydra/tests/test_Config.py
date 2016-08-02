@@ -82,113 +82,31 @@ class TestConfig(unittest.TestCase):
         self.assertEqual("<APIKEY:f5095bc1520183e76be64af1c5f9e7e3>", ac.downloader.sabnzbd.apikey)
         self.assertEqual("<PASSWORD:4c471a175d85451486af666d7eebe4f8>", ac.downloader.sabnzbd.password)
 
-    def testMigration18to19(self):
+    def testMigration25to26(self):
         testCfg = {
             "main":
                 {
-                    "configVersion": 18,
+                    "configVersion": 25,
                 },
             "downloaders": [
                 {}
             ],
-            "searching": {
-                "alwaysShowDuplicates": True,
-                "ignoreWords": "forbidden",
-                "requireWords": "required",
-                "categorysizes": {
-                    "audiobookmax": 1000,
-                    "audioookmin": 50,
-                    "audiomax": 2000,
-                    "audiomin": 1,
-                    "comicmax": 250,
-                    "comicmin": 1,
-                    "consolemax": 40000,
-                    "consolemin": 100,
-                    "ebookmax": 100,
-                    "ebookmin": None,
-                    "enable_category_sizes": True,
-                    "flacmax": 2000,
-                    "flacmin": 10,
-                    "movieshdmax": 20000,
-                    "movieshdmin": 3000,
-                    "moviesmax": 20000,
-                    "moviesmin": 500,
-                    "moviessdmin": 3000,
-                    "mp3max": 500,
-                    "mp3min": 1,
-                    "pcmax": 50000,
-                    "pcmin": 100,
-                    "tvhdmax": 3000,
-                    "tvhdmin": 300,
-                    "tvmax": 5000,
-                    "tvmin": 50,
-                    "tvsdmax": 1000,
-                    "tvsdmin": 50,
-                    "xxxmax": 10000,
-                    "xxxmin": 100
-                }
-            }
-        }
-        cfg = config.migrateConfig(testCfg)
-
-        self.assertTrue(cfg["categories"]["enableCategorySizes"])
-        self.assertFalse(cfg["categories"]["categories"]["movies"]["requiredWords"])
-        self.assertFalse(cfg["categories"]["categories"]["movies"]["forbiddenWords"])
-        self.assertEqual(2000, cfg["categories"]["categories"]["movies"]["newznabCategories"][0])
-        self.assertEqual("forbidden", cfg["searching"]["forbiddenWords"])
-        self.assertEqual("required", cfg["searching"]["requiredWords"])
-        self.assertEqual("", cfg["downloaders"][0]["iconCssClass"])
-
-    def testMigration18to19WithMissingComicSection(self):
-        testCfg = {
-            "main":
+            "indexers": [
                 {
-                    "configVersion": 18,
+                    "hitLimitResetTime": "1970-01-01T00:00:00.000Z",
+                    "name": "Indexer1"
                 },
-            "downloaders": [
-                {}
-            ],
-            "searching": {
-                "alwaysShowDuplicates": True,
-                "ignoreWords": "forbidden",
-                "requireWords": "required",
-                "categorysizes": {
-                    "audiobookmax": 1000,
-                    "audioookmin": 50,
-                    "audiomax": 2000,
-                    "audiomin": 1,
-                    "consolemax": 40000,
-                    "consolemin": 100,
-                    "ebookmax": 100,
-                    "ebookmin": None,
-                    "enable_category_sizes": True,
-                    "flacmax": 2000,
-                    "flacmin": 10,
-                    "movieshdmax": 20000,
-                    "movieshdmin": 3000,
-                    "moviesmax": 20000,
-                    "moviesmin": 500,
-                    "moviessdmin": 3000,
-                    "mp3max": 500,
-                    "mp3min": 1,
-                    "pcmax": 50000,
-                    "pcmin": 100,
-                    "tvhdmax": 3000,
-                    "tvhdmin": 300,
-                    "tvmax": 5000,
-                    "tvmin": 50,
-                    "tvsdmax": 1000,
-                    "tvsdmin": 50,
-                    "xxxmax": 10000,
-                    "xxxmin": 100
+                {
+                    "hitLimitResetTime": "1970-01-01T08:00:00.000Z",
+                    "name": "Indexer2"
+                },
+                {
+                    "hitLimitResetTime": 10,
+                    "name": "Indexer3"
                 }
-            }
+            ]
         }
         cfg = config.migrateConfig(testCfg)
-        print(cfg)
-
-        self.assertTrue(cfg["categories"]["enableCategorySizes"])
-        self.assertTrue("min" in cfg["categories"]["categories"]["comic"])
-        
-        
-        
+        self.assertEqual(0, cfg["indexers"][0]["hitLimitResetTime"])
+        self.assertEqual(8, cfg["indexers"][1]["hitLimitResetTime"])
+        self.assertEqual(10, cfg["indexers"][2]["hitLimitResetTime"])

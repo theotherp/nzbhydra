@@ -596,6 +596,9 @@ def migrateConfig(config):
                 anizb = [x for x in initialConfig["indexers"] if x["name"] == "anizb"][0]
                 config["indexers"].append(anizb)
 
+        if config["main"]["configVersion"] == 22:
+            config["main"]["configVersion"] = 24  # I skipped some config numbers for some reason
+
         if config["main"]["configVersion"] == 24:
             with version_update(config, 25):
                 if config["searching"]["duplicateAgeThreshold"] == 3600:
@@ -615,7 +618,8 @@ def migrateConfig(config):
             with version_update(config, 26):
                 addLogMessage(20, "Migrating API hit limit reset times to hour of day")
                 for indexer in config["indexers"]:
-                    if "hitLimitResetTime" in indexer.keys() and indexer["hitLimitResetTime"]:
+                    #When the migration from version 22 didn't work and I didn't know I told some people to manually convert the hitLimitResetTime so I must check that it's not already a number
+                    if "hitLimitResetTime" in indexer.keys() and indexer["hitLimitResetTime"] and not isinstance(indexer["hitLimitResetTime"], (int, long)):
                         t = arrow.get(indexer["hitLimitResetTime"])
                         addLogMessage(20, "Setting API hit limit reset time for indexer %s to hour of day %d" % (indexer["name"], t.hour))
                         indexer["hitLimitResetTime"] = t.hour

@@ -1,7 +1,10 @@
 # NZB Hydra changelog
 
 ----------
-### 0.2.127
+### 0.2.129
+Fixed: Migration from config version 22 didn't work so all users with that version would get errors. Sorry about that.
+
+### 0.2.128
 Fixed: Better error handling with testing indexer caps.
 
 ### 0.2.127
