@@ -1330,6 +1330,8 @@ def create_context():
 
 
 def isNumber(string):
+    if string is None:
+        return False
     try:
         int(string)
         return True
