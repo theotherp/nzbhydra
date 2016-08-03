@@ -420,8 +420,8 @@ class SearchTests(unittest.TestCase):
                 self.assertEqual("All", dbSearch.category)
                 self.assertEqual("imdbid", dbSearch.identifier_key)
                 self.assertEqual("animdbid", dbSearch.identifier_value)
-                self.assertEqual(1, dbSearch.season)
-                self.assertEqual(2, dbSearch.episode)
+                self.assertEqual("1", dbSearch.season)
+                self.assertEqual("2", dbSearch.episode)
                 self.assertEqual("search", dbSearch.type)
                 self.assertEqual(18, dbSearch.time.hour)
 

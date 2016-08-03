@@ -430,6 +430,8 @@ class SearchModule(object):
         self.logger.exception("%s: %s" % (self.name, msg), *args, **kwargs)
         
     def isNumber(self, string):
+        if string is None:
+            return False
         try:
             int(string)
             return True

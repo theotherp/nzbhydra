@@ -251,6 +251,43 @@ class IntegrationApiSearchTests(AbstractSearchTestCase):
             self.assertTrue(downloads[0]["response_successful"])
             self.assertIsNone(downloads[2]["response_successful"]) #Don't know if redirection went well
 
+    @requests_mock.Mocker()
+    def testFullStackTvSearch(self, requestsMock):
+        #Same as above but just with tvsearch, makes sure default sonarr searches work (breaking that is the worst...)
+        web.app.template_folder = "../templates"
+
+        expectedItems = self.prepareSearchMocks(requestsMock, 1, 1)
+        with web.app.test_request_context('/'):
+            response = self.app.get("/api?t=tvsearch&q=query&cat=5030")
+            entries, _, _ = newznab.NewzNab(Bunch.fromDict({"name": "forTest", "score": 0, "host": "host"})).parseXml(response.data)
+            self.assertSearchResults(entries, expectedItems)
+            calledUrls = sorted([x.url for x in requestsMock.request_history])
+            self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=tvsearch&extended=1&offset=0&limit=100&q=query&cat=5030', calledUrls[0]))
+            self.assertEqual("http://localhost:5075/getnzb?searchresultid=1", entries[0].link)
+
+            # Download NZB
+            config.settings.searching.nzbAccessType = "redirect"
+            response = self.app.get("/getnzb?searchresultid=1")
+            self.assertTrue("redirect" in response.data)
+
+            config.settings.searching.nzbAccessType = "serve"
+            requestsMock.register_uri('GET', re.compile(r'.*newznab1result1.link*'), text="NZB Data")
+            response = self.app.get("/getnzb?searchresultid=1")
+            self.assertEquals("NZB Data", response.data)
+
+            # Download via API
+            requestsMock.register_uri('GET', re.compile(r'.*newznab1result1.link*'), text="NZB Data")
+            response = self.app.get("/api?t=get&id=%s" % entries[0].indexerguid)
+            self.assertEquals("NZB Data", response.data)
+
+            # Find downloaded NZBs in stats
+            downloads = json.loads(self.app.get("/internalapi/getnzbdownloads").data)["nzbDownloads"]
+            print(downloads)
+            self.assertEqual(3, len(downloads))
+            self.assertEqual("http://www.newznab1.com/details/newznab1result1.guid", downloads[0]["detailsLink"])
+            self.assertTrue(downloads[0]["response_successful"])
+            self.assertIsNone(downloads[2]["response_successful"])  # Don't know if redirection went well
+
 
     @requests_mock.Mocker()
     def testBaseUrl(self, requestsMock):
