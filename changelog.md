@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.130
+Fixed: Sonarr search was broken after last update. Sorry...
+
 ### 0.2.129
 Added: Support for daily shows.
 

@@ -1333,5 +1333,5 @@ def isNumber(string):
     try:
         int(string)
         return True
-    except ValueError:
+    except (TypeError, ValueError):
         return False

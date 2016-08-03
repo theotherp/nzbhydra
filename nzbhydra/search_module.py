@@ -433,7 +433,7 @@ class SearchModule(object):
         try:
             int(string)
             return True
-        except ValueError:
+        except (TypeError, ValueError):
             return False
 
 
