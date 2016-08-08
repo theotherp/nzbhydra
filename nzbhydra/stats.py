@@ -62,7 +62,10 @@ def get_avg_indexer_search_results_share():
             logger.error("Unable to find indexer %s in configuration" % p.name)
             continue
         result = database.db.execute_sql(
-                "select (100 * (select cast(sum(ps.resultsCount) as float) from indexersearch ps where ps.search_id in (select ps.search_id from indexersearch ps where ps.indexer_id == %d) and ps.indexer_id == %d)) / (select sum(ps.resultsCount) from indexersearch ps where ps.search_id in (select ps.search_id from indexersearch ps where ps.indexer_id == %d)) as sumAllResults" % (
+                "select (100 * (select cast(sum(ps.resultsCount) as float) from indexersearch ps "
+                "where ps.search_id in (select ps.search_id from indexersearch ps, search s where ps.indexer_id == %d and ps.search_id = s.id and ps.successful and (s.episode NOT NULL  or s.season not NULL  or s.identifier_key not null or s.query not null)) and ps.indexer_id == %d)) "
+                "/ "
+                "(select sum(ps.resultsCount) from indexersearch ps where ps.search_id in (select ps.search_id from indexersearch ps, search s where ps.indexer_id == %d and ps.search_id = s.id and ps.successful and (s.episode NOT NULL  or s.season not NULL  or s.identifier_key not null or s.query not null))) as sumAllResults" % (
                     p.id, p.id, p.id)).fetchone()
         results.append({"name": p.name, "avgResultsShare": int(result[0]) if result[0] is not None else "N/A"})
     results = sorted(results, key=lambda x: x["name"])
