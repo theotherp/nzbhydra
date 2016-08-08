@@ -4312,10 +4312,6 @@ function getIndexerPresets() {
             host: "https://nn-tmux.6box.me"
         },
         {
-            name: "CasstormNZB",
-            host: "https://nzb.casstormnzb.com"
-        },
-        {
             name: "DogNZB",
             host: "https://api.dognzb.cr"
         },
