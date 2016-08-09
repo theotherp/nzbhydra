@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.132
+Added: Option to remove trailing language from newznab results. Some indexers add the language to the result title, preventing proper duplicate detection. Enabled by default.
+
 ### 0.2.131
 Changed: "Average results shares" statistic now only considers specific searches, so only those where you actually searched for somethic specific, using a query or an ID. This should results in more helpful values.
 Note that they're still not precise. When you do a search with only one indexer enable its share will be 100%. If you search with two indexers and the second is offline, then the first one's share is 100% (and the second one's not counted).

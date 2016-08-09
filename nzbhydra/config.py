@@ -194,6 +194,7 @@ initialConfig = {
         "maxAge": "",
         "nzbAccessType": "redirect",
         "removeDuplicatesExternal": True,
+        "removeLanguage": True,
         "requiredWords": "",
         "timeout": 20,
         "userAgent": "NZBHydra"

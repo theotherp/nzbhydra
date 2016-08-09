@@ -526,6 +526,12 @@ class NewzNab(SearchModule):
         entry.title = item.find("title").text
         if entry.title and "nzbgeek" in self.settings.host:
             entry.title = entry.title.replace("-Obfuscated", "")
+        if config.settings.searching.removeLanguage:
+            for word in [" English", " Korean", " Spanish", " French", " German", " Italian", " Danish", " Dutch", " Japanese", " Cantonese", " Mandarin", " Russian", " Polish", " Vietnamese", " Swedish", " Norwegian", " Finnish", " Turkish", " Portuguese", " Flemish", " Greek", " Hungarian"]:
+                if entry.title.endswith(word):
+                    logger.debug("Removing trailing%s from title %s" % (word, entry.title))
+                    entry.title = entry.title[:-len(word)]
+                    break
         entry.link = item.find("link").text
         entry.attributes = []
         entry.pubDate = item.find("pubDate").text

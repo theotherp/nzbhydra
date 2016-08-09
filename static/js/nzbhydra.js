@@ -4080,12 +4080,21 @@ function ConfigFields($injector) {
                             }
                         },
                         {
-                            key: 'alwaysShowDuplicates',
+                            key: 'removeDuplicatesExternal',
                             type: 'horizontalSwitch',
                             templateOptions: {
                                 type: 'switch',
-                                label: 'Always show duplicates',
-                                help: 'Activate to show duplicates in search results by default'
+                                label: 'Remove API duplicates',
+                                help: 'Remove duplicates when searching via API'
+                            }
+                        },
+                        {
+                            key: 'removeLanguage',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Remove language from newznab titles',
+                                help: 'Some indexers add the language to the result title, preventing proper duplicate detection'
                             }
                         },
                         {
