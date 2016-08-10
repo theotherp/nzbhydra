@@ -65,7 +65,8 @@ class NewznabTests(UrlTestCase):
 
         # Don't use "not available" as group
         self.assertIsNone(entries[2].group)
-        
+
+        self.assertEqual("English testtitle2", entries[1].title)
         self.assertEqual("testtitle3", entries[2].title)
 
     @freeze_time("2016-01-30 18:00:00", tz_offset=-4)

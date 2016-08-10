@@ -3529,6 +3529,15 @@ function ConfigFields($injector) {
                             }
                         },
                         {
+                            key: "categories." + category.name + '.requiredRegex',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Required regex',
+                                help: 'Must be present in a title (case insensitive)'
+                            }
+                        },
+                        {
                             key: "categories." + category.name + '.forbiddenWords',
                             type: 'horizontalInput',
                             templateOptions: {
@@ -3536,8 +3545,16 @@ function ConfigFields($injector) {
                                 label: 'Forbidden words',
                                 placeholder: 'separate, with, commas, like, this'
                             }
-                        }
-                        ,
+                        },
+                        {
+                            key: "categories." + category.name + '.forbiddenRegex',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Forbidden regex',
+                                help: 'Must not be present in a title (case insensitive)'
+                            }
+                        },
                         {
                             key: "categories." + category.name + '.applyRestrictions',
                             type: 'horizontalSelect',
@@ -3982,6 +3999,15 @@ function ConfigFields($injector) {
                             }
                         },
                         {
+                            key: 'forbiddenRegex',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Forbidden regex',
+                                help: 'Must not be present in a title (case insensitive)'
+                            }
+                        },
+                        {
                             key: 'requiredWords',
                             type: 'horizontalInput',
                             templateOptions: {
@@ -3989,6 +4015,15 @@ function ConfigFields($injector) {
                                 label: 'Required words',
                                 placeholder: 'separate, with, commas, like, this',
                                 help: "Only results with at least one of these words in the title will be used"
+                            }
+                        },
+                        {
+                            key: 'requiredRegex',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Required regex',
+                                help: 'Must be present in a title (case insensitive)'
                             }
                         },
                         {

@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.133
+Added: Required and forbidden regex support. Separate values for now, so you can either just use comma separated values and / or complex regexes.
+
 ### 0.2.132
 Added: Option to remove trailing language from newznab results. Some indexers add the language to the result title, preventing proper duplicate detection. Enabled by default.
 

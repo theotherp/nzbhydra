@@ -215,6 +215,12 @@ class SearchModule(object):
                     break
             if not foundRequiredWord:
                 return False, 'None of the required words is contained in the title "%s"' % nzbSearchResult.title
+        if (searchRequest.category.category.requiredRegex and not re.search(searchRequest.category.category.requiredRegex.lower(), nzbSearchResult.title.lower()))\
+                or (config.settings.searching.requiredRegex and not re.search(config.settings.searching.requiredRegex.lower(), nzbSearchResult.title.lower())):
+            return False, "Required regex not found in title"
+        if (searchRequest.category.category.forbiddenRegex and re.search(searchRequest.category.category.forbiddenRegex.lower(), nzbSearchResult.title.lower())) \
+                or (config.settings.searching.forbiddenRegex and re.search(config.settings.searching.forbiddenRegex.lower(), nzbSearchResult.title.lower())):
+            return False, "Forbidden regex found in title"
         if searchRequest.minsize and nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
                 return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize)
         if searchRequest.maxsize and nzbSearchResult.size / (1024 * 1024) > searchRequest.maxsize:

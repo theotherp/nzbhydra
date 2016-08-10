@@ -154,7 +154,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 26,
+        "configVersion": 27,
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -197,7 +197,9 @@ initialConfig = {
         "removeLanguage": True,
         "requiredWords": "",
         "timeout": 20,
-        "userAgent": "NZBHydra"
+        "userAgent": "NZBHydra",
+        "requiredRegex": None,
+        "forbiddenRegex": None
     },
     "categories": {
         "enableCategorySizes": True,
@@ -211,7 +213,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "xxx": {
                 "applyRestrictions": "both",
@@ -222,7 +226,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "both"
+                "ignoreResults": "both",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "console": {
                 "applyRestrictions": "both",
@@ -233,7 +239,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "tvsd": {
                 "applyRestrictions": "both",
@@ -244,7 +252,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "anime": {
                 "applyRestrictions": "both",
@@ -255,7 +265,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "tv": {
                 "applyRestrictions": "both",
@@ -266,7 +278,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "movieshd": {
                 "applyRestrictions": "both",
@@ -279,7 +293,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "audiobook": {
                 "applyRestrictions": "both",
@@ -290,7 +306,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "pc": {
                 "applyRestrictions": "both",
@@ -301,7 +319,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "moviessd": {
                 "applyRestrictions": "both",
@@ -312,7 +332,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "ebook": {
                 "applyRestrictions": "both",
@@ -324,7 +346,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "movies": {
                 "applyRestrictions": "both",
@@ -335,7 +359,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "mp3": {
                 "applyRestrictions": "both",
@@ -346,7 +372,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "flac": {
                 "applyRestrictions": "both",
@@ -357,7 +385,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "comic": {
                 "applyRestrictions": "both",
@@ -368,7 +398,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             },
             "audio": {
                 "applyRestrictions": "both",
@@ -379,7 +411,9 @@ initialConfig = {
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
-                "ignoreResults": "never"
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
             }
         }
     },
@@ -624,6 +658,15 @@ def migrateConfig(config):
                         t = arrow.get(indexer["hitLimitResetTime"])
                         addLogMessage(20, "Setting API hit limit reset time for indexer %s to hour of day %d" % (indexer["name"], t.hour))
                         indexer["hitLimitResetTime"] = t.hour
+
+        if config["main"]["configVersion"] == 26:
+            with version_update(config, 27):
+                addLogMessage(20, "Adding empty required and forbidden regexes to categories")
+                for cat in config["categories"]["categories"]:
+                    config["categories"]["categories"][cat]["requiredRegex"] = None
+                    config["categories"]["categories"][cat]["forbiddenRegex"] = None
+                config["searching"]["requiredRegex"] = None
+                config["searching"]["forbiddenRegex"] = None
                 
 
         

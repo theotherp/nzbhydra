@@ -2,8 +2,8 @@ import logging
 
 from bunch import Bunch
 
-categories = Bunch.fromDict([{"name": 'na', "pretty": "N/A", "supportsById": False, "mayBeSelected": False, "newznabCategories": [], "applyRestrictions": False, "forbiddenWords": None, "requiredWords": None, "ignoreResults": "never"},
-                             {"name": 'all', "pretty": "All", "supportsById": False, "newznabCategories": [], "applyRestrictions": False, "forbiddenWords": None, "requiredWords": None, "mayBeSelected": True},
+categories = Bunch.fromDict([{"name": 'na', "pretty": "N/A", "supportsById": False, "mayBeSelected": False, "newznabCategories": [], "applyRestrictions": False, "forbiddenWords": None, "requiredWords": None, "ignoreResults": "never", "forbiddenRegex": None, "requiredRegex": None},
+                             {"name": 'all', "pretty": "All", "supportsById": False, "newznabCategories": [], "applyRestrictions": False, "forbiddenWords": None, "requiredWords": None, "mayBeSelected": True, "forbiddenRegex": None, "requiredRegex": None},
                              {"name": 'movies', "pretty": "Movies", "supportsById": True, "mayBeSelected": True},
                              {"name": 'movieshd', "pretty": "Movies HD", "supportsById": True, "mayBeSelected": True},
                              {"name": 'moviessd', "pretty": "Movies SD", "supportsById": True, "mayBeSelected": True},
