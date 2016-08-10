@@ -4115,12 +4115,12 @@ function ConfigFields($injector) {
                             }
                         },
                         {
-                            key: 'removeDuplicatesExternal',
+                            key: 'alwaysShowDuplicates',
                             type: 'horizontalSwitch',
                             templateOptions: {
                                 type: 'switch',
-                                label: 'Remove API duplicates',
-                                help: 'Remove duplicates when searching via API'
+                                label: 'Always show duplicates',
+                                help: 'Activate to show duplicates in search results by default'
                             }
                         },
                         {
