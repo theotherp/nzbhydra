@@ -220,22 +220,24 @@ def search(search_request):
         # dbsearch.save()
         cache_entry["dbsearch"] = dbsearch
 
-        # Find ignored words and pParse query for ignored words
+        # Find ignored words and parse query for ignored words
         search_request.forbiddenWords = []
         search_request.requiredWords = []
-        if config.settings.searching.forbiddenWords:
+        applyRestrictionsGlobal = config.settings.searching.applyRestrictions == "both" or (config.settings.searching.applyRestrictions == "internal" and search_request.internal) or (config.settings.searching.applyRestrictions == "external" and not search_request.internal)
+        applyRestrictionsCategory = category.applyRestrictions == "both" or (category.applyRestrictions == "internal" and search_request.internal) or (search_request.category.category.applyRestrictions == "external" and not search_request.internal)
+        if config.settings.searching.forbiddenWords and applyRestrictionsGlobal:
             logger.debug("Using configured global forbidden words: %s" % config.settings.searching.forbiddenWords)
             search_request.forbiddenWords.extend([x.lower().strip() for x in list(filter(bool, config.settings.searching.forbiddenWords.split(",")))])
-        if config.settings.searching.requiredWords:
+        if config.settings.searching.requiredWords and applyRestrictionsGlobal:
             logger.debug("Using configured global required words: %s" % config.settings.searching.requiredWords)
             search_request.requiredWords.extend([x.lower().strip() for x in list(filter(bool, config.settings.searching.requiredWords.split(",")))])
-        if category.applyRestrictions == "both" or (category.applyRestrictions == "internal" and search_request.internal) or (category.applyRestrictions == "external" and not search_request.internal):
-            if category.forbiddenWords:
-                logger.debug("Using configured forbidden words for category %s: %s" % (category.pretty, category.forbiddenWords))
-                search_request.forbiddenWords.extend([x.lower().strip() for x in list(filter(bool, category.forbiddenWords.split(",")))])
-            if category.requiredWords:
-                logger.debug("Using configured required words for category %s: %s" % (category.pretty, category.requiredWords))
-                search_request.requiredWords.extend([x.lower().strip() for x in list(filter(bool, category.requiredWords.split(",")))])
+        
+        if category.forbiddenWords and applyRestrictionsCategory:
+            logger.debug("Using configured forbidden words for category %s: %s" % (category.pretty, category.forbiddenWords))
+            search_request.forbiddenWords.extend([x.lower().strip() for x in list(filter(bool, category.forbiddenWords.split(",")))])
+        if category.requiredWords and applyRestrictionsCategory:
+            logger.debug("Using configured required words for category %s: %s" % (category.pretty, category.requiredWords))
+            search_request.requiredWords.extend([x.lower().strip() for x in list(filter(bool, category.requiredWords.split(",")))])
         
         
         if search_request.query:

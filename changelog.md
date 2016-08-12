@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.134
+Fixed: Properly follow configuration if required words / regexes should be used for internal or external searches. Added such a switch to the searching config. 
+
 ### 0.2.133
 Added: Required and forbidden regex support. Separate values for now, so you can either just use comma separated values and / or complex regexes.
 
