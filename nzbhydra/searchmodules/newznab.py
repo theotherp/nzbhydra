@@ -351,7 +351,7 @@ class NewzNab(SearchModule):
         else:
             for word in search_request.forbiddenWords:
                 if " " in word or "-" in word or "." in word:
-                    logger.debug('Not using ignored word "%s" in query because it contains a space, dash or dot which is not supported by newznab queries' % word)
+                    self.debug('Not using ignored word "%s" in query because it contains a space, dash or dot which is not supported by newznab queries' % word)
                     continue
                 query += " !" + word
         return query
@@ -529,7 +529,7 @@ class NewzNab(SearchModule):
         if config.settings.searching.removeLanguage:
             for word in [" English", " Korean", " Spanish", " French", " German", " Italian", " Danish", " Dutch", " Japanese", " Cantonese", " Mandarin", " Russian", " Polish", " Vietnamese", " Swedish", " Norwegian", " Finnish", " Turkish", " Portuguese", " Flemish", " Greek", " Hungarian"]:
                 if entry.title.endswith(word):
-                    logger.debug("Removing trailing%s from title %s" % (word, entry.title))
+                    self.debug("Removing trailing%s from title %s" % (word, entry.title))
                     entry.title = entry.title[:-len(word)]
                     break
         entry.link = item.find("link").text
@@ -571,7 +571,7 @@ class NewzNab(SearchModule):
                 try:
                     usenetdate = arrow.get(attribute_value, 'ddd, DD MMM YYYY HH:mm:ss Z')
                 except ParserError:
-                    logger.debug("Unable to parse usenet date format: %s" % attribute_value)
+                    self.debug("Unable to parse usenet date format: %s" % attribute_value)
                     usenetdate = None
             # Store all the extra attributes, we will return them later for external apis
             entry.attributes.append({"name": attribute_name, "value": attribute_value})
