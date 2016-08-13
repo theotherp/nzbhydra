@@ -91,35 +91,50 @@ def canUseIdKey(indexer, key):
         return True
 
 
+def add_not_picked_indexer(reasonMap, reason, indexerName):
+    if reason not in reasonMap.keys():
+        reasonMap[reason] = [indexerName]
+    else:
+        reasonMap[reason].append(indexerName)
+
+
 def pick_indexers(search_request):
     # type: (nzbhydra.search.SearchRequest, bool) -> List[nzbhydra.search_modules.SearchModule]
     query_supplied = True if search_request.query else False
     queryCanBeGenerated = None  # Store if we can generate a query from IDs. Initiall true but when we need this the first time and query generation fails we set it to false
     picked_indexers = []
     selected_indexers = search_request.indexers.split("|") if search_request.indexers is not None else None
+    notPickedReasons = {}
+    
     for p in indexers.enabled_indexers:
         if not p.settings.enabled:
             logger.debug("Did not pick %s because it is disabled" % p)
+            add_not_picked_indexer(notPickedReasons, "Disabled", p.name)
             continue
         if search_request.internal and p.settings.accessType == "external":
             logger.debug("Did not pick %s because it is only enabled for external searches" % p)
+            add_not_picked_indexer(notPickedReasons, "Disabled for API searches", p.name)
             continue
         if not search_request.internal and p.settings.accessType == "internal":
             logger.debug("Did not pick %s because it is only enabled for internal searches" % p)
+            add_not_picked_indexer(notPickedReasons, "Disabled for internal searches", p.name)
             continue
         if selected_indexers and p.name not in selected_indexers:
             logger.debug("Did not pick %s because it was not selected by the user" % p)
+            add_not_picked_indexer(notPickedReasons, "Not selected by user", p.name)
             continue
         try:
             status = p.indexer.status.get()
             if status.disabled_until > arrow.utcnow() and not config.settings.searching.ignoreTemporarilyDisabled:
                 logger.info("Did not pick %s because it is disabled temporarily due to an error: %s" % (p, status.reason))
+                add_not_picked_indexer(notPickedReasons, "Temporarily disabled", p.name)
                 continue
         except IndexerStatus.DoesNotExist:
             pass
         if hasattr(p.settings, "categories") and len(p.settings.categories) > 0:
             if search_request.category.category.name != "all" and search_request.category.category.name not in p.settings.categories:
                 logger.debug("Did not pick %s because it is not enabled for category %s" % (p, search_request.category.category.pretty))
+                add_not_picked_indexer(notPickedReasons, "Disabled for this category %s" % search_request.category.category.pretty, p.name)
                 continue
         if p.settings.hitLimit > 0:
             if p.settings.hitLimitResetTime:
@@ -141,17 +156,20 @@ def pick_indexers(search_request):
                         logger.info("Did not pick %s because its API hit limit of %d was reached. Next possible hit at %s" % (p, p.settings.hitLimit, nextHitAfter.format('YYYY-MM-DD HH:mm')))
                     except IndexerApiAccess.DoesNotExist:
                         logger.info("Did not pick %s because its API hit limit of %d was reached" % (p, p.settings.hitLimit))
+                add_not_picked_indexer(notPickedReasons, "API limit reached", p.name)
                 continue
             else:
                 logger.debug("%s has had %d of a maximum of %d API hits since %02d:%02d" % (p, apiHits, p.settings.hitLimit, comparisonTime.hour, comparisonTime.minute))
 
         if (query_supplied or search_request.identifier_key is not None) and not p.supports_queries:
             logger.debug("Did not pick %s because a query was supplied but the indexer does not support queries" % p)
+            add_not_picked_indexer(notPickedReasons, "Does not support queries", p.name)
             continue
 
         # Here on we check if we could supply the indexer with generated/retrieved data like the title of a series
         if not query_supplied and p.needs_queries and search_request.identifier_key is None:
             logger.debug("Did not pick %s because no query was supplied but the indexer needs queries" % p)
+            add_not_picked_indexer(notPickedReasons, "Query needed", p.name)
             continue
 
         # If we can theoretically do that we must try to actually get the title, otherwise the indexer won't be able to search 
@@ -159,6 +177,7 @@ def pick_indexers(search_request):
         if search_request.identifier_key is not None and not canUseIdKey(p, search_request.identifier_key):
             if not (allow_query_generation and p.generate_queries):
                 logger.debug("Did not pick %s because search will be done by an identifier and the indexer or system wide settings don't allow query generation" % p)
+                add_not_picked_indexer(notPickedReasons, "Does not support ID based searches", p.name)
                 continue
             else:
                 if queryCanBeGenerated is None:
@@ -174,10 +193,16 @@ def pick_indexers(search_request):
                         logger.debug("Unable to get title for supplied ID. Indexers that don't support the ID will be skipped")
                 if not queryCanBeGenerated:
                     logger.debug("Did not pick %s because search will be done by an identifier and retrieval of the title for query generation failed" % p)
+                    add_not_picked_indexer(notPickedReasons, "Does not support ID based searches", p.name)
                     continue
 
         logger.debug("Picked %s" % p)
         picked_indexers.append(p)
+    if len(picked_indexers) == 0:
+        warning = "No indexeres were selected for this search:"
+        for reason, notPickedIndexers in notPickedReasons.items():
+            warning += "\r\n%s: %s" % (reason, ", ".join(notPickedIndexers))
+        logger.warn(warning)
 
     return picked_indexers
 

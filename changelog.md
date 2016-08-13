@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.135
+Added: Log a warning if no indexers were picked and provide the reasons.
+
 ### 0.2.134
 Fixed: Properly follow configuration if required words / regexes should be used for internal or external searches. Added such a switch to the searching config. 
 

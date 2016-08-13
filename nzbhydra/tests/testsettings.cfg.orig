@@ -15,7 +15,7 @@
         "apikey": "hailhydra",
         "ssl": true,
         "cacheTimeout": 30,
-        "configVersion": 25,
+        "configVersion": 27,
         "host": "127.0.0.1",
         "cachethreshold": 25,
         "logging": {
@@ -54,6 +54,223 @@
             "ssl": false
         }
     },
+    "categories": {
+            "categories": {
+                "anime": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": [], 
+                    "ignoreResults": "never", 
+                    "max": 3000, 
+                    "min": 50, 
+                    "newznabCategories": [
+                        5070
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": null
+                }, 
+                "audio": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": "soundgarden", 
+                    "ignoreResults": "never", 
+                    "max": 2000, 
+                    "min": 1, 
+                    "newznabCategories": [
+                        3000
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": "mp3, flac"
+                }, 
+                "audiobook": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "never", 
+                    "max": 1000, 
+                    "min": 50, 
+                    "newznabCategories": [
+                        3030
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": null
+                }, 
+                "comic": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "external", 
+                    "max": 250, 
+                    "min": 1, 
+                    "newznabCategories": [
+                        7030
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": null
+                }, 
+                "console": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "never", 
+                    "max": 40000, 
+                    "min": 100, 
+                    "newznabCategories": [
+                        1000
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": null
+                }, 
+                "ebook": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "internal", 
+                    "max": 100, 
+                    "min": null, 
+                    "newznabCategories": [
+                        7020, 
+                        8010
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": null
+                }, 
+                "flac": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "never", 
+                    "max": 2000, 
+                    "min": 10, 
+                    "newznabCategories": [
+                        3040
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": null
+                }, 
+                "movies": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": "dts", 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "never", 
+                    "max": 20000, 
+                    "min": 500, 
+                    "newznabCategories": [
+                        2000
+                    ], 
+                    "requiredRegex": "1080p", 
+                    "requiredWords": ""
+                }, 
+                "movieshd": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "never", 
+                    "max": 20000, 
+                    "min": 3000, 
+                    "newznabCategories": [
+                        2040, 
+                        2050, 
+                        2060, 
+                        2070
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": ""
+                }, 
+                "moviessd": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "never", 
+                    "max": 3000, 
+                    "min": 500, 
+                    "newznabCategories": [
+                        2030
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": ""
+                }, 
+                "mp3": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "never", 
+                    "max": 500, 
+                    "min": 1, 
+                    "newznabCategories": [
+                        3010
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": null
+                }, 
+                "pc": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "never", 
+                    "max": 50000, 
+                    "min": 100, 
+                    "newznabCategories": [
+                        4000
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": null
+                }, 
+                "tv": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "never", 
+                    "max": 5000, 
+                    "min": 50, 
+                    "newznabCategories": [
+                        5000
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": null
+                }, 
+                "tvhd": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "never", 
+                    "max": 3000, 
+                    "min": 300, 
+                    "newznabCategories": [
+                        5040
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": null
+                }, 
+                "tvsd": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "never", 
+                    "max": 1000, 
+                    "min": 50, 
+                    "newznabCategories": [
+                        5030
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": null
+                }, 
+                "xxx": {
+                    "applyRestrictions": "both", 
+                    "forbiddenRegex": null, 
+                    "forbiddenWords": null, 
+                    "ignoreResults": "always", 
+                    "max": 10000, 
+                    "min": 100, 
+                    "newznabCategories": [
+                        6000
+                    ], 
+                    "requiredRegex": null, 
+                    "requiredWords": null
+                }
+            }, 
+            "enableCategorySizes": true
+        }, 
     "resultProcessing": {
         "duplicateSizeThresholdInPercent": 0.1,
         "htmlParser": "html.parser",
