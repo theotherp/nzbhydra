@@ -51,10 +51,10 @@ class Womble(SearchModule):
             self.error("This indexer does not support specific searches")
             return []
         if search_request.category is not None:
-            if search_request.category in("TV SD", "TV") or "5030" in search_request.category or "5000" in search_request.category:
+            if any(x in search_request.category.category.newznabCategories for x in [5030, 5000]):
                 urls.append(self.build_base_url().add({"sec": "tv-dvd"}).tostr())
                 urls.append(self.build_base_url().add({"sec": "tv-sd"}).tostr())
-            if search_request.category in ("TV HD", "TV") or "5040" in search_request.category or "5000" in search_request.category:
+            if any(x in search_request.category.category.newznabCategories for x in [5040, 5000]):
                 urls.append(self.build_base_url().add({"sec": "tv-x264"}).tostr())
                 urls.append(self.build_base_url().add({"sec": "tv-hd"}).tostr())
         else:

@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.136
+Fixed: Womble would not search at all.
+
 ### 0.2.135
 Added: Log a warning if no indexers were picked and provide the reasons.
 
