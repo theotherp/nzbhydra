@@ -327,9 +327,11 @@ class SearchModule(object):
             time_before = arrow.utcnow()
             response = self.get(url, cookies=cookies, timeout=timeout)
             response.raise_for_status()
+            
             time_after = arrow.utcnow()
             papiaccess.response_time = (time_after - time_before).seconds * 1000 + ((time_after - time_before).microseconds / 1000)
             papiaccess.response_successful = True
+            self.debug("HTTP request to indexer completed in %dms" % papiaccess.response_time)
             indexerStatus = self.handle_indexer_success(saveIndexerStatus=saveToDb)
         except RequestException as e:
             self.error("Error while connecting to URL %s: %s" % (url, str(e)))

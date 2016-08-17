@@ -159,13 +159,14 @@ def sizeof_fmt(num, suffix='B'):
 
 
 def process_for_external_api(results):
+    logger.debug("Processing results for external search")
     results = transform_results(results["results"], True)
     return results
 
 
 def process_for_internal_api(search_result):
     nzbsearchresults = search_result["results"]
-    logger.debug("Processing %d results" % len(nzbsearchresults))
+    logger.debug("Processing results for internal search")
     indexersearchdbentries = []
     for indexer, indexer_info in search_result["indexer_infos"].items():
         indexer_search_info = IndexerSearchSchema().dump(indexer_info["indexer_search"]).data

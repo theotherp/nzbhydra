@@ -504,8 +504,10 @@ def api(args):
     if config.settings.main.apikey and ("apikey" not in args or args["apikey"] != config.settings.main.apikey):
         logger.error("Tried API access with invalid or missing API key")
         raise Unauthorized("API key not provided or invalid")
-    elif args["t"] in ("search", "tvsearch", "movie", "book"):
-        return api_search(args)
+    elif args["t"] in ("search", "tvsearch", "movie", "book"): 
+        searchResult = api_search(args)
+        logger.info("Search completed")
+        return searchResult
     elif args["t"] == "get":
         if "nzbhydrasearchresult" not in args["id"]:
             logger.error("API NZB download request with invalid id %s" % args["id"])
@@ -671,7 +673,9 @@ def internalapi_search(args):
         type = "general"
     indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None
     search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=indexers)
-    return startSearch(search_request)
+    searchResult = startSearch(search_request)
+    logger.info("Search completed")
+    return searchResult
 
 
 internalapi_moviesearch_args = {
@@ -709,7 +713,9 @@ def internalapi_moviesearch(args):
         search_request.identifier_key = "imdbid"
         search_request.identifier_value = imdbid
 
-    return startSearch(search_request)
+    searchResult = startSearch(search_request)
+    logger.info("Search completed")
+    return searchResult
 
 
 internalapi_tvsearch_args = {
@@ -744,7 +750,9 @@ def internalapi_tvsearch(args):
     elif args["rid"]:
         search_request.identifier_key = "rid"
         search_request.identifier_value = args["rid"]
-    return startSearch(search_request)
+    searchResult = startSearch(search_request)
+    logger.info("Search completed")
+    return searchResult
 
 
 internalapi_autocomplete_args = {

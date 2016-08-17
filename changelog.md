@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.138
+Added: Some performance related debug loggings.
+
 ### 0.2.137
 Added: Button to invert indexer selection on earch page.
 

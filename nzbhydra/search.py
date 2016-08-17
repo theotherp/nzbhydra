@@ -226,6 +226,9 @@ def search(search_request):
     if oldSearchResultsCount > 0:
         logger.info("Deleting %d search results from database that are older than %d days" % (oldSearchResultsCount, keepFor))
         SearchResult.delete().where(SearchResult.firstFound < (datetime.date.today() - datetime.timedelta(days=keepFor))).execute()
+    else:
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug("%d search results stored in database" % SearchResult.select().count())
 
     limit = search_request.limit
     external_offset = int(search_request.offset)
@@ -290,13 +293,14 @@ def search(search_request):
         
         logger.debug("Searching indexers with offset %d" % search_request.offset)
         result = search_and_handle_db(dbsearch, {x: search_request for x in indexers_to_call})
-        
+        logger.debug("All search calls to indexers completed")
         search_results = []
         indexers_to_call = []
 
         for indexer, queries_execution_result in result["results"].items():
             #Drastically improves db access time but means that if one database write fails all fail. That's a risk we need to take 
             with db.atomic():
+                logger.debug("Saving %d results to database" % len(queries_execution_result.results))
                 for result in queries_execution_result.results:
                     if result.title is None or result.link is None or result.indexerguid is None:
                         logger.info("Skipping result with missing data: %s" % result)
@@ -324,6 +328,7 @@ def search(search_request):
                     cache_entry["total"] += 100
 
         if search_request.internal or config.settings.searching.removeDuplicatesExternal:
+            logger.debug("Searching for duplicates")
             countBefore = len(search_results)
             grouped_by_sameness = find_duplicates(search_results)
             allresults = []
@@ -356,7 +361,7 @@ def search(search_request):
         logger.debug("We have %d cached results and return %d-%d of %d total available accounting for the limit set for the API search" % (len(cache_entry["results"]), external_offset, external_offset + limit, cache_entry["total"]))
         nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:(external_offset + limit)])
     cache_entry["last_access"] = arrow.utcnow()
-
+    logger.info("Returning %d results" % len(nzb_search_results))
     return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearchid": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset}
 
 
@@ -380,7 +385,6 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
             except Exception as e:
                 logger.error("Error saving IndexerApiAccessEntry", e)
 
-    logger.debug("Returning search results now")
     return {"results": results_by_indexer, "dbsearch": dbsearch}
 
 
