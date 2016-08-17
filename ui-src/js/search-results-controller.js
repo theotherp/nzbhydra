@@ -25,7 +25,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.doShowDuplicates = ConfigService.getSafe().searching.alwaysShowDuplicates;
     $scope.selected = [];
     
-    $scope.indexerStatusesExpanded = localStorageService.get("indexerStatusesExpanded") != null ? localStorageService.get("indexerStatusesExpanded") : false;
+    $scope.foo = {indexerStatusesExpanded: localStorageService.get("indexerStatusesExpanded") != null ? localStorageService.get("indexerStatusesExpanded") : false};
+    console.log($scope.foo.indexerStatusesExpanded);
     
     $scope.countFilteredOut = 0;
 
@@ -214,9 +215,9 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         $scope.selected = _.difference($scope.results, $scope.selected);
     };
     
-    $scope.toggleIndexerStatuses = function() {
-        $scope.indexerStatusesExpanded = !$scope.indexerStatusesExpanded;
-        localStorageService.set("indexerStatusesExpanded", $scope.indexerStatusesExpanded);
+    $scope.toggleIndexerStatuses = function(indexerStatusesExpanded) {
+        //For some reason the value is actually the other way around
+        localStorageService.set("indexerStatusesExpanded", !indexerStatusesExpanded);
     }
 
 }

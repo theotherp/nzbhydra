@@ -4,6 +4,8 @@
 ### 0.2.137
 Added: Button to invert indexer selection on earch page.
 
+Fixed: Indexer statuses box would not store state properly.
+
 ### 0.2.136
 Fixed: Womble would not search at all.
 

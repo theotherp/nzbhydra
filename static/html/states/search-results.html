@@ -4,9 +4,9 @@
     <div class="col-md-10" style="padding-right: 0px">
         <!-- TODO: Make box smaller if no error messages exist-->
         <uib-accordion close-others="oneAtATime">
-            <uib-accordion-group panel-class="panel-indexer-statuses" is-open="indexerStatusesExpanded">
+            <uib-accordion-group panel-class="panel-indexer-statuses" is-open="foo.indexerStatusesExpanded">
                 <uib-accordion-heading>
-                    Indexer statuses <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': indexerStatusesExpanded, 'glyphicon-chevron-right': !indexerStatusesExpanded}" ng-click="toggleIndexerStatuses()"></i>
+                    Indexer statuses <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': foo.indexerStatusesExpanded, 'glyphicon-chevron-right': !foo.indexerStatusesExpanded}" ng-click="toggleIndexerStatuses(foo.indexerStatusesExpanded)"></i>
                 </uib-accordion-heading>
 
                 <table class="table" style="margin-bottom: 0px">
