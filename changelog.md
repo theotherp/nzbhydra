@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.137
+Added: Button to invert indexer selection on earch page.
+
 ### 0.2.136
 Fixed: Womble would not search at all.
 

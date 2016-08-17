@@ -245,6 +245,12 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
                 return {name: indexer.name, activated: isIndexerPreselected(indexer), categories: indexer.categories};
             }).value();
     }
+    
+    $scope.toggleAllIndexers = function() {
+        angular.forEach($scope.availableIndexers, function(indexer) {
+            indexer.activated = !indexer.activated; 
+        })
+    };
 
     $scope.availableIndexers = getAvailableIndexers();
     
