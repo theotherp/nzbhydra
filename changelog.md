@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.139
+Added: Log how long a search took.
+
 ### 0.2.138
 Added: Some performance related debug loggings.
 
