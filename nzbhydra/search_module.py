@@ -23,7 +23,7 @@ import requests
 from peewee import fn, OperationalError
 from requests import RequestException
 from nzbhydra import config, database
-from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, Indexer
+from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, Indexer, SearchResult
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAuthException, IndexerAccessException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
@@ -138,6 +138,7 @@ class SearchModule(object):
         else:
             urls = self.get_search_urls(search_request)
         queries_execution_result = self.execute_queries(urls, search_request)
+
         database.db.close()
         return queries_execution_result
 
@@ -423,7 +424,19 @@ class SearchModule(object):
                     self.error("Unable to save API response to database")
                 psearch.resultsCount = total_results
                 #psearch.save()
-        return QueriesExecutionResult(didsearch= True, results=results, indexerSearchEntry=psearch, indexerApiAccessEntry=papiaccess, indexerStatus=indexerStatus, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)
+        results2 = []
+        self.debug("Writing %d results to database" % len(results))
+        for result in results:
+            if result.title is None or result.link is None or result.indexerguid is None:
+                self.info("Skipping result with missing data: %s" % result)
+                continue
+            searchResult = SearchResult().get_or_create(indexer=self.indexer, guid=result.indexerguid, defaults={"title": result.title, "link": result.link, "details": result.details_link})
+            searchResult = searchResult[0]  # Second is a boolean determining if the search result was created
+            result.searchResultId = searchResult.id
+            results2.append(result)
+        self.debug("Wrote results to database")
+
+        return QueriesExecutionResult(didsearch= True, results=results2, indexerSearchEntry=psearch, indexerApiAccessEntry=papiaccess, indexerStatus=indexerStatus, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)
 
     def debug(self, msg, *args, **kwargs):
         self.logger.debug("%s: %s" % (self.name, msg), *args, **kwargs)

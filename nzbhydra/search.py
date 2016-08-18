@@ -300,17 +300,17 @@ def search(search_request):
         for indexer, queries_execution_result in result["results"].items():
             #Drastically improves db access time but means that if one database write fails all fail. That's a risk we need to take 
             with db.atomic():
-                logger.debug("Saving %d results to database" % len(queries_execution_result.results))
+                logger.debug("%s returned %d results. Writing them to database..." % (indexer, len(queries_execution_result.results)))
                 for result in queries_execution_result.results:
-                    if result.title is None or result.link is None or result.indexerguid is None:
-                        logger.info("Skipping result with missing data: %s" % result)
-                        continue
-                    searchResult = SearchResult().get_or_create(indexer=indexer.indexer, guid=result.indexerguid, defaults={"title": result.title, "link": result.link, "details": result.details_link})
-                    searchResult = searchResult[0]  # Second is a boolean determining if the search result was created
-                    result.searchResultId = searchResult.id
+                    # if result.title is None or result.link is None or result.indexerguid is None:
+                    #     logger.info("Skipping result with missing data: %s" % result)
+                    #     continue
+                    # searchResult = SearchResult().get_or_create(indexer=indexer.indexer, guid=result.indexerguid, defaults={"title": result.title, "link": result.link, "details": result.details_link})
+                    # searchResult = searchResult[0]  # Second is a boolean determining if the search result was created
+                    # result.searchResultId = searchResult.id
                     search_results.append(result)
-        
-                logger.debug("%s returned %d results" % (indexer, len(queries_execution_result.results)))
+                #logger.debug("Wrote results results to database")
+
                 cache_entry["indexer_infos"][indexer].update(
                     {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
                      "indexer_search": queries_execution_result.indexerSearchEntry})
@@ -384,6 +384,7 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
                 Indexer().create(name=indexer)
             except Exception as e:
                 logger.error("Error saving IndexerApiAccessEntry", e)
+
 
     return {"results": results_by_indexer, "dbsearch": dbsearch}
 
