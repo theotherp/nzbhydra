@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.140
+Changed: Hopefully improved the performance of writing results to the database. Let me know what happens. 
+
 ### 0.2.139
 Added: Log how long a search took.
 
