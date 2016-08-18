@@ -30,7 +30,7 @@ import urllib
 from builtins import *
 from peewee import fn
 from jwt import DecodeError, ExpiredSignature
-from nzbhydra.exceptions import DownloaderException, IndexerResultParsingException, DownloaderNotFoundException
+from nzbhydra.exceptions import DownloaderException, DownloaderNotFoundException
 
 # standard_library.install_aliases()
 from functools import update_wrapper
@@ -146,7 +146,7 @@ def disable_caching(response):
         response.headers["Hydra-MaySeeAdmin"] = user["maySeeAdmin"]
         response.headers["Hydra-MaySeeStats"] = user["maySeeStats"]
         response.headers["Hydra-Username"] = user["username"]
-        
+
     return response
 
 
@@ -255,7 +255,7 @@ def getUserFromToken():
                 g.user = u
                 user = u
                 break
-        
+
         if user is not None:
             return user
         else:
@@ -297,12 +297,12 @@ def isAllowed(authType):
         return True
 
     user = None
-    #Try to find token header
+    # Try to find token header
     if request.headers.get('TokenAuthorization'):
         logger.debug("Found auth token in headers")
         user = getUserFromToken()
- 
-    #No user found in token. Check if basic auth header is set
+
+    # No user found in token. Check if basic auth header is set
     if user is None:
         user = getUserFromBasicAuth()
     if user is None:
@@ -319,8 +319,6 @@ def isAllowed(authType):
             logger.warn("User %s may not see the admin area" % user.username)
         return user.maySeeAdmin
     return True
-    
-    
 
 
 def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False, disableAuthForForm=False):
@@ -391,15 +389,15 @@ def base(path):
         "statsRestricted": config.settings.auth.restrictStats and len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none",
         "searchRestricted": config.settings.auth.restrictSearch and len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none",
     }
-    
-    getUserFromToken() #Just see if the token is there
+
+    getUserFromToken()  # Just see if the token is there
     if request.authorization:
         for u in config.settings.auth.users:
             if u.username == request.authorization.username:
                 if config.settings.auth.restrictAdmin:
                     bootstrapped["maySeeAdmin"] = u.maySeeAdmin
                 if config.settings.auth.restrictStats:
-                    bootstrapped["maySeeStats"] = u.maySeeStats    
+                    bootstrapped["maySeeStats"] = u.maySeeStats
 
     return render_template("index.html", base_url=base_url, onProd="false" if config.settings.main.debug else "true", theme=config.settings.main.theme + ".css", bootstrapped=json.dumps(bootstrapped))
 
@@ -504,9 +502,12 @@ def api(args):
     if config.settings.main.apikey and ("apikey" not in args or args["apikey"] != config.settings.main.apikey):
         logger.error("Tried API access with invalid or missing API key")
         raise Unauthorized("API key not provided or invalid")
-    elif args["t"] in ("search", "tvsearch", "movie", "book"): 
+    elif args["t"] in ("search", "tvsearch", "movie", "book"):
+        before = arrow.now()
         searchResult = api_search(args)
-        logger.info("Search completed")
+        after = arrow.now()
+        took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
+        logger.info("API search request completed in %d ms" % took)
         return searchResult
     elif args["t"] == "get":
         if "nzbhydrasearchresult" not in args["id"]:
@@ -659,6 +660,7 @@ internalapi_search_args = {
 @app.route('/internalapi/search')
 @requires_auth("main")
 @use_args(internalapi_search_args, locations=['querystring'])
+# @flask_cache.memoize()
 def internalapi_search(args):
     logger.debug("Search request with args %s" % args)
     if args["category"].lower() == "ebook":
@@ -673,8 +675,11 @@ def internalapi_search(args):
         type = "general"
     indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None
     search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=indexers)
+    before = arrow.now()
     searchResult = startSearch(search_request)
-    logger.info("Search completed")
+    after = arrow.now()
+    took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
+    logger.info("Search completed in %d ms" % took)
     return searchResult
 
 
@@ -713,8 +718,11 @@ def internalapi_moviesearch(args):
         search_request.identifier_key = "imdbid"
         search_request.identifier_value = imdbid
 
+    before = arrow.now()
     searchResult = startSearch(search_request)
-    logger.info("Search completed")
+    after = arrow.now()
+    took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
+    logger.info("Search completed in %d ms" % took)
     return searchResult
 
 
@@ -750,8 +758,12 @@ def internalapi_tvsearch(args):
     elif args["rid"]:
         search_request.identifier_key = "rid"
         search_request.identifier_value = args["rid"]
+
+    before = arrow.now()
     searchResult = startSearch(search_request)
-    logger.info("Search completed")
+    after = arrow.now()
+    took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
+    logger.info("Search completed in %d ms" % took)
     return searchResult
 
 
@@ -1076,8 +1088,6 @@ internalapi__askforpassword_args = {
     "old_username": fields.String(missing=None)
 }
 
-
-
 countAskForPasswordRequests = {}
 
 
@@ -1115,8 +1125,6 @@ def internalapi_askforadmin(args):
             return "OK"
         else:
             return returnBasicAuth401()
-    
-    
 
 
 @app.route('/internalapi/get_version_history')
@@ -1179,6 +1187,7 @@ def internalapi_getHelp(args):
             return markdown.markdown(helpMd, output_format="html", extensions=['markdown.extensions.nl2br'])
     logger.error("Unable to find help file %s" % helpFile)
     return "Unable to find help file %s" % helpFile, 500
+
 
 @app.route('/internalapi/getbackup')
 @requires_auth("admin")
@@ -1304,9 +1313,9 @@ def internalapi_update():
 
 @app.route("/internalapi/teststuff")
 def internalapi_teststuff():
-    #Used to trigger execution of test code
+    # Used to trigger execution of test code
     logger.error(u"äöü")
-    return "OK" 
+    return "OK"
 
 
 def run(host, port, basepath):
