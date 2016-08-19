@@ -50,6 +50,8 @@ def check_auth(body, indexer):
         raise IndexerAuthException("You're not allowed to use the API.", indexer)
     if '<error code="910"' in body:
         raise IndexerAccessException("The API seems to be disabled for the moment.", indexer)
+    if "Site Maintenance" in body:
+        raise IndexerAccessException("Site is down for maintenance.", indexer)
     if '<error code=' in body:
         try:
             tree = ET.fromstring(body)
