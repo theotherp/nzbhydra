@@ -46,7 +46,7 @@ sudo nano /etc/default/nzbhydra
 Start the service:
 
 ```sh
-sudo service start nzbhydra
+sudo service nzbhydra start
 ```
 
 ## TODO
