@@ -36,7 +36,7 @@ from nzbhydra.exceptions import DownloaderException, DownloaderNotFoundException
 from functools import update_wrapper
 from time import sleep
 from arrow import Arrow
-from flask import Flask, render_template, request, jsonify, Response, g
+from flask import Flask, render_template, request, jsonify, Response, g, session
 from flask import redirect, make_response, send_file
 from flask_cache import Cache
 from flask.json import JSONEncoder
@@ -232,14 +232,6 @@ def create_token(user):
     return token.decode('unicode_escape')
 
 
-def parse_token(req):
-    token = req.headers.get('TokenAuthorization')
-    if token is None:
-        return None
-    token = token.split()[1]
-    return jwt.decode(token, config.settings.main.secret)
-
-
 def isAdminLoggedIn():
     auth = request.authorization
     return len(config.settings.auth.users) == 0 or (auth is not None and any([x.maySeeAdmin and x.username == auth.username and x.password == auth.password for x in config.settings.auth.users]))
@@ -247,10 +239,12 @@ def isAdminLoggedIn():
 
 def getUserFromToken():
     try:
-        payload = parse_token(request)
+        payload = request.cookies.get("rememberMe")
         if payload is None:
             return None
+        payload = jwt.decode(json.loads(payload), config.settings.main.secret)
         user = None
+
         for u in config.settings.auth.users:
             if u.username == payload["username"]:
                 g.user = u
@@ -303,6 +297,8 @@ def isAllowed(authType):
         logger.debug("Found auth token in headers")
         user = getUserFromToken()
 
+    if request.cookies.get("rememberMe"):
+        user = getUserFromToken()
     # No user found in token. Check if basic auth header is set
     if user is None:
         user = getUserFromBasicAuth()
@@ -368,7 +364,10 @@ def login():
         if u.username.encode("utf-8") == username and u.password.encode("utf-8") == password:
             token = create_token(u)
             logger.info("Form login form user %s successful" % username)
-            return jsonify(token=token)
+            session["rememberMe"] = token
+            response = jsonify(token=token)
+            response.set_cookie("rememberMe", json.dumps(token), expires=arrow.now().datetime + datetime.timedelta(days=14))
+            return response
     response = jsonify(message='Wrong username or Password')
     logger.warn("Unsuccessful form login for user %s" % username)
     response.status_code = 401
@@ -661,6 +660,7 @@ internalapi_search_args = {
 @app.route('/internalapi/search')
 @requires_auth("main")
 @use_args(internalapi_search_args, locations=['querystring'])
+@flask_cache.memoize()
 def internalapi_search(args):
     logger.debug("Search request with args %s" % args)
     if args["category"].lower() == "ebook":
