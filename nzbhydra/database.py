@@ -23,7 +23,7 @@ db = SqliteExtDatabase(None, pragmas=(
     ('busy_timeout', 20),
     ('threadlocals', True),
     ('journal_mode', 'WAL'),
-    
+
 ))
 
 DATABASE_VERSION = 9
@@ -105,7 +105,7 @@ class SearchResult(Model):
     class Meta(object):
         database = db
         indexes = (
-            (('indexer', 'guid'), True),  # Note the trailing comma!
+            #(('indexer', 'guid'), True),  # Note the trailing comma!
         )
 
     def save(self, *args, **kwargs):

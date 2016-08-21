@@ -1,4 +1,4 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title', 'satellizer', 'LocalStorageModule']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ngAnimate', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title', 'satellizer', 'LocalStorageModule', 'angular.filter']);
 
 angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$locationProvider", "blockUIConfig", "$urlMatcherFactoryProvider", "$authProvider", "localStorageServiceProvider", "bootstrapped", function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig, $urlMatcherFactoryProvider, $authProvider, localStorageServiceProvider, bootstrapped) {
 
@@ -694,60 +694,36 @@ function hydraupdates() {
 
 angular
     .module('nzbhydraApp')
-    .directive('searchResult', searchResult);
+    .directive('titleGroup', titleGroup);
 
-function searchResult() {
+function titleGroup() {
     return {
-        templateUrl: 'static/html/directives/search-result.html',
-        require: '^titleGroup',
+        templateUrl: 'static/html/directives/title-group.html',
         scope: {
-            titleGroup: "<",
-            showDuplicates: "<",
-            selected: "<",
-            rowIndex: "<"
+            titles: "<",
+            selected: "=",
+            rowIndex: "@",
+            doShowDuplicates: "<"
         },
         controller: ['$scope', '$element', '$attrs', controller],
         multiElement: true
     };
 
     function controller($scope, $element, $attrs) {
+        $scope.expanded = false;
         $scope.titleGroupExpanded = false;
-        $scope.hashGroupExpanded = {};
 
-        $scope.toggleTitleGroup = function () {
-            $scope.titleGroupExpanded = !$scope.titleGroupExpanded;
-            if (!$scope.titleGroupExpanded) {
-                $scope.hashGroupExpanded[$scope.titleGroup[0][0].hash] = false; //Also collapse the first title's duplicates
-            }
-        };
+        $scope.$on("toggleTitleExpansion", function (event, args) {
+            $scope.titleGroupExpanded = args;
+            event.stopPropagation();
+        });
 
-        $scope.groupingRowDuplicatesToShow = groupingRowDuplicatesToShow;
-        function groupingRowDuplicatesToShow() {
-            if ($scope.showDuplicates &&  $scope.titleGroup[0].length > 1 && $scope.hashGroupExpanded[$scope.titleGroup[0][0].hash]) {
-                return $scope.titleGroup[0].slice(1);
-            } else {
-                return [];
-            }
-        }
 
-        //<div ng-repeat="hashGroup in titleGroup" ng-if="titleGroup.length > 0 && titleGroupExpanded"  class="search-results-row">
-        $scope.otherTitleRowsToShow = otherTitleRowsToShow;
-        function otherTitleRowsToShow() {
-            if ($scope.titleGroup.length > 1 && $scope.titleGroupExpanded) {
-                return $scope.titleGroup.slice(1);
-            } else {
-                return [];
-            }
+        $scope.titlesToShow = titlesToShow;
+        function titlesToShow() {
+            return $scope.titles.slice(1);
         }
         
-        $scope.hashGroupDuplicatesToShow = hashGroupDuplicatesToShow;
-        function hashGroupDuplicatesToShow(hashGroup) {
-            if ($scope.showDuplicates && $scope.hashGroupExpanded[hashGroup[0].hash]) {
-                return hashGroup.slice(1);
-            } else {
-                return [];
-            }
-        }
     }
 }
 angular
@@ -946,6 +922,75 @@ function focusOn() {
     }
 }
 
+angular
+    .module('nzbhydraApp')
+    .directive('duplicateGroup', duplicateGroup);
+
+function duplicateGroup() {
+    return {
+        templateUrl: 'static/html/directives/duplicate-group.html',
+        scope: {
+            duplicates: "<",
+            selected: "=",
+            isFirstRow: "<",
+            rowIndex: "<",
+            displayTitleToggle: "<"
+        },
+        controller: ['$scope', '$element', '$attrs','localStorageService', titleRowController]
+    };
+
+    function titleRowController($scope, localStorageService) {
+        $scope.titlesExpanded = false;
+        $scope.duplicatesExpanded = false;
+        $scope.foo = {
+            duplicatesDisplayed: localStorageService.get("duplicatesDisplayed") != null ? localStorageService.get("duplicatesDisplayed") : false
+        };
+        $scope.duplicatesToShow = duplicatesToShow;
+        function duplicatesToShow() {
+            return $scope.duplicates.slice(1);
+        }
+
+        $scope.toggleTitleExpansion = function() {
+            $scope.titlesExpanded = !$scope.titlesExpanded;
+            $scope.$emit("toggleTitleExpansion", $scope.titlesExpanded);
+        };
+        
+        $scope.toggleDuplicateExpansion = function() {
+            $scope.duplicatesExpanded = !$scope.duplicatesExpanded;
+        };
+
+        $scope.$on("invertSelection", function() {
+            for (var i = 0; i < $scope.duplicates.length; i++) {
+                if ($scope.duplicatesExpanded ) {
+                    invertSelection($scope.selected, $scope.duplicates[i]);
+                } else {
+                    if (i > 0) {
+                        //Always remove duplicates that aren't displayed
+                        invertSelection($scope.selected, $scope.duplicates[i], true);
+                    } else {
+                        invertSelection($scope.selected, $scope.duplicates[i]);
+                    }
+                }
+            }
+        });
+
+        $scope.$on("duplicatesDisplayed", function(event, args) {
+            $scope.foo.duplicatesDisplayed = args;
+        });
+
+        function invertSelection(a, b, dontPush) {
+            var index = _.indexOf(a,b);
+            if (index > -1) {
+                a.splice(index,1);
+            } else {
+                if (!dontPush)
+                a.push(b);
+            }
+        }
+    }
+
+
+}
 angular
     .module('nzbhydraApp')
     .directive('downloadNzbsButton', downloadNzbsButton);
@@ -1596,7 +1641,6 @@ angular
 //SearchResultsController.$inject = ['blockUi'];
 function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, localStorageService, SearchService, ConfigService) {
 
-    
     if (localStorageService.get("sorting") != null) {
         var sorting = localStorageService.get("sorting");
         $scope.sortPredicate = sorting.predicate;
@@ -1616,8 +1660,10 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.doShowDuplicates = ConfigService.getSafe().searching.alwaysShowDuplicates;
     $scope.selected = [];
     
-    $scope.foo = {indexerStatusesExpanded: localStorageService.get("indexerStatusesExpanded") != null ? localStorageService.get("indexerStatusesExpanded") : false};
-    console.log($scope.foo.indexerStatusesExpanded);
+    $scope.foo = {
+        indexerStatusesExpanded: localStorageService.get("indexerStatusesExpanded") != null ? localStorageService.get("indexerStatusesExpanded") : false,
+        duplicatesDisplayed: localStorageService.get("duplicatesDisplayed") != null ? localStorageService.get("duplicatesDisplayed") : false,
+    };
     
     $scope.countFilteredOut = 0;
 
@@ -1803,13 +1849,22 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     
     
     $scope.invertSelection = function invertSelection() {
-        $scope.selected = _.difference($scope.results, $scope.selected);
+        $scope.$broadcast("invertSelection");
     };
     
     $scope.toggleIndexerStatuses = function(indexerStatusesExpanded) {
         //For some reason the value is actually the other way around
         localStorageService.set("indexerStatusesExpanded", !indexerStatusesExpanded);
-    }
+    };
+
+    $scope.toggleDuplicatesDisplayed = function () {
+        $scope.duplicatesDisplayed = !$scope.duplicatesDisplayed;
+        localStorageService.set("duplicatesDisplayed", $scope.duplicatesDisplayed);
+        $scope.$broadcast("duplicatesDisplayed", $scope.duplicatesDisplayed);
+    };
+
+    
+
 
 }
 SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "growl", "localStorageService", "SearchService", "ConfigService"];
@@ -3221,13 +3276,8 @@ ConfigBoxService.$inject = ["$http", "$q"];
 var filters = angular.module('filters', []);
 
 filters.filter('bytes', function() {
-	return function(bytes, precision) {
-		if (isNaN(parseFloat(bytes)) || !isFinite(bytes) || bytes == 0) return '-';
-		if (typeof precision === 'undefined') precision = 1;
-		
-		var units = ['b', 'kB', 'MB', 'GB', 'TB', 'PB'],
-			number = Math.floor(Math.log(bytes) / Math.log(1024));
-		return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) +   units[number];
+	return function(bytes) {
+		return filesize(bytes);
 	}
 });
 
@@ -3238,6 +3288,8 @@ filters.filter('unsafe',
 		};
 	}]
 );
+
+
 angular
     .module('nzbhydraApp')
     .factory('DownloaderCategoriesService', DownloaderCategoriesService);

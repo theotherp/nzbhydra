@@ -1,17 +1,17 @@
-<td class="col-md-1 search-results-cell">
+<td class="col-md-1 search-results-cell" style="text-align: right">
     {{ ::result.indexer }}
 </td>
-<td class="col-md-2 search-results-cell">
+<td class="col-md-2 search-results-cell" style="width: 8%; text-align: right">
     {{ ::result.category }}
 </td>
-<td class="col-md-1 search-results-cell">
-    {{ ::result.size | bytes }}
+<td class="col-md-1 search-results-cell" style="width: 7%; text-align: right">
+    {{ ::result.size | byteFmt: 2 }}
 </td>
-<td class="col-md-1 search-results-cell">
+<td class="col-md-1 search-results-cell" style="text-align: right">
     {{ ::result.age_days }}d
 </td>
 <td class="col-md-3 search-results-cell">
-    <a href ng-click="showNfo(result)" ng-class="{'no-nfo': result.has_nfo == 0, 'fuzzy-nfo': result.has_nfo == 2}"
+    <a href ng-click="showNfo(result)" ng-class="::{'no-nfo': result.has_nfo == 0, 'fuzzy-nfo': result.has_nfo == 2}"
        uib-tooltip="May have an NFO. Click to find out..."
        tooltip-placement="top"
        tooltip-trigger="mouseenter"

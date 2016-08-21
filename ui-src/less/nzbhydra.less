@@ -453,9 +453,13 @@ a.disabled:hover {
   border-top-width: 0 !important;
 }
 
+.odd {
+  background-color: darken(@table-bg, 5%);
+}
+
+
 .duplicate {
   background-color: darken(@table-bg, 15%);
-
 }
 
 .title-group-first-row {
@@ -494,8 +498,18 @@ a.disabled:hover {
   border-bottom-color: @table-border-color;
 }
 
-.odd {
-  background-color: darken(@table-bg, 5%);
+.title-group-table {
+  width: 100%;
+  margin: 0;
+  border-width: 0;
+  padding: 0
+}
+
+.title-subgroup-table {
+  width: 97%;
+  padding: 0;
+  border-width: 0;
+  margin: 0 0 0 3%;
 }
 
 .form-control {
@@ -697,4 +711,12 @@ input:focus + .input-group-addon {
 
 .indexer-input-focused {
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+
+.table .table {
+  background-color: @table-bg;
+}
+
+.results-table-expanded {
+  border-color: red;
 }

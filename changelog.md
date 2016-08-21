@@ -1,6 +1,11 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.141
+Changed: Rewrote some of the search result presentation logic which improves rendering time a bit (still slow, though).
+
+Added/Fixed: Button to invert selection is back and should work as expected.
+
 ### 0.2.140
 Changed: Hopefully improved the performance of writing results to the database. Let me know what happens. 
 

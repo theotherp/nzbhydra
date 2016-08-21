@@ -5,7 +5,6 @@ angular
 //SearchResultsController.$inject = ['blockUi'];
 function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, localStorageService, SearchService, ConfigService) {
 
-    
     if (localStorageService.get("sorting") != null) {
         var sorting = localStorageService.get("sorting");
         $scope.sortPredicate = sorting.predicate;
@@ -25,8 +24,10 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.doShowDuplicates = ConfigService.getSafe().searching.alwaysShowDuplicates;
     $scope.selected = [];
     
-    $scope.foo = {indexerStatusesExpanded: localStorageService.get("indexerStatusesExpanded") != null ? localStorageService.get("indexerStatusesExpanded") : false};
-    console.log($scope.foo.indexerStatusesExpanded);
+    $scope.foo = {
+        indexerStatusesExpanded: localStorageService.get("indexerStatusesExpanded") != null ? localStorageService.get("indexerStatusesExpanded") : false,
+        duplicatesDisplayed: localStorageService.get("duplicatesDisplayed") != null ? localStorageService.get("duplicatesDisplayed") : false,
+    };
     
     $scope.countFilteredOut = 0;
 
@@ -212,12 +213,21 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     
     
     $scope.invertSelection = function invertSelection() {
-        $scope.selected = _.difference($scope.results, $scope.selected);
+        $scope.$broadcast("invertSelection");
     };
     
     $scope.toggleIndexerStatuses = function(indexerStatusesExpanded) {
         //For some reason the value is actually the other way around
         localStorageService.set("indexerStatusesExpanded", !indexerStatusesExpanded);
-    }
+    };
+
+    $scope.toggleDuplicatesDisplayed = function () {
+        $scope.duplicatesDisplayed = !$scope.duplicatesDisplayed;
+        localStorageService.set("duplicatesDisplayed", $scope.duplicatesDisplayed);
+        $scope.$broadcast("duplicatesDisplayed", $scope.duplicatesDisplayed);
+    };
+
+    
+
 
 }

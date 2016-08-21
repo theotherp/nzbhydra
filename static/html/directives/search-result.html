@@ -1,13 +1,22 @@
 <tr class="search-results-row" ng-class="{'title-group-first-row': titleGroupExpanded || (hashGroupExpanded[titleGroup[0][0].hash]), 'odd': rowIndex % 2 == 0, 'even' : rowIndex % 2 == 1}">
-    <td class="col-md-12 search-results-cell" ng-init="result = titleGroup[0][0]">
-        <input type="checkbox" data-checklist-model="selected" data-checklist-value="result"/>
-        <a href="" ng-click="toggleTitleGroup()" ng-class="{'visibility-hidden': titleGroup.length == 1}"><span class="glyphicon"
-                                                                                                                ng-class="{'glyphicon-collapse-up': titleGroupExpanded, 'glyphicon-expand': !titleGroupExpanded}"></span></a>
-        <a href="" ng-if="showDuplicates" ng-click="hashGroupExpanded[titleGroup[0][0].hash]=!hashGroupExpanded[titleGroup[0][0].hash]" ng-class="{'visibility-hidden': titleGroup[0].length == 1}"><span class="glyphicon"
-                                                                                                                                                                                   ng-class="{'glyphicon-collapse-up': hashGroupExpanded[titleGroup[0][0].hash], 'glyphicon-expand': !hashGroupExpanded[titleGroup[0][0].hash]}"></span></a>
-        {{ ::result.title }}
+    <td colspan="6" style="margin:0; border-width: 0; padding: 0">
+    <table style="width: 100%; margin:0; border-width: 0; padding: 0" class="table">
+        <tr style="margin:0; border-width: 0; padding: 0" ng-class="{'odd': rowIndex % 2 == 0, 'even' : rowIndex % 2 == 1}">
+            
+                
+            
+        <td class="col-md-12 search-results-cell" ng-init="result = titleGroup[0][0]">
+            <input type="checkbox" data-checklist-model="selected" data-checklist-value="result"/>
+            <a href="" ng-click="toggleTitleGroup()" ng-class="{'visibility-hidden': titleGroup.length == 1}"><span class="glyphicon"
+                                                                                                                    ng-class="{'glyphicon-collapse-up': titleGroupExpanded, 'glyphicon-expand': !titleGroupExpanded}"></span></a>
+            <a href="" ng-if="showDuplicates" ng-click="hashGroupExpanded[titleGroup[0][0].hash]=!hashGroupExpanded[titleGroup[0][0].hash]" ng-class="{'visibility-hidden': titleGroup[0].length == 1}"><span class="glyphicon"
+                                                                                                                                                                                                              ng-class="{'glyphicon-collapse-up': hashGroupExpanded[titleGroup[0][0].hash], 'glyphicon-expand': !hashGroupExpanded[titleGroup[0][0].hash]}"></span></a>
+            {{ ::result.title }}
+        </td>
+        <td other-columns result="result"></td>
+        </tr>
+    </table>
     </td>
-    <td other-columns result="result"></td>
 </tr>
 
 
