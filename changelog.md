@@ -6,6 +6,8 @@ Changed: Rewrote some of the search result presentation logic which improves ren
 
 Added/Fixed: Button to invert selection is back and should work as expected.
 
+Added: Shift-click support for the result checkboxes. Click one result, shift click another and all shown displayed checkboses between them will be set to the new value of the first clicked checkbox.  
+
 ### 0.2.140
 Changed: Hopefully improved the performance of writing results to the database. Let me know what happens. 
 

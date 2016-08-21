@@ -9,7 +9,8 @@ function titleGroup() {
             titles: "<",
             selected: "=",
             rowIndex: "@",
-            doShowDuplicates: "<"
+            doShowDuplicates: "<",
+            internalRowIndex: "@"
         },
         controller: ['$scope', '$element', '$attrs', controller],
         multiElement: true

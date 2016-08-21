@@ -73,7 +73,7 @@
 
 <div class="row" ng-if="indexersearches" style="margin-top: 30px">
     <div class="col-md-6" style="text-align: left;">
-        <input style="margin-top:20px; margin-bottom:20px;" type="checkbox" ng-model="foo.doShowDuplicates" ng-click="toggleDuplicatesDisplayed()" class="btn btn-default">Include duplicates</input>
+        <input style="margin-top:20px; margin-bottom:20px;" type="checkbox" ng-model="foo.duplicatesDisplayed" ng-click="toggleDuplicatesDisplayed()" class="btn btn-default">Include duplicates</input>
         <button class="btn btn-default" ng-click="invertSelection()">Invert selection</button>
         <download-nzbs-button search-results="selected"></download-nzbs-button>
     </div>
@@ -116,7 +116,7 @@
 
         <tbody dir-paginate-start="titleGroup in filteredResults | itemsPerPage:limitTo track by groupId(titleGroup)" ng-show="0"></tbody>
 
-        <tbody title-group titles="titleGroup" selected="selected" style="display: table-row-group" row-index="{{ $index }}" do-show-duplicates="doShowDuplicates"></tbody>
+        <tbody title-group titles="titleGroup" selected="selected" style="display: table-row-group" row-index="{{ $index }}" do-show-duplicates="foo.duplicatesDisplayed"></tbody>
 
         <tbody dir-paginate-end ng-show="0"></tbody>
 

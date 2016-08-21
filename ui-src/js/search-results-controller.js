@@ -21,12 +21,13 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.indexerDisplayState = []; //Stores if a indexer's results should be displayed or not
     $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
     $scope.groupExpanded = {};
-    $scope.doShowDuplicates = ConfigService.getSafe().searching.alwaysShowDuplicates;
     $scope.selected = [];
+    $scope.lastClicked = null;
+    $scope.lastClickedValue = null;
     
     $scope.foo = {
         indexerStatusesExpanded: localStorageService.get("indexerStatusesExpanded") != null ? localStorageService.get("indexerStatusesExpanded") : false,
-        duplicatesDisplayed: localStorageService.get("duplicatesDisplayed") != null ? localStorageService.get("duplicatesDisplayed") : false,
+        duplicatesDisplayed: localStorageService.get("duplicatesDisplayed") != null ? localStorageService.get("duplicatesDisplayed") : false
     };
     
     $scope.countFilteredOut = 0;
@@ -165,8 +166,10 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         if ($scope.countFilteredOut > 0) {
             growl.info("Filtered " + $scope.countFilteredOut + " of the retrieved results");
         }
-        return filtered;
 
+        $scope.lastClicked = null;
+        
+        return filtered;
     }
 
     $scope.toggleTitlegroupExpand = function toggleTitlegroupExpand(titleGroup) {
@@ -211,7 +214,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         return $scope.results.length;
     }
     
-    
     $scope.invertSelection = function invertSelection() {
         $scope.$broadcast("invertSelection");
     };
@@ -227,7 +229,12 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         $scope.$broadcast("duplicatesDisplayed", $scope.duplicatesDisplayed);
     };
 
-    
-
-
+    $scope.$on("checkboxClicked", function(event, originalEvent, rowIndex, newCheckedValue) {
+        if (originalEvent.shiftKey && $scope.lastClicked != null) {
+            console.log("Shift clicked from " + $scope.lastClicked + " to " + rowIndex);
+            $scope.$broadcast("shiftClick", Number($scope.lastClicked), Number(rowIndex), Number($scope.lastClickedValue));
+        }
+        $scope.lastClicked = rowIndex;
+        $scope.lastClickedValue = newCheckedValue;
+    })
 }
