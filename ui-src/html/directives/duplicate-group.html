@@ -4,10 +4,10 @@
             <input type="checkbox" data-checklist-model="selected" data-checklist-value="result" ng-click="clickCheckbox($event)" data-checkbox-index="0"/>
 
             <a href="" ng-click="toggleTitleExpansion()" ng-class="{'visibility-hidden': !displayTitleToggle}"><span class="glyphicon"
-                                                                                                                     ng-class="{'glyphicon-collapse-up': titlesExpanded, 'glyphicon-expand': !titlesExpanded}"></span></a>
+                                                                                                                     ng-class="{'glyphicon-minus': titlesExpanded, 'glyphicon-plus': !titlesExpanded}"></span></a>
 
             <a ng-if="foo.duplicatesDisplayed" href="" ng-click="toggleDuplicateExpansion()" ng-class="{'visibility-hidden': duplicates.length == 1}"><span class="glyphicon"
-                                                                                                                            ng-class="{'glyphicon-collapse-up': duplicatesExpanded, 'glyphicon-expand': !duplicatesExpanded}"></span></a>
+                                                                                                                            ng-class="{'glyphicon-minus': duplicatesExpanded, 'glyphicon-plus': !duplicatesExpanded}"></span></a>
             <span ng-if="isFirstRow">{{ ::result.title }}</span>
         </td>
         <td other-columns result="result"></td>
