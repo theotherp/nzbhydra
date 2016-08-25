@@ -1,7 +1,7 @@
 # NZB Hydra changelog
 
 ----------
-### 0.2.142
+### 0.2.143
 Added: Filter results directly on the search results page. Just edit the query or change/add min/max age/size and the already loaded results are filtered on the fly. 
 
 ### 0.2.142
