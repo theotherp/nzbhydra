@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.142
+Fixed: Remove debug code.
+
 ### 0.2.141
 Changed: Rewrote some of the search result presentation logic which improves rendering time a bit (still slow, though).
 
