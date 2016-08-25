@@ -8,7 +8,7 @@ function titleGroup() {
         scope: {
             titles: "<",
             selected: "=",
-            rowIndex: "@",
+            rowIndex: "<",
             doShowDuplicates: "<",
             internalRowIndex: "@"
         },

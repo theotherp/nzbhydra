@@ -660,7 +660,6 @@ internalapi_search_args = {
 @app.route('/internalapi/search')
 @requires_auth("main")
 @use_args(internalapi_search_args, locations=['querystring'])
-#@flask_cache.memoize()
 def internalapi_search(args):
     logger.debug("Search request with args %s" % args)
     if args["category"].lower() == "ebook":

@@ -252,6 +252,10 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         })
     };
 
+    $scope.searchInputChanged = function() {
+        $scope.$broadcast("searchInputChanged", $scope.query != $stateParams.query ? $scope.query : null, $scope.minage, $scope.maxage, $scope.minsize, $scope.maxsize);
+    };
+
     $scope.availableIndexers = getAvailableIndexers();
     
 
