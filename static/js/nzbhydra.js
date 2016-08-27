@@ -2308,7 +2308,7 @@ function RestartService(blockUI, $timeout, $window, NzbHydraControlService) {
     function countdownAndReload(message, timer) {
         message = angular.isUndefined ? "" : " ";
         
-        if (timer > 1) {
+        if (timer >= 1) {
             blockUI.start(message + "Restarting. Will reload page in " + timer + " seconds...");
             $timeout(function () {
                 countdownAndReload(message, timer -1)

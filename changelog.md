@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.145
+Fixed: Login would fail in some cases.
+
 ### 0.2.144
 Fixed: After last version queries would be cut if pressing return too fast. 
 
