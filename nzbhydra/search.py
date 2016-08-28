@@ -305,7 +305,7 @@ def search(search_request):
                     if result.title is None or result.link is None or result.indexerguid is None:
                         logger.info("Skipping result with missing data: %s" % result)
                         continue
-                    searchResult, _ = SearchResult().create_or_get(indexer=indexer.indexer, guid=result.indexerguid, title= result.title, link= result.link, details= result.details_link)
+                    searchResult, _ = SearchResult().create_or_get(indexer=indexer.indexer, guid=result.indexerguid, title=result.title, link=result.link, details=result.details_link)
                     result.searchResultId = searchResult.id
                     search_results.append(result)
                 logger.debug("Written results results to database")

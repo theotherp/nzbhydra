@@ -5,12 +5,14 @@ from __future__ import unicode_literals
 
 import random
 import string
-import time
 
 import arrow
+import time
+from peewee import OperationalError
+from playhouse.migrate import SqliteMigrator, migrate
 
 from nzbhydra import database
-from nzbhydra.database import SearchResult
+from nzbhydra.database import SearchResult, TvIdCache
 
 
 def bla(preset, count):
@@ -39,9 +41,14 @@ def rndstr(n):
 
 database.db.init("c:\\temp\\playground.db")
 database.db.connect()
-#database.db.create_table(database.Indexer)
-database.db.drop_table(database.SearchResult)
-database.db.create_table(database.SearchResult)
+database.Indexer.drop_table()
+database.Indexer.create_table()
+SearchResult.drop_table()
+SearchResult.create_table()
+TvIdCache.drop_table()
+TvIdCache.create_table()
+
+
 indexer1, created = database.Indexer.get_or_create(name="indexer1")
 indexer2, created = database.Indexer.get_or_create(name="indexer2")
 indexer3, created = database.Indexer.get_or_create(name="indexer3")
@@ -49,38 +56,39 @@ indexer4, created = database.Indexer.get_or_create(name="indexer4")
 indexer5, created = database.Indexer.get_or_create(name="indexer5")
 indexers = [indexer1, indexer2, indexer3, indexer4, indexer5]
 
-database.SearchResult.delete().execute()
+
 now = time.time()
 with database.db.atomic():
     # Prefil with 10000
     for x in range(1, 6):
+        SearchResult.create(indexer=indexers[x - 1], title="hallo", guid="hallo", link="hallo")
         for i in range(0, 2000):
+            pass
             SearchResult.create(indexer=indexers[x - 1], title="%s%d" % (rndstr(80), i), guid="%s%d" % (rndstr(100), i), link="%s%d" % (rndstr(120), i))
-            #SearchResult.create(indexer=indexers[x - 1], title="%s" % i, guid="%s" % i, link="%s" % i)
+            # SearchResult.create(indexer=indexers[x - 1], title="%s" % i, guid="%s" % i, link="%s" % i)
+
 after = time.time()
 print(after - now)
-
 
 now = time.time()
 rows = []
 with database.db.atomic():
-    for i in range(0, 100):
-        for x in range(1, 6):
-            SearchResult.create_or_get(indexer=indexers[x - 1], title="%s%d" % (rndstr(80), i), guid="%s%d" % (rndstr(100), i), link="%s%d" % (rndstr(120), i))
-            #SearchResult.get_or_create(indexer=indexers[x - 1], title="%s%d" % (rndstr(80), i), guid="%s%d" % (rndstr(100), i), link="%s%d" % (rndstr(120), i))
-            #_, created = SearchResult.create_or_get(indexer=indexers[x - 1], title="%s" % i, guid="%s" % i, link="%s" % i)
-            #print(created)
+    for x in range(1, 6):
+        _, created = SearchResult.get_or_create(indexer=indexers[x - 1], title="hallo", guid="hallo", link="hallo")
+        print(created)
+        print(SearchResult.select().where(SearchResult.title == "hallo").count())
+        for i in range(0, 100):
+            pass
+
+            #SearchResult.create_or_get(indexer=indexers[x - 1], title="%s%d" % (rndstr(80), i), guid="%s%d" % (rndstr(100), i), link="%s%d" % (rndstr(120), i))
+            # SearchResult.get_or_create(indexer=indexers[x - 1], title="%s%d" % (rndstr(80), i), guid="%s%d" % (rndstr(100), i), link="%s%d" % (rndstr(120), i))
+            _, created = SearchResult.get_or_create(indexer=indexers[x - 1], title="%s" % i, guid="%s" % i, link="%s" % i)
+
+
+
 
 after = time.time()
 print(after - now)
-
-# now = time.time()
-# rows = []
-# with database.db.atomic():
-#     for i in range(0, 100):
-#         for x in range(1, 6):
-#             _, created = SearchResult.get_or_create(indexer=indexers[x - 1], title="%s" % i, guid="%s" % i, link="%s" % i)
-#             print(created)
 #
-# after = time.time()
-# print(after - now)
+
+database.db.close()
