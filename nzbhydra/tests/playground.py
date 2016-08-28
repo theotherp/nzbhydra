@@ -72,17 +72,19 @@ print(after - now)
 
 now = time.time()
 rows = []
+ids = []
 with database.db.atomic():
     for x in range(1, 6):
         _, created = SearchResult.get_or_create(indexer=indexers[x - 1], title="hallo", guid="hallo", link="hallo")
-        print(created)
-        print(SearchResult.select().where(SearchResult.title == "hallo").count())
         for i in range(0, 100):
             pass
 
             #SearchResult.create_or_get(indexer=indexers[x - 1], title="%s%d" % (rndstr(80), i), guid="%s%d" % (rndstr(100), i), link="%s%d" % (rndstr(120), i))
             # SearchResult.get_or_create(indexer=indexers[x - 1], title="%s%d" % (rndstr(80), i), guid="%s%d" % (rndstr(100), i), link="%s%d" % (rndstr(120), i))
             _, created = SearchResult.get_or_create(indexer=indexers[x - 1], title="%s" % i, guid="%s" % i, link="%s" % i)
+            if _.id in ids:
+                raise Exception("Double iD: " + str(_.id))
+            ids.append(_.id)
 
 
 

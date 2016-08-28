@@ -4,19 +4,18 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import datetime
-import json
 import re
 from itertools import groupby
 
 from bunch import Bunch
 from flask import request
+
 # standard_library.install_aliases()
 from builtins import *
 import concurrent
 import copy
 import logging
 import arrow
-from playhouse.shortcuts import model_to_dict
 from requests_futures.sessions import FuturesSession
 
 from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult, Indexer
@@ -28,7 +27,8 @@ session = FuturesSession()
 
 
 class SearchRequest(object):
-    def __init__(self, type=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, title=None, category=None, minsize=None, maxsize=None, minage=None, maxage=None, offset=0, limit=100, indexers=None, forbiddenWords=None, requiredWords=None, author=None, username=None, internal=True):
+    def __init__(self, type=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, title=None, category=None, minsize=None, maxsize=None, minage=None, maxage=None, offset=0, limit=100, indexers=None, forbiddenWords=None, requiredWords=None, author=None,
+                 username=None, internal=True):
         self.type = type
         self.query = query
         self.identifier_key = identifier_key
@@ -105,7 +105,7 @@ def pick_indexers(search_request):
     picked_indexers = []
     selected_indexers = search_request.indexers.split("|") if search_request.indexers is not None else None
     notPickedReasons = {}
-    
+
     for p in indexers.enabled_indexers:
         if not p.settings.enabled:
             logger.debug("Did not pick %s because it is disabled" % p)
@@ -242,8 +242,9 @@ def search(search_request):
         indexers_to_call = pick_indexers(search_request)
         for p in indexers_to_call:
             cache_entry["indexer_infos"][p] = {"has_more": True, "search_request": search_request, "total_included": False}
-        
-        dbsearch = Search(internal=search_request.internal, query=search_request.query, category=categoryResult.category.pretty, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode, type=search_request.type,
+
+        dbsearch = Search(internal=search_request.internal, query=search_request.query, category=categoryResult.category.pretty, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode,
+                          type=search_request.type,
                           username=search_request.username)
         # dbsearch.save()
         cache_entry["dbsearch"] = dbsearch
@@ -259,15 +260,14 @@ def search(search_request):
         if config.settings.searching.requiredWords and applyRestrictionsGlobal:
             logger.debug("Using configured global required words: %s" % config.settings.searching.requiredWords)
             search_request.requiredWords.extend([x.lower().strip() for x in list(filter(bool, config.settings.searching.requiredWords.split(",")))])
-        
+
         if category.forbiddenWords and applyRestrictionsCategory:
             logger.debug("Using configured forbidden words for category %s: %s" % (category.pretty, category.forbiddenWords))
             search_request.forbiddenWords.extend([x.lower().strip() for x in list(filter(bool, category.forbiddenWords.split(",")))])
         if category.requiredWords and applyRestrictionsCategory:
             logger.debug("Using configured required words for category %s: %s" % (category.pretty, category.requiredWords))
             search_request.requiredWords.extend([x.lower().strip() for x in list(filter(bool, category.requiredWords.split(",")))])
-        
-        
+
         if search_request.query:
             forbiddenWords = [str(x[1]) for x in re.findall(r"[\s|\b](\-\-|!)(?P<term>\w+)", search_request.query)]
             if len(forbiddenWords) > 0:
@@ -290,7 +290,7 @@ def search(search_request):
         logger.debug("We want %d results but have only %d so far" % ((external_offset + limit), len(cache_entry["results"])))
         logger.debug("%d indexers still have results" % len(indexers_to_call))
         search_request.offset = cache_entry["offset"]
-        
+
         logger.debug("Searching indexers with offset %d" % search_request.offset)
         result = search_and_handle_db(dbsearch, {x: search_request for x in indexers_to_call})
         logger.debug("All search calls to indexers completed")
@@ -298,14 +298,17 @@ def search(search_request):
         indexers_to_call = []
 
         for indexer, queries_execution_result in result["results"].items():
-            #Drastically improves db access time but means that if one database write fails all fail. That's a risk we need to take 
+            # Drastically improves db access time but means that if one database write fails all fail. That's a risk we need to take
             with db.atomic():
                 logger.debug("%s returned %d results. Writing them to database..." % (indexer, len(queries_execution_result.results)))
                 for result in queries_execution_result.results:
                     if result.title is None or result.link is None or result.indexerguid is None:
                         logger.info("Skipping result with missing data: %s" % result)
                         continue
-                    searchResult, _ = SearchResult().get_or_create(indexer=indexer.indexer, guid=result.indexerguid, title=result.title, link=result.link, details=result.details_link)
+                    try:
+                        searchResult = SearchResult().get(SearchResult.indexer == indexer.indexer, SearchResult.guid == result.indexerguid)
+                    except SearchResult.DoesNotExist:
+                        searchResult = SearchResult().create(indexer=indexer.indexer, guid=result.indexerguid, title=result.title, link=result.link, details=result.details_link)
                     result.searchResultId = searchResult.id
                     search_results.append(result)
                 logger.debug("Written results results to database")
@@ -316,7 +319,7 @@ def search(search_request):
                 if queries_execution_result.has_more:
                     indexers_to_call.append(indexer)
                     logger.debug("%s still has more results so we could use it the next round" % indexer)
-        
+
                 if queries_execution_result.total_known:
                     if not cache_entry["indexer_infos"][indexer]["total_included"]:
                         cache_entry["total"] += queries_execution_result.total
@@ -454,7 +457,7 @@ def testForSameness(result1, result2):
     if same_group and same_poster:
         age_threshold = 2
         size_threshold = 1
-    
+
     same = result1.indexer != result2.indexer
     same = same and test_for_duplicate_age(result1, result2, age_threshold)
     same = same and test_for_duplicate_size(result1, result2, size_threshold)
@@ -464,14 +467,14 @@ def testForSameness(result1, result2):
 def test_for_duplicate_age(result1, result2, age_threshold):
     if result1.epoch is None or result2.epoch is None:
         return False
-    
+
     group_known = result1.group is not None and result2.group is not None
     same_group = result1.group == result2.group
     poster_known = result1.poster is not None and result2.poster is not None
     same_poster = result1.poster == result2.poster
     if (group_known and not same_group) or (poster_known and not same_poster):
         return False
-    
+
     same_age = abs(result1.epoch - result2.epoch) / (60 * 60) <= age_threshold  # epoch difference (seconds) to minutes    
     return same_age
 
