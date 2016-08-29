@@ -190,8 +190,9 @@ if __name__ == '__main__':
 
     if args.quiet:
         log.quiet_output()
-
-    logger.notice("Starting NZBHydra")
+    with open("version.txt") as f:
+        version = f.read()
+    logger.notice("Starting NZBHydra %s" % version)
     logger.debug("Base path is {}".format(basepath))
 
     run(args)
