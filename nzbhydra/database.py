@@ -26,7 +26,7 @@ db = SqliteExtDatabase(None, pragmas=(
 
 ))
 
-DATABASE_VERSION = 9
+DATABASE_VERSION = 10
 
 
 class JSONField(TextField):
@@ -105,7 +105,7 @@ class SearchResult(Model):
     class Meta(object):
         database = db
         indexes = (
-            #(('indexer', 'guid'), True),  # Note the trailing comma!
+            (('indexer', 'guid'), True),  # Note the trailing comma!
         )
 
     def save(self, *args, **kwargs):
@@ -200,7 +200,7 @@ class TvIdCache(Model):
 
     class Meta(object):
         database = db
-        indexes = (("tvdb", "tvrage", "tvmaze"), True)
+        indexes = (("tvdb", "tvrage", "tvmaze"), True),
 
 
 class MovieIdCache(Model):
@@ -224,7 +224,7 @@ def init_db(dbfile):
     logger.info("Initializing database and creating tables")
     for t in tables:
         try:
-            db.create_table(t)
+            t.create_table()
         except OperationalError:
             logger.exception("Error while creating table %s" % t)
 
@@ -384,6 +384,53 @@ def update_db(dbfile):
                 
                 vi.version = 9
                 vi.save()
+
+        if vi.version == 9:
+            logger.info("Ensuring database indexes are set")
+            migrator = SqliteMigrator(db)
+            try:
+                migrate(migrator.drop_index("searchresult", "searchresult_indexer_id_guid"))
+            except OperationalError:
+                logger.info("Index searchresult_indexer_id_guid doesn't exist so doesn't need to be dropped")
+
+            logger.info("Removing duplicate results from search results")
+            db.execute_sql("""
+            DELETE FROM searchresult
+            WHERE rowid NOT IN
+                  (
+                    SELECT min(rowid)
+                    FROM searchresult
+                    GROUP BY
+                      indexer_id
+                      , guid
+                  )
+            """)
+            migrate(migrator.add_index("searchresult", ("indexer_id", "guid"), True))
+
+            try:
+                migrate(migrator.drop_index("tvidcache", "tvidcache_tvdb_tvrage_tvmaze"))
+            except OperationalError:
+                logger.info("Index tvidcache_tvdb_tvrage_tvmaze doesn't exist so doesn't need to be dropped")
+
+            logger.info("Removing duplicate results from TV ID cache")
+            db.execute_sql("""
+            DELETE FROM tvidcache
+            WHERE rowid NOT IN
+                  (
+                    SELECT min(rowid)
+                    FROM tvidcache
+                    GROUP BY
+                      tvdb
+                      , tvrage
+                      , tvmaze
+                  )
+            """)
+            migrate(migrator.add_index("tvidcache", ("tvdb", "tvrage", "tvmaze"), True))
+
+            logger.info("Index migration completed successfully")
+            vi.version = 10
+            vi.save()
+
 
             
             

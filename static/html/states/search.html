@@ -60,6 +60,7 @@
                                uib-tooltip="Prefix terms with -- to exclude"
                                tooltip-placement="top"
                                tooltip-trigger="mouseenter"
+                               ng-change="searchInputChanged()"
                         >
 
                         <span class="input-group-btn input-group-btn2">
@@ -97,13 +98,13 @@
                 <div class="col-sm-3" style="width: 11%">
                     <div class="input-group">
                         <span class="input-group-addon">Min</span>
-                        <input type="number" class="form-control" id="minage" ng-model="minage" style="width: 90px" ng-enter="startSearch()">
+                        <input type="number" class="form-control" id="minage" ng-model="minage" style="width: 90px" ng-enter="startSearch()" ng-change="searchInputChanged()" ng-model-options='{ debounce: 500 }'>
                     </div>
                 </div>
                 <div class="col-sm-3" style="width: 11%">
                     <div class="input-group">
                         <span class="input-group-addon">Max</span>
-                        <input type="number" class="form-control" id="maxage" ng-model="maxage" style="width: 90px" ng-enter="startSearch()">
+                        <input type="number" class="form-control" id="maxage" ng-model="maxage" style="width: 90px" ng-enter="startSearch()" ng-change="searchInputChanged()" ng-model-options='{ debounce: 500 }'>
                     </div>
                 </div>
                 <label for="inputEmail3" class="col-sm-5 control-label" style="width:5%">Size</label>
@@ -111,13 +112,13 @@
                 <div class="col-sm-3" style="width: 11%">
                     <div class="input-group">
                         <span class="input-group-addon">Min</span>
-                        <input type="number" class="form-control" id="minsize" ng-model="minsize" style="width: 90px" ng-enter="startSearch()">
+                        <input type="number" class="form-control" id="minsize" ng-model="minsize" style="width: 90px" ng-enter="startSearch()" ng-change="searchInputChanged()" ng-model-options='{ debounce: 500 }'>
                     </div>
                 </div>
                 <div class="col-sm-3" style="width: 11%">
                     <div class="input-group">
                         <span class="input-group-addon">Max</span>
-                        <input type="number" class="form-control" id="maxsize" ng-model="maxsize" style="width: 90px" ng-enter="startSearch()">
+                        <input type="number" class="form-control" id="maxsize" ng-model="maxsize" style="width: 90px" ng-enter="startSearch()" ng-change="searchInputChanged()" ng-model-options='{ debounce: 500 }'>
                     </div>
                 </div>
             </div>

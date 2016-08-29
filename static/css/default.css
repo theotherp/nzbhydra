@@ -7452,6 +7452,9 @@ a.disabled:hover {
 .odd {
   background-color: #f2f2f2;
 }
+.search-results-cell:focus {
+  outline: none;
+}
 .duplicate {
   background-color: #d9d9d9;
 }

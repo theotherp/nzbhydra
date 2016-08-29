@@ -74,37 +74,57 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     //Sorting (and filtering) are really slow (about 2 seconds for 1000 results from 5 indexers) but I haven't found any way of making it faster, apart from the tracking 
     $scope.setSorting = setSorting;
     function setSorting(predicate, reversedDefault) {
+        if (predicate == $scope.sortPredicate) {
+            $scope.sortReversed = !$scope.sortReversed;
+        } else {
+            $scope.sortReversed = reversedDefault;
+        }
+        $scope.sortPredicate = predicate;
         startBlocking("Sorting / filtering...").then(function () {
-
-            if (predicate == $scope.sortPredicate) {
-                $scope.sortReversed = !$scope.sortReversed;
-            } else {
-                $scope.sortReversed = reversedDefault;
-            }
-            $scope.sortPredicate = predicate;
             $scope.filteredResults = sortAndFilter($scope.results);
-            localStorageService.set("sorting", {predicate: predicate, reversed: $scope.sortReversed});
             blockUI.reset();
+            localStorageService.set("sorting", {predicate: predicate, reversed: $scope.sortReversed});
         });
     }
 
+    $scope.inlineFilter = inlineFilter;
+    function inlineFilter(result) {
+        var ok = true;
+        ok = ok && $scope.titleFilter && result.title.toLowerCase().indexOf($scope.titleFilter) > -1;
+        ok = ok && $scope.minSizeFilter && $scope.minSizeFilter * 1024 * 1024 < result.size;
+        ok = ok && $scope.maxSizeFilter && $scope.maxSizeFilter * 1024 * 1024 > result.size;
+        return ok;
+    }
 
+
+    $scope.$on("searchInputChanged", function(event, query, minage, maxage, minsize, maxsize) {
+       console.log("Got event searchInputChanged");
+        $scope.filteredResults = sortAndFilter($scope.results, query, minage, maxage, minsize, maxsize);
+    });
+
+    $scope.resort = function() {
+    };
     
-    function sortAndFilter(results) {
+    function sortAndFilter(results, query, minage, maxage, minsize, maxsize) {
         $scope.countFilteredOut = 0;
-        var safeConfig = ConfigService.getSafe();
+
         function filterByAgeAndSize(item) {
-            var filterOut = !(_.isNumber($stateParams.minsize) && item.size / 1024 / 1024 < $stateParams.minsize)
-                && !(_.isNumber($stateParams.maxsize) && item.size / 1024 / 1024 > $stateParams.maxsize)
-                && !(_.isNumber($stateParams.minage) && item.age_days < $stateParams.minage)
-                && !((_.isNumber($stateParams.maxage) && item.age_days > $stateParams.maxage)
-                    || (_.isNumber(safeConfig.searching.maxAge) && item.age_days > safeConfig.searching.maxAge)
-                        
-                );
-            if (!filterOut) {
+            var ok = true;
+            ok = ok && (!_.isNumber(minsize) || item.size / 1024 / 1024 >= minsize)
+                && (!_.isNumber(maxsize) || item.size / 1024 / 1024 <= maxsize)
+                && (!_.isNumber(minage) || item.age_days >= Number(minage))
+                && (!_.isNumber(maxage) || item.age_days <= Number(maxage));
+
+            if (ok && query) {
+                var words = query.toLowerCase().split(" ");
+                ok = _.every(words, function(word) {
+                    return item.title.toLowerCase().indexOf(word) > -1;
+                });
+            }
+            if (!ok) {
                 $scope.countFilteredOut++;
             }
-            return filterOut;
+            return ok;
         }
         
         
@@ -151,6 +171,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         }
 
         var filtered = _.chain(results)
+            //Filter by age, size and title
+            .filter(filterByAgeAndSize)
             //Remove elements of which the indexer is currently hidden    
             .filter(getItemIndexerDisplayState)
             //Make groups of results with the same title    
@@ -168,7 +190,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         }
 
         $scope.lastClicked = null;
-        
         return filtered;
     }
 

@@ -256,7 +256,7 @@ def getUserFromToken():
         else:
             logger.warn("Token is invalid, user is unknown")
             return None
-    except DecodeError:
+    except (ValueError, DecodeError):
         logger.warn('Token is invalid')
         return None
     except ExpiredSignature:
