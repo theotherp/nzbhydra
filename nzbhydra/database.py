@@ -221,7 +221,7 @@ def init_db(dbfile):
         except OperationalError:
             logger.exception("Error while creating table %s" % t)
 
-    logger.info("Created new version info entry with database version 1")
+    logger.info("Created new version info entry with database version %d" % DATABASE_VERSION)
     VersionInfo(version=DATABASE_VERSION).create()
 
     db.close()

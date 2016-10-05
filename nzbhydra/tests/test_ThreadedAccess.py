@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import threading
+from time import sleep
 
 import requests_mock
 from bunch import Bunch
@@ -16,6 +17,7 @@ import logging
 from nzbhydra import web
 from nzbhydra.searchmodules import newznab
 from urltools import compare
+from nzbhydra.tests.db_prepare import set_and_drop
 
 from nzbhydra.tests.test_IntegrationTestsSearch import AbstractSearchTestCase
 
@@ -26,12 +28,14 @@ logging.getLogger("root").setLevel("DEBUG")
 
 class ThreadedAccessTests(AbstractSearchTestCase):
     def testReproduceDatabaseIsLocked(self):
+        set_and_drop()
         web.app.template_folder = "../templates"
         threads = []
         for i in range(15):
             t = threading.Thread(target=self.startTest)
             threads.append(t)
             t.start()
+        sleep(10)
 
     def startTest(self):
         with web.app.test_request_context('/'):

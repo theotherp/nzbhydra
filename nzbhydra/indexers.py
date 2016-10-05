@@ -48,9 +48,7 @@ def read_indexers_from_config():
         if indexer.enabled:
             enabled_indexers.append(instance)
             logger.info("Activated indexer %s" % instance.name)
-        
-                  
-    database.db.close()            
+
     return enabled_indexers
 
 

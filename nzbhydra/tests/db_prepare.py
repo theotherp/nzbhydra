@@ -32,8 +32,6 @@ def set_and_drop(dbfile="tests.db", tables=None):
         except OperationalError as e:
             print(e)
             pass
-    
-    database.db.close()
 
     if os.path.exists("testsettings.cfg"):
         os.remove("testsettings.cfg")
