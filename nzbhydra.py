@@ -110,7 +110,8 @@ def run(arguments):
             database.init_db(database_file)
         else:
             database.update_db(database_file)
-        #database.db.init(database_file)
+        logger.info("Starting db")
+
         indexers.read_indexers_from_config()
 
         if config.settings.main.debug:

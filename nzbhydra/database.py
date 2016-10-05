@@ -18,7 +18,7 @@ from playhouse.sqliteq import SqliteQueueDatabase
 
 logger = logging.getLogger('root')
 
-db = SqliteQueueDatabase(None, autostart=True, queue_max_size=1024, readers=4, results_timeout=10.0)
+db = SqliteQueueDatabase(None, autostart=False, queue_max_size=1024, readers=4, results_timeout=10.0)
 
 DATABASE_VERSION = 10
 
@@ -212,6 +212,7 @@ class DummyTableDefinition(Model):
 
 def init_db(dbfile):
     tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, VersionInfo, TvIdCache, MovieIdCache, SearchResult]
+    db.start()
     db.init(dbfile)
 
     logger.info("Initializing database and creating tables")
@@ -224,11 +225,13 @@ def init_db(dbfile):
     logger.info("Created new version info entry with database version %d" % DATABASE_VERSION)
     VersionInfo(version=DATABASE_VERSION).create()
 
-    db.close()
+
 
 
 def update_db(dbfile):
     # CAUTION: Don't forget to increase the default value for VersionInfo
+    logger.debug("Initing")
+    db.start()
     db.init(dbfile)
 
     vi = VersionInfo.get()
