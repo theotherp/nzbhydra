@@ -1247,8 +1247,6 @@ def internalapi_gettheme():
 
 
 def restart(func=None, afterUpdate=False):
-    logger.info("Finishing pending database work")
-    database.db.stop()
     logger.info("Restarting now")
     logger.debug("Setting env variable RESTART to 1")
     os.environ["RESTART"] = "1"
