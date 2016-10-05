@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.148
+Changed: Switched to SqliteQueueDatabase which will hopefully reduce or even prevent the notorious "database is locked error". 
+
 ### 0.2.147
 Changed: Rewrote search result database handling in the hope of fixing this schlamassel.
 

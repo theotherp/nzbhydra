@@ -40,7 +40,6 @@ def rndstr(n):
 
 
 database.db.init("c:\\temp\\playground.db")
-database.db.connect()
 database.Indexer.drop_table()
 database.Indexer.create_table()
 SearchResult.drop_table()

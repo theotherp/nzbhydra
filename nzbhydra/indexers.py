@@ -30,7 +30,6 @@ def init_indexer_table_entry(indexer_name):
 
 # Load from config and initialize all configured indexers using the loaded modules
 def read_indexers_from_config():
-    database.db.connect()
     global enabled_indexers, configured_indexers
     enabled_indexers = []
 

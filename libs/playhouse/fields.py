@@ -61,13 +61,16 @@ if hashpw and gensalt:
 
         def db_value(self, value):
             """Convert the python value for storage in the database."""
-            value = value.encode('utf-8')
+            if isinstance(value, PasswordHash):
+                return bytes(value)
+
+            if isinstance(value, unicode_type):
+                value = value.encode('utf-8')
             salt = gensalt(self.bcrypt_iterations)
             return value if value is None else hashpw(value, salt)
 
         def python_value(self, value):
             """Convert the database value to a pythonic value."""
-            # FixMe: how do i get this to run before saving to the DB?
             if isinstance(value, unicode_type):
                 value = value.encode('utf-8')
 
@@ -98,6 +101,9 @@ class ManyToManyField(Field):
         self.primary_key = False
         self.verbose_name = None
 
+    def _get_descriptor(self):
+        return ManyToManyFieldDescriptor(self)
+
     def add_to_class(self, model_class, name):
         if isinstance(self._through_model, Proxy):
             def callback(through_model):
@@ -113,7 +119,7 @@ class ManyToManyField(Field):
         self.model_class = model_class
         if not self.verbose_name:
             self.verbose_name = re.sub('_+', ' ', name).title()
-        setattr(model_class, name, ManyToManyFieldDescriptor(self))
+        setattr(model_class, name, self._get_descriptor())
 
         if not self._is_backref:
             backref = ManyToManyField(
@@ -184,7 +190,7 @@ class ManyToManyQuery(SelectQuery):
         super(ManyToManyQuery, self).__init__(*args, **kwargs)
 
     def clone(self):
-        query = ManyToManyQuery(
+        query = type(self)(
             self._instance,
             self._field_descriptor,
             self.model_class)

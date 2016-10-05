@@ -14,17 +14,11 @@ import logging
 import arrow
 from dateutil.tz import tzutc
 from playhouse.migrate import *
-from playhouse.sqlite_ext import SqliteExtDatabase
+from playhouse.sqliteq import SqliteQueueDatabase
 
 logger = logging.getLogger('root')
 
-db = SqliteExtDatabase(None, pragmas=(
-    ('timeout', 20),
-    ('busy_timeout', 20),
-    ('threadlocals', True),
-    ('journal_mode', 'WAL'),
-
-))
+db = SqliteQueueDatabase(None, autostart=True, queue_max_size=1024, readers=4, results_timeout=10.0)
 
 DATABASE_VERSION = 10
 
@@ -219,7 +213,6 @@ class DummyTableDefinition(Model):
 def init_db(dbfile):
     tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, VersionInfo, TvIdCache, MovieIdCache, SearchResult]
     db.init(dbfile)
-    db.connect()
 
     logger.info("Initializing database and creating tables")
     for t in tables:
@@ -237,7 +230,6 @@ def init_db(dbfile):
 def update_db(dbfile):
     # CAUTION: Don't forget to increase the default value for VersionInfo
     db.init(dbfile)
-    db.connect()
 
     vi = VersionInfo.get()
     if vi.version < DATABASE_VERSION:

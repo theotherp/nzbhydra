@@ -131,9 +131,11 @@ class Column(object):
 
 class Metadata(object):
     column_map = {}
+    extension_import = ''
 
     def __init__(self, database):
         self.database = database
+        self.requires_extension = False
 
     def execute(self, sql, *params):
         return self.database.execute_sql(sql, params)
@@ -198,6 +200,7 @@ class PostgresqlMetadata(Metadata):
         1700: DecimalField,
         2950: TextField, # UUID
     }
+    extension_import = 'from playhouse.postgres_ext import *'
 
     def __init__(self, database):
         super(PostgresqlMetadata, self).__init__(database)
@@ -217,6 +220,10 @@ class PostgresqlMetadata(Metadata):
 
     def get_column_types(self, table, schema):
         column_types = {}
+        extension_types = set((
+            postgres_ext.JSONField,
+            postgres_ext.TSVectorField,
+            postgres_ext.HStoreField)) if postgres_ext is not None else set()
 
         # Look up the actual column type for each column.
         identifier = '"%s"."%s"' % (schema, table)
@@ -227,6 +234,8 @@ class PostgresqlMetadata(Metadata):
             column_types[column_description.name] = self.column_map.get(
                 column_description.type_code,
                 UnknownField)
+            if column_types[column_description.name] in extension_types:
+                self.requires_extension = True
 
         return column_types
 
@@ -359,7 +368,8 @@ class DatabaseMetadata(_DatabaseMetadata):
         for index in self.indexes[table]:
             if len(index.columns) > 1:
                 field_names = [self.columns[table][column].name
-                               for column in index.columns]
+                               for column in index.columns
+                               if column in self.columns[table]]
                 accum.append((field_names, index.unique))
         return accum
 
@@ -400,12 +410,21 @@ class Introspector(object):
     def get_database_kwargs(self):
         return self.metadata.database.connect_kwargs
 
+    def get_additional_imports(self):
+        if self.metadata.requires_extension:
+            return '\n' + self.metadata.extension_import
+        return ''
+
     def make_model_name(self, table):
         model = re.sub('[^\w]+', '', table)
-        return ''.join(sub.title() for sub in model.split('_'))
+        model_name = ''.join(sub.title() for sub in model.split('_'))
+        if not model_name[0].isalpha():
+            model_name = 'T' + model_name
+        return model_name
 
     def make_column_name(self, column):
-        column = re.sub('_id$', '', column.lower()) or column.lower()
+        column = re.sub('_id$', '', column.lower().strip()) or column.lower()
+        column = re.sub('[^\w]+', '_', column)
         if column in RESERVED_WORDS:
             column += '_'
         return column
@@ -443,7 +462,7 @@ class Introspector(object):
                 foreign_keys[table] = self.metadata.get_foreign_keys(
                     table, self.schema)
             except ValueError as exc:
-                err(exc.message)
+                err(*exc.args)
                 foreign_keys[table] = []
 
             model_names[table] = self.make_model_name(table)
@@ -546,12 +565,14 @@ class Introspector(object):
                 indexes = multi_column_indexes
 
             # Fix models with multi-column primary keys.
+            composite_key = False
             if len(primary_keys) == 0:
                 primary_keys = columns.keys()
             if len(primary_keys) > 1:
-                Meta.primary_key = CompositeKey([
+                Meta.primary_key = CompositeKey(*[
                     field.name for col, field in columns.items()
                     if col in primary_keys])
+                composite_key = True
 
             attrs = {'Meta': Meta}
             for db_column, column in columns.items():
@@ -562,7 +583,11 @@ class Introspector(object):
                 params = {
                     'db_column': db_column,
                     'null': column.nullable}
-                if column.primary_key and FieldClass is not PrimaryKeyField:
+                if column.primary_key and composite_key:
+                    if FieldClass is PrimaryKeyField:
+                        FieldClass = IntegerField
+                    params['primary_key'] = False
+                elif column.primary_key and FieldClass is not PrimaryKeyField:
                     params['primary_key'] = True
                 if column.is_foreign_key():
                     if column.is_self_referential_fk():

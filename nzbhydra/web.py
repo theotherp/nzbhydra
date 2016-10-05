@@ -120,18 +120,6 @@ class CustomJSONEncoder(JSONEncoder):
 app.json_encoder = CustomJSONEncoder
 
 
-@app.before_request
-def _db_connect():
-    if request.endpoint is not None and not request.endpoint.endswith("static"):  # No point in opening a db connection if we only serve a static file
-        database.db.connect()
-
-
-@app.teardown_request
-def _db_disconnect(esc):
-    if not database.db.is_closed():
-        database.db.close()
-
-
 @app.after_request
 def disable_caching(response):
     if "/static" not in request.path:  # Prevent caching of control URLs
@@ -256,7 +244,7 @@ def getUserFromToken():
         else:
             logger.warn("Token is invalid, user is unknown")
             return None
-    except (ValueError, DecodeError):
+    except (ValueError, DecodeError) as e:
         logger.warn('Token is invalid')
         return None
     except ExpiredSignature:
@@ -1259,6 +1247,8 @@ def internalapi_gettheme():
 
 
 def restart(func=None, afterUpdate=False):
+    logger.info("Finishing pending database work")
+    database.db.stop()
     logger.info("Restarting now")
     logger.debug("Setting env variable RESTART to 1")
     os.environ["RESTART"] = "1"
@@ -1272,6 +1262,8 @@ def restart(func=None, afterUpdate=False):
 @app.route("/internalapi/restart")
 @requires_auth("admin", True)
 def internalapi_restart():
+    logger.info("Finishing pending database work")
+    database.db.stop()
     logger.info("User requested to restart. Sending restart command in 1 second")
     func = request.environ.get('werkzeug.server.shutdown')
     thread = threading.Thread(target=restart, args=(func, False))
@@ -1289,6 +1281,8 @@ def shutdown():
 @app.route("/internalapi/shutdown")
 @requires_auth("admin", True)
 def internalapi_shutdown():
+    logger.info("Finishing pending database work")
+    database.db.stop()
     logger.info("Shutting down due to external request")
     thread = threading.Thread(target=shutdown)
     thread.daemon = True

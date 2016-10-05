@@ -64,21 +64,36 @@ import time
 
 from peewee import MySQLDatabase
 from peewee import PostgresqlDatabase
+from peewee import SqliteDatabase
 
 logger = logging.getLogger('peewee.pool')
+
+
+def make_int(val):
+    if val is not None and not isinstance(val, (int, float)):
+        return int(val)
+    return val
 
 
 class PooledDatabase(object):
     def __init__(self, database, max_connections=20, stale_timeout=None,
                  **kwargs):
-        self.max_connections = max_connections
-        self.stale_timeout = stale_timeout
+        self.max_connections = make_int(max_connections)
+        self.stale_timeout = make_int(stale_timeout)
         self._connections = []
         self._in_use = {}
         self._closed = set()
         self.conn_key = id
 
         super(PooledDatabase, self).__init__(database, **kwargs)
+
+    def init(self, database, max_connections=None, stale_timeout=None,
+             **connect_kwargs):
+        super(PooledDatabase, self).init(database, **connect_kwargs)
+        if max_connections is not None:
+            self.max_connections = make_int(max_connections)
+        if stale_timeout is not None:
+            self.stale_timeout = make_int(stale_timeout)
 
     def _connect(self, *args, **kwargs):
         while True:
@@ -161,22 +176,17 @@ class PooledDatabase(object):
         for _, conn in self._connections:
             self._close(conn, close_conn=True)
 
+
 class PooledMySQLDatabase(PooledDatabase, MySQLDatabase):
     def _is_closed(self, key, conn):
         is_closed = super(PooledMySQLDatabase, self)._is_closed(key, conn)
         if not is_closed:
-            if hasattr(conn, 'open'):
-                # MySQLdb `ping()` seems to always return `None` in my testing.
-                # So the `open` attribute will be used instead.
-                is_closed = not bool(conn.open)
-            else:
-                # pymysql `ping([reconnect=True])` will indicate if the conn
-                # is closed or not.
-                try:
-                    is_closed = not conn.ping(False)
-                except:
-                    is_closed = True
+            try:
+                conn.ping(False)
+            except:
+                is_closed = True
         return is_closed
+
 
 class _PooledPostgresqlDatabase(PooledDatabase):
     def _is_closed(self, key, conn):
@@ -192,6 +202,28 @@ try:
     from playhouse.postgres_ext import PostgresqlExtDatabase
 
     class PooledPostgresqlExtDatabase(_PooledPostgresqlDatabase, PostgresqlExtDatabase):
+        pass
+except ImportError:
+    pass
+
+
+class _PooledSqliteDatabase(PooledDatabase):
+    def _is_closed(self, key, conn):
+        closed = super(_PooledSqliteDatabase, self)._is_closed(key, conn)
+        if not closed:
+            try:
+                conn.total_changes
+            except:
+                return True
+        return closed
+
+class PooledSqliteDatabase(_PooledSqliteDatabase, SqliteDatabase):
+    pass
+
+try:
+    from playhouse.sqlite_ext import SqliteExtDatabase
+
+    class PooledSqliteExtDatabase(_PooledSqliteDatabase, SqliteExtDatabase):
         pass
 except ImportError:
     pass

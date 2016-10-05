@@ -54,7 +54,8 @@ from peewee import Entity
 from peewee import Expression
 from peewee import Node
 from peewee import OP
-from peewee import QueryCompiler
+from peewee import SqliteQueryCompiler
+from peewee import _AutoPrimaryKeyField
 from peewee import sqlite3  # Import the best SQLite version.
 from peewee import transaction
 from peewee import _sqlite_date_part
@@ -75,31 +76,17 @@ FTS_VER = sqlite3.sqlite_version_info[:3] >= (3, 7, 4) and 'FTS4' or 'FTS3'
 FTS5_MIN_VERSION = (3, 9, 0)
 
 
-class RowIDField(PrimaryKeyField):
+class RowIDField(_AutoPrimaryKeyField):
     """
     Field used to access hidden primary key on FTS5 or any other SQLite
     table that does not have a separately-defined primary key.
     """
-    def add_to_class(self, model_class, name):
-        if name != 'rowid':
-            raise ValueError('RowIDField must be named `rowid`.')
-        super(RowIDField, self).add_to_class(model_class, name)
-
-        # The `rowid` field should not ever be declared as part of a DDL
-        # or INSERT statement.
-        model_class._meta.remove_field(name)
+    _column_name = 'rowid'
 
 
-class DocIDField(PrimaryKeyField):
+class DocIDField(_AutoPrimaryKeyField):
     """Field used to access hidden primary key on FTS3/4 tables."""
-    def add_to_class(self, model_class, name):
-        if name != 'docid':
-            raise ValueError('DocIDField must be named `docid`.')
-        super(DocIDField, self).add_to_class(model_class, name)
-
-        # The `docid` field should not ever be declared as part of a DDL
-        # or INSERT statement.
-        model_class._meta.remove_field(name)
+    _column_name = 'docid'
 
 
 class PrimaryKeyAutoIncrementField(PrimaryKeyField):
@@ -203,7 +190,7 @@ class SearchField(BareField):
     do not support secondary indexes, using this field will prevent you
     from mistakenly creating the wrong kind of field on your FTS table.
     """
-    def __init__(self, unindexed=False, db_column=None, coerce=None):
+    def __init__(self, unindexed=False, db_column=None, coerce=None, **_):
         kwargs = {'null': True, 'db_column': db_column, 'coerce': coerce}
         self._unindexed = unindexed
         if unindexed:
@@ -211,8 +198,9 @@ class SearchField(BareField):
         super(SearchField, self).__init__(**kwargs)
 
     def clone_base(self, **kwargs):
-        return super(SearchField, self).clone_base(
-            unindexed=self._unindexed, **kwargs)
+        clone = super(SearchField, self).clone_base(**kwargs)
+        clone._unindexed = self._unindexed
+        return clone
 
 
 class _VirtualFieldMixin(object):
@@ -339,13 +327,18 @@ class FTSModel(BaseFTSModel):
         return fn.fts_bm25(match_info, *weights)
 
     @classmethod
+    def lucene(cls, *weights):
+        match_info = fn.matchinfo(cls.as_entity(), FTS_MATCHINFO_FORMAT)
+        return fn.fts_lucene(match_info, *weights)
+
+    @classmethod
     def _search(cls, term, weights, with_score, score_alias, score_fn,
                 explicit_ordering):
         if not weights:
             rank = score_fn()
         elif isinstance(weights, dict):
             weight_args = []
-            for field in cls._meta.sorted_fields:
+            for field in cls._meta.declared_fields:
                 weight_args.append(
                     weights.get(field, weights.get(field.name, 1.0)))
             rank = score_fn(*weight_args)
@@ -386,6 +379,18 @@ class FTSModel(BaseFTSModel):
             with_score,
             score_alias,
             cls.bm25,
+            explicit_ordering)
+
+    @classmethod
+    def search_lucene(cls, term, weights=None, with_score=False,
+                      score_alias='score', explicit_ordering=False):
+        """Full-text search for selected `term` using BM25 algorithm."""
+        return cls._search(
+            term,
+            weights,
+            with_score,
+            score_alias,
+            cls.lucene,
             explicit_ordering)
 
 
@@ -474,7 +479,7 @@ class FTS5Model(BaseFTSModel):
         if cls._meta.primary_key.name != 'rowid':
             raise ImproperlyConfigured(cls._error_messages['pk'])
         for field in cls._meta.fields.values():
-            if not isinstance(field, SearchField):
+            if not isinstance(field, (SearchField, RowIDField)):
                 raise ImproperlyConfigured(cls._error_messages['field_type'])
         if cls._meta.indexes:
             raise ImproperlyConfigured(cls._error_messages['index'])
@@ -577,7 +582,7 @@ class FTS5Model(BaseFTSModel):
             rank = SQL('rank')
         elif isinstance(weights, dict):
             weight_args = []
-            for field in cls._meta.sorted_fields:
+            for field in cls._meta.declared_fields:
                 weight_args.append(
                     weights.get(field, weights.get(field.name, 1.0)))
             rank = fn.bm25(cls.as_entity(), *weight_args)
@@ -734,12 +739,12 @@ def ClosureTable(model_class, foreign_key=None):
     return type(name, (BaseClosureTable,), {'Meta': Meta})
 
 
-class SqliteQueryCompiler(QueryCompiler):
+class SqliteExtQueryCompiler(SqliteQueryCompiler):
     """
     Subclass of QueryCompiler that can be used to construct virtual tables.
     """
     def _create_table(self, model_class, safe=False, options=None):
-        clause = super(SqliteQueryCompiler, self)._create_table(
+        clause = super(SqliteExtQueryCompiler, self)._create_table(
             model_class, safe=safe)
 
         if issubclass(model_class, VirtualModel):
@@ -787,6 +792,9 @@ class SqliteQueryCompiler(QueryCompiler):
                 option.glue = '='
                 columns_constraints.nodes.append(option)
 
+        if getattr(model_class._meta, 'without_rowid', None):
+            clause.nodes.append(SQL('WITHOUT ROWID'))
+
         return clause
 
     def clean_options(self, model_class, clause, extra_options):
@@ -818,7 +826,7 @@ class SqliteExtDatabase(SqliteDatabase):
     * Specify a row factory
     * Advanced transactions (specify isolation level)
     """
-    compiler_class = SqliteQueryCompiler
+    compiler_class = SqliteExtQueryCompiler
 
     def __init__(self, database, c_extensions=True, *args, **kwargs):
         super(SqliteExtDatabase, self).__init__(database, *args, **kwargs)
@@ -828,18 +836,25 @@ class SqliteExtDatabase(SqliteDatabase):
         self._extensions = set([])
         self._row_factory = None
         if _c_ext and c_extensions:
+            self._using_c_extensions = True
             self.register_function(_c_ext.peewee_date_part, 'date_part', 2)
             self.register_function(_c_ext.peewee_date_trunc, 'date_trunc', 2)
             self.register_function(_c_ext.peewee_regexp, 'regexp', 2)
             self.register_function(_c_ext.peewee_rank, 'fts_rank', -1)
+            self.register_function(_c_ext.peewee_lucene, 'fts_lucene', -1)
             self.register_function(_c_ext.peewee_bm25, 'fts_bm25', -1)
             self.register_function(_c_ext.peewee_murmurhash, 'murmurhash', 1)
         else:
+            self._using_c_extensions = False
             self.register_function(_sqlite_date_part, 'date_part', 2)
             self.register_function(_sqlite_date_trunc, 'date_trunc', 2)
             self.register_function(_sqlite_regexp, 'regexp', 2)
             self.register_function(rank, 'fts_rank', -1)
             self.register_function(bm25, 'fts_bm25', -1)
+
+    @property
+    def using_c_extensions(self):
+        return self._using_c_extensions
 
     def _add_conn_hooks(self, conn):
         self._set_pragmas(conn)
@@ -849,9 +864,7 @@ class SqliteExtDatabase(SqliteDatabase):
         if self._row_factory:
             conn.row_factory = self._row_factory
         if self._extensions:
-            conn.enable_load_extension(True)
-            for extension in self._extensions:
-                conn.load_extension(extension)
+            self._load_extensions(conn)
 
     def _load_aggregates(self, conn):
         for name, (klass, num_params) in self._aggregates.items():
@@ -864,6 +877,11 @@ class SqliteExtDatabase(SqliteDatabase):
     def _load_functions(self, conn):
         for name, (fn, num_params) in self._functions.items():
             conn.create_function(name, num_params, fn)
+
+    def _load_extensions(self, conn):
+        conn.enable_load_extension(True)
+        for extension in self._extensions:
+            conn.load_extension(extension)
 
     def register_aggregate(self, klass, name=None, num_params=-1):
         self._aggregates[name or klass.__name__.lower()] = (klass, num_params)
@@ -935,15 +953,14 @@ class SqliteExtDatabase(SqliteDatabase):
         return super(SqliteExtDatabase, self).create_index(
             model_class, field_name, unique)
 
-    def granular_transaction(self, lock_type='deferred'):
+    def transaction(self, lock_type='deferred'):
         assert lock_type.lower() in ('deferred', 'immediate', 'exclusive')
-        return granular_transaction(self, lock_type)
+        return _sqlite_transaction(self, lock_type)
 
 
-class granular_transaction(transaction):
+class _sqlite_transaction(transaction):
     def __init__(self, db, lock_type='deferred'):
-        self.db = db
-        self.conn = self.db.get_conn()
+        super(_sqlite_transaction, self).__init__(db)
         self.lock_type = lock_type
 
     def _begin(self):

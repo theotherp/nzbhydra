@@ -1,11 +1,13 @@
 try:
-    from urlparse import urlparse
+    from urlparse import urlparse, parse_qsl
 except ImportError:
-    from urllib.parse import urlparse
+    from urllib.parse import urlparse, parse_qsl
 
 from peewee import *
 from playhouse.pool import PooledMySQLDatabase
 from playhouse.pool import PooledPostgresqlDatabase
+from playhouse.pool import PooledSqliteDatabase
+from playhouse.pool import PooledSqliteExtDatabase
 from playhouse.sqlite_ext import SqliteExtDatabase
 
 
@@ -18,6 +20,8 @@ schemes = {
     'postgresql+pool': PooledPostgresqlDatabase,
     'sqlite': SqliteDatabase,
     'sqliteext': SqliteExtDatabase,
+    'sqlite+pool': PooledSqliteDatabase,
+    'sqliteext+pool': PooledSqliteExtDatabase,
 }
 
 def register_database(db_class, *names):
@@ -26,7 +30,16 @@ def register_database(db_class, *names):
         schemes[name] = db_class
 
 def parseresult_to_dict(parsed):
-    connect_kwargs = {'database': parsed.path[1:]}
+
+    # urlparse in python 2.6 is broken so query will be empty and instead
+    # appended to path complete with '?'
+    path_parts = parsed.path[1:].split('?')
+    try:
+        query = path_parts[1]
+    except IndexError:
+        query = parsed.query
+
+    connect_kwargs = {'database': path_parts[0]}
     if parsed.username:
         connect_kwargs['user'] = parsed.username
     if parsed.password:
@@ -41,6 +54,25 @@ def parseresult_to_dict(parsed):
         connect_kwargs['passwd'] = connect_kwargs.pop('password')
     elif 'sqlite' in parsed.scheme and not connect_kwargs['database']:
         connect_kwargs['database'] = ':memory:'
+
+    # Get additional connection args from the query string
+    qs_args = parse_qsl(query, keep_blank_values=True)
+    for key, value in qs_args:
+        if value.lower() == 'false':
+            value = False
+        elif value.lower() == 'true':
+            value = True
+        elif value.isdigit():
+            value = int(value)
+        elif '.' in value and all(p.isdigit() for p in value.split('.', 1)):
+            try:
+                value = float(value)
+            except ValueError:
+                pass
+        elif value.lower() in ('null', 'none'):
+            value = None
+
+        connect_kwargs[key] = value
 
     return connect_kwargs
 

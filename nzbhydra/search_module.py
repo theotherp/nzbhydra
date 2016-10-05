@@ -88,7 +88,6 @@ class SearchModule(object):
         # return self.indexer.settings.get("generate_queries", True)  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for indexers which don't support id-based searches
     
     def search(self, search_request):
-        database.db.connect()
         if search_request.type == "tv":
             if search_request.query is None and search_request.identifier_key is None and self.needs_queries:
                 self.error("TV search without query or id or title is not possible with this indexer")

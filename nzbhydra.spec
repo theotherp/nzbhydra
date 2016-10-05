@@ -13,7 +13,7 @@ a = Analysis(['nzbhydra.py'],
                     ('version.txt', '.'),
                     ('changelog.md', '.'),
                     ('LICENSE', '.')],
-             hiddenimports=["rison", "socketserver"],
+             hiddenimports=["rison", "socketserver", "multipart"],
              hookspath=None,
              
              runtime_hooks=None,

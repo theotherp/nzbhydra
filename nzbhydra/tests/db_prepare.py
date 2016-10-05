@@ -18,7 +18,6 @@ def set_and_drop(dbfile="tests.db", tables=None):
     if tables is None:
         tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, TvIdCache, MovieIdCache, SearchResult]
     database.db.init(dbfile)
-    database.db.connect()
     
     for t in tables:
         try:
