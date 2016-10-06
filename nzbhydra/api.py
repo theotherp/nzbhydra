@@ -248,8 +248,10 @@ IndexerNzbDownloadResult = namedtuple("IndexerNzbDownload", "content headers")
 
 def download_nzb_and_log(searchResultId):
     link, papiaccess, _ = get_indexer_nzb_link(searchResultId, "serve", True)
+    indexerName = None
     try:
-        indexer = indexers.getIndexerByName(SearchResult.get(SearchResult.id == searchResultId).indexer.name)
+        indexerName = SearchResult.get(SearchResult.id == searchResultId).indexer.name
+        indexer = indexers.getIndexerByName(indexerName)
         r = indexer.get(link, timeout=10)
         r.raise_for_status()
 
@@ -257,8 +259,15 @@ def download_nzb_and_log(searchResultId):
         papiaccess.response_time = r.elapsed.microseconds / 1000
 
         return IndexerNzbDownloadResult(content=r.content, headers=r.headers)
-    except IndexerNotFoundException as e:
-        logger.error(e.message)
+    except IndexerNotFoundException:
+        if indexerName:
+            logger.error("Unable to find indexer with name %s" % indexerName)
+        else:
+            logger.error("Unable to find indexer for search result id %s" % searchResultId)
+        return None
+    except SearchResult.DoesNotExist:
+        logger.error("Unable to find search result with ID %s" % searchResultId)
+        return None
     except RequestException as e:
         logger.error("Error while connecting to URL %s: %s" % (link, str(e)))
         papiaccess.error = str(e)
