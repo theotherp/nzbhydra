@@ -276,9 +276,12 @@ def download_nzb_and_log(searchResultId):
         papiaccess.save()
 
 
-
 def get_nzb_response(searchResultId):
-    searchResult = SearchResult.get(SearchResult.id == searchResultId)
+    try:
+        searchResult = SearchResult.get(SearchResult.id == searchResultId)
+    except SearchResult.DoesNotExist:
+        logger.error("Unable to find search result with ID %s" % searchResultId)
+        return "Unable to find search result with ID %s" % searchResultId, 500
     nzbdownloadresult = download_nzb_and_log(searchResultId)
     if nzbdownloadresult is not None:
         bio = BytesIO(nzbdownloadresult.content)
