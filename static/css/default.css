@@ -7665,6 +7665,9 @@ input:focus + .input-group-addon {
 .results-table-expanded {
   border-color: red;
 }
+.indexer-statuses-accordion {
+  color: #000000;
+}
 .nav-tabs > li > a:hover {
   border-color: #eeeeee #eeeeee transparent;
   background-color: transparent;

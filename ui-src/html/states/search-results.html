@@ -4,9 +4,11 @@
     <div class="col-md-10" style="padding-right: 0px">
         <!-- TODO: Make box smaller if no error messages exist-->
         <uib-accordion close-others="oneAtATime">
-            <uib-accordion-group panel-class="panel-indexer-statuses" is-open="foo.indexerStatusesExpanded">
+            <uib-accordion-group panel-class="panel-indexer-statuses" is-open="foo.indexerStatusesExpanded" is-disabled="true" class="">
                 <uib-accordion-heading>
-                    Indexer statuses <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': foo.indexerStatusesExpanded, 'glyphicon-chevron-right': !foo.indexerStatusesExpanded}" ng-click="toggleIndexerStatuses(foo.indexerStatusesExpanded)"></i>
+                    <span class="indexer-statuses-accordion">
+                        <span ng-click="toggleIndexerStatuses()">Indexer statuses</span> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': foo.indexerStatusesExpanded, 'glyphicon-chevron-right': !foo.indexerStatusesExpanded}" ng-click="toggleIndexerStatuses()"></i>
+                    </span>
                 </uib-accordion-heading>
 
                 <table class="table" style="margin-bottom: 0px">
@@ -57,7 +59,7 @@
                             <div ng-if="$index > 0">{{ apiaccess.error }}</div>
                         </span>
                     </span>
-                    <span ng-if="!ps.did_search">
+                            <span ng-if="!ps.did_search">
                         Did not search.
                     </span>
                         </td>
@@ -91,7 +93,7 @@
         <tr class="search-results-row">
             <th class="col-md-12 cursor-default search-results-cell">
                 <!--<input type="checkbox" ng-click="invertSelection()" display="float:left; width:1%" uib-tooltip="Invert selection." tooltip-placement="top" tooltip-trigger="mouseenter"/>-->
-                
+
                 <span ng-click="setSorting('title', false)" style="vertical-align: top; float:right; width:98%">
                 Title <span ng-show="sortPredicate=='title'" class="caret" ng-class="{'caret-reversed': !sortReversed}"></span>
                     </span>

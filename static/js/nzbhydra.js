@@ -694,6 +694,37 @@ function hydraupdates() {
 
 angular
     .module('nzbhydraApp')
+    .directive('titleRow', titleRow);
+
+function titleRow() {
+    return {
+        templateUrl: 'static/html/directives/title-row.html',
+        scope: {
+            duplicates: "<",
+            selected: "<",
+            rowIndex: "@"
+        },
+        controller: ['$scope', '$element', '$attrs', titleRowController]
+    };
+
+    function titleRowController($scope) {
+        $scope.expanded = false;
+        console.log("Building title row");
+        $scope.duplicatesToShow = duplicatesToShow;
+        function duplicatesToShow() {
+            if ($scope.expanded && $scope.duplicates.length > 1) {
+                console.log("Showing all duplicates in group");
+                return $scope.duplicates;
+            } else {
+                console.log("Showing first duplicate in group");
+                return [$scope.duplicates[0]];
+            }
+        }
+
+    }
+}
+angular
+    .module('nzbhydraApp')
     .directive('titleGroup', titleGroup);
 
 function titleGroup() {
@@ -725,6 +756,64 @@ function titleGroup() {
             return $scope.titles.slice(1);
         }
         
+    }
+}
+angular
+    .module('nzbhydraApp')
+    .directive('searchResult', searchResult);
+
+function searchResult() {
+    return {
+        templateUrl: 'static/html/directives/search-result.html',
+        require: '^titleGroup',
+        scope: {
+            titleGroup: "<",
+            showDuplicates: "<",
+            selected: "<",
+            rowIndex: "<"
+        },
+        controller: ['$scope', '$element', '$attrs', controller],
+        multiElement: true
+    };
+
+    function controller($scope, $element, $attrs) {
+        $scope.titleGroupExpanded = false;
+        $scope.hashGroupExpanded = {};
+
+        $scope.toggleTitleGroup = function () {
+            $scope.titleGroupExpanded = !$scope.titleGroupExpanded;
+            if (!$scope.titleGroupExpanded) {
+                $scope.hashGroupExpanded[$scope.titleGroup[0][0].hash] = false; //Also collapse the first title's duplicates
+            }
+        };
+
+        $scope.groupingRowDuplicatesToShow = groupingRowDuplicatesToShow;
+        function groupingRowDuplicatesToShow() {
+            if ($scope.showDuplicates &&  $scope.titleGroup[0].length > 1 && $scope.hashGroupExpanded[$scope.titleGroup[0][0].hash]) {
+                return $scope.titleGroup[0].slice(1);
+            } else {
+                return [];
+            }
+        }
+
+        //<div ng-repeat="hashGroup in titleGroup" ng-if="titleGroup.length > 0 && titleGroupExpanded"  class="search-results-row">
+        $scope.otherTitleRowsToShow = otherTitleRowsToShow;
+        function otherTitleRowsToShow() {
+            if ($scope.titleGroup.length > 1 && $scope.titleGroupExpanded) {
+                return $scope.titleGroup.slice(1);
+            } else {
+                return [];
+            }
+        }
+        
+        $scope.hashGroupDuplicatesToShow = hashGroupDuplicatesToShow;
+        function hashGroupDuplicatesToShow(hashGroup) {
+            if ($scope.showDuplicates && $scope.hashGroupExpanded[hashGroup[0].hash]) {
+                return hashGroup.slice(1);
+            } else {
+                return [];
+            }
+        }
     }
 }
 angular
@@ -1912,9 +2001,9 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         $scope.$broadcast("invertSelection");
     };
     
-    $scope.toggleIndexerStatuses = function(indexerStatusesExpanded) {
-        //For some reason the value is actually the other way around
-        localStorageService.set("indexerStatusesExpanded", !indexerStatusesExpanded);
+    $scope.toggleIndexerStatuses = function() {
+        $scope.foo.indexerStatusesExpanded = !$scope.foo.indexerStatusesExpanded;
+        localStorageService.set("indexerStatusesExpanded", $scope.foo.indexerStatusesExpanded);
     };
 
     $scope.toggleDuplicatesDisplayed = function () {

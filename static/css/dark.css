@@ -7665,5 +7665,8 @@ input:focus + .input-group-addon {
 .results-table-expanded {
   border-color: red;
 }
+.indexer-statuses-accordion {
+  color: #c8c8c8;
+}
 
 /*# sourceMappingURL=dark.css.map */

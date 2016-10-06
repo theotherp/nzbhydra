@@ -239,9 +239,9 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         $scope.$broadcast("invertSelection");
     };
     
-    $scope.toggleIndexerStatuses = function(indexerStatusesExpanded) {
-        //For some reason the value is actually the other way around
-        localStorageService.set("indexerStatusesExpanded", !indexerStatusesExpanded);
+    $scope.toggleIndexerStatuses = function() {
+        $scope.foo.indexerStatusesExpanded = !$scope.foo.indexerStatusesExpanded;
+        localStorageService.set("indexerStatusesExpanded", $scope.foo.indexerStatusesExpanded);
     };
 
     $scope.toggleDuplicatesDisplayed = function () {
