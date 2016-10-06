@@ -179,7 +179,7 @@ class NzbIndex(SearchModule):
             entry.passworded = True
         title = infotd.find("label").text
         title = title.replace("\n", "")
-        title = re.sub(" +", "", title)
+        title = re.sub(" +", " ", title)
         m = self.title_pattern.search(title)
         if m:
             entry.title = m.group(1)
