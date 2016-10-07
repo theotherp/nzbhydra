@@ -16,6 +16,7 @@ import markdown
 from bunch import Bunch
 from werkzeug.contrib.fixers import ProxyFix
 
+import nzbhydra
 from nzbhydra.categories import getCategoryByName
 from nzbhydra.searchmodules import omgwtf
 
@@ -56,7 +57,7 @@ from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_searc
 from nzbhydra.update import get_rep_version, get_current_version, update, getChangelog, getVersionHistory
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import getLogs
-from nzbhydra.backup_debug import backup, getDebuggingInfos, getBackupFilenames, getBackupFileByFilename
+from nzbhydra.backup_debug import backup, getDebuggingInfos, getBackupFilenames, getBackupFileByFilename, restoreFromBackupData, restoreFromBackupFile
 from nzbhydra import ipinfo
 
 
@@ -1207,15 +1208,34 @@ def internalapi_getbackups():
     return jsonify({"backups": getBackupFilenames()})
 
 
-internalapi_getbackupfile_args = {
+
+@app.route('/internalapi/restorebackup', methods=['POST'])
+@requires_auth("admin")
+def internalapi_restore_backup():
+    return restoreFromBackupData(request.files["content"].stream)
+
+
+internalapi_restore_backupfile_args = {
+    "filename": fields.String(required=True)
+}
+
+
+@app.route('/internalapi/restorefrombackupfile')
+@requires_auth("admin")
+@use_args(internalapi_restore_backupfile_args)
+def internalapi_restore_backupfile(args):
+    return restoreFromBackupFile(args["filename"])
+
+
+
+internalapi_logerror_args = {
     "error": fields.String(required=True),
     "cause": fields.String(required=True)
 }
 
-
 @app.route('/internalapi/logerror', methods=['GET', 'PUT'])
 @requires_auth("main")
-@use_args(internalapi_getbackupfile_args)
+@use_args(internalapi_logerror_args)
 def internalapi_logerror(args):
     logger.error("The client encountered the following error: %s. Caused by: %s" % (args["error"], args["cause"]))
     return "OK"

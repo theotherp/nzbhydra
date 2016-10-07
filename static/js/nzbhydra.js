@@ -1,4 +1,4 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title', 'satellizer', 'LocalStorageModule', 'angular.filter']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title', 'satellizer', 'LocalStorageModule', 'angular.filter', 'ngFileUpload']);
 
 angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$locationProvider", "blockUIConfig", "$urlMatcherFactoryProvider", "$authProvider", "localStorageServiceProvider", "bootstrapped", function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig, $urlMatcherFactoryProvider, $authProvider, localStorageServiceProvider, bootstrapped) {
 
@@ -1271,17 +1271,57 @@ angular
     .directive('hydrabackup', hydrabackup);
 
 function hydrabackup() {
-    controller.$inject = ["$scope", "BackupService"];
+    controller.$inject = ["$scope", "BackupService", "Upload", "$timeout", "RequestsErrorHandler", "growl", "RestartService"];
     return {
         templateUrl: 'static/html/directives/backup.html',
         controller: controller
     };
 
-    function controller($scope, BackupService) {
-        BackupService.getBackupsList().then(function(backups) {
+    function controller($scope, BackupService, Upload, $timeout, RequestsErrorHandler, growl, RestartService) {
+        BackupService.getBackupsList().then(function (backups) {
             $scope.backups = backups;
         });
-        
+
+        $scope.uploadActive = false;
+
+        $scope.uploadBackupFile = function (file, errFiles) {
+            RequestsErrorHandler.specificallyHandled(function () {
+                console.log("Hallo");
+                $scope.file = file;
+                $scope.errFile = errFiles && errFiles[0];
+                if (file) {
+                    $scope.uploadActive = true;
+                    file.upload = Upload.upload({
+                        url: 'internalapi/restorebackup',
+                        data: {content: file}
+                    });
+
+                    file.upload.then(function (response) {
+                        $scope.uploadActive = false;
+                        file.result = response.data;
+                        RestartService.restart("Restore successful.");
+
+                    }, function (response) {
+                        $scope.uploadActive = false;
+                        growl.error(response.data)
+                    }, function (evt) {
+                        file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                        file.loaded = Math.floor(evt.loaded / 1024);
+                        file.total = Math.floor(evt.total / 1024);
+                    });
+                }
+            });
+        };
+
+        $scope.restoreFromFile = function(filename) {
+            BackupService.restoreFromFile(filename).then(function() {
+                RestartService.restart("Restore successful.");
+            },
+            function(response) {
+                growl.error(response.data);
+            })
+        }
+
     }
 }
 
@@ -2390,17 +2430,16 @@ angular
 function RestartService(blockUI, $timeout, $window, NzbHydraControlService) {
 
     return {
-        restart: restart,
-        countdownAndReload: countdownAndReload
+        restart: restart
     };
 
-    function countdownAndReload(message, timer) {
-        message = angular.isUndefined ? "" : " ";
-        
+
+    function internalCaR(message, timer) {
+
         if (timer >= 1) {
             blockUI.start(message + "Restarting. Will reload page in " + timer + " seconds...");
             $timeout(function () {
-                countdownAndReload(message, timer -1)
+                internalCaR(message, timer - 1)
             }, 1000);
         } else {
             $timeout(function () {
@@ -2408,13 +2447,13 @@ function RestartService(blockUI, $timeout, $window, NzbHydraControlService) {
                 $window.location.reload();
             }, 1000);
         }
-        
     }
     
     
 
     function restart(message) {
-        NzbHydraControlService.restart().then(countdownAndReload(message, 15),
+        message = message + (angular.isUndefined(message) ? "" : " ");
+        NzbHydraControlService.restart().then(internalCaR(message, 15),
             function () {
                 growl.info("Unable to send restart command.");
             }
@@ -5625,13 +5664,20 @@ angular
 function BackupService($http) {
 
     return {
-        getBackupsList: getBackupsList
+        getBackupsList: getBackupsList,
+        restoreFromFile: restoreFromFile
     };
     
 
     function getBackupsList() {
         return $http.get('internalapi/getbackups').then(function (data) {
             return data.data.backups;
+        });
+    }
+
+    function restoreFromFile(filename) {
+        return $http.get('internalapi/restorefrombackupfile', {params:{filename: filename}}).then(function (response) {
+            return response;
         });
     }
 

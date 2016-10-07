@@ -10,6 +10,8 @@ from future import standard_library
 #standard_library.install_aliases()
 from builtins import *
 from peewee import OperationalError
+from retry import retry
+
 from nzbhydra.database import Indexer, IndexerApiAccess, IndexerSearch, IndexerStatus, Search, IndexerNzbDownload, TvIdCache, MovieIdCache, SearchResult
 from nzbhydra import database, config
 
@@ -17,6 +19,9 @@ from nzbhydra import database, config
 def set_and_drop(dbfile="tests.db", tables=None):
     if tables is None:
         tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, TvIdCache, MovieIdCache, SearchResult]
+    deleteDbFile(dbfile)
+
+    database.db.start()
     database.db.init(dbfile)
     
     for t in tables:
@@ -38,3 +43,9 @@ def set_and_drop(dbfile="tests.db", tables=None):
     shutil.copy("testsettings.cfg.orig", "testsettings.cfg")
     config.load("testsettings.cfg")
     pass
+
+
+@retry(WindowsError, delay=1, tries=5)
+def deleteDbFile(dbfile):
+    if os.path.exists(dbfile):
+        os.remove(dbfile)

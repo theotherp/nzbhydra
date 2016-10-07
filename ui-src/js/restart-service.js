@@ -5,17 +5,16 @@ angular
 function RestartService(blockUI, $timeout, $window, NzbHydraControlService) {
 
     return {
-        restart: restart,
-        countdownAndReload: countdownAndReload
+        restart: restart
     };
 
-    function countdownAndReload(message, timer) {
-        message = angular.isUndefined ? "" : " ";
-        
+
+    function internalCaR(message, timer) {
+
         if (timer >= 1) {
             blockUI.start(message + "Restarting. Will reload page in " + timer + " seconds...");
             $timeout(function () {
-                countdownAndReload(message, timer -1)
+                internalCaR(message, timer - 1)
             }, 1000);
         } else {
             $timeout(function () {
@@ -23,13 +22,13 @@ function RestartService(blockUI, $timeout, $window, NzbHydraControlService) {
                 $window.location.reload();
             }, 1000);
         }
-        
     }
     
     
 
     function restart(message) {
-        NzbHydraControlService.restart().then(countdownAndReload(message, 15),
+        message = message + (angular.isUndefined(message) ? "" : " ");
+        NzbHydraControlService.restart().then(internalCaR(message, 15),
             function () {
                 growl.info("Unable to send restart command.");
             }
