@@ -182,7 +182,7 @@ def process_for_internal_api(search_result):
     nzbsearchresults = transform_results(nzbsearchresults, False)
     nzbsearchresults = serialize_nzb_search_result(nzbsearchresults)
 
-    return {"results": nzbsearchresults, "indexersearches": indexersearchdbentries, "searchentryid": search_result["dbsearchid"], "total": search_result["total"]}
+    return {"results": nzbsearchresults, "indexersearches": indexersearchdbentries, "searchentryid": search_result["dbsearchid"], "total": search_result["total"], "rejected": search_result["rejected"]}
 
 
 def serialize_nzb_search_result(results):

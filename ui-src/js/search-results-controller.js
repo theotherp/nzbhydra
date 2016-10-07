@@ -45,6 +45,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.results = SearchService.getLastResults().results;
     $scope.total = SearchService.getLastResults().total;
     $scope.resultsCount = SearchService.getLastResults().resultsCount;
+    $scope.rejected = SearchService.getLastResults().rejected;
     $scope.filteredResults = sortAndFilter($scope.results);
     stopBlocking();
 
@@ -206,12 +207,13 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     }
 
     $scope.loadMore = loadMore;
-    function loadMore() {
+    function loadMore(loadAll) {
         startBlocking("Loading more results...").then(function () {
-            SearchService.loadMore($scope.resultsCount).then(function (data) {
+            SearchService.loadMore($scope.resultsCount, loadAll).then(function (data) {
                 $scope.results = $scope.results.concat(data.results);
                 $scope.filteredResults = sortAndFilter($scope.results);
                 $scope.total = data.total;
+                $scope.rejected = data.rejected;
                 $scope.resultsCount += data.resultsCount;
                 stopBlocking();
             });

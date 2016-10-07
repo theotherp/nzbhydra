@@ -637,7 +637,10 @@ internalapi_search_args = {
     "query": fields.String(missing=None),
     "category": fields.String(missing=None),
     "offset": fields.Integer(missing=0),
+    "limit": fields.Integer(missing=None),
+    "loadAll": fields.Boolean(missing=False),
     "indexers": fields.String(missing=None),
+
 
     "minsize": fields.Integer(missing=None),
     "maxsize": fields.Integer(missing=None),
@@ -663,7 +666,7 @@ def internalapi_search(args):
     else:
         type = "general"
     indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None
-    search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=indexers)
+    search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], limit=args["limit"], loadAll=args["loadAll"], indexers=indexers)
     before = arrow.now()
     searchResult = startSearch(search_request)
     after = arrow.now()

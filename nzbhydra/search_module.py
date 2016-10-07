@@ -27,7 +27,7 @@ from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, In
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAuthException, IndexerAccessException
 from nzbhydra.nzb_search_result import NzbSearchResult
 
-QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "didsearch results indexerSearchEntry indexerApiAccessEntry indexerStatus total loaded_results total_known has_more")
+QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "didsearch results indexerSearchEntry indexerApiAccessEntry indexerStatus total loaded_results total_known has_more rejected")
 IndexerProcessingResult = collections.namedtuple("IndexerProcessingResult", "entries queries total total_known has_more rejected")
 titleRegex = re.compile("(\w[\w']*\w|\w)")
 
@@ -386,6 +386,7 @@ class SearchModule(object):
                         total_results += parsed_results.total
                         total_known = parsed_results.total_known
                         has_more = parsed_results.has_more
+                        rejected = parsed_results.rejected
 
                         papiaccess.response_successful = True
                         self.handle_indexer_success(False)
@@ -421,7 +422,7 @@ class SearchModule(object):
                     self.error("Unable to save API response to database")
                 psearch.resultsCount = total_results
                 #psearch.save()
-        return QueriesExecutionResult(didsearch= True, results=results, indexerSearchEntry=psearch, indexerApiAccessEntry=papiaccess, indexerStatus=indexerStatus, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more)
+        return QueriesExecutionResult(didsearch= True, results=results, indexerSearchEntry=psearch, indexerApiAccessEntry=papiaccess, indexerStatus=indexerStatus, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more, rejected=rejected)
 
     def debug(self, msg, *args, **kwargs):
         self.logger.debug("%s: %s" % (self.name, msg), *args, **kwargs)

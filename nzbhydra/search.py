@@ -28,7 +28,7 @@ session = FuturesSession()
 
 class SearchRequest(object):
     def __init__(self, type=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, title=None, category=None, minsize=None, maxsize=None, minage=None, maxage=None, offset=0, limit=100, indexers=None, forbiddenWords=None, requiredWords=None, author=None,
-                 username=None, internal=True):
+                 username=None, internal=True, loadAll=False):
         self.type = type
         self.query = query
         self.identifier_key = identifier_key
@@ -43,12 +43,13 @@ class SearchRequest(object):
         self.minage = minage
         self.maxage = maxage
         self.offset = offset
-        self.limit = limit
+        self.limit = limit if limit is not None else 100
         self.indexers = indexers
         self.forbiddenWords = forbiddenWords if forbiddenWords else []
         self.requiredWords = requiredWords if requiredWords else []
         self.username = username
         self.internal = internal
+        self.loadAll = loadAll if loadAll is not None else loadAll
 
     @property
     def search_hash(self):
@@ -237,7 +238,7 @@ def search(search_request):
     search_request.category = categoryResult
     if search_hash not in pseudo_cache.keys() or search_request.offset == 0:  # If it's a new search (which starts with offset 0) do it again instead of using the cached results
         logger.debug("Didn't find this query in cache or want to do a new search")
-        cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0}
+        cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0, "rejected": 0}
         category = categoryResult.category
         indexers_to_call = pick_indexers(search_request)
         for p in indexers_to_call:
@@ -286,8 +287,11 @@ def search(search_request):
         logger.debug("Found search in cache")
 
         logger.debug("Will search at indexers as long as we don't have enough results for the current offset+limit and any indexer has more results.")
-    while len(cache_entry["results"]) < external_offset + limit and len(indexers_to_call) > 0:
-        logger.debug("We want %d results but have only %d so far" % ((external_offset + limit), len(cache_entry["results"])))
+    while (len(cache_entry["results"]) < external_offset + limit or search_request.loadAll) and len(indexers_to_call) > 0:
+        if len(cache_entry["results"]) < external_offset + limit:
+            logger.debug("We want %d results but have only %d so far" % ((external_offset + limit), len(cache_entry["results"])))
+        elif search_request.loadAll:
+            logger.debug("All results requested. Continuing to search.")
         logger.debug("%d indexers still have results" % len(indexers_to_call))
         search_request.offset = cache_entry["offset"]
 
@@ -315,7 +319,7 @@ def search(search_request):
 
                 cache_entry["indexer_infos"][indexer].update(
                     {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
-                     "indexer_search": queries_execution_result.indexerSearchEntry})
+                     "indexer_search": queries_execution_result.indexerSearchEntry, "rejected": queries_execution_result.rejected})
                 if queries_execution_result.has_more:
                     indexers_to_call.append(indexer)
                     logger.debug("%s still has more results so we could use it the next round" % indexer)
@@ -328,6 +332,7 @@ def search(search_request):
                 elif queries_execution_result.has_more:
                     logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
                     cache_entry["total"] += 100
+                cache_entry["rejected"] += cache_entry["indexer_infos"][indexer]["rejected"]
 
         if search_request.internal or config.settings.searching.removeDuplicatesExternal:
             logger.debug("Searching for duplicates")
@@ -364,7 +369,7 @@ def search(search_request):
         nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:(external_offset + limit)])
     cache_entry["last_access"] = arrow.utcnow()
     logger.info("Returning %d results" % len(nzb_search_results))
-    return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearchid": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset}
+    return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearchid": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset, "rejected": cache_entry["rejected"]}
 
 
 def search_and_handle_db(dbsearch, indexers_and_search_requests):

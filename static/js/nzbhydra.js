@@ -1766,9 +1766,10 @@ function SearchService($http) {
 
     }
 
-    function loadMore(offset) {
+    function loadMore(offset, loadAll) {
         lastExecutedQuery.removeQuery("offset");
         lastExecutedQuery.addQuery("offset", offset);
+        lastExecutedQuery.addQuery("loadAll", loadAll ? true : false);
 
         return $http.get(lastExecutedQuery.toString()).then(processData);
     }
@@ -1777,6 +1778,7 @@ function SearchService($http) {
         var results = response.data.results;
         var indexersearches = response.data.indexersearches;
         var total = response.data.total;
+        var rejected = response.data.rejected;
         var resultsCount = results.length;
 
 
@@ -1791,7 +1793,7 @@ function SearchService($http) {
             }
         });
         
-        lastResults = {"results": results, "indexersearches": indexersearches, "total": total, "resultsCount": resultsCount};
+        lastResults = {"results": results, "indexersearches": indexersearches, "total": total, "resultsCount": resultsCount, "rejected": rejected};
         return lastResults;
     }
     
@@ -1847,6 +1849,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.results = SearchService.getLastResults().results;
     $scope.total = SearchService.getLastResults().total;
     $scope.resultsCount = SearchService.getLastResults().resultsCount;
+    $scope.rejected = SearchService.getLastResults().rejected;
     $scope.filteredResults = sortAndFilter($scope.results);
     stopBlocking();
 
@@ -2008,12 +2011,13 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     }
 
     $scope.loadMore = loadMore;
-    function loadMore() {
+    function loadMore(loadAll) {
         startBlocking("Loading more results...").then(function () {
-            SearchService.loadMore($scope.resultsCount).then(function (data) {
+            SearchService.loadMore($scope.resultsCount, loadAll).then(function (data) {
                 $scope.results = $scope.results.concat(data.results);
                 $scope.filteredResults = sortAndFilter($scope.results);
                 $scope.total = data.total;
+                $scope.rejected = data.rejected;
                 $scope.resultsCount += data.resultsCount;
                 stopBlocking();
             });
