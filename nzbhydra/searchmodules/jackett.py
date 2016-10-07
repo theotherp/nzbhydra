@@ -93,7 +93,7 @@ class Jackett(newznab.NewzNab):
        
         if total == 0 or len(acceptedEntries) == 0:
             self.info("Query returned no results")
-            return IndexerProcessingResult(entries=acceptedEntries, queries=[], total=0, total_known=True, has_more=False, rejected=0)
+            return IndexerProcessingResult(entries=acceptedEntries, queries=[], total=0, total_known=True, has_more=False, rejected=countRejected)
         else:
             return IndexerProcessingResult(entries=acceptedEntries, queries=[], total=total, total_known=True, has_more=False, rejected=countRejected)
     
