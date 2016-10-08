@@ -8,6 +8,7 @@ import datetime
 import logging
 import re
 from itertools import groupby
+from sqlite3 import OperationalError
 
 import arrow
 import concurrent
@@ -18,7 +19,7 @@ from requests_futures.sessions import FuturesSession
 from retry import retry
 
 from nzbhydra import config, indexers, infos, categories
-from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult, Indexer, InterfaceError, IntegrityError, OperationalError
+from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult, Indexer, InterfaceError, IntegrityError
 
 logger = logging.getLogger('root')
 
@@ -222,7 +223,7 @@ def search(search_request):
 
     # Clean up old search results. We do this here because we don't have any background jobs and this is the function most regularly called
     keepFor = config.settings.main.keepSearchResultsForDays
-    oldSearchResultsCount = SearchResult.select().where(SearchResult.firstFound < (datetime.date.today() - datetime.timedelta(days=keepFor))).count()
+    oldSearchResultsCount = countOldSearchResults(keepFor)
     if oldSearchResultsCount > 0:
         logger.info("Deleting %d search results from database that are older than %d days" % (oldSearchResultsCount, keepFor))
         SearchResult.delete().where(SearchResult.firstFound < (datetime.date.today() - datetime.timedelta(days=keepFor))).execute()
@@ -311,10 +312,12 @@ def search(search_request):
                         continue
                     try:
                         searchResult, _ = tryGetOrCreateSearchResultDbEntry(indexer.indexer.id, result)
-                    except IntegrityError, DatabaseError:
-                        searchResult = SearchResult().get(SearchResult.indexer_id == indexer.indexer.id, SearchResult.guid == result.indexerguid)
-                    result.searchResultId = searchResult.id
-                    search_results.append(result)
+                        result.searchResultId = searchResult.id
+                        search_results.append(result)
+                    except (IntegrityError, OperationalError) as e:
+                        db.set_autocommit(False)
+                        logger.error("Error while trying to save search result to database. Skipping it. Error: %s" % e)
+                        db.set_autocommit(True)
 
             cache_entry["indexer_infos"][indexer].update(
                 {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
@@ -369,6 +372,11 @@ def search(search_request):
     cache_entry["last_access"] = arrow.utcnow()
     logger.info("Returning %d results" % len(nzb_search_results))
     return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearchid": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset, "rejected": cache_entry["rejected"]}
+
+
+@retry((InterfaceError, OperationalError), delay=1, tries=5, logger=logger)
+def countOldSearchResults(keepFor):
+    return SearchResult.select().where(SearchResult.firstFound < (datetime.date.today() - datetime.timedelta(days=keepFor))).count()
 
 
 @retry((InterfaceError, OperationalError), delay=1, tries=5, logger=logger)

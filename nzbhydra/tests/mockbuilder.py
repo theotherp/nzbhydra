@@ -108,7 +108,7 @@ def serve():
     doSleep = False
     doGenerateDuplicates = False
     generateDuplicateGroupRange = 5
-    doGenerateNewGuids = False
+    doGenerateNewGuids = True
 
     indexer = indexers[request.args.get("apikey")]
 
