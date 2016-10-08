@@ -246,7 +246,7 @@ def getUserFromToken():
             logger.warn("Token is invalid, user is unknown")
             return None
     except (ValueError, DecodeError) as e:
-        logger.warn('Token is invalid')
+        #logger.warn('Token is invalid') #TODO Rewrite handling for cookies instead of tokens
         return None
     except ExpiredSignature:
         logger.warn("Token has expired")
