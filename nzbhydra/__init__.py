@@ -1,7 +1,10 @@
 from os.path import dirname, abspath
 
+import thread
+
 configFile = None
 databaseFile = None
+databaseLock = thread.allocate_lock()
 
 def getBasePath():
     try:

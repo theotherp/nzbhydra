@@ -19,14 +19,12 @@ from flask import request
 from requests_futures.sessions import FuturesSession
 from retry import retry
 
-from nzbhydra import config, indexers, infos, categories
+from nzbhydra import config, indexers, infos, categories, databaseLock
 from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult, Indexer, InterfaceError, IntegrityError
 
 logger = logging.getLogger('root')
 
 session = FuturesSession()
-
-lock = thread.allocate_lock()
 
 class SearchRequest(object):
     def __init__(self, type=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, title=None, category=None, minsize=None, maxsize=None, minage=None, maxage=None, offset=0, limit=100, indexers=None, forbiddenWords=None, requiredWords=None, author=None,
@@ -306,12 +304,11 @@ def search(search_request):
         for indexer, queries_execution_result in result["results"].items():
             waslocked = False
             before = arrow.now()
-            global lock
-            if lock.locked():
+            if databaseLock.locked():
                 logger.info("Database accesses locked by other search. Will wait for our turn.")
                 waslocked = True
 
-            lock.acquire()
+                databaseLock.acquire()
             if waslocked:
                 after = arrow.now()
                 took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
@@ -330,7 +327,7 @@ def search(search_request):
                     except (IntegrityError, OperationalError) as e:
                         logger.error("Error while trying to save search result to database. Skipping it. Error: %s" % e)
 
-            lock.release()
+                        databaseLock.release()
 
             cache_entry["indexer_infos"][indexer].update(
                 {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
@@ -399,7 +396,7 @@ def tryGetOrCreateSearchResultDbEntry(indexerId, result):
 
 @retry((InterfaceError, OperationalError), delay=1, tries=5, logger=logger)
 def saveSearch(dbsearch):
-    with lock:
+    with databaseLock:
         dbsearch.save()
 
 
@@ -407,7 +404,7 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
     results_by_indexer = start_search_futures(indexers_and_search_requests)
     dbsearch.username = request.authorization.username if request.authorization is not None else None
     saveSearch(dbsearch)
-    with lock:
+    with databaseLock:
         with db.atomic():
             for indexer, result in results_by_indexer.items():
                 if result.didsearch:

@@ -6,7 +6,7 @@ Added: Restore settings from backup via GUI.
 
 Added: Display number of rejected results in search results view and new button to load all available results.
 
-Changed: Changed and rewrote database handling. Should prevent the notorious "database is locked" errors.
+Changed: Changed and rewrote database handling. Should (mostly) prevent the notorious "database is locked" errors.
  
 Fixed: NZBIndex result titles would be stripped of all spaces.
 

@@ -105,6 +105,13 @@ def run(arguments):
             daemonize(arguments.pidfile)
 
         config.logLogMessages()
+
+        try:
+            import _sqlite3
+            logger.debug("SQLite3 version: %s" % _sqlite3.sqlite_version)
+        except:
+            logger.error("Unable to log SQLite version")
+
         logger.info("Loading database file %s" % database_file)
         if not os.path.exists(database_file):
             database.init_db(database_file)
@@ -194,7 +201,7 @@ if __name__ == '__main__':
     with open("version.txt") as f:
         version = f.read()
     logger.notice("Starting NZBHydra %s" % version)
-    logger.debug("Base path is {}".format(basepath))
+    logger.notice("Base path is {}".format(basepath))
 
     run(args)
     if "RESTART" in os.environ.keys() and os.environ["RESTART"] == "1":

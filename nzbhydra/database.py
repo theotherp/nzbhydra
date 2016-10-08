@@ -18,7 +18,7 @@ from playhouse.sqliteq import SqliteQueueDatabase
 
 logger = logging.getLogger('root')
 
-db = SqliteQueueDatabase(None, autostart=False, readers=4, results_timeout=20.0)
+db = SqliteQueueDatabase(None, autostart=False, readers=1, results_timeout=20.0)
 
 DATABASE_VERSION = 10
 

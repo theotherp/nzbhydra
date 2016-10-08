@@ -30,7 +30,7 @@ def startTest(query):
 
 
 runs = 30
-concurrent_searches = 5
+concurrent_searches = 21
 for x in range(1, runs+1):
     threads = []
     allSuccessful = True
