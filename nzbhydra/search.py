@@ -12,6 +12,7 @@ from sqlite3 import OperationalError
 
 import arrow
 import concurrent
+import thread
 from builtins import *
 from bunch import Bunch
 from flask import request
@@ -25,6 +26,7 @@ logger = logging.getLogger('root')
 
 session = FuturesSession()
 
+lock = thread.allocate_lock()
 
 class SearchRequest(object):
     def __init__(self, type=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, title=None, category=None, minsize=None, maxsize=None, minage=None, maxage=None, offset=0, limit=100, indexers=None, forbiddenWords=None, requiredWords=None, author=None,
@@ -301,9 +303,20 @@ def search(search_request):
         search_results = []
         indexers_to_call = []
 
-        toCreateAfter = []
         for indexer, queries_execution_result in result["results"].items():
-            # Drastically improves db access time but means that if one database write fails all fail. That's a risk we need to take
+            waslocked = False
+            before = arrow.now()
+            global lock
+            if lock.locked():
+                logger.info("Database accesses locked by other search. Will wait for our turn.")
+                waslocked = True
+
+            lock.acquire()
+            if waslocked:
+                after = arrow.now()
+                took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
+                logger.debug("Waited %dms for database lock" % took)
+
             with db.atomic():
                 logger.debug("%s returned %d results. Trying to retrieve them from database" % (indexer, len(queries_execution_result.results)))
                 for result in queries_execution_result.results:
@@ -315,9 +328,9 @@ def search(search_request):
                         result.searchResultId = searchResult.id
                         search_results.append(result)
                     except (IntegrityError, OperationalError) as e:
-                        db.set_autocommit(False)
                         logger.error("Error while trying to save search result to database. Skipping it. Error: %s" % e)
-                        db.set_autocommit(True)
+
+            lock.release()
 
             cache_entry["indexer_infos"][indexer].update(
                 {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
@@ -384,27 +397,38 @@ def tryGetOrCreateSearchResultDbEntry(indexerId, result):
     return SearchResult().get_or_create(indexer_id=indexerId, guid=result.indexerguid, defaults={"title": result.title, "link": result.link, "details": result.details_link, "firstFound": datetime.datetime.utcnow()})
 
 
+@retry((InterfaceError, OperationalError), delay=1, tries=5, logger=logger)
+def saveSearch(dbsearch):
+    with lock:
+        dbsearch.save()
+
+
 def search_and_handle_db(dbsearch, indexers_and_search_requests):
     results_by_indexer = start_search_futures(indexers_and_search_requests)
     dbsearch.username = request.authorization.username if request.authorization is not None else None
-    dbsearch.save()
-    for indexer, result in results_by_indexer.items():
-        if result.didsearch:
-            indexersearchentry = result.indexerSearchEntry
-            indexersearchentry.search = dbsearch
-            indexersearchentry.save()
-            result.indexerApiAccessEntry.username = request.authorization.username if request.authorization is not None else None
-            try:
-                result.indexerApiAccessEntry.indexer = Indexer.get(Indexer.name == indexer)
-                result.indexerApiAccessEntry.save()
-                result.indexerStatus.save()
-            except Indexer.DoesNotExist:
-                logger.error("Tried to save indexer API access but no indexer with name %s was found in the database. Adding it now. This shouldn't've happened. If possible send a bug report with a full log." % indexer)
-                Indexer().create(name=indexer)
-            except Exception as e:
-                logger.exception("Error saving IndexerApiAccessEntry")
+    saveSearch(dbsearch)
+    with lock:
+        with db.atomic():
+            for indexer, result in results_by_indexer.items():
+                if result.didsearch:
+                    indexersearchentry = result.indexerSearchEntry
+                    indexersearchentry.search = dbsearch
+                    indexersearchentry.save()
+                    result.indexerApiAccessEntry.username = request.authorization.username if request.authorization is not None else None
+                    try:
+                        result.indexerApiAccessEntry.indexer = Indexer.get(Indexer.name == indexer)
+                        result.indexerApiAccessEntry.save()
+                        result.indexerStatus.save()
+                    except Indexer.DoesNotExist:
+                        logger.error("Tried to save indexer API access but no indexer with name %s was found in the database. Adding it now. This shouldn't've happened. If possible send a bug report with a full log." % indexer)
+                        Indexer().create(name=indexer)
+                    except Exception as e:
+                        logger.exception("Error saving IndexerApiAccessEntry")
 
     return {"results": results_by_indexer, "dbsearch": dbsearch}
+
+
+
 
 
 def start_search_futures(indexers_and_search_requests):
