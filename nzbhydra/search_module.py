@@ -48,13 +48,16 @@ class SearchModule(object):
         self.limit = 100
         self.supportedFilters = []
         self.supportsNot = None
+        self.indexerDb = None
 
     def __repr__(self):
         return self.name
 
     @property
     def indexer(self):
-        return Indexer.get(fn.lower(Indexer.name) == self.settings.name.lower())
+        if self.indexerDb is None:
+            self.indexerDb = Indexer.get(fn.lower(Indexer.name) == self.settings.name.lower())
+        return self.indexerDb
 
     @property
     def host(self):
@@ -362,6 +365,7 @@ class SearchModule(object):
         total_results = 0
         total_known = False
         has_more = False
+        rejected = 0
         while len(queries) > 0:
             query = queries.pop()
             if query in executed_queries:

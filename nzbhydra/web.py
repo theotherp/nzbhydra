@@ -1339,6 +1339,9 @@ def run(host, port, basepath):
     configureFolders(basepath)
     for handler in logger.handlers:
         app.logger.addHandler(handler)
+    # from waitress import serve
+    # logging.getLogger("waitress").setLevel(logging.FATAL)
+    # serve(app, host=host, port=port)
     if context is None:
         app.run(host=host, port=port, debug=config.settings.main.debug, threaded=config.settings.main.runThreaded, use_reloader=config.settings.main.flaskReloader)
     else:

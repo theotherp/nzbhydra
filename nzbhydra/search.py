@@ -3,23 +3,22 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import copy
 import datetime
+import logging
 import re
 from itertools import groupby
 
+import arrow
+import concurrent
+from builtins import *
 from bunch import Bunch
 from flask import request
-
-# standard_library.install_aliases()
-from builtins import *
-import concurrent
-import copy
-import logging
-import arrow
 from requests_futures.sessions import FuturesSession
+from retry import retry
 
-from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult, Indexer
 from nzbhydra import config, indexers, infos, categories
+from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult, Indexer, InterfaceError, IntegrityError
 
 logger = logging.getLogger('root')
 
@@ -301,38 +300,62 @@ def search(search_request):
         search_results = []
         indexers_to_call = []
 
+        toCreateAfter = []
         for indexer, queries_execution_result in result["results"].items():
             # Drastically improves db access time but means that if one database write fails all fail. That's a risk we need to take
             with db.atomic():
-                logger.debug("%s returned %d results. Writing them to database..." % (indexer, len(queries_execution_result.results)))
+                logger.debug("%s returned %d results. Trying to retrieve them from database" % (indexer, len(queries_execution_result.results)))
                 for result in queries_execution_result.results:
                     if result.title is None or result.link is None or result.indexerguid is None:
                         logger.info("Skipping result with missing data: %s" % result)
                         continue
+                    #try:
+                    #searchResult = SearchResult().get(SearchResult.indexer_id == indexer.indexer.id, SearchResult.guid == result.indexerguid)
                     try:
-                        searchResult = SearchResult().get(SearchResult.indexer == indexer.indexer, SearchResult.guid == result.indexerguid)
-                    except SearchResult.DoesNotExist:
-                        searchResult = SearchResult().create(indexer=indexer.indexer, guid=result.indexerguid, title=result.title, link=result.link, details=result.details_link)
+                        searchResult,_ = tryGetOrCreateSearchResultDbEntry(indexer.indexer.id, result)
+                    except IntegrityError, DatabaseError:
+                        searchResult = SearchResult().get(SearchResult.indexer_id == indexer.indexer.id, SearchResult.guid == result.indexerguid)
                     result.searchResultId = searchResult.id
                     search_results.append(result)
-                logger.debug("Written results results to database")
+                    # except SearchResult.DoesNotExist:
+                    #     searchResult = SearchResult().create(indexer=indexer.indexer.id, guid=result.indexerguid, title=result.title, link=result.link, details=result.details_link)
+                    #     result.searchResultId = searchResult.id
+                    #     search_results.append(result)
+                    #     # toCreateAfter.append([{"indexer": indexer.indexer, "guid": result.indexerguid, "title": result.title, "link": result.link, "details": result.details_link, "firstFound": datetime.datetime.utcnow()}, result])
+                    # except InterfaceError as e:
+                    #     print(indexer.indexer.id)
+                    #     print(result.indexerguid)
+                    #     raise
 
-                cache_entry["indexer_infos"][indexer].update(
-                    {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
-                     "indexer_search": queries_execution_result.indexerSearchEntry, "rejected": queries_execution_result.rejected})
-                if queries_execution_result.has_more:
-                    indexers_to_call.append(indexer)
-                    logger.debug("%s still has more results so we could use it the next round" % indexer)
+            cache_entry["indexer_infos"][indexer].update(
+                {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
+                 "indexer_search": queries_execution_result.indexerSearchEntry, "rejected": queries_execution_result.rejected})
+            if queries_execution_result.has_more:
+                indexers_to_call.append(indexer)
+                logger.debug("%s still has more results so we could use it the next round" % indexer)
 
-                if queries_execution_result.total_known:
-                    if not cache_entry["indexer_infos"][indexer]["total_included"]:
-                        cache_entry["total"] += queries_execution_result.total
-                        logger.debug("%s reports %d total results. We'll include in the total this time only" % (indexer, queries_execution_result.total))
-                        cache_entry["indexer_infos"][indexer]["total_included"] = True
-                elif queries_execution_result.has_more:
-                    logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
-                    cache_entry["total"] += 100
-                cache_entry["rejected"] += cache_entry["indexer_infos"][indexer]["rejected"]
+            if queries_execution_result.total_known:
+                if not cache_entry["indexer_infos"][indexer]["total_included"]:
+                    cache_entry["total"] += queries_execution_result.total
+                    logger.debug("%s reports %d total results. We'll include in the total this time only" % (indexer, queries_execution_result.total))
+                    cache_entry["indexer_infos"][indexer]["total_included"] = True
+            elif queries_execution_result.has_more:
+                logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
+                cache_entry["total"] += 100
+            cache_entry["rejected"] += cache_entry["indexer_infos"][indexer]["rejected"]
+
+        # logger.debug("Writing %d new results to database" % len(toCreateAfter))
+        # with db.atomic():
+        #     try:
+        #         SearchResult.insert_many([x[0] for x in toCreateAfter]).execute()
+        #     except IntegrityError:
+        #         pass
+        # for x in toCreateAfter:
+        #     searchResultFromDb = SearchResult().get(SearchResult.indexer == x[0]["indexer"], SearchResult.guid == x[0]["guid"])
+        #     result = x[1]
+        #     result.searchResultId = searchResultFromDb.id
+        #     search_results.append(result)
+        # logger.debug("Wrote %d new results to database" % len(toCreateAfter))
 
         if search_request.internal or config.settings.searching.removeDuplicatesExternal:
             logger.debug("Searching for duplicates")
@@ -370,6 +393,11 @@ def search(search_request):
     cache_entry["last_access"] = arrow.utcnow()
     logger.info("Returning %d results" % len(nzb_search_results))
     return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearchid": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset, "rejected": cache_entry["rejected"]}
+
+
+@retry(InterfaceError, delay=1,tries=5,logger=logger)
+def tryGetOrCreateSearchResultDbEntry(indexerId, result):
+    return SearchResult().get_or_create(indexer_id=indexerId, guid=result.indexerguid, defaults={"title": result.title, "link": result.link, "details": result.details_link, "firstFound": datetime.datetime.utcnow()})
 
 
 def search_and_handle_db(dbsearch, indexers_and_search_requests):

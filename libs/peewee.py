@@ -2017,8 +2017,11 @@ class QueryCompiler(object):
 
             for row_dict in query._iter_rows():
                 if not have_fields:
-                    fields = sorted(
-                        row_dict.keys(), key=operator.attrgetter('_sort_key'))
+                    try:
+                        fields = sorted(
+                            row_dict.keys(), key=operator.attrgetter('_sort_key'))
+                    except AttributeError:
+                        raise
                     have_fields = True
 
                 values = []
