@@ -4169,7 +4169,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   line-height: 1;
   color: #c8c8c8;
   text-align: center;
-  background-color: #999999;
+  background-color: #101214;
   border: 1px solid #cccccc;
   border-radius: 4px;
 }
@@ -5018,7 +5018,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .pagination > .active > a:focus,
 .pagination > .active > span:focus {
   z-index: 2;
-  color: #ffffff;
+  color: #969696;
   background-color: #232628;
   border-color: rgba(0, 0, 0, 0.6);
   cursor: default;
@@ -5030,7 +5030,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .pagination > .disabled > a:hover,
 .pagination > .disabled > a:focus {
   color: #7a8288;
-  background-color: #ffffff;
+  background-color: #191919;
   border-color: rgba(0, 0, 0, 0.6);
   cursor: not-allowed;
 }

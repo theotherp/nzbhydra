@@ -53,7 +53,7 @@
 @input-color-placeholder: @gray-light;
 @legend-color: @text-color;
 @legend-border-color: darken(@gray-darker, 5%);
-@input-group-addon-bg: @gray-lighter;
+@input-group-addon-bg: darken(@gray-darker, 10%);
 @input-group-addon-border-color: @input-border;
 @dropdown-bg: @gray-dark;
 @dropdown-border: rgba(0, 0, 0, 0.15);
@@ -117,11 +117,11 @@
 @pagination-hover-color: @link-hover-color;
 @pagination-hover-bg: transparent;
 @pagination-hover-border: rgba(0, 0, 0, 0.6);
-@pagination-active-color: rgb(255, 255, 255);
+@pagination-active-color: rgb(150, 150, 150);
 @pagination-active-bg: darken(@pagination-bg, 10%);
 @pagination-active-border: rgba(0, 0, 0, 0.6);
 @pagination-disabled-color: @gray-light;
-@pagination-disabled-bg: rgb(255, 255, 255);
+@pagination-disabled-bg: rgb(25, 25, 25);
 @pagination-disabled-border: rgba(0, 0, 0, 0.6);
 @pager-bg: @pagination-bg;
 @pager-border: @pagination-border;
@@ -267,3 +267,7 @@
 
 @input-group-addon-color: #fff;
 @switch-color: @gray-dark;
+
+.pagination > .disabled {
+
+}
