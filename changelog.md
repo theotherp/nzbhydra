@@ -6,11 +6,13 @@ Added: Restore settings from backup via GUI.
 
 Added: Display number of rejected results in search results view and new button to load all available results.
 
-Changed: Switched to SqliteQueueDatabase which will hopefully reduce or even prevent the notorious "database is locked" error.
+Changed: Changed and rewrote database handling. Should prevent the notorious "database is locked" errors.
  
 Fixed: NZBIndex result titles would be stripped of all spaces.
 
 Fixed: Indexer statuses box wouldn't remember state.
+
+Fixed: Some color inconsistencies.
 
 ### 0.2.147
 Changed: Rewrote search result database handling in the hope of fixing this schlamassel.
