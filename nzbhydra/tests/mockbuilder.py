@@ -108,6 +108,7 @@ def serve():
     doSleep = False
     doGenerateDuplicates = False
     generateDuplicateGroupRange = 5
+    doGenerateNewGuids = False
 
     indexer = indexers[request.args.get("apikey")]
 
@@ -119,9 +120,12 @@ def serve():
         titles = ["title%d" % x for x in range(0, generateDuplicateGroupRange)]
     indexerName = indexer["name"]
     title = indexer["name"]
+    query = str(request.args.get("q")) if "q" in request.args.keys() else None
     numberOfTotalResults = indexer["numberOfTotalResults"]
     offset = int(request.args.get("offset")) if "offset" in request.args.keys() else 0
     resultBaseName = "indexer%s" % indexerName
+    if query:
+        resultBaseName += "-" + query
     categories = ["2000"]
 
     items = []
@@ -134,7 +138,10 @@ def serve():
             searchResultTitle = resultBaseName + " title" + str(i)
             searchResultPubDate = arrow.get(random.randint(1412677738, 1475836139)).format("ddd, DD MMM YYYY HH:mm:ss Z")
             searchResultSize = random.randint(100000, 10000000)
-        searchResultguid = resultBaseName + "-guid-" + str(random.randint(1000, 10000000)) + str(i)
+        if doGenerateNewGuids:
+            searchResultguid = resultBaseName + "-guid-" + str(random.randint(1000, 10000000)) + str(i)
+        else:
+            searchResultguid = resultBaseName + "-guid-" + str(i)
         searchResultLink = resultBaseName + "-link-" + str(i)
         searchResultDescription = resultBaseName + "-description-" + str(i)
         item = buildNewznabItem(title=searchResultTitle, guid=searchResultguid, link=searchResultLink, pubdate=searchResultPubDate, description=searchResultDescription, size=searchResultSize, indexer_name=indexerName, categories=categories)

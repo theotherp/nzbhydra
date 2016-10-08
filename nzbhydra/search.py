@@ -18,7 +18,7 @@ from requests_futures.sessions import FuturesSession
 from retry import retry
 
 from nzbhydra import config, indexers, infos, categories
-from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult, Indexer, InterfaceError, IntegrityError
+from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult, Indexer, InterfaceError, IntegrityError, OperationalError
 
 logger = logging.getLogger('root')
 
@@ -309,23 +309,12 @@ def search(search_request):
                     if result.title is None or result.link is None or result.indexerguid is None:
                         logger.info("Skipping result with missing data: %s" % result)
                         continue
-                    #try:
-                    #searchResult = SearchResult().get(SearchResult.indexer_id == indexer.indexer.id, SearchResult.guid == result.indexerguid)
                     try:
-                        searchResult,_ = tryGetOrCreateSearchResultDbEntry(indexer.indexer.id, result)
+                        searchResult, _ = tryGetOrCreateSearchResultDbEntry(indexer.indexer.id, result)
                     except IntegrityError, DatabaseError:
                         searchResult = SearchResult().get(SearchResult.indexer_id == indexer.indexer.id, SearchResult.guid == result.indexerguid)
                     result.searchResultId = searchResult.id
                     search_results.append(result)
-                    # except SearchResult.DoesNotExist:
-                    #     searchResult = SearchResult().create(indexer=indexer.indexer.id, guid=result.indexerguid, title=result.title, link=result.link, details=result.details_link)
-                    #     result.searchResultId = searchResult.id
-                    #     search_results.append(result)
-                    #     # toCreateAfter.append([{"indexer": indexer.indexer, "guid": result.indexerguid, "title": result.title, "link": result.link, "details": result.details_link, "firstFound": datetime.datetime.utcnow()}, result])
-                    # except InterfaceError as e:
-                    #     print(indexer.indexer.id)
-                    #     print(result.indexerguid)
-                    #     raise
 
             cache_entry["indexer_infos"][indexer].update(
                 {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
@@ -343,19 +332,6 @@ def search(search_request):
                 logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
                 cache_entry["total"] += 100
             cache_entry["rejected"] += cache_entry["indexer_infos"][indexer]["rejected"]
-
-        # logger.debug("Writing %d new results to database" % len(toCreateAfter))
-        # with db.atomic():
-        #     try:
-        #         SearchResult.insert_many([x[0] for x in toCreateAfter]).execute()
-        #     except IntegrityError:
-        #         pass
-        # for x in toCreateAfter:
-        #     searchResultFromDb = SearchResult().get(SearchResult.indexer == x[0]["indexer"], SearchResult.guid == x[0]["guid"])
-        #     result = x[1]
-        #     result.searchResultId = searchResultFromDb.id
-        #     search_results.append(result)
-        # logger.debug("Wrote %d new results to database" % len(toCreateAfter))
 
         if search_request.internal or config.settings.searching.removeDuplicatesExternal:
             logger.debug("Searching for duplicates")
@@ -395,7 +371,7 @@ def search(search_request):
     return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearchid": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset, "rejected": cache_entry["rejected"]}
 
 
-@retry(InterfaceError, delay=1,tries=5,logger=logger)
+@retry((InterfaceError, OperationalError), delay=1, tries=5, logger=logger)
 def tryGetOrCreateSearchResultDbEntry(indexerId, result):
     return SearchResult().get_or_create(indexer_id=indexerId, guid=result.indexerguid, defaults={"title": result.title, "link": result.link, "details": result.details_link, "firstFound": datetime.datetime.utcnow()})
 
@@ -418,7 +394,7 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
                 logger.error("Tried to save indexer API access but no indexer with name %s was found in the database. Adding it now. This shouldn't've happened. If possible send a bug report with a full log." % indexer)
                 Indexer().create(name=indexer)
             except Exception as e:
-                logger.error("Error saving IndexerApiAccessEntry", e)
+                logger.exception("Error saving IndexerApiAccessEntry")
 
     return {"results": results_by_indexer, "dbsearch": dbsearch}
 
