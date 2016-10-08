@@ -90,32 +90,33 @@ def restoreFromBackupData(zipData):
         zf.extract(databaseFileName, tempFolder)
 
         #TODO Reenable when database file locked issue is resolved
-        # logger.debug("Starting to restore settings file to %s" % nzbhydra.configFile)
-        # configFileBeforeRestore = nzbhydra.configFile + ".beforerestore"
-        # logger.debug("Renaming config file %s to %s" % (nzbhydra.configFile, configFileBeforeRestore))
-        # os.rename(nzbhydra.configFile, configFileBeforeRestore)
-        # configTempFile = os.path.join(tempFolder, configFileName)
-        # logger.debug("Replacing config file %s with extracted file %s" % (nzbhydra.configFile, configTempFile))
-        # os.rename(configTempFile, nzbhydra.configFile)
-        # logger.debug("Deleting temporary backup of config file %s" % configFileBeforeRestore)
-        # os.unlink(configFileBeforeRestore)
-        #
-        # logger.debug("Starting to datbase file to %s" % nzbhydra.databaseFile)
-        # logger.debug("Shutting down database")
-        # dbStopped = database.db.stop()
-        # if dbStopped:
-        #     database.db.close()
-        #     dbStopped = database.db.is_closed()
-        #     pass
-        #     os.unlink(nzbhydra.databaseFile)
+        logger.debug("Starting to restore settings file to %s" % nzbhydra.configFile)
+        configFileBeforeRestore = nzbhydra.configFile + ".beforerestore"
+        logger.debug("Renaming config file %s to %s" % (nzbhydra.configFile, configFileBeforeRestore))
+        os.rename(nzbhydra.configFile, configFileBeforeRestore)
+        configTempFile = os.path.join(tempFolder, configFileName)
+        logger.debug("Replacing config file %s with extracted file %s" % (nzbhydra.configFile, configTempFile))
+        os.rename(configTempFile, nzbhydra.configFile)
+        logger.debug("Deleting temporary backup of config file %s" % configFileBeforeRestore)
+        os.unlink(configFileBeforeRestore)
 
-        # databaseFileBeforeRestore = nzbhydra.databaseFile + ".beforerestore"
-        # logger.debug("Renaming database file %s to %s" % (nzbhydra.databaseFile, databaseFileBeforeRestore))
-        # os.rename(nzbhydra.databaseFile, databaseFileBeforeRestore)
-        # databaseTempFile = os.path.join(tempFolder, databaseFileName)
-        # logger.debug("Replacing database file %s with extracted file %s" % (nzbhydra.databaseFile, databaseTempFile))
-        # os.rename(databaseTempFile, nzbhydra.databaseFile)
-        # logger.debug("Deleting temporary backup of database file %s" % databaseFileBeforeRestore)
+        logger.debug("Starting to datbase file to %s" % nzbhydra.databaseFile)
+        logger.debug("Shutting down database")
+        dbStopped = database.db.stop()
+        if dbStopped:
+            database.db.close()
+            dbStopped = database.db.is_closed()
+            database.db.get_conn().close()
+            pass
+            os.rename(nzbhydra.databaseFile, nzbhydra.databaseFile + "old")
+
+        databaseFileBeforeRestore = nzbhydra.databaseFile + ".beforerestore"
+        logger.debug("Renaming database file %s to %s" % (nzbhydra.databaseFile, databaseFileBeforeRestore))
+        os.rename(nzbhydra.databaseFile, databaseFileBeforeRestore)
+        databaseTempFile = os.path.join(tempFolder, databaseFileName)
+        logger.debug("Replacing database file %s with extracted file %s" % (nzbhydra.databaseFile, databaseTempFile))
+        os.rename(databaseTempFile, nzbhydra.databaseFile)
+        logger.debug("Deleting temporary backup of database file %s" % databaseFileBeforeRestore)
 
         logger.info("Restoration completed successfully.")
 

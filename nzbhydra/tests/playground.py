@@ -29,24 +29,29 @@ def startTest(query):
         allSuccessful = False
 
 
-for x in range(1, 11):
+runs = 30
+concurrent_searches = 5
+for x in range(1, runs+1):
     threads = []
     allSuccessful = True
 
-    print("Starting test run #%d/%d" % (x,10))
-    for i in range(1, 6):
+    print("Starting test run #%d/%d" % (x, runs))
+    for i in range(1, concurrent_searches+1):
+        beforerun = arrow.now()
         t = threading.Thread(target=startTest, args=(str(i),))
         sleep(1)
         threads.append(t)
         t.start()
     for t in threads:
         t.join()
+    afterrun = arrow.now()
+    took = (afterrun - beforerun).seconds * 1000 + (afterrun - beforerun).microseconds / 1000
     if allSuccessful:
         successes += 1
-        print("Run successful")
+        print("Run successful. Took %dms" % took)
     else:
         failures += 1
-        print("Run failed")
+        print("Run failed. Took %dms" % took)
 
 print("Runs without failures: %d" % successes)
 print("Runs with failures: %d" % failures)

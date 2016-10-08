@@ -1271,18 +1271,41 @@ angular
     .directive('hydrabackup', hydrabackup);
 
 function hydrabackup() {
-    controller.$inject = ["$scope", "BackupService", "Upload", "$timeout", "RequestsErrorHandler", "growl", "RestartService"];
+    controller.$inject = ["$scope", "BackupService", "Upload", "RequestsErrorHandler", "growl", "RestartService", "$http"];
     return {
         templateUrl: 'static/html/directives/backup.html',
         controller: controller
     };
 
-    function controller($scope, BackupService, Upload, $timeout, RequestsErrorHandler, growl, RestartService) {
-        BackupService.getBackupsList().then(function (backups) {
-            $scope.backups = backups;
-        });
+    function controller($scope, BackupService, Upload, RequestsErrorHandler, growl, RestartService, $http) {
+        $scope.refreshBackupList = function () {
+            BackupService.getBackupsList().then(function (backups) {
+                $scope.backups = backups;
+            });
+        };
+
+        $scope.refreshBackupList();
 
         $scope.uploadActive = false;
+
+
+        $scope.createAndDownloadBackupFile = function() {
+
+                $http({method: 'GET', url: '/internalapi/getbackup', responseType: 'arraybuffer'}).success(function (data, status, headers, config) {
+                    var a = document.createElement('a');
+                    var blob = new Blob([data], {'type': "application/octet-stream"});
+                    a.href = URL.createObjectURL(blob);
+                    a.download = "nzbhydra-backup-" + moment().format("YYYY-MM-DD-HH-mm") + ".zip";
+
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    $scope.refreshBackupList();
+                }).error(function (data, status, headers, config) {
+                    console.log("Error:" + status);
+                });
+
+        };
 
         $scope.uploadBackupFile = function (file, errFiles) {
             RequestsErrorHandler.specificallyHandled(function () {

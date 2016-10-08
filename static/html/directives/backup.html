@@ -1,7 +1,7 @@
 <div style="text-align: left; margin: auto; width: 800px">
-    <a href="internalapi/getbackup" target="_self">
-        <button class="btn btn-primary">Create and download backup</button>
-    </a>
+
+    <button class="btn btn-primary" ng-click="createAndDownloadBackupFile()">Create and download backup</button>
+
     <br>
     <br>
     <button type="file" ngf-select="uploadBackupFile($file, $invalidFiles)" class="btn btn-primary">

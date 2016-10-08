@@ -109,6 +109,7 @@ def serve():
     doGenerateDuplicates = False
     generateDuplicateGroupRange = 5
     doGenerateNewGuids = True
+    doSwitchGenerateNewGuidsDependingOnQuery = True
 
     indexer = indexers[request.args.get("apikey")]
 
@@ -126,6 +127,9 @@ def serve():
     resultBaseName = "indexer%s" % indexerName
     if query:
         resultBaseName += "-" + query
+        if doSwitchGenerateNewGuidsDependingOnQuery:
+            doGenerateNewGuids = int(query) % 2 == 0
+            print("Switched generation of new GUIDs to " + str(doGenerateNewGuids))
     categories = ["2000"]
 
     items = []
