@@ -99,7 +99,47 @@ indexers = {
         "name": "g",
         "numberOfTotalResults": 25,
         "delay": 2
-    }
+    },
+    "h": {
+        "name": "h",
+        "numberOfTotalResults": 50,
+        "delay": 1
+    },
+    "i": {
+        "name": "i",
+        "numberOfTotalResults": 75,
+        "delay": 0
+    },
+    "j": {
+        "name": "j",
+        "numberOfTotalResults": 100,
+        "delay": 1
+    },
+    "k": {
+        "name": "k",
+        "numberOfTotalResults": 125,
+        "delay": 2
+    },
+    "l": {
+        "name": "l",
+        "numberOfTotalResults": 150,
+        "delay": 1
+    },
+    "m": {
+        "name": "m",
+        "numberOfTotalResults": 175,
+        "delay": 0
+    },
+    "n": {
+        "name": "n",
+        "numberOfTotalResults": 200,
+        "delay": 1
+    },
+    "o": {
+        "name": "o",
+        "numberOfTotalResults": 225,
+        "delay": 2
+    },
 }
 
 

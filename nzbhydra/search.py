@@ -308,7 +308,7 @@ def search(search_request):
                 logger.info("Database accesses locked by other search. Will wait for our turn.")
                 waslocked = True
 
-                databaseLock.acquire()
+            databaseLock.acquire()
             if waslocked:
                 after = arrow.now()
                 took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
@@ -327,7 +327,7 @@ def search(search_request):
                     except (IntegrityError, OperationalError) as e:
                         logger.error("Error while trying to save search result to database. Skipping it. Error: %s" % e)
 
-                        databaseLock.release()
+            databaseLock.release()
 
             cache_entry["indexer_infos"][indexer].update(
                 {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
