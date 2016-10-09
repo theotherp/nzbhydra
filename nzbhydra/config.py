@@ -194,7 +194,6 @@ initialConfig = {
         "forbiddenWords": "",
         "maxAge": "",
         "nzbAccessType": "redirect",
-        "removeDuplicatesExternal": True,
         "removeLanguage": True,
         "requiredWords": "",
         "timeout": 20,

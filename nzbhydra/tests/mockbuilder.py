@@ -143,10 +143,18 @@ indexers = {
 }
 
 
+pubDates = None
+sizes = None
+titles = None
+
 @mockapp.route('/api')
 def serve():
+    global pubDates
+    global sizes
+    global titles
+
     doSleep = False
-    doGenerateDuplicates = False
+    doGenerateDuplicates = True
     generateDuplicateGroupRange = 5
     doGenerateNewGuids = True
     doSwitchGenerateNewGuidsDependingOnQuery = True
@@ -155,10 +163,10 @@ def serve():
 
     if doSleep:
         sleep(indexer["delay"])
-    if doGenerateDuplicates:
-        pubDates = [arrow.get(random.randint(1412677738, 1475836139)).format("ddd, DD MMM YYYY HH:mm:ss Z") for x in range(0, generateDuplicateGroupRange)]
-        sizes = [random.randint(100000, 10000000) for x in range(0, generateDuplicateGroupRange)]
-        titles = ["title%d" % x for x in range(0, generateDuplicateGroupRange)]
+    if doGenerateDuplicates and pubDates is None: #Only generate once
+        pubDates = [arrow.get(random.randint(1412677738, 1475836139)).format("ddd, DD MMM YYYY HH:mm:ss Z") for x in xrange(0, generateDuplicateGroupRange)]
+        sizes = [random.randint(100000, 10000000) for x in xrange(0, generateDuplicateGroupRange)]
+        titles = ["title%d" % x for x in xrange(0, generateDuplicateGroupRange)]
     indexerName = indexer["name"]
     title = indexer["name"]
     query = str(request.args.get("q")) if "q" in request.args.keys() else None

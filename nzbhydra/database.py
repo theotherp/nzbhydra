@@ -20,7 +20,7 @@ logger = logging.getLogger('root')
 
 db = SqliteQueueDatabase(None, autostart=False, readers=1, results_timeout=20.0)
 
-DATABASE_VERSION = 10
+DATABASE_VERSION = 11
 
 
 class JSONField(TextField):
@@ -78,6 +78,8 @@ class IndexerSearch(Model):
 
     successful = BooleanField(default=False)
     resultsCount = IntegerField(null=True)  # number of results, we save this because SearchResult db rows are deleted after some time
+    uniqueResults = IntegerField(null=True)  # number of results, we save this because SearchResult db rows are deleted after some time
+    processedResults = IntegerField(null=True)  # number of results, we save this because SearchResult db rows are deleted after some time
 
     class Meta(object):
         database = db
@@ -426,7 +428,13 @@ def update_db(dbfile):
             vi.version = 10
             vi.save()
 
+        if vi.version == 10:
+            logger.info("Upgrading database to version 11")
+            migrator = SqliteMigrator(db)
+            logger.info("Adding column type to store indexers' unique results and processed results counts")
+            with db.transaction():
+                migrate(
+                    migrator.add_column("indexersearch", "uniqueresults", IndexerSearch.uniqueResults),
+                    migrator.add_column("indexersearch", "processedresults", IndexerSearch.processedResults)
+                )
 
-            
-            
-    db.close()

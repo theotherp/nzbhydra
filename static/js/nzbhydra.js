@@ -1705,7 +1705,9 @@ function StatsController($scope, stats) {
     $scope.avgIndexerSearchResultsShares = stats.avgIndexerSearchResultsShares;
     $scope.avgIndexerAccessSuccesses = stats.avgIndexerAccessSuccesses;
     $scope.indexerDownloadShares = stats.indexerDownloadShares;
-    
+    $scope.perDayOfWeek = stats.timeBasedDownloadStats.perDayOfWeek;
+    $scope.perHourOfDay = stats.timeBasedDownloadStats.perHourOfDay;
+
 }
 StatsController.$inject = ["$scope", "stats"];
 
@@ -2479,7 +2481,7 @@ function RestartService(blockUI, $timeout, $window, NzbHydraControlService) {
     
 
     function restart(message) {
-        message = message + (angular.isUndefined(message) ? "" : " ");
+        message = angular.isDefined(message) ? message + " " : "";
         NzbHydraControlService.restart().then(internalCaR(message, 15),
             function () {
                 growl.info("Unable to send restart command.");
@@ -4384,15 +4386,6 @@ function ConfigFields($injector) {
                                 addonRight: {
                                     text: 'hours'
                                 }
-                            }
-                        },
-                        {
-                            key: 'removeDuplicatesExternal',
-                            type: 'horizontalSwitch',
-                            templateOptions: {
-                                type: 'switch',
-                                label: 'Remove API duplicates',
-                                help: 'Remove duplicates when searching via API'
                             }
                         },
                         {

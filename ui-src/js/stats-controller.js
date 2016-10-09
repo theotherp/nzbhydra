@@ -10,5 +10,7 @@ function StatsController($scope, stats) {
     $scope.avgIndexerSearchResultsShares = stats.avgIndexerSearchResultsShares;
     $scope.avgIndexerAccessSuccesses = stats.avgIndexerAccessSuccesses;
     $scope.indexerDownloadShares = stats.indexerDownloadShares;
-    
+    $scope.perDayOfWeek = stats.timeBasedDownloadStats.perDayOfWeek;
+    $scope.perHourOfDay = stats.timeBasedDownloadStats.perHourOfDay;
+
 }

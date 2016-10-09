@@ -7668,5 +7668,8 @@ input:focus + .input-group-addon {
 .indexer-statuses-accordion {
   color: #c8c8c8;
 }
+.tooltip-inner {
+  max-width: 350px;
+}
 
 /*# sourceMappingURL=dark.css.map */

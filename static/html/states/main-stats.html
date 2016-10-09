@@ -27,13 +27,18 @@
             <thead>
             <tr>
                 <th>Indexer</th>
-                <th>Avg. results share (%)</th>
+                <th>Avg. results share (%) <span class="glyphicon glyphicon-question-sign" tooltip-placement="auto top" uib-tooltip="How many results the indexer on average contributed to specific searches (i.e. update queries e.g. for the latest releases in a specific category are ignored)"></span>
+                </th>
+                <th>Avg. unique share (%) <span class="glyphicon glyphicon-question-sign" tooltip-placement="auto top-right"
+                                                uib-tooltip-html="'How many of the results the indexer contributed to searches were unique (only returned by this indexer). <br>Results from raw search engines are excluded because they would be misleading.'"></span></th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="avgIndexerSearchResultsShare in avgIndexerSearchResultsShares">
                 <td>{{ avgIndexerSearchResultsShare.name }}</td>
-                <td>{{ avgIndexerSearchResultsShare.avgResultsShare | number: 0 }}</td>
+                <td>{{ avgIndexerSearchResultsShare.avgResultsShare }}</td>
+                <td>{{ avgIndexerSearchResultsShare.avgUniqueResults }}</td>
+
             </tr>
             </tbody>
         </table>
@@ -43,10 +48,11 @@
 <div class="row">
     <div class="col-md-9">
         <table class="table">
-            <caption>Avg. indexer access success</caption>
+            <caption>Indexer API accesses <span class="glyphicon glyphicon-question-sign" tooltip-placement="top" uib-tooltip="An API access is considered failed when the indexer could not be reached, authentication failed or parsing of the results failed"></span></caption>
             <thead>
             <tr>
                 <th>Indexer</th>
+                <th>Avg. per day</th>
                 <th>% successful</th>
                 <th>% failed</th>
             </tr>
@@ -54,6 +60,7 @@
             <tbody>
             <tr ng-repeat="avgIndexerAccessSuccess in avgIndexerAccessSuccesses">
                 <td>{{ avgIndexerAccessSuccess.name }}</td>
+                <td>{{ avgIndexerAccessSuccess.averagePerDay }}</td>
                 <td>{{ avgIndexerAccessSuccess.successPercent | number: 0}}</td>
                 <td>{{ avgIndexerAccessSuccess.failedPercent | number: 0 }}</td>
             </tr>
@@ -77,6 +84,45 @@
                 <td>{{ indexerDownloads.name }}</td>
                 <td>{{ indexerDownloads.total | number: 0}}</td>
                 <td>{{ indexerDownloads.share | number: 0 }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-9">
+        <table class="table">
+            <caption>NZB downloads per day of week</caption>
+            <thead>
+            <tr>
+                <th>Day of the week</th>
+                <th>Downloads</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="stat in perDayOfWeek">
+                    <td>{{ stat.day }}</td>
+                    <td>{{ stat.downloads }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-2"></div>
+
+    <div class="col-md-9">
+        <table class="table">
+            <caption>NZB downloads per hour of day</caption>
+            <thead>
+            <tr>
+                <th>Hour of the day</th>
+                <th>Downloads</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="stat in perHourOfDay">
+                <td>{{ stat.hour }}</td>
+                <td>{{ stat.downloads }}</td>
             </tr>
             </tbody>
         </table>

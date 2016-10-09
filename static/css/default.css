@@ -7668,6 +7668,9 @@ input:focus + .input-group-addon {
 .indexer-statuses-accordion {
   color: #000000;
 }
+.tooltip-inner {
+  max-width: 350px;
+}
 .nav-tabs > li > a:hover {
   border-color: #eeeeee #eeeeee transparent;
   background-color: transparent;

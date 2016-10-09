@@ -27,7 +27,7 @@ function RestartService(blockUI, $timeout, $window, NzbHydraControlService) {
     
 
     function restart(message) {
-        message = message + (angular.isUndefined(message) ? "" : " ");
+        message = angular.isDefined(message) ? message + " " : "";
         NzbHydraControlService.restart().then(internalCaR(message, 15),
             function () {
                 growl.info("Unable to send restart command.");

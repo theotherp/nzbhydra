@@ -331,7 +331,7 @@ def search(search_request):
 
             cache_entry["indexer_infos"][indexer].update(
                 {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
-                 "indexer_search": queries_execution_result.indexerSearchEntry, "rejected": queries_execution_result.rejected})
+                 "indexer_search": queries_execution_result.indexerSearchEntry, "rejected": queries_execution_result.rejected, "processed_results": queries_execution_result.loaded_results})
             if queries_execution_result.has_more:
                 indexers_to_call.append(indexer)
                 logger.debug("%s still has more results so we could use it the next round" % indexer)
@@ -346,28 +346,40 @@ def search(search_request):
                 cache_entry["total"] += 100
             cache_entry["rejected"] += cache_entry["indexer_infos"][indexer]["rejected"]
 
-        if search_request.internal or config.settings.searching.removeDuplicatesExternal:
-            logger.debug("Searching for duplicates")
-            countBefore = len(search_results)
-            grouped_by_sameness = find_duplicates(search_results)
-            allresults = []
-            for group in grouped_by_sameness:
-                if search_request.internal:
-                    for i in group:
-                        # We give each group of results a unique value by which they can be identified later
-                        i.hash = hash(group[0].details_link)
-                        allresults.append(i)
+        logger.debug("Searching for duplicates")
+        numberResultsBeforeDuplicateRemoval = len(search_results)
+        grouped_by_sameness, uniqueResultsPerIndexer = find_duplicates(search_results)
+        allresults = []
+        for group in grouped_by_sameness:
+            if search_request.internal:
+                for i in group:
+                    # We give each group of results a unique value by which they can be identified later
+                    i.hash = hash(group[0].details_link)
+                    allresults.append(i)
 
-                else:
-                    # We sort by age first and then by indexerscore so the newest result with the highest indexer score is chosen
-                    group = sorted(group, key=lambda x: x.epoch, reverse=True)
-                    group = sorted(group, key=lambda x: x.indexerscore, reverse=True)
-                    allresults.append(group[0])
-            search_results = allresults
-            if not search_request.internal:
-                countAfter = len(search_results)
-                countRemoved = countBefore - countAfter
-                logger.info("Removed %d duplicates from %d results" % (countRemoved, countBefore))
+            else:
+                # We sort by age first and then by indexerscore so the newest result with the highest indexer score is chosen
+                group = sorted(group, key=lambda x: x.epoch, reverse=True)
+                group = sorted(group, key=lambda x: x.indexerscore, reverse=True)
+                allresults.append(group[0])
+        search_results = allresults
+
+        with databaseLock:
+            for infos in cache_entry["indexer_infos"].values():
+                if infos["indexer"] in uniqueResultsPerIndexer.keys(): #If the search failed it isn't contained in the duplicates list
+                    uniqueResultsCount = uniqueResultsPerIndexer[infos["indexer"]]
+                    processedResults = infos["processed_results"]
+                    logger.debug("Indexer %s had a unique results share of %d%% (%d of %d total results were only provided by this indexer)" % (infos["indexer"], 100 / (numberResultsBeforeDuplicateRemoval / uniqueResultsCount), uniqueResultsCount, numberResultsBeforeDuplicateRemoval))
+                    infos["indexer_search"].uniqueResults = uniqueResultsCount
+                    infos["indexer_search"].processedResults = processedResults
+                    infos["indexer_search"].save()
+
+
+        if not search_request.internal:
+            countAfter = len(search_results)
+            countRemoved = numberResultsBeforeDuplicateRemoval - countAfter
+            logger.info("Removed %d duplicates from %d results" % (countRemoved, numberResultsBeforeDuplicateRemoval))
+
         search_results = sorted(search_results, key=lambda x: x.epoch, reverse=True)
 
         cache_entry["results"].extend(search_results)
@@ -475,8 +487,12 @@ def find_duplicates(results):
             if not foundGroup:
                 grouped.append([i])
         grouped_by_sameness.extend(grouped)
-
-    return grouped_by_sameness
+    uniqueResultsPerIndexer = {}
+    for entry in [x[0] for x in grouped_by_sameness if len(x) == 1]:
+        if entry.indexer not in uniqueResultsPerIndexer.keys():
+            uniqueResultsPerIndexer[entry.indexer] = 0
+        uniqueResultsPerIndexer[entry.indexer] += 1
+    return grouped_by_sameness, uniqueResultsPerIndexer
 
 
 def testForSameness(result1, result2):
