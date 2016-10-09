@@ -212,20 +212,20 @@ def getTimeBasedSearchStats():
 
 
 def calculcateTimeBasedStats(downloadTimes):
-    perDayOfWeek = {}
+    perDayOfWeek = {x: 0 for x in range(1, 8)}  # Even days withot activity should be contained so they're included in the graph
     for x in range(1, 8):
         dayKey = lambda x: x.isoweekday()
         sortedByDay = sorted(downloadTimes, key=dayKey)
         for key, group in groupby(sortedByDay, dayKey):
             perDayOfWeek[key] = len(list(group))
-    perDayOfWeek = [{"day": calendar.day_name[key - 1], "downloads": value} for key, value in perDayOfWeek.iteritems()]
-    perHourOfDay = {}
+    perDayOfWeek = [{"day": calendar.day_name[key - 1], "count": value} for key, value in perDayOfWeek.iteritems()]
+    perHourOfDay = {x: 0 for x in range(0, 24)}  # See above
     for x in range(1, 8):
         hourKey = lambda x: x.hour
         sortedByHour = sorted(downloadTimes, key=hourKey)
         for key, group in groupby(sortedByHour, hourKey):
             perHourOfDay[key] = len(list(group))
-    perHourOfDay = [{"hour": key, "downloads": value} for key, value in perHourOfDay.iteritems()]
+    perHourOfDay = [{"hour": key, "count": value} for key, value in perHourOfDay.iteritems()]
     return perDayOfWeek, perHourOfDay
 
 
@@ -257,19 +257,14 @@ def getIndexerBasedDownloadStats():
 
 def get_nzb_downloads(page=0, limit=100, type=None):
     query = IndexerNzbDownload() \
-        .select(Indexer.name.alias("indexerName"), IndexerNzbDownload.title, IndexerNzbDownload.time, SearchResult.id.alias('searchResultId'), SearchResult.details.alias('detailsLink'), Search.internal, IndexerApiAccess.response_successful, IndexerApiAccess.username) \
-        .join(SearchResult, JOIN.LEFT_OUTER) \
-        .switch(IndexerNzbDownload) \
-        .join(IndexerApiAccess, JOIN.LEFT_OUTER) \
-        .join(Indexer, JOIN.LEFT_OUTER) \
-        .switch(IndexerApiAccess) \
-        .join(IndexerSearch, JOIN.LEFT_OUTER) \
-        .join(Search, JOIN.LEFT_OUTER)
+        .select(Indexer.name.alias("indexerName"), IndexerNzbDownload.title, IndexerNzbDownload.time, IndexerNzbDownload.internal, SearchResult.id.alias('searchResultId'), SearchResult.details.alias('detailsLink'), IndexerApiAccess.response_successful, IndexerApiAccess.username) \
+        .switch(IndexerNzbDownload).join(IndexerApiAccess, JOIN.LEFT_OUTER).join(Indexer, JOIN.LEFT_OUTER) \
+        .switch(IndexerNzbDownload).join(SearchResult, JOIN.LEFT_OUTER)
 
     if type == "Internal":
-        query = query.where(Search.internal)
+        query = query.where(IndexerNzbDownload.internal)
     elif type == "API":
-        query = query.where(~Search.internal)
+        query = query.where(~IndexerNzbDownload.internal)
 
     total_downloads = query.count()
     nzb_downloads = list(query.order_by(IndexerNzbDownload.time.desc()).paginate(page, limit).dicts())

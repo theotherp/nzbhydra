@@ -601,7 +601,8 @@ searchresultid_args = {
 
 internalapi__getnzb_args = {
     "searchresultid": fields.String(),
-    "downloader": fields.String(missing=None)  # Name of downloader or empty if regular link
+    "downloader": fields.String(missing=None),  # Name of downloader or empty if regular link
+    "internal": fields.Boolean(missing=False)
 }
 
 
@@ -612,10 +613,10 @@ def getnzb(args):
     logger.debug("Get NZB request with args %s" % args)
     searchResult = SearchResult.get(SearchResult.id == args["searchresultid"])
     if config.settings.main.logging.logIpAddresses:
-        logger.info("API request from %s to download %s from %s" % (getIp(), searchResult.title, searchResult.indexer.name))
+        logger.info("%s request from %s to download %s from %s" % ("Internal" if args["internal"] else "API", getIp(), searchResult.title, searchResult.indexer.name))
     else:
-        logger.info("API request to download %s from %s" % (searchResult.title, searchResult.indexer.name))
-    return extract_nzb_infos_and_return_response(args["searchresultid"], args["downloader"])
+        logger.info("%s request to download %s from %s" % ("Internal" if args["internal"] else "API", searchResult.title, searchResult.indexer.name))
+    return extract_nzb_infos_and_return_response(args["searchresultid"], args["downloader"], args["internal"])
 
 
 def process_and_jsonify_for_internalapi(results):
@@ -811,9 +812,9 @@ def internalapi_getnzb(args):
         return extract_nzb_infos_and_return_response(args["searchresultid"])
 
 
-def extract_nzb_infos_and_return_response(searchResultId, downloader=None):
+def extract_nzb_infos_and_return_response(searchResultId, downloader=None, internal=False):
     if (downloader is None and config.settings.searching.nzbAccessType == NzbAccessTypeSelection.redirect) or (downloader is not None and getDownloaderInstanceByName(downloader).setting.nzbaccesstype == NzbAccessTypeSelection.redirect):
-        link, _, _ = get_indexer_nzb_link(searchResultId, "redirect", True)
+        link, _, _ = get_indexer_nzb_link(searchResultId, mode="redirect", log_api_access=True, internal=internal)
         if link is not None:
             if config.settings.main.logging.logIpAddresses:
                 if getIp() is None:

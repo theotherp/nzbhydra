@@ -10,7 +10,8 @@ NZBHydra is a meta search for NZB indexers and the "spiritual successor" to [NZB
 * Compatible with Sonarr, CP, NZB 360, SickBeard, Mylar and Lazy Librarian (and others)
 * Either proxy the NZBs from the indexers (keeping all X-NZB headers), redirect or use direct links in search results
 * Included function to add results (single or a bunch) to multiple instances of SABnzbd or NZBGet(v13+) and show NFOs where available. Option to decide if links are added as links or the NZBs are uploaded. Select category in GUI or define a default.
-* Statistics on indexers (average response time, share of results, access errors), NZB download history and search history (both via internal GUI and API). Indexers with problems are paused for an increasing time span (like in sonarr)
+* Statistics on indexers (average response time, share of results, access errors), searches and downloads per time of day and day of week, NZB download history and search history (both via internal GUI and API): [Screenshot](http://i.imgur.com/Xc6URSc.png) 
+* Indexers with problems are paused for an increasing time span (like in sonarr)
 * Multi user capabilities so that you can share with your friends but keep the config safe
 * Login by HTTP basic auth or form
 * Define required and forbidden words

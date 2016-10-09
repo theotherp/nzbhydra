@@ -186,7 +186,6 @@ function ConfigFields($injector) {
                 }
             }
         );
-        console.log(fields);
         return fields;
     }
 
@@ -664,6 +663,15 @@ function ConfigFields($injector) {
                                 addonRight: {
                                     text: 'hours'
                                 }
+                            }
+                        },
+                        {
+                            key: 'removeDuplicatesExternal',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Remove API duplicates',
+                                help: 'Remove duplicates when searching via API'
                             }
                         },
                         {

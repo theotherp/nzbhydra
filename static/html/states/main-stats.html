@@ -1,53 +1,76 @@
+<pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+    <path d="M-1,1 l2,-2
+           M0,4 l4,-4
+           M3,5 l2,-2"></path>
+</pattern>
+
 <div class="row">
 
-    <div class="col-md-9">
-        <table class="table">
-            <caption>Avg. response times</caption>
-            <thead>
-            <tr>
-                <th>Indexer</th>
-                <th>Avg. response time</th>
-                <th>Delta</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="avgResponseTime in avgResponseTimes">
-                <td>{{ avgResponseTime.name }}</td>
-                <td>{{ avgResponseTime.avgResponseTime }}</td>
-                <td>{{ avgResponseTime.delta }}</td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="col-md-10">
+        <div style="margin-top:10px" class="caption">Avg. response times</div>
+        <tab-or-chart display="chart">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Indexer</th>
+                    <th>Avg. response time</th>
+                    <th>Delta</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="avgResponseTime in avgResponseTimes">
+                    <td>{{ avgResponseTime.name }}</td>
+                    <td>{{ avgResponseTime.avgResponseTime }}</td>
+                    <td>{{ avgResponseTime.delta }}</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <chart>
+                <nvd3 options="avgResponseTimesChart.options" data="avgResponseTimesChart.data"></nvd3>
+            </chart>
+        </tab-or-chart>
+
     </div>
-    <div class="col-md-2"></div>
+    <div class="col-md-1"></div>
 
-    <div class="col-md-9">
-        <table class="table">
-            <caption>Avg. results shares</caption>
-            <thead>
-            <tr>
-                <th>Indexer</th>
-                <th>Avg. results share (%) <span class="glyphicon glyphicon-question-sign" tooltip-placement="auto top" uib-tooltip="How many results the indexer on average contributed to specific searches (i.e. update queries e.g. for the latest releases in a specific category are ignored)"></span>
-                </th>
-                <th>Avg. unique share (%) <span class="glyphicon glyphicon-question-sign" tooltip-placement="auto top-right"
-                                                uib-tooltip-html="'How many of the results the indexer contributed to searches were unique (only returned by this indexer). <br>Results from raw search engines are excluded because they would be misleading.'"></span></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="avgIndexerSearchResultsShare in avgIndexerSearchResultsShares">
-                <td>{{ avgIndexerSearchResultsShare.name }}</td>
-                <td>{{ avgIndexerSearchResultsShare.avgResultsShare }}</td>
-                <td>{{ avgIndexerSearchResultsShare.avgUniqueResults }}</td>
+    <div class="col-md-10">
+        <div style="margin-top:9px" class="caption">Average results <span class="glyphicon glyphicon-question-sign" tooltip-placement="auto top"
+                                                                          uib-tooltip="How many results the indexer on average contributed to specific searches (i.e. update queries e.g. for the latest releases in a specific category are ignored)"></span>
+            and average unique results <span class="glyphicon glyphicon-question-sign" tooltip-placement="auto top-right"
+                                             uib-tooltip-html="'How many of the results the indexer contributed to searches were unique (only returned by this indexer). <br>Results from raw search engines are excluded because they would be misleading.'"></span>
+        </div>
+        <tab-or-chart display="chart">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Indexer</th>
+                    <th>Avg. results (%)
+                    </th>
+                    <th>Avg. unique results (%)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="avgIndexerSearchResultsShare in avgIndexerSearchResultsShares">
+                    <td>{{ avgIndexerSearchResultsShare.name }}</td>
+                    <td>{{ avgIndexerSearchResultsShare.avgResultsShare }}</td>
+                    <td>{{ avgIndexerSearchResultsShare.avgUniqueResults }}</td>
 
-            </tr>
-            </tbody>
-        </table>
+                </tr>
+                </tbody>
+            </table>
+
+            <chart>
+                <nvd3 options="resultsSharesChart.options" data="resultsSharesChart.data"></nvd3>
+            </chart>
+        </tab-or-chart>
+
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-9">
-        <table class="table">
+<div class="row" style="margin-bottom: 50px">
+    <div class="col-md-10">
+        <table class="table" style="margin-top: 9px">
             <caption>Indexer API accesses <span class="glyphicon glyphicon-question-sign" tooltip-placement="top" uib-tooltip="An API access is considered failed when the indexer could not be reached, authentication failed or parsing of the results failed"></span></caption>
             <thead>
             <tr>
@@ -67,64 +90,145 @@
             </tbody>
         </table>
     </div>
-    <div class="col-md-2"></div>
+    <div class="col-md-1"></div>
 
-    <div class="col-md-9">
-        <table class="table">
-            <caption>NZB downloads per indexer</caption>
-            <thead>
-            <tr>
-                <th>Indexer</th>
-                <th>Total</th>
-                <th>% of all</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="indexerDownloads in indexerDownloadShares">
-                <td>{{ indexerDownloads.name }}</td>
-                <td>{{ indexerDownloads.total | number: 0}}</td>
-                <td>{{ indexerDownloads.share | number: 0 }}</td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="col-md-10">
+        <div style="margin-top:10px" class="caption">NZB downloads per indexer</caption>
+            <tab-or-chart display="chart">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Indexer</th>
+                        <th>Total</th>
+                        <th>% of all</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="indexerDownloads in indexerDownloadShares">
+                        <td>{{ indexerDownloads.name }}</td>
+                        <td>{{ indexerDownloads.total | number: 0}}</td>
+                        <td>{{ indexerDownloads.share | number: 0 }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <chart>
+                    <nvd3 options="indexerDownloadSharesChart.options" data="indexerDownloadSharesChart.data"></nvd3>
+                </chart>
+            </tab-or-chart>
+
+
+        </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-9">
-        <table class="table">
-            <caption>NZB downloads per day of week</caption>
-            <thead>
-            <tr>
-                <th>Day of the week</th>
-                <th>Downloads</th>
-            </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="stat in perDayOfWeek">
-                    <td>{{ stat.day }}</td>
-                    <td>{{ stat.downloads }}</td>
+    <div class="col-md-10">
+        <div style="margin-top:10px" class="caption">Searches per day of week</div>
+        <tab-or-chart display="chart">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Day of the week</th>
+                    <th>Searches</th>
                 </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="col-md-2"></div>
+                </thead>
+                <tbody>
+                <tr ng-repeat="stat in searchesPerDayOfWeek">
+                    <td>{{ stat.day }}</td>
+                    <td>{{ stat.count }}</td>
+                </tr>
+                </tbody>
+            </table>
 
-    <div class="col-md-9">
-        <table class="table">
-            <caption>NZB downloads per hour of day</caption>
-            <thead>
-            <tr>
-                <th>Hour of the day</th>
-                <th>Downloads</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="stat in perHourOfDay">
-                <td>{{ stat.hour }}</td>
-                <td>{{ stat.downloads }}</td>
-            </tr>
-            </tbody>
-        </table>
+            <chart>
+                <nvd3 options="searchesPerDayOfWeekChart.options" data="searchesPerDayOfWeekChart.data"></nvd3>
+            </chart>
+        </tab-or-chart>
+    </div>
+    <div class="col-md-1"></div>
+
+    <div class="col-md-10">
+        <div style="margin-top:10px" class="caption">Searches per hour of day</div>
+        <tab-or-chart display="chart">
+            <table>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Hour of the day</th>
+                        <th>Searches</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="stat in searchesPerHourOfDay">
+                        <td>{{ stat.hour }}</td>
+                        <td>{{ stat.count }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </table>
+
+            <chart>
+                <nvd3 options="searchesPerHourOfDayChart.options" data="searchesPerHourOfDayChart.data"></nvd3>
+            </chart>
+        </tab-or-chart>
+
     </div>
 </div>
+
+
+<div class="row">
+    <div class="col-md-10">
+        <div style="margin-top:10px" class="caption">NZB downloads per day of week</div>
+        <tab-or-chart display="chart">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Day of the week</th>
+                    <th>Downloads</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="stat in downloadsPerDayOfWeek">
+                    <td>{{ stat.day }}</td>
+                    <td>{{ stat.count }}</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <chart>
+                <nvd3 options="downloadsPerDayOfWeekChart.options" data="downloadsPerDayOfWeekChart.data"></nvd3>
+            </chart>
+        </tab-or-chart>
+    </div>
+    <div class="col-md-1"></div>
+
+    <div class="col-md-10">
+        <div style="margin-top:10px" class="caption">NZB downloads per hour of day</div>
+        <tab-or-chart display="chart">
+            <table>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Hour of the day</th>
+                        <th>Downloads</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="stat in downloadsPerHourOfDay">
+                        <td>{{ stat.hour }}</td>
+                        <td>{{ stat.count }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </table>
+
+            <chart>
+                <nvd3 options="downloadsPerHourOfDayChart.options" data="downloadsPerHourOfDayChart.data"></nvd3>
+            </chart>
+        </tab-or-chart>
+
+    </div>
+</div>
+
+

@@ -9,11 +9,14 @@ Added: Display number of rejected results in search results view and new button 
 Added: Enhanced stat calculation:
     * Show the average daily number of API accesses for each indexers
     * Show the average number of unique results each indexer contributed in a search (will only work for searches made from this point on). Also added some text explaining that ;-)
-    * Show avergae number of downloads per day of week and hour of day. Might add some fancy graphs at some point, who knows.
+    * Show average number of downloads per day of week and hour of day
+    * Added some fancy charts
 
 Changed: Removed option that decided if duplicates should be removed for API calls, this is now always enabled.
 
 Changed: Changed and rewrote database handling. Should (mostly) prevent the notorious "database is locked" errors.
+
+Fixed: Downloads would always be displayed as "API" in the history. 
  
 Fixed: NZBIndex result titles would be stripped of all spaces.
 

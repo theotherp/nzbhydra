@@ -136,6 +136,7 @@ class IndexerNzbDownload(Model):
     time = DateTimeField()
     title = CharField() #Redundant when the search result still exists but after it's deleted we still wanna see what the title is
     mode = CharField()  # "serve" or "redirect"
+    internal = BooleanField(null=True)
     
     class Meta(object):
         database = db
@@ -431,10 +432,11 @@ def update_db(dbfile):
         if vi.version == 10:
             logger.info("Upgrading database to version 11")
             migrator = SqliteMigrator(db)
-            logger.info("Adding column type to store indexers' unique results and processed results counts")
+            logger.info("Adding column type to store indexers' unique results and processed results counts and NZB download source")
             with db.transaction():
                 migrate(
                     migrator.add_column("indexersearch", "uniqueresults", IndexerSearch.uniqueResults),
-                    migrator.add_column("indexersearch", "processedresults", IndexerSearch.processedResults)
+                    migrator.add_column("indexersearch", "processedresults", IndexerSearch.processedResults),
+                    migrator.add_column("indexernzbdownload", "internal", IndexerNzbDownload.internal)
                 )
 

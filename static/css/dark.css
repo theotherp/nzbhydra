@@ -7671,5 +7671,167 @@ input:focus + .input-group-addon {
 .tooltip-inner {
   max-width: 350px;
 }
+.caption {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 5px;
+  color: #7a8288;
+  text-align: left;
+}
+.nv-axis text {
+  fill: #c8c8c8;
+}
+.nv-bar text {
+  fill: #c8c8c8 !important;
+}
+.nvd3 .nv-discretebar .nv-groups rect {
+  fill: #62686d !important;
+}
+.nvd3 .nv-multibarHorizontal .nv-groups rect {
+  fill: #62686d !important;
+}
+.nv-groups .nv-series-0 rect {
+  fill: #62686d !important;
+}
+g.nv-multiBarWithLegend > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(1) > circle {
+  fill: #62686d !important;
+  stroke: #62686d !important;
+}
+.nv-groups .nv-series-1 rect {
+  fill: #959ba0 !important;
+}
+g.nv-multiBarWithLegend > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(2) > circle {
+  fill: #959ba0 !important;
+  stroke: #959ba0 !important;
+}
+.nv-legend-text {
+  fill: #c8c8c8;
+}
+.nvtooltip {
+  background-color: #2e3338;
+  color: #c8c8c8;
+}
+.tick line {
+  opacity: 0 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(1) > circle {
+  fill: #7f7400 !important;
+  stroke: #7f7400 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(2) > circle {
+  fill: #7f4d06 !important;
+  stroke: #7f4d06 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(3) > circle {
+  fill: #7f2f25 !important;
+  stroke: #7f2f25 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(4) > circle {
+  fill: #185255 !important;
+  stroke: #185255 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(5) > circle {
+  fill: #7f245e !important;
+  stroke: #7f245e !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(6) > circle {
+  fill: #71447f !important;
+  stroke: #71447f !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(7) > circle {
+  fill: #381960 !important;
+  stroke: #381960 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(8) > circle {
+  fill: #167d49 !important;
+  stroke: #167d49 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(9) > circle {
+  fill: #7f2f25 !important;
+  stroke: #7f2f25 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(10) > circle {
+  fill: #4f8d68 !important;
+  stroke: #4f8d68 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(11) > circle {
+  fill: #68829e !important;
+  stroke: #68829e !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(12) > circle {
+  fill: #007744 !important;
+  stroke: #007744 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(13) > circle {
+  fill: #919509 !important;
+  stroke: #919509 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(14) > circle {
+  fill: #2c9586 !important;
+  stroke: #2c9586 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(15) > circle {
+  fill: #105a13 !important;
+  stroke: #105a13 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(16) > circle {
+  fill: #503454 !important;
+  stroke: #503454 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(17) > circle {
+  fill: #061859 !important;
+  stroke: #061859 !important;
+}
+.nv-pie > .nv-slice:nth-child(1) {
+  fill: #7f7400;
+}
+.nv-pie > .nv-slice:nth-child(2) {
+  fill: #7f4d06;
+}
+.nv-pie > .nv-slice:nth-child(3) {
+  fill: #7f2f25;
+}
+.nv-pie > .nv-slice:nth-child(4) {
+  fill: #185255;
+}
+.nv-pie > .nv-slice:nth-child(5) {
+  fill: #7f245e;
+}
+.nv-pie > .nv-slice:nth-child(6) {
+  fill: #71447f;
+}
+.nv-pie > .nv-slice:nth-child(7) {
+  fill: #381960;
+}
+.nv-pie > .nv-slice:nth-child(8) {
+  fill: #167d49;
+}
+.nv-pie > .nv-slice:nth-child(9) {
+  fill: #7f2f25;
+}
+.nv-pie > .nv-slice:nth-child(10) {
+  fill: #4f8d68;
+}
+.nv-pie > .nv-slice:nth-child(11) {
+  fill: #68829e;
+}
+.nv-pie > .nv-slice:nth-child(12) {
+  fill: #007744;
+}
+.nv-pie > .nv-slice:nth-child(13) {
+  fill: #919509;
+}
+.nv-pie > .nv-slice:nth-child(14) {
+  fill: #2c9586;
+}
+.nv-pie > .nv-slice:nth-child(15) {
+  fill: #105a13;
+}
+.nv-pie > .nv-slice:nth-child(16) {
+  fill: #503454;
+}
+.nv-pie > .nv-slice:nth-child(17) {
+  fill: #061859;
+}
 
 /*# sourceMappingURL=dark.css.map */

@@ -7671,6 +7671,49 @@ input:focus + .input-group-addon {
 .tooltip-inner {
   max-width: 350px;
 }
+.caption {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 5px;
+  color: #00640e;
+  text-align: left;
+}
+.nv-axis text {
+  fill: #000000;
+}
+.nv-bar text {
+  fill: #000000 !important;
+}
+.nvd3 .nv-discretebar .nv-groups rect {
+  fill: #009715 !important;
+}
+.nvd3 .nv-multibarHorizontal .nv-groups rect {
+  fill: #009715 !important;
+}
+.nv-groups .nv-series-0 rect {
+  fill: #009715 !important;
+}
+g.nv-multiBarWithLegend > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(1) > circle {
+  fill: #009715 !important;
+  stroke: #009715 !important;
+}
+.nv-groups .nv-series-1 rect {
+  fill: #00550c !important;
+}
+g.nv-multiBarWithLegend > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(2) > circle {
+  fill: #00550c !important;
+  stroke: #00550c !important;
+}
+.nv-legend-text {
+  fill: #000000;
+}
+.nvtooltip {
+  background-color: #fff;
+  color: #000000;
+}
+.tick line {
+  opacity: 0 !important;
+}
 .nav-tabs > li > a:hover {
   border-color: #eeeeee #eeeeee transparent;
   background-color: transparent;

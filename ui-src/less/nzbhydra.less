@@ -17,6 +17,11 @@
 @badge-font-weight: normal;
 @breadcrumb-separator: ">";
 
+//Will be redefined by theme later
+@chart-bar-color: pink;
+@chart-bar-color-alt: pink;
+@chart-text-color: pink;
+
 html,
 body {
   height: 100%;
@@ -730,4 +735,64 @@ input:focus + .input-group-addon {
 
 .tooltip-inner {
   max-width: 350px;
+}
+
+.caption {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 5px;
+  color: @brand-primary;
+  text-align: left;
+}
+
+//Charts
+
+.nv-axis text {
+  fill: @chart-text-color;
+}
+
+.nv-bar text {
+  fill: @chart-text-color !important;
+}
+
+.nvd3 .nv-discretebar .nv-groups rect {
+  fill: @chart-bar-color !important;
+}
+
+.nvd3 .nv-multibarHorizontal .nv-groups rect {
+  fill: @chart-bar-color !important;
+}
+
+.nv-groups .nv-series-0 rect {
+  fill: @chart-bar-color !important;
+}
+//Legend
+g.nv-multiBarWithLegend > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(1) > circle {
+//.nv-series:nth-child(1) > circle {
+  fill: @chart-bar-color !important;
+  stroke: @chart-bar-color !important;
+}
+
+.nv-groups .nv-series-1 rect {
+  fill: @chart-bar-color-alt !important;
+}
+//Legend
+g.nv-multiBarWithLegend > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(2) > circle {
+  fill: @chart-bar-color-alt !important;
+  stroke: @chart-bar-color-alt !important;
+}
+
+.nv-legend-text {
+  fill: @chart-text-color;
+}
+
+
+
+.nvtooltip {
+  background-color: @modal-content-bg;
+  color: @text-color;
+}
+
+.tick line{
+  opacity: 0 !important;
 }

@@ -219,7 +219,7 @@ def get_entry_by_id(indexer_name, guid, title):
         return None
 
 
-def get_indexer_nzb_link(searchResultId, mode, log_api_access):
+def get_indexer_nzb_link(searchResultId, mode, log_api_access, internal=False):
     """
     Build a link that leads to the actual NZB of the indexer using the given informations. We log this as indexer API access and NZB download because this is only called
     when the NZB will be actually downloaded later (by us or a downloader) 
@@ -237,7 +237,7 @@ def get_indexer_nzb_link(searchResultId, mode, log_api_access):
     except RuntimeError:
         pass
     papiaccess.save()
-    pnzbdl = IndexerNzbDownload(searchResult=searchResult, apiAccess=papiaccess, mode=mode, title=searchResult.title)
+    pnzbdl = IndexerNzbDownload(searchResult=searchResult, apiAccess=papiaccess, mode=mode, title=searchResult.title, internal=internal)
     pnzbdl.save()
 
     return link, papiaccess, pnzbdl
