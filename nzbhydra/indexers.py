@@ -32,6 +32,7 @@ def init_indexer_table_entry(indexer_name):
 def read_indexers_from_config():
     global enabled_indexers, configured_indexers
     enabled_indexers = []
+    configured_indexers = []
 
     for indexer in config.settings.indexers:
         try:
