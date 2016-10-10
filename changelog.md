@@ -26,6 +26,10 @@ Fixed: Enabling and disabling indexers would not be properly broadcasted to all 
 
 Fixed: Some color inconsistencies.
 
+Fixed: Better handle NZBClub returning an empty page.
+
+Fixed: Better handle parsing errors in general.
+
 ### 0.2.147
 Changed: Rewrote search result database handling in the hope of fixing this schlamassel.
 

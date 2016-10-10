@@ -386,6 +386,8 @@ class SearchModule(object):
                 executed_queries.add(query)
 
                 if request is not None:
+                    if request.text == "":
+                        raise IndexerResultParsingException("Indexer returned an empty page", self)
                     self.check_auth(request.text)
                     self.debug("Successfully loaded URL %s" % request.url)
                     try:
@@ -400,23 +402,22 @@ class SearchModule(object):
 
                         papiaccess.response_successful = True
                         self.handle_indexer_success(False)
-                    except IndexerResultParsingException as e:
-                        self.error("Error while processing search results from indexer %s" % e)
                     except Exception:
                         self.exception("Error while processing search results from indexer %s" % self)
                         raise IndexerResultParsingException("Error while parsing the results from indexer", self)
             except IndexerAuthException as e:
-                self.error("Unable to authorize with %s: %s" % (e.search_module, e.message))
                 papiaccess.error = "Authorization error :%s" % e.message
+                self.error(papiaccess.error)
                 self.handle_indexer_failure(reason="Authentication failed", disable_permanently=True)
                 papiaccess.response_successful = False
             except IndexerAccessException as e:
-                self.error("Unable to access %s: %s" % (e.search_module, e.message))
                 papiaccess.error = "Access error: %s" % e.message
+                self.error(papiaccess.error)
                 self.handle_indexer_failure(reason="Access failed")
                 papiaccess.response_successful = False
             except IndexerResultParsingException as e:
-                papiaccess.exception = "Access error: %s" % e.message
+                papiaccess.error = "Access error: %s" % e.message
+                self.error(papiaccess.error)
                 self.handle_indexer_failure(reason="Parsing results failed")
                 papiaccess.response_successful = False
             except Exception as e:
