@@ -304,19 +304,17 @@ def search(search_request):
         search_results = []
         indexers_to_call = []
 
+        waslocked = False
+        before = arrow.now()
+        if databaseLock.locked():
+            logger.debug("Database accesses locked by other search. Will wait for our turn.")
+            waslocked = True
+        databaseLock.acquire()
+        if waslocked:
+            after = arrow.now()
+            took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
+            logger.debug("Waited %dms for database lock" % took)
         for indexer, queries_execution_result in result["results"].items():
-            waslocked = False
-            before = arrow.now()
-            if databaseLock.locked():
-                logger.info("Database accesses locked by other search. Will wait for our turn.")
-                waslocked = True
-
-            databaseLock.acquire()
-            if waslocked:
-                after = arrow.now()
-                took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
-                logger.debug("Waited %dms for database lock" % took)
-
             with db.atomic():
                 logger.debug("%s returned %d results. Trying to retrieve them from database" % (indexer, len(queries_execution_result.results)))
                 for result in queries_execution_result.results:
@@ -330,7 +328,7 @@ def search(search_request):
                     except (IntegrityError, OperationalError) as e:
                         logger.error("Error while trying to save search result to database. Skipping it. Error: %s" % e)
 
-            databaseLock.release()
+
 
             cache_entry["indexer_infos"][indexer].update(
                 {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
@@ -348,6 +346,8 @@ def search(search_request):
                 logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
                 cache_entry["total"] += 100
             cache_entry["rejected"] += cache_entry["indexer_infos"][indexer]["rejected"]
+
+        databaseLock.release()
 
         logger.debug("Searching for duplicates")
         numberResultsBeforeDuplicateRemoval = len(search_results)

@@ -26,7 +26,7 @@ regexUser = re.compile(r"(user|username)=[\w]+", re.I)
 regexPassword = re.compile(r"(password)=[\w]+", re.I)
 
 # module variables
-LOGGER_DEFAULT_FORMAT = u'%(asctime)s - %(levelname)s - %(module)s - %(message)s'
+LOGGER_DEFAULT_FORMAT = u'%(asctime)s - %(levelname)s - %(module)s - %(threadName)s - %(message)s'
 LOGGER_DEFAULT_LEVEL = 'INFO'
 NOTICE_LOG_LEVEL = 25
 
