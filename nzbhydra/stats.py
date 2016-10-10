@@ -231,29 +231,50 @@ def calculcateTimeBasedStats(downloadTimes):
 
 
 def getIndexerBasedDownloadStats():
-    results = []
-    allDownloadsCount = IndexerNzbDownload.select().count()
+    enabledIndexerIds = []
     for p in Indexer.select().order_by(Indexer.name):
         try:
             indexer = getIndexerByName(p.name)
             if not indexer.settings.enabled:
-                logger.debug("Skipping download stats for %s" % p.name)
+                logger.debug("Skipping download stats for %s because it's disabled" % p.name)
                 continue
+            enabledIndexerIds.append(str(p.id))
         except IndexerNotFoundException:
             logger.error("Unable to find indexer %s in configuration" % p.name)
             continue
-        dlCount = IndexerNzbDownload(). \
-            select(Indexer.name, IndexerApiAccess.response_successful). \
-            join(IndexerApiAccess, JOIN.LEFT_OUTER). \
-            join(Indexer, JOIN.LEFT_OUTER). \
-            where(Indexer.id == p). \
-            count()
-        results.append({"name": p.name,
-                        "total": dlCount,
-                        "share": 100 / (allDownloadsCount / dlCount) if allDownloadsCount > 0 and dlCount > 0 else 0})
-    results = sorted(results, key=lambda x: x["name"])
-    results = sorted(results, key=lambda x: x["share"], reverse=True)
-    return results
+    enabledIndexerIds = ", ".join(enabledIndexerIds)
+    query = """
+    SELECT
+      indexer.name,
+      count(*) AS total,
+      CASE WHEN count(*) > 0
+        THEN
+          100 / (1.0 * countall.countall / count(*))
+      ELSE 0
+      END
+               AS share
+    FROM
+      indexernzbdownload dl,
+      (SELECT count(*) AS countall
+       FROM
+         indexernzbdownload dl
+         LEFT OUTER JOIN indexerapiaccess api
+           ON dl.apiAccess_id = api.id
+       WHERE api.indexer_id IN (%s))
+      countall
+      LEFT OUTER JOIN indexerapiaccess api
+        ON dl.apiAccess_id = api.id
+      LEFT OUTER JOIN indexer indexer
+        ON api.indexer_id = indexer.id
+    WHERE api.indexer_id IN (%s)
+    GROUP BY indexer.id
+    """ % (enabledIndexerIds, enabledIndexerIds)
+    stats = database.db.execute_sql(query).fetchall()
+    stats = [{"name": x[0], "total": x[1], "share": x[2]} for x in stats]
+
+    stats = sorted(stats, key=lambda x: x["name"])
+    stats = sorted(stats, key=lambda x: x["share"], reverse=True)
+    return stats
 
 
 def get_nzb_downloads(page=0, limit=100, type=None):
