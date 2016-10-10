@@ -2,7 +2,7 @@
 
 ----------
 ### 0.2.148
-Added: Restore settings from backup via GUI.
+Added: Restore settings from backup via GUI. Please note that this only supports backup ZIPs created with this version or later.
 
 Added: Display number of rejected results in search results view and new button to load all available results.
 

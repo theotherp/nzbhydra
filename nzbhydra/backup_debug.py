@@ -39,8 +39,8 @@ def backup():
                            "version": update.get_current_version()[1]})
     
     try:
-        zf.write(nzbhydra.configFile, compress_type=compression)
-        zf.write(nzbhydra.databaseFile, compress_type=compression)
+        zf.write(nzbhydra.configFile, arcname=os.path.basename(nzbhydra.configFile), compress_type=compression)
+        zf.write(nzbhydra.databaseFile, arcname=os.path.basename(nzbhydra.databaseFile), compress_type=compression)
         zf.writestr("hydraBackupInfo.txt", fileInfo, compress_type=compression)
         zf.close()
         logger.info("Successfully backed up database and settings to %s" % backup_file)
@@ -61,68 +61,113 @@ def restoreFromBackupFile(filename):
 
 
 def restoreFromBackupData(zipData):
-    logger.info("Attempting to restore data from uploaded backup ZIP")
+    logger.info("Attempting to restore data from backup ZIP")
     try:
         zf = zipfile.ZipFile(zipData, "r", compression=compression)
     except zipfile.BadZipfile:
-        logger.error("Uploaded file is not a ZIP")
-        return "Uploaded file is not a ZIP", 500
+        logger.error("File is not a ZIP")
+        return "File is not a ZIP", 500
     containedFiles = zf.namelist()
     if "hydraBackupInfo.txt" not in containedFiles:
         noBackupInfoError = "Unable to restore from backup file because it doesn't contain a file called 'hydraBackupInfo.txt'. Either the ZIP is no NZB Hydra backup file or it was created before version 0.2.148."
         logger.error(noBackupInfoError)
         return noBackupInfoError, 500
-    backupInfoString = zf.read("hydraBackupInfo.txt")
-    backupInfo = json.loads(backupInfoString)
-    logger.debug("Found backup info in archive: %s" % backupInfoString)
-    configFileName = backupInfo["configFile"]
-    databaseFileName = backupInfo["databaseFile"]
     try:
         tempFolder = os.path.join(nzbhydra.getBasePath(), "temp")
         if os.path.exists(tempFolder):
-            logger.debug("Deleting old temp folder")
+            logger.info("Deleting old temp folder")
             shutil.rmtree(tempFolder)
-        logger.debug("Creating new temp folder %s" % tempFolder)
+        logger.info("Creating new temp folder %s" % tempFolder)
         os.mkdir(tempFolder)
+    except Exception as e:
+        logger.exception("Error while (re)creating temp folder")
+        return "An error occured while (re)creating the temp folder: %s" % e, 500
 
-        logger.debug("Extracting backup data to temp folder %s" % tempFolder)
+    try:
+        backupInfoString = zf.read("hydraBackupInfo.txt")
+    except KeyError:
+        infoMissingTest = "Unable to find hydraBackupInfo.txt. Please note that only backup files created version 0.2.148ff are supported"
+        logger.error(infoMissingTest)
+        return infoMissingTest
+    try:
+        backupInfo = json.loads(backupInfoString)
+        logger.info("Found backup info in archive: %s" % backupInfoString)
+        configFileName = backupInfo["configFile"]
+        databaseFileName = backupInfo["databaseFile"]
+        logger.info("Extracting backup data to temp folder %s" % tempFolder)
         zf.extract(configFileName, tempFolder)
         zf.extract(databaseFileName, tempFolder)
+    except Exception as e:
+        logger.exception("Error while extracting backup ZIP")
+        return "An error occured while extracting the data from the backup ZIP: %s" % e, 500
 
-        #TODO Reenable when database file locked issue is resolved
-        logger.debug("Starting to restore settings file to %s" % nzbhydra.configFile)
-        configFileBeforeRestore = nzbhydra.configFile + ".beforerestore"
-        logger.debug("Renaming config file %s to %s" % (nzbhydra.configFile, configFileBeforeRestore))
-        os.rename(nzbhydra.configFile, configFileBeforeRestore)
-        configTempFile = os.path.join(tempFolder, configFileName)
-        logger.debug("Replacing config file %s with extracted file %s" % (nzbhydra.configFile, configTempFile))
-        os.rename(configTempFile, nzbhydra.configFile)
-        logger.debug("Deleting temporary backup of config file %s" % configFileBeforeRestore)
-        os.unlink(configFileBeforeRestore)
-
-        logger.debug("Starting to datbase file to %s" % nzbhydra.databaseFile)
-        logger.debug("Shutting down database")
+    try:
+        logger.info("Shutting down database")
         dbStopped = database.db.stop()
         if dbStopped:
             database.db.close()
-            dbStopped = database.db.is_closed()
-            database.db.get_conn().close()
-            pass
-            os.rename(nzbhydra.databaseFile, nzbhydra.databaseFile + "old")
+    except Exception as e:
+        logger.exception("Error while shutting down database")
+        try:
+            database.db.start()
+        except Exception as e:
+            return "Unable to recover from database error: %s. You might need to restart" % e, 500
+        return "An error occured while shutting down the database: %s" % e, 500
 
-        databaseFileBeforeRestore = nzbhydra.databaseFile + ".beforerestore"
-        logger.debug("Renaming database file %s to %s" % (nzbhydra.databaseFile, databaseFileBeforeRestore))
-        os.rename(nzbhydra.databaseFile, databaseFileBeforeRestore)
-        databaseTempFile = os.path.join(tempFolder, databaseFileName)
-        logger.debug("Replacing database file %s with extracted file %s" % (nzbhydra.databaseFile, databaseTempFile))
+    databaseFileRestored = False
+    databaseFileTempBackup = None
+    configFileTempBackup = None
+    try:
+        logger.info("Starting to restore database file to %s" % nzbhydra.databaseFile)
+        databaseFileTempBackup = nzbhydra.databaseFile + ".tempBackup"
+        logger.info("Renaming database file %s to temporary backup file %s" % (nzbhydra.databaseFile, databaseFileTempBackup))
+        os.rename(nzbhydra.databaseFile, databaseFileTempBackup)
+        databaseTempFile = os.path.join(tempFolder, os.path.basename(databaseFileName))
+        logger.info("Replacing database file %s with extracted file %s" % (nzbhydra.databaseFile, databaseTempFile))
         os.rename(databaseTempFile, nzbhydra.databaseFile)
-        logger.debug("Deleting temporary backup of database file %s" % databaseFileBeforeRestore)
+        databaseFileRestored = True
+
+        logger.info("Starting to restore settings file to %s" % nzbhydra.configFile)
+        configFileTempBackup = nzbhydra.configFile + ".tempBackup"
+        logger.info("Renaming config file %s to temporary backup file %s" % (nzbhydra.configFile, configFileTempBackup))
+        os.rename(nzbhydra.configFile, configFileTempBackup)
+        configTempFile = os.path.join(tempFolder, os.path.basename(configFileName))
+        logger.info("Replacing config file %s with extracted file %s" % (nzbhydra.configFile, configTempFile))
+        os.rename(configTempFile, nzbhydra.configFile)
 
         logger.info("Restoration completed successfully.")
-
     except Exception as e:
-        logger.exception("Error while trying to restore data")
-        return "An error occured while trying to restore data: %s" % e, 500
+        logger.exception("Error while restoring files")
+        logger.info("Restoring original state")
+        if databaseFileRestored:
+            if databaseFileTempBackup is not None:
+                logger.info("Moving temporary database backup file %s back to %s" % (databaseFileTempBackup, nzbhydra.databaseFile))
+                if os.path.exists(nzbhydra.databaseFile):
+                    os.unlink(nzbhydra.databaseFile)
+                os.rename(databaseFileTempBackup, nzbhydra.databaseFile)
+            else:
+                logger.error("Unable to bring back database file to state before restore")
+        if configFileTempBackup is not None:
+            logger.info("Moving temporary config backup file %s back to %s" % (configFileTempBackup, nzbhydra.configFile))
+            if os.path.exists(nzbhydra.configFile):
+                os.unlink(nzbhydra.configFile)
+            os.rename(configFileTempBackup, nzbhydra.configFile)
+        else:
+            logger.error("Unable to bring back config file to state before restore")
+        return "Error while restoring files: %s. Original state was restored." % e, 500
+    finally:
+        try:
+            if databaseFileTempBackup is not None and os.path.exists(databaseFileTempBackup):
+                logger.info("Deleting temporary backup of database file %s" % databaseFileTempBackup)
+                os.unlink(databaseFileTempBackup)
+            if configFileTempBackup is not None and os.path.exists(configFileTempBackup):
+                logger.info("Deleting temporary backup of config file %s" % configFileTempBackup)
+                os.unlink(configFileTempBackup)
+            logger.info("Deleting temp folder %s" % tempFolder)
+            shutil.rmtree(tempFolder)
+        except Exception as e:
+            logger.error("Error while cleaning up")
+
     return "OK"
 
     

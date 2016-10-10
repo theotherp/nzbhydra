@@ -82,6 +82,8 @@ def daemonize(pidfile):
 
 
 def run(arguments):
+    arguments.config = arguments.config if os.path.isabs(arguments.config) else os.path.join(nzbhydra.getBasePath(), arguments.config)
+    arguments.database = arguments.database if os.path.isabs(arguments.database) else os.path.join(nzbhydra.getBasePath(), arguments.database)
     nzbhydra.configFile = settings_file = arguments.config
     nzbhydra.databaseFile = database_file = arguments.database
 
