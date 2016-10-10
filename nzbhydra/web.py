@@ -1343,12 +1343,14 @@ def run(host, port, basepath):
     configureFolders(basepath)
     for handler in logger.handlers:
         app.logger.addHandler(handler)
-    # from waitress import serve
-    # logging.getLogger("waitress").setLevel(logging.FATAL)
-    # serve(app, host=host, port=port)
+    if config.settings.main.runThreaded:
+        logger.info("Running threaded server")
+    if config.settings.main.flaskReloader:
+        logger.info("Using flask reloader")
     if context is None:
         app.run(host=host, port=port, debug=config.settings.main.debug, threaded=config.settings.main.runThreaded, use_reloader=config.settings.main.flaskReloader)
     else:
+        logger.info("Running Hydra with SSL")
         app.run(host=host, port=port, debug=config.settings.main.debug, ssl_context=context, threaded=config.settings.main.runThreaded, use_reloader=config.settings.main.flaskReloader)
 
 

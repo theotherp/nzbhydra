@@ -2,6 +2,7 @@ import logging
 import weakref
 from threading import Event
 from threading import Thread
+
 try:
     from Queue import Queue
 except ImportError:
@@ -17,7 +18,6 @@ except ImportError:
 
 from playhouse.sqlite_ext import SqliteExtDatabase
 
-
 logger = logging.getLogger('peewee.sqliteq')
 
 
@@ -27,7 +27,7 @@ class ResultTimeout(Exception):
 
 class AsyncCursor(object):
     __slots__ = ('sql', 'params', 'commit', 'timeout',
-                 '_event', '_cursor', '_exc', '_idx', '_rows')
+                 '_event', '_cursor', '_exc', '_idx', '_rows', '_ready')
 
     def __init__(self, event, sql, params, commit, timeout):
         self._event = event
@@ -36,6 +36,7 @@ class AsyncCursor(object):
         self.commit = commit
         self.timeout = timeout
         self._cursor = self._exc = self._idx = self._rows = None
+        self._ready = False
 
     def set_result(self, cursor, exc=None):
         self._cursor = cursor
@@ -51,14 +52,18 @@ class AsyncCursor(object):
             raise ResultTimeout('results not ready, timed out.')
         if self._exc is not None:
             raise self._exc
+        self._ready = True
 
     def __iter__(self):
-        self._wait()
+        if not self._ready:
+            self._wait()
         if self._exc is not None:
             raise self._exec
         return self
 
     def next(self):
+        if not self._ready:
+            self._wait()
         try:
             obj = self._rows[self._idx]
         except IndexError:
@@ -66,16 +71,19 @@ class AsyncCursor(object):
         else:
             self._idx += 1
             return obj
+
     __next__ = next
 
     @property
     def lastrowid(self):
-        self._wait()
+        if not self._ready:
+            self._wait()
         return self._cursor.lastrowid
 
     @property
     def rowcount(self):
-        self._wait()
+        if not self._ready:
+            self._wait()
         return self._cursor.rowcount
 
     @property
@@ -89,7 +97,8 @@ class AsyncCursor(object):
         return list(self)  # Iterating implies waiting until populated.
 
     def fetchone(self):
-        self._wait()
+        if not self._ready:
+            self._wait()
         try:
             return next(self)
         except StopIteration:
@@ -168,14 +177,18 @@ class SqliteQueueDatabase(SqliteExtDatabase):
                          for _ in range(self._num_readers)]
 
     def _run_worker_loop(self, queue):
-        while True:
-            async_cursor = queue.get()
-            if async_cursor is StopIteration:
-                logger.info('worker shutting down.')
-                return
+        conn = self.get_conn()
+        try:
+            while True:
+                async_cursor = queue.get()
+                if async_cursor is StopIteration:
+                    logger.info('worker shutting down.')
+                    return
 
-            logger.debug('received query %s', async_cursor.sql)
-            self._process_execution(async_cursor)
+                logger.debug('received query %s', async_cursor.sql)
+                self._process_execution(async_cursor)
+        finally:
+            self._close(conn)
 
     def _process_execution(self, async_cursor):
         try:
@@ -223,6 +236,7 @@ class SqliteQueueDatabase(SqliteExtDatabase):
             self._writer.join()
             for reader in self._readers:
                 reader.join()
+            self._is_stopped = True
             return True
 
     def is_stopped(self):
@@ -261,4 +275,5 @@ class GreenletHelper(ThreadHelper):
         def wrap(*a, **k):
             gevent.sleep()
             return fn(*a, **k)
+
         return GThread(wrap, *args, **kwargs)
