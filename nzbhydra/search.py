@@ -76,6 +76,7 @@ class SearchRequest(object):
         rep += (", minage \"%s\"" % self.minage) if self.minage is not None else ""
         rep += (", maxage \"%s\"" % self.maxage) if self.maxage is not None else ""
         rep += (", offset \"%s\"" % self.offset) if self.offset is not None else ""
+        rep += (", loadAll \"%s\"" % self.loadAll) if self.loadAll is not None else ""
         rep += (", limit \"%s\"" % self.limit) if self.limit is not None else ""
         rep += (", indexers \"%s\"" % self.indexers) if self.indexers is not None else ""
         rep += " ]"
@@ -287,6 +288,8 @@ def search(search_request):
         logger.debug("Found search in cache")
 
         logger.debug("Will search at indexers as long as we don't have enough results for the current offset+limit and any indexer has more results.")
+    if search_request.loadAll:
+        logger.debug("Requested to load all results. Will continue to search until all indexers are exhausted")
     while (len(cache_entry["results"]) < external_offset + limit or search_request.loadAll) and len(indexers_to_call) > 0:
         if len(cache_entry["results"]) < external_offset + limit:
             logger.debug("We want %d results but have only %d so far" % ((external_offset + limit), len(cache_entry["results"])))
@@ -374,7 +377,6 @@ def search(search_request):
                     infos["indexer_search"].processedResults = processedResults
                     infos["indexer_search"].save()
 
-
         if not search_request.internal:
             countAfter = len(search_results)
             countRemoved = numberResultsBeforeDuplicateRemoval - countAfter
@@ -384,6 +386,11 @@ def search(search_request):
 
         cache_entry["results"].extend(search_results)
         cache_entry["offset"] += limit
+
+    if len(indexers_to_call) == 0:
+        logger.debug("All indexers exhausted")
+    elif len(cache_entry["results"]) >= external_offset + limit:
+        logger.debug("Loaded a total of %d results which is enough for the %d requested. Stopping search." % (len(cache_entry["results"]), (external_offset + limit)))
 
     if search_request.internal:
         logger.debug("We have %d cached results and return them all because we search internally" % len(cache_entry["results"]))
