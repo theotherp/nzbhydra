@@ -1765,7 +1765,6 @@ function StatsController($scope, $filter, stats) {
                             return d;
                         },
                         rotateLabels: 30,
-                        axisLabelDistance: -10,
                         showMaxMin: false,
                         color: function () {
                             return "white"
@@ -1801,13 +1800,16 @@ function StatsController($scope, $filter, stats) {
 
     $scope.avgResponseTimesChart = getChart("multiBarHorizontalChart", $scope.avgResponseTimes, "name", "avgResponseTime", "", "Response time");
     $scope.avgResponseTimesChart.options.chart.margin.left = 100;
-    $scope.avgResponseTimesChart.options.chart.yAxis.axisLabelDistance = 0;
+    $scope.avgResponseTimesChart.options.chart.yAxis.rotateLabels = -30;
+
 
     $scope.downloadsPerHourOfDayChart = getChart("discreteBarChart", $scope.downloadsPerHourOfDay, "hour", "count", "Hour of day", 'Downloads');
     $scope.downloadsPerDayOfWeekChart = getChart("discreteBarChart", $scope.downloadsPerDayOfWeek, "day", "count", "Day of week", 'Downloads');
+    $scope.downloadsPerDayOfWeekChart.options.chart.xAxis.rotateLabels = 0;
 
     $scope.searchesPerHourOfDayChart = getChart("discreteBarChart", $scope.searchesPerHourOfDay, "hour", "count", "Hour of day", 'Searches');
     $scope.searchesPerDayOfWeekChart = getChart("discreteBarChart", $scope.searchesPerDayOfWeek, "day", "count", "Day of week", 'Searches');
+    $scope.searchesPerDayOfWeekChart.options.chart.xAxis.rotateLabels = 0;
 
 
     //Was unable to use the function above for this and gave up

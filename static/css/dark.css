@@ -1072,7 +1072,7 @@ html {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 body {
-  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Roboto", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.42857143;
   color: #c8c8c8;
@@ -6195,7 +6195,7 @@ button.close {
   position: absolute;
   z-index: 1030;
   display: block;
-  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Roboto", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
   font-weight: normal;
   line-height: 1.4;
@@ -6302,7 +6302,7 @@ button.close {
   display: none;
   max-width: 276px;
   padding: 1px;
-  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Roboto", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   font-weight: normal;
   line-height: 1.42857143;
@@ -7707,12 +7707,21 @@ g.nv-multiBarWithLegend > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(2) 
 .nv-legend-text {
   fill: #c8c8c8;
 }
+g.nv-multiBarHorizontalChart > g > g > g > g > g > text {
+  transform: rotate(-31deg);
+}
 .nvtooltip {
   background-color: #2e3338;
   color: #c8c8c8;
 }
 .tick line {
   opacity: 0 !important;
+}
+.nv-pieLabels > .nv-label > text {
+  fill: #e6e6e6 !important;
+}
+g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g > text {
+  fill: #e6e6e6 !important;
 }
 g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(1) > circle {
   fill: #7f7400 !important;

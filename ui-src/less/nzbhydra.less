@@ -3,7 +3,7 @@
 
 @grid-columns: 20;
 
-@font-family-sans-serif: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-sans-serif: "Roboto", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
 @headings-font-weight: 400;
 @line-height-large: 1.33;
 @border-radius-large: 5px;
@@ -784,6 +784,10 @@ g.nv-multiBarWithLegend > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(2) 
 
 .nv-legend-text {
   fill: @chart-text-color;
+}
+
+g.nv-multiBarHorizontalChart > g > g > g > g > g > text {
+  transform: rotate(-31deg);
 }
 
 

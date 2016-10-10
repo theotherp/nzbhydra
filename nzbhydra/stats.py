@@ -212,13 +212,14 @@ def getTimeBasedSearchStats():
 
 
 def calculcateTimeBasedStats(downloadTimes):
+    daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     perDayOfWeek = {x: 0 for x in range(1, 8)}  # Even days withot activity should be contained so they're included in the graph
     for x in range(1, 8):
         dayKey = lambda x: x.isoweekday()
         sortedByDay = sorted(downloadTimes, key=dayKey)
         for key, group in groupby(sortedByDay, dayKey):
             perDayOfWeek[key] = len(list(group))
-    perDayOfWeek = [{"day": calendar.day_name[key - 1], "count": value} for key, value in perDayOfWeek.iteritems()]
+    perDayOfWeek = [{"day": daysOfWeek[key - 1], "count": value} for key, value in perDayOfWeek.iteritems()]
     perHourOfDay = {x: 0 for x in range(0, 24)}  # See above
     for x in range(1, 8):
         hourKey = lambda x: x.hour
