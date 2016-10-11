@@ -368,11 +368,11 @@ def search(search_request):
         search_results = allresults
 
         with databaseLock:
-            for infos in cache_entry["indexer_infos"].values():
-                if infos["indexer"] in uniqueResultsPerIndexer.keys(): #If the search failed it isn't contained in the duplicates list
+            for indexer, infos in cache_entry["indexer_infos"].iteritems():
+                if indexer.name in uniqueResultsPerIndexer.keys(): #If the search failed it isn't contained in the duplicates list
                     uniqueResultsCount = uniqueResultsPerIndexer[infos["indexer"]]
                     processedResults = infos["processed_results"]
-                    logger.debug("Indexer %s had a unique results share of %d%% (%d of %d total results were only provided by this indexer)" % (infos["indexer"], 100 / (numberResultsBeforeDuplicateRemoval / uniqueResultsCount), uniqueResultsCount, numberResultsBeforeDuplicateRemoval))
+                    logger.debug("Indexer %s had a unique results share of %d%% (%d of %d total results were only provided by this indexer)" % (indexer.name, 100 / (numberResultsBeforeDuplicateRemoval / uniqueResultsCount), uniqueResultsCount, numberResultsBeforeDuplicateRemoval))
                     infos["indexer_search"].uniqueResults = uniqueResultsCount
                     infos["indexer_search"].processedResults = processedResults
                     infos["indexer_search"].save()
