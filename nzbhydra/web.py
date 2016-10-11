@@ -684,6 +684,7 @@ internalapi_moviesearch_args = {
     "tmdbid": fields.String(missing=None),
     "offset": fields.Integer(missing=0),
     "indexers": fields.String(missing=None),
+    "loadAll": fields.Boolean(missing=False),
 
     "minsize": fields.Integer(missing=None),
     "maxsize": fields.Integer(missing=None),
@@ -698,7 +699,7 @@ internalapi_moviesearch_args = {
 def internalapi_moviesearch(args):
     logger.debug("Movie search request with args %s" % args)
     indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None
-    search_request = SearchRequest(type="movie", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], indexers=indexers)
+    search_request = SearchRequest(type="movie", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], loadAll=args["loadAll"], indexers=indexers)
 
     if args["imdbid"]:
         search_request.identifier_key = "imdbid"
@@ -729,6 +730,7 @@ internalapi_tvsearch_args = {
     "episode": fields.Integer(missing=None),
     "offset": fields.Integer(missing=0),
     "indexers": fields.String(missing=None),
+    "loadAll": fields.Boolean(missing=False),
 
     "minsize": fields.Integer(missing=None),
     "maxsize": fields.Integer(missing=None),
@@ -744,6 +746,7 @@ def internalapi_tvsearch(args):
     logger.debug("TV search request with args %s" % args)
     indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None
     search_request = SearchRequest(type="tv", query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], episode=args["episode"], season=args["season"], title=args["title"],
+                                   loadAll=args["loadAll"],
                                    indexers=indexers)
     if args["tvdbid"]:
         search_request.identifier_key = "tvdbid"
@@ -1346,7 +1349,7 @@ def run(host, port, basepath):
     if config.settings.main.runThreaded:
         logger.info("Running threaded server")
     if config.settings.main.flaskReloader:
-        logger.info("Using flask reloader")
+        logger.info("Using flask reloader. This is not good idea unless you're a developer!")
     if context is None:
         app.run(host=host, port=port, debug=config.settings.main.debug, threaded=config.settings.main.runThreaded, use_reloader=config.settings.main.flaskReloader)
     else:

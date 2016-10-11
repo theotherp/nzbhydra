@@ -2235,7 +2235,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
 
     $scope.loadMore = loadMore;
     function loadMore(loadAll) {
-        startBlocking("Loading more results...").then(function () {
+        startBlocking(loadAll ? "Loading all results..." : "Loading more results...").then(function () {
             SearchService.loadMore($scope.resultsCount, loadAll).then(function (data) {
                 $scope.results = $scope.results.concat(data.results);
                 $scope.filteredResults = sortAndFilter($scope.results);

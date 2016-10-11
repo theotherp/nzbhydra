@@ -86,9 +86,9 @@
     <div class="col-md-6" style="text-align: right;">
         <span class="badge">Loaded {{ resultsCount }} of {{ total }} results (rejected {{ rejected }})</span>
 
-        <div class="btn-group" style="margin-top:20px; margin-bottom:20px;">
-            <button type="button" ng-disabled="resultsCount >= total" ng-click="loadMore(false)" class="btn btn-default">Load more</button>
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <div class="btn-group" style="margin-top:20px; margin-bottom:20px;" >
+            <button type="button" ng-click="loadMore(false)" class="btn btn-default" ng-disabled="resultsCount >= total">Load more</button>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="resultsCount >= total">
                 <span class="caret"></span>
                 <span class="sr-only">Toggle Dropdown</span>
             </button>
