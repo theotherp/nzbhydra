@@ -7458,6 +7458,34 @@ a.disabled:hover {
 .duplicate {
   background-color: #d9d9d9;
 }
+.result-title {
+  font-size: 13px;
+  width: 50%;
+}
+.result-indexer {
+  font-size: 12px;
+  width: 8%;
+}
+.result-category {
+  font-size: 12px;
+  width: 6%;
+}
+.result-size {
+  font-size: 12px;
+  width: 6%;
+}
+.result-details {
+  font-size: 12px;
+  width: 6%;
+}
+.result-age {
+  font-size: 12px;
+  width: 4%;
+}
+.result-links {
+  font-size: 12px;
+  width: 10%;
+}
 .title-group-first-row {
   border-width: 1px 1px 0 1px;
   border-style: solid;

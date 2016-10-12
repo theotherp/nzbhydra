@@ -196,6 +196,9 @@ class NzbIndex(SearchModule):
             entry.link = link[0]["href"]
         else:
             self.debug("Did not find link in row")
+        complete = infotd.find("span", class_="complete")
+        if complete:
+            entry.files = complete.text[0:complete.text.find(" ")]
         entry.category = getUnknownCategory()
         sizetd = tds[2]
         entry.size = self.parse_size(sizetd)

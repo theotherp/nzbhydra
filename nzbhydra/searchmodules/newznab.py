@@ -554,17 +554,13 @@ class NewzNab(SearchModule):
         for i in item.findall("./newznab:attr", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}):
             attribute_name = i.attrib["name"]
             attribute_value = i.attrib["value"]
-            if attribute_name == "size":
-                entry.size = int(attribute_value)
-            elif attribute_name == "guid":
+            if attribute_name == "guid":
                 entry.indexerguid = attribute_value
             elif attribute_name == "category" and attribute_value != "":
                 try:
                     categories.append(int(attribute_value))
                 except ValueError:
                     self.error("Unable to parse category %s" % attribute_value)
-            elif attribute_name == "poster":
-                entry.poster = attribute_value
             elif attribute_name == "password" and attribute_value != "0":
                 entry.passworded = True
             elif attribute_name == "group" and attribute_value != "not available":
@@ -575,7 +571,16 @@ class NewzNab(SearchModule):
                 except ParserError:
                     self.debug("Unable to parse usenet date format: %s" % attribute_value)
                     usenetdate = None
-            # Store all the extra attributes, we will return them later for external apis
+            else:
+                for x in ["size", "files", "comments", "grabs"]:
+                    if attribute_name == x:
+                        setattr(entry, x, int(attribute_value))
+                    else:
+                        for x in ["guid", "poster"]:
+                            if attribute_name == x:
+                                setattr(entry, x, attribute_value)
+
+            # Store all the attributes, we will return them later for external apis
             entry.attributes.append({"name": attribute_name, "value": attribute_value})
         entry.details_link = self.get_details_link(entry.indexerguid)
         if usenetdate is None:

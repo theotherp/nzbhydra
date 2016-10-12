@@ -101,26 +101,30 @@
     <table class="search-results-table table">
         <thead class="search-results-header">
         <tr class="search-results-row">
-            <th class="col-md-12 cursor-default search-results-cell">
+            <th class="col-md-12 cursor-default search-results-cell result-title">
                 <!--<input type="checkbox" ng-click="invertSelection()" display="float:left; width:1%" uib-tooltip="Invert selection." tooltip-placement="top" tooltip-trigger="mouseenter"/>-->
 
                 <span ng-click="setSorting('title', false)" style="vertical-align: top; float:right; width:98%">
                 Title <span ng-show="sortPredicate=='title'" class="caret" ng-class="{'caret-reversed': !sortReversed}"></span>
                     </span>
             </th>
-            <th class="col-md-1 cursor-default search-results-cell" ng-click="setSorting('indexer', false)" style="text-align: right">
+            <th class="col-md-1 cursor-default search-results-cell result-indexer" ng-click="setSorting('indexer', false)" style="text-align: right">
                 Indexer <span ng-show="sortPredicate=='indexer'" class="caret" ng-class="{'caret-reversed': !sortReversed}"></span>
             </th>
-            <th class="col-md-2 cursor-default search-results-cell" ng-click="setSorting('category', false)" style="vertical-align: top; width:8%; text-align: right">
+            <th class="col-md-1 cursor-default search-results-cell result-category" ng-click="setSorting('category', false)" style="vertical-align: top; text-align: right">
                 Category <span ng-show="sortPredicate=='category'" class="caret" ng-class="{'caret-reversed': !sortReversed}"></span>
             </th>
-            <th class="col-md-1 cursor-default search-results-cell" ng-click="setSorting('size', true)" style="vertical-align: top; width:7%; text-align: right">
+            <th class="col-md-1 cursor-default search-results-cell result-size"  ng-click="setSorting('size', true)" style="vertical-align: top; text-align: right">
                 Size <span ng-show="sortPredicate=='size'" class="caret" ng-class="{'caret-reversed': !sortReversed}"></span>
             </th>
-            <th class="col-md-1 cursor-default search-results-cell" ng-click="setSorting('epoch', true)" style="vertical-align: top; text-align: right">
+            <th class="col-md-1 cursor-default search-results-cell result-details" style="vertical-align: top; text-align: right">
+                Details <span class="glyphicon glyphicon-question-sign" tooltip-placement="top"
+                              uib-tooltip="Files/Grabs/Comments (where available)"></span>
+            </th>
+            <th class="col-md-1 cursor-default search-results-cell result-age" ng-click="setSorting('epoch', true)" style="vertical-align: top; text-align: right">
                 Age <span ng-show="sortPredicate=='epoch'" class="caret" ng-class="{'caret-reversed': sortReversed}"></span>
             </th>
-            <th class="col-md-3 search-results-cell" style="vertical-align: top">
+            <th class="col-md-3 search-results-cell result-links" style="vertical-align: top">
                 Links
             </th>
         </tr>

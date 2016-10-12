@@ -1,6 +1,6 @@
 <table class="table" style="margin:0">
     <tr ng-init="result=duplicates[0]" class="search-results-row" ng-class="{'odd': rowIndex % 2 == 0, 'even' : rowIndex % 2 == 1}">
-        <td class="col-md-12 search-results-cell" ng-init="result = duplicates[0]" style="margin:0;">
+        <td class="col-md-12 search-results-cell result-title" ng-init="result = duplicates[0]" style="margin:0;">
             <input type="checkbox" data-checklist-model="selected" data-checklist-value="result" ng-click="clickCheckbox($event)" data-checkbox-index="0"/>
 
             <a href="" ng-click="toggleTitleExpansion()" ng-class="{'visibility-hidden': !displayTitleToggle}"><span class="glyphicon"

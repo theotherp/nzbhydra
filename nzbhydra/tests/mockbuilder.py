@@ -35,12 +35,24 @@ def buildNewznabItem(title=None, guid=None, link=None, pubdate=None, description
         categories = []
     size = str(size)
 
-    attributes = [{
-        "name": "size",
-        "value": size
-    },
+    attributes = [
+        {
+            "name": "size",
+            "value": size
+        },
         {"name": "guid",
-         "value": guid}
+         "value": guid
+         },
+        {"name": "files",
+         "value": 100
+         },
+        {"name": "grabs",
+         "value": 110
+         },
+        {"name": "comments",
+         "value": 3
+         }
+
     ]
     attributes.extend([{"name": "category", "value": x} for x in categories])
 
@@ -142,10 +154,10 @@ indexers = {
     },
 }
 
-
 pubDates = None
 sizes = None
 titles = None
+
 
 @mockapp.route('/api')
 def serve():
@@ -163,7 +175,7 @@ def serve():
 
     if doSleep:
         sleep(indexer["delay"])
-    if doGenerateDuplicates and pubDates is None: #Only generate once
+    if doGenerateDuplicates and pubDates is None:  # Only generate once
         pubDates = [arrow.get(random.randint(1412677738, 1475836139)).format("ddd, DD MMM YYYY HH:mm:ss Z") for x in xrange(0, generateDuplicateGroupRange)]
         sizes = [random.randint(100000, 10000000) for x in xrange(0, generateDuplicateGroupRange)]
         titles = ["title%d" % x for x in xrange(0, generateDuplicateGroupRange)]

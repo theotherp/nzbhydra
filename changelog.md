@@ -2,6 +2,8 @@
 
 ----------
 ### 0.2.149
+Added: Show number of files, grabs and comments where indexers provide this information.
+
 Fixed: Config for removing duplicates for API results was left over.
 
 ### 0.2.148
