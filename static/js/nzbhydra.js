@@ -4586,15 +4586,6 @@ function ConfigFields($injector) {
                             }
                         },
                         {
-                            key: 'removeDuplicatesExternal',
-                            type: 'horizontalSwitch',
-                            templateOptions: {
-                                type: 'switch',
-                                label: 'Remove API duplicates',
-                                help: 'Remove duplicates when searching via API'
-                            }
-                        },
-                        {
                             key: 'alwaysShowDuplicates',
                             type: 'horizontalSwitch',
                             templateOptions: {

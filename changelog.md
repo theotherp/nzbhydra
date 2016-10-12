@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.149
+Fixed: Config for removing duplicates for API results was left over.
+
 ### 0.2.148
 Added: Restore settings from backup via GUI. Please note that this only supports backup ZIPs created with this version or later.
 
