@@ -86,10 +86,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
                 $scope.maxsize = "";
             }
         }
-        
-        // _.each($scope.availableIndexers, function(indexer) {
-        //     indexer.activated = angular.isUndefined(indexer.categories) || indexer.categories.length == 0 || indexer.categories.indexOf($scope.category.name) > -1;
-        // })
+
         $scope.availableIndexers = getAvailableIndexers();
         
         
@@ -260,7 +257,6 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     
 
     if ($scope.mode) {
-        console.log("Starting search in newly loaded search controller");
         $scope.startSearch();
     }
     

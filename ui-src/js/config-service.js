@@ -20,6 +20,7 @@ function ConfigService($http, $q, $cacheFactory) {
             .then(function (successresponse) {
                 console.log("Settings saved. Updating cache");
                 cache.put("config", newConfig);
+                invalidateSafe();
             }, function (errorresponse) {
                 console.log("Error saving settings: " + errorresponse);
             });

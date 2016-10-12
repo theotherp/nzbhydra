@@ -6,6 +6,8 @@ Added: Show number of files, grabs and comments where indexers provide this info
 
 Fixed: Config for removing duplicates for API results was left over.
 
+Fixed: When you enable or disable an indexer in the config, save and go to the search page the indexer's new state is proper represented (i.e. it's not hidden or shown without you having to reload the page).
+
 ### 0.2.148
 Added: Restore settings from backup via GUI. Please note that this only supports backup ZIPs created with this version or later.
 
