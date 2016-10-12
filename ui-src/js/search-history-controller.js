@@ -13,7 +13,6 @@ function SearchHistoryController($scope, $state, StatsService, history) {
     $scope.searchRequests = history.data.searchRequests;
     $scope.totalRequests = history.data.totalRequests;
 
-
     $scope.pageChanged = function (newPage) {
         getSearchRequestsPage(newPage);
     };
@@ -82,6 +81,10 @@ function SearchHistoryController($scope, $state, StatsService, history) {
         }
         if (request.tvtitle != null) {
             return request.tvtitle;
+        }
+
+        if (!request.query && !request.identifier_key && !request.season && !request.episode) {
+            return "Update query";
         }
         return request.query;
     }
