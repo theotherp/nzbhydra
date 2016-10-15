@@ -1,6 +1,10 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.150
+
+Changed: Removed some 6box indexers from the presets.
+
 ### 0.2.149
 Added: Show number of files, grabs and comments where indexers provide this information.
 
