@@ -76,7 +76,7 @@ function UpdateService($http, growl, blockUI, RestartService) {
         blockUI.start("Updating. Please stand by...");
         $http.get("internalapi/update").then(function (data) {
                 if (data.data.success) {
-                    RestartService.countdownAndReload("Update complete.", 15);
+                    RestartService.restart("Update complete.", 15);
                 } else {
                     blockUI.reset();
                     growl.info("An error occurred while updating. Please check the logs.");

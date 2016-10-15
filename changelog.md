@@ -5,6 +5,8 @@
 
 Changed: Removed some 6box indexers from the presets.
 
+Fixed: Restart after update wouldn't work.
+
 ### 0.2.149
 Added: Show number of files, grabs and comments where indexers provide this information.
 
