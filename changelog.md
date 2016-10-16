@@ -7,6 +7,8 @@ Changed: Removed some 6box indexers from the presets.
 
 Fixed: Restart after update wouldn't work.
 
+Fixed: Database migration of 0.2.149 would not store new database version meaning the migration might've been done on every startup.
+
 ### 0.2.149
 Added: Show number of files, grabs and comments where indexers provide this information.
 

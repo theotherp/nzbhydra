@@ -439,4 +439,7 @@ def update_db(dbfile):
                     migrator.add_column("indexersearch", "processedresults", IndexerSearch.processedResults),
                     migrator.add_column("indexernzbdownload", "internal", IndexerNzbDownload.internal)
                 )
+            logger.info("Database migration completed successfully")
+            vi.version = 11
+            vi.save()
 
