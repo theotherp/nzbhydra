@@ -1,8 +1,10 @@
 # NZB Hydra changelog
 
 ----------
-### 0.2.150
+### 0.2.151
+Added: Store Ebook search data in the database. Redesigned search history.
 
+### 0.2.150
 Changed: Removed some 6box indexers from the presets.
 
 Fixed: Restart after update wouldn't work.

@@ -1516,7 +1516,7 @@ function UpdateService($http, growl, blockUI, RestartService) {
         blockUI.start("Updating. Please stand by...");
         $http.get("internalapi/update").then(function (data) {
                 if (data.data.success) {
-                    RestartService.countdownAndReload("Update complete.", 15);
+                    RestartService.restart("Update complete.", 15);
                 } else {
                     blockUI.reset();
                     growl.info("An error occurred while updating. Please check the logs.");
@@ -2294,7 +2294,7 @@ angular
     .controller('SearchHistoryController', SearchHistoryController);
 
 
-function SearchHistoryController($scope, $state, StatsService, history) {
+function SearchHistoryController($scope, $state, StatsService, history, $sce) {
     $scope.type = "All";
     $scope.limit = 100;
     $scope.pagination = {
@@ -2378,11 +2378,51 @@ function SearchHistoryController($scope, $state, StatsService, history) {
             return "Update query";
         }
         return request.query;
-    }
+    };
+
+    $scope.formatAdditional = function(request) {
+        var result = [];
+        //ID key: ID value
+        //season
+        //episode
+        //author
+        //title
+        if (request.identifier_key) {
+            var href;
+            var key;
+            if (request.identifier_key == "imdbid") {
+                key = "IMDB ID";
+                href = "https://www.imdb.com/title/tt"
+            } else  if (request.identifier_key == "tvdbid") {
+                key = "TVDB ID";
+                href = "https://thetvdb.com/?tab=series&id="
+            } else if (request.identifier_key == "rid") {
+                key = "TVRage ID";
+                href = "internalapi/redirect_rid?rid="
+            } else if (request.identifier_key == "tmdb") {
+                key = "TMDV ID";
+                href = "https://www.themoviedb.org/movie/"
+            }
+            result.push(key + ": " + '<a target="_blank" href="' + href + request.identifier_value + '">' + request.identifier_value + "</a>");
+        }
+        if (request.season) {
+            result.push("Season: " + request.season);
+        }
+        if (request.episode) {
+            result.push("Episode: " + request.episode);
+        }
+        if (request.author) {
+            result.push("Author: " + request.author);
+        }
+        if (request.title) {
+            result.push("Title: " + request.title);
+        }
+        return $sce.trustAsHtml(result.join(", "));
+    };
 
 
 }
-SearchHistoryController.$inject = ["$scope", "$state", "StatsService", "history"];
+SearchHistoryController.$inject = ["$scope", "$state", "StatsService", "history", "$sce"];
 
 angular
     .module('nzbhydraApp')

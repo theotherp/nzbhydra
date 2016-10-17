@@ -20,7 +20,7 @@ logger = logging.getLogger('root')
 
 db = SqliteQueueDatabase(None, autostart=False, readers=1, results_timeout=20.0)
 
-DATABASE_VERSION = 11
+DATABASE_VERSION = 12
 
 
 class JSONField(TextField):
@@ -61,6 +61,9 @@ class Search(Model):
     episode = TextField(null=True)
     type = CharField(default="general")
     username = CharField(null=True)
+    title = TextField(null=True)
+    author = TextField(null=True)
+
 
     class Meta(object):
         database = db
@@ -441,5 +444,18 @@ def update_db(dbfile):
                 )
             logger.info("Database migration completed successfully")
             vi.version = 11
+            vi.save()
+
+        if vi.version == 11:
+            logger.info("Upgrading database to version 12")
+            migrator = SqliteMigrator(db)
+            logger.info("Adding columns to store author and title in search history")
+            with db.transaction():
+                migrate(
+                    migrator.add_column("search", "author", Search.author),
+                    migrator.add_column("search", "title", Search.title),
+                )
+            logger.info("Database migration completed successfully")
+            vi.version = 12
             vi.save()
 

@@ -12,7 +12,6 @@ from sqlite3 import OperationalError
 
 import arrow
 import concurrent
-import thread
 from builtins import *
 from bunch import Bunch
 from flask import request
@@ -25,6 +24,7 @@ from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, Searc
 logger = logging.getLogger('root')
 
 session = FuturesSession()
+
 
 class SearchRequest(object):
     def __init__(self, type=None, query=None, identifier_key=None, identifier_value=None, season=None, episode=None, title=None, category=None, minsize=None, maxsize=None, minage=None, maxage=None, offset=0, limit=100, indexers=None, forbiddenWords=None, requiredWords=None, author=None,
@@ -246,8 +246,8 @@ def search(search_request):
             cache_entry["indexer_infos"][p] = {"has_more": True, "search_request": search_request, "total_included": False}
 
         dbsearch = Search(internal=search_request.internal, query=search_request.query, category=categoryResult.category.pretty, identifier_key=search_request.identifier_key, identifier_value=search_request.identifier_value, season=search_request.season, episode=search_request.episode,
-                          type=search_request.type,
-                          username=search_request.username)
+                          type=search_request.type, title=search_request.title, author=search_request.author, username=search_request.username)
+        saveSearch(dbsearch)
         # dbsearch.save()
         cache_entry["dbsearch"] = dbsearch
 
@@ -328,8 +328,6 @@ def search(search_request):
                     except (IntegrityError, OperationalError) as e:
                         logger.error("Error while trying to save search result to database. Skipping it. Error: %s" % e)
 
-
-
             cache_entry["indexer_infos"][indexer].update(
                 {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
                  "indexer_search": queries_execution_result.indexerSearchEntry, "rejected": queries_execution_result.rejected, "processed_results": queries_execution_result.loaded_results})
@@ -369,7 +367,7 @@ def search(search_request):
 
         with databaseLock:
             for indexer, infos in cache_entry["indexer_infos"].iteritems():
-                if indexer.name in uniqueResultsPerIndexer.keys(): #If the search failed it isn't contained in the duplicates list
+                if indexer.name in uniqueResultsPerIndexer.keys():  # If the search failed it isn't contained in the duplicates list
                     uniqueResultsCount = uniqueResultsPerIndexer[infos["indexer"]]
                     processedResults = infos["processed_results"]
                     logger.debug("Indexer %s had a unique results share of %d%% (%d of %d total results were only provided by this indexer)" % (indexer.name, 100 / (numberResultsBeforeDuplicateRemoval / uniqueResultsCount), uniqueResultsCount, numberResultsBeforeDuplicateRemoval))
@@ -442,9 +440,6 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
                         logger.exception("Error saving IndexerApiAccessEntry")
 
     return {"results": results_by_indexer, "dbsearch": dbsearch}
-
-
-
 
 
 def start_search_futures(indexers_and_search_requests):
