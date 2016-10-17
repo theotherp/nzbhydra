@@ -442,9 +442,9 @@ def update_db(dbfile):
                     migrator.add_column("indexersearch", "processedresults", IndexerSearch.processedResults),
                     migrator.add_column("indexernzbdownload", "internal", IndexerNzbDownload.internal)
                 )
-            logger.info("Database migration completed successfully")
             vi.version = 11
             vi.save()
+            logger.info("Database migration completed successfully")
 
         if vi.version == 11:
             logger.info("Upgrading database to version 12")
@@ -455,7 +455,7 @@ def update_db(dbfile):
                     migrator.add_column("search", "author", Search.author),
                     migrator.add_column("search", "title", Search.title),
                 )
-            logger.info("Database migration completed successfully")
             vi.version = 12
             vi.save()
+            logger.info("Database migration completed successfully")
 
