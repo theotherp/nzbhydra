@@ -601,6 +601,15 @@ nzbhydraapp.filter('unsafe', ["$sce", function ($sce) {
     return $sce.trustAsHtml;
 }]);
 
+nzbhydraapp.filter('dereferer', ["ConfigService", function (ConfigService) {
+    return function(url) {
+        if (ConfigService.getSafe().dereferer) {
+            return ConfigService.getSafe().dereferer.replace("$s", escape(url));
+        }
+        return url;
+    }
+}]);
+
 nzbhydraapp.config(["$provide", function ($provide) {
     $provide.decorator("$exceptionHandler", ['$delegate', '$injector', function ($delegate, $injector) {
         return function (exception, cause) {
@@ -2294,7 +2303,7 @@ angular
     .controller('SearchHistoryController', SearchHistoryController);
 
 
-function SearchHistoryController($scope, $state, StatsService, history, $sce) {
+function SearchHistoryController($scope, $state, StatsService, history, $sce, $filter) {
     $scope.type = "All";
     $scope.limit = 100;
     $scope.pagination = {
@@ -2403,7 +2412,9 @@ function SearchHistoryController($scope, $state, StatsService, history, $sce) {
                 key = "TMDV ID";
                 href = "https://www.themoviedb.org/movie/"
             }
-            result.push(key + ": " + '<a target="_blank" href="' + href + request.identifier_value + '">' + request.identifier_value + "</a>");
+            href = href + request.identifier_value;
+            href = $filter("dereferer")(href);
+            result.push(key + ": " + '<a target="_blank" href="' + href + '">' + request.identifier_value + "</a>");
         }
         if (request.season) {
             result.push("Season: " + request.season);
@@ -2422,7 +2433,7 @@ function SearchHistoryController($scope, $state, StatsService, history, $sce) {
 
 
 }
-SearchHistoryController.$inject = ["$scope", "$state", "StatsService", "history", "$sce"];
+SearchHistoryController.$inject = ["$scope", "$state", "StatsService", "history", "$sce", "$filter"];
 
 angular
     .module('nzbhydraApp')
@@ -4249,6 +4260,32 @@ function ConfigFields($injector) {
                             }
                         },
                         {
+                            key: 'httpProxy',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'HTTP proxy',
+                                placeholder: 'http://user:pass@10.0.0.1:1080',
+                                help: "IPv4 only"
+                            },
+                            watcher: {
+                                listener: restartListener
+                            }
+                        },
+                        {
+                            key: 'httpsProxy',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'HTTPS proxy',
+                                placeholder: 'http://user:pass@10.0.0.1:1090',
+                                help: "IPv4 only"
+                            },
+                            watcher: {
+                                listener: restartListener
+                            }
+                        },
+                        {
                             key: 'sslcert',
                             hideExpression: '!model.ssl',
                             type: 'horizontalInput',
@@ -4313,6 +4350,15 @@ function ConfigFields($injector) {
                             },
                             validators: {
                                 apikey: regexValidator(/^[a-zA-Z0-9]*$/, "API key must only contain numbers and digits", false)
+                            }
+                        },
+                        {
+                            key: 'dereferer',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Dereferer',
+                                help: 'Redirect external links to hide your instance. Insert $s for target URL. Delete to disable.'
                             }
                         }
                     ]

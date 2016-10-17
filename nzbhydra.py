@@ -158,6 +158,16 @@ def run(arguments):
                     logger.info("Public IP address via SOCKS proxy: %s" % publicip)
                 else:
                     logger.error("Could not get public IP address. Is the proxy working?")
+            if config.settings.main.httpProxy or config.settings.main.httpProxy:
+                logger.warning("Ignoring HTTP / HTTPS proxy because SOCKS proxy is set")
+        else:
+            if config.settings.main.httpProxy:
+                logger.info("Using HTTP proxy %s" % config.settings.main.httpProxy)
+                os.environ["HTTP_PROXY"] = config.settings.main.httpProxy
+            if config.settings.main.httpsProxy:
+                logger.info("Using HTTPS proxy %s" % config.settings.main.httpsProxy)
+                os.environ["HTTPS_PROXY"] = config.settings.main.httpsProxy
+
 
         logger.notice("Starting web app on %s:%d" % (host, port))
         if config.settings.main.externalUrl is not None and config.settings.main.externalUrl != "":

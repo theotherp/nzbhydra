@@ -3,7 +3,7 @@ angular
     .controller('SearchHistoryController', SearchHistoryController);
 
 
-function SearchHistoryController($scope, $state, StatsService, history, $sce) {
+function SearchHistoryController($scope, $state, StatsService, history, $sce, $filter) {
     $scope.type = "All";
     $scope.limit = 100;
     $scope.pagination = {
@@ -112,7 +112,9 @@ function SearchHistoryController($scope, $state, StatsService, history, $sce) {
                 key = "TMDV ID";
                 href = "https://www.themoviedb.org/movie/"
             }
-            result.push(key + ": " + '<a target="_blank" href="' + href + request.identifier_value + '">' + request.identifier_value + "</a>");
+            href = href + request.identifier_value;
+            href = $filter("dereferer")(href);
+            result.push(key + ": " + '<a target="_blank" href="' + href + '">' + request.identifier_value + "</a>");
         }
         if (request.season) {
             result.push("Season: " + request.season);

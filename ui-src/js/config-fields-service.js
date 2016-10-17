@@ -289,6 +289,32 @@ function ConfigFields($injector) {
                             }
                         },
                         {
+                            key: 'httpProxy',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'HTTP proxy',
+                                placeholder: 'http://user:pass@10.0.0.1:1080',
+                                help: "IPv4 only"
+                            },
+                            watcher: {
+                                listener: restartListener
+                            }
+                        },
+                        {
+                            key: 'httpsProxy',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'HTTPS proxy',
+                                placeholder: 'http://user:pass@10.0.0.1:1090',
+                                help: "IPv4 only"
+                            },
+                            watcher: {
+                                listener: restartListener
+                            }
+                        },
+                        {
                             key: 'sslcert',
                             hideExpression: '!model.ssl',
                             type: 'horizontalInput',
@@ -353,6 +379,15 @@ function ConfigFields($injector) {
                             },
                             validators: {
                                 apikey: regexValidator(/^[a-zA-Z0-9]*$/, "API key must only contain numbers and digits", false)
+                            }
+                        },
+                        {
+                            key: 'dereferer',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Dereferer',
+                                help: 'Redirect external links to hide your instance. Insert $s for target URL. Delete to disable.'
                             }
                         }
                     ]

@@ -598,6 +598,15 @@ nzbhydraapp.filter('unsafe', function ($sce) {
     return $sce.trustAsHtml;
 });
 
+nzbhydraapp.filter('dereferer', function (ConfigService) {
+    return function(url) {
+        if (ConfigService.getSafe().dereferer) {
+            return ConfigService.getSafe().dereferer.replace("$s", escape(url));
+        }
+        return url;
+    }
+});
+
 nzbhydraapp.config(function ($provide) {
     $provide.decorator("$exceptionHandler", ['$delegate', '$injector', function ($delegate, $injector) {
         return function (exception, cause) {

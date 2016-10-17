@@ -155,6 +155,7 @@ initialConfig = {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
         "configVersion": 27,
+        "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
         "flaskReloader": False,
@@ -175,6 +176,8 @@ initialConfig = {
         "sslcert": None,
         "sslkey": None,
         "socksProxy": None,
+        "httpProxy": None,
+        "httpsProxy": None,
         "startupBrowser": True,
         "theme": "default",
         "urlBase": None,
@@ -857,4 +860,5 @@ def getSafeConfig():
         "categories": categories.getCategories(),
         "downloaders": [{"enabled": x.enabled, "name": x.name, "type": x.type, "iconCssClass": x.iconCssClass, "defaultCategory": x.defaultCategory if hasattr(x, "defaultCategory") else None} for x in settings["downloaders"]],
         "authType": settings["auth"]["authType"],
+        "dereferer": settings["main"]["dereferer"]
     }
