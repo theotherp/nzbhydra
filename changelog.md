@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.152
+Fixed: Getting debug infos might fail with reverse proxy. 
+
 ### 0.2.151
 Added: Store Ebook search data in the database. Redesigned search history.
 

@@ -22,7 +22,7 @@ function hydrabackup() {
 
         $scope.createAndDownloadBackupFile = function() {
 
-                $http({method: 'GET', url: '/internalapi/getbackup', responseType: 'arraybuffer'}).success(function (data, status, headers, config) {
+                $http({method: 'GET', url: 'internalapi/getbackup', responseType: 'arraybuffer'}).success(function (data, status, headers, config) {
                     var a = document.createElement('a');
                     var blob = new Blob([data], {'type': "application/octet-stream"});
                     a.href = URL.createObjectURL(blob);
