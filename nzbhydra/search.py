@@ -119,7 +119,7 @@ def pick_indexers(search_request):
             continue
         if not search_request.internal and p.settings.accessType == "internal":
             logger.debug("Did not pick %s because it is only enabled for internal searches" % p)
-            add_not_picked_indexer(notPickedReasons, "Disabled for internal searches", p.name)
+            add_not_picked_indexer(notPickedReasons, "Disabled for API searches", p.name)
             continue
         if selected_indexers and p.name not in selected_indexers:
             logger.debug("Did not pick %s because it was not selected by the user" % p)
@@ -322,7 +322,7 @@ def search(search_request):
                         logger.info("Skipping result with missing data: %s" % result)
                         continue
                     try:
-                        searchResult, _ = tryGetOrCreateSearchResultDbEntry(indexer.indexer.id, result)
+                        searchResult = tryGetOrCreateSearchResultDbEntry(indexer.indexer.id, result)
                         result.searchResultId = searchResult.id
                         search_results.append(result)
                     except (IntegrityError, OperationalError) as e:
@@ -408,7 +408,10 @@ def countOldSearchResults(keepFor):
 
 @retry((InterfaceError, OperationalError), delay=1, tries=5, logger=logger)
 def tryGetOrCreateSearchResultDbEntry(indexerId, result):
-    return SearchResult().get_or_create(indexer_id=indexerId, guid=result.indexerguid, defaults={"title": result.title, "link": result.link, "details": result.details_link, "firstFound": datetime.datetime.utcnow()})
+    try:
+        return SearchResult().get(SearchResult.indexer_id == indexerId, SearchResult.guid == result.indexerguid)
+    except SearchResult.DoesNotExist:
+        return SearchResult().create(indexer_id=indexerId, guid=result.indexerguid, title=result.title, link=result.link, details=result.details_link, firstFound=datetime.datetime.utcnow())
 
 
 @retry((InterfaceError, OperationalError), delay=1, tries=5, logger=logger)

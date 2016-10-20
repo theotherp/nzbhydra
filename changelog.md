@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.153
+Nothing important.
+
 ### 0.2.152
 Fixed: Getting debug infos might fail with reverse proxy. 
 
