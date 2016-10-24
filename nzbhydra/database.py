@@ -265,6 +265,7 @@ def update_db(dbfile):
             try:
                 logger.debug("Deleting all rows in TvIdCache")
                 TvIdCache.delete().execute()
+
                 migrator = SqliteMigrator(db)
                 logger.info("Adding new column tvmaze to table TvIdCache, setting nullable columns and adding index")
                 migrate(

@@ -3,6 +3,7 @@ Vagrantfile
 /.tmp
 /backup
 /debug
+/sampleapiresults
 /dist
 /build
 /flask_session

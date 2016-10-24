@@ -589,9 +589,11 @@ api_search.make_cache_key = make_request_cache_key
 def get_details(guid):
     searchResultId = int(guid[len("nzbhydrasearchresult"):])
     searchResult = SearchResult.get(SearchResult.id == searchResultId)
-    details_link = get_details_link(searchResult.indexer.name, searchResult.guid)
+    details_link = searchResult.details
     if details_link:
+        logger.info("Redirecting to details link %s " % details_link)
         return redirect(details_link)
+    logger.error("Unable to find details link for search result ID %d" % searchResultId)
     return "Unable to find details", 500
 
 

@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.154
+Changed: (Hopefully) better algorithm to get details links for NZBs.
+
 ### 0.2.153
 Nothing important.
 

@@ -216,7 +216,7 @@ def serve():
 
 @mockapp.route('/download')
 def download():
-    return "Hallo"
+    return ""
 
 
 mockapp.run(port=5000, use_reloader=True, threaded=True)

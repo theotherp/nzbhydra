@@ -537,11 +537,19 @@ class NewzNab(SearchModule):
         entry.link = item.find("link").text
         entry.attributes = []
         entry.pubDate = item.find("pubDate").text
-        entry.indexerguid = item.find("guid").text
-        if entry.indexerguid:
+        guid = item.find("guid")
+        entry.indexerguid = guid.text
+        if "isPermaLink" in guid.attrib.keys() and guid.attrib["isPermaLink"]:
+            entry.details_link = entry.indexerguid
             m = self.guidpattern.search(entry.indexerguid)
             if m:
+                # Extract GUID from link
                 entry.indexerguid = m.group(2)
+        if not entry.details_link:
+            comments = item.find("comments")
+            # Example: https://nzbfinder.ws/details/1234567jagkshsg72hs8whgs6#comments
+            if comments:
+                entry.details_link = comments.text.replace("#comments", "")
         entry.has_nfo = NzbSearchResult.HAS_NFO_MAYBE
         description = item.find("description")
         if description is not None:
@@ -582,7 +590,8 @@ class NewzNab(SearchModule):
 
             # Store all the attributes, we will return them later for external apis
             entry.attributes.append({"name": attribute_name, "value": attribute_value})
-        entry.details_link = self.get_details_link(entry.indexerguid)
+        if not entry.details_link:
+            entry.details_link = self.get_details_link(entry.indexerguid)
         if usenetdate is None:
             # Not provided by attributes, use pubDate instead
             usenetdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
