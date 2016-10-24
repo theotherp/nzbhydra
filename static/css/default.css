@@ -7235,6 +7235,7 @@ textarea.by-id-checkbox {
   width: 16px;
   height: 16px;
   background-repeat: no-repeat;
+  vertical-align: middle;
 }
 .config-tab-content {
   background-color: #333333;
@@ -7476,7 +7477,7 @@ a.disabled:hover {
 }
 .result-details {
   font-size: 12px;
-  width: 6%;
+  width: 4%;
 }
 .result-age {
   font-size: 12px;
@@ -7484,7 +7485,7 @@ a.disabled:hover {
 }
 .result-links {
   font-size: 12px;
-  width: 10%;
+  width: 8%;
 }
 .title-group-first-row {
   border-width: 1px 1px 0 1px;

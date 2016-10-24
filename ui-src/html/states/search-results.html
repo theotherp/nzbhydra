@@ -117,9 +117,8 @@
             <th class="col-md-1 cursor-default search-results-cell result-size"  ng-click="setSorting('size', true)" style="vertical-align: top; text-align: right">
                 Size <span ng-show="sortPredicate=='size'" class="caret" ng-class="{'caret-reversed': !sortReversed}"></span>
             </th>
-            <th class="col-md-1 cursor-default search-results-cell result-details" style="vertical-align: top; text-align: right">
-                Details <span class="glyphicon glyphicon-question-sign" tooltip-placement="top"
-                              uib-tooltip="Files/Grabs/Comments (where available)"></span>
+            <th class="col-md-1 cursor-default search-results-cell result-details" ng-click="setSorting('grabs', true)" style="vertical-align: top; text-align: right">
+                Grabs
             </th>
             <th class="col-md-1 cursor-default search-results-cell result-age" ng-click="setSorting('epoch', true)" style="vertical-align: top; text-align: right">
                 Age <span ng-show="sortPredicate=='epoch'" class="caret" ng-class="{'caret-reversed': sortReversed}"></span>

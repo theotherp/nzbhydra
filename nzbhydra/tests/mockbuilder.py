@@ -44,13 +44,13 @@ def buildNewznabItem(title=None, guid=None, link=None, pubdate=None, description
          "value": guid
          },
         {"name": "files",
-         "value": 100
+         "value": random.randint(1, 500)
          },
         {"name": "grabs",
-         "value": 110
+         "value": random.randint(0, 100)
          },
         {"name": "comments",
-         "value": 3
+         "value": random.randint(0,3)
          }
 
     ]
