@@ -4,6 +4,8 @@
 ### 0.2.154
 Changed: (Hopefully) better algorithm to get details links for NZBs.
 
+Added: Torrent search compatible with [Cardigann](https://github.com/cardigann/cardigann/). 
+
 ### 0.2.153
 Nothing important.
 

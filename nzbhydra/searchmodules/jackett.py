@@ -119,7 +119,9 @@ class Jackett(newznab.NewzNab):
         entry.link = item.find("link").text
         entry.details_link = item.find("comments").text
         entry.indexerguid = item.find("guid").text
-        entry.size = int(item.find("size").text)
+        size = item.find("size")
+        if size:
+            entry.size = int(size.text)
         entry.attributes = []
         entry.has_nfo = NzbSearchResult.HAS_NFO_NO
         categories = item.find("category")            
@@ -131,6 +133,8 @@ class Jackett(newznab.NewzNab):
             attribute_name = i.attrib["name"]
             attribute_value = i.attrib["value"]
             entry.attributes.append({"name": attribute_name, "value": attribute_value})
+            if attribute_name == "size":
+                entry.size = int(attribute_value)
         
         entry.pubDate = item.find("pubDate").text
         pubDate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
