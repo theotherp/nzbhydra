@@ -244,14 +244,18 @@ class SearchModule(object):
             if nzbSearchResult.category.ignoreResults == "always":
                 reason = "always"
                 ignore = True
-            if nzbSearchResult.category.ignoreResults == "internal" and searchRequest.internal:
+            elif nzbSearchResult.category.ignoreResults == "internal" and searchRequest.internal:
                 reason = "for internal searches"
                 ignore = True
-            if nzbSearchResult.category.ignoreResults == "external" and not searchRequest.internal:
+            elif nzbSearchResult.category.ignoreResults == "external" and not searchRequest.internal:
                 reason = "for API searches"
+                ignore = True
+            elif self.settings.categories and nzbSearchResult.category.name not in self.settings.categories:
+                reason = "by this indexer"
                 ignore = True
             if ignore:
                 return False, "Results from category %s are configured to be ignored %s" % (nzbSearchResult.category.pretty, reason)
+
         return True, None
         
 

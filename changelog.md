@@ -2,12 +2,17 @@
 
 ----------
 ### 0.2.155
+Added: This changelog will now contain links to the associated issues on GitHub. If you have questions or feedback you're welcome to comment there. 
+
 Added: Hydra will try to determine what backend a newznab compatible indexer is running (newznab, nntmux or nzedb) and depending on that use the correct values for NFO retrieval and excluding words. 
-Because a search needs to be executed for this analysis it will not be done automatically, so please open the settings for each newznab compatible indexer and click "Check capabilities". Sorry about that. 
+Because a search needs to be executed for this analysis it will not be done automatically, so please open the settings for each newznab compatible indexer and click "Check capabilities". Sorry about that.
+See [#376](https://github.com/theotherp/nzbhydra/issues/376) and [#329](https://github.com/theotherp/nzbhydra/issues/329).
+ 
+Added: Results in a category for which an indexer is not enabled will be rejected (when searching without specified categories). See [#353](https://github.com/theotherp/nzbhydra/issues/353).
 
-Changed: New omgwtfnzbs host. Existing settings will be migrated.
+Changed: New omgwtfnzbs host. Existing settings will be migrated. See [#409](https://github.com/theotherp/nzbhydra/issues/408).
 
-Fixed: Sorting by grabs.
+Fixed: Sorting by grabs. See [#407](https://github.com/theotherp/nzbhydra/issues/407).
 
 ### 0.2.154
 Added: Torrent search compatible with [Cardigann](https://github.com/cardigann/cardigann/).

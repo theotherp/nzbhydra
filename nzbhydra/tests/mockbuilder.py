@@ -195,7 +195,6 @@ def serve():
         if doSwitchGenerateNewGuidsDependingOnQuery:
             doGenerateNewGuids = int(query) % 2 == 0
             print("Switched generation of new GUIDs to " + str(doGenerateNewGuids))
-    categories = ["2000"]
 
     items = []
     for i in range(offset, min(offset + 100, numberOfTotalResults)):
@@ -213,7 +212,7 @@ def serve():
             searchResultguid = resultBaseName + "-guid-" + str(i)
         searchResultLink = "http://127.0.0.1:5000/download"
         searchResultDescription = resultBaseName + "-description-" + str(i)
-        item = buildNewznabItem(title=searchResultTitle, guid=searchResultguid, link=searchResultLink, pubdate=searchResultPubDate, description=searchResultDescription, size=searchResultSize, indexer_name=indexerName, categories=categories)
+        item = buildNewznabItem(title=searchResultTitle, guid=searchResultguid, link=searchResultLink, pubdate=searchResultPubDate, description=searchResultDescription, size=searchResultSize, indexer_name=indexerName, categories=[["2000", "3000", "4000", "5000", "6000"][random.randint(0, 4)]])
         items.append(item)
     result = render_template("api.html", items=items, offset=offset, total=numberOfTotalResults, title=title, description=title + " - description")
     return result
