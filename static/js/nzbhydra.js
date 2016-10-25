@@ -3729,6 +3729,7 @@ function ConfigBoxService($http, $q) {
                 model.comicCategory = data.comicCategory;
                 model.ebookCategory = data.ebookCategory;
                 model.magazineCategory = data.magazineCategory;
+                model.backend = data.backend;
                 deferred.resolve({supportedIds: data.supportedIds, supportedTypes: data.supportedTypes}, model);
             } else {
                 deferred.reject(data.message);
@@ -4763,7 +4764,8 @@ function ConfigFields($injector) {
                             type: 'newznab',
                             accessType: "both",
                             search_ids: undefined, //["imdbid", "rid", "tvdbid"],
-                            searchTypes: undefined //["tvsearch", "movie"]
+                            searchTypes: undefined, //["tvsearch", "movie"]
+                            backend: 'newznab'
                         },
                         addNewText: 'Add new indexer',
                         entryTemplateUrl: 'indexerEntry.html',

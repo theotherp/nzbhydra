@@ -2,6 +2,9 @@
 
 ----------
 ### 0.2.155
+Added: Hydra will try to determine what backend a newznab compatible indexer is running (newznab, nntmux or nzedb) and depending on that use the correct values for NFO retrieval and excluding words. 
+Because a search needs to be executed for this analysis it will not be done automatically, so please open the settings for each newznab compatible indexer and click "Check capabilities". Sorry about that. 
+
 Changed: New omgwtfnzbs host. Existing settings will be migrated.
 
 Fixed: Sorting by grabs.

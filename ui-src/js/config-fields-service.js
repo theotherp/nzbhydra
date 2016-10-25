@@ -792,7 +792,8 @@ function ConfigFields($injector) {
                             type: 'newznab',
                             accessType: "both",
                             search_ids: undefined, //["imdbid", "rid", "tvdbid"],
-                            searchTypes: undefined //["tvsearch", "movie"]
+                            searchTypes: undefined, //["tvsearch", "movie"]
+                            backend: 'newznab'
                         },
                         addNewText: 'Add new indexer',
                         entryTemplateUrl: 'indexerEntry.html',

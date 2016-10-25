@@ -276,6 +276,24 @@ def check_caps(host, apikey, userAgent=None, timeout=None, skipIdsAndTypes=False
         if doBruteForce and not skipIdsAndTypes:
             logger.info("Unable to read supported params from caps. Will continue with brute force")
             supportedIds, supportedTypes = checkCapsBruteForce(supportedTypes, toCheck, host, apikey)
+
+        #Check indexer type (nzedb, newznab, nntmux)
+        url = _build_base_url(host, apikey, "tvsearch", None)
+        headers = {
+            'User-Agent': userAgent if userAgent is not None else config.settings.searching.userAgent
+        }
+        logger.debug("Requesting %s" % url)
+        r = requests.get(url, verify=False, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers)
+        r.raise_for_status()
+        generator = ET.fromstring(r.content).find("channel/generator")
+        if generator is not None:
+            backend = generator.text
+            logger.info("Found generator tag indicating that indexer %s is a %s based indexer" % (host, backend))
+        else:
+            logger.info("Assuming indexer %s is a newznab based indexer" % host)
+            backend = "newznab"
+
+
         return {
             "animeCategory": animeCategory, 
             "comicCategory": comicCategory, 
@@ -285,7 +303,8 @@ def check_caps(host, apikey, userAgent=None, timeout=None, skipIdsAndTypes=False
             "supportedIds": sorted(list(set(supportedIds))), 
             "supportedTypes": sorted(list(set(supportedTypes))),
             "supportedCategories": supportedCategories,
-            "supportsAllCategories": len(supportedCategories) == getNumberOfSelectableCategories() - 1 #Without "all
+            "supportsAllCategories": len(supportedCategories) == getNumberOfSelectableCategories() - 1, #Without "all
+            "backend": backend
         }
 
     except HTTPError as e:
@@ -355,7 +374,10 @@ class NewzNab(SearchModule):
                 if " " in word or "-" in word or "." in word:
                     self.debug('Not using ignored word "%s" in query because it contains a space, dash or dot which is not supported by newznab queries' % word)
                     continue
-                query += " !" + word
+                if self.settings.backend.lower() in ["nntmux", "nzedb"]:
+                    query += ",-" + word
+                else:
+                    query += " !" + word
         return query
 
     def get_showsearch_urls(self, search_request):
@@ -609,7 +631,13 @@ class NewzNab(SearchModule):
         # try to get raw nfo. if it is xml the indexer doesn't actually return raw nfos (I'm looking at you, DOGNzb)
         url = furl(self.settings.host)
         url.path.add("api")
-        url.add({"apikey": self.settings.apikey, "t": "getnfo", "o": "xml", "id": guid, "raw": "1"})
+        if self.settings.backend.lower() in ["nzedb", "nntmux"]:
+            logger.debug("Using t=info for nzedb or nntmux based indexer")
+            t = "info"
+        else:
+            logger.debug("Using t=getnfo for non-nzedb based indexer")
+            t = "getnfo"
+        url.add({"apikey": self.settings.apikey, "t": t, "o": "xml", "id": guid, "raw": "1"})
 
         response, papiaccess, _ = self.get_url_with_papi_access(url, "nfo")
         if response is None:

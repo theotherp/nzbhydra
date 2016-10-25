@@ -673,13 +673,12 @@ def migrateConfig(config):
 
         if config["main"]["configVersion"] == 27:
             with version_update(config, 28):
-                addLogMessage(20, "Changing omgwtfnzbs host to .me")
+                addLogMessage(20, "Changing omgwtfnzbs host to .me and adding backend setting to indexers. Assuming newznab by default.")
                 for indexer in config["indexers"]:
                     if indexer["name"] == "omgwtfnzbs.org":
                         indexer["host"] = "https://api.omgwtfnzbs.me"
-                        break
-                else:
-                    logger.error("Unable to find omgwtfnzbs in indexers")
+                    if indexer["type"] == "newznab":
+                        indexer["backend"] = "newznab"
         
     return config
 

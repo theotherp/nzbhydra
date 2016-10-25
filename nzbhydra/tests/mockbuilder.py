@@ -161,6 +161,11 @@ titles = None
 
 @mockapp.route('/api')
 def serve():
+
+    if request.args.get("t") == "caps":
+        with open("mock/nocaps.xml") as f:
+            return f.read()
+
     global pubDates
     global sizes
     global titles
