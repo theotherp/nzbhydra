@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.156
+Fixed: Size unavailable for Cardigann results, errors where multiple results with the same GUID were returned by Jackett/Cardigann. See [#410](https://github.com/theotherp/nzbhydra/issues/410).
+
 ### 0.2.155
 Added: This changelog will now contain links to the associated issues on GitHub. If you have questions or feedback you're welcome to comment there. 
 

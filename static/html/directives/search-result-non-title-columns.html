@@ -14,7 +14,7 @@
     {{ ::result.age_days }}d
 </td>
 <td class="col-md-3 search-results-cell result-links">
-    <a ng-class="{'no-nfo': result.comments == 0}" ng-href="result.details_link" target="_blank"><i class="fa fa-comment" aria-hidden="true" style="margin-left:2px; margin-right:2px;"></i></a>
+    <a ng-class="{'no-nfo': result.comments == 0}" href="{{::result.details_link}}" target="_blank"><i class="fa fa-comment" aria-hidden="true" style="margin-left:2px; margin-right:2px;"></i></a>
     <span ng-class="::{'no-nfo': result.has_nfo == 0}" >
     <a href ng-click="showNfo(result)">
         <i class="fa fa-file-text"

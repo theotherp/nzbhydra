@@ -119,8 +119,9 @@ class Jackett(newznab.NewzNab):
         entry.link = item.find("link").text
         entry.details_link = item.find("comments").text
         entry.indexerguid = item.find("guid").text
+        entry.comments = 0
         size = item.find("size")
-        if size:
+        if size is not None:
             entry.size = int(size.text)
         entry.attributes = []
         entry.has_nfo = NzbSearchResult.HAS_NFO_NO
@@ -128,13 +129,17 @@ class Jackett(newznab.NewzNab):
         if categories is not None:
             categories = categories.text
         entry.category = getByNewznabCats(categories)
-        
-        for i in item.findall("./newznab:attr", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}):
+
+        attributes = item.findall("torznab:attr", {"torznab": "http://torznab.com/schemas/2015/feed"})
+        attributes.extend(item.findall("newznab:attr", {"newznab": "http://www.newznab.com/DTD/2010/feeds/attributes/"}))
+        for i in attributes:
             attribute_name = i.attrib["name"]
             attribute_value = i.attrib["value"]
             entry.attributes.append({"name": attribute_name, "value": attribute_value})
             if attribute_name == "size":
                 entry.size = int(attribute_value)
+            if attribute_name == "grabs":
+                entry.grabs = int(attribute_value)
         
         entry.pubDate = item.find("pubDate").text
         pubDate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
@@ -143,6 +148,8 @@ class Jackett(newznab.NewzNab):
         entry.age_days = (arrow.utcnow() - pubDate).days
         entry.precise_date = True 
         entry.downloadType = "torrent"
+        # For some trackers several results with the same ID are returned (e.g. PTP so we need to make sure the ID is unique)
+        entry.indexerguid += str(entry.size)
         return entry
 
 

@@ -4965,7 +4965,7 @@ function getIndexerPresets() {
     ],
         [
             {
-                name: "Jackett",
+                name: "Jackett/Cardigann",
                 host: "http://127.0.0.1:9117/torznab/YOURTRACKER",
                 search_ids: [],
                 searchTypes: [],

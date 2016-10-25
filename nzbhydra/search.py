@@ -84,6 +84,9 @@ class SearchRequest(object):
 
 
 def canUseIdKey(indexer, key):
+    if not hasattr(indexer.settings, "search_ids"):
+        logger.error('Search IDs property not set. Please open the config for indexer %s and click "Check capabilities"' % indexer.name)
+        return False
     if key in indexer.settings.search_ids:
         return True
     # We might be able to convert them using TVMaze
@@ -91,6 +94,7 @@ def canUseIdKey(indexer, key):
         return True
     if key == "rid" and "tvdbid" in indexer.settings.search_ids:
         return True
+    return False
 
 
 def add_not_picked_indexer(reasonMap, reason, indexerName):
@@ -213,6 +217,7 @@ pseudo_cache = {}
 
 
 def search(search_request):
+    logger.info("Starting new search: %s" % search_request)
     if search_request.maxage is None and config.settings.searching.maxAge:
         search_request.maxage = config.settings.searching.maxAge
         logger.info("Will ignore results older than %d days" % search_request.maxage)
@@ -315,8 +320,8 @@ def search(search_request):
             took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
             logger.debug("Waited %dms for database lock" % took)
         for indexer, queries_execution_result in result["results"].items():
-            with db.atomic():
-                logger.debug("%s returned %d results. Trying to retrieve them from database" % (indexer, len(queries_execution_result.results)))
+            with db.atomic("deferred"):
+                logger.info("%s returned %d results" % (indexer, len(queries_execution_result.results)))
                 for result in queries_execution_result.results:
                     if result.title is None or result.link is None or result.indexerguid is None:
                         logger.info("Skipping result with missing data: %s" % result)
@@ -386,7 +391,7 @@ def search(search_request):
         cache_entry["offset"] += limit
 
     if len(indexers_to_call) == 0:
-        logger.debug("All indexers exhausted")
+        logger.info("All indexers exhausted")
     elif len(cache_entry["results"]) >= external_offset + limit:
         logger.debug("Loaded a total of %d results which is enough for the %d requested. Stopping search." % (len(cache_entry["results"]), (external_offset + limit)))
 
@@ -425,7 +430,7 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
     dbsearch.username = request.authorization.username if request.authorization is not None else None
     saveSearch(dbsearch)
     with databaseLock:
-        with db.atomic():
+        with db.atomic(transaction_type="deferred"):
             for indexer, result in results_by_indexer.items():
                 if result.didsearch:
                     indexersearchentry = result.indexerSearchEntry

@@ -18,7 +18,7 @@ def startTest(query):
     try:
         print("Starting request")
         before = arrow.now()
-        r = requests.get("http://127.0.0.1:5076/api?apikey=apikey&t=search&q=%s" % query)
+        r = requests.get("http://127.0.0.1:5075/api?apikey=apikey&t=search&q=%s" % query)
         r.raise_for_status()
         after = arrow.now()
         took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
@@ -30,7 +30,7 @@ def startTest(query):
 
 
 runs = 30
-concurrent_searches = 10
+concurrent_searches = 3
 for x in range(1, runs+1):
     threads = []
     allSuccessful = True
