@@ -14,6 +14,8 @@ Changed: New omgwtfnzbs host. Existing settings will be migrated. See [#409](htt
 
 Fixed: Sorting by grabs. See [#407](https://github.com/theotherp/nzbhydra/issues/407).
 
+Fixed: Stat times weren't localized. See [#378](https://github.com/theotherp/nzbhydra/issues/378).
+
 ### 0.2.154
 Added: Torrent search compatible with [Cardigann](https://github.com/cardigann/cardigann/).
 

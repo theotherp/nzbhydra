@@ -9,6 +9,7 @@ from itertools import groupby
 
 import arrow
 from builtins import *
+from dateutil import tz
 from peewee import fn, JOIN
 
 from nzbhydra import database
@@ -195,7 +196,7 @@ def getTimeBasedDownloadStats():
         select(Indexer.name, IndexerApiAccess.response_successful, IndexerNzbDownload.time). \
         join(IndexerApiAccess, JOIN.LEFT_OUTER). \
         join(Indexer, JOIN.LEFT_OUTER)
-    downloadTimes = [arrow.get(x.time) for x in downloads]
+    downloadTimes = [arrow.get(x.time).to(tz.tzlocal()) for x in downloads]
 
     perDayOfWeek, perHourOfDay = calculcateTimeBasedStats(downloadTimes)
 
@@ -204,7 +205,7 @@ def getTimeBasedDownloadStats():
 
 def getTimeBasedSearchStats():
     searches = Search().select(Search.time)
-    searchTimes = [arrow.get(x.time) for x in searches]
+    searchTimes = [arrow.get(x.time).to(tz.tzlocal()) for x in searches]
 
     perDayOfWeek, perHourOfDay = calculcateTimeBasedStats(searchTimes)
 

@@ -3,15 +3,13 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-# standard_library.install_aliases()
-import shutil
+import datetime
+import json
+import logging
 
+import arrow
 from builtins import *
 from builtins import object
-import json
-import datetime
-import logging
-import arrow
 from dateutil.tz import tzutc
 from playhouse.migrate import *
 from playhouse.sqliteq import SqliteQueueDatabase
@@ -63,7 +61,6 @@ class Search(Model):
     username = CharField(null=True)
     title = TextField(null=True)
     author = TextField(null=True)
-
 
     class Meta(object):
         database = db
@@ -135,12 +132,12 @@ class IndexerApiAccess(Model):
 
 class IndexerNzbDownload(Model):
     searchResult = ForeignKeyField(SearchResult, related_name="downloads")
-    apiAccess = ForeignKeyField(IndexerApiAccess)  
+    apiAccess = ForeignKeyField(IndexerApiAccess)
     time = DateTimeField()
-    title = CharField() #Redundant when the search result still exists but after it's deleted we still wanna see what the title is
+    title = CharField()  # Redundant when the search result still exists but after it's deleted we still wanna see what the title is
     mode = CharField()  # "serve" or "redirect"
     internal = BooleanField(null=True)
-    
+
     class Meta(object):
         database = db
 
@@ -210,7 +207,7 @@ class MovieIdCache(Model):
 
     class Meta(object):
         database = db
-        
+
 
 class DummyTableDefinition(Model):
     idField = IntegerField(default=1, null=False)
@@ -232,8 +229,6 @@ def init_db(dbfile):
     VersionInfo(version=DATABASE_VERSION).create()
 
 
-
-
 def update_db(dbfile):
     # CAUTION: Don't forget to increase the default value for VersionInfo
     logger.debug("Initing")
@@ -243,8 +238,8 @@ def update_db(dbfile):
     vi = VersionInfo.get()
     if vi.version < DATABASE_VERSION:
         logger.info("Migrating database")
-        #Backup will be done by update code
-    
+        # Backup will be done by update code
+
         if vi.version == 1:
             logger.info("Upgrading database to version 2")
             # Update from 1 to 2
@@ -269,10 +264,10 @@ def update_db(dbfile):
                 migrator = SqliteMigrator(db)
                 logger.info("Adding new column tvmaze to table TvIdCache, setting nullable columns and adding index")
                 migrate(
-                        migrator.add_column("tvidcache", "tvmaze", TvIdCache.tvmaze),
-                        migrator.drop_not_null("tvidcache", "tvdb"),
-                        migrator.drop_not_null("tvidcache", "tvrage"),
-                        migrator.add_index("tvidcache", ("tvdb", "tvrage", "tvmaze"), True)
+                    migrator.add_column("tvidcache", "tvmaze", TvIdCache.tvmaze),
+                    migrator.drop_not_null("tvidcache", "tvdb"),
+                    migrator.drop_not_null("tvidcache", "tvrage"),
+                    migrator.add_index("tvidcache", ("tvdb", "tvrage", "tvmaze"), True)
                 )
                 logger.info("Adding new table MovieIdCache")
                 db.create_table(MovieIdCache)
@@ -287,50 +282,50 @@ def update_db(dbfile):
             logger.info("Adding columns for usernames")
             migrator = SqliteMigrator(db)
             migrate(
-                    migrator.add_column("indexerapiaccess", "username", IndexerApiAccess.username),
-                    migrator.add_column("search", "username", Search.username)
-                    )
+                migrator.add_column("indexerapiaccess", "username", IndexerApiAccess.username),
+                migrator.add_column("search", "username", Search.username)
+            )
             vi.version = 4
             vi.save()
         if vi.version == 4:
             logger.info("Upgrading database to version 5")
             logger.info("Dropping and recreating ID cache tables for movies and TV so they will be refilled with titles")
-            
+
             db.drop_table(MovieIdCache)
             db.create_table(MovieIdCache)
             db.drop_table(TvIdCache)
             db.create_table(TvIdCache)
-            
+
             vi.version = 5
             vi.save()
 
         if vi.version == 5:
             logger.info("Upgrading database to version 6 (this might take a couple of seconds)")
             logger.info("Migrating table columns")
-            
-            #TODO: Store all stuff before migrating and after fill it back in
+
+            # TODO: Store all stuff before migrating and after fill it back in
 
             # Delete all instances of IndexerNzbDownload because we'll allow the reference to SearchResult to be empty but need to make it non-nullable afterwards
-            #IndexerNzbDownload.delete().execute()
+            # IndexerNzbDownload.delete().execute()
             indexerNzbDownloads = list(v5IndexerNzbDownload.select().dicts())
 
             logger.info("Converting search results to new schema")
-            
+
             migrator = SqliteMigrator(db)
             migrate(
-                
+
                 migrator.rename_column('IndexerSearch', 'results', 'resultscount'),
-                                
+
                 migrator.drop_column('IndexerNzbDownload', 'indexer_id'),
                 migrator.drop_column('IndexerNzbDownload', 'guid'),
                 migrator.drop_column('IndexerNzbDownload', 'indexer_search_id'),
 
                 migrator.rename_column('IndexerNzbDownload', 'api_access_id', 'apiaccess_id'),
-                
+
                 # Add foreign key to SearchResult
                 migrator.add_column('IndexerNzbDownload', 'searchResult_id', DummyTableDefinition.idField),
             )
-            
+
             logger.info("Creating table for search results")
             db.create_table(SearchResult)
 
@@ -341,7 +336,7 @@ def update_db(dbfile):
                     newDownload = IndexerNzbDownload.get(IndexerNzbDownload.apiAccess == oldDownload["api_access"])
                     newDownload.searchResult = searchResult
                     newDownload.save()
-            
+
                 vi.version = 6
                 vi.save()
 
@@ -354,7 +349,7 @@ def update_db(dbfile):
             vi.version = 7
             vi.save()
 
-        #Well this is embarrassing
+        # Well this is embarrassing
         if vi.version == 7:
             logger.info("Upgrading database to version 8")
             migrator = SqliteMigrator(db)
@@ -367,7 +362,7 @@ def update_db(dbfile):
         if vi.version == 8:
             logger.info("Upgrading database to version 9")
             migrator = SqliteMigrator(db)
-            cursor = db.execute_sql("select t.id, t.season, t.episode from search t where t.episode is not null or t.season is not null")
+            cursor = db.execute_sql("SELECT t.id, t.season, t.episode FROM search t WHERE t.episode IS NOT NULL OR t.season IS NOT NULL")
             rows = list(cursor.fetchall())
             logger.info("Changing column type of season and episode to text")
             with db.transaction():
@@ -383,7 +378,7 @@ def update_db(dbfile):
                     search.season = str(row[1])
                     search.episode = str(row[2])
                     search.save()
-                
+
                 vi.version = 9
                 vi.save()
 
@@ -459,4 +454,3 @@ def update_db(dbfile):
             vi.version = 12
             vi.save()
             logger.info("Database migration completed successfully")
-
