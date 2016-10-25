@@ -2,6 +2,8 @@
 
 ----------
 ### 0.2.155
+Changed: New omgwtfnzbs host. Existing settings will be migrated.
+
 Fixed: Sorting by grabs.
 
 ### 0.2.154

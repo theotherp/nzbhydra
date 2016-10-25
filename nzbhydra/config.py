@@ -136,8 +136,8 @@ initialConfig = {
             "enabled": False,
             "hitLimit": 0,
             "hitLimitResetTime": None,
-            "host": "https://api.omgwtfnzbs.org",
-            "name": "omgwtfnzbs.org",
+            "host": "https://api.omgwtfnzbs.me",
+            "name": "omgwtfnzbs",
             "password": None,
             "preselect": True,
             "score": 0,
@@ -154,7 +154,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 27,
+        "configVersion": 28,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
@@ -670,8 +670,16 @@ def migrateConfig(config):
                     config["categories"]["categories"][cat]["forbiddenRegex"] = None
                 config["searching"]["requiredRegex"] = None
                 config["searching"]["forbiddenRegex"] = None
-                
 
+        if config["main"]["configVersion"] == 27:
+            with version_update(config, 28):
+                addLogMessage(20, "Changing omgwtfnzbs host to .me")
+                for indexer in config["indexers"]:
+                    if indexer["name"] == "omgwtfnzbs.org":
+                        indexer["host"] = "https://api.omgwtfnzbs.me"
+                        break
+                else:
+                    logger.error("Unable to find omgwtfnzbs in indexers")
         
     return config
 
