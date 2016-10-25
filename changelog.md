@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.155
+Fixed: Sorting by grabs.
+
 ### 0.2.154
 Added: Torrent search compatible with [Cardigann](https://github.com/cardigann/cardigann/).
 
