@@ -593,6 +593,10 @@ class NewzNab(SearchModule):
                     self.error("Unable to parse category %s" % attribute_value)
             elif attribute_name == "password" and attribute_value != "0":
                 entry.passworded = True
+            elif attribute_name == "nfo":
+                entry.has_nfo = NzbSearchResult.HAS_NFO_YES if int(attribute_value) == 1 else NzbSearchResult.HAS_NFO_NO
+            elif attribute_name == "info" and self.settings.backend.lower() in["nzedb", "nntmux"]:
+                entry.has_nfo = NzbSearchResult.HAS_NFO_YES
             elif attribute_name == "group" and attribute_value != "not available":
                 entry.group = attribute_value
             elif attribute_name == "usenetdate":
@@ -612,6 +616,9 @@ class NewzNab(SearchModule):
 
             # Store all the attributes, we will return them later for external apis
             entry.attributes.append({"name": attribute_name, "value": attribute_value})
+        if self.settings.backend.lower() in ["nzedb", "nntmux"] and entry.has_nfo == NzbSearchResult.HAS_NFO_MAYBE:
+            # If the "info" attribute wasn't found this entry doesn't have an NFO
+            entry.has_nfo = NzbSearchResult.HAS_NFO_NO
         if not entry.details_link:
             entry.details_link = self.get_details_link(entry.indexerguid)
         if usenetdate is None:

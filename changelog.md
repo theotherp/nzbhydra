@@ -2,6 +2,8 @@
 
 ----------
 ### 0.2.158
+Changed: Properly use newznab indexer data to check if an NFO is available. See [#329](https://github.com/theotherp/nzbhydra/issues/329).
+
 Fixed: Results from indexers reporting no comments would show comment icon. See [#411](https://github.com/theotherp/nzbhydra/issues/411).
  
 Fixed: "Include duplicates" state would not be remembered properly and switching it was wonky. 
