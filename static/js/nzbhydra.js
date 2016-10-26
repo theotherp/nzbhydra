@@ -2295,9 +2295,9 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     };
 
     $scope.toggleDuplicatesDisplayed = function () {
-        $scope.duplicatesDisplayed = !$scope.duplicatesDisplayed;
-        localStorageService.set("duplicatesDisplayed", $scope.duplicatesDisplayed);
-        $scope.$broadcast("duplicatesDisplayed", $scope.duplicatesDisplayed);
+        //$scope.foo.duplicatesDisplayed = !$scope.foo.duplicatesDisplayed;
+        localStorageService.set("duplicatesDisplayed", $scope.foo.duplicatesDisplayed);
+        $scope.$broadcast("duplicatesDisplayed", $scope.foo.duplicatesDisplayed);
     };
 
     $scope.$on("checkboxClicked", function(event, originalEvent, rowIndex, newCheckedValue) {
