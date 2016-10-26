@@ -377,7 +377,7 @@ class NewzNab(SearchModule):
                 if self.settings.backend.lower() in ["nntmux", "nzedb"]:
                     query += ",-" + word
                 else:
-                    query += " !" + word
+                    query += "--" + word
         return query
 
     def get_showsearch_urls(self, search_request):
