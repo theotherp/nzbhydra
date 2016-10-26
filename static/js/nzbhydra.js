@@ -2178,7 +2178,13 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
             function createHashGroup(hashGroup) {
                 //Sorting hash group's contents should not matter for size and age and title but might for category (we might remove this, it's probably mostly unnecessary)
                 var sortedHashGroup = _.sortBy(hashGroup, function (item) {
-                    var sortPredicateValue = item[$scope.sortPredicate];
+                    var sortPredicateValue;
+                    if ($scope.sortPredicate == "grabs") {
+                        sortPredicateValue = angular.isDefined(item.grabs) ? item.grabs : 0;
+                    } else {
+                        sortPredicateValue = item[$scope.sortPredicate];
+                    }
+                    //var sortPredicateValue = item[$scope.sortPredicate];
                     return $scope.sortReversed ? -sortPredicateValue : sortPredicateValue;
                 });
                 //Now sort the hash group by indexer score (inverted) so that the result with the highest indexer score is shown on top (or as the only one of a hash group if it's collapsed)
@@ -2189,7 +2195,11 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
             }
 
             function getHashGroupFirstElementSortPredicate(hashGroup) {
-                var sortPredicateValue = hashGroup[0][$scope.sortPredicate];
+                if ($scope.sortPredicate == "grabs") {
+                    sortPredicateValue = angular.isDefined(hashGroup[0].grabs) ? hashGroup[0].grabs : 0;
+                } else {
+                    var sortPredicateValue = hashGroup[0][$scope.sortPredicate];
+                }
                 return $scope.sortReversed ? -sortPredicateValue : sortPredicateValue;
             }
 
@@ -2200,6 +2210,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
             var sortPredicateValue;
             if ($scope.sortPredicate == "title") {
                 sortPredicateValue = titleGroup[0][0].title.toLowerCase();
+            } else if ($scope.sortPredicate == "grabs") {
+                sortPredicateValue = angular.isDefined(titleGroup[0][0].grabs) ? titleGroup[0][0].grabs : 0;
             } else {
                 sortPredicateValue = titleGroup[0][0][$scope.sortPredicate];
             }

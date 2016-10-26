@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.157
+Fixed: Sorting by grabs works with indexers which don't report the number of grabs. Results from those will be considered as having 0 grabs. See [#407](https://github.com/theotherp/nzbhydra/issues/407).
+
 ### 0.2.156
 Fixed: Size unavailable for Cardigann results, errors where multiple results with the same GUID were returned by Jackett/Cardigann. See [#410](https://github.com/theotherp/nzbhydra/issues/410).
 
