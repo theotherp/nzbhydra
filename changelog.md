@@ -4,7 +4,9 @@
 ### 0.2.158
 Fixed: Results from indexers reporting no comments would show comment icon. See [#411](https://github.com/theotherp/nzbhydra/issues/411).
  
-Fixed: "Include duplicates" state would not be remembered properly and switching it was wonky. Known issue: Expanding duplicates fucks up the layout.
+Fixed: "Include duplicates" state would not be remembered properly and switching it was wonky. 
+
+Fixed: Expanding duplicates fucked up the layout (since 0.2.154).
 
 ### 0.2.157
 Fixed: Sorting by grabs works with indexers which don't report the number of grabs. Results from those will be considered as having 0 grabs. See [#407](https://github.com/theotherp/nzbhydra/issues/407).
