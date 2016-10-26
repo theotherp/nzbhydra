@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.158
+Fixed: Results from indexers reporting no comments would show comment icon. See [#411](https://github.com/theotherp/nzbhydra/issues/411). 
+
 ### 0.2.157
 Fixed: Sorting by grabs works with indexers which don't report the number of grabs. Results from those will be considered as having 0 grabs. See [#407](https://github.com/theotherp/nzbhydra/issues/407).
 
