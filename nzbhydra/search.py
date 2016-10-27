@@ -320,7 +320,7 @@ def search(search_request):
             took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
             logger.debug("Waited %dms for database lock" % took)
         for indexer, queries_execution_result in result["results"].items():
-            with db.atomic("deferred"):
+            with db.atomic():
                 logger.info("%s returned %d results" % (indexer, len(queries_execution_result.results)))
                 for result in queries_execution_result.results:
                     if result.title is None or result.link is None or result.indexerguid is None:

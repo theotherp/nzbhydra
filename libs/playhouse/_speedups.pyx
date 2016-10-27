@@ -3,6 +3,7 @@ from bisect import bisect_right
 from collections import deque
 from cpython cimport datetime
 
+
 cdef basestring _strip_parens(basestring s):
     if not s or s[0] != '(':
         return s
@@ -38,6 +39,7 @@ cdef basestring _strip_parens(basestring s):
 def strip_parens(basestring s):
     return _strip_parens(s)
 
+
 cdef tuple SQLITE_DATETIME_FORMATS = (
     '%Y-%m-%d %H:%M:%S',
     '%Y-%m-%d %H:%M:%S.%f',
@@ -53,6 +55,7 @@ cdef dict SQLITE_DATE_TRUNC_MAPPING = {
     'hour': '%Y-%m-%d %H',
     'minute': '%Y-%m-%d %H:%M',
     'second': '%Y-%m-%d %H:%M:%S'}
+
 
 cpdef format_date_time(date_value, formats, post_fn=None):
     cdef:
@@ -73,7 +76,9 @@ cpdef format_date_time(date_value, formats, post_fn=None):
 cpdef datetime.datetime format_date_time_sqlite(date_value):
     return format_date_time(date_value, SQLITE_DATETIME_FORMATS)
 
+
 cdef class _QueryResultWrapper(object)  # Forward decl.
+
 
 cdef class _ResultIterator(object):
     cdef:
@@ -95,6 +100,7 @@ cdef class _ResultIterator(object):
             raise StopIteration
         self._idx += 1
         return obj
+
 
 cdef class _QueryResultWrapper(object):
     cdef:
@@ -227,7 +233,7 @@ cdef class _QueryResultWrapper(object):
 
     cpdef fill_cache(self, n=None):
         cdef:
-            int counter = -1 if n is None else <int> n
+            int counter = -1 if n is None else <int>n
         if counter > 0:
             counter = counter - self._ct
 
@@ -239,6 +245,7 @@ cdef class _QueryResultWrapper(object):
                 break
             else:
                 counter -= 1
+
 
 cdef class _TuplesQueryResultWrapper(_QueryResultWrapper):
     cdef process_row(self, tuple row):
@@ -254,6 +261,7 @@ cdef class _TuplesQueryResultWrapper(_QueryResultWrapper):
                 ret.append(func(row[i]))
 
         return tuple(ret)
+
 
 cdef class _DictQueryResultWrapper(_QueryResultWrapper):
     cdef dict _make_dict(self, tuple row):
@@ -273,11 +281,13 @@ cdef class _DictQueryResultWrapper(_QueryResultWrapper):
     cdef process_row(self, tuple row):
         return self._make_dict(row)
 
+
 cdef class _ModelQueryResultWrapper(_DictQueryResultWrapper):
     cdef process_row(self, tuple row):
         inst = self.model(**self._make_dict(row))
         inst._prepare_instance()
         return inst
+
 
 cdef class _SortedFieldList(object):
     cdef:

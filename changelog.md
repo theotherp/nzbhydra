@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.159
+Fixed: Windows binaries wouldn't start up because of library inconsistencies. See [#409](https://github.com/theotherp/nzbhydra/issues/409).
+
 ### 0.2.158
 Changed: Properly use newznab indexer data to check if an NFO is available. See [#329](https://github.com/theotherp/nzbhydra/issues/329).
 

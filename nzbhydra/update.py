@@ -91,24 +91,29 @@ def getChangelog(currentVersion, repVersion):
     return changelog
 
 
-def getVersionHistory():
+def getVersionHistory(oldVersion=None, sinceLastVersion=False):
     main_dir = os.path.dirname(os.path.dirname(__file__))
     changelogMd = os.path.join(main_dir, "changelog.md")
     try:
         with open(changelogMd, "r") as f:
             changelog = f.read()
-        return getChangesSince(changelog)
+        return getChangesSince(changelog, oldVersion=oldVersion, sinceLastVersion=sinceLastVersion)
     except Exception:
         logger.exception("Unable to read local changelog")
         return None
 
 
-def getChangesSince(changelog, oldVersion=None):
+def getChangesSince(changelog, oldVersion=None, sinceLastVersion=False):
     start = changelog.index("----------") + 11
     changelog = changelog[start:]
+    end = None
     if oldVersion:
+        end = changelog.index(("### %s" % oldVersion).strip())
+    elif sinceLastVersion:
+        end = changelog.index("###", start)
+
+    if end:
         try:
-            end = changelog.index(("### %s" % oldVersion).strip())
             changelog = changelog[:end]
         except ValueError:
             logger.exception("Err while finding current version in changelog. Will return the whole changelog")
