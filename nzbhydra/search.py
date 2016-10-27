@@ -430,7 +430,7 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
     dbsearch.username = request.authorization.username if request.authorization is not None else None
     saveSearch(dbsearch)
     with databaseLock:
-        with db.atomic(transaction_type="deferred"):
+        with db.atomic():
             for indexer, result in results_by_indexer.items():
                 if result.didsearch:
                     indexersearchentry = result.indexerSearchEntry
