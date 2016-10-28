@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.161
+Fixed: Max age was not respected in internal movie and TV searches and never used for newznab indexer requests. See [#412](https://github.com/theotherp/nzbhydra/issues/412).
+
 ### 0.2.160
 Fixed: Error while searching with windows binaries. See [#413](https://github.com/theotherp/nzbhydra/issues/413)
 

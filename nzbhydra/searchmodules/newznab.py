@@ -401,6 +401,8 @@ class NewzNab(SearchModule):
             url.add({"season": search_request.season})
         if search_request.query:
             url.add({"q": search_request.query})
+        if search_request.maxage:
+            url.add({"maxage": search_request.maxage})
 
         return [url.url]
 
@@ -424,6 +426,8 @@ class NewzNab(SearchModule):
                     return []
 
                 url.add({search_request.identifier_key: search_request.identifier_value})
+        if search_request.maxage:
+            url.add({"maxage": search_request.maxage})
 
         return [url.url]
 
