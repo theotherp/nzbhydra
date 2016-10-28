@@ -1,9 +1,12 @@
 import json
 import os
-from subprocess import call
-from bs4 import BeautifulSoup
 import requests
+from bs4 import BeautifulSoup
+from subprocess import call
 from nzbhydra import update
+
+DO_PUSH = False
+DO_RELEASE = False
 
 _, version = update.get_current_version()
 
@@ -13,8 +16,11 @@ text = '\n\n'.join(find_all)
 
 returncode = call(["buildWindowsdist.cmd", version])
 
-# if returncode == 0:
-#     token = os.environ.get("TOKEN")
-#     data = {"tag_name": version, "target_commitish": "master", "name": version, "body": text, "draft": False, "prerelease": False}
-#     r = requests.post("https://api.github.com/repos/theotherp/nzbhydra-windows-releases/releases?access_token=" + token, data=json.dumps(data))
-#     r.raise_for_status()
+if returncode == 0 and DO_PUSH:
+    returncode = call(["pushWindowsdist.cmd", version])
+
+if returncode == 0 and DO_RELEASE:
+    token = os.environ.get("TOKEN")
+    data = {"tag_name": version, "target_commitish": "master", "name": version, "body": text, "draft": False, "prerelease": False}
+    r = requests.post("https://api.github.com/repos/theotherp/nzbhydra-windows-releases/releases?access_token=" + token, data=json.dumps(data))
+    r.raise_for_status()

@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.160
+Fixed: Error while searching with windows binaries. See [#413](https://github.com/theotherp/nzbhydra/issues/413)
+
 ### 0.2.159
 Fixed: Windows binaries wouldn't start up because of library inconsistencies. See [#409](https://github.com/theotherp/nzbhydra/issues/409).
 
