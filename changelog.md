@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.162
+Changed: Rename omgwtfnzbs.org to omgwtfnzbs and change references in database to keep stats. See [#418](https://github.com/theotherp/nzbhydra/issues/408).
+
 ### 0.2.161
 Fixed: Max age was not respected in internal movie and TV searches and never used for newznab indexer requests. See [#412](https://github.com/theotherp/nzbhydra/issues/412).
 

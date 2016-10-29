@@ -18,7 +18,7 @@ logger = logging.getLogger('root')
 
 db = SqliteQueueDatabase(None, autostart=False, results_timeout=20.0)
 
-DATABASE_VERSION = 12
+DATABASE_VERSION = 13
 
 
 class JSONField(TextField):
@@ -452,5 +452,36 @@ def update_db(dbfile):
                     migrator.add_column("search", "title", Search.title),
                 )
             vi.version = 12
+            vi.save()
+            logger.info("Database migration completed successfully")
+
+        if vi.version == 12:
+            logger.info("Upgrading database to version 13")
+            omgorg = None
+            omg = None
+            with db.transaction():
+                try:
+                    omgorg = Indexer.get(Indexer.name == "omgwtfnzbs.org")
+                except Indexer.DoesNotExist:
+                    logger.info("No database entry found for omgwtfnzbs.org")
+                    pass
+                try:
+                    omg = Indexer.get(Indexer.name == "omgwtfnzbs")
+                except Indexer.DoesNotExist:
+                    logger.info("No entry for omgwtfnzbs found in database")
+                except Exception as e:
+                    print(e)
+                if omgorg and not omg:
+                    logger.info("Renaming omgwtfnzbs.org to omgwtfnzbs in database")
+                    omgorg.name = "omgwtfnzbs"
+                    omgorg.save()
+                elif omgorg and omg:
+                    db.execute_sql("UPDATE indexerapiaccess SET indexer_id = %d WHERE indexer_id = %d" % (omg.id, omgorg.id))
+                    db.execute_sql("UPDATE indexersearch SET indexer_id = %d WHERE indexer_id = %d" % (omg.id, omgorg.id))
+                    db.execute_sql("UPDATE searchresult SET indexer_id = %d WHERE indexer_id = %d" % (omg.id, omgorg.id))
+                    omgorg.delete_instance()
+                    logger.info("Changed references from omgwtfnzbs.org to omgwtfnzbs in database and deleted old indexer entry")
+
+            vi.version = 13
             vi.save()
             logger.info("Database migration completed successfully")

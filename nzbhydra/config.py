@@ -154,7 +154,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 28,
+        "configVersion": 29,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
@@ -679,6 +679,14 @@ def migrateConfig(config):
                         indexer["host"] = "https://api.omgwtfnzbs.me"
                     if indexer["type"] == "newznab":
                         indexer["backend"] = "newznab"
+
+        if config["main"]["configVersion"] == 28:
+            with version_update(config, 29):
+                addLogMessage(20, "Renaming omgwtf")
+                for indexer in config["indexers"]:
+                    if indexer["name"].lower() == "omgwtfnzbs.org":
+                        indexer["name"] = "omgwtfnzbs"
+
         
     return config
 

@@ -150,7 +150,7 @@ class OmgWtf(SearchModule):
     
     def __init__(self, indexer):
         super(OmgWtf, self).__init__(indexer)
-        self.module = "omgwtfnzbs.org"
+        self.module = "omgwtfnzbs"
 
         self.supports_queries = True  # We can only search using queries
         self.needs_queries = False
