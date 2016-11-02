@@ -203,7 +203,7 @@ class NzbClub(SearchModule):
     def process_query_result(self, xml, searchRequest, maxResults=None):
         self.debug("Started processing results")
         entries = []
-        countRejected = 0
+        countRejected = self.getRejectedCountDict()
         try:
             tree = ET.fromstring(xml)
         except Exception:
@@ -218,11 +218,11 @@ class NzbClub(SearchModule):
             except IndexerResultParsingRowException:
                 continue
 
-            accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
+            accepted, reason, ri = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
                 entries.append(entry)
             else:
-                countRejected += 1
+                countRejected[ri] += 1
                 self.debug("Rejected search result. Reason: %s" % reason)
 
         self.debug("Finished processing results")

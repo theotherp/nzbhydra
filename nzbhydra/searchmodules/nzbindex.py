@@ -124,13 +124,13 @@ class NzbIndex(SearchModule):
         self.debug("Started processing results")
 
         entries = []
-        countRejected = 0
+        countRejected = self.getRejectedCountDict()
         logger.debug("Using HTML parser %s" % config.settings.searching.htmlParser)
         soup = BeautifulSoup(html, config.settings.searching.htmlParser)
         main_table = soup.find(id="results").find('table')
 
         if "No results found" in soup.text:
-            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False, rejected=0)
+            return IndexerProcessingResult(entries=[], queries=[], total=0, total_known=True, has_more=False, rejected={})
         if not main_table or not main_table.find("tbody"):
             self.error("Unable to find main table in NZBIndex page: %s..." % html[:500])
             self.debug(html[:500])
@@ -143,11 +143,11 @@ class NzbIndex(SearchModule):
                 entry = self.parseRow(row)
             except IndexerResultParsingRowException:
                 continue
-            accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
+            accepted, reason, ri = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
                 entries.append(entry)
             else:
-                countRejected += 1
+                countRejected[ri] += 1
                 self.debug("Rejected search result. Reason: %s" % reason)
         try:
             page_links = main_table.find("tfoot").find_all("tr")[1].find_all('a')

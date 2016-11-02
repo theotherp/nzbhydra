@@ -20,6 +20,7 @@ from retry import retry
 
 from nzbhydra import config, indexers, infos, categories, databaseLock
 from nzbhydra.database import IndexerStatus, Search, db, IndexerApiAccess, SearchResult, Indexer, InterfaceError, IntegrityError
+from nzbhydra.search_module import SearchModule
 
 logger = logging.getLogger('root')
 
@@ -244,7 +245,7 @@ def search(search_request):
     search_request.category = categoryResult
     if search_hash not in pseudo_cache.keys() or search_request.offset == 0:  # If it's a new search (which starts with offset 0) do it again instead of using the cached results
         logger.debug("Didn't find this query in cache or want to do a new search")
-        cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0, "rejected": 0}
+        cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0, "rejected": SearchModule.getRejectedCountDict()}
         category = categoryResult.category
         indexers_to_call = pick_indexers(search_request)
         for p in indexers_to_call:
@@ -348,7 +349,9 @@ def search(search_request):
             elif queries_execution_result.has_more:
                 logger.debug("%s doesn't report an exact number of results so let's just add another 100 to the total" % indexer)
                 cache_entry["total"] += 100
-            cache_entry["rejected"] += cache_entry["indexer_infos"][indexer]["rejected"]
+            for rejectKey in cache_entry["rejected"].keys():
+                if rejectKey in cache_entry["indexer_infos"][indexer]["rejected"].keys():
+                    cache_entry["rejected"][rejectKey] += cache_entry["indexer_infos"][indexer]["rejected"][rejectKey]
 
         databaseLock.release()
 
@@ -402,8 +405,11 @@ def search(search_request):
         logger.debug("We have %d cached results and return %d-%d of %d total available accounting for the limit set for the API search" % (len(cache_entry["results"]), external_offset, external_offset + limit, cache_entry["total"]))
         nzb_search_results = copy.deepcopy(cache_entry["results"][external_offset:(external_offset + limit)])
     cache_entry["last_access"] = arrow.utcnow()
+    for k, v in cache_entry["rejected"].items():
+        if v > 0:
+            logger.info("Rejected %d because: %s" % (v, k))
     logger.info("Returning %d results" % len(nzb_search_results))
-    return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearchid": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset, "rejected": cache_entry["rejected"]}
+    return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearchid": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset, "rejected": cache_entry["rejected"].items()}
 
 
 @retry((InterfaceError, OperationalError), delay=1, tries=5, logger=logger)

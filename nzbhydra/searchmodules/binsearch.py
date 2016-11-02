@@ -132,7 +132,7 @@ class Binsearch(SearchModule):
         logger.info("Last results count %d" % self.last_results_count)
                 
         entries = Set([])
-        countRejected = 0        
+        countRejected = self.getRejectedCountDict()
         self.debug("Using HTML parser %s" % config.settings.searching.htmlParser)
         soup = BeautifulSoup(html, config.settings.searching.htmlParser)
 
@@ -152,11 +152,11 @@ class Binsearch(SearchModule):
                 entry = self.parseRow(row)
             except IndexerResultParsingRowException:
                 continue
-            accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
+            accepted, reason, ri = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
                 entries.add(entry)
             else:
-                countRejected += 1
+                countRejected[ri] += 1
                 self.debug("Rejected search result. Reason: %s" % reason)
             
         self.debug("Finished processing %d results" % len(entries))

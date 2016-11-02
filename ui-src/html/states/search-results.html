@@ -7,11 +7,11 @@
             <uib-accordion-group panel-class="panel-indexer-statuses" is-open="foo.indexerStatusesExpanded" is-disabled="true" class="">
                 <uib-accordion-heading>
                     <span class="indexer-statuses-accordion">
-                        <span ng-click="toggleIndexerStatuses()">Indexer statuses</span> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': foo.indexerStatusesExpanded, 'glyphicon-chevron-right': !foo.indexerStatusesExpanded}" ng-click="toggleIndexerStatuses()"></i>
+                        <span ng-click="toggleIndexerStatuses()">Indexer statuses</span><span ng-if="countRejected > 0"> / Rejected results</span> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': foo.indexerStatusesExpanded, 'glyphicon-chevron-right': !foo.indexerStatusesExpanded}" ng-click="toggleIndexerStatuses()"></i>
                     </span>
                 </uib-accordion-heading>
 
-                <table class="table" style="margin-bottom: 0px">
+                <table class="table">
                     <thead>
                     <tr>
                         <th class="col-md-6 text-left">
@@ -68,6 +68,41 @@
                     <tr ng-repeat-end ng-if="0"></tr>
                     </tbody>
                 </table>
+
+
+                <table class="table" style="margin-bottom: 0px; margin-top: 5px" ng-if="countRejected > 0">
+                    <thead>
+                    <tr>
+                        <th class="col-md-5 text-left">
+
+                        </th>
+                        <th class="col-md-5 text-left" style="text-align: right">
+                            Reject reason
+                        </th>
+                        <th class="col-md-5 text-left">
+                            Count
+                        </th>
+                        <th class="col-md-5 text-left">
+
+                        </th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="entry in rejected | filter: filterRejectedZero(entry)">
+                        <td>
+                        </td>
+                        <td style="text-align: right">
+                            {{ entry[0] }}
+                        </td>
+                        <td >
+                            {{ entry[1] }}
+                        </td>
+                        <td >
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </uib-accordion-group>
         </uib-accordion>
     </div>
@@ -84,9 +119,9 @@
         <dir-pagination-controls auto-hide="false"></dir-pagination-controls>
     </div>
     <div class="col-md-6" style="text-align: right;">
-        <span class="badge">Loaded {{ resultsCount }} of {{ total }} results (rejected {{ rejected }})</span>
+        <span class="badge">Loaded {{ resultsCount }} of {{ total }} results (rejected {{ countRejected }})</span>
 
-        <div class="btn-group" style="margin-top:20px; margin-bottom:20px;" >
+        <div class="btn-group" style="margin-top:20px; margin-bottom:20px;">
             <button type="button" ng-click="loadMore(false)" class="btn btn-default" ng-disabled="resultsCount >= total">Load more</button>
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="resultsCount >= total">
                 <span class="caret"></span>
@@ -114,7 +149,7 @@
             <th class="col-md-1 cursor-default search-results-cell result-category" ng-click="setSorting('category', false)" style="vertical-align: top; text-align: right">
                 Category <span ng-show="sortPredicate=='category'" class="caret" ng-class="{'caret-reversed': !sortReversed}"></span>
             </th>
-            <th class="col-md-1 cursor-default search-results-cell result-size"  ng-click="setSorting('size', true)" style="vertical-align: top; text-align: right">
+            <th class="col-md-1 cursor-default search-results-cell result-size" ng-click="setSorting('size', true)" style="vertical-align: top; text-align: right">
                 Size <span ng-show="sortPredicate=='size'" class="caret" ng-class="{'caret-reversed': !sortReversed}"></span>
             </th>
             <th class="col-md-1 cursor-default search-results-cell result-details" ng-click="setSorting('grabs', true)" style="vertical-align: top; text-align: right">

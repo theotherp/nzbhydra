@@ -3,31 +3,25 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import json
-import time
-
+import collections
+import logging
 import re
-from builtins import str
+from sqlite3 import OperationalError
+
+import arrow
+import requests
+from builtins import *
 from flask import request
-from future import standard_library
+from peewee import fn, OperationalError
+from requests import RequestException
 from requests.auth import HTTPBasicAuth
 from retry import retry
 
-from nzbhydra.log import removeSensitiveData
-
-#standard_library.install_aliases()
-from builtins import *
-import logging
-import collections
-import arrow
-import requests
-from peewee import fn, OperationalError
-from sqlite3 import OperationalError
-from nzbhydra.database import InterfaceError
-from requests import RequestException
 from nzbhydra import config, databaseLock
 from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, Indexer
+from nzbhydra.database import InterfaceError
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAuthException, IndexerAccessException
+from nzbhydra.log import removeSensitiveData
 from nzbhydra.nzb_search_result import NzbSearchResult
 
 QueriesExecutionResult = collections.namedtuple("QueriesExecutionResult", "didsearch results indexerSearchEntry indexerApiAccessEntry indexerStatus total loaded_results total_known has_more rejected")
@@ -87,12 +81,12 @@ class SearchModule(object):
             self.error('Search types property not set. Please open the config for this indexer and click "Check capabilities"')
             return []
         return self.settings.searchTypes
-    
+
     @property
     def generate_queries(self):
         return True  # TODO pass when used check for internal vs external
         # return self.indexer.settings.get("generate_queries", True)  # If true and a search by movieid or tvdbid or rid is done then we attempt to find the title and generate queries for indexers which don't support id-based searches
-    
+
     def search(self, search_request):
         self.info("Starting search")
         if search_request.type == "tv":
@@ -186,7 +180,7 @@ class SearchModule(object):
 
     def get_details_link(self, guid):
         return ""
-    
+
     def get_entry_by_id(self, guid, title):
         # to extend
         # Returns an NzbSearchResult for the given GUID 
@@ -194,19 +188,33 @@ class SearchModule(object):
 
     def create_nzb_search_result(self):
         return NzbSearchResult(indexer=self.name, indexerscore=self.score)
-    
+
+    @staticmethod
+    def getRejectedCountDict():
+        return {
+            "Passworded": 0,
+            "Forbidden word": 0,
+            "Required word missing": 0,
+            "Forbidden by regex": 0,
+            "Required regex not found": 0,
+            "Wrong size": 0,
+            "Wrong age": 0,
+            "Missing attributes": 0,
+            "Category ignored": 0
+        }
+
     def accept_result(self, nzbSearchResult, searchRequest, supportedFilters):
         global titleRegex
-        #Allows the implementations to check against one general rule if the search result is ok or shall be discarded
+        # Allows the implementations to check against one general rule if the search result is ok or shall be discarded
         if config.settings.searching.ignorePassworded and nzbSearchResult.passworded:
-            return False, "Passworded results shall be ignored"
-        #Forbidden and required words are handled differently depending on if they contain a dash or dot. If yes we do a simple search, otherwise a word based comparison
+            return False, "Passworded results shall be ignored", "Passworded"
+        # Forbidden and required words are handled differently depending on if they contain a dash or dot. If yes we do a simple search, otherwise a word based comparison
         for word in searchRequest.forbiddenWords:
             if "-" in word or "." in word:
                 if word.strip().lower() in nzbSearchResult.title.lower():
-                    return False, '"%s" is in the list of ignored words or excluded by the query' % word
+                    return False, '"%s" is in the list of ignored words or excluded by the query' % word, "Forbidden word"
             elif word.strip().lower() in titleRegex.findall(nzbSearchResult.title.lower()):
-                return False, '"%s" is in the list of ignored words or excluded by the query' % word
+                return False, '"%s" is in the list of ignored words or excluded by the query' % word, "Forbidden word"
         if searchRequest.requiredWords and len(searchRequest.requiredWords) > 0:
             foundRequiredWord = False
             titleWords = titleRegex.findall(nzbSearchResult.title.lower())
@@ -219,26 +227,26 @@ class SearchModule(object):
                     foundRequiredWord = True
                     break
             if not foundRequiredWord:
-                return False, 'None of the required words is contained in the title "%s"' % nzbSearchResult.title
-        
+                return False, 'None of the required words is contained in the title "%s"' % nzbSearchResult.title, "Required word missing"
+
         applyRestrictionsGlobal = config.settings.searching.applyRestrictions == "both" or (config.settings.searching.applyRestrictions == "internal" and searchRequest.internal) or (config.settings.searching.applyRestrictions == "external" and not searchRequest.internal)
-        applyRestrictionsCategory = searchRequest.category.category.applyRestrictions == "both" or (searchRequest.category.category.applyRestrictions == "internal" and searchRequest.internal) or (searchRequest.category.category.applyRestrictions == "external" and not searchRequest.internal)  
-        if (searchRequest.category.category.requiredRegex and applyRestrictionsCategory and not re.search(searchRequest.category.category.requiredRegex.lower(), nzbSearchResult.title.lower()))\
+        applyRestrictionsCategory = searchRequest.category.category.applyRestrictions == "both" or (searchRequest.category.category.applyRestrictions == "internal" and searchRequest.internal) or (searchRequest.category.category.applyRestrictions == "external" and not searchRequest.internal)
+        if (searchRequest.category.category.requiredRegex and applyRestrictionsCategory and not re.search(searchRequest.category.category.requiredRegex.lower(), nzbSearchResult.title.lower())) \
                 or (config.settings.searching.requiredRegex and applyRestrictionsGlobal and not re.search(config.settings.searching.requiredRegex.lower(), nzbSearchResult.title.lower())):
-            return False, "Required regex not found in title"
+            return False, "Required regex not found in title", "Required regex not found"
         if (searchRequest.category.category.forbiddenRegex and applyRestrictionsCategory and re.search(searchRequest.category.category.forbiddenRegex.lower(), nzbSearchResult.title.lower())) \
                 or (config.settings.searching.forbiddenRegex and applyRestrictionsGlobal and re.search(config.settings.searching.forbiddenRegex.lower(), nzbSearchResult.title.lower())):
-            return False, "Forbidden regex found in title"
+            return False, "Forbidden regex found in title", "Forbidden by regex"
         if searchRequest.minsize and nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
-                return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize)
+            return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize), "Wrong size"
         if searchRequest.maxsize and nzbSearchResult.size / (1024 * 1024) > searchRequest.maxsize:
-                return False, "Bigger than requested maximum size: %dMB > %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.maxsize)
+            return False, "Bigger than requested maximum size: %dMB > %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.maxsize), "Wrong size"
         if searchRequest.minage and nzbSearchResult.age_days < searchRequest.minage:
-            return False, "Younger than requested minimum age: %dd < %dd" % (nzbSearchResult.age_days, searchRequest.minage)
+            return False, "Younger than requested minimum age: %dd < %dd" % (nzbSearchResult.age_days, searchRequest.minage), "Wrong age"
         if searchRequest.maxage and nzbSearchResult.age_days > searchRequest.maxage:
-            return False, "Older than requested maximum age: %dd > %dd" % (nzbSearchResult.age_days, searchRequest.maxage)
+            return False, "Older than requested maximum age: %dd > %dd" % (nzbSearchResult.age_days, searchRequest.maxage), "Wrong age"
         if nzbSearchResult.pubdate_utc is None:
-            return False, "Unknown age"
+            return False, "Unknown age", "Missing attributes"
         if nzbSearchResult.category:
             ignore = False
             reason = ""
@@ -255,10 +263,9 @@ class SearchModule(object):
                 reason = "by this indexer"
                 ignore = True
             if ignore:
-                return False, "Results from category %s are configured to be ignored %s" % (nzbSearchResult.category.pretty, reason)
+                return False, "Results from category %s are configured to be ignored %s" % (nzbSearchResult.category.pretty, reason), "Category ignored"
 
-        return True, None
-        
+        return True, None, ""
 
     def process_query_result(self, result, searchRequest, maxResults=None):
         return []
@@ -268,7 +275,6 @@ class SearchModule(object):
         return []
 
     disable_periods = [0, 15, 30, 60, 3 * 60, 6 * 60, 12 * 60, 24 * 60]
-
 
     def handle_indexer_success(self, doSaveIndexerStatus=True):
         # Deescalate level by 1 (or stay at 0) and reset reason and disable-time
@@ -280,7 +286,7 @@ class SearchModule(object):
             indexer_status.level -= 1
         indexer_status.reason = None
         indexer_status.disabled_until = arrow.get(0)  # Because I'm too dumb to set it to None/null
-        
+
         if doSaveIndexerStatus:
             self.saveIndexerStatus(indexer_status)
         return indexer_status
@@ -334,14 +340,14 @@ class SearchModule(object):
         try:
             papiaccess.username = request.authorization.username if request.authorization is not None else None
         except RuntimeError:
-            #Is thrown when we're searching which is run in a thread. When downloading NFOs or whatever this will work
+            # Is thrown when we're searching which is run in a thread. When downloading NFOs or whatever this will work
             pass
         indexerStatus = None
         try:
             time_before = arrow.utcnow()
             response = self.get(url, cookies=cookies, timeout=timeout)
             response.raise_for_status()
-            
+
             time_after = arrow.utcnow()
             papiaccess.response_time = (time_after - time_before).seconds * 1000 + ((time_after - time_before).microseconds / 1000)
             papiaccess.response_successful = True
@@ -377,7 +383,7 @@ class SearchModule(object):
         total_results = 0
         total_known = False
         has_more = False
-        rejected = 0
+        rejected = self.getRejectedCountDict()
         while len(queries) > 0:
             query = queries.pop()
             if query in executed_queries:
@@ -436,7 +442,7 @@ class SearchModule(object):
                 else:
                     self.error("Unable to save API response to database")
                 psearch.resultsCount = total_results
-        return QueriesExecutionResult(didsearch= True, results=results, indexerSearchEntry=psearch, indexerApiAccessEntry=papiaccess, indexerStatus=indexerStatus, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more, rejected=rejected)
+        return QueriesExecutionResult(didsearch=True, results=results, indexerSearchEntry=psearch, indexerApiAccessEntry=papiaccess, indexerStatus=indexerStatus, total=total_results, loaded_results=len(results), total_known=total_known, has_more=has_more, rejected=rejected)
 
     def debug(self, msg, *args, **kwargs):
         self.logger.debug("%s: %s" % (self.name, msg), *args, **kwargs)
@@ -449,10 +455,10 @@ class SearchModule(object):
 
     def error(self, msg, *args, **kwargs):
         self.logger.error("%s: %s" % (self.name, msg), *args, **kwargs)
-        
+
     def exception(self, msg, *args, **kwargs):
         self.logger.exception("%s: %s" % (self.name, msg), *args, **kwargs)
-        
+
     def isNumber(self, string):
         if string is None:
             return False

@@ -79,16 +79,16 @@ class Jackett(newznab.NewzNab):
         
     def process_query_result(self, xml_response, searchRequest, maxResults=None):
         self.debug("Started processing results")
-        countRejected = 0
+        countRejected = self.getRejectedCountDict()
         acceptedEntries = []
         entries, total, offset = self.parseXml(xml_response, maxResults)
         
         for entry in entries:
-            accepted, reason = self.accept_result(entry, searchRequest, self.supportedFilters)
+            accepted, reason,ri = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
                 acceptedEntries.append(entry)
             else:
-                countRejected += 1
+                countRejected[ri] += 1
                 self.debug("Rejected search result. Reason: %s" % reason)
        
         if total == 0 or len(acceptedEntries) == 0:

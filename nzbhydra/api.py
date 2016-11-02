@@ -87,6 +87,17 @@ class IndexerApiAccessSchema(Schema):
     response_successful = fields.Boolean()
     response_time = fields.Integer()
     error = fields.String()
+    
+class RejectionCountSchema(Schema):
+    passworded = fields.Integer()
+    forbiddenword = fields.Integer()
+    requiredword = fields.Integer()
+    forbiddenregex = fields.Integer()
+    requiredregex = fields.Integer()
+    size = fields.Integer()
+    age = fields.Integer()
+    missing = fields.Integer()
+    category =fields.Integer()
 
 
 class IndexerSearchSchema(Schema):
@@ -95,7 +106,6 @@ class IndexerSearchSchema(Schema):
     successful = fields.Boolean()
     results = fields.Integer()
     did_search = fields.Boolean()
-
     apiAccesses = fields.Nested(IndexerApiAccessSchema, many=True)
 
 

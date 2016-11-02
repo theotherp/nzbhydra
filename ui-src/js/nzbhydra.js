@@ -617,7 +617,7 @@ nzbhydraapp.config(function ($provide) {
                     return line.trim();
                 });
                 stack = stack.join("\n");
-                $injector.get("$http").put("internalapi/logerror", {error: stack, cause: angular.isDefined(cause) ? cause.toString() : "No known cause"});
+                //$injector.get("$http").put("internalapi/logerror", {error: stack, cause: angular.isDefined(cause) ? cause.toString() : "No known cause"});
 
 
             } catch (e) {

@@ -620,7 +620,7 @@ nzbhydraapp.config(["$provide", function ($provide) {
                     return line.trim();
                 });
                 stack = stack.join("\n");
-                $injector.get("$http").put("internalapi/logerror", {error: stack, cause: angular.isDefined(cause) ? cause.toString() : "No known cause"});
+                //$injector.get("$http").put("internalapi/logerror", {error: stack, cause: angular.isDefined(cause) ? cause.toString() : "No known cause"});
 
 
             } catch (e) {
@@ -1249,9 +1249,6 @@ function connectionTest() {
             } else if ($scope.data.type == "newznab") {
                 url = "internalapi/test_newznab";
                 params = {host: $scope.data.host, apikey: $scope.data.apikey};
-            } else if ($scope.data.type == "omgwtf") {
-                url = "internalapi/test_omgwtf";
-                params = {username: $scope.data.username, apikey: $scope.data.apikey};
             }
             $http.get(url, {params: params}).success(function (result) {
                 //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
@@ -2038,6 +2035,12 @@ angular
     .module('nzbhydraApp')
     .controller('SearchResultsController', SearchResultsController);
 
+function sumRejected(rejected) {
+    return _.reduce(rejected, function (memo, entry) {
+        return memo + entry[1];
+    }, 0);
+}
+
 //SearchResultsController.$inject = ['blockUi'];
 function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, growl, localStorageService, SearchService, ConfigService) {
 
@@ -2052,20 +2055,22 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.limitTo = 100;
     $scope.offset = 0;
     //Handle incoming data
-    
-    $scope.indexersearches = _.sortBy(SearchService.getLastResults().indexersearches, function(i) {return i.indexer.toLowerCase()});
+
+    $scope.indexersearches = _.sortBy(SearchService.getLastResults().indexersearches, function (i) {
+        return i.indexer.toLowerCase()
+    });
     $scope.indexerDisplayState = []; //Stores if a indexer's results should be displayed or not
     $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
     $scope.groupExpanded = {};
     $scope.selected = [];
     $scope.lastClicked = null;
     $scope.lastClickedValue = null;
-    
+
     $scope.foo = {
         indexerStatusesExpanded: localStorageService.get("indexerStatusesExpanded") != null ? localStorageService.get("indexerStatusesExpanded") : false,
         duplicatesDisplayed: localStorageService.get("duplicatesDisplayed") != null ? localStorageService.get("duplicatesDisplayed") : false
     };
-    
+
     $scope.countFilteredOut = 0;
 
     //Initially set visibility of all found indexers to true, they're needed for initial filtering / sorting
@@ -2076,12 +2081,13 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     _.forEach($scope.indexersearches, function (ps) {
         $scope.indexerResultsInfo[ps.indexer.toLowerCase()] = {loadedResults: ps.loaded_results};
     });
-    
+
     //Process results
     $scope.results = SearchService.getLastResults().results;
     $scope.total = SearchService.getLastResults().total;
     $scope.resultsCount = SearchService.getLastResults().resultsCount;
     $scope.rejected = SearchService.getLastResults().rejected;
+    $scope.countRejected = sumRejected($scope.rejected);
     $scope.filteredResults = sortAndFilter($scope.results);
     stopBlocking();
 
@@ -2134,14 +2140,14 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     }
 
 
-    $scope.$on("searchInputChanged", function(event, query, minage, maxage, minsize, maxsize) {
-       console.log("Got event searchInputChanged");
+    $scope.$on("searchInputChanged", function (event, query, minage, maxage, minsize, maxsize) {
+        console.log("Got event searchInputChanged");
         $scope.filteredResults = sortAndFilter($scope.results, query, minage, maxage, minsize, maxsize);
     });
 
-    $scope.resort = function() {
+    $scope.resort = function () {
     };
-    
+
     function sortAndFilter(results, query, minage, maxage, minsize, maxsize) {
         $scope.countFilteredOut = 0;
 
@@ -2154,7 +2160,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
 
             if (ok && query) {
                 var words = query.toLowerCase().split(" ");
-                ok = _.every(words, function(word) {
+                ok = _.every(words, function (word) {
                     return item.title.toLowerCase().indexOf(word) > -1;
                 });
             }
@@ -2163,8 +2169,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
             }
             return ok;
         }
-        
-        
+
+
         function getItemIndexerDisplayState(item) {
             return $scope.indexerDisplayState[item.indexer.toLowerCase()];
         }
@@ -2215,12 +2221,12 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
             } else {
                 sortPredicateValue = titleGroup[0][0][$scope.sortPredicate];
             }
-            
+
             return sortPredicateValue;
         }
 
         var filtered = _.chain(results)
-            //Filter by age, size and title
+        //Filter by age, size and title
             .filter(filterByAgeAndSize)
             //Remove elements of which the indexer is currently hidden    
             .filter(getItemIndexerDisplayState)
@@ -2248,7 +2254,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     };
 
 
-//Clear the blocking
     $scope.stopBlocking = stopBlocking;
     function stopBlocking() {
         blockUI.reset();
@@ -2262,6 +2267,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
                 $scope.filteredResults = sortAndFilter($scope.results);
                 $scope.total = data.total;
                 $scope.rejected = data.rejected;
+                $scope.countRejected = sumRejected($scope.rejected);
                 $scope.resultsCount += data.resultsCount;
                 stopBlocking();
             });
@@ -2272,7 +2278,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
 //Filters the results according to new visibility settings.
     $scope.toggleIndexerDisplay = toggleIndexerDisplay;
     function toggleIndexerDisplay(indexer) {
-        $scope.indexerDisplayState[indexer.toLowerCase()] = $scope.indexerDisplayState[indexer.toLowerCase()]; 
+        $scope.indexerDisplayState[indexer.toLowerCase()] = $scope.indexerDisplayState[indexer.toLowerCase()];
         startBlocking("Filtering. Sorry...").then(function () {
             $scope.filteredResults = sortAndFilter($scope.results);
         }).then(function () {
@@ -2284,12 +2290,12 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     function countResults() {
         return $scope.results.length;
     }
-    
+
     $scope.invertSelection = function invertSelection() {
         $scope.$broadcast("invertSelection");
     };
-    
-    $scope.toggleIndexerStatuses = function() {
+
+    $scope.toggleIndexerStatuses = function () {
         $scope.foo.indexerStatusesExpanded = !$scope.foo.indexerStatusesExpanded;
         localStorageService.set("indexerStatusesExpanded", $scope.foo.indexerStatusesExpanded);
     };
@@ -2300,7 +2306,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         $scope.$broadcast("duplicatesDisplayed", $scope.foo.duplicatesDisplayed);
     };
 
-    $scope.$on("checkboxClicked", function(event, originalEvent, rowIndex, newCheckedValue) {
+    $scope.$on("checkboxClicked", function (event, originalEvent, rowIndex, newCheckedValue) {
         if (originalEvent.shiftKey && $scope.lastClicked != null) {
             console.log("Shift clicked from " + $scope.lastClicked + " to " + rowIndex);
             $scope.$broadcast("shiftClick", Number($scope.lastClicked), Number(rowIndex), Number($scope.lastClickedValue));
@@ -2308,8 +2314,16 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         $scope.lastClicked = rowIndex;
         $scope.lastClickedValue = newCheckedValue;
     })
+
+    $scope.filterRejectedZero = function() {
+        return function (entry) {
+            return entry[1] > 0;
+        }
+    }
 }
 SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "growl", "localStorageService", "SearchService", "ConfigService"];
+
+
 angular
     .module('nzbhydraApp')
     .controller('SearchHistoryController', SearchHistoryController);
@@ -4020,7 +4034,7 @@ function ConfigFields($injector) {
             message: '$viewValue + " is not a valid IP Address"'
         };
     }
-    
+
     function regexValidator(regex, message, prefixViewValue) {
         return {
             expression: function ($viewValue, $modelValue) {
@@ -4033,7 +4047,7 @@ function ConfigFields($injector) {
             message: (prefixViewValue ? '$viewValue + " ' : '" ') + message + '"'
         };
     }
-    
+
 
     function getCategoryFields() {
         var fields = [];
@@ -4914,67 +4928,71 @@ ConfigFields.$inject = ["$injector"];
 function getIndexerPresets() {
     return [
         [
-        {
-            name: "6box",
-            host: "https://6box.me"
-        },
-        {
-            name: "6box sptweb",
-            host: "https://6box.me/spotweb"
-        },
-        {
-            name: "DogNZB",
-            host: "https://api.dognzb.cr"
-        },
-        {
-            name: "Drunken Slug",
-            host: "https://drunkenslug.com"
-        },
-        {
-            name: "miatrix",
-            host: "https://www.miatrix.com"
-        },
-        {
-            name: "NZB Finder",
-            host: "https://nzbfinder.ws"
-        },
-        {
-            name: "NZBs.org",
-            host: "https://nzbs.org"
-        },
-        {
-            name: "nzb.is",
-            host: "https://nzb.is"
-        },
-        {
-            name: "nzb.su",
-            host: "https://api.nzb.su"
-        },
-        {
-            name: "NZBGeek",
-            host: "https://api.nzbgeek.info"
-        },
-        {
-            name: "NzbNdx",
-            host: "https://www.nzbndx.com"
-        },
-        {
-            name: "NzBNooB",
-            host: "https://www.nzbnoob.com"
-        },
-        {
-            name: "nzbplanet",
-            host: "https://nzbplanet.net"
-        },
-        {
-            name: "oznzb",
-            host: "https://api.oznzb.com/"
-        },
-        {
-            name: "SimplyNZBs",
-            host: "https://simplynzbs.com"
-        }
-    ],
+            {
+                name: "6box",
+                host: "https://6box.me"
+            },
+            {
+                name: "6box sptweb",
+                host: "https://6box.me/spotweb"
+            },
+            {
+                name: "DogNZB",
+                host: "https://api.dognzb.cr"
+            },
+            {
+                name: "Drunken Slug",
+                host: "https://drunkenslug.com"
+            },
+            {
+                name: "miatrix",
+                host: "https://www.miatrix.com"
+            },
+            {
+                name: "NZB Finder",
+                host: "https://nzbfinder.ws"
+            },
+            {
+                name: "NZBs.org",
+                host: "https://nzbs.org"
+            },
+            {
+                name: "nzb.is",
+                host: "https://nzb.is"
+            },
+            {
+                name: "nzb.su",
+                host: "https://api.nzb.su"
+            },
+            {
+                name: "NZBGeek",
+                host: "https://api.nzbgeek.info"
+            },
+            {
+                name: "NzbNdx",
+                host: "https://www.nzbndx.com"
+            },
+            {
+                name: "NzBNooB",
+                host: "https://www.nzbnoob.com"
+            },
+            {
+                name: "nzbplanet",
+                host: "https://nzbplanet.net"
+            },
+            {
+                name: "oznzb",
+                host: "https://api.oznzb.com/"
+            },
+            {
+                name: "omgwtfnzbs",
+                host: "https://api.omgwtfnzbs.me/"
+            },
+            {
+                name: "SimplyNZBs",
+                host: "https://simplynzbs.com"
+            }
+        ],
         [
             {
                 name: "Jackett/Cardigann",
@@ -5046,7 +5064,7 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
         )
     }
 
-    if (model.type == 'newznab' || model.type == 'jackett' || model.type == 'omgwtf') {
+    if (model.type == 'newznab' || model.type == 'jackett') {
         fieldset.push(
             {
                 key: 'apikey',
@@ -5114,17 +5132,17 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                 },
                 validators: {
                     timeOfDay: {
-                            expression: function ($viewValue, $modelValue) {
-                                var value = $modelValue || $viewValue;
-                                return value >= 0 && value <= 24;
-                            },
-                            message: '$viewValue + " is not a valid hour of day (0-24)"'
-                        }
-                    
+                        expression: function ($viewValue, $modelValue) {
+                            var value = $modelValue || $viewValue;
+                            return value >= 0 && value <= 24;
+                        },
+                        message: '$viewValue + " is not a valid hour of day (0-24)"'
+                    }
+
                 }
             });
     }
-    if (model.type == 'newznab' || model.type == 'omgwtf') {
+    if (model.type == 'newznab') {
         fieldset.push(
             {
                 key: 'username',
@@ -5175,7 +5193,8 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                     help: 'Preselect this indexer on the search page'
                 }
             }
-        )}
+        )
+    }
     if (model.type != "womble" || model.type != "jackett") {
         fieldset.push(
             {
@@ -5637,16 +5656,8 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
         } else {
             blockUI.start("Testing connection...");
             scope.spinnerActive = true;
-            var url;
-            var settings;
-            if (model.type == "newznab" || model.type == "jackett") {
-                url = "internalapi/test_newznab";
-                settings = {host: model.host, apikey: model.apikey};
-            } else if (model.type == "omgwtf") {
-                url = "internalapi/test_omgwtf";
-                settings = {username: model.username, apikey: model.apikey};
-            }
-
+            var url = "internalapi/test_newznab";
+            var settings = {host: model.host, apikey: model.apikey};
             ConfigBoxService.checkConnection(url, JSON.stringify(settings)).then(function () {
                     checkCaps(scope, model).then(function () {
                         blockUI.reset();

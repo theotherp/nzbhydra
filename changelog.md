@@ -2,6 +2,8 @@
 
 ----------
 ### 0.2.163
+Added: Display in search results and log how many search results were rejected for which reason. See [#417](https://github.com/theotherp/nzbhydra/issues/417).
+
 Changed: Remove old omgwtfnzbs implementation now that they support a proper newznab compatible API. Shoutout to their team for improving the indexer and helping me support it. See [#416](https://github.com/theotherp/nzbhydra/issues/416).
 
 Changed: Increased default max size for TV results to 4500 to include MULTI 1080p BluRay rips which tend to be decadently large.
