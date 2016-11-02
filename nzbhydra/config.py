@@ -189,7 +189,7 @@ initialConfig = {
             "tvhd": {
                 "applyRestrictions": "both",
                 "min": 300,
-                "max": 3000,
+                "max": 4500,
                 "newznabCategories": [
                     5040
                 ],
@@ -724,6 +724,9 @@ def migrateConfig(config):
                             config["indexers"].remove(omgold)
                 else:
                     addLogMessage(20, "omgwtf not found in your settings. That's unusual but we'll keep it that way...")
+                if config["categories"]["categories"]["tvhd"]["max"] == 3000:
+                    addLogMessage(20, "Increasing max size for TV HD results to 4500MB")
+                    config["categories"]["categories"]["tvhd"]["max"] = 4500
 
 
 
