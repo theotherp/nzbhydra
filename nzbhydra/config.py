@@ -128,33 +128,12 @@ initialConfig = {
             "timeout": None,
             "type": "womble",
             "username": None
-        },
-        {
-            "accessType": "both",
-            "apikey": "",
-            "categories": [],
-            "enabled": False,
-            "hitLimit": 0,
-            "hitLimitResetTime": None,
-            "host": "https://api.omgwtfnzbs.me",
-            "name": "omgwtfnzbs",
-            "password": None,
-            "preselect": True,
-            "score": 0,
-            "search_ids": [
-                "imdbid"
-            ],
-            "searchTypes": [],
-            "showOnSearch": True,
-            "timeout": None,
-            "type": "omgwtf",
-            "username": ""
         }
     ],
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 29,
+        "configVersion": 30,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
@@ -686,6 +665,67 @@ def migrateConfig(config):
                 for indexer in config["indexers"]:
                     if indexer["name"].lower() == "omgwtfnzbs.org":
                         indexer["name"] = "omgwtfnzbs"
+
+        if config["main"]["configVersion"] == 29:
+            with version_update(config, 30):
+                addLogMessage(20, "Attempting to remove old omgwtfnzbs and migrate to regular newznab indexer")
+                omgold = None
+                omgnew = None
+                for indexer in config["indexers"]:
+                    if indexer["type"] == "omgwtf":
+                        omgold = indexer
+                    elif indexer["type"] == "newznab" and "omgwtfnzbs.me" in indexer["host"].lower():
+                        omgnew = indexer
+                if omgold:
+                    if omgnew:
+                        addLogMessage(20, "Newznab indexer for omgwtf already exists. Deleting old entry for omgwtf and giving the newznab indexer the old one's name to take over most of the history and stats")
+                        omgnew["name"] = omgold["name"]
+                        config["indexers"].remove(omgold)
+                    else:
+                        if omgold["apikey"]:
+                            addLogMessage(20, "You seem to be using omgwtf. Deleting old entry for omgwtf and moving settings to new newznab indexer")
+                            omgnew = {
+                                "accessType": omgold["accessType"],
+                                "animeCategory": None,
+                                "apikey": omgold["apikey"],
+                                "audiobookCategory": "3030",
+                                "backend": "newznab",
+                                "categories": omgold["categories"],
+                                "comicCategory": None,
+                                "ebookCategory": "7020",
+                                "enabled": omgold["enabled"],
+                                "hitLimit": omgold["hitLimit"],
+                                "hitLimitResetTime": omgold["hitLimitResetTime"] if "hitLimitResetTime" in omgold.keys() else None,
+                                "host": "https://api.omgwtfnzbs.me",
+                                "magazineCategory": None,
+                                "name": omgold["name"],
+                                "password": None,
+                                "preselect": omgold["preselect"],
+                                "score": omgold["score"],
+                                "searchTypes": [
+                                    "movie",
+                                    "tvsearch"
+                                ],
+                                "search_ids": [
+                                    "imdbid",
+                                    "rid",
+                                    "tvdbid",
+                                    "tvmazeid"
+                                ],
+                                "showOnSearch": True,
+                                "timeout": omgold["timeout"],
+                                "type": "newznab",
+                                "username": None
+                            }
+                            config["indexers"].append(omgnew)
+                            config["indexers"].remove(omgold)
+                        else:
+                            addLogMessage(20, "You don't seem to be using omgwtf. Deleting old entry for omgwtf.")
+                            config["indexers"].remove(omgold)
+                else:
+                    addLogMessage(20, "omgwtf not found in your settings. That's unusual but we'll keep it that way...")
+
+
 
         
     return config

@@ -44,11 +44,7 @@ class TestConfig(unittest.TestCase):
                     {
                         "apikey": "newznabapikey",
                     },
-                ],
-                "omgwtfnzbs": {
-                    "apikey": "omgwtfapikey",
-                    "username": "omgwtfusername"
-                }
+                ]
             },
             "main": {
                 "apikey": "hydraapikey",
@@ -67,8 +63,6 @@ class TestConfig(unittest.TestCase):
         ac = config.getAnonymizedConfig()
         ac = Bunch.fromDict(ac)
         self.assertEqual("<APIKEY:3f7ccf2fa729e7329f8d2af3ae5b2d00>", ac.indexers.newznab[0].apikey)
-        self.assertEqual("<USERNAME:be1cd7618f0bc25e333d996582c037b2>", ac.indexers.omgwtfnzbs.username)
-        self.assertEqual("<APIKEY:680eae14a056ebd0d1c71dbfb6c5ebbc>", ac.indexers.omgwtfnzbs.apikey)
         self.assertEqual("<IPADDRESS:6465ec74397c9126916786bbcd6d7601>", ac.main.host)
         self.assertEqual("<APIKEY:b5f0bb7a7671d14f3d79866bcdfac6b5>", ac.main.apikey)
         self.assertEqual("http://<DOMAIN:ea2cbe92bacf786835b93ff2ca78c459>/nzbhydra", ac.main.externalUrl)

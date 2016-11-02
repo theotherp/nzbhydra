@@ -18,7 +18,6 @@ from werkzeug.contrib.fixers import ProxyFix
 
 import nzbhydra
 from nzbhydra.categories import getCategoryByName
-from nzbhydra.searchmodules import omgwtf
 
 sslImported = True
 try:
@@ -909,20 +908,6 @@ internalapi__testnewznab_args = {
 @requires_auth("main")
 def internalapi_testnewznab(args):
     success, message = test_connection(args["host"], args["apikey"])
-    return jsonify({"result": success, "message": message})
-
-
-internalapi__testomgwtf_args = {
-    "username": fields.String(missing=None),
-    "apikey": fields.String(missing=None),
-}
-
-
-@app.route('/internalapi/test_omgwtf', methods=['POST'])
-@use_args(internalapi__testomgwtf_args)
-@requires_auth("main")
-def internalapi_testomgwtf(args):
-    success, message = omgwtf.test_connection(args["apikey"], args["username"])
     return jsonify({"result": success, "message": message})
 
 

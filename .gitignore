@@ -14,9 +14,9 @@ Vagrantfile
 /node_modules
 /bower_components
 *.db*
-*.cfg
+*.cfg*
 *.bak
-*.log
+*.log*
 **/*.pyc
 /libs/**/__pycache__
 /libs/**/tests/**

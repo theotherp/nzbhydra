@@ -36,7 +36,7 @@ function ConfigFields($injector) {
             message: '$viewValue + " is not a valid IP Address"'
         };
     }
-    
+
     function regexValidator(regex, message, prefixViewValue) {
         return {
             expression: function ($viewValue, $modelValue) {
@@ -49,7 +49,7 @@ function ConfigFields($injector) {
             message: (prefixViewValue ? '$viewValue + " ' : '" ') + message + '"'
         };
     }
-    
+
 
     function getCategoryFields() {
         var fields = [];
@@ -929,67 +929,71 @@ function ConfigFields($injector) {
 function getIndexerPresets() {
     return [
         [
-        {
-            name: "6box",
-            host: "https://6box.me"
-        },
-        {
-            name: "6box sptweb",
-            host: "https://6box.me/spotweb"
-        },
-        {
-            name: "DogNZB",
-            host: "https://api.dognzb.cr"
-        },
-        {
-            name: "Drunken Slug",
-            host: "https://drunkenslug.com"
-        },
-        {
-            name: "miatrix",
-            host: "https://www.miatrix.com"
-        },
-        {
-            name: "NZB Finder",
-            host: "https://nzbfinder.ws"
-        },
-        {
-            name: "NZBs.org",
-            host: "https://nzbs.org"
-        },
-        {
-            name: "nzb.is",
-            host: "https://nzb.is"
-        },
-        {
-            name: "nzb.su",
-            host: "https://api.nzb.su"
-        },
-        {
-            name: "NZBGeek",
-            host: "https://api.nzbgeek.info"
-        },
-        {
-            name: "NzbNdx",
-            host: "https://www.nzbndx.com"
-        },
-        {
-            name: "NzBNooB",
-            host: "https://www.nzbnoob.com"
-        },
-        {
-            name: "nzbplanet",
-            host: "https://nzbplanet.net"
-        },
-        {
-            name: "oznzb",
-            host: "https://api.oznzb.com/"
-        },
-        {
-            name: "SimplyNZBs",
-            host: "https://simplynzbs.com"
-        }
-    ],
+            {
+                name: "6box",
+                host: "https://6box.me"
+            },
+            {
+                name: "6box sptweb",
+                host: "https://6box.me/spotweb"
+            },
+            {
+                name: "DogNZB",
+                host: "https://api.dognzb.cr"
+            },
+            {
+                name: "Drunken Slug",
+                host: "https://drunkenslug.com"
+            },
+            {
+                name: "miatrix",
+                host: "https://www.miatrix.com"
+            },
+            {
+                name: "NZB Finder",
+                host: "https://nzbfinder.ws"
+            },
+            {
+                name: "NZBs.org",
+                host: "https://nzbs.org"
+            },
+            {
+                name: "nzb.is",
+                host: "https://nzb.is"
+            },
+            {
+                name: "nzb.su",
+                host: "https://api.nzb.su"
+            },
+            {
+                name: "NZBGeek",
+                host: "https://api.nzbgeek.info"
+            },
+            {
+                name: "NzbNdx",
+                host: "https://www.nzbndx.com"
+            },
+            {
+                name: "NzBNooB",
+                host: "https://www.nzbnoob.com"
+            },
+            {
+                name: "nzbplanet",
+                host: "https://nzbplanet.net"
+            },
+            {
+                name: "oznzb",
+                host: "https://api.oznzb.com/"
+            },
+            {
+                name: "omgwtfnzbs",
+                host: "https://api.omgwtfnzbs.me/"
+            },
+            {
+                name: "SimplyNZBs",
+                host: "https://simplynzbs.com"
+            }
+        ],
         [
             {
                 name: "Jackett/Cardigann",
@@ -1061,7 +1065,7 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
         )
     }
 
-    if (model.type == 'newznab' || model.type == 'jackett' || model.type == 'omgwtf') {
+    if (model.type == 'newznab' || model.type == 'jackett') {
         fieldset.push(
             {
                 key: 'apikey',
@@ -1129,17 +1133,17 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                 },
                 validators: {
                     timeOfDay: {
-                            expression: function ($viewValue, $modelValue) {
-                                var value = $modelValue || $viewValue;
-                                return value >= 0 && value <= 24;
-                            },
-                            message: '$viewValue + " is not a valid hour of day (0-24)"'
-                        }
-                    
+                        expression: function ($viewValue, $modelValue) {
+                            var value = $modelValue || $viewValue;
+                            return value >= 0 && value <= 24;
+                        },
+                        message: '$viewValue + " is not a valid hour of day (0-24)"'
+                    }
+
                 }
             });
     }
-    if (model.type == 'newznab' || model.type == 'omgwtf') {
+    if (model.type == 'newznab') {
         fieldset.push(
             {
                 key: 'username',
@@ -1190,7 +1194,8 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                     help: 'Preselect this indexer on the search page'
                 }
             }
-        )}
+        )
+    }
     if (model.type != "womble" || model.type != "jackett") {
         fieldset.push(
             {
@@ -1652,16 +1657,8 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
         } else {
             blockUI.start("Testing connection...");
             scope.spinnerActive = true;
-            var url;
-            var settings;
-            if (model.type == "newznab" || model.type == "jackett") {
-                url = "internalapi/test_newznab";
-                settings = {host: model.host, apikey: model.apikey};
-            } else if (model.type == "omgwtf") {
-                url = "internalapi/test_omgwtf";
-                settings = {username: model.username, apikey: model.apikey};
-            }
-
+            var url = "internalapi/test_newznab";
+            var settings = {host: model.host, apikey: model.apikey};
             ConfigBoxService.checkConnection(url, JSON.stringify(settings)).then(function () {
                     checkCaps(scope, model).then(function () {
                         blockUI.reset();

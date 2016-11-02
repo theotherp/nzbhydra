@@ -94,7 +94,6 @@ class SearchPerformanceTests(unittest.TestCase):
 
         getIndexerSettingByName("binsearch").enabled = False
         getIndexerSettingByName("nzbindex").enabled = False
-        getIndexerSettingByName("omgwtf").enabled = False
         getIndexerSettingByName("womble").enabled = False
         getIndexerSettingByName("nzbclub").enabled = False
 

@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.163
+Changed: Remove old omgwtfnzbs implementation now that they support a proper newznab compatible API. Shoutout to their team for improving the indexer and helping me support it. See [#416](https://github.com/theotherp/nzbhydra/issues/416).
+
 ### 0.2.162
 Changed: Rename omgwtfnzbs.org to omgwtfnzbs and change references in database to keep stats. See [#414](https://github.com/theotherp/nzbhydra/issues/414).
 
