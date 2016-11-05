@@ -2,7 +2,9 @@
 
 ----------
 ### 0.2.165
-Fixed: Debug code cached API searches resulting in no new searches being executed. 
+Fixed: Debug code cached API searches resulting in no new searches being executed.
+
+Fixed: Search would work when an indexer was not picked. See [#418](https://github.com/theotherp/nzbhydra/issues/418) (again).
 
 ### 0.2.164
 Fixed: Search would work when Binsearch or NZBIndex returned no results. See [#418](https://github.com/theotherp/nzbhydra/issues/418).

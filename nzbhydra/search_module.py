@@ -374,7 +374,7 @@ class SearchModule(object):
 
     def execute_queries(self, queries, searchRequest):
         if len(queries) == 0:
-            return QueriesExecutionResult(didsearch=False, results=[], indexerSearchEntry=None, indexerApiAccessEntry=None, indexerStatus=None, total=0, loaded_results=0, total_known=True, has_more=False, rejected=0)
+            return QueriesExecutionResult(didsearch=False, results=[], indexerSearchEntry=None, indexerApiAccessEntry=None, indexerStatus=None, total=0, loaded_results=0, total_known=True, has_more=False, rejected=self.getRejectedCountDict())
         results = []
         executed_queries = set()
         psearch = IndexerSearch(indexer=self.indexer)
