@@ -187,7 +187,7 @@ def serve():
     indexerName = indexer["name"]
     title = indexer["name"]
     query = str(request.args.get("q")) if "q" in request.args.keys() else None
-    numberOfTotalResults = indexer["numberOfTotalResults"]
+    numberOfTotalResults = indexer["numberOfTotalResults"] if query != "0" else 0
     offset = int(request.args.get("offset")) if "offset" in request.args.keys() else 0
     resultBaseName = "indexer%s" % indexerName
     if query:

@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.165
+Fixed: Debug code cached API searches resulting in no new searches being executed. 
+
 ### 0.2.164
 Fixed: Search would work when Binsearch or NZBIndex returned no results. See [#418](https://github.com/theotherp/nzbhydra/issues/418).
 
