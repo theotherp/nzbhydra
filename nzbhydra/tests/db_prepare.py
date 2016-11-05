@@ -1,47 +1,40 @@
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
 
+import inspect
 import os
 import shutil
 
-from future import standard_library
-#standard_library.install_aliases()
+import peewee
 from builtins import *
-from peewee import OperationalError
+from playhouse.sqliteq import SqliteQueueDatabase
 from retry import retry
 
-from nzbhydra.database import Indexer, IndexerApiAccess, IndexerSearch, IndexerStatus, Search, IndexerNzbDownload, TvIdCache, MovieIdCache, SearchResult
 from nzbhydra import database, config
+from nzbhydra.database import Indexer, IndexerApiAccess, IndexerSearch, IndexerStatus, Search, IndexerNzbDownload, TvIdCache, MovieIdCache, SearchResult
 
 
-def set_and_drop(dbfile="tests.db", tables=None):
+def set_and_drop(dbfile="tests2.db", tables=None):
     if tables is None:
         tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, TvIdCache, MovieIdCache, SearchResult]
     deleteDbFile(dbfile)
+    database.db = SqliteQueueDatabase(dbfile, autostart=True, results_timeout=2.0)
 
+    models = [
+        obj for name, obj in inspect.getmembers(
+            tables, lambda obj: type(obj) == type and issubclass(obj, peewee.Model)
+        )
+        ]
+    peewee.create_model_tables(models)
     database.db.start()
-    database.db.init(dbfile)
-    
-    for t in tables:
-        try:
-            database.db.drop_table(t)
-        except OperationalError as e:
-            print(e)
-            pass
-    
-    for t in tables:
-        try:
-            database.db.create_table(t)
-        except OperationalError as e:
-            print(e)
-            pass
-
+    x = database.Indexer.select().count()
     if os.path.exists("testsettings.cfg"):
         os.remove("testsettings.cfg")
     shutil.copy("testsettings.cfg.orig", "testsettings.cfg")
     config.load("testsettings.cfg")
+    # sleep(1)
     pass
 
 

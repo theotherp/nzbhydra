@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.164
+Fixed: Search would work when Binsearch or NZBIndex returned no results. See [#418](https://github.com/theotherp/nzbhydra/issues/418).
+
 ### 0.2.163
 Added: Display in search results and log how many search results were rejected for which reason. See [#417](https://github.com/theotherp/nzbhydra/issues/417).
 

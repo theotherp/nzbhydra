@@ -6,10 +6,12 @@ from __future__ import unicode_literals
 import json
 import random
 import threading
+from time import sleep
 
 import pytest
 import requests_mock
 from bunch import Bunch
+from playhouse.sqlite_ext import SqliteExtDatabase
 from retry import retry
 
 from nzbhydra import database
@@ -45,6 +47,8 @@ class AbstractSearchTestCase(unittest.TestCase):
             nn.host = "http://www.newznab%d.com" % i
             nn.apikey = "apikeyindexer.com"
             nn.hitLimit = None
+            nn.backend = "newznab"
+            nn.categories = []
             nn.timeout = None
             nn.score = 0
             nn.accessType = "both"
@@ -117,6 +121,8 @@ class AbstractSearchTestCase(unittest.TestCase):
         self.newznab1.apikey = "apikeyindexer1.com"
         self.newznab1.timeout = None
         self.newznab1.hitLimit = None
+        self.newznab1.backend = ""
+        self.newznab1.categories = []
         self.newznab1.score = 0
         self.newznab1.type = "newznab"
         self.newznab1.accessType = "both"
@@ -130,6 +136,8 @@ class AbstractSearchTestCase(unittest.TestCase):
         self.newznab2.apikey = "apikeyindexer2.com"
         self.newznab2.timeout = None
         self.newznab2.hitLimit = None
+        self.newznab2.backend = ""
+        self.newznab2.categories = []
         self.newznab2.accessType = "both"
         self.newznab2.score = 0
         self.newznab2.type = "newznab"
@@ -137,14 +145,12 @@ class AbstractSearchTestCase(unittest.TestCase):
         self.newznab2.searchTypes = ["tvsearch", "movie"]
 
         config.settings.indexers = [self.newznab1, self.newznab2]
+
         read_indexers_from_config()
 
     @retry(AssertionError, delay=1, tries=10)
     def tryDatabaseShutown(self):
         database.db.stop()
-        if not database.db.is_stopped():
-            print("Database not stopped")
-            raise AssertionError("Database not stopped")
         database.db.close()
         if not database.db.is_closed():
             raise AssertionError("Database not closed")
@@ -328,13 +334,13 @@ class IntegrationApiSearchTests(AbstractSearchTestCase):
         expectedItems = self.prepareSearchMocks(requestsMock, 1, 1)
         with web.app.test_request_context('/'):
             response = self.app.get("/api?t=search&q=query+!excluded")
-            entries, _, _ = newznab.NewzNab(Bunch.fromDict({"name": "forTest", "score": 0, "host": "host"})).parseXml(response.data)
+            entries, _, _ = newznab.NewzNab(Bunch.fromDict({"name": "forTest", "score": 0, "host": "host", "backend": ""})).parseXml(response.data)
             self.assertSearchResults(entries, expectedItems)
             calledUrls = sorted([x.url for x in requestsMock.request_history])
             self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query+!excluded', calledUrls[0]))
 
             response = self.app.get("/api?t=search&q=query+--excluded")
-            entries, _, _ = newznab.NewzNab(Bunch.fromDict({"name": "forTest", "score": 0, "host": "host"})).parseXml(response.data)
+            entries, _, _ = newznab.NewzNab(Bunch.fromDict({"name": "forTest", "score": 0, "host": "host", "backend": ""})).parseXml(response.data)
             self.assertSearchResults(entries, expectedItems)
             calledUrls = sorted([x.url for x in requestsMock.request_history])
             self.assertTrue(compare('http://www.newznab1.com/api?apikey=apikeyindexer.com&t=search&extended=1&offset=0&limit=100&q=query+!excluded', calledUrls[0]))

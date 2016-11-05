@@ -138,7 +138,7 @@ class Binsearch(SearchModule):
 
         if "No results in most popular groups" in soup.text:
             logger.info("No results found for query")
-            return IndexerProcessingResult(entries=[], queries=[], total_known=0, has_more=False, total=0, rejected=0)
+            return IndexerProcessingResult(entries=[], queries=[], total_known=0, has_more=False, total=0, rejected=self.getRejectedCountDict())
         main_table = soup.find('table', attrs={'id': 'r2'})
 
         if not main_table:

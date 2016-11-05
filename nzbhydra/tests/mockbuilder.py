@@ -71,7 +71,7 @@ def buildNewznabItem(title=None, guid=None, link=None, pubdate=None, description
 def buildNewznabResponse(title, items, offset=0, total=None):
     if total is None:
         total = str(len(items))
-    with app.test_request_context('/'):
+    with mockapp.test_request_context('/'):
         result = render_template("api.html", items=items, offset=offset, total=total, title=title, description=title + " - description")
         return result
 
@@ -223,4 +223,5 @@ def download():
     return ""
 
 
-mockapp.run(port=5000, use_reloader=True, threaded=True)
+if __name__ == '__main__':
+    mockapp.run(port=5000, use_reloader=True, threaded=True)
