@@ -565,7 +565,7 @@ class NewzNab(SearchModule):
         entry.pubDate = item.find("pubDate").text
         guid = item.find("guid")
         entry.indexerguid = guid.text
-        if "isPermaLink" in guid.attrib.keys() and guid.attrib["isPermaLink"]:
+        if "isPermaLink" in guid.attrib.keys() and guid.attrib["isPermaLink"] == "true":
             entry.details_link = entry.indexerguid
             m = self.guidpattern.search(entry.indexerguid)
             if m:

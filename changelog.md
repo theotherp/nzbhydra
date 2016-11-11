@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.167
+Fixed: Details link was extracted wrong for some newznab indexers.
+
 ### 0.2.166
 Fixed: Was possible to select the search type (Internal vs API) for Jackett / Cardigann indexers. Torrents are only supported for internal searches.
 
