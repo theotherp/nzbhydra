@@ -79,8 +79,7 @@ Please send merge requests to the develop branch!
 Send me an email at TheOtherP@gmx.de or a PM at https://www.reddit.com/user/TheOtherP
 
 ### Donate ###
-If you like to help me with any running or upcoming costs you're welcome to send money to my bitcoin: 13x4cfm5BNzedsSqdPcexUhAF3cP8LYrsk
-Or send me an appreciation mail and give the money to someone who needs it, like [Doctors without borders](https://donate.doctorswithoutborders.org/onetime.cfm)
+If you like to help me with any running or upcoming costs you're welcome to send money to my bitcoin: 1PnnwWfdyniojCL2kD5ZDBWBuKcFJvrq4t
 
 ### License ###
    Licensed under the Apache License, Version 2.0 (the "License");
