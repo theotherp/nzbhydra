@@ -5,7 +5,6 @@
 </pattern>
 
 <div class="row">
-
     <div class="col-md-10">
         <div style="margin-top:10px" class="caption">Avg. response times</div>
         <tab-or-chart display="chart">
@@ -121,7 +120,7 @@
 
         </div>
     </div>
-</div>
+ </div>
 
 <div class="row">
     <div class="col-md-10">
@@ -147,8 +146,35 @@
             </chart>
         </tab-or-chart>
     </div>
+    
     <div class="col-md-1"></div>
+    
+    <div class="col-md-10">
+        <div style="margin-top:10px" class="caption">NZB downloads per day of week</div>
+        <tab-or-chart display="chart">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Day of the week</th>
+                    <th>Downloads</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="stat in downloadsPerDayOfWeek">
+                    <td>{{ stat.day }}</td>
+                    <td>{{ stat.count }}</td>
+                </tr>
+                </tbody>
+            </table>
 
+            <chart>
+                <nvd3 options="downloadsPerDayOfWeekChart.options" data="downloadsPerDayOfWeekChart.data"></nvd3>
+            </chart>
+        </tab-or-chart>
+    </div>    
+</div>
+
+<div class="row">
     <div class="col-md-10">
         <div style="margin-top:10px" class="caption">Searches per hour of day</div>
         <tab-or-chart display="chart">
@@ -173,35 +199,8 @@
                 <nvd3 options="searchesPerHourOfDayChart.options" data="searchesPerHourOfDayChart.data"></nvd3>
             </chart>
         </tab-or-chart>
+    </div>    
 
-    </div>
-</div>
-
-
-<div class="row">
-    <div class="col-md-10">
-        <div style="margin-top:10px" class="caption">NZB downloads per day of week</div>
-        <tab-or-chart display="chart">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Day of the week</th>
-                    <th>Downloads</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="stat in downloadsPerDayOfWeek">
-                    <td>{{ stat.day }}</td>
-                    <td>{{ stat.count }}</td>
-                </tr>
-                </tbody>
-            </table>
-
-            <chart>
-                <nvd3 options="downloadsPerDayOfWeekChart.options" data="downloadsPerDayOfWeekChart.data"></nvd3>
-            </chart>
-        </tab-or-chart>
-    </div>
     <div class="col-md-1"></div>
 
     <div class="col-md-10">
@@ -228,8 +227,8 @@
                 <nvd3 options="downloadsPerHourOfDayChart.options" data="downloadsPerHourOfDayChart.data"></nvd3>
             </chart>
         </tab-or-chart>
-
     </div>
+
 </div>
 
 
