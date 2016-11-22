@@ -69,7 +69,10 @@ def test_connection(host, apikey):
     logger.info("Testing connection for host %s" % host)
     f = furl(host)
     f.path.add("api")
-    f.query.add({"apikey": apikey, "t": "tvsearch"})
+    if apikey == "0":
+        f.query.add({"t": "tvsearch"})
+    else:
+        f.query.add({"apikey": apikey, "t": "tvsearch"})
     try:
         headers = {
             'User-Agent': config.settings.searching.userAgent
@@ -318,7 +321,10 @@ def check_caps(host, apikey, userAgent=None, timeout=None, skipIdsAndTypes=False
 def _build_base_url(host, apikey, action, category, limit=None, offset=0):
     f = furl(host)
     f.path.add("api")
-    f.query.add({"apikey": apikey, "extended": 1, "t": action, "offset": offset})
+    if apikey == "0":
+        f.query.add({"extended": 1, "t": action, "offset": offset})
+    else:
+        f.query.add({"apikey": apikey, "extended": 1, "t": action, "offset": offset})
     if limit is not None:
         f.query.add({"limit": limit})
 
@@ -490,7 +496,10 @@ class NewzNab(SearchModule):
     def get_entry_by_id(self, guid, title):
         url = furl(self.settings.host)
         url.path.add("api")
-        url.add({"apikey": self.settings.apikey, "t": "details", "o": "xml", "id": guid})
+        if self.settings.apikey == "0":
+            url.add({"t": "details", "o": "xml", "id": guid})
+        else:
+            url.add({"apikey": self.settings.apikey, "t": "details", "o": "xml", "id": guid})
 
         response, papiaccess, _ = self.get_url_with_papi_access(url, "nfo")
         if response is None:
@@ -648,7 +657,10 @@ class NewzNab(SearchModule):
         else:
             logger.debug("Using t=getnfo for non-nzedb based indexer")
             t = "getnfo"
-        url.add({"apikey": self.settings.apikey, "t": t, "o": "xml", "id": guid, "raw": "1"})
+        if self.settings.apikey == "0":
+            url.add({"t": t, "o": "xml", "id": guid, "raw": "1"})
+        else:
+            url.add({"apikey": self.settings.apikey, "t": t, "o": "xml", "id": guid, "raw": "1"})
 
         response, papiaccess, _ = self.get_url_with_papi_access(url, "nfo")
         if response is None:
@@ -673,7 +685,10 @@ class NewzNab(SearchModule):
     def get_nzb_link(self, guid, title):
         f = furl(self.settings.host)
         f.path.add("api")
-        f.add({"t": "get", "apikey": self.settings.apikey, "id": guid})
+        if self.settings.apikey == "0":
+            f.add({"t": "get", "id": guid})
+        else:
+            f.add({"t": "get", "apikey": self.settings.apikey, "id": guid})
         return f.tostr()
 
 
