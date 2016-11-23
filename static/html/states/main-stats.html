@@ -12,18 +12,15 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th ng-click="reverse = predicate == 'name' && !reverse; predicate = 'name'">Indexer
-                        <span ng-show="predicate == 'name' && !reverse;" class="fa fa-caret-down"></span>
-                        <span ng-show="predicate == 'name' && reverse;" class="fa fa-caret-up"></span>
-                    </th>
-                    <th ng-click="reverse = predicate == 'avgResponseTime' && !reverse; predicate = 'avgResponseTime'">Avg. response time
-                        <span ng-show="predicate == 'avgResponseTime' && !reverse;" class="fa fa-caret-down"></span>
-                        <span ng-show="predicate == 'avgResponseTime' && reverse;" class="fa fa-caret-up"></span>					
-					</th>
-                    <th ng-click="reverse = predicate == 'delta' && !reverse; predicate = 'delta'">Delta
-                        <span ng-show="predicate == 'delta' && !reverse;" class="fa fa-caret-down"></span>
-                        <span ng-show="predicate == 'delta' && reverse;" class="fa fa-caret-up"></span>					
-					</th>
+                 <th ng-click="reverse = predicate == 'name' && !reverse; predicate = 'name'">Indexer
+                    <span ng-show="predicate=='name'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                 </th>
+                 <th ng-click="reverse = predicate == 'avgResponseTime' && !reverse; predicate = 'avgResponseTime'">Avg. response time
+                    <span ng-show="predicate=='avgResponseTime'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>					
+                 </th>
+                 <th ng-click="reverse = predicate == 'delta' && !reverse; predicate = 'delta'">Delta
+                    <span ng-show="predicate=='delta'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>					
+                 </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -54,16 +51,13 @@
                 <thead>
                 <tr>
                     <th ng-click="reverse = predicate == 'name' && !reverse; predicate = 'name'">Indexer
-					    <span ng-show="predicate == 'name' && !reverse;" class="fa fa-caret-down"></span>
-                        <span ng-show="predicate == 'name' && reverse;" class="fa fa-caret-up"></span>
+						<span ng-show="predicate=='name'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 					</th>
-                    <th ng-click="reverse = predicate == 'avgResultsShare' && !reverse; predicate = 'avgResultsShare'">Avg. results (%)
-					    <span ng-show="predicate == 'avgResultsShare' && !reverse;" class="fa fa-caret-down"></span>
-                        <span ng-show="predicate == 'avgResultsShare' && reverse;" class="fa fa-caret-up"></span>
+                    <th ng-click="reverse = predicate == 'avgResultsShare' && !reverse; predicate = 'avgResultsShare'">Avg. results per search
+						<span ng-show="predicate=='avgResultsShare'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 					</th>
                     <th ng-click="reverse = predicate == 'avgUniqueResults' && !reverse; predicate = 'avgUniqueResults'">Avg. unique results (%)
-					    <span ng-show="predicate == 'avgUniqueResults' && !reverse;" class="fa fa-caret-down"></span>
-                        <span ng-show="predicate == 'avgUniqueResults' && reverse;" class="fa fa-caret-up"></span>
+						<span ng-show="predicate=='avgUniqueResults'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 					</th>
                 </tr>
                 </thead>
@@ -92,20 +86,16 @@
             <thead>
             <tr>
                 <th ng-click="reverse = predicate == 'name' && !reverse; predicate = 'name'">Indexer
-				    <span ng-show="predicate == 'name' && !reverse;" class="fa fa-caret-down"></span>
-                    <span ng-show="predicate == 'name' && reverse;" class="fa fa-caret-up"></span>
+				    <span ng-show="predicate=='name'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 				</th>
                 <th ng-click="reverse = predicate == 'averagePerDay' && !reverse; predicate = 'averagePerDay'">Avg. per day
-				    <span ng-show="predicate == 'averagePerDay' && !reverse;" class="fa fa-caret-down"></span>
-                    <span ng-show="predicate == 'averagePerDay' && reverse;" class="fa fa-caret-up"></span>
+				    <span ng-show="predicate=='averagePerDay'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 				</th>
                 <th ng-click="reverse = predicate == 'successPercent' && !reverse; predicate = 'successPercent'">% successful
-				    <span ng-show="predicate == 'successPercent' && !reverse;" class="fa fa-caret-down"></span>
-                    <span ng-show="predicate == 'successPercent' && reverse;" class="fa fa-caret-up"></span>
+				    <span ng-show="predicate=='successPercent'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 				</th>
                 <th ng-click="reverse = predicate == 'failedPercent' && !reverse; predicate = 'failedPercent'">% failed
-				    <span ng-show="predicate == 'failedPercent' && !reverse;" class="fa fa-caret-down"></span>
-                    <span ng-show="predicate == 'failedPercent' && reverse;" class="fa fa-caret-up"></span>
+				    <span ng-show="predicate=='failedPercent'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 				</th>
             </tr>
             </thead>
@@ -129,16 +119,13 @@
                     <thead>
                     <tr>
                         <th ng-click="reverse = predicate == 'name' && !reverse; predicate = 'name'">Indexer
-						    <span ng-show="predicate == 'name' && !reverse;" class="fa fa-caret-down"></span>
-							<span ng-show="predicate == 'name' && reverse;" class="fa fa-caret-up"></span>
+						    <span ng-show="predicate=='name'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 						</th>
                         <th ng-click="reverse = predicate == 'total' && !reverse; predicate = 'total'">Total
-						    <span ng-show="predicate == 'total' && !reverse;" class="fa fa-caret-down"></span>
-							<span ng-show="predicate == 'total' && reverse;" class="fa fa-caret-up"></span>
+						    <span ng-show="predicate=='total'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 						</th>
                         <th ng-click="reverse = predicate == 'share' && !reverse; predicate = 'share'">% of all enabled
-						    <span ng-show="predicate == 'share' && !reverse;" class="fa fa-caret-down"></span>
-							<span ng-show="predicate == 'share' && reverse;" class="fa fa-caret-up"></span>
+						    <span ng-show="predicate=='share'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 						</th>
                     </tr>
                     </thead>
@@ -169,12 +156,10 @@
                 <thead>
                 <tr>
                     <th ng-click="reverse = predicate == 'day' && !reverse; predicate = 'day'">Day of the week
-					    <span ng-show="predicate == 'day' && !reverse;" class="fa fa-caret-down"></span>
-						<span ng-show="predicate == 'day' && reverse;" class="fa fa-caret-up"></span>
+					    <span ng-show="predicate=='day'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 					</th>
                     <th ng-click="reverse = predicate == 'count' && !reverse; predicate = 'count'">Searches
-					    <span ng-show="predicate == 'count' && !reverse;" class="fa fa-caret-down"></span>
-						<span ng-show="predicate == 'count' && reverse;" class="fa fa-caret-up"></span>
+					    <span ng-show="predicate=='count'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 					</th>
                 </tr>
                 </thead>
@@ -201,12 +186,10 @@
                 <thead>
                 <tr>
                     <th ng-click="reverse = predicate == 'day' && !reverse; predicate = 'day'">Day of the week
-					    <span ng-show="predicate == 'day' && !reverse;" class="fa fa-caret-down"></span>
-						<span ng-show="predicate == 'day' && reverse;" class="fa fa-caret-up"></span>
+					    <span ng-show="predicate=='day'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 					</th>
                     <th ng-click="reverse = predicate == 'count' && !reverse; predicate = 'count'">Downloads
-					    <span ng-show="predicate == 'count' && !reverse;" class="fa fa-caret-down"></span>
-						<span ng-show="predicate == 'count' && reverse;" class="fa fa-caret-up"></span>
+					    <span ng-show="predicate=='count'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 					</th>
                 </tr>
                 </thead>
@@ -234,12 +217,10 @@
                     <thead>
                     <tr>
                         <th ng-click="reverse = predicate == 'hour' && !reverse; predicate = 'hour'">Hour of the day
-						    <span ng-show="predicate == 'hour' && !reverse;" class="fa fa-caret-down"></span>
-							<span ng-show="predicate == 'hour' && reverse;" class="fa fa-caret-up"></span>
+						    <span ng-show="predicate=='hour'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 						</th>
                         <th ng-click="reverse = predicate == 'count' && !reverse; predicate = 'count'">Searches
-						    <span ng-show="predicate == 'count' && !reverse;" class="fa fa-caret-down"></span>
-							<span ng-show="predicate == 'count' && reverse;" class="fa fa-caret-up"></span>
+						    <span ng-show="predicate=='count'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 						</th>
                     </tr>
                     </thead>
@@ -268,12 +249,10 @@
                     <thead>
                     <tr>
                         <th ng-click="reverse = predicate == 'hour' && !reverse; predicate = 'hour'">Hour of the day
-						    <span ng-show="predicate == 'hour' && !reverse;" class="fa fa-caret-down"></span>
-							<span ng-show="predicate == 'hour' && reverse;" class="fa fa-caret-up"></span>
+						    <span ng-show="predicate=='hour'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 						</th>
                         <th ng-click="reverse = predicate == 'count' && !reverse; predicate = 'count'">Downloads
-						    <span ng-show="predicate == 'count' && !reverse;" class="fa fa-caret-down"></span>
-							<span ng-show="predicate == 'count' && reverse;" class="fa fa-caret-up"></span>
+						    <span ng-show="predicate=='count'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
 						</th>
                     </tr>
                     </thead>
