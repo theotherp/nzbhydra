@@ -79,7 +79,7 @@ function StatsController($scope, $filter, StatsService, blockUI, stats) {
 
         var rotation = 30;
         if (numIndexers > 30) {
-            rotation = 90;
+            rotation = 70;
         }
         $scope.resultsSharesChart.options.chart.xAxis.rotateLabels = rotation;
         $scope.resultsSharesChart.options.chart.height = avgResponseTimesChartHeight;

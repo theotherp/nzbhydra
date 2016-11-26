@@ -1075,8 +1075,8 @@ body {
   font-family: "Roboto", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.42857143;
-  color: #f0f0f0;
-  background-color: #000000;
+  color: #c8c8c8;
+  background-color: #262c2e;
 }
 input,
 button,
@@ -1121,8 +1121,8 @@ img {
 .img-thumbnail {
   padding: 4px;
   line-height: 1.42857143;
-  background-color: #000000;
-  border: 1px solid #000000;
+  background-color: #1a1f20;
+  border: 1px solid #0a0c0c;
   border-radius: 4px;
   -webkit-transition: all 0.2s ease-in-out;
   -o-transition: all 0.2s ease-in-out;
@@ -1543,7 +1543,7 @@ pre {
   line-height: 1.42857143;
   word-break: break-all;
   word-wrap: break-word;
-  color: #050505;
+  color: #3a3f44;
   background-color: #f5f5f5;
   border: 1px solid #cccccc;
   border-radius: 4px;
@@ -2612,7 +2612,7 @@ pre code {
   }
 }
 table {
-  background-color: #080808;
+  background-color: #2d3436;
 }
 caption {
   padding-top: 8px;
@@ -2655,7 +2655,7 @@ th {
   border-top: 2px solid #1a1f20;
 }
 .table .table {
-  background-color: #000000;
+  background-color: #262c2e;
 }
 .table-condensed > thead > tr > th,
 .table-condensed > tbody > tr > th,
@@ -2681,10 +2681,10 @@ th {
   border-bottom-width: 2px;
 }
 .table-striped > tbody > tr:nth-of-type(odd) {
-  background-color: #0f0f0f;
+  background-color: #343c3f;
 }
 .table-hover > tbody > tr:hover {
-  background-color: #262626;
+  background-color: #495458;
 }
 table col[class*="col-"] {
   position: static;
@@ -2709,14 +2709,14 @@ table th[class*="col-"] {
 .table > thead > tr.active > th,
 .table > tbody > tr.active > th,
 .table > tfoot > tr.active > th {
-  background-color: #262626;
+  background-color: #495458;
 }
 .table-hover > tbody > tr > td.active:hover,
 .table-hover > tbody > tr > th.active:hover,
 .table-hover > tbody > tr.active:hover > td,
 .table-hover > tbody > tr:hover > .active,
 .table-hover > tbody > tr.active:hover > th {
-  background-color: #191919;
+  background-color: #3d474a;
 }
 .table > thead > tr > td.success,
 .table > tbody > tr > td.success,
@@ -2864,7 +2864,7 @@ legend {
   margin-bottom: 20px;
   font-size: 21px;
   line-height: inherit;
-  color: #f0f0f0;
+  color: #c8c8c8;
   border: 0;
   border-bottom: 1px solid #1a1f20;
 }
@@ -2908,7 +2908,7 @@ output {
   padding-top: 7px;
   font-size: 14px;
   line-height: 1.42857143;
-  color: #f0f0f0;
+  color: #c8c8c8;
 }
 .form-control {
   display: block;
@@ -2917,8 +2917,8 @@ output {
   padding: 6px 12px;
   font-size: 14px;
   line-height: 1.42857143;
-  color: #f0f0f0;
-  background-color: #0f1113;
+  color: #c8c8c8;
+  background-color: #1f2328;
   background-image: none;
   border: 1px solid #cccccc;
   border-radius: 4px;
@@ -3409,8 +3409,8 @@ fieldset[disabled] .btn {
 }
 .btn-default {
   color: #ffffff;
-  background-color: #282828;
-  border-color: #282828;
+  background-color: #3a3f44;
+  border-color: #3a3f44;
 }
 .btn-default:hover,
 .btn-default:focus,
@@ -3419,8 +3419,8 @@ fieldset[disabled] .btn {
 .btn-default.active,
 .open > .dropdown-toggle.btn-default {
   color: #ffffff;
-  background-color: #0e0e0e;
-  border-color: #090909;
+  background-color: #232628;
+  border-color: #1e2023;
 }
 .btn-default:active,
 .btn-default.active,
@@ -3445,11 +3445,11 @@ fieldset[disabled] .btn-default:active,
 .btn-default.disabled.active,
 .btn-default[disabled].active,
 fieldset[disabled] .btn-default.active {
-  background-color: #282828;
-  border-color: #282828;
+  background-color: #3a3f44;
+  border-color: #3a3f44;
 }
 .btn-default .badge {
-  color: #282828;
+  color: #3a3f44;
   background-color: #ffffff;
 }
 .btn-primary {
@@ -3805,7 +3805,7 @@ tbody.collapse.in {
   list-style: none;
   font-size: 14px;
   text-align: left;
-  background-color: #050505;
+  background-color: #3a3f44;
   border: 1px solid #262c2e;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 4px;
@@ -3829,7 +3829,7 @@ tbody.collapse.in {
   clear: both;
   font-weight: normal;
   line-height: 1.42857143;
-  color: #f0f0f0;
+  color: #c8c8c8;
   white-space: nowrap;
 }
 .dropdown-menu > li > a:hover,
@@ -4167,7 +4167,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   font-size: 14px;
   font-weight: normal;
   line-height: 1;
-  color: #f0f0f0;
+  color: #c8c8c8;
   text-align: center;
   background-color: #0f1112;
   border: 1px solid #cccccc;
@@ -4254,7 +4254,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .nav > li > a:hover,
 .nav > li > a:focus {
   text-decoration: none;
-  background-color: #1a1a1a;
+  background-color: #3d474a;
 }
 .nav > li.disabled > a {
   color: #7a8288;
@@ -4269,7 +4269,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .nav .open > a,
 .nav .open > a:hover,
 .nav .open > a:focus {
-  background-color: #1a1a1a;
+  background-color: #3d474a;
   border-color: #ffffff;
 }
 .nav .nav-divider {
@@ -4301,7 +4301,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .nav-tabs > li.active > a:hover,
 .nav-tabs > li.active > a:focus {
   color: #ffffff;
-  background-color: #1a1a1a;
+  background-color: #3d474a;
   border: 1px solid #1a1f20;
   border-bottom-color: transparent;
   cursor: default;
@@ -4347,7 +4347,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .nav-tabs.nav-justified > .active > a,
   .nav-tabs.nav-justified > .active > a:hover,
   .nav-tabs.nav-justified > .active > a:focus {
-    border-bottom-color: #000000;
+    border-bottom-color: #262c2e;
   }
 }
 .nav-pills > li {
@@ -4415,7 +4415,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .nav-tabs-justified > .active > a,
   .nav-tabs-justified > .active > a:hover,
   .nav-tabs-justified > .active > a:focus {
-    border-bottom-color: #000000;
+    border-bottom-color: #262c2e;
   }
 }
 .tab-content > .tab-pane {
@@ -4756,11 +4756,11 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   }
 }
 .navbar-default {
-  background-color: #282828;
-  border-color: #171717;
+  background-color: #3a3f44;
+  border-color: #2b2e32;
 }
 .navbar-default .navbar-brand {
-  color: #f0f0f0;
+  color: #c8c8c8;
 }
 .navbar-default .navbar-brand:hover,
 .navbar-default .navbar-brand:focus {
@@ -4768,21 +4768,21 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   background-color: none;
 }
 .navbar-default .navbar-text {
-  color: #f0f0f0;
+  color: #c8c8c8;
 }
 .navbar-default .navbar-nav > li > a {
-  color: #f0f0f0;
+  color: #c8c8c8;
 }
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
   color: #ffffff;
-  background-color: #141414;
+  background-color: #272b2e;
 }
 .navbar-default .navbar-nav > .active > a,
 .navbar-default .navbar-nav > .active > a:hover,
 .navbar-default .navbar-nav > .active > a:focus {
   color: #ffffff;
-  background-color: #141414;
+  background-color: #272b2e;
 }
 .navbar-default .navbar-nav > .disabled > a,
 .navbar-default .navbar-nav > .disabled > a:hover,
@@ -4791,39 +4791,39 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   background-color: transparent;
 }
 .navbar-default .navbar-toggle {
-  border-color: #141414;
+  border-color: #272b2e;
 }
 .navbar-default .navbar-toggle:hover,
 .navbar-default .navbar-toggle:focus {
-  background-color: #141414;
+  background-color: #272b2e;
 }
 .navbar-default .navbar-toggle .icon-bar {
-  background-color: #f0f0f0;
+  background-color: #c8c8c8;
 }
 .navbar-default .navbar-collapse,
 .navbar-default .navbar-form {
-  border-color: #171717;
+  border-color: #2b2e32;
 }
 .navbar-default .navbar-nav > .open > a,
 .navbar-default .navbar-nav > .open > a:hover,
 .navbar-default .navbar-nav > .open > a:focus {
-  background-color: #141414;
+  background-color: #272b2e;
   color: #ffffff;
 }
 @media (max-width: 767px) {
   .navbar-default .navbar-nav .open .dropdown-menu > li > a {
-    color: #f0f0f0;
+    color: #c8c8c8;
   }
   .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
   .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
     color: #ffffff;
-    background-color: #141414;
+    background-color: #272b2e;
   }
   .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
   .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
   .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
     color: #ffffff;
-    background-color: #141414;
+    background-color: #272b2e;
   }
   .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a,
   .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:hover,
@@ -4833,13 +4833,13 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   }
 }
 .navbar-default .navbar-link {
-  color: #f0f0f0;
+  color: #c8c8c8;
 }
 .navbar-default .navbar-link:hover {
   color: #ffffff;
 }
 .navbar-default .btn-link {
-  color: #f0f0f0;
+  color: #c8c8c8;
 }
 .navbar-default .btn-link:hover,
 .navbar-default .btn-link:focus {
@@ -4988,7 +4988,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
   line-height: 1.42857143;
   text-decoration: none;
   color: #ffffff;
-  background-color: #282828;
+  background-color: #3a3f44;
   border: 1px solid rgba(0, 0, 0, 0.6);
   margin-left: -1px;
 }
@@ -5019,7 +5019,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .pagination > .active > span:focus {
   z-index: 2;
   color: #969696;
-  background-color: #0e0e0e;
+  background-color: #232628;
   border-color: rgba(0, 0, 0, 0.6);
   cursor: default;
 }
@@ -5077,7 +5077,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .pager li > span {
   display: inline-block;
   padding: 5px 14px;
-  background-color: #282828;
+  background-color: #3a3f44;
   border: 1px solid rgba(0, 0, 0, 0.6);
   border-radius: 15px;
 }
@@ -5099,7 +5099,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .pager .disabled > a:focus,
 .pager .disabled > span {
   color: #7a8288;
-  background-color: #282828;
+  background-color: #3a3f44;
   cursor: not-allowed;
 }
 .label {
@@ -5128,11 +5128,11 @@ a.label:focus {
   top: -1px;
 }
 .label-default {
-  background-color: #282828;
+  background-color: #3a3f44;
 }
 .label-default[href]:hover,
 .label-default[href]:focus {
-  background-color: #0e0e0e;
+  background-color: #232628;
 }
 .label-primary {
   background-color: #7a8288;
@@ -5219,7 +5219,7 @@ a.badge:focus {
   padding: 30px 15px;
   margin-bottom: 30px;
   color: inherit;
-  background-color: #000000;
+  background-color: #1a1f20;
 }
 .jumbotron h1,
 .jumbotron .h1 {
@@ -5231,7 +5231,7 @@ a.badge:focus {
   font-weight: 200;
 }
 .jumbotron > hr {
-  border-top-color: #000000;
+  border-top-color: #030404;
 }
 .container .jumbotron,
 .container-fluid .jumbotron {
@@ -5259,8 +5259,8 @@ a.badge:focus {
   padding: 4px;
   margin-bottom: 20px;
   line-height: 1.42857143;
-  background-color: #000000;
-  border: 1px solid #000000;
+  background-color: #1a1f20;
+  border: 1px solid #0a0c0c;
   border-radius: 4px;
   -webkit-transition: border 0.2s ease-in-out;
   -o-transition: border 0.2s ease-in-out;
@@ -5278,7 +5278,7 @@ a.thumbnail.active {
 }
 .thumbnail .caption {
   padding: 9px;
-  color: #f0f0f0;
+  color: #c8c8c8;
 }
 .alert {
   padding: 15px;
@@ -5375,7 +5375,7 @@ a.thumbnail.active {
   overflow: hidden;
   height: 20px;
   margin-bottom: 20px;
-  background-color: #000000;
+  background-color: #1a1f20;
   border-radius: 4px;
   -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -5494,7 +5494,7 @@ a.thumbnail.active {
   display: block;
   padding: 10px 15px;
   margin-bottom: -1px;
-  background-color: #0d0d0d;
+  background-color: #32393c;
   border: 1px solid rgba(0, 0, 0, 0.6);
 }
 .list-group-item:first-child {
@@ -5507,7 +5507,7 @@ a.thumbnail.active {
   border-bottom-left-radius: 4px;
 }
 a.list-group-item {
-  color: #f0f0f0;
+  color: #c8c8c8;
 }
 a.list-group-item .list-group-item-heading {
   color: #ffffff;
@@ -5515,8 +5515,8 @@ a.list-group-item .list-group-item-heading {
 a.list-group-item:hover,
 a.list-group-item:focus {
   text-decoration: none;
-  color: #f0f0f0;
-  background-color: #1a1a1a;
+  color: #c8c8c8;
+  background-color: #3d474a;
 }
 .list-group-item.disabled,
 .list-group-item.disabled:hover,
@@ -5540,7 +5540,7 @@ a.list-group-item:focus {
 .list-group-item.active:focus {
   z-index: 2;
   color: #ffffff;
-  background-color: #1a1a1a;
+  background-color: #3d474a;
   border-color: rgba(0, 0, 0, 0.6);
 }
 .list-group-item.active .list-group-item-heading,
@@ -5557,7 +5557,7 @@ a.list-group-item:focus {
 .list-group-item.active .list-group-item-text,
 .list-group-item.active:hover .list-group-item-text,
 .list-group-item.active:focus .list-group-item-text {
-  color: #808080;
+  color: #a1aeb2;
 }
 .list-group-item-success {
   color: #ffffff;
@@ -5657,7 +5657,7 @@ a.list-group-item-danger.active:focus {
 }
 .panel {
   margin-bottom: 20px;
-  background-color: #080808;
+  background-color: #2d3436;
   border: 1px solid transparent;
   border-radius: 4px;
   -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
@@ -5690,7 +5690,7 @@ a.list-group-item-danger.active:focus {
 }
 .panel-footer {
   padding: 10px 15px;
-  background-color: #1a1a1a;
+  background-color: #3d474a;
   border-top: 1px solid rgba(0, 0, 0, 0.6);
   border-bottom-right-radius: 3px;
   border-bottom-left-radius: 3px;
@@ -5890,16 +5890,16 @@ a.list-group-item-danger.active:focus {
   border-color: rgba(0, 0, 0, 0.6);
 }
 .panel-default > .panel-heading {
-  color: #f0f0f0;
-  background-color: #1a1a1a;
+  color: #c8c8c8;
+  background-color: #3d474a;
   border-color: rgba(0, 0, 0, 0.6);
 }
 .panel-default > .panel-heading + .panel-collapse > .panel-body {
   border-top-color: rgba(0, 0, 0, 0.6);
 }
 .panel-default > .panel-heading .badge {
-  color: #1a1a1a;
-  background-color: #f0f0f0;
+  color: #3d474a;
+  background-color: #c8c8c8;
 }
 .panel-default > .panel-footer + .panel-collapse > .panel-body {
   border-bottom-color: rgba(0, 0, 0, 0.6);
@@ -6024,8 +6024,8 @@ a.list-group-item-danger.active:focus {
   min-height: 20px;
   padding: 19px;
   margin-bottom: 20px;
-  background-color: #000000;
-  border: 1px solid #000000;
+  background-color: #1a1f20;
+  border: 1px solid #0a0c0c;
   border-radius: 4px;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
@@ -6109,7 +6109,7 @@ button.close {
 }
 .modal-content {
   position: relative;
-  background-color: #080808;
+  background-color: #2d3436;
   border: 1px solid #999999;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 5px;
@@ -6307,7 +6307,7 @@ button.close {
   font-weight: normal;
   line-height: 1.42857143;
   text-align: left;
-  background-color: #080808;
+  background-color: #2d3436;
   background-clip: padding-box;
   border: 1px solid #999999;
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -6332,8 +6332,8 @@ button.close {
   margin: 0;
   padding: 8px 14px;
   font-size: 14px;
-  background-color: #080808;
-  border-bottom: 1px solid #000000;
+  background-color: #2d3436;
+  border-bottom: 1px solid #212728;
   border-radius: 4px 4px 0 0;
 }
 .popover-content {
@@ -6368,7 +6368,7 @@ button.close {
   bottom: 1px;
   margin-left: -10px;
   border-bottom-width: 0;
-  border-top-color: #080808;
+  border-top-color: #2d3436;
 }
 .popover.right > .arrow {
   top: 50%;
@@ -6383,7 +6383,7 @@ button.close {
   left: 1px;
   bottom: -10px;
   border-left-width: 0;
-  border-right-color: #080808;
+  border-right-color: #2d3436;
 }
 .popover.bottom > .arrow {
   left: 50%;
@@ -6398,7 +6398,7 @@ button.close {
   top: 1px;
   margin-left: -10px;
   border-top-width: 0;
-  border-bottom-color: #080808;
+  border-bottom-color: #2d3436;
 }
 .popover.left > .arrow {
   top: 50%;
@@ -6412,7 +6412,7 @@ button.close {
   content: " ";
   right: 1px;
   border-right-width: 0;
-  border-left-color: #080808;
+  border-left-color: #2d3436;
   bottom: -10px;
 }
 .carousel {
@@ -6937,7 +6937,7 @@ button.close {
   cursor: pointer;
   border-radius: 4px;
   border: 1px solid;
-  border-color: #282828;
+  border-color: #3a3f44;
   position: relative;
   text-align: left;
   overflow: hidden;
@@ -7013,7 +7013,7 @@ button.close {
   margin-bottom: -1px;
   z-index: 100;
   color: #ffffff;
-  background: #282828;
+  background: #3a3f44;
 }
 .bootstrap-switch .bootstrap-switch-handle-on {
   border-bottom-left-radius: 3px;
@@ -7111,7 +7111,7 @@ button.close {
 html,
 body {
   height: 100%;
-  background: #000000;
+  background: #262c2e;
 }
 #wrap {
   min-height: 100%;
@@ -7127,7 +7127,7 @@ body {
 }
 #footer {
   background-color: #7a8288;
-  color: #000000;
+  color: #262c2e;
 }
 /* ------ featurette */
 .featurette {
@@ -7136,7 +7136,7 @@ body {
   height: 10%;
   /* set a pixel height and then remove the body,html height */
   vertical-align: middle;
-  color: #000000;
+  color: #262c2e;
 }
 .featurette-inner {
   display: table-cell;
@@ -7194,8 +7194,8 @@ a.expand-collapse:focus {
 }
 .by-id-checkbox {
   font-size: 14px;
-  color: #f0f0f0;
-  background-color: #0f1113;
+  color: #c8c8c8;
+  background-color: #1f2328;
   background-image: none;
   border: 1px solid #cccccc;
   border-right: 0px;
@@ -7238,7 +7238,7 @@ textarea.by-id-checkbox {
   vertical-align: middle;
 }
 .config-tab-content {
-  background-color: #050505;
+  background-color: #3a3f44;
   margin: 30px;
   padding: 20px;
 }
@@ -7277,12 +7277,12 @@ textarea.by-id-checkbox {
   text-align: center;
 }
 a.disabled {
-  color: #050505;
+  color: #3a3f44;
   text-decoration: none;
   cursor: default;
 }
 a.disabled:hover {
-  color: #050505;
+  color: #3a3f44;
   text-decoration: none;
   cursor: default;
 }
@@ -7292,7 +7292,7 @@ a.disabled:hover {
 .search-results-table {
   display: table;
   width: 100%;
-  background-color: #080808;
+  background-color: #2d3436;
   border-collapse: separate;
 }
 .search-results-header {
@@ -7416,20 +7416,20 @@ a.disabled:hover {
   margin: 0;
 }
 .ui-select-bootstrap .ui-select-choices-row > a {
-  background-color: #0f1113;
-  color: #f0f0f0;
+  background-color: #1f2328;
+  color: #c8c8c8;
 }
 .ui-select-match > .btn {
-  background-color: #0f1113;
-  color: #f0f0f0;
+  background-color: #1f2328;
+  color: #c8c8c8;
 }
 .dropdown-menu {
-  background-color: #0f1113;
-  color: #f0f0f0;
+  background-color: #1f2328;
+  color: #c8c8c8;
 }
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary {
   background-color: #62c462;
-  color: #050505;
+  color: #3a3f44;
 }
 .input-group-btn2 {
   border: 1px solid #cccccc;
@@ -7451,13 +7451,13 @@ a.disabled:hover {
   border-top-width: 0 !important;
 }
 .odd {
-  background-color: #000000;
+  background-color: #212728;
 }
 .search-results-cell:focus {
   outline: none;
 }
 .duplicate {
-  background-color: #000000;
+  background-color: #0a0c0c;
 }
 .result-title {
   font-size: 13px;
@@ -7559,13 +7559,13 @@ a.disabled:hover {
 }
 .block-ui-message {
   background-color: #464646;
-  color: #000000;
+  color: #262c2e;
 }
 .nfo {
   background-color: transparent;
   border-width: 0;
   text-align: left;
-  color: #f0f0f0;
+  color: #c8c8c8;
 }
 input[type='number'] {
   -moz-appearance: textfield;
@@ -7587,10 +7587,10 @@ pre {
   margin: auto;
 }
 .panel {
-  border-color: #171717;
+  border-color: #2b2e32;
 }
 .panel-default > .panel-heading {
-  background-color: #282828;
+  background-color: #3a3f44;
 }
 .panel-default > .panel-heading h3 {
   color: #7a8288;
@@ -7669,16 +7669,16 @@ input:focus + .input-group-addon {
   border-color: #62c462;
 }
 .indexer-score-input-disabled {
-  border-color: #282828;
+  border-color: #3a3f44;
 }
 .indexer-score-input-disabled:focus {
-  border-color: #282828;
+  border-color: #3a3f44;
 }
 .btn:focus {
   outline: none;
 }
 .btn-default:active {
-  background-color: #282828;
+  background-color: #3a3f44;
 }
 .indexer-input:focus {
   outline: 0;
@@ -7689,13 +7689,13 @@ input:focus + .input-group-addon {
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
 .table .table {
-  background-color: #080808;
+  background-color: #2d3436;
 }
 .results-table-expanded {
   border-color: red;
 }
 .indexer-statuses-accordion {
-  color: #f0f0f0;
+  color: #c8c8c8;
 }
 .tooltip-inner {
   max-width: 350px;
@@ -7708,40 +7708,40 @@ input:focus + .input-group-addon {
   text-align: left;
 }
 .nv-axis text {
-  fill: #f0f0f0;
+  fill: #c8c8c8;
 }
 .nv-bar text {
-  fill: #f0f0f0 !important;
+  fill: #c8c8c8 !important;
 }
 .nvd3 .nv-discretebar .nv-groups rect {
-  fill: #175987 !important;
+  fill: #1d3f1d !important;
 }
 .nvd3 .nv-multibarHorizontal .nv-groups rect {
-  fill: #175987 !important;
+  fill: #1d3f1d !important;
 }
 .nv-groups .nv-series-0 rect {
-  fill: #175987 !important;
+  fill: #1d3f1d !important;
 }
 g.nv-multiBarWithLegend > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(1) > circle {
-  fill: #175987 !important;
-  stroke: #175987 !important;
+  fill: #1d3f1d !important;
+  stroke: #1d3f1d !important;
 }
 .nv-groups .nv-series-1 rect {
-  fill: #1e76b3 !important;
+  fill: #2d622d !important;
 }
 g.nv-multiBarWithLegend > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(2) > circle {
-  fill: #1e76b3 !important;
-  stroke: #1e76b3 !important;
+  fill: #2d622d !important;
+  stroke: #2d622d !important;
 }
 .nv-legend-text {
-  fill: #f0f0f0;
+  fill: #c8c8c8;
 }
 g.nv-multiBarHorizontalChart > g > g > g > g > g > text {
   transform: rotate(-31deg);
 }
 .nvtooltip {
-  background-color: #080808;
-  color: #f0f0f0;
+  background-color: #2d3436;
+  color: #c8c8c8;
 }
 .tick line {
   opacity: 0 !important;
@@ -7872,1035 +7872,457 @@ g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(17) > circle 
   fill: #061859;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(1) > rect {
-  fill: #185f90 !important;
+  fill: #204620 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(1) {
-  fill: #185f90 !important;
+  fill: #204620 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(1) {
-  fill: #207bbb !important;
+  fill: #306930 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(2) > rect {
-  fill: #1a6498 !important;
+  fill: #234d23 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(2) {
-  fill: #1a6498 !important;
+  fill: #234d23 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(2) {
-  fill: #2181c4 !important;
+  fill: #347034 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(3) > rect {
-  fill: #1b6aa1 !important;
+  fill: #275427 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(3) {
-  fill: #1b6aa1 !important;
+  fill: #275427 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(3) {
-  fill: #2387cd !important;
+  fill: #377737 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(4) > rect {
-  fill: #1d70aa !important;
+  fill: #2a5b2a !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(4) {
-  fill: #1d70aa !important;
+  fill: #2a5b2a !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(4) {
-  fill: #248dd5 !important;
+  fill: #3a7e3a !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(5) > rect {
-  fill: #1e76b3 !important;
+  fill: #2d622d !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(5) {
-  fill: #1e76b3 !important;
+  fill: #2d622d !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(5) {
-  fill: #2992db !important;
+  fill: #3d853d !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(6) > rect {
-  fill: #207bbb !important;
+  fill: #306930 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(6) {
-  fill: #207bbb !important;
+  fill: #306930 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(6) {
-  fill: #3296dc !important;
+  fill: #408c40 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(7) > rect {
-  fill: #2181c4 !important;
+  fill: #347034 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(7) {
-  fill: #2181c4 !important;
+  fill: #347034 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(7) {
-  fill: #3b9bde !important;
+  fill: #449344 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(8) > rect {
-  fill: #2387cd !important;
+  fill: #377737 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(8) {
-  fill: #2387cd !important;
+  fill: #377737 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(8) {
-  fill: #449fdf !important;
+  fill: #479a47 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(9) > rect {
-  fill: #248dd5 !important;
+  fill: #3a7e3a !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(9) {
-  fill: #248dd5 !important;
+  fill: #3a7e3a !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(9) {
-  fill: #4ca4e1 !important;
+  fill: #4aa14a !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(10) > rect {
-  fill: #2992db !important;
+  fill: #3d853d !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(10) {
-  fill: #2992db !important;
+  fill: #3d853d !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(10) {
-  fill: #55a8e2 !important;
+  fill: #4da84d !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(11) > rect {
-  fill: #3296dc !important;
+  fill: #408c40 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(11) {
-  fill: #3296dc !important;
+  fill: #408c40 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(11) {
-  fill: #5eade4 !important;
+  fill: #51af51 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(12) > rect {
-  fill: #3b9bde !important;
+  fill: #449344 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(12) {
-  fill: #3b9bde !important;
+  fill: #449344 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(12) {
-  fill: #66b1e5 !important;
+  fill: #58b258 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(13) > rect {
-  fill: #449fdf !important;
+  fill: #479a47 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(13) {
-  fill: #449fdf !important;
+  fill: #479a47 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(13) {
-  fill: #6fb5e6 !important;
+  fill: #5eb55e !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(14) > rect {
-  fill: #4ca4e1 !important;
+  fill: #4aa14a !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(14) {
-  fill: #4ca4e1 !important;
+  fill: #4aa14a !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(14) {
-  fill: #78bae8 !important;
+  fill: #65b865 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(15) > rect {
-  fill: #55a8e2 !important;
+  fill: #4da84d !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(15) {
-  fill: #55a8e2 !important;
+  fill: #4da84d !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(15) {
-  fill: #81bee9 !important;
+  fill: #6cbc6c !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(16) > rect {
-  fill: #5eade4 !important;
+  fill: #51af51 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(16) {
-  fill: #5eade4 !important;
+  fill: #51af51 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(16) {
-  fill: #89c3eb !important;
+  fill: #73bf73 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(17) > rect {
-  fill: #66b1e5 !important;
+  fill: #58b258 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(17) {
-  fill: #66b1e5 !important;
+  fill: #58b258 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(17) {
-  fill: #92c7ec !important;
+  fill: #7ac27a !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(18) > rect {
-  fill: #6fb5e6 !important;
+  fill: #5eb55e !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(18) {
-  fill: #6fb5e6 !important;
+  fill: #5eb55e !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(18) {
-  fill: #9bccee !important;
+  fill: #81c581 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(19) > rect {
-  fill: #78bae8 !important;
+  fill: #65b865 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(19) {
-  fill: #78bae8 !important;
+  fill: #65b865 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(19) {
-  fill: #a3d0ef !important;
+  fill: #88c888 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(20) > rect {
-  fill: #81bee9 !important;
+  fill: #6cbc6c !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(20) {
-  fill: #81bee9 !important;
+  fill: #6cbc6c !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(20) {
-  fill: #acd5f1 !important;
+  fill: #8fcc8f !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(21) > rect {
-  fill: #89c3eb !important;
+  fill: #73bf73 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(21) {
-  fill: #89c3eb !important;
+  fill: #73bf73 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(21) {
-  fill: #b5d9f2 !important;
+  fill: #96cf96 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(22) > rect {
-  fill: #92c7ec !important;
+  fill: #7ac27a !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(22) {
-  fill: #92c7ec !important;
+  fill: #7ac27a !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(22) {
-  fill: #bedef4 !important;
+  fill: #9dd29d !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(23) > rect {
-  fill: #9bccee !important;
+  fill: #81c581 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(23) {
-  fill: #9bccee !important;
+  fill: #81c581 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(23) {
-  fill: #c6e2f5 !important;
+  fill: #a4d5a4 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(24) > rect {
-  fill: #a3d0ef !important;
+  fill: #88c888 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(24) {
-  fill: #a3d0ef !important;
+  fill: #88c888 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(24) {
-  fill: #cfe6f7 !important;
+  fill: #abd8ab !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(25) > rect {
-  fill: #acd5f1 !important;
+  fill: #8fcc8f !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(25) {
-  fill: #acd5f1 !important;
+  fill: #8fcc8f !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(25) {
-  fill: #d8ebf8 !important;
+  fill: #b2dcb2 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(26) > rect {
-  fill: #b5d9f2 !important;
+  fill: #96cf96 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(26) {
-  fill: #b5d9f2 !important;
+  fill: #96cf96 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(26) {
-  fill: #e0effa !important;
+  fill: #b9dfb9 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(27) > rect {
-  fill: #bedef4 !important;
+  fill: #9dd29d !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(27) {
-  fill: #bedef4 !important;
+  fill: #9dd29d !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(27) {
-  fill: #e9f4fb !important;
+  fill: #c0e2c0 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(28) > rect {
-  fill: #c6e2f5 !important;
+  fill: #a4d5a4 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(28) {
-  fill: #c6e2f5 !important;
+  fill: #a4d5a4 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(28) {
-  fill: #f2f8fd !important;
+  fill: #c7e5c7 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(29) > rect {
-  fill: #cfe6f7 !important;
+  fill: #abd8ab !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(29) {
-  fill: #cfe6f7 !important;
+  fill: #abd8ab !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(29) {
-  fill: #fbfdfe !important;
+  fill: #cee9ce !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(30) > rect {
-  fill: #d8ebf8 !important;
+  fill: #b2dcb2 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(30) {
-  fill: #d8ebf8 !important;
+  fill: #b2dcb2 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(30) {
-  fill: #ffffff !important;
+  fill: #d5ecd5 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(31) > rect {
-  fill: #e0effa !important;
+  fill: #b9dfb9 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(31) {
-  fill: #e0effa !important;
+  fill: #b9dfb9 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(31) {
-  fill: #ffffff !important;
+  fill: #dcefdc !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(32) > rect {
-  fill: #e9f4fb !important;
+  fill: #c0e2c0 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(32) {
-  fill: #e9f4fb !important;
+  fill: #c0e2c0 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(32) {
-  fill: #ffffff !important;
+  fill: #e3f2e3 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(33) > rect {
-  fill: #f2f8fd !important;
+  fill: #c7e5c7 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(33) {
-  fill: #f2f8fd !important;
+  fill: #c7e5c7 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(33) {
-  fill: #ffffff !important;
+  fill: #eaf5ea !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(34) > rect {
-  fill: #fbfdfe !important;
+  fill: #cee9ce !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(34) {
-  fill: #fbfdfe !important;
+  fill: #cee9ce !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(34) {
-  fill: #ffffff !important;
+  fill: #f1f9f1 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(35) > rect {
-  fill: #ffffff !important;
+  fill: #d5ecd5 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(35) {
-  fill: #ffffff !important;
+  fill: #d5ecd5 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(35) {
-  fill: #ffffff !important;
+  fill: #f8fcf8 !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(36) > rect {
-  fill: #ffffff !important;
+  fill: #dcefdc !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(36) {
-  fill: #ffffff !important;
+  fill: #dcefdc !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(36) {
   fill: #ffffff !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(37) > rect {
-  fill: #ffffff !important;
+  fill: #e3f2e3 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(37) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(37) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(38) > rect {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(38) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(38) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(39) > rect {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(39) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(39) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(40) > rect {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(40) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(40) {
-  fill: #ffffff !important;
-}
-.weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(1) > rect {
-  fill: #1c6da6 !important;
-}
-.weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(2) > rect {
-  fill: #2181c4 !important;
-}
-.weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(3) > rect {
-  fill: #2e94db !important;
-}
-.weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(4) > rect {
-  fill: #4ca4e1 !important;
-}
-.weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(5) > rect {
-  fill: #6bb3e6 !important;
-}
-.weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(6) > rect {
-  fill: #89c3eb !important;
-}
-.weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(7) > rect {
-  fill: #a8d2f0 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(1) > rect {
-  fill: #185f90 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(2) > rect {
-  fill: #1a6498 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(3) > rect {
-  fill: #1b6aa1 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(4) > rect {
-  fill: #1d70aa !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(5) > rect {
-  fill: #1e76b3 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(6) > rect {
-  fill: #207bbb !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(7) > rect {
-  fill: #2181c4 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(8) > rect {
-  fill: #2387cd !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(9) > rect {
-  fill: #248dd5 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(10) > rect {
-  fill: #2992db !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(11) > rect {
-  fill: #3296dc !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(12) > rect {
-  fill: #3b9bde !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(13) > rect {
-  fill: #449fdf !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(14) > rect {
-  fill: #4ca4e1 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(15) > rect {
-  fill: #55a8e2 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(16) > rect {
-  fill: #5eade4 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(17) > rect {
-  fill: #66b1e5 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(18) > rect {
-  fill: #6fb5e6 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(19) > rect {
-  fill: #78bae8 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(20) > rect {
-  fill: #81bee9 !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(21) > rect {
-  fill: #89c3eb !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(22) > rect {
-  fill: #92c7ec !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(23) > rect {
-  fill: #9bccee !important;
-}
-.dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(24) > rect {
-  fill: #a3d0ef !important;
-}
-.nv-pieLabels > .nv-label > text {
-  fill: #e6e6e6 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g > text {
-  fill: #e6e6e6 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(1) > circle {
-  fill: #7f7400 !important;
-  stroke: #7f7400 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(2) > circle {
-  fill: #7f4d06 !important;
-  stroke: #7f4d06 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(3) > circle {
-  fill: #7f2f25 !important;
-  stroke: #7f2f25 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(4) > circle {
-  fill: #185255 !important;
-  stroke: #185255 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(5) > circle {
-  fill: #7f245e !important;
-  stroke: #7f245e !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(6) > circle {
-  fill: #71447f !important;
-  stroke: #71447f !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(7) > circle {
-  fill: #381960 !important;
-  stroke: #381960 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(8) > circle {
-  fill: #167d49 !important;
-  stroke: #167d49 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(9) > circle {
-  fill: #7f2f25 !important;
-  stroke: #7f2f25 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(10) > circle {
-  fill: #4f8d68 !important;
-  stroke: #4f8d68 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(11) > circle {
-  fill: #68829e !important;
-  stroke: #68829e !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(12) > circle {
-  fill: #007744 !important;
-  stroke: #007744 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(13) > circle {
-  fill: #919509 !important;
-  stroke: #919509 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(14) > circle {
-  fill: #2c9586 !important;
-  stroke: #2c9586 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(15) > circle {
-  fill: #105a13 !important;
-  stroke: #105a13 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(16) > circle {
-  fill: #503454 !important;
-  stroke: #503454 !important;
-}
-g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(17) > circle {
-  fill: #061859 !important;
-  stroke: #061859 !important;
-}
-.nv-pie > .nv-slice:nth-child(1) {
-  fill: #7f7400;
-}
-.nv-pie > .nv-slice:nth-child(2) {
-  fill: #7f4d06;
-}
-.nv-pie > .nv-slice:nth-child(3) {
-  fill: #7f2f25;
-}
-.nv-pie > .nv-slice:nth-child(4) {
-  fill: #185255;
-}
-.nv-pie > .nv-slice:nth-child(5) {
-  fill: #7f245e;
-}
-.nv-pie > .nv-slice:nth-child(6) {
-  fill: #71447f;
-}
-.nv-pie > .nv-slice:nth-child(7) {
-  fill: #381960;
-}
-.nv-pie > .nv-slice:nth-child(8) {
-  fill: #167d49;
-}
-.nv-pie > .nv-slice:nth-child(9) {
-  fill: #7f2f25;
-}
-.nv-pie > .nv-slice:nth-child(10) {
-  fill: #4f8d68;
-}
-.nv-pie > .nv-slice:nth-child(11) {
-  fill: #68829e;
-}
-.nv-pie > .nv-slice:nth-child(12) {
-  fill: #007744;
-}
-.nv-pie > .nv-slice:nth-child(13) {
-  fill: #919509;
-}
-.nv-pie > .nv-slice:nth-child(14) {
-  fill: #2c9586;
-}
-.nv-pie > .nv-slice:nth-child(15) {
-  fill: #105a13;
-}
-.nv-pie > .nv-slice:nth-child(16) {
-  fill: #503454;
-}
-.nv-pie > .nv-slice:nth-child(17) {
-  fill: #061859;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(1) > rect {
-  fill: #185f90 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(1) {
-  fill: #185f90 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(1) {
-  fill: #207bbb !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(2) > rect {
-  fill: #1a6498 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(2) {
-  fill: #1a6498 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(2) {
-  fill: #2181c4 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(3) > rect {
-  fill: #1b6aa1 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(3) {
-  fill: #1b6aa1 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(3) {
-  fill: #2387cd !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(4) > rect {
-  fill: #1d70aa !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(4) {
-  fill: #1d70aa !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(4) {
-  fill: #248dd5 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(5) > rect {
-  fill: #1e76b3 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(5) {
-  fill: #1e76b3 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(5) {
-  fill: #2992db !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(6) > rect {
-  fill: #207bbb !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(6) {
-  fill: #207bbb !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(6) {
-  fill: #3296dc !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(7) > rect {
-  fill: #2181c4 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(7) {
-  fill: #2181c4 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(7) {
-  fill: #3b9bde !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(8) > rect {
-  fill: #2387cd !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(8) {
-  fill: #2387cd !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(8) {
-  fill: #449fdf !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(9) > rect {
-  fill: #248dd5 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(9) {
-  fill: #248dd5 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(9) {
-  fill: #4ca4e1 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(10) > rect {
-  fill: #2992db !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(10) {
-  fill: #2992db !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(10) {
-  fill: #55a8e2 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(11) > rect {
-  fill: #3296dc !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(11) {
-  fill: #3296dc !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(11) {
-  fill: #5eade4 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(12) > rect {
-  fill: #3b9bde !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(12) {
-  fill: #3b9bde !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(12) {
-  fill: #66b1e5 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(13) > rect {
-  fill: #449fdf !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(13) {
-  fill: #449fdf !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(13) {
-  fill: #6fb5e6 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(14) > rect {
-  fill: #4ca4e1 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(14) {
-  fill: #4ca4e1 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(14) {
-  fill: #78bae8 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(15) > rect {
-  fill: #55a8e2 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(15) {
-  fill: #55a8e2 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(15) {
-  fill: #81bee9 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(16) > rect {
-  fill: #5eade4 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(16) {
-  fill: #5eade4 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(16) {
-  fill: #89c3eb !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(17) > rect {
-  fill: #66b1e5 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(17) {
-  fill: #66b1e5 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(17) {
-  fill: #92c7ec !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(18) > rect {
-  fill: #6fb5e6 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(18) {
-  fill: #6fb5e6 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(18) {
-  fill: #9bccee !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(19) > rect {
-  fill: #78bae8 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(19) {
-  fill: #78bae8 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(19) {
-  fill: #a3d0ef !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(20) > rect {
-  fill: #81bee9 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(20) {
-  fill: #81bee9 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(20) {
-  fill: #acd5f1 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(21) > rect {
-  fill: #89c3eb !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(21) {
-  fill: #89c3eb !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(21) {
-  fill: #b5d9f2 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(22) > rect {
-  fill: #92c7ec !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(22) {
-  fill: #92c7ec !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(22) {
-  fill: #bedef4 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(23) > rect {
-  fill: #9bccee !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(23) {
-  fill: #9bccee !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(23) {
-  fill: #c6e2f5 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(24) > rect {
-  fill: #a3d0ef !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(24) {
-  fill: #a3d0ef !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(24) {
-  fill: #cfe6f7 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(25) > rect {
-  fill: #acd5f1 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(25) {
-  fill: #acd5f1 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(25) {
-  fill: #d8ebf8 !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(26) > rect {
-  fill: #b5d9f2 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(26) {
-  fill: #b5d9f2 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(26) {
-  fill: #e0effa !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(27) > rect {
-  fill: #bedef4 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(27) {
-  fill: #bedef4 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(27) {
-  fill: #e9f4fb !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(28) > rect {
-  fill: #c6e2f5 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(28) {
-  fill: #c6e2f5 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(28) {
-  fill: #f2f8fd !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(29) > rect {
-  fill: #cfe6f7 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(29) {
-  fill: #cfe6f7 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(29) {
-  fill: #fbfdfe !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(30) > rect {
-  fill: #d8ebf8 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(30) {
-  fill: #d8ebf8 !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(30) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(31) > rect {
-  fill: #e0effa !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(31) {
-  fill: #e0effa !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(31) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(32) > rect {
-  fill: #e9f4fb !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(32) {
-  fill: #e9f4fb !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(32) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(33) > rect {
-  fill: #f2f8fd !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(33) {
-  fill: #f2f8fd !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(33) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(34) > rect {
-  fill: #fbfdfe !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(34) {
-  fill: #fbfdfe !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(34) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(35) > rect {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(35) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(35) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(36) > rect {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(36) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(36) {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(37) > rect {
-  fill: #ffffff !important;
-}
-.nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(37) {
-  fill: #ffffff !important;
+  fill: #e3f2e3 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(37) {
   fill: #ffffff !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(38) > rect {
-  fill: #ffffff !important;
+  fill: #eaf5ea !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(38) {
-  fill: #ffffff !important;
+  fill: #eaf5ea !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(38) {
   fill: #ffffff !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(39) > rect {
-  fill: #ffffff !important;
+  fill: #f1f9f1 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(39) {
-  fill: #ffffff !important;
+  fill: #f1f9f1 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(39) {
   fill: #ffffff !important;
 }
 .nvd3 .nv-multibarHorizontal > g > g.nv-groups > g > g:nth-child(40) > rect {
-  fill: #ffffff !important;
+  fill: #f8fcf8 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(40) {
-  fill: #ffffff !important;
+  fill: #f8fcf8 !important;
 }
 .nvd3 .nv-multibar > g > g.nv-groups > g:nth-child(1) > rect:nth-child(40) {
   fill: #ffffff !important;
 }
 .weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(1) > rect {
-  fill: #1c6da6 !important;
+  fill: #285728 !important;
 }
 .weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(2) > rect {
-  fill: #2181c4 !important;
+  fill: #347034 !important;
 }
 .weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(3) > rect {
-  fill: #2e94db !important;
+  fill: #3f883f !important;
 }
 .weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(4) > rect {
-  fill: #4ca4e1 !important;
+  fill: #4aa14a !important;
 }
 .weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(5) > rect {
-  fill: #6bb3e6 !important;
+  fill: #5bb45b !important;
 }
 .weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(6) > rect {
-  fill: #89c3eb !important;
+  fill: #73bf73 !important;
 }
 .weeklyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(7) > rect {
-  fill: #a8d2f0 !important;
+  fill: #8cca8c !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(1) > rect {
-  fill: #185f90 !important;
+  fill: #204620 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(2) > rect {
-  fill: #1a6498 !important;
+  fill: #234d23 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(3) > rect {
-  fill: #1b6aa1 !important;
+  fill: #275427 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(4) > rect {
-  fill: #1d70aa !important;
+  fill: #2a5b2a !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(5) > rect {
-  fill: #1e76b3 !important;
+  fill: #2d622d !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(6) > rect {
-  fill: #207bbb !important;
+  fill: #306930 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(7) > rect {
-  fill: #2181c4 !important;
+  fill: #347034 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(8) > rect {
-  fill: #2387cd !important;
+  fill: #377737 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(9) > rect {
-  fill: #248dd5 !important;
+  fill: #3a7e3a !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(10) > rect {
-  fill: #2992db !important;
+  fill: #3d853d !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(11) > rect {
-  fill: #3296dc !important;
+  fill: #408c40 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(12) > rect {
-  fill: #3b9bde !important;
+  fill: #449344 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(13) > rect {
-  fill: #449fdf !important;
+  fill: #479a47 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(14) > rect {
-  fill: #4ca4e1 !important;
+  fill: #4aa14a !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(15) > rect {
-  fill: #55a8e2 !important;
+  fill: #4da84d !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(16) > rect {
-  fill: #5eade4 !important;
+  fill: #51af51 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(17) > rect {
-  fill: #66b1e5 !important;
+  fill: #58b258 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(18) > rect {
-  fill: #6fb5e6 !important;
+  fill: #5eb55e !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(19) > rect {
-  fill: #78bae8 !important;
+  fill: #65b865 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(20) > rect {
-  fill: #81bee9 !important;
+  fill: #6cbc6c !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(21) > rect {
-  fill: #89c3eb !important;
+  fill: #73bf73 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(22) > rect {
-  fill: #92c7ec !important;
+  fill: #7ac27a !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(23) > rect {
-  fill: #9bccee !important;
+  fill: #81c581 !important;
 }
 .dailyChart .nvd3 .nv-discretebar > g > g.nv-groups > g > g:nth-child(24) > rect {
-  fill: #a3d0ef !important;
+  fill: #88c888 !important;
 }
 
-/*# sourceMappingURL=dark.css.map */
+/*# sourceMappingURL=grey.css.map */

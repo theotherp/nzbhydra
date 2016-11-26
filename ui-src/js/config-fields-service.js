@@ -358,7 +358,8 @@ function ConfigFields($injector) {
                                 label: 'Theme',
                                 help: 'Reload page after saving',
                                 options: [
-                                    {name: 'Default', value: 'default'},
+                                    {name: 'Grey', value: 'grey'},
+                                    {name: 'Bright', value: 'bright'},
                                     {name: 'Dark', value: 'dark'}
                                 ]
                             }

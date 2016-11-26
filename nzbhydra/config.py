@@ -133,7 +133,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 30,
+        "configVersion": 31,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
@@ -158,7 +158,7 @@ initialConfig = {
         "httpProxy": None,
         "httpsProxy": None,
         "startupBrowser": True,
-        "theme": "default",
+        "theme": "grey",
         "urlBase": None,
         "useLocalUrlForApiAccess": True,
     },
@@ -727,6 +727,12 @@ def migrateConfig(config):
                 if config["categories"]["categories"]["tvhd"]["max"] == 3000:
                     addLogMessage(20, "Increasing max size for TV HD results to 4500MB")
                     config["categories"]["categories"]["tvhd"]["max"] = 4500
+
+        if config["main"]["configVersion"] == 30:
+            with version_update(config, 31):
+                addLogMessage(20, "Renaming default theme to bright theme")
+                if config["main"]["theme"] == "default":
+                    config["main"]["theme"] = "bright"
 
 
 

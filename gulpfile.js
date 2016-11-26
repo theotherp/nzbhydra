@@ -65,7 +65,15 @@ gulp.task('scripts', function () {
 
 gulp.task('less', function () {
     var dest = 'static/css';
-    var defaultTheme = gulp.src('ui-src/less/default.less')
+    var brightTheme = gulp.src('ui-src/less/bright.less')
+        .pipe(sourcemaps.init())
+        .pipe(less())
+        .on('error', swallowError)
+        .pipe(sourcemaps.write("."))
+        //.pipe(newer(dest))
+        .pipe(gulp.dest(dest));
+
+    var greyTheme = gulp.src('ui-src/less/grey.less')
         .pipe(sourcemaps.init())
         .pipe(less())
         .on('error', swallowError)
@@ -81,7 +89,7 @@ gulp.task('less', function () {
         //.pipe(newer(dest))
         .pipe(gulp.dest(dest));
     
-    return merge(defaultTheme, darkTheme);
+    return merge(brightTheme, greyTheme, darkTheme);
 });
 
 gulp.task('copy-assets', function () {

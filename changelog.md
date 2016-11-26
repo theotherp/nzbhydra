@@ -10,6 +10,8 @@ Added: Show stats for a certain time span. See [#431](https://github.com/theothe
 
 Added: Option to truncate database and log file. Requested by a user running the synology package where database and log files are not available easily.
 
+Added: New "dark" theme which is basically just a darker grey theme. Supplied by /u/SabreWolF9. Grey theme is now default. 
+
 Changed: API keys are not mandatory for indexers. Apparently there are som which don't require one or even throw an error when one is provided. Whatever. See [#427](https://github.com/theotherp/nzbhydra/issues/427)
 
 Changed: Some indexers do support more search types or IDs than they say in their caps. So search capabilities of an indexer (searching by IMDB ID, TVDB ID, etc.) are now always determined by "brute force" instead of relying on the data provided in the caps. That means that the caps check will take a lot more time (up to 6 queries) but be more precise. See [#433](https://github.com/theotherp/nzbhydra/issues/433).    

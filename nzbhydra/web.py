@@ -1262,7 +1262,7 @@ def internalapi_getcategories(args):
 @app.route('/internalapi/gettheme')
 @requires_auth("main")
 def internalapi_gettheme():
-    return send_file("../static/css/default.css")
+    return send_file("../static/css/bright.css")
 
 
 def restart(func=None, afterUpdate=False):
