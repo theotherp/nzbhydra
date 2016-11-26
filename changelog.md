@@ -10,6 +10,8 @@ Changed: Some indexers do support more search types or IDs than they say in thei
 
 Fixed: Calls to /details/ would not use dereferer.
 
+Fixed: Database was not properly shut down.
+
 
 
 ### 0.2.168

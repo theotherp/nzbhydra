@@ -1281,7 +1281,24 @@ def restart(func=None, afterUpdate=False):
 def internalapi_restart():
     logger.info("Finishing pending database work")
     database.db.stop()
+    database.db.close()
     logger.info("User requested to restart. Sending restart command in 1 second")
+    func = request.environ.get('werkzeug.server.shutdown')
+    thread = threading.Thread(target=restart, args=(func, False))
+    thread.daemon = True
+    thread.start()
+    return "Restarting"
+
+
+@app.route("/internalapi/deleteloganddb")
+@requires_auth("admin", True)
+def internalapi_restart_and_delete_log_and_database_file():
+    logger.info("Finishing pending database work")
+    database.db.stop()
+    database.db.close()
+    logger.debug("Setting env variable CLEARLOGANDDB to 1")
+    os.environ["CLEARLOGANDDB"] = "1"
+    logger.info("User requested to delete the log file and database. Sending restart command in 1 second")
     func = request.environ.get('werkzeug.server.shutdown')
     thread = threading.Thread(target=restart, args=(func, False))
     thread.daemon = True
@@ -1300,6 +1317,7 @@ def shutdown():
 def internalapi_shutdown():
     logger.info("Finishing pending database work")
     database.db.stop()
+    database.db.close()
     logger.info("Shutting down due to external request")
     thread = threading.Thread(target=shutdown)
     thread.daemon = True
