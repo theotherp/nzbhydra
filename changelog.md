@@ -14,7 +14,7 @@ Changed: API keys are not mandatory for indexers. Apparently there are som which
 
 Changed: Some indexers do support more search types or IDs than they say in their caps. So search capabilities of an indexer (searching by IMDB ID, TVDB ID, etc.) are now always determined by "brute force" instead of relying on the data provided in the caps. That means that the caps check will take a lot more time (up to 6 queries) but be more precise. See [#433](https://github.com/theotherp/nzbhydra/issues/433).    
 
-Fixed: Calls to /details/ would not use dereferer.
+Fixed: Calls to /details/ would not use dereferer. See [#434](https://github.com/theotherp/nzbhydra/issues/439).
 
 Fixed: Database was not properly shut down.
 
