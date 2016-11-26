@@ -1585,7 +1585,7 @@ angular
     .module('nzbhydraApp')
     .controller('SystemController', SystemController);
 
-function SystemController($scope, $state, $http, growl, RestartService, NzbHydraControlService) {
+function SystemController($scope, $state, $http, growl, RestartService, ModalService, NzbHydraControlService) {
 
 
     $scope.shutdown = function () {
@@ -1599,6 +1599,24 @@ function SystemController($scope, $state, $http, growl, RestartService, NzbHydra
 
     $scope.restart = function () {
         RestartService.restart();
+    };
+
+    $scope.deleteLogAndDatabase = function () {
+        ModalService.open("Delete log and db", "Are you absolutely sure you want to delete your database and log files? Hydra will restart to do that. This will not work on Windows.",  {
+            yes: {
+                onYes: function () {
+                    NzbHydraControlService.deleteLogAndDb();
+                    RestartService.restart();
+                },
+                text: "Yes, delete log and database"
+            },
+            no: {
+                onCancel: function () {
+
+                },
+                text: "Nah"
+            }
+        });
     };
     
 
@@ -1659,7 +1677,7 @@ function SystemController($scope, $state, $http, growl, RestartService, NzbHydra
     }
     
 }
-SystemController.$inject = ["$scope", "$state", "$http", "growl", "RestartService", "NzbHydraControlService"];
+SystemController.$inject = ["$scope", "$state", "$http", "growl", "RestartService", "ModalService", "NzbHydraControlService"];
 
 angular
     .module('nzbhydraApp')
@@ -2844,7 +2862,8 @@ function NzbHydraControlService($http) {
 
     return {
         restart: restart,
-        shutdown: shutdown
+        shutdown: shutdown,
+        deleteLogAndDb: deleteLogAndDb
     };
 
     function restart() {
@@ -2853,6 +2872,10 @@ function NzbHydraControlService($http) {
 
     function shutdown() {
         return $http.get("internalapi/shutdown");
+    }
+
+    function deleteLogAndDb() {
+        return $http.get("internalapi/deleteloganddb");
     }
 }
 NzbHydraControlService.$inject = ["$http"];

@@ -2,7 +2,7 @@ angular
     .module('nzbhydraApp')
     .controller('SystemController', SystemController);
 
-function SystemController($scope, $state, $http, growl, RestartService, NzbHydraControlService) {
+function SystemController($scope, $state, $http, growl, RestartService, ModalService, NzbHydraControlService) {
 
 
     $scope.shutdown = function () {
@@ -16,6 +16,24 @@ function SystemController($scope, $state, $http, growl, RestartService, NzbHydra
 
     $scope.restart = function () {
         RestartService.restart();
+    };
+
+    $scope.deleteLogAndDatabase = function () {
+        ModalService.open("Delete log and db", "Are you absolutely sure you want to delete your database and log files? Hydra will restart to do that. This will not work on Windows.",  {
+            yes: {
+                onYes: function () {
+                    NzbHydraControlService.deleteLogAndDb();
+                    RestartService.restart();
+                },
+                text: "Yes, delete log and database"
+            },
+            no: {
+                onCancel: function () {
+
+                },
+                text: "Nah"
+            }
+        });
     };
     
 

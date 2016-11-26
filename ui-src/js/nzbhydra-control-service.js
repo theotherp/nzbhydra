@@ -6,7 +6,8 @@ function NzbHydraControlService($http) {
 
     return {
         restart: restart,
-        shutdown: shutdown
+        shutdown: shutdown,
+        deleteLogAndDb: deleteLogAndDb
     };
 
     function restart() {
@@ -15,5 +16,9 @@ function NzbHydraControlService($http) {
 
     function shutdown() {
         return $http.get("internalapi/shutdown");
+    }
+
+    function deleteLogAndDb() {
+        return $http.get("internalapi/deleteloganddb");
     }
 }
