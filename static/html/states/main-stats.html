@@ -3,6 +3,29 @@
            M0,4 l4,-4
            M3,5 l2,-2"></path>
 </pattern>
+<div class="row" style="margin-top: 50px; margin-bottom: 30px">
+    <div class="col-md-6">
+    </div>
+    <div class="col-md-4">
+        <p class="input-group">
+            <span class="input-group-addon" id="basic-addon3">After</span>
+            <input type="text" class="form-control" uib-datepicker-popup ng-model="afterDate" is-open="after.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close"/>
+            <span class="input-group-btn input-group-btn2">
+            <button type="button" class="btn btn-default" ng-click="openAfter()"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+        </p>
+    </div>
+    <div class="col-md-4">
+        <p class="input-group">
+            <span class="input-group-addon" id="basic-addon3">Before</span>
+            <input type="text" class="form-control" uib-datepicker-popup ng-model="beforeDate" is-open="before.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close"/>
+            <span class="input-group-btn input-group-btn2">
+            <button type="button" class="btn btn-default" ng-click="openBefore()"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+        </p>
+    </div>
+
+</div>
 
 <div class="row">
 

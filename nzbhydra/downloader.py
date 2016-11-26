@@ -65,7 +65,7 @@ class Nzbget(Downloader):
 
     def test(self, setting):
         self.logger.debug("Testing connection to snzbget")
-        rpc = self.get_rpc(setting.host, setting.ssl, setting.port, urllib.quote(setting.username), urllib.quote(setting.password))
+        rpc = self.get_rpc(setting.host, setting.ssl, setting.port, setting.username, urllib.quote(setting.password.encode("utf-8")))
 
         try:
             if rpc.writelog('INFO', 'NZB Hydra connected to test connection'):

@@ -52,7 +52,7 @@ from nzbhydra.database import IndexerStatus, Indexer, SearchResult
 from nzbhydra.downloader import getInstanceBySetting, getDownloaderInstanceByName
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
 from nzbhydra.search import SearchRequest
-from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses, getIndexerBasedDownloadStats, getTimeBasedDownloadStats, getTimeBasedSearchStats
+from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses, getIndexerBasedDownloadStats, getTimeBasedDownloadStats, getTimeBasedSearchStats, getStats
 from nzbhydra.update import get_rep_version, get_current_version, update, getChangelog, getVersionHistory
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import getLogs
@@ -937,16 +937,16 @@ def internalapi_testcaps(args):
         return jsonify({"success": False, "message": e.message})
 
 
+internalapi__stats_args = {
+    "after": fields.Integer(missing=None),
+    "before": fields.Integer(missing=None)
+}
+
 @app.route('/internalapi/getstats')
 @requires_auth("stats")
-def internalapi_getstats():
-    return jsonify({"avgResponseTimes": get_avg_indexer_response_times(),
-                    "avgIndexerSearchResultsShares": get_avg_indexer_search_results_share(),
-                    "avgIndexerAccessSuccesses": get_avg_indexer_access_success(),
-                    "indexerDownloadShares": getIndexerBasedDownloadStats(),
-                    "timeBasedDownloadStats": getTimeBasedDownloadStats(),
-                    "timeBasedSearchStats": getTimeBasedSearchStats()
-                    })
+@use_args(internalapi__stats_args)
+def internalapi_getstats(args):
+    return jsonify(getStats(args["after"], args["before"]))
 
 
 @app.route('/internalapi/getindexerstatuses')

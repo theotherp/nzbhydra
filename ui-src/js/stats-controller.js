@@ -2,18 +2,134 @@ angular
     .module('nzbhydraApp')
     .controller('StatsController', StatsController);
 
-function StatsController($scope, $filter, stats) {
+function StatsController($scope, $filter, StatsService, blockUI, stats) {
 
-    stats = stats.data;
-    $scope.nzbDownloads = null;
-    $scope.avgResponseTimes = stats.avgResponseTimes;
-    $scope.avgIndexerSearchResultsShares = stats.avgIndexerSearchResultsShares;
-    $scope.avgIndexerAccessSuccesses = stats.avgIndexerAccessSuccesses;
-    $scope.indexerDownloadShares = stats.indexerDownloadShares;
-    $scope.downloadsPerHourOfDay = stats.timeBasedDownloadStats.perHourOfDay;
-    $scope.downloadsPerDayOfWeek = stats.timeBasedDownloadStats.perDayOfWeek;
-    $scope.searchesPerHourOfDay = stats.timeBasedSearchStats.perHourOfDay;
-    $scope.searchesPerDayOfWeek = stats.timeBasedSearchStats.perDayOfWeek;
+    $scope.dateOptions = {
+        dateDisabled: false,
+        formatYear: 'yy',
+        startingDay: 1
+    };
+
+    $scope.afterDate = null;
+    $scope.beforeDate = null;
+
+    $scope.openAfter = function () {
+        $scope.after.opened = true;
+    };
+
+    $scope.openBefore = function () {
+        $scope.before.opened = true;
+    };
+
+    $scope.after = {
+        opened: false
+    };
+
+    $scope.before = {
+        opened: false
+    };
+
+
+    function updateStats() {
+        blockUI.start("Updating stats...");
+        var after = $scope.afterDate != null ? $scope.afterDate.getTime() / 1000 : null;
+        var before = $scope.beforeDate != null ? $scope.beforeDate.getTime() / 1000 : null;
+        StatsService.get(after, before).then(function(stats) {
+            $scope.setStats(stats);
+        });
+
+        blockUI.reset();
+    }
+
+    $scope.$watch('beforeDate', function () {
+        updateStats();
+    });
+
+    $scope.$watch('afterDate', function () {
+        updateStats();
+    });
+
+    $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+    $scope.format = $scope.formats[0];
+    $scope.altInputFormats = ['M!/d!/yyyy'];
+
+    $scope.setStats = function (stats) {
+        stats = stats.data;
+
+        $scope.nzbDownloads = null;
+        $scope.avgResponseTimes = stats.avgResponseTimes;
+        $scope.avgIndexerSearchResultsShares = stats.avgIndexerSearchResultsShares;
+        $scope.avgIndexerAccessSuccesses = stats.avgIndexerAccessSuccesses;
+        $scope.indexerDownloadShares = stats.indexerDownloadShares;
+        $scope.downloadsPerHourOfDay = stats.timeBasedDownloadStats.perHourOfDay;
+        $scope.downloadsPerDayOfWeek = stats.timeBasedDownloadStats.perDayOfWeek;
+        $scope.searchesPerHourOfDay = stats.timeBasedSearchStats.perHourOfDay;
+        $scope.searchesPerDayOfWeek = stats.timeBasedSearchStats.perDayOfWeek;
+
+
+        var numIndexers = $scope.avgResponseTimes.length;
+
+        $scope.avgResponseTimesChart = getChart("multiBarHorizontalChart", $scope.avgResponseTimes, "name", "avgResponseTime", "", "Response time");
+        $scope.avgResponseTimesChart.options.chart.margin.left = 100;
+        $scope.avgResponseTimesChart.options.chart.yAxis.rotateLabels = -30;
+        var avgResponseTimesChartHeight = Math.max(numIndexers * 30, 350);
+        $scope.avgResponseTimesChart.options.chart.height = avgResponseTimesChartHeight;
+
+        $scope.resultsSharesChart = getResultsSharesChart();
+
+        var rotation = 30;
+        if (numIndexers > 30) {
+            rotation = 90;
+        }
+        $scope.resultsSharesChart.options.chart.xAxis.rotateLabels = rotation;
+        $scope.resultsSharesChart.options.chart.height = avgResponseTimesChartHeight;
+
+        $scope.downloadsPerHourOfDayChart = getChart("discreteBarChart", $scope.downloadsPerHourOfDay, "hour", "count", "Hour of day", 'Downloads');
+        $scope.downloadsPerDayOfWeekChart = getChart("discreteBarChart", $scope.downloadsPerDayOfWeek, "day", "count", "Day of week", 'Downloads');
+        $scope.downloadsPerDayOfWeekChart.options.chart.xAxis.rotateLabels = 0;
+
+        $scope.searchesPerHourOfDayChart = getChart("discreteBarChart", $scope.searchesPerHourOfDay, "hour", "count", "Hour of day", 'Searches');
+        $scope.searchesPerDayOfWeekChart = getChart("discreteBarChart", $scope.searchesPerDayOfWeek, "day", "count", "Day of week", 'Searches');
+        $scope.searchesPerDayOfWeekChart.options.chart.xAxis.rotateLabels = 0;
+
+        $scope.indexerDownloadSharesChart = {
+            options: {
+                chart: {
+                    type: 'pieChart',
+                    height: 500,
+                    x: function (d) {
+                        return d.name;
+                    },
+                    y: function (d) {
+                        return d.share;
+                    },
+                    showLabels: true,
+                    duration: 500,
+                    labelThreshold: 0.01,
+                    labelSunbeamLayout: true,
+                    tooltip: {
+                        valueFormatter: function (d, i) {
+                            return $filter('number')(d, 2) + "%";
+                        }
+                    },
+                    legend: {
+                        margin: {
+                            top: 5,
+                            right: 35,
+                            bottom: 5,
+                            left: 0
+                        }
+                    }
+                }
+            },
+            data: $scope.indexerDownloadShares
+        };
+
+        $scope.indexerDownloadSharesChart.options.chart.height = Math.min(Math.max(numIndexers * 40, 350), 900);
+    };
+
+    $scope.setStats(stats);
+
 
     function getChart(chartType, values, xKey, yKey, xAxisLabel, yAxisLabel) {
         return {
@@ -82,112 +198,67 @@ function StatsController($scope, $filter, stats) {
         };
     }
 
-    $scope.avgResponseTimesChart = getChart("multiBarHorizontalChart", $scope.avgResponseTimes, "name", "avgResponseTime", "", "Response time");
-    $scope.avgResponseTimesChart.options.chart.margin.left = 100;
-    $scope.avgResponseTimesChart.options.chart.yAxis.rotateLabels = -30;
-
-
-    $scope.downloadsPerHourOfDayChart = getChart("discreteBarChart", $scope.downloadsPerHourOfDay, "hour", "count", "Hour of day", 'Downloads');
-    $scope.downloadsPerDayOfWeekChart = getChart("discreteBarChart", $scope.downloadsPerDayOfWeek, "day", "count", "Day of week", 'Downloads');
-    $scope.downloadsPerDayOfWeekChart.options.chart.xAxis.rotateLabels = 0;
-
-    $scope.searchesPerHourOfDayChart = getChart("discreteBarChart", $scope.searchesPerHourOfDay, "hour", "count", "Hour of day", 'Searches');
-    $scope.searchesPerDayOfWeekChart = getChart("discreteBarChart", $scope.searchesPerDayOfWeek, "day", "count", "Day of week", 'Searches');
-    $scope.searchesPerDayOfWeekChart.options.chart.xAxis.rotateLabels = 0;
-
-
     //Was unable to use the function above for this and gave up
-    $scope.resultsSharesChart = {
-        options: {
-            chart: {
-                type: 'multiBarChart',
-                height: 350,
-                margin: {
-                    top: 20,
-                    right: 20,
-                    bottom: 100,
-                    left: 45
-                },
-
-                clipEdge: true,
-                duration: 500,
-                stacked: false,
-                reduceXTicks: false,
-                showValues: true,
-                tooltip: {
-                    enabled: true,
-                    valueFormatter: function (d) {
-                        return d + "%";
-                    }
-                },
-                showControls: false,
-                xAxis: {
-                    axisLabel: '',
-                    showMaxMin: false,
-                    rotateLabels: 30,
-                    axisLabelDistance: 30,
-                    tickFormat: function (d) {
-                        return d;
-                    }
-                },
-                yAxis: {
-                    axisLabel: 'Share (%)',
-                    axisLabelDistance: -20,
-                    tickFormat: function (d) {
-                        return d;
-                    }
-                }
-            }
-        },
-
-        data: [
-            {
-                key: "Results",
-                values: _.map($scope.avgIndexerSearchResultsShares, function (stats) {
-                    return {series: 0, y: stats.avgResultsShare, x: stats.name}
-                })
-            },
-            {
-                key: "Unique results",
-                values: _.map($scope.avgIndexerSearchResultsShares, function (stats) {
-                    return {series: 1, y: stats.avgUniqueResults, x: stats.name}
-                })
-            }
-        ]
-    };
-
-    $scope.indexerDownloadSharesChart = {
-        options: {
-            chart: {
-                type: 'pieChart',
-                height: 500,
-                x: function (d) {
-                    return d.name;
-                },
-                y: function (d) {
-                    return d.share;
-                },
-                showLabels: true,
-                duration: 500,
-                labelThreshold: 0.01,
-                labelSunbeamLayout: true,
-                tooltip: {
-                    valueFormatter: function (d, i) {
-                        return $filter('number')(d, 2) + "%";
-                    }
-                },
-                legend: {
+    function getResultsSharesChart() {
+        return {
+            options: {
+                chart: {
+                    type: 'multiBarChart',
+                    height: 350,
                     margin: {
-                        top: 5,
-                        right: 35,
-                        bottom: 5,
-                        left: 0
+                        top: 20,
+                        right: 20,
+                        bottom: 100,
+                        left: 45
+                    },
+
+                    clipEdge: true,
+                    duration: 500,
+                    stacked: false,
+                    reduceXTicks: false,
+                    showValues: true,
+                    tooltip: {
+                        enabled: true,
+                        valueFormatter: function (d) {
+                            return d + "%";
+                        }
+                    },
+                    showControls: false,
+                    xAxis: {
+                        axisLabel: '',
+                        showMaxMin: false,
+                        rotateLabels: 30,
+                        axisLabelDistance: 30,
+                        tickFormat: function (d) {
+                            return d;
+                        }
+                    },
+                    yAxis: {
+                        axisLabel: 'Share (%)',
+                        axisLabelDistance: -20,
+                        tickFormat: function (d) {
+                            return d;
+                        }
                     }
                 }
-            }
-        },
-        data: $scope.indexerDownloadShares
-    };
+            },
+
+            data: [
+                {
+                    key: "Results",
+                    values: _.map($scope.avgIndexerSearchResultsShares, function (stats) {
+                        return {series: 0, y: stats.avgResultsShare, x: stats.name}
+                    })
+                },
+                {
+                    key: "Unique results",
+                    values: _.map($scope.avgIndexerSearchResultsShares, function (stats) {
+                        return {series: 1, y: stats.avgUniqueResults, x: stats.name}
+                    })
+                }
+            ]
+        };
+    }
 
 
 }

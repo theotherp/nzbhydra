@@ -10,8 +10,8 @@ function StatsService($http) {
         getDownloadHistory: getDownloadHistory
     };
 
-    function getStats() {
-        return $http.get("internalapi/getstats").success(function (response) {
+    function getStats(after, before) {
+        return $http.get("internalapi/getstats", {params: {after:after, before:before}}).success(function (response) {
             return response.data;
         });
     }

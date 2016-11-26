@@ -23,13 +23,29 @@ logger = logging.getLogger('root')
 def get_indexer_response_times():
     result = []
     for p in Indexer.select().order_by(Indexer.name):
-        print("Limiting stats to 100 for testing only!")
         result.append({"key": p.name,
                        "values": [{"responseTime": x.response_time, "date": x.time.timestamp} for x in IndexerApiAccess().select(IndexerApiAccess.response_time, IndexerApiAccess.time).where((IndexerApiAccess.response_successful) & (IndexerApiAccess.indexer == p)).join(Indexer).limit(1)]})
     return result
 
 
-def get_avg_indexer_response_times():
+def getStats(after=None, before=None):
+    if after is None:
+        after = 0
+    afterSql = "datetime(%d, 'unixepoch')" % after
+    after = arrow.get(after).datetime
+    if before is None:
+        before = arrow.utcnow().timestamp + 10000
+    beforeSql = "datetime(%d, 'unixepoch')" % before
+    before = arrow.get(before).datetime
+    return {"avgResponseTimes": get_avg_indexer_response_times(after, before),
+            "avgIndexerSearchResultsShares": get_avg_indexer_search_results_share(afterSql, beforeSql),
+            "avgIndexerAccessSuccesses": get_avg_indexer_access_success(afterSql, beforeSql),
+            "indexerDownloadShares": getIndexerBasedDownloadStats(afterSql, beforeSql),
+            "timeBasedDownloadStats": getTimeBasedDownloadStats(after, before),
+            "timeBasedSearchStats": getTimeBasedSearchStats(after, before)
+            }
+
+def get_avg_indexer_response_times(after, before):
     result = []
     response_times = []
     for p in Indexer.select().order_by(Indexer.name):
@@ -41,10 +57,12 @@ def get_avg_indexer_response_times():
         except IndexerNotFoundException:
             logger.error("Unable to find indexer %s in configuration" % p.name)
             continue
-        avg_response_time = IndexerApiAccess().select(fn.AVG(IndexerApiAccess.response_time)).where((IndexerApiAccess.response_successful) & (IndexerApiAccess.indexer == p)).tuples()[0][0]
+        where = (IndexerApiAccess.response_successful) & (IndexerApiAccess.indexer == p) & (IndexerApiAccess.time > after) & (IndexerApiAccess.time < before)
+        avg_response_time = IndexerApiAccess().select(fn.AVG(IndexerApiAccess.response_time)).where(where).tuples()[0][0]
         if avg_response_time:
             response_times.append({"name": p.name, "avgResponseTime": int(avg_response_time)})
-    avg_response_time = IndexerApiAccess().select(fn.AVG(IndexerApiAccess.response_time)).where((IndexerApiAccess.response_successful) & (IndexerApiAccess.response_time is not None)).tuples()[0][0]
+    where = (IndexerApiAccess.response_successful) & (IndexerApiAccess.response_time is not None) & (IndexerApiAccess.time > after) & (IndexerApiAccess.time < before)
+    avg_response_time = IndexerApiAccess().select(fn.AVG(IndexerApiAccess.response_time)).where(where).tuples()[0][0]
     for i in response_times:
         delta = i["avgResponseTime"] - avg_response_time
         i["delta"] = delta
@@ -55,7 +73,7 @@ def get_avg_indexer_response_times():
     return result
 
 
-def get_avg_indexer_search_results_share():
+def get_avg_indexer_search_results_share(afterSql, beforeSql):
     results = []
     for p in Indexer.select().order_by(Indexer.name):
         try:
@@ -69,22 +87,22 @@ def get_avg_indexer_search_results_share():
         except IndexerNotFoundException:
             logger.error("Unable to find indexer %s in configuration" % p.name)
             continue
+        innerSelect = """(SELECT ps.search_id
+                                    FROM indexersearch ps, search s
+                                    WHERE ps.indexer_id == %(id)d AND ps.search_id = s.id AND ps.successful AND (s.episode NOT NULL OR s.season NOT NULL OR s.identifier_key NOT NULL OR s.query NOT NULL)) AND ps.time > %(after)s and ps.time < %(before)s""" % {"id": p.id, "after": afterSql, "before": beforeSql}
+
         result = database.db.execute_sql(
             """
             SELECT (100 *
             (SELECT cast(sum(ps.resultsCount) AS FLOAT)
              FROM indexersearch ps
-             WHERE ps.search_id IN (SELECT ps.search_id
-                                    FROM indexersearch ps, search s
-                                    WHERE ps.indexer_id == %d AND ps.search_id = s.id AND ps.successful AND (s.episode NOT NULL OR s.season NOT NULL OR s.identifier_key NOT NULL OR s.query NOT NULL)) AND ps.indexer_id == %d))
+             WHERE ps.search_id IN %s AND ps.indexer_id == %d))
            /
            (SELECT sum(ps.resultsCount)
             FROM indexersearch ps
-            WHERE ps.search_id IN (SELECT ps.search_id
-                                   FROM indexersearch ps, search s
-                                   WHERE ps.indexer_id == %d AND ps.search_id = s.id AND ps.successful AND (s.episode NOT NULL OR s.season NOT NULL OR s.identifier_key NOT NULL OR s.query NOT NULL))) AS sumAllResults
+            WHERE ps.search_id IN %s) AS sumAllResults
              """
-            % (p.id, p.id, p.id)).fetchone()
+            % (innerSelect, p.id, innerSelect)).fetchone()
         avgResultsShare = int(result[0]) if result is not None and result[0] is not None else "N/A"
 
         result = database.db.execute_sql(
@@ -95,13 +113,13 @@ def get_avg_indexer_search_results_share():
                     100 / (processedResults * 1.0 / uniqueResults)
                 ELSE 0
                 END) as avgUniqueResults
-            FROM indexersearch
+            FROM indexersearch s
             WHERE processedResults IS NOT NULL AND uniqueResults IS NOT NULL
-                  AND indexer_id == %d
+                  AND s.indexer_id == %(id)d AND s.time > %(before)s and s.time < %(after)s
             GROUP BY indexer_id;
 
             """
-            % p.id).fetchone()
+            % {"id": p.id, "after": afterSql, "before": beforeSql}).fetchone()
         if p.name in ["NZBIndex", "Binsearch", "NZBClub"]:
             avgUniqueResults = "-"
         elif result is not None and result[0] is not None:
@@ -114,7 +132,7 @@ def get_avg_indexer_search_results_share():
     return results
 
 
-def get_avg_indexer_access_success():
+def get_avg_indexer_access_success(afterSql, beforeSql):
     dbResults = database.db.execute_sql(
         """
         SELECT
@@ -132,13 +150,13 @@ def get_avg_indexer_access_success():
                                                 count(1)     AS failed,
                                                 p.indexer_id AS pid1
                                               FROM indexerapiaccess p
-                                              WHERE NOT p.response_successful
+                                              WHERE NOT p.response_successful AND p.time > %(after)s AND p.time < %(before)s
                                               GROUP BY p.indexer_id) AS failed ON p.id == failed.pid1
                 LEFT OUTER JOIN (SELECT
                                    count(1)     AS success,
                                    p.indexer_id AS pid2
                                  FROM indexerapiaccess p
-                                 WHERE p.response_successful
+                                 WHERE p.response_successful AND p.time > %(after)s AND p.time < %(before)s
                                  GROUP BY p.indexer_id) AS success
                   ON success.pid2 = p.id) query1,
 
@@ -158,6 +176,8 @@ def get_avg_indexer_access_success():
                    x.indexer_id AS indexer_id
                  FROM
                    indexerapiaccess x
+                WHERE
+                   x.time > %(after)s AND x.time < %(before)s
                  GROUP BY
                    date(x.time),
                    x.indexer_id
@@ -167,7 +187,7 @@ def get_avg_indexer_access_success():
            GROUP BY u.indexer_id) query2
 
         WHERE query1.indexer_id == query2.indexer_id
-        """).fetchall()
+        """ % {"before": beforeSql, "after": afterSql}).fetchall()
     results = []
     for i in dbResults:
         name = i[0]
@@ -191,9 +211,10 @@ def get_avg_indexer_access_success():
     return results
 
 
-def getTimeBasedDownloadStats():
+def getTimeBasedDownloadStats(after, before):
     downloads = IndexerNzbDownload(). \
         select(Indexer.name, IndexerApiAccess.response_successful, IndexerNzbDownload.time). \
+        where((IndexerApiAccess.time > after) & (IndexerApiAccess.time < before)) .\
         join(IndexerApiAccess, JOIN.LEFT_OUTER). \
         join(Indexer, JOIN.LEFT_OUTER)
     downloadTimes = [arrow.get(x.time).to(tz.tzlocal()) for x in downloads]
@@ -203,8 +224,8 @@ def getTimeBasedDownloadStats():
     return {"perDayOfWeek": perDayOfWeek, "perHourOfDay": perHourOfDay}
 
 
-def getTimeBasedSearchStats():
-    searches = Search().select(Search.time)
+def getTimeBasedSearchStats(after, before):
+    searches = Search().select(Search.time).where((Search.time > after) & (Search.time < before))
     searchTimes = [arrow.get(x.time).to(tz.tzlocal()) for x in searches]
 
     perDayOfWeek, perHourOfDay = calculcateTimeBasedStats(searchTimes)
@@ -231,7 +252,7 @@ def calculcateTimeBasedStats(downloadTimes):
     return perDayOfWeek, perHourOfDay
 
 
-def getIndexerBasedDownloadStats():
+def getIndexerBasedDownloadStats(afterSql, beforeSql):
     enabledIndexerIds = []
     for p in Indexer.select().order_by(Indexer.name):
         try:
@@ -261,15 +282,17 @@ def getIndexerBasedDownloadStats():
          indexernzbdownload dl
          LEFT OUTER JOIN indexerapiaccess api
            ON dl.apiAccess_id = api.id
-       WHERE api.indexer_id IN (%s))
+       WHERE api.indexer_id IN (%(enabledIndexerIds)s)
+       AND dl.time > %(afterSql)s AND dl.time < %(beforeSql)s
+       )
       countall
       LEFT OUTER JOIN indexerapiaccess api
         ON dl.apiAccess_id = api.id
       LEFT OUTER JOIN indexer indexer
         ON api.indexer_id = indexer.id
-    WHERE api.indexer_id IN (%s)
+    WHERE api.indexer_id IN (%(enabledIndexerIds)s)
     GROUP BY indexer.id
-    """ % (enabledIndexerIds, enabledIndexerIds)
+    """ % {"enabledIndexerIds": enabledIndexerIds, "afterSql": afterSql, "beforeSql": beforeSql}
     stats = database.db.execute_sql(query).fetchall()
     stats = [{"name": x[0], "total": x[1], "share": x[2]} for x in stats]
 
