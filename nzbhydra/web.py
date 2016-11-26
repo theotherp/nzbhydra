@@ -57,7 +57,7 @@ from nzbhydra.update import get_rep_version, get_current_version, update, getCha
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import getLogs
 from nzbhydra.backup_debug import backup, getDebuggingInfos, getBackupFilenames, getBackupFileByFilename, restoreFromBackupData, restoreFromBackupFile
-from nzbhydra import ipinfo
+from nzbhydra import ipinfo, log
 
 
 class ReverseProxied(object):
@@ -1293,12 +1293,9 @@ def internalapi_restart():
 @app.route("/internalapi/deleteloganddb")
 @requires_auth("admin", True)
 def internalapi_restart_and_delete_log_and_database_file():
-    logger.info("Finishing pending database work")
-    database.db.stop()
-    database.db.close()
-    logger.debug("Setting env variable CLEARLOGANDDB to 1")
-    os.environ["CLEARLOGANDDB"] = "1"
-    logger.info("User requested to delete the log file and database. Sending restart command in 1 second")
+    database.truncate_db()
+    log.truncateLogFile()
+    logger.info("Log file and database truncated as requested by user. Sending restart command")
     func = request.environ.get('werkzeug.server.shutdown')
     thread = threading.Thread(target=restart, args=(func, False))
     thread.daemon = True

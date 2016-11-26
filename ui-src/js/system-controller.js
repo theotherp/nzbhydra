@@ -19,11 +19,11 @@ function SystemController($scope, $state, $http, growl, RestartService, ModalSer
     };
 
     $scope.deleteLogAndDatabase = function () {
-        ModalService.open("Delete log and db", "Are you absolutely sure you want to delete your database and log files? Hydra will restart to do that. This will not work on Windows.",  {
+        ModalService.open("Delete log and db", "Are you absolutely sure you want to delete your database and log files? Hydra will restart to do that.",  {
             yes: {
                 onYes: function () {
                     NzbHydraControlService.deleteLogAndDb();
-                    RestartService.restart();
+                    RestartService.countdown();
                 },
                 text: "Yes, delete log and database"
             },

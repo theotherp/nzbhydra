@@ -7,6 +7,7 @@ from __future__ import absolute_import
 import cgi
 import codecs
 import hashlib
+import os
 import types
 
 from future import standard_library
@@ -107,6 +108,18 @@ def getLogFile():
         with codecs.open(logfilename, "r", 'utf-8') as logFile:
             log = cgi.escape(logFile.read())
     return log
+
+
+def truncateLogFile():
+    global logfilename
+    logger.warn("Truncating log file %s" % logfilename)
+    with open(logfilename, "w") as f:
+        f.write("")
+    for i in range(1,25):
+        rotatedFilename = "%s.%d" % (logfilename, i)
+        if os.path.exists(rotatedFilename):
+            logger.info("Deleting rotated file %s" % rotatedFilename)
+            os.unlink(rotatedFilename)
 
 
 def getAnonymizedLogFile(hideThese):

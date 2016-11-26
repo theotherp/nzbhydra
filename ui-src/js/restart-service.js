@@ -2,10 +2,11 @@ angular
     .module('nzbhydraApp')
     .factory('RestartService', RestartService);
 
-function RestartService(blockUI, $timeout, $window, NzbHydraControlService) {
+function RestartService(blockUI, $timeout, $window, growl, NzbHydraControlService) {
 
     return {
-        restart: restart
+        restart: restart,
+        countdown: countdown
     };
 
 
@@ -24,7 +25,9 @@ function RestartService(blockUI, $timeout, $window, NzbHydraControlService) {
         }
     }
     
-    
+    function countdown() {
+        internalCaR("", 15);
+    }
 
     function restart(message) {
         message = angular.isDefined(message) ? message + " " : "";

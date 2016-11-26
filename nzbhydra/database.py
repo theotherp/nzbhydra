@@ -229,6 +229,19 @@ def init_db(dbfile):
     VersionInfo(version=DATABASE_VERSION).create()
 
 
+def truncate_db():
+    logger.warn("Truncating database")
+    IndexerNzbDownload.delete().execute()
+    SearchResult.delete().execute()
+    TvIdCache.delete().execute()
+    MovieIdCache.delete().execute()
+    IndexerStatus.delete().execute()
+    IndexerApiAccess.delete().execute()
+    IndexerSearch.delete().execute()
+    Search.delete().execute()
+    Indexer.delete().execute()
+
+
 def update_db(dbfile):
     # CAUTION: Don't forget to increase the default value for VersionInfo
     logger.debug("Initing")

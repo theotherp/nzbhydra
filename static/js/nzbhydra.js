@@ -1602,11 +1602,11 @@ function SystemController($scope, $state, $http, growl, RestartService, ModalSer
     };
 
     $scope.deleteLogAndDatabase = function () {
-        ModalService.open("Delete log and db", "Are you absolutely sure you want to delete your database and log files? Hydra will restart to do that. This will not work on Windows.",  {
+        ModalService.open("Delete log and db", "Are you absolutely sure you want to delete your database and log files? Hydra will restart to do that.",  {
             yes: {
                 onYes: function () {
                     NzbHydraControlService.deleteLogAndDb();
-                    RestartService.restart();
+                    RestartService.countdown();
                 },
                 text: "Yes, delete log and database"
             },
@@ -2819,10 +2819,11 @@ angular
     .module('nzbhydraApp')
     .factory('RestartService', RestartService);
 
-function RestartService(blockUI, $timeout, $window, NzbHydraControlService) {
+function RestartService(blockUI, $timeout, $window, growl, NzbHydraControlService) {
 
     return {
-        restart: restart
+        restart: restart,
+        countdown: countdown
     };
 
 
@@ -2841,7 +2842,9 @@ function RestartService(blockUI, $timeout, $window, NzbHydraControlService) {
         }
     }
     
-    
+    function countdown() {
+        internalCaR("", 15);
+    }
 
     function restart(message) {
         message = angular.isDefined(message) ? message + " " : "";
@@ -2852,7 +2855,7 @@ function RestartService(blockUI, $timeout, $window, NzbHydraControlService) {
         )
     }
 }
-RestartService.$inject = ["blockUI", "$timeout", "$window", "NzbHydraControlService"];
+RestartService.$inject = ["blockUI", "$timeout", "$window", "growl", "NzbHydraControlService"];
 
 angular
     .module('nzbhydraApp')

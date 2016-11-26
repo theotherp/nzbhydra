@@ -8,6 +8,8 @@ Added: Allow not defining a category when sending NZBs to a downloader. In that 
 
 Added: Show stats for a certain time span. See [#431](https://github.com/theotherp/nzbhydra/issues/431).
 
+Added: Option to truncate database and log file. Requested by a user running the synology package where database and log files are not available easily.
+
 Changed: Some indexers do support more search types or IDs than they say in their caps. So search capabilities of an indexer (searching by IMDB ID, TVDB ID, etc.) are now always determined by "brute force" instead of relying on the data provided in the caps. That means that the caps check will take a lot more time (up to 6 queries) but be more precise. See [#433](https://github.com/theotherp/nzbhydra/issues/433).    
 
 Fixed: Calls to /details/ would not use dereferer.
