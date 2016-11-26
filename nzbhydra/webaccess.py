@@ -31,11 +31,11 @@ def getCleanProxyUrl(url):
 
 def get(url, **kwargs):
     global proxies
-    myproxies = proxies if proxies is not None and furl(url).host not in ["127.0.0.1", "localhost"] and "192.168" not in url else None
+    myproxies = proxies if proxies is not None and furl(url).host not in ["127.0.0.1", "localhost"] and "192.168" not in str(url) else None
     return requests.get(url, proxies=myproxies, verify=False, **kwargs)
 
 
 def post(url, **kwargs):
     global proxies
-    myproxies = proxies if proxies is not None and furl(url).host not in ["127.0.0.1", "localhost"] and "192.168" not in url else None
-    return requests.post(url, proxies=myproxies if furl(url).host not in ["127.0.0.1", "localhost"] and "192.168" not in url  else None, verify=False, **kwargs)
+    myproxies = proxies if proxies is not None and furl(url).host not in ["127.0.0.1", "localhost"] and "192.168" not in str(url) else None
+    return requests.post(url, proxies=myproxies, verify=False, **kwargs)

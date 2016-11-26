@@ -1072,7 +1072,6 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                 type: 'horizontalInput',
                 templateOptions: {
                     type: 'text',
-                    required: true,
                     label: 'API Key'
                 },
                 watcher: {
