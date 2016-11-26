@@ -1472,7 +1472,8 @@ function getDownloaderBoxFields(model, parentModel, isInitial) {
             type: 'horizontalInput',
             templateOptions: {
                 type: 'text',
-                label: 'Username'
+                label: 'Username',
+                help: model.type == "nzbget" ? 'Only alphanumeric usernames are guaranteed to work' : ""
             },
             watcher: {
                 listener: function (field, newValue, oldValue, scope) {
@@ -1487,7 +1488,8 @@ function getDownloaderBoxFields(model, parentModel, isInitial) {
             type: 'horizontalInput',
             templateOptions: {
                 type: 'password',
-                label: 'Password'
+                label: 'Password',
+                help: model.type == "nzbget" ? 'See username' : ""
             },
             watcher: {
                 listener: function (field, newValue, oldValue, scope) {
