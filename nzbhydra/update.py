@@ -17,6 +17,7 @@ import requests
 from nzbhydra import config, backup_debug
 from furl import furl
 
+from nzbhydra import webaccess
 from nzbhydra.exceptions import IndexerResultParsingException
 
 logger = logging.getLogger('root')
@@ -160,7 +161,7 @@ class UpdateManager():
         url.path.add("version.txt")
         logger.debug("Loading repository version from %s" % url)
         try:
-            r = requests.get(url, verify=False)
+            r = webaccess.get(url)
             r.raise_for_status()
             return versiontuple(r.text.strip()), r.text.strip()
         except requests.RequestException as e:
@@ -175,7 +176,7 @@ class UpdateManager():
         url.path.add("changelog.md")
         logger.debug("Loading changelog from %s" % url)
         try:
-            r = requests.get(url, verify=False)
+            r = webaccess.get(url)
             r.raise_for_status()
             return r.text
         except requests.RequestException as e:
@@ -335,7 +336,7 @@ class SourceUpdateManager(UpdateManager):
             # retrieve file
             logger.info("Downloading update from " + repr(tar_download_url))
             tar_download_path = os.path.join(update_dir, 'sb-update.tar')
-            response = requests.get(tar_download_url, stream=True, verify=False) #Apparently SSL causes problems on some systems (#138)b
+            response = webaccess.get(tar_download_url, stream=True) #Apparently SSL causes problems on some systems (#138)b
             with open(tar_download_path, 'wb') as out_file:
                 shutil.copyfileobj(response.raw, out_file)
             del response

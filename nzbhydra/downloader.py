@@ -9,6 +9,7 @@ from builtins import *
 from builtins import str
 from future import standard_library
 
+from nzbhydra import webaccess
 from nzbhydra.exceptions import DownloaderException, DownloaderNotFoundException
 
 #standard_library.install_aliases()
@@ -207,7 +208,7 @@ class Sabnzbd(Downloader):
         try:
             f = self.get_sab(setting.url, setting.apikey, setting.username, setting.password)
             f.add({"mode": "qstatus"})
-            r = requests.get(f.tostr(), verify=False, timeout=15)
+            r = webaccess.get(f.tostr(), timeout=15)
             r.raise_for_status()
             if "state" in json.loads(r.text).keys():
                 self.logger.info('Connection test to sabnzbd successful')
@@ -235,7 +236,7 @@ class Sabnzbd(Downloader):
         if category is not None:
             f.add({"cat": category})
         try:
-            r = requests.get(f.tostr(), verify=False, timeout=15)
+            r = webaccess.get(f.tostr(), timeout=15)
             r.raise_for_status()
             return r.json()["status"]
         except (SSLError, HTTPError, ConnectionError, ReadTimeout, InvalidSchema, MissingSchema):
@@ -256,7 +257,7 @@ class Sabnzbd(Downloader):
             f.add({"cat": category})
         try:
             files = {'nzbfile': (title, content)}
-            r = requests.post(f.tostr(), files=files, verify=False,timeout=15)
+            r = webaccess.post(f.tostr(), files=files, timeout=15)
             r.raise_for_status()
             return r.json()["status"]
         except (SSLError, HTTPError, ConnectionError, ReadTimeout):
@@ -268,7 +269,7 @@ class Sabnzbd(Downloader):
         f = self.get_sab()
         f.add({"mode": "get_cats", "output": "json"})
         try:
-            r = requests.get(f.tostr(), verify=False, timeout=15)
+            r = webaccess.get(f.tostr(), timeout=15)
             r.raise_for_status()
             return r.json()["categories"]
         except (SSLError, HTTPError, ConnectionError, ReadTimeout, InvalidSchema, MissingSchema):

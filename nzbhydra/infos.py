@@ -19,6 +19,7 @@ from enum import Enum
 from requests.exceptions import ReadTimeout
 from requests.packages.urllib3.exceptions import HTTPError, ConnectionError
 
+from nzbhydra import webaccess
 from nzbhydra.exceptions import ExternalApiInfoException
 from nzbhydra.database import TvIdCache, MovieIdCache
 
@@ -112,7 +113,7 @@ def imdbid_to_tmdbid(imdbid):
 
 
 def find_series_ids(input):
-    info = requests.get("http://api.tvmaze.com/search/shows?q=%s" % input)
+    info = webaccess.get("http://api.tvmaze.com/search/shows?q=%s" % input)
     info.raise_for_status()
     results = []
     for result in info.json():
@@ -138,14 +139,14 @@ def title_from_id(identifier_key, identifier_value):
             if identifier_value[0:2] != "tt":
                 identifier_value = "tt%s" % identifier_value
             url = furl("http://www.omdbapi.com").add({"i": identifier_value, "plot": "short", "r": "json"}).tostr()
-            omdb = requests.get(url)
+            omdb = webaccess.get(url)
             return omdb.json()["Title"]
 
         if identifier_key not in ("rid", "tvdbid"):
             raise AttributeError("Unknown identifier %s" % identifier_key)
 
         tvmaze_key = "tvrage" if identifier_key == "rid" else "thetvdb"
-        tvmaze = requests.get(furl("http://api.tvmaze.com/lookup/shows").add({tvmaze_key: identifier_value}).url)
+        tvmaze = webaccess.get(furl("http://api.tvmaze.com/lookup/shows").add({tvmaze_key: identifier_value}).url)
         if tvmaze.status_code == 404:
             #Unfortunately TVMaze returns a 404 for unknown/invalid IDs
             raise ExternalApiInfoException("Unable to find id %s and value %s at TVMaze" % (identifier_key, identifier_value))

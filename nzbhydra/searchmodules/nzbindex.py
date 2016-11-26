@@ -17,6 +17,7 @@ from bs4 import BeautifulSoup
 from furl import furl
 import requests
 from nzbhydra import config
+from nzbhydra import webaccess
 from nzbhydra.categories import getUnknownCategory
 
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException, IndexerResultParsingRowException
@@ -96,7 +97,7 @@ class NzbIndex(SearchModule):
 
     def get(self, query, timeout=None, cookies=None):
         # overwrite for special handling, e.g. cookies
-        return requests.get(query, timeout=timeout, verify=False, cookies={"agreed": "true", "lang": "2"})
+        return webaccess.get(query, timeout=timeout, cookies={"agreed": "true", "lang": "2"})
 
 
     def get_ebook_urls(self, search_request):

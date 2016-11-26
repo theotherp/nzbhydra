@@ -281,7 +281,7 @@ function ConfigFields($injector) {
                             templateOptions: {
                                 type: 'text',
                                 label: 'SOCKS proxy',
-                                placeholder: '127.0.0.1:1080',
+                                placeholder: 'socks5://user:pass@127.0.0.1:1080',
                                 help: "IPv4 only"
                             },
                             watcher: {
@@ -307,7 +307,7 @@ function ConfigFields($injector) {
                             templateOptions: {
                                 type: 'text',
                                 label: 'HTTPS proxy',
-                                placeholder: 'http://user:pass@10.0.0.1:1090',
+                                placeholder: 'https://user:pass@10.0.0.1:1090',
                                 help: "IPv4 only"
                             },
                             watcher: {

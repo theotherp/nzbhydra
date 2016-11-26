@@ -3,6 +3,8 @@
 import sys
 import traceback
 
+from nzbhydra import webaccess
+
 if sys.version_info >= (3, 0) or sys.version_info < (2, 7, 9):
     sys.stderr.write("Sorry, requires Python 2.7.9 or greater, not Python 3 compatible\n")
     sys.exit(1)
@@ -24,8 +26,6 @@ from nzbhydra import log
 from nzbhydra import indexers
 from nzbhydra import database
 from nzbhydra import web
-from nzbhydra import socks_proxy
-from nzbhydra import update
 import nzbhydra.config as config
 
 import requests
@@ -142,32 +142,12 @@ def run(arguments):
 
         host = config.settings.main.host if arguments.host is None else arguments.host
         port = config.settings.main.port if arguments.port is None else arguments.port
+
         socksproxy = config.settings.main.socksProxy if arguments.socksproxy is None else arguments.socksproxy
-
-        # SOCKS proxy settings
         if socksproxy:
-            try:
-                sockshost, socksport = socksproxy.split(':')  # FWIW: this won't work for literal IPv6 addresses
-            except:
-                logger.error('Incorrect SOCKS proxy settings "%s"' % socksproxy)
-                sockshost, socksport = [None, None]
-            if sockshost:
-                logger.info("Using SOCKS proxy at host %s and port %s" % (sockshost, socksport))
-                publicip = socks_proxy.setSOCKSproxy(sockshost, int(socksport))
-                if publicip:
-                    logger.info("Public IP address via SOCKS proxy: %s" % publicip)
-                else:
-                    logger.error("Could not get public IP address. Is the proxy working?")
-            if config.settings.main.httpProxy or config.settings.main.httpProxy:
-                logger.warning("Ignoring HTTP / HTTPS proxy because SOCKS proxy is set")
-        else:
-            if config.settings.main.httpProxy:
-                logger.info("Using HTTP proxy %s" % config.settings.main.httpProxy)
-                os.environ["HTTP_PROXY"] = config.settings.main.httpProxy
-            if config.settings.main.httpsProxy:
-                logger.info("Using HTTPS proxy %s" % config.settings.main.httpsProxy)
-                os.environ["HTTPS_PROXY"] = config.settings.main.httpsProxy
-
+            webaccess.set_proxies(socksproxy)
+        elif config.settings.main.httpProxy:
+            webaccess.set_proxies(config.settings.main.httpProxy, config.settings.main.httpsProxy)
 
         logger.notice("Starting web app on %s:%d" % (host, port))
         if config.settings.main.externalUrl is not None and config.settings.main.externalUrl != "":
@@ -204,7 +184,7 @@ if __name__ == '__main__':
     parser.add_argument('--quiet', '-q', action='store_true', help='Quiet (no output)', default=False)
     parser.add_argument('--pidfile', action='store', help='PID file. Only relevant with daemon argument', default="nzbhydra.pid")
     parser.add_argument('--restarted', action='store_true', help=argparse.SUPPRESS, default=False)
-    parser.add_argument('--socksproxy', action='store', help='SOCKS proxy to use in format host:port', default=None)
+    parser.add_argument('--socksproxy', action='store', help='SOCKS proxy to use in format socks5://user:pass@host:port', default=None)
 
     args, unknown = parser.parse_known_args()
 

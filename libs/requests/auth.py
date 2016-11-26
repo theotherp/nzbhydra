@@ -17,7 +17,8 @@ from base64 import b64encode
 
 from .compat import urlparse, str
 from .cookies import extract_cookies_to_jar
-from .utils import parse_dict_header, to_native_string
+from ._internal_utils import to_native_string
+from .utils import parse_dict_header
 from .status_codes import codes
 
 CONTENT_TYPE_FORM_URLENCODED = 'application/x-www-form-urlencoded'
@@ -26,9 +27,15 @@ CONTENT_TYPE_MULTI_PART = 'multipart/form-data'
 
 def _basic_auth_str(username, password):
     """Returns a Basic Auth string."""
+    
+    if isinstance(username, str):
+        username = username.encode('latin1')
+
+    if isinstance(password, str):
+        password = password.encode('latin1')
 
     authstr = 'Basic ' + to_native_string(
-        b64encode(('%s:%s' % (username, password)).encode('latin1')).strip()
+        b64encode(b':'.join((username, password))).strip()
     )
 
     return authstr
@@ -43,9 +50,19 @@ class AuthBase(object):
 
 class HTTPBasicAuth(AuthBase):
     """Attaches HTTP Basic Authentication to the given Request object."""
+
     def __init__(self, username, password):
         self.username = username
         self.password = password
+
+    def __eq__(self, other):
+        return all([
+            self.username == getattr(other, 'username', None),
+            self.password == getattr(other, 'password', None)
+        ])
+
+    def __ne__(self, other):
+        return not self == other
 
     def __call__(self, r):
         r.headers['Authorization'] = _basic_auth_str(self.username, self.password)
@@ -54,6 +71,7 @@ class HTTPBasicAuth(AuthBase):
 
 class HTTPProxyAuth(HTTPBasicAuth):
     """Attaches HTTP Proxy Authentication to a given Request object."""
+
     def __call__(self, r):
         r.headers['Proxy-Authorization'] = _basic_auth_str(self.username, self.password)
         return r
@@ -61,6 +79,7 @@ class HTTPProxyAuth(HTTPBasicAuth):
 
 class HTTPDigestAuth(AuthBase):
     """Attaches HTTP Digest Authentication to the given Request object."""
+
     def __init__(self, username, password):
         self.username = username
         self.password = password
@@ -78,12 +97,16 @@ class HTTPDigestAuth(AuthBase):
             self._thread_local.num_401_calls = None
 
     def build_digest_header(self, method, url):
+        """
+        :rtype: str
+        """
 
         realm = self._thread_local.chal['realm']
         nonce = self._thread_local.chal['nonce']
         qop = self._thread_local.chal.get('qop')
         algorithm = self._thread_local.chal.get('algorithm')
         opaque = self._thread_local.chal.get('opaque')
+        hash_utf8 = None
 
         if algorithm is None:
             _algorithm = 'MD5'
@@ -169,7 +192,11 @@ class HTTPDigestAuth(AuthBase):
             self._thread_local.num_401_calls = 1
 
     def handle_401(self, r, **kwargs):
-        """Takes the given response and tries digest-auth, if needed."""
+        """
+        Takes the given response and tries digest-auth, if needed.
+
+        :rtype: requests.Response
+        """
 
         if self._thread_local.pos is not None:
             # Rewind the file position indicator of the body to where
@@ -221,3 +248,12 @@ class HTTPDigestAuth(AuthBase):
         self._thread_local.num_401_calls = 1
 
         return r
+
+    def __eq__(self, other):
+        return all([
+            self.username == getattr(other, 'username', None),
+            self.password == getattr(other, 'password', None)
+        ])
+
+    def __ne__(self, other):
+        return not self == other

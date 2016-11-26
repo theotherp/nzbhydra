@@ -17,10 +17,10 @@ import time
 import xml.etree.ElementTree as ET
 import arrow
 from furl import furl
-import requests
 import concurrent
 from requests.exceptions import RequestException, HTTPError
 
+from nzbhydra import webaccess
 from nzbhydra.categories import getByNewznabCats, getCategoryByAnyInput, getNumberOfSelectableCategories
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.datestuff import now
@@ -74,7 +74,7 @@ def test_connection(host, apikey):
         headers = {
             'User-Agent': config.settings.searching.userAgent
         }
-        r = requests.get(f.url, verify=False, headers=headers, timeout=config.settings.searching.timeout)
+        r = webaccess.get(f.url, headers=headers, timeout=config.settings.searching.timeout)
         r.raise_for_status()
         check_auth(r.text, None)
     except RequestException as e:
@@ -99,7 +99,7 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult):
             'User-Agent': config.settings.searching.userAgent
         }
         logger.debug("Requesting %s" % url)
-        r = requests.get(url, verify=False, timeout=config.settings.searching.timeout, headers=headers)
+        r = webaccess.get(url, timeout=config.settings.searching.timeout, headers=headers)
         r.raise_for_status()
         titles = []
         tree = ET.fromstring(r.content)
@@ -195,7 +195,7 @@ def check_caps(host, apikey, userAgent=None, timeout=None, skipIdsAndTypes=False
             'User-Agent': userAgent if userAgent is not None else config.settings.searching.userAgent
         }
         logger.debug("Requesting %s" % url)
-        r = requests.get(url, verify=False, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers)
+        r = webaccess.get(url, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers)
         r.raise_for_status()
 
         tree = ET.fromstring(r.content)
@@ -283,7 +283,7 @@ def check_caps(host, apikey, userAgent=None, timeout=None, skipIdsAndTypes=False
             'User-Agent': userAgent if userAgent is not None else config.settings.searching.userAgent
         }
         logger.debug("Requesting %s" % url)
-        r = requests.get(url, verify=False, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers)
+        r = webaccess.get(url, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers)
         r.raise_for_status()
         generator = ET.fromstring(r.content).find("channel/generator")
         if generator is not None:
@@ -574,7 +574,7 @@ class NewzNab(SearchModule):
         if not entry.details_link:
             comments = item.find("comments")
             # Example: https://nzbfinder.ws/details/1234567jagkshsg72hs8whgs6#comments
-            if comments:
+            if comments is not None:
                 entry.details_link = comments.text.replace("#comments", "")
         entry.has_nfo = NzbSearchResult.HAS_NFO_MAYBE
         description = item.find("description")

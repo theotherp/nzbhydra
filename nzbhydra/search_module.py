@@ -18,6 +18,7 @@ from requests.auth import HTTPBasicAuth
 from retry import retry
 
 from nzbhydra import config, databaseLock
+from nzbhydra import webaccess
 from nzbhydra.database import IndexerSearch, IndexerApiAccess, IndexerStatus, Indexer
 from nzbhydra.database import InterfaceError
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAuthException, IndexerAccessException
@@ -333,7 +334,7 @@ class SearchModule(object):
         else:
             auth = None
         self.debug("Requesting %s with timeout %d" % (url, timeout))
-        return requests.get(url, timeout=timeout, verify=False, cookies=cookies, headers=headers, auth=auth)
+        return webaccess.get(url, timeout=timeout, cookies=cookies, headers=headers, auth=auth)
 
     def get_url_with_papi_access(self, url, type, cookies=None, timeout=None, saveToDb=True):
         papiaccess = IndexerApiAccess(indexer=self.indexer, type=type, url=url, time=arrow.utcnow().datetime)

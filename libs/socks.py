@@ -1,6 +1,6 @@
 """
 SocksiPy - Python SOCKS module.
-Version 1.5.7
+Version 1.5.6
 
 Copyright 2006 Dan-Haim. All rights reserved.
 
@@ -52,7 +52,7 @@ Modifications made by Anorov (https://github.com/Anorov)
 -Various small bug fixes
 """
 
-__version__ = "1.5.7"
+__version__ = "1.5.6"
 
 import socket
 import struct
@@ -60,7 +60,6 @@ from errno import EOPNOTSUPP, EINVAL, EAGAIN
 from io import BytesIO
 from os import SEEK_CUR
 from collections import Callable
-from base64 import b64encode
 
 PROXY_TYPE_SOCKS4 = SOCKS4 = 1
 PROXY_TYPE_SOCKS5 = SOCKS5 = 2
@@ -71,12 +70,10 @@ PRINTABLE_PROXY_TYPES = dict(zip(PROXY_TYPES.values(), PROXY_TYPES.keys()))
 
 _orgsocket = _orig_socket = socket.socket
 
-
 class ProxyError(IOError):
     """
     socket_err contains original socket.error exception.
     """
-
     def __init__(self, msg, socket_err=None):
         self.msg = msg
         self.socket_err = socket_err
@@ -87,45 +84,32 @@ class ProxyError(IOError):
     def __str__(self):
         return self.msg
 
-
 class GeneralProxyError(ProxyError): pass
-
-
 class ProxyConnectionError(ProxyError): pass
-
-
 class SOCKS5AuthError(ProxyError): pass
-
-
 class SOCKS5Error(ProxyError): pass
-
-
 class SOCKS4Error(ProxyError): pass
-
-
 class HTTPError(ProxyError): pass
 
+SOCKS4_ERRORS = { 0x5B: "Request rejected or failed",
+                  0x5C: "Request rejected because SOCKS server cannot connect to identd on the client",
+                  0x5D: "Request rejected because the client program and identd report different user-ids"
+                }
 
-SOCKS4_ERRORS = {0x5B: "Request rejected or failed",
-                 0x5C: "Request rejected because SOCKS server cannot connect to identd on the client",
-                 0x5D: "Request rejected because the client program and identd report different user-ids"
-                 }
+SOCKS5_ERRORS = { 0x01: "General SOCKS server failure",
+                  0x02: "Connection not allowed by ruleset",
+                  0x03: "Network unreachable",
+                  0x04: "Host unreachable",
+                  0x05: "Connection refused",
+                  0x06: "TTL expired",
+                  0x07: "Command not supported, or protocol error",
+                  0x08: "Address type not supported"
+                }
 
-SOCKS5_ERRORS = {0x01: "General SOCKS server failure",
-                 0x02: "Connection not allowed by ruleset",
-                 0x03: "Network unreachable",
-                 0x04: "Host unreachable",
-                 0x05: "Connection refused",
-                 0x06: "TTL expired",
-                 0x07: "Command not supported, or protocol error",
-                 0x08: "Address type not supported"
-                 }
-
-DEFAULT_PORTS = {SOCKS4: 1080,
-                 SOCKS5: 1080,
-                 HTTP: 8080
-                 }
-
+DEFAULT_PORTS = { SOCKS4: 1080,
+                  SOCKS5: 1080,
+                  HTTP: 8080
+                }
 
 def set_default_proxy(proxy_type=None, addr=None, port=None, rdns=True, username=None, password=None):
     """
@@ -138,9 +122,7 @@ def set_default_proxy(proxy_type=None, addr=None, port=None, rdns=True, username
                                 username.encode() if username else None,
                                 password.encode() if password else None)
 
-
 setdefaultproxy = set_default_proxy
-
 
 def get_default_proxy():
     """
@@ -148,9 +130,7 @@ def get_default_proxy():
     """
     return socksocket.default_proxy
 
-
 getdefaultproxy = get_default_proxy
-
 
 def wrap_module(module):
     """
@@ -164,9 +144,7 @@ def wrap_module(module):
     else:
         raise GeneralProxyError("No default proxy specified")
 
-
 wrapmodule = wrap_module
-
 
 def create_connection(dest_pair, proxy_type=None, proxy_addr=None,
                       proxy_port=None, proxy_rdns=True,
@@ -184,54 +162,24 @@ def create_connection(dest_pair, proxy_type=None, proxy_addr=None,
     source_address - tuple (host, port) for the socket to bind to as its source
     address before connecting (only for compatibility)
     """
-    # Remove IPv6 brackets on the remote address and proxy address.
-    remote_host, remote_port = dest_pair
-    if remote_host.startswith('['):
-        remote_host = remote_host.strip('[]')
-    if proxy_addr and proxy_addr.startswith('['):
-        proxy_addr = proxy_addr.strip('[]')
+    sock = socksocket()
+    if socket_options is not None:
+        for opt in socket_options:
+            sock.setsockopt(*opt)
+    if isinstance(timeout, (int, float)):
+        sock.settimeout(timeout)
+    if proxy_type is not None:
+        sock.set_proxy(proxy_type, proxy_addr, proxy_port, proxy_rdns,
+                       proxy_username, proxy_password)
+    if source_address is not None:
+        sock.bind(source_address)
 
-    err = None
-
-    # Allow the SOCKS proxy to be on IPv4 or IPv6 addresses.
-    for r in socket.getaddrinfo(proxy_addr, proxy_port, 0, socket.SOCK_STREAM):
-        family, socket_type, proto, canonname, sa = r
-        sock = None
-        try:
-            sock = socksocket(family, socket_type, proto)
-
-            if socket_options is not None:
-                for opt in socket_options:
-                    sock.setsockopt(*opt)
-
-            if isinstance(timeout, (int, float)):
-                sock.settimeout(timeout)
-
-            if proxy_type is not None:
-                sock.set_proxy(proxy_type, proxy_addr, proxy_port, proxy_rdns,
-                               proxy_username, proxy_password)
-            if source_address is not None:
-                sock.bind(source_address)
-
-            sock.connect((remote_host, remote_port))
-            return sock
-
-        except socket.error as e:
-            err = e
-            if sock is not None:
-                sock.close()
-                sock = None
-
-    if err is not None:
-        raise err
-
-    raise socket.error("gai returned empty list.")
-
+    sock.connect(dest_pair)
+    return sock
 
 class _BaseSocket(socket.socket):
     """Allows Python 2's "delegated" methods such as send() to be overridden
     """
-
     def __init__(self, *pos, **kw):
         _orig_socket.__init__(self, *pos, **kw)
 
@@ -242,11 +190,8 @@ class _BaseSocket(socket.socket):
 
     _savenames = list()
 
-
 def _makemethod(name):
     return lambda self, *pos, **kw: self._savedmethods[name](*pos, **kw)
-
-
 for name in ("sendto", "send", "recvfrom", "recv"):
     method = getattr(_BaseSocket, name, None)
 
@@ -257,7 +202,6 @@ for name in ("sendto", "send", "recvfrom", "recv"):
     if not isinstance(method, Callable):
         _BaseSocket._savenames.append(name)
         setattr(_BaseSocket, name, _makemethod(name))
-
 
 class socksocket(_BaseSocket):
     """socksocket([family[, type[, proto]]]) -> socket object
@@ -443,7 +387,7 @@ class socksocket(_BaseSocket):
         """
         CONNECT = b"\x01"
         self.proxy_peername, self.proxy_sockname = self._SOCKS5_request(self,
-                                                                        CONNECT, dest_addr)
+            CONNECT, dest_addr)
 
     def _SOCKS5_request(self, conn, cmd, dst):
         """
@@ -494,7 +438,7 @@ class socksocket(_BaseSocket):
                     # Authentication failed
                     raise SOCKS5AuthError("SOCKS5 authentication failed")
 
-                    # Otherwise, authentication succeeded
+                # Otherwise, authentication succeeded
 
             # No authentication is required if 0x00
             elif chosen_auth[1:2] != b"\x00":
@@ -534,38 +478,25 @@ class socksocket(_BaseSocket):
         """
         host, port = addr
         proxy_type, _, _, rdns, username, password = self.proxy
-        family_to_byte = {socket.AF_INET: b"\x01", socket.AF_INET6: b"\x04"}
 
         # If the given destination address is an IP address, we'll
-        # use the IP address request even if remote resolving was specified.
-        # Detect whether the address is IPv4/6 directly.
-        for family in (socket.AF_INET, socket.AF_INET6):
-            try:
-                addr_bytes = socket.inet_pton(family, host)
-                file.write(family_to_byte[family] + addr_bytes)
-                host = socket.inet_ntop(family, addr_bytes)
-                file.write(struct.pack(">H", port))
-                return host, port
-            except socket.error:
-                continue
+        # use the IPv4 address request even if remote resolving was specified.
+        try:
+            addr_bytes = socket.inet_aton(host)
+            file.write(b"\x01" + addr_bytes)
+            host = socket.inet_ntoa(addr_bytes)
+        except socket.error:
+            # Well it's not an IP number, so it's probably a DNS name.
+            if rdns:
+                # Resolve remotely
+                host_bytes = host.encode('idna')
+                file.write(b"\x03" + chr(len(host_bytes)).encode() + host_bytes)
+            else:
+                # Resolve locally
+                addr_bytes = socket.inet_aton(socket.gethostbyname(host))
+                file.write(b"\x01" + addr_bytes)
+                host = socket.inet_ntoa(addr_bytes)
 
-        # Well it's not an IP number, so it's probably a DNS name.
-        if rdns:
-            # Resolve remotely
-            host_bytes = host.encode('idna')
-            file.write(b"\x03" + chr(len(host_bytes)).encode() + host_bytes)
-        else:
-            # Resolve locally
-            addresses = socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM, socket.IPPROTO_TCP, socket.AI_ADDRCONFIG)
-            # We can't really work out what IP is reachable, so just pick the
-            # first.
-            target_addr = addresses[0]
-            family = target_addr[0]
-            host = target_addr[4][0]
-
-            addr_bytes = socket.inet_pton(family, host)
-            file.write(family_to_byte[family] + addr_bytes)
-            host = socket.inet_ntop(family, addr_bytes)
         file.write(struct.pack(">H", port))
         return host, port
 
@@ -576,8 +507,6 @@ class socksocket(_BaseSocket):
         elif atyp == b"\x03":
             length = self._readall(file, 1)
             addr = self._readall(file, ord(length))
-        elif atyp == b"\x04":
-            addr = socket.inet_ntop(socket.AF_INET6, self._readall(file, 16))
         else:
             raise GeneralProxyError("SOCKS5 proxy server sent invalid data")
 
@@ -653,17 +582,8 @@ class socksocket(_BaseSocket):
         # If we need to resolve locally, we do this now
         addr = dest_addr if rdns else socket.gethostbyname(dest_addr)
 
-        http_headers = [
-            b"CONNECT " + addr.encode('idna') + b":" + str(dest_port).encode() + b" HTTP/1.1",
-            b"Host: " + dest_addr.encode('idna')
-        ]
-
-        if username and password:
-            http_headers.append(b"Proxy-Authorization: basic " + b64encode(username + b":" + password))
-
-        http_headers.append(b"\r\n")
-
-        self.sendall(b"\r\n".join(http_headers))
+        self.sendall(b"CONNECT " + addr.encode('idna') + b":" + str(dest_port).encode() +
+                     b" HTTP/1.1\r\n" + b"Host: " + dest_addr.encode('idna') + b"\r\n\r\n")
 
         # We just need the first line to check if the connection was successful
         fobj = self.makefile()
@@ -698,10 +618,11 @@ class socksocket(_BaseSocket):
         self.proxy_peername = addr, dest_port
 
     _proxy_negotiators = {
-        SOCKS4: _negotiate_SOCKS4,
-        SOCKS5: _negotiate_SOCKS5,
-        HTTP: _negotiate_HTTP
-    }
+                           SOCKS4: _negotiate_SOCKS4,
+                           SOCKS5: _negotiate_SOCKS5,
+                           HTTP: _negotiate_HTTP
+                         }
+
 
     def connect(self, dest_pair):
         """
@@ -736,10 +657,11 @@ class socksocket(_BaseSocket):
 
         # Do a minimal input check first
         if (not isinstance(dest_pair, (list, tuple))
-            or len(dest_pair) != 2
-            or not dest_addr
-            or not isinstance(dest_port, int)):
+                or len(dest_pair) != 2
+                or not dest_addr
+                or not isinstance(dest_port, int)):
             raise GeneralProxyError("Invalid destination-connection (host, port) pair")
+
 
         if proxy_type is None:
             # Treat like regular socket object
@@ -761,7 +683,7 @@ class socksocket(_BaseSocket):
             printable_type = PRINTABLE_PROXY_TYPES[proxy_type]
 
             msg = "Error connecting to {0} proxy {1}".format(printable_type,
-                                                             proxy_server)
+                                                           proxy_server)
             raise ProxyConnectionError(msg, error)
 
         else:

@@ -207,7 +207,11 @@ class Binsearch(SearchModule):
         m = self.poster_pattern.search(collection_link)
         if m:
             poster = m.group(1).strip()
-            entry.poster = urlparse.unquote(poster).replace("+", " ")
+            try:
+                entry.poster = urlparse.unquote(poster).replace("+", " ")
+            except UnicodeDecodeError:
+                logger.debug("Unable to decode poster from %s" % poster)
+                entry.poster = None
 
         # Size
         m = self.size_pattern.search(info.text)
