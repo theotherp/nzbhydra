@@ -1742,7 +1742,7 @@ function StatsController($scope, $filter, stats) {
             options: {
                 chart: {
                     type: chartType,
-                    height: 350,
+                    height: 450, // bumped from 350
                     margin: {
                         top: 20,
                         right: 20,
@@ -1757,11 +1757,11 @@ function StatsController($scope, $filter, stats) {
                     },
                     showValues: true,
                     valueFormat: function (d) {
-                        return d;
+                       return d;
                     },
-                    color: function () {
-                        return "red"
-                    },
+                    //color: function () { // Nope
+                    //    return "red"
+                    //},
                     showControls: false,
                     showLegend: false,
                     duration: 100,
@@ -1770,7 +1770,7 @@ function StatsController($scope, $filter, stats) {
                         tickFormat: function (d) {
                             return d;
                         },
-                        rotateLabels: 30,
+                        rotateLabels: 90, // Perpendicular rather than angled (30)
                         showMaxMin: false,
                         color: function () {
                             return "white"
@@ -1804,26 +1804,50 @@ function StatsController($scope, $filter, stats) {
         };
     }
 
+    $colorBars=['#042740','#042944',
+      '#053C63','#074D7E',
+      '#0A5C96','#0A64A4',
+      '#0B3D61','#0E4C77',
+      '#1F6596','#2E76A9',
+      '#3979A6','#508EBA',
+      '#5896C1','#259DF2',
+      '#5DB4F2','#80B4DA',
+      '#84B1D1','#9AD0F5',
+      '#9CC4E0','#B2D5EE',
+      '#B5D5EC','#CDE4F5',
+      '#E4F1FB','#F3FAFE'];
+	
+    $colorBarsSubSet=['#2E76A9',
+      '#3979A6','#508EBA',
+      '#5896C1','#259DF2',
+      '#5DB4F2','#80B4DA'];
+
     $scope.avgResponseTimesChart = getChart("multiBarHorizontalChart", $scope.avgResponseTimes, "name", "avgResponseTime", "", "Response time");
     $scope.avgResponseTimesChart.options.chart.margin.left = 100;
-    $scope.avgResponseTimesChart.options.chart.yAxis.rotateLabels = -30;
-
+    $scope.avgResponseTimesChart.options.chart.yAxis.rotateLabels = -90;
 
     $scope.downloadsPerHourOfDayChart = getChart("discreteBarChart", $scope.downloadsPerHourOfDay, "hour", "count", "Hour of day", 'Downloads');
-    $scope.downloadsPerDayOfWeekChart = getChart("discreteBarChart", $scope.downloadsPerDayOfWeek, "day", "count", "Day of week", 'Downloads');
-    $scope.downloadsPerDayOfWeekChart.options.chart.xAxis.rotateLabels = 0;
+    $scope.downloadsPerHourOfDayChart.options.chart.xAxis.rotateLabels = 0;
+    $scope.downloadsPerHourOfDayChart.options.chart.color = $colorBars;
 
     $scope.searchesPerHourOfDayChart = getChart("discreteBarChart", $scope.searchesPerHourOfDay, "hour", "count", "Hour of day", 'Searches');
+    $scope.searchesPerHourOfDayChart.options.chart.xAxis.rotateLabels = 0;
+    $scope.searchesPerHourOfDayChart.options.chart.color = $colorBars;
+
+    $scope.downloadsPerDayOfWeekChart = getChart("discreteBarChart", $scope.downloadsPerDayOfWeek, "day", "count", "Day of week", 'Downloads');
+    $scope.downloadsPerDayOfWeekChart.options.chart.xAxis.rotateLabels = 0;
+    $scope.downloadsPerDayOfWeekChart.options.chart.color = $colorBarsSubSet;
+
     $scope.searchesPerDayOfWeekChart = getChart("discreteBarChart", $scope.searchesPerDayOfWeek, "day", "count", "Day of week", 'Searches');
     $scope.searchesPerDayOfWeekChart.options.chart.xAxis.rotateLabels = 0;
-
+    $scope.searchesPerDayOfWeekChart.options.chart.color = $colorBarsSubSet;
 
     //Was unable to use the function above for this and gave up
     $scope.resultsSharesChart = {
         options: {
             chart: {
                 type: 'multiBarChart',
-                height: 350,
+                height: 450, // bumped from 350
                 margin: {
                     top: 20,
                     right: 20,
@@ -1846,7 +1870,7 @@ function StatsController($scope, $filter, stats) {
                 xAxis: {
                     axisLabel: '',
                     showMaxMin: false,
-                    rotateLabels: 30,
+                    rotateLabels: 90, // make labels perpendicular
                     axisLabelDistance: 30,
                     tickFormat: function (d) {
                         return d;

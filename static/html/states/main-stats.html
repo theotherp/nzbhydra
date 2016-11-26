@@ -12,13 +12,19 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Indexer</th>
-                    <th>Avg. response time</th>
-                    <th>Delta</th>
+                 <th ng-click="reverse = predicate == 'name' && !reverse; predicate = 'name'">Indexer
+                    <span ng-show="predicate=='name'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                 </th>
+                 <th ng-click="reverse = predicate == 'avgResponseTime' && !reverse; predicate = 'avgResponseTime'">Avg. response time
+                    <span ng-show="predicate=='avgResponseTime'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>					
+                 </th>
+                 <th ng-click="reverse = predicate == 'delta' && !reverse; predicate = 'delta'">Delta
+                    <span ng-show="predicate=='delta'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>					
+                 </th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="avgResponseTime in avgResponseTimes">
+                <tr ng-repeat="avgResponseTime in avgResponseTimes | orderBy:predicate:reverse">
                     <td>{{ avgResponseTime.name }}</td>
                     <td>{{ avgResponseTime.avgResponseTime }}</td>
                     <td>{{ avgResponseTime.delta }}</td>
@@ -44,14 +50,19 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Indexer</th>
-                    <th>Avg. results (%)
-                    </th>
-                    <th>Avg. unique results (%)</th>
+                 <th ng-click="reverse = predicate == 'name' && !reverse; predicate = 'name'">Indexer
+                        <span ng-show="predicate=='name'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                 </th>
+                 <th ng-click="reverse = predicate == 'avgResultsShare' && !reverse; predicate = 'avgResultsShare'">Avg. results per search
+                        <span ng-show="predicate=='avgResultsShare'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                 </th>
+                 <th ng-click="reverse = predicate == 'avgUniqueResults' && !reverse; predicate = 'avgUniqueResults'">Avg. unique results (%)
+                        <span ng-show="predicate=='avgUniqueResults'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                 </th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="avgIndexerSearchResultsShare in avgIndexerSearchResultsShares">
+                <tr ng-repeat="avgIndexerSearchResultsShare in avgIndexerSearchResultsShares | orderBy:predicate:reverse">
                     <td>{{ avgIndexerSearchResultsShare.name }}</td>
                     <td>{{ avgIndexerSearchResultsShare.avgResultsShare }}</td>
                     <td>{{ avgIndexerSearchResultsShare.avgUniqueResults }}</td>
@@ -74,14 +85,22 @@
             <caption>Indexer API accesses <span class="glyphicon glyphicon-question-sign" tooltip-placement="top" uib-tooltip="An API access is considered failed when the indexer could not be reached, authentication failed or parsing of the results failed"></span></caption>
             <thead>
             <tr>
-                <th>Indexer</th>
-                <th>Avg. per day</th>
-                <th>% successful</th>
-                <th>% failed</th>
+                <th ng-click="reverse = predicate == 'name' && !reverse; predicate = 'name'">Indexer
+                        <span ng-show="predicate=='name'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                </th>
+                <th ng-click="reverse = predicate == 'averagePerDay' && !reverse; predicate = 'averagePerDay'">Avg. per day
+                        <span ng-show="predicate=='averagePerDay'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                </th>
+                <th ng-click="reverse = predicate == 'successPercent' && !reverse; predicate = 'successPercent'">% successful
+                        <span ng-show="predicate=='successPercent'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                </th>
+                <th ng-click="reverse = predicate == 'failedPercent' && !reverse; predicate = 'failedPercent'">% failed
+                        <span ng-show="predicate=='failedPercent'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                </th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="avgIndexerAccessSuccess in avgIndexerAccessSuccesses">
+            <tr ng-repeat="avgIndexerAccessSuccess in avgIndexerAccessSuccesses | orderBy:predicate:reverse">
                 <td>{{ avgIndexerAccessSuccess.name }}</td>
                 <td>{{ avgIndexerAccessSuccess.averagePerDay }}</td>
                 <td>{{ avgIndexerAccessSuccess.successPercent | number: 0}}</td>
@@ -99,13 +118,19 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>Indexer</th>
-                        <th>Total</th>
-                        <th>% of all enabled</th>
+                        <th ng-click="reverse = predicate == 'name' && !reverse; predicate = 'name'">Indexer
+                                <span ng-show="predicate=='name'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                        </th>
+                        <th ng-click="reverse = predicate == 'total' && !reverse; predicate = 'total'">Total
+                                <span ng-show="predicate=='total'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                        </th>
+                        <th ng-click="reverse = predicate == 'share' && !reverse; predicate = 'share'">% of all enabled
+                                <span ng-show="predicate=='share'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="indexerDownloads in indexerDownloadShares">
+                    <tr ng-repeat="indexerDownloads in indexerDownloadShares | orderBy:predicate:reverse">
                         <td>{{ indexerDownloads.name }}</td>
                         <td>{{ indexerDownloads.total | number: 0}}</td>
                         <td>{{ indexerDownloads.share | number: 0 }}</td>
@@ -130,12 +155,16 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Day of the week</th>
-                    <th>Searches</th>
+                 <th ng-click="reverse = predicate == 'day' && !reverse; predicate = 'day'">Day of the week
+                        <span ng-show="predicate=='day'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                 </th>
+                 <th ng-click="reverse = predicate == 'count' && !reverse; predicate = 'count'">Searches
+                        <span ng-show="predicate=='count'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                 </th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="stat in searchesPerDayOfWeek">
+                <tr ng-repeat="stat in searchesPerDayOfWeek | orderBy:predicate:reverse">
                     <td>{{ stat.day }}</td>
                     <td>{{ stat.count }}</td>
                 </tr>
@@ -147,50 +176,25 @@
             </chart>
         </tab-or-chart>
     </div>
+
     <div class="col-md-1"></div>
 
-    <div class="col-md-10">
-        <div style="margin-top:10px" class="caption">Searches per hour of day</div>
-        <tab-or-chart display="chart">
-            <table>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Hour of the day</th>
-                        <th>Searches</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ng-repeat="stat in searchesPerHourOfDay">
-                        <td>{{ stat.hour }}</td>
-                        <td>{{ stat.count }}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </table>
-
-            <chart>
-                <nvd3 options="searchesPerHourOfDayChart.options" data="searchesPerHourOfDayChart.data"></nvd3>
-            </chart>
-        </tab-or-chart>
-
-    </div>
-</div>
-
-
-<div class="row">
     <div class="col-md-10">
         <div style="margin-top:10px" class="caption">NZB downloads per day of week</div>
         <tab-or-chart display="chart">
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Day of the week</th>
-                    <th>Downloads</th>
+                 <th ng-click="reverse = predicate == 'day' && !reverse; predicate = 'day'">Day of the week
+                        <span ng-show="predicate=='day'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                 </th>
+                 <th ng-click="reverse = predicate == 'count' && !reverse; predicate = 'count'">Downloads
+                        <span ng-show="predicate=='count'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                 </th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="stat in downloadsPerDayOfWeek">
+                <tr ng-repeat="stat in downloadsPerDayOfWeek | orderBy:predicate:reverse">
                     <td>{{ stat.day }}</td>
                     <td>{{ stat.count }}</td>
                 </tr>
@@ -202,6 +206,39 @@
             </chart>
         </tab-or-chart>
     </div>
+</div>
+
+<div class="row">
+    <div class="col-md-10">
+        <div style="margin-top:10px" class="caption">Searches per hour of day</div>
+        <tab-or-chart display="chart">
+            <table>
+                <table class="table">
+                    <thead>
+                    <tr>
+                         <th ng-click="reverse = predicate == 'hour' && !reverse; predicate = 'hour'">Hour of the day
+                                <span ng-show="predicate=='hour'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                         </th>
+                         <th ng-click="reverse = predicate == 'count' && !reverse; predicate = 'count'">Searches
+                                <span ng-show="predicate=='count'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                         </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="stat in searchesPerHourOfDay | orderBy:predicate:reverse">
+                        <td>{{ stat.hour }}</td>
+                        <td>{{ stat.count }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </table>
+
+            <chart>
+                <nvd3 options="searchesPerHourOfDayChart.options" data="searchesPerHourOfDayChart.data"></nvd3>
+            </chart>
+        </tab-or-chart>
+    </div>
+
     <div class="col-md-1"></div>
 
     <div class="col-md-10">
@@ -211,12 +248,16 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>Hour of the day</th>
-                        <th>Downloads</th>
+                         <th ng-click="reverse = predicate == 'hour' && !reverse; predicate = 'hour'">Hour of the day
+                                <span ng-show="predicate=='hour'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                         </th>
+                         <th ng-click="reverse = predicate == 'count' && !reverse; predicate = 'count'">Downloads
+                                <span ng-show="predicate=='count'" class="caret" ng-class="{'caret-reversed': !reverse}"></span>
+                         </th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="stat in downloadsPerHourOfDay">
+                    <tr ng-repeat="stat in downloadsPerHourOfDay | orderBy:predicate:reverse">
                         <td>{{ stat.hour }}</td>
                         <td>{{ stat.count }}</td>
                     </tr>
@@ -228,8 +269,5 @@
                 <nvd3 options="downloadsPerHourOfDayChart.options" data="downloadsPerHourOfDayChart.data"></nvd3>
             </chart>
         </tab-or-chart>
-
     </div>
 </div>
-
-

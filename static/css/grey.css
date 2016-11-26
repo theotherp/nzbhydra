@@ -1543,9 +1543,8 @@ pre {
   line-height: 1.42857143;
   word-break: break-all;
   word-wrap: break-word;
-  /* change to complement black background */
-  color: #f0f0f0;
-  background-color: #151515;
+  color: #3a3f44;
+  background-color: #f5f5f5;
   border: 1px solid #cccccc;
   border-radius: 4px;
 }
@@ -7120,8 +7119,6 @@ body {
   height: 100%;
   /* Negative indent footer by it's height */
   margin: 0 auto -50px;
-  /* Make the background black */
-  background-color: #000;
 }
 /* Set the fixed height of the footer here */
 #push,
@@ -7716,32 +7713,31 @@ input:focus + .input-group-addon {
 .nv-bar text {
   fill: #c8c8c8 !important;
 }
-/* changes required for updated chart colors & sizes */
 .nvd3 .nv-discretebar .nv-groups rect {
-    fill: #62686d !important;
+  fill: #62686d !important;
 }
 .nvd3 .nv-multibarHorizontal .nv-groups rect {
-    fill: #62686d !important;
+  fill: #62686d !important;
 }
 .nv-groups .nv-series-0 rect {
-    fill: #62686d !important;
+  fill: #62686d !important;
 }
 g.nv-multiBarWithLegend > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(1) > circle {
-    fill: #62686d !important;
-    stroke: #62686d !important;
+  fill: #62686d !important;
+  stroke: #62686d !important;
 }
 .nv-groups .nv-series-1 rect {
-    fill: #959ba0 !important;
+  fill: #959ba0 !important;
 }
 g.nv-multiBarWithLegend > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(2) > circle {
-    fill: #959ba0 !important;
-    stroke: #959ba0 !important;
+  fill: #959ba0 !important;
+  stroke: #959ba0 !important;
 }
 .nv-legend-text {
-    fill: #c8c8c8;
+  fill: #c8c8c8;
 }
 g.nv-multiBarHorizontalChart > g > g > g > g > g > text {
-    transform: rotate(-31deg);
+  transform: rotate(-31deg);
 }
 .nvtooltip {
   background-color: #2e3338;
@@ -7876,4 +7872,4 @@ g.nv-pieChart > g > g.nv-legendWrap.nvd3-svg > g > g > g:nth-child(17) > circle 
   fill: #061859;
 }
 
-/*# sourceMappingURL=dark.css.map */
+/*# sourceMappingURL=grey.css.map */
