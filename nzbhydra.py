@@ -3,8 +3,6 @@
 import sys
 import traceback
 
-from nzbhydra import webaccess
-
 if sys.version_info >= (3, 0) or sys.version_info < (2, 7, 9):
     sys.stderr.write("Sorry, requires Python 2.7.9 or greater, not Python 3 compatible\n")
     sys.exit(1)
@@ -26,6 +24,7 @@ from nzbhydra import log
 from nzbhydra import indexers
 from nzbhydra import database
 from nzbhydra import web
+from nzbhydra import webaccess
 import nzbhydra.config as config
 
 import requests
@@ -108,6 +107,29 @@ def run(arguments):
 
         config.logLogMessages()
 
+        if arguments.clearloganddb:
+            logger.warning("Deleting log file and database now as requested")
+            try:
+                logger.warning("Deleting database file %s" % database_file)
+                os.unlink(database_file)
+            except Exception as e:
+                logger.error("Unable to close or delete log file: %s" % e)
+
+            try:
+                handler = logger.handlers[1] if len(logger.handlers) == 2 else logger.handlers[0]
+                filename = handler.stream.name
+
+                if filename and os.path.exists(filename):
+                    logger.warn("Deleting file %s" % filename)
+                handler.flush()
+                handler.close()
+                logger.removeHandler(handler)
+                os.unlink(filename)
+                logger.addHandler(handler)
+            except Exception as e:
+                print("Unable to close or delete log file: %s" % e)
+
+
         try:
             import _sqlite3
             logger.debug("SQLite3 version: %s" % _sqlite3.sqlite_version)
@@ -184,6 +206,7 @@ if __name__ == '__main__':
     parser.add_argument('--quiet', '-q', action='store_true', help='Quiet (no output)', default=False)
     parser.add_argument('--pidfile', action='store', help='PID file. Only relevant with daemon argument', default="nzbhydra.pid")
     parser.add_argument('--restarted', action='store_true', help=argparse.SUPPRESS, default=False)
+    parser.add_argument('--clearloganddb', action='store_true', help=argparse.SUPPRESS, default=False)
     parser.add_argument('--socksproxy', action='store', help='SOCKS proxy to use in format socks5://user:pass@host:port', default=None)
 
     args, unknown = parser.parse_known_args()
@@ -218,5 +241,14 @@ if __name__ == '__main__':
             if "--restarted" not in args:
                 logger.debug("Setting restarted flag in command line")
                 args.append("--restarted")
+            if "CLEARLOGANDDB" in os.environ.keys():
+                if os.environ["CLEARLOGANDDB"] == "1":
+                    if "--clearloganddb" not in args:
+                        logger.debug("Setting flag in command line to clear log and db on startup")
+                        args.append("--clearloganddb")
+                else:
+                    if "--clearloganddb" in args:
+                        args.remove("--clearloganddb")
+                os.environ["CLEARLOGANDDB"] = "0"  # Make sure it is not executed again
             logger.info("Restarting process after shutdown: " + " ".join(args))
             subprocess.Popen(args, cwd=os.getcwd())
