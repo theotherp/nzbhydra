@@ -3,7 +3,6 @@ import os
 import requests
 from furl import furl
 
-from nzbhydra.log import logger
 
 proxies = None
 
@@ -15,6 +14,7 @@ def set_proxies(http, https=None):
     if http is None:
         return
     try:
+        from nzbhydra.log import logger
         cleanHttp = getCleanProxyUrl(http)
         cleanHttps = getCleanProxyUrl(https if https is not None else http)
         logger.info("Using proxy settings: http=%s, https=%s (username and password not shown)" % (cleanHttp, cleanHttps))
@@ -31,9 +31,11 @@ def getCleanProxyUrl(url):
 
 def get(url, **kwargs):
     global proxies
-    return requests.get(url, proxies=proxies if furl(url).host not in ["127.0.0.1", "localhost"] and "192.168" not in url else None, verify=False, **kwargs)
+    myproxies = proxies if proxies is not None and furl(url).host not in ["127.0.0.1", "localhost"] and "192.168" not in url else None
+    return requests.get(url, proxies=myproxies, verify=False, **kwargs)
 
 
 def post(url, **kwargs):
     global proxies
-    return requests.post(url, proxies=proxies if furl(url).host not in ["127.0.0.1", "localhost"] and "192.168" not in url  else None, verify=False, **kwargs)
+    myproxies = proxies if proxies is not None and furl(url).host not in ["127.0.0.1", "localhost"] and "192.168" not in url else None
+    return requests.post(url, proxies=myproxies if furl(url).host not in ["127.0.0.1", "localhost"] and "192.168" not in url  else None, verify=False, **kwargs)
