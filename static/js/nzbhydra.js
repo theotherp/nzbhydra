@@ -1585,7 +1585,7 @@ angular
     .module('nzbhydraApp')
     .controller('SystemController', SystemController);
 
-function SystemController($scope, $state, $http, growl, RestartService, ModalService, NzbHydraControlService) {
+function SystemController($scope, $state, $http, growl, RestartService, ModalService, UpdateService, NzbHydraControlService) {
 
 
     $scope.shutdown = function () {
@@ -1617,6 +1617,10 @@ function SystemController($scope, $state, $http, growl, RestartService, ModalSer
                 text: "Nah"
             }
         });
+    };
+
+    $scope.forceUpdate = function() {
+        UpdateService.update()
     };
     
 
@@ -1677,7 +1681,7 @@ function SystemController($scope, $state, $http, growl, RestartService, ModalSer
     }
     
 }
-SystemController.$inject = ["$scope", "$state", "$http", "growl", "RestartService", "ModalService", "NzbHydraControlService"];
+SystemController.$inject = ["$scope", "$state", "$http", "growl", "RestartService", "ModalService", "UpdateService", "NzbHydraControlService"];
 
 angular
     .module('nzbhydraApp')

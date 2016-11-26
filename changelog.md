@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.170
+Added: Button to force an update from GitHub.
+
 ### 0.2.169
 Added: Allow providing username and password for socks proxy. Be aware that only direct calls from Hydra will go through proxies. Calls to git for example will not. See [#430](https://github.com/theotherp/nzbhydra/issues/430).
 
@@ -19,8 +22,6 @@ Changed: Some indexers do support more search types or IDs than they say in thei
 Fixed: Calls to /details/ would not use dereferer. See [#434](https://github.com/theotherp/nzbhydra/issues/439).
 
 Fixed: Database was not properly shut down.
-
-
 
 ### 0.2.168
 Changed: I lost access to my old bitcoin wallet. I created a new one and updated the readme. As I don't have any means of "converting" money to bitcoin and have some services that I pay with Bitcoin I changed my policy and am now open to receive donations ;-)
