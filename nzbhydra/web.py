@@ -591,6 +591,8 @@ def get_details(guid):
     details_link = searchResult.details
     if details_link:
         logger.info("Redirecting to details link %s " % details_link)
+        if config.settings.main.dereferer:
+            details_link = config.settings.main.dereferer.replace("$s", urllib.quote(details_link))
         return redirect(details_link)
     logger.error("Unable to find details link for search result ID %d" % searchResultId)
     return "Unable to find details", 500

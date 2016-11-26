@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.169
+Fixed: Calls to /details/ would not use dereferer.
+
 ### 0.2.168
 Changed: I lost access to my old bitcoin wallet. I created a new one and updated the readme. As I don't have any means of "converting" money to bitcoin and have some services that I pay with Bitcoin I changed my policy and am now open to receive donations ;-)
 
