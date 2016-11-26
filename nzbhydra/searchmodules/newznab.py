@@ -235,36 +235,7 @@ def check_caps(host, apikey, userAgent=None, timeout=None, skipIdsAndTypes=False
         
 
         searching = tree.find("searching")
-        doBruteForce = False
         if searching is not None and not skipIdsAndTypes:
-            tvsearch = searching.find("tv-search")
-            if tvsearch is not None and tvsearch.attrib["available"] == "yes":
-                supportedTypes.append("tvsearch")
-                logger.debug("Found supported TV search")
-                if "supportedParams" in tvsearch.attrib:
-                    params = tvsearch.attrib["supportedParams"]
-                    params = params.split(",")
-                    for x in ["q", "season", "ep"]:
-                        if x in params:
-                            params.remove(x)
-                    supportedIds.extend(params)
-                    logger.debug("Found supported TV IDs: %s" % params)
-                else:
-                    doBruteForce = True
-            movie_search = searching.find("movie-search")
-            if movie_search is not None and movie_search.attrib["available"] == "yes":
-                supportedTypes.append("movie")
-                logger.debug("Found supported movie search")
-                if "supportedParams" in movie_search.attrib:
-                    params = movie_search.attrib["supportedParams"]
-                    params = params.split(",")
-                    for x in ["q", "genre"]:
-                        if x in params:
-                            params.remove(x)
-                    supportedIds.extend(params)
-                    logger.debug("Found supported movie IDs: %s" % params)
-                else:
-                    doBruteForce = True
             book_search = searching.find("book-search")
             if book_search is not None and book_search.attrib["available"] == "yes":
                 supportedTypes.append("movie")
@@ -273,8 +244,8 @@ def check_caps(host, apikey, userAgent=None, timeout=None, skipIdsAndTypes=False
             can_handle = [y["id"] for y in toCheck]
             supportedIds = [x for x in supportedIds if x in can_handle]  # Only use those we can handle
 
-        if doBruteForce and not skipIdsAndTypes:
-            logger.info("Unable to read supported params from caps. Will continue with brute force")
+        if not skipIdsAndTypes:
+            logger.info("Checking capabilities of indexer by brute force to make sure supported search types are correctly recognized")
             supportedIds, supportedTypes = checkCapsBruteForce(supportedTypes, toCheck, host, apikey)
 
         #Check indexer type (nzedb, newznab, nntmux)

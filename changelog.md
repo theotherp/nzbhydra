@@ -2,9 +2,13 @@
 
 ----------
 ### 0.2.169
+Added: Allow providing username and password for socks proxy. Be aware that only direct calls from Hydra will go through proxies. Calls to git for example will not. See [#430](https://github.com/theotherp/nzbhydra/issues/430).
+
+Changed: Some indexers do support more search types or IDs than they say in their caps. So search capabilities of an indexer (searching by IMDB ID, TVDB ID, etc.) are now always determined by "brute force" instead of relying on the data provided in the caps. That means that the caps check will take a lot more time (up to 6 queries) but be more precise. See [#433](https://github.com/theotherp/nzbhydra/issues/433).    
+
 Fixed: Calls to /details/ would not use dereferer.
 
-Added: Allow providing username and password for socks proxy. Be aware that only direct calls from Hydra will go through proxies. Calls to git for example will not. See [#430](https://github.com/theotherp/nzbhydra/issues/430).
+
 
 ### 0.2.168
 Changed: I lost access to my old bitcoin wallet. I created a new one and updated the readme. As I don't have any means of "converting" money to bitcoin and have some services that I pay with Bitcoin I changed my policy and am now open to receive donations ;-)
