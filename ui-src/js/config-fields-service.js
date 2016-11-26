@@ -1526,7 +1526,7 @@ function getDownloaderBoxFields(model, parentModel, isInitial) {
             templateOptions: {
                 type: 'text',
                 label: 'Default category',
-                help: 'When adding NZBs this category will be used instead of asking for the category',
+                help: 'When adding NZBs this category will be used instead of asking for the category. Write "No category" to let the downloader decide.',
                 placeholder: 'Ask when downloading'
             }
         },

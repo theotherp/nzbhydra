@@ -12,14 +12,18 @@ function NzbDownloadService($http, ConfigService, DownloaderCategoriesService) {
     return service;
 
     function sendNzbAddCommand(downloader, searchresultids, category) {
-        return $http.put("internalapi/addnzbs", {downloader: downloader.name, searchresultids: angular.toJson(searchresultids), category: category});
+        var params = {downloader: downloader.name, searchresultids: angular.toJson(searchresultids)};
+        if (category != "No category") {
+            params["category"] = category;
+        }
+        return $http.put("internalapi/addnzbs", params);
     }
     
     function download(downloader, searchresultids) {
         
         var category = downloader.defaultCategory;
         
-        if (_.isUndefined(category) || category == "" || category == null) {
+        if ((_.isUndefined(category) || category == "" || category == null) && category != "No category") {
             return DownloaderCategoriesService.openCategorySelection(downloader).then(function (category) {
                 return sendNzbAddCommand(downloader, searchresultids, category)
             }, function (error) {

@@ -4,6 +4,8 @@
 ### 0.2.169
 Added: Allow providing username and password for socks proxy. Be aware that only direct calls from Hydra will go through proxies. Calls to git for example will not. See [#430](https://github.com/theotherp/nzbhydra/issues/430).
 
+Added: Allow not defining a category when sending NZBs to a downloader. In that case the downloader will decide which category to use. See [#434](https://github.com/theotherp/nzbhydra/issues/434).
+
 Changed: Some indexers do support more search types or IDs than they say in their caps. So search capabilities of an indexer (searching by IMDB ID, TVDB ID, etc.) are now always determined by "brute force" instead of relying on the data provided in the caps. That means that the caps check will take a lot more time (up to 6 queries) but be more precise. See [#433](https://github.com/theotherp/nzbhydra/issues/433).    
 
 Fixed: Calls to /details/ would not use dereferer.

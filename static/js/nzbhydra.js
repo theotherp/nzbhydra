@@ -2800,14 +2800,18 @@ function NzbDownloadService($http, ConfigService, DownloaderCategoriesService) {
     return service;
 
     function sendNzbAddCommand(downloader, searchresultids, category) {
-        return $http.put("internalapi/addnzbs", {downloader: downloader.name, searchresultids: angular.toJson(searchresultids), category: category});
+        var params = {downloader: downloader.name, searchresultids: angular.toJson(searchresultids)};
+        if (category != "No category") {
+            params["category"] = category;
+        }
+        return $http.put("internalapi/addnzbs", params);
     }
     
     function download(downloader, searchresultids) {
         
         var category = downloader.defaultCategory;
         
-        if (_.isUndefined(category) || category == "" || category == null) {
+        if ((_.isUndefined(category) || category == "" || category == null) && category != "No category") {
             return DownloaderCategoriesService.openCategorySelection(downloader).then(function (category) {
                 return sendNzbAddCommand(downloader, searchresultids, category)
             }, function (error) {
@@ -4279,7 +4283,7 @@ function ConfigFields($injector) {
                             templateOptions: {
                                 type: 'text',
                                 label: 'SOCKS proxy',
-                                placeholder: '127.0.0.1:1080',
+                                placeholder: 'socks5://user:pass@127.0.0.1:1080',
                                 help: "IPv4 only"
                             },
                             watcher: {
@@ -4305,7 +4309,7 @@ function ConfigFields($injector) {
                             templateOptions: {
                                 type: 'text',
                                 label: 'HTTPS proxy',
-                                placeholder: 'http://user:pass@10.0.0.1:1090',
+                                placeholder: 'https://user:pass@10.0.0.1:1090',
                                 help: "IPv4 only"
                             },
                             watcher: {
@@ -5525,7 +5529,7 @@ function getDownloaderBoxFields(model, parentModel, isInitial) {
             templateOptions: {
                 type: 'text',
                 label: 'Default category',
-                help: 'When adding NZBs this category will be used instead of asking for the category',
+                help: 'When adding NZBs this category will be used instead of asking for the category. Write "No category" to let the downloader decide.',
                 placeholder: 'Ask when downloading'
             }
         },
