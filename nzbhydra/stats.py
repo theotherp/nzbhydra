@@ -115,7 +115,7 @@ def get_avg_indexer_search_results_share(afterSql, beforeSql):
                 END) as avgUniqueResults
             FROM indexersearch s
             WHERE processedResults IS NOT NULL AND uniqueResults IS NOT NULL
-                  AND s.indexer_id == %(id)d AND s.time > %(before)s and s.time < %(after)s
+                  AND s.indexer_id == %(id)d AND s.time > %(after)s and s.time < %(before)s
             GROUP BY indexer_id;
 
             """

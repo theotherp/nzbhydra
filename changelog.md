@@ -4,6 +4,8 @@
 ### 0.2.170
 Added: Button to force an update from GitHub.
 
+Fixed: Unique results share buggy from 0.2.169.
+
 ### 0.2.169
 Added: Allow providing username and password for socks proxy. Be aware that only direct calls from Hydra will go through proxies. Calls to git for example will not. See [#430](https://github.com/theotherp/nzbhydra/issues/430).
 
