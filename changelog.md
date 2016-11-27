@@ -2,14 +2,20 @@
 
 ----------
 ### 0.2.172
-Fixed: Make sure indexer statuses are not duplicated. Also fixed some kinks in the handling of indexer failures and the reenabling of indexers via GUI. See [#366](https://github.com/theotherp/nzbhydra/issues/366).
+Fixed: Make sure indexer statuses are not duplicated. Also fixed some kinks in the handling of indexer failures and the reenabling of indexers via GUI. 
+    See [#366](https://github.com/theotherp/nzbhydra/issues/366).
 
 ### 0.2.171
-Added: Option to shutdown Hydra when it's supposed to restart (either after an update or as requested by the user). This could help users who run Hydra with a service manager on Linux which restarts the instance when it closes and thus produces a second instance. See [#442](https://github.com/theotherp/nzbhydra/issues/442).
+Added: Option to shutdown Hydra when it's supposed to restart (either after an update or as requested by the user). 
+    This could help users who run Hydra with a service manager on Linux which restarts the instance when it closes and thus produces a second instance. 
+    See [#442](https://github.com/theotherp/nzbhydra/issues/442).
 
 Changed: Updated BeautifulSoup library which will hopefully fix conflicts with newer linux installations.
 
-Changed: Search result IDs are now derived from their actual indexer search results. That means that when a search result is found, deleted from the database and found again it will have the same ID both times. This should ensure that CP doesn't find the same result after 7+ days and thinks it's a new one. All existing search result IDs are invalid. The updating process might take a bit longer than usual.
+Changed: Search result IDs are now derived from their actual indexer search results. 
+    That means that when a search result is found, deleted from the database and found again it will have the same ID both times. 
+    This should ensure that CP doesn't find the same result after 7+ days and thinks it's a new one. All existing search result IDs are invalid. 
+    The updating process might take a bit longer than usual.
  
 Fixed: Downloader icons wouldn't update according to status.
 
