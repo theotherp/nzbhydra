@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.174
+Fixed: What was supposed to fix duplicate indexers in the index statuses made it worse. Oops. See [#445](https://github.com/theotherp/nzbhydra/issues/445).
+
 ### 0.2.173
 Fixed: Downloading NZBs via API failed with 0.2.171. See [#443](https://github.com/theotherp/nzbhydra/issues/443).
 

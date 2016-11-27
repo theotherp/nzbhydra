@@ -19,7 +19,7 @@ logger = logging.getLogger('root')
 
 db = SqliteQueueDatabase(None, autostart=False, results_timeout=20.0)
 
-DATABASE_VERSION = 15
+DATABASE_VERSION = 16
 
 
 class JSONField(TextField):
@@ -608,22 +608,22 @@ def update_db(dbfile):
             vi.save()
             logger.info("Database migration completed successfully")
 
-        if vi.version == 14:
-            logger.info("Upgrading database to version 15")
+        if vi.version == 14 or vi.version == 15:
+            logger.info("Upgrading database to version 15/16")
             logger.info("Deleting duplicate indexer statuses and adding unique constraint")
-            with db.transaction():
-                for indexer in Indexer.select():
-                    statuses = list(IndexerStatus.select().where(IndexerStatus.indexer == indexer).order_by(IndexerStatus.latest_failure.desc()))
-                    if len(statuses) == 1:
-                        logger.info("Adding indexer status entry for indexer %s" % indexer.name)
-                        IndexerStatus.create_or_get(indexer=indexer, first_failure=None, latest_failure=None, disabled_until=None)
 
-                    elif len(statuses) > 1:
-                        logger.info("Deleting duplicate indexer status entries for %s" % indexer.name)
-                        for status in statuses[1:]:
-                            status.delete_instance()
-                db.execute_sql("CREATE UNIQUE INDEX indexerstatus_indexer_id_uindex ON indexerstatus(indexer_id);")
+            for indexer in Indexer.select():
+                statuses = list(IndexerStatus.select().where(IndexerStatus.indexer == indexer).order_by(IndexerStatus.latest_failure.desc()))
+                if len(statuses) == 0:
+                    logger.info("Adding indexer status entry for indexer %s" % indexer.name)
+                    IndexerStatus.create_or_get(indexer=indexer, first_failure=None, latest_failure=None, disabled_until=None)
 
-            vi.version = 15
+                elif len(statuses) > 1:
+                    logger.info("Deleting duplicate indexer status entries for %s" % indexer.name)
+                    for status in statuses[1:]:
+                        status.delete_instance()
+            db.execute_sql("CREATE UNIQUE INDEX indexerstatus_indexer_id_uindex ON indexerstatus(indexer_id);")
+
+            vi.version = 16
             vi.save()
             logger.info("Database migration completed successfully")
