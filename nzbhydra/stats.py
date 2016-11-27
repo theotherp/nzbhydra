@@ -338,4 +338,4 @@ def get_search_requests(page=0, limit=100, type=None):
 
 
 def get_indexer_statuses():
-    return list(IndexerStatus().select(Indexer.name, IndexerStatus.first_failure, IndexerStatus.latest_failure, IndexerStatus.disabled_until, IndexerStatus.level, IndexerStatus.reason).join(Indexer).dicts())
+    return list(IndexerStatus().select(Indexer.name, IndexerStatus.first_failure, IndexerStatus.latest_failure, IndexerStatus.disabled_until, IndexerStatus.level, IndexerStatus.reason, IndexerStatus.disabled_permanently).join(Indexer).dicts())

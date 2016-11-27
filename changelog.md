@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.172
+Fixed: Make sure indexer statuses are not duplicated. Also fixed some kinks in the handling of indexer failures and the reenabling of indexers via GUI. See [#366](https://github.com/theotherp/nzbhydra/issues/366).
+
 ### 0.2.171
 Added: Option to shutdown Hydra when it's supposed to restart (either after an update or as requested by the user). This could help users who run Hydra with a service manager on Linux which restarts the instance when it closes and thus produces a second instance. See [#442](https://github.com/theotherp/nzbhydra/issues/442).
 

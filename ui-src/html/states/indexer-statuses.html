@@ -13,8 +13,10 @@
         <td class="col-md-2">{{ indexerStatus.name }}</td>
         <td class="col-md-3">{{ indexerStatus.latest_failure | formatDate:false}}</td>
         <td class="col-md-4">
-            {{ indexerStatus.disabled_until | formatDate:true}}
-            <a href="" ng-click="enable(indexerStatus.name)" ><span ng-if="!isInPast(indexerStatus.disabled_until)" class="glyphicon glyphicon-ok"></span></a>
+            <a href="" ng-click="enable(indexerStatus.name)"><span ng-if="!isInPast(indexerStatus.disabled_until)||indexerStatus.disabled_permanently" class="glyphicon glyphicon-ok"></span></a>
+            <span ng-if="!indexerStatus.disabled_permanently">{{ indexerStatus.disabled_until | formatDate:true}}</span>
+            <span ng-if="indexerStatus.disabled_permanently">Permanently</span>
+
         </td>
         <td class="col-md-11">{{ indexerStatus.reason }}</td>
     </tr>

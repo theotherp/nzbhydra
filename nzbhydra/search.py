@@ -133,7 +133,7 @@ def pick_indexers(search_request):
             continue
         try:
             status = p.indexer.status.get()
-            if status.disabled_until > arrow.utcnow() and not config.settings.searching.ignoreTemporarilyDisabled:
+            if status.disabled_until and status.disabled_until > arrow.utcnow() and not config.settings.searching.ignoreTemporarilyDisabled:
                 logger.info("Did not pick %s because it is disabled temporarily due to an error: %s" % (p, status.reason))
                 add_not_picked_indexer(notPickedReasons, "Temporarily disabled", p.name)
                 continue

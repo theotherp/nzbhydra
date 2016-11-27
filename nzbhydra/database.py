@@ -19,7 +19,7 @@ logger = logging.getLogger('root')
 
 db = SqliteQueueDatabase(None, autostart=False, results_timeout=20.0)
 
-DATABASE_VERSION = 14
+DATABASE_VERSION = 15
 
 
 class JSONField(TextField):
@@ -39,7 +39,7 @@ class DateTimeUTCField(DateTimeField):
         return arrow.get(value).datetime if value is not None else None
 
     def python_value(self, value):
-        return arrow.get(value, tzinfo=tzutc())
+        return arrow.get(value, tzinfo=tzutc()) if value is not None else None
 
 
 class Indexer(Model):
@@ -169,13 +169,13 @@ class v5IndexerNzbDownload(Model):
 
 
 class IndexerStatus(Model):
-    indexer = ForeignKeyField(Indexer, related_name="status")
-    first_failure = DateTimeUTCField(default=datetime.datetime.utcnow(), null=True)
-    latest_failure = DateTimeUTCField(default=datetime.datetime.utcnow(), null=True)
-    disabled_until = DateTimeUTCField(default=datetime.datetime.utcnow(), null=True)
+    indexer = ForeignKeyField(Indexer, related_name="status", unique=True)
+    first_failure = DateTimeUTCField(null=True)
+    latest_failure = DateTimeUTCField(null=True)
+    disabled_until = DateTimeUTCField(null=True)
     level = IntegerField(default=0)
     reason = CharField(null=True)
-    disabled_permanently = BooleanField(default=False)  # Set to true if an error occurred that probably won't fix itself (e.g. when the apikey is wrong) 
+    disabled_permanently = BooleanField(default=False)  # Set to true if an error occurred that probably won't fix itself (e.g. when the apikey is wrong)
 
     def __repr__(self):
         return "%s in status %d. First failure: %s. Latest Failure: %s. Reason: %s. Disabled until: %s" % (self.indexer, self.level, self.first_failure, self.latest_failure, self.reason, self.disabled_until)
@@ -605,5 +605,25 @@ def update_db(dbfile):
                 db.execute_sql("ALTER TABLE searchresult2 RENAME TO searchresult")
 
             vi.version = 14
+            vi.save()
+            logger.info("Database migration completed successfully")
+
+        if vi.version == 14:
+            logger.info("Upgrading database to version 15")
+            logger.info("Deleting duplicate indexer statuses and adding unique constraint")
+            with db.transaction():
+                for indexer in Indexer.select():
+                    statuses = list(IndexerStatus.select().where(IndexerStatus.indexer == indexer).order_by(IndexerStatus.latest_failure.desc()))
+                    if len(statuses) == 1:
+                        logger.info("Adding indexer status entry for indexer %s" % indexer.name)
+                        IndexerStatus.create_or_get(indexer=indexer, first_failure=None, latest_failure=None, disabled_until=None)
+
+                    elif len(statuses) > 1:
+                        logger.info("Deleting duplicate indexer status entries for %s" % indexer.name)
+                        for status in statuses[1:]:
+                            status.delete_instance()
+                db.execute_sql("CREATE UNIQUE INDEX indexerstatus_indexer_id_uindex ON indexerstatus(indexer_id);")
+
+            vi.version = 15
             vi.save()
             logger.info("Database migration completed successfully")

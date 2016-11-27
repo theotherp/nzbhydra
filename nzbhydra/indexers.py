@@ -1,19 +1,17 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from builtins import range
-from future import standard_library
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
+import logging
+
+from builtins import *
 from peewee import fn
 
-#standard_library.install_aliases()
-from builtins import *
-import logging
 from nzbhydra import config, database
-from nzbhydra.database import Indexer
+from nzbhydra.database import Indexer, IndexerStatus
 from nzbhydra.exceptions import IndexerNotFoundException
-from nzbhydra.searchmodules import newznab, womble, nzbclub, nzbindex, binsearch, jackett, anizb #Actually used but referenced dynamically
+from nzbhydra.searchmodules import anizb, binsearch, jackett, newznab, nzbclub, nzbindex, womble
 
 logger = logging.getLogger('root')
 configured_indexers = []
@@ -25,7 +23,8 @@ def init_indexer_table_entry(indexer_name):
         Indexer.get(fn.lower(Indexer.name) == indexer_name.lower())
     except Indexer.DoesNotExist as e:
         logger.info("Unable to find indexer with name %s in database. Will add it" % indexer_name)
-        Indexer().create(name=indexer_name)
+        indexer = Indexer().create(name=indexer_name)
+        IndexerStatus.create_or_get(indexer=indexer, first_failure=None, latest_failure=None, disabled_until=None)
 
 
 # Load from config and initialize all configured indexers using the loaded modules
@@ -38,7 +37,7 @@ def read_indexers_from_config():
         try:
             instance = sys.modules["nzbhydra.searchmodules." + indexer.type].get_instance(indexer)
         except Exception:
-            if hasattr(indexer, "type"): 
+            if hasattr(indexer, "type"):
                 logger.error("Unable to get reference to search module %s" % indexer.type)
             else:
                 logger.error("%s has no type setting" % indexer)
@@ -80,4 +79,3 @@ def clean_up_database():
         if indexer.name not in configured_indexer_names:
             logger.info("Removing old indexer entry %s from database" % indexer.name)
             indexer.delete_instance()
-        

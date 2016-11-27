@@ -413,24 +413,24 @@ class SearchModule(object):
                         rejected = parsed_results.rejected
 
                         papiaccess.response_successful = True
-                        self.handle_indexer_success(False)
+                        indexerStatus = self.handle_indexer_success(False)
                     except Exception:
                         self.exception("Error while processing search results from indexer %s" % self)
                         raise IndexerResultParsingException("Error while parsing the results from indexer", self)
             except IndexerAuthException as e:
                 papiaccess.error = "Authorization error :%s" % e.message
                 self.error(papiaccess.error)
-                self.handle_indexer_failure(reason="Authentication failed", disable_permanently=True)
+                indexerStatus = self.handle_indexer_failure(reason="Authentication failed", disable_permanently=True)
                 papiaccess.response_successful = False
             except IndexerAccessException as e:
                 papiaccess.error = "Access error: %s" % e.message
                 self.error(papiaccess.error)
-                self.handle_indexer_failure(reason="Access failed")
+                indexerStatus = self.handle_indexer_failure(reason="Access failed")
                 papiaccess.response_successful = False
             except IndexerResultParsingException as e:
                 papiaccess.error = "Access error: %s" % e.message
                 self.error(papiaccess.error)
-                self.handle_indexer_failure(reason="Parsing results failed")
+                indexerStatus = self.handle_indexer_failure(reason="Parsing results failed")
                 papiaccess.response_successful = False
             except Exception as e:
                 self.exception("An error error occurred while searching: %s", e)
