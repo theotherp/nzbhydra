@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.171
+Changed: Updated BeautifulSoup library which will hopefully fix conflicts with newer linux installations.
+
 ### 0.2.170
 Added: Button to force an update from GitHub.
 

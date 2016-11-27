@@ -6,9 +6,10 @@ necessary. It is heavily based on code from Mark Pilgrim's Universal
 Feed Parser. It works best on XML and HTML, but it does not rewrite the
 XML or HTML to reflect a new encoding; that's the tree builder's job.
 """
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 __license__ = "MIT"
 
-from pdb import set_trace
 import codecs
 from htmlentitydefs import codepoint2name
 import re
@@ -346,7 +347,7 @@ class UnicodeDammit:
         self.tried_encodings = []
         self.contains_replacement_characters = False
         self.is_html = is_html
-
+        self.log = logging.getLogger(__name__)
         self.detector = EncodingDetector(
             markup, override_encodings, is_html, exclude_encodings)
 
@@ -376,9 +377,10 @@ class UnicodeDammit:
                 if encoding != "ascii":
                     u = self._convert_from(encoding, "replace")
                 if u is not None:
-                    logging.warning(
+                    self.log.warning(
                             "Some characters could not be decoded, and were "
-                            "replaced with REPLACEMENT CHARACTER.")
+                            "replaced with REPLACEMENT CHARACTER."
+                    )
                     self.contains_replacement_characters = True
                     break
 
