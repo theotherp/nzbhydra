@@ -497,16 +497,16 @@ def api(args):
         logger.info("API search request completed in %d ms" % took)
         return searchResult
     elif args["t"] == "get":
-        if "nzbhydrasearchresult" not in args["id"]:
-            logger.error("API NZB download request with invalid id %s" % args["id"])
+        try:
+            searchResult = SearchResult.get(SearchResult.id == args["id"])
+        except SearchResult.DoesNotExist:
+            logger.error("API NZB download request with unknown search result ID %s" % args["id"])
             return "Invalid ID %s" % args["id"], 500
-        searchResultId = args["id"]
-        searchResult = SearchResult.get(SearchResult.id == searchResultId)
         if config.settings.main.logging.logIpAddresses:
             logger.info("API request from %s to download %s from %s" % (getIp(), searchResult.title, searchResult.indexer.name))
         else:
             logger.info("API request to download %s from %s" % (searchResult.title, searchResult.indexer.name))
-        return extract_nzb_infos_and_return_response(searchResultId)
+        return extract_nzb_infos_and_return_response(args["id"])
     elif args["t"] == "caps":
         xml = render_template("caps.html")
         return Response(xml, mimetype="text/xml")
