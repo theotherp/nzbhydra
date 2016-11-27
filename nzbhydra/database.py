@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import datetime
+import hashlib
 import json
 import logging
 
@@ -18,7 +19,7 @@ logger = logging.getLogger('root')
 
 db = SqliteQueueDatabase(None, autostart=False, results_timeout=20.0)
 
-DATABASE_VERSION = 13
+DATABASE_VERSION = 14
 
 
 class JSONField(TextField):
@@ -91,6 +92,7 @@ class IndexerSearch(Model):
 
 
 class SearchResult(Model):
+    id = CharField(primary_key=True)
     indexer = ForeignKeyField(Indexer, related_name="results")
     firstFound = DateTimeField()
     title = CharField()
@@ -496,5 +498,106 @@ def update_db(dbfile):
                     logger.info("Changed references from omgwtfnzbs.org to omgwtfnzbs in database and deleted old indexer entry")
 
             vi.version = 13
+            vi.save()
+            logger.info("Database migration completed successfully")
+
+        if vi.version == 13:
+            logger.info("Upgrading database to version 14. Migrating to hash based search result IDs")
+
+            class SearchResultOld(Model):
+                indexer_id = IntegerField()
+                firstFound = DateTimeField()
+                title = CharField()
+                guid = CharField()
+                link = CharField()
+                details = CharField(null=True)
+
+                class Meta(object):
+                    database = db
+                    db_table = "searchresult"
+
+            class SearchResultMigration(Model):
+                id = CharField(primary_key=True)
+                indexer_id = IntegerField()
+                firstFound = DateTimeField()
+                title = CharField()
+                guid = CharField()
+                link = CharField()
+                details = CharField(null=True)
+
+                class Meta(object):
+                    database = db
+                    db_table = "searchresult2"
+
+            class IndexerNzbDownloadOld(Model):
+                searchResult = ForeignKeyField(SearchResultOld, related_name="downloads")
+                apiAccess = ForeignKeyField(IndexerApiAccess)
+                time = DateTimeField()
+                title = CharField()  # Redundant when the search result still exists but after it's deleted we still wanna see what the title is
+                mode = CharField()  # "serve" or "redirect"
+                internal = BooleanField(null=True)
+
+                class Meta(object):
+                    database = db
+                    db_table = "indexernzbdownload"
+
+            class IndexerNzbDownloadMigration(Model):
+                searchResult = ForeignKeyField(SearchResultMigration, related_name="downloads")
+                apiAccess = ForeignKeyField(IndexerApiAccess)
+                time = DateTimeField()
+                title = CharField()  # Redundant when the search result still exists but after it's deleted we still wanna see what the title is
+                mode = CharField()  # "serve" or "redirect"
+                internal = BooleanField(null=True)
+
+                class Meta(object):
+                    database = db
+                    db_table = "indexernzbdownload2"
+
+            with db.transaction():
+                db.execute_sql("""
+                CREATE TABLE searchresult2
+                (
+                  id         VARCHAR PRIMARY KEY NOT NULL,
+                  indexer_id INTEGER             NOT NULL,
+                  firstFound TEXT                NOT NULL,
+                  title      TEXT                NOT NULL,
+                  guid       TEXT                NOT NULL,
+                  link       TEXT                NOT NULL,
+                  details    TEXT,
+                  FOREIGN KEY (indexer_id) REFERENCES indexer (id)
+                    DEFERRABLE INITIALLY DEFERRED
+                );
+                """)
+
+                db.execute_sql("""
+                CREATE TABLE indexernzbdownload2
+                (
+                  id              INTEGER PRIMARY KEY NOT NULL,
+                  searchResult_id VARCHAR             NOT NULL,
+                  apiAccess_id    INTEGER             NOT NULL,
+                  time            TEXT                NOT NULL,
+                  title           TEXT                NOT NULL,
+                  mode            TEXT                NOT NULL,
+                  internal        INTEGER,
+                  FOREIGN KEY (searchResult_id) REFERENCES searchresult (id)
+                    DEFERRABLE INITIALLY DEFERRED,
+                  FOREIGN KEY (apiAccess_id) REFERENCES indexerapiaccess (id)
+                    DEFERRABLE INITIALLY DEFERRED);
+                """)
+
+                for sr in SearchResultOld.select():
+                    searchResultId = hashlib.sha1(str(sr.indexer_id) + sr.guid).hexdigest()
+                    # Slow but was unable to do this with insert_from or insert_many
+                    srMigrated = SearchResultMigration.create(**{"id": searchResultId, "indexer_id": sr.indexer_id, "firstFound": sr.firstFound, "title": sr.title, "guid": sr.guid, "link": sr.link, "details": sr.details})
+
+                    for dl in IndexerNzbDownloadOld.select().where(IndexerNzbDownloadOld.searchResult == sr):  # Find all linked downloads
+                        IndexerNzbDownloadMigration.create(searchResult=srMigrated, apiAccess=dl.apiAccess, time=dl.time, title=dl.title, mode=dl.mode, internal=dl.internal)
+
+                db.execute_sql("DROP TABLE indexernzbdownload")
+                db.execute_sql("ALTER TABLE indexernzbdownload2 RENAME TO indexernzbdownload")
+                db.execute_sql("DROP TABLE searchresult")
+                db.execute_sql("ALTER TABLE searchresult2 RENAME TO searchresult")
+
+            vi.version = 14
             vi.save()
             logger.info("Database migration completed successfully")

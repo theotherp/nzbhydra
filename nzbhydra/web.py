@@ -119,7 +119,6 @@ class CustomJSONEncoder(JSONEncoder):
 
 app.json_encoder = CustomJSONEncoder
 
-
 @app.after_request
 def disable_caching(response):
     if "/static" not in request.path:  # Prevent caching of control URLs
@@ -501,7 +500,7 @@ def api(args):
         if "nzbhydrasearchresult" not in args["id"]:
             logger.error("API NZB download request with invalid id %s" % args["id"])
             return "Invalid ID %s" % args["id"], 500
-        searchResultId = int(args["id"][len("nzbhydrasearchresult"):])
+        searchResultId = args["id"]
         searchResult = SearchResult.get(SearchResult.id == searchResultId)
         if config.settings.main.logging.logIpAddresses:
             logger.info("API request from %s to download %s from %s" % (getIp(), searchResult.title, searchResult.indexer.name))
@@ -512,7 +511,7 @@ def api(args):
         xml = render_template("caps.html")
         return Response(xml, mimetype="text/xml")
     elif args["t"] == "details":
-        searchResultId = int(args["id"][len("nzbhydrasearchresult"):])
+        searchResultId = args["id"]
         searchResult = SearchResult.get(SearchResult.id == searchResultId)
         logger.info("API request from to get detils for %s from %s" % (searchResult.title, searchResult.indexer.name))
         item = get_entry_by_id(searchResult.indexer.name, searchResult.guid, searchResult.title)
@@ -522,7 +521,7 @@ def api(args):
         item.link = get_nzb_link_and_guid(searchResultId, False)[0]  # We need to make sure the link in the details refers to us
         return render_search_results_for_api([item], None, None, output=args["o"])
     elif args["t"] == "getnfo":
-        searchResultId = int(args["id"][len("nzbhydrasearchresult"):])
+        searchResultId = args["id"]
         result = get_nfo(searchResultId)
         if result["has_nfo"]:
             if args["raw"] == 1:
@@ -586,7 +585,7 @@ api_search.make_cache_key = make_request_cache_key
 @app.route("/details/<path:guid>")
 @requires_auth("main", disableAuthForForm=True)
 def get_details(guid):
-    searchResultId = int(guid[len("nzbhydrasearchresult"):])
+    searchResultId = guid
     searchResult = SearchResult.get(SearchResult.id == searchResultId)
     details_link = searchResult.details
     if details_link:
@@ -599,7 +598,7 @@ def get_details(guid):
 
 
 searchresultid_args = {
-    "searchresultid": fields.Integer()
+    "searchresultid": fields.String()
 }
 
 internalapi__getnzb_args = {

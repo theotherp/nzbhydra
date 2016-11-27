@@ -145,7 +145,7 @@ def transform_results(results, external):
             continue
         i = copy.copy(j)
         i.link = get_nzb_link_and_guid(i.searchResultId, external)
-        i.guid = "nzbhydrasearchresult%d" % i.searchResultId
+        i.guid = i.searchResultId
         attributes = {x["name"]: x["value"] for x in i.attributes}
         attributes["guid"] = i.guid
         for attribute in ["size", "poster", "group"]:

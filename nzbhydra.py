@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+import atexit
 import sys
 import traceback
 
@@ -192,6 +192,13 @@ def run(arguments):
     except Exception:
         logger.exception("Fatal error occurred")
 
+
+@atexit.register
+def _stop_worker_threads():
+    logger.info("Exit registered. Shutting down database...")
+    database.db.stop()
+    database.db.close()
+    logger.info("Database shut down")
 
 if __name__ == '__main__':
 

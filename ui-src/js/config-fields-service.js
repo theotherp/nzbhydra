@@ -671,7 +671,7 @@ function ConfigFields($injector) {
                                 type: 'select',
                                 label: 'HTML parser',
                                 options: [
-                                    {name: 'Default BS (slow)', value: 'html.parser'},
+                                    {name: 'Default BS (slower)', value: 'html.parser'},
                                     {name: 'LXML (faster, needs to be installed separately)', value: 'lxml'}
                                 ]
                             }

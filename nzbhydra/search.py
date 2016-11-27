@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import copy
 import datetime
+import hashlib
 import logging
 import re
 from itertools import groupby
@@ -328,8 +329,9 @@ def search(search_request):
                         logger.info("Skipping result with missing data: %s" % result)
                         continue
                     try:
-                        searchResult = tryGetOrCreateSearchResultDbEntry(indexer.indexer.id, result)
-                        result.searchResultId = searchResult.id
+                        searchResultId = hashlib.sha1(str(indexer.indexer.id) + result.indexerguid).hexdigest()
+                        tryGetOrCreateSearchResultDbEntry(searchResultId, indexer.indexer.id, result)
+                        result.searchResultId = searchResultId
                         search_results.append(result)
                     except (IntegrityError, OperationalError) as e:
                         logger.error("Error while trying to save search result to database. Skipping it. Error: %s" % e)
@@ -418,11 +420,11 @@ def countOldSearchResults(keepFor):
 
 
 @retry((InterfaceError, OperationalError), delay=1, tries=5, logger=logger)
-def tryGetOrCreateSearchResultDbEntry(indexerId, result):
+def tryGetOrCreateSearchResultDbEntry(searchResultId, indexerId, result):
     try:
-        return SearchResult().get(SearchResult.indexer_id == indexerId, SearchResult.guid == result.indexerguid)
+        return SearchResult().get(SearchResult.id == searchResultId)
     except SearchResult.DoesNotExist:
-        return SearchResult().create(indexer_id=indexerId, guid=result.indexerguid, title=result.title, link=result.link, details=result.details_link, firstFound=datetime.datetime.utcnow())
+        return SearchResult().create(id=searchResultId, indexer_id=indexerId, guid=result.indexerguid, title=result.title, link=result.link, details=result.details_link, firstFound=datetime.datetime.utcnow())
 
 
 @retry((InterfaceError, OperationalError), delay=1, tries=5, logger=logger)
