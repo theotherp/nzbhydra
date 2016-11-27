@@ -151,6 +151,7 @@ initialConfig = {
         "repositoryBase": "https://github.com/theotherp",
         "runThreaded": True,
         "secret": None,
+        "shutdownForRestart": False,
         "ssl": False,
         "sslcert": None,
         "sslkey": None,

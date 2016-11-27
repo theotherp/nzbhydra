@@ -16,7 +16,6 @@ import markdown
 from bunch import Bunch
 from werkzeug.contrib.fixers import ProxyFix
 
-import nzbhydra
 from nzbhydra.categories import getCategoryByName
 
 sslImported = True
@@ -46,13 +45,13 @@ from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
 from flask_session import Session
 from nzbhydra import config, search, infos, database
-from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_details_link, get_nzb_link_and_guid, get_entry_by_id
+from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_nzb_link_and_guid, get_entry_by_id
 from nzbhydra.config import NzbAccessTypeSelection, createSecret
 from nzbhydra.database import IndexerStatus, Indexer, SearchResult
 from nzbhydra.downloader import getInstanceBySetting, getDownloaderInstanceByName
 from nzbhydra.indexers import read_indexers_from_config, clean_up_database
 from nzbhydra.search import SearchRequest
-from nzbhydra.stats import get_avg_indexer_response_times, get_avg_indexer_search_results_share, get_avg_indexer_access_success, get_nzb_downloads, get_search_requests, get_indexer_statuses, getIndexerBasedDownloadStats, getTimeBasedDownloadStats, getTimeBasedSearchStats, getStats
+from nzbhydra.stats import get_nzb_downloads, get_search_requests, get_indexer_statuses, getStats
 from nzbhydra.update import get_rep_version, get_current_version, update, getChangelog, getVersionHistory
 from nzbhydra.searchmodules.newznab import test_connection, check_caps
 from nzbhydra.log import getLogs
@@ -118,6 +117,7 @@ class CustomJSONEncoder(JSONEncoder):
 
 
 app.json_encoder = CustomJSONEncoder
+
 
 @app.after_request
 def disable_caching(response):
@@ -244,7 +244,7 @@ def getUserFromToken():
             logger.warn("Token is invalid, user is unknown")
             return None
     except (ValueError, DecodeError) as e:
-        #logger.warn('Token is invalid') #TODO Rewrite handling for cookies instead of tokens
+        # logger.warn('Token is invalid') #TODO Rewrite handling for cookies instead of tokens
         return None
     except ExpiredSignature:
         logger.warn("Token has expired")
@@ -644,7 +644,6 @@ internalapi_search_args = {
     "loadAll": fields.Boolean(missing=False),
     "indexers": fields.String(missing=None),
 
-
     "minsize": fields.Integer(missing=None),
     "maxsize": fields.Integer(missing=None),
     "minage": fields.Integer(missing=None),
@@ -655,7 +654,7 @@ internalapi_search_args = {
 @app.route('/internalapi/search')
 @requires_auth("main")
 @use_args(internalapi_search_args, locations=['querystring'])
-#@flask_cache.memoize()
+# @flask_cache.memoize()
 def internalapi_search(args):
     logger.debug("Search request with args %s" % args)
     if args["category"].lower() == "ebook":
@@ -941,6 +940,7 @@ internalapi__stats_args = {
     "before": fields.Integer(missing=None)
 }
 
+
 @app.route('/internalapi/getstats')
 @requires_auth("stats")
 @use_args(internalapi__stats_args)
@@ -1206,7 +1206,6 @@ def internalapi_getbackups():
     return jsonify({"backups": getBackupFilenames()})
 
 
-
 @app.route('/internalapi/restorebackup', methods=['POST'])
 @requires_auth("admin")
 def internalapi_restore_backup():
@@ -1225,11 +1224,11 @@ def internalapi_restore_backupfile(args):
     return restoreFromBackupFile(args["filename"])
 
 
-
 internalapi_logerror_args = {
     "error": fields.String(required=True),
     "cause": fields.String(required=True)
 }
+
 
 @app.route('/internalapi/logerror', methods=['GET', 'PUT'])
 @requires_auth("main")
@@ -1264,6 +1263,42 @@ def internalapi_gettheme():
     return send_file("../static/css/bright.css")
 
 
+@app.route("/internalapi/restart")
+@requires_auth("admin", True)
+def internalapi_restart():
+    logger.info("User requested to restart. Sending restart command in 1 second")
+    triggerRestart()
+    return "Restarting"
+
+
+@app.route("/internalapi/deleteloganddb")
+@requires_auth("admin", True)
+def internalapi_restart_and_delete_log_and_database_file():
+    database.truncate_db()
+    log.truncateLogFile()
+    logger.info("Log file and database truncated as requested by user. Sending restart command")
+    triggerRestart()
+    return "Restarting"
+
+
+def triggerRestart():
+    shutdownDb()
+    func = request.environ.get('werkzeug.server.shutdown')
+    if config.settings.main.shutdownForRestart:
+        logger.info("Option to shutdown instead of restart is set. Will shutdown and expect external service manager to restart Hydra...")
+        thread = threading.Thread(target=shutdown)
+    else:
+        thread = threading.Thread(target=restart, args=(func, False))
+    thread.daemon = True
+    thread.start()
+
+
+def shutdownDb():
+    logger.info("Finishing pending database work")
+    database.db.stop()
+    database.db.close()
+
+
 def restart(func=None, afterUpdate=False):
     logger.info("Restarting now")
     logger.debug("Setting env variable RESTART to 1")
@@ -1275,33 +1310,6 @@ def restart(func=None, afterUpdate=False):
     func()
 
 
-@app.route("/internalapi/restart")
-@requires_auth("admin", True)
-def internalapi_restart():
-    logger.info("Finishing pending database work")
-    database.db.stop()
-    database.db.close()
-    logger.info("User requested to restart. Sending restart command in 1 second")
-    func = request.environ.get('werkzeug.server.shutdown')
-    thread = threading.Thread(target=restart, args=(func, False))
-    thread.daemon = True
-    thread.start()
-    return "Restarting"
-
-
-@app.route("/internalapi/deleteloganddb")
-@requires_auth("admin", True)
-def internalapi_restart_and_delete_log_and_database_file():
-    database.truncate_db()
-    log.truncateLogFile()
-    logger.info("Log file and database truncated as requested by user. Sending restart command")
-    func = request.environ.get('werkzeug.server.shutdown')
-    thread = threading.Thread(target=restart, args=(func, False))
-    thread.daemon = True
-    thread.start()
-    return "Restarting"
-
-
 def shutdown():
     logger.debug("Sending shutdown signal to server")
     sleep(1)
@@ -1311,9 +1319,7 @@ def shutdown():
 @app.route("/internalapi/shutdown")
 @requires_auth("admin", True)
 def internalapi_shutdown():
-    logger.info("Finishing pending database work")
-    database.db.stop()
-    database.db.close()
+    shutdownDb()
     logger.info("Shutting down due to external request")
     thread = threading.Thread(target=shutdown)
     thread.daemon = True

@@ -4637,6 +4637,15 @@ function ConfigFields($injector) {
                                 type: 'switch',
                                 label: 'Open browser on startup'
                             }
+                        },
+                        {
+                            key: 'shutdownForRestart',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Shutdown to restart',
+                                help: 'When run with a service manager which automatically restarts Hydra enable this to prevent duplicate instances'
+                            }
                         }
                     ]
                 }
