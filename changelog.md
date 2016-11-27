@@ -4,7 +4,9 @@
 ### 0.2.171
 Changed: Updated BeautifulSoup library which will hopefully fix conflicts with newer linux installations.
 
-Changed: Search result IDs are now derived from their actual indexer search results. That means that when a search result is found, deleted from the database and found again it will have the same ID both times. This should ensure that CP doesn't find the same result after 7+ days and thinks it's a new one. All existing search result IDs are invalid. 
+Changed: Search result IDs are now derived from their actual indexer search results. That means that when a search result is found, deleted from the database and found again it will have the same ID both times. This should ensure that CP doesn't find the same result after 7+ days and thinks it's a new one. All existing search result IDs are invalid.
+ 
+Fixed: Downloader icons wouldn't update according to status.
 
 ### 0.2.170
 Added: Button to force an update from GitHub.
