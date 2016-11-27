@@ -85,10 +85,14 @@ function StatsController($scope, $filter, StatsService, blockUI, stats) {
         $scope.resultsSharesChart.options.chart.height = avgResponseTimesChartHeight;
 
         $scope.downloadsPerHourOfDayChart = getChart("discreteBarChart", $scope.downloadsPerHourOfDay, "hour", "count", "Hour of day", 'Downloads');
+        $scope.downloadsPerHourOfDayChart.options.chart.xAxis.rotateLabels = 0;
+
         $scope.downloadsPerDayOfWeekChart = getChart("discreteBarChart", $scope.downloadsPerDayOfWeek, "day", "count", "Day of week", 'Downloads');
         $scope.downloadsPerDayOfWeekChart.options.chart.xAxis.rotateLabels = 0;
 
         $scope.searchesPerHourOfDayChart = getChart("discreteBarChart", $scope.searchesPerHourOfDay, "hour", "count", "Hour of day", 'Searches');
+        $scope.searchesPerHourOfDayChart.options.chart.xAxis.rotateLabels = 0;
+
         $scope.searchesPerDayOfWeekChart = getChart("discreteBarChart", $scope.searchesPerDayOfWeek, "day", "count", "Day of week", 'Searches');
         $scope.searchesPerDayOfWeekChart.options.chart.xAxis.rotateLabels = 0;
 
