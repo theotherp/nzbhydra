@@ -9,7 +9,6 @@ import re
 from sqlite3 import OperationalError
 
 import arrow
-import requests
 from builtins import *
 from flask import request
 from peewee import fn, OperationalError
@@ -286,6 +285,7 @@ class SearchModule(object):
         if indexer_status.level > 0:
             indexer_status.level -= 1
         indexer_status.reason = None
+        indexer_status.disabled_permanently = False
         indexer_status.disabled_until = arrow.get(0)  # Because I'm too dumb to set it to None/null
 
         if doSaveIndexerStatus:
@@ -311,12 +311,15 @@ class SearchModule(object):
         indexer_status.reason = reason  # Overwrite the last reason if one is set, should've been logged anyway
         if disable_permanently:
             indexer_status.disabled_permanently = True
+            self.info("Disabling indexer permanently until reenabled by user because the authentication failed")
         else:
             indexer_status.level = min(len(self.disable_periods) - 1, indexer_status.level + 1)
-            indexer_status.disabled_until = arrow.utcnow().replace(minutes=self.disable_periods[indexer_status.level])
+            indexer_status.disabled_until = arrow.utcnow().replace(minutes=+self.disable_periods[indexer_status.level])
+            self.info("Disabling indexer temporarily due to access problems. Will be reenabled %s" % indexer_status.disabled_until.humanize())
 
         if saveIndexerStatus:
             self.saveIndexerStatus(indexer_status)
+
         return indexer_status
 
     def get(self, url, timeout=None, cookies=None):

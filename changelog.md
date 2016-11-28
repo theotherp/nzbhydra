@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.175
+Fixed: Don't display indexers as disabled if they're not. Also log a bit more infos when and why a disabler gets disabled and when it will be reenabled. See [#447](https://github.com/theotherp/nzbhydra/issues/445).
+
 ### 0.2.174
 Fixed: What was supposed to fix duplicate indexers in the index statuses made it worse. Oops. See [#445](https://github.com/theotherp/nzbhydra/issues/445).
 
