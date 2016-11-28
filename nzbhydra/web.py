@@ -1316,7 +1316,7 @@ def restart(func=None, afterUpdate=False):
 def shutdown():
     logger.debug("Sending shutdown signal to server")
     sleep(1)
-    os._exit(0)
+    os._exit(6)
 
 
 @app.route("/internalapi/shutdown")
