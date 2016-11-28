@@ -1289,7 +1289,7 @@ def triggerRestart():
     func = request.environ.get('werkzeug.server.shutdown')
     if config.settings.main.shutdownForRestart:
         logger.info("Option to shutdown instead of restart is set. Will shutdown and expect external service manager to restart Hydra...")
-        thread = threading.Thread(target=shutdown)
+        thread = threading.Thread(target=shutdownforrestart)
     else:
         thread = threading.Thread(target=restart, args=(func, False))
     thread.daemon = True
@@ -1317,6 +1317,12 @@ def shutdown():
     logger.debug("Sending shutdown signal to server")
     sleep(1)
     os._exit(6)
+
+    
+def shutdownforrestart():
+    logger.debug("Sending restart signal to server")
+    sleep(1)
+    os._exit(0)    
 
 
 @app.route("/internalapi/shutdown")
