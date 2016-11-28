@@ -2562,8 +2562,8 @@ angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
 
-function SearchController($scope, $http, $stateParams, $state, SearchService, focus, ConfigService, CategoriesService, blockUI, $element) {
-    
+function SearchController($scope, $http, $stateParams, $state, $window, $filter, SearchService, focus, ConfigService, CategoriesService, blockUI, $element, ModalService) {
+
     function getNumberOrUndefined(number) {
         if (_.isUndefined(number) || _.isNaN(number) || number == "") {
             return undefined;
@@ -2578,8 +2578,8 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
     //Fill the form with the search values we got from the state params (so that their values are the same as in the current url)
     $scope.mode = $stateParams.mode;
-    $scope.categories = _.filter(CategoriesService.getAll(), function(c) { 
-        return c.mayBeSelected && c.ignoreResults != "internal" && c.ignoreResults != "always"; 
+    $scope.categories = _.filter(CategoriesService.getAll(), function (c) {
+        return c.mayBeSelected && c.ignoreResults != "internal" && c.ignoreResults != "always";
     });
     if (angular.isDefined($stateParams.category) && $stateParams.category) {
         $scope.category = CategoriesService.getByName($stateParams.category);
@@ -2609,11 +2609,37 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
 
     var safeConfig = ConfigService.getSafe();
 
+    //Doesn't belong here but whatever
+    if (ConfigService.getSafe().pollShown == 0) {
+        ModalService.open("User query",
+            "Dear user, I would like to ask you to answer a short poll about NZB Hydra. It is absolutely anonymous and will not take more than a couple of minutes. You would help me a lot!", {
+                yes: {
+                    onYes: function () {
+                        $window.open($filter("dereferer")("https://www.surveymonkey.com/r/HWXLCHM"), "_blank");
+                        $http.get("internalapi/pollshown", {params: {selection: 1}});
+                    },
+                    text: "Yes, I want to help. Take me there."
+                },
+                cancel: {
+                    onCancel: function () {
+                        $http.get("internalapi/pollshown", {params: {selection: 0}});
+                    },
+                    text: "Not now"
+                },
+                no: {
+                    onNo: function () {
+                        $http.get("internalapi/pollshown", {params: {selection: -1}});
+                    },
+                    text: "Nah, feck off"
+                }
+            });
+    }
+
 
     $scope.typeAheadWait = 300;
     $scope.selectedItem = "";
     $scope.autocompleteLoading = false;
-    $scope.isAskById = $scope.category.supportsById; 
+    $scope.isAskById = $scope.category.supportsById;
     $scope.isById = {value: true}; //If true the user wants to search by id so we enable autosearch. Was unable to achieve this using a simple boolean
     $scope.availableIndexers = [];
     $scope.autocompleteClass = "autocompletePosterMovies";
@@ -2625,7 +2651,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         $scope.isAskById = $scope.category.supportsById;
 
         focus('focus-query-box');
-        
+
         //Hacky way of triggering the autocomplete loading
         var searchModel = $element.find("#searchfield").controller("ngModel");
         if (angular.isDefined(searchModel.$viewValue)) {
@@ -2648,8 +2674,8 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         }
 
         $scope.availableIndexers = getAvailableIndexers();
-        
-        
+
+
     };
 
 
@@ -2690,7 +2716,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
             return {};
         }
     };
-    
+
 
     $scope.startSearch = function () {
         blockUI.start("Searching...");
@@ -2708,12 +2734,12 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
             $scope.tvdbid = undefined;
         });
     };
-    
+
     function getSelectedIndexers() {
         var activatedIndexers = _.filter($scope.availableIndexers).filter(function (indexer) {
-            return indexer.activated ;
+            return indexer.activated;
         });
-            return _.pluck(activatedIndexers, "name").join("|");
+        return _.pluck(activatedIndexers, "name").join("|");
     }
 
 
@@ -2730,7 +2756,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         } else {
             stateParams.mode = "search";
         }
-        
+
         stateParams.tmdbid = $scope.tmdbid;
         stateParams.tvdbid = $scope.tvdbid;
         stateParams.title = $scope.title;
@@ -2743,7 +2769,7 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         stateParams.maxage = $scope.maxage;
         stateParams.category = $scope.category.name;
         stateParams.indexers = encodeURIComponent(getSelectedIndexers());
-        
+
         $state.go("root.search", stateParams, {inherit: false, notify: true, reload: true});
     };
 
@@ -2759,8 +2785,8 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         $scope.query = "";
         $scope.goToSearchUrl();
     };
-    
-    $scope.startQuerySearch = function() {
+
+    $scope.startQuerySearch = function () {
         //Reset values because they might've been set from the last search
         $scope.title = undefined;
         $scope.tmdbid = undefined;
@@ -2776,11 +2802,11 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
     $scope.seriesSelected = function () {
         return $scope.category.name.indexOf("tv") > -1;
     };
-    
-    $scope.toggleIndexer = function(indexer) {
+
+    $scope.toggleIndexer = function (indexer) {
         $scope.indexers[indexer] = !$scope.indexers[indexer]
     };
-    
+
 
     function isIndexerPreselected(indexer) {
         if (angular.isUndefined($scope.indexers)) {
@@ -2788,40 +2814,40 @@ function SearchController($scope, $http, $stateParams, $state, SearchService, fo
         } else {
             return _.contains($scope.indexers, indexer.name);
         }
-        
+
     }
 
 
     function getAvailableIndexers() {
         return _.chain(safeConfig.indexers).filter(function (indexer) {
             return indexer.enabled && indexer.showOnSearch && (angular.isUndefined(indexer.categories) || indexer.categories.length == 0 || $scope.category.name == "all" || indexer.categories.indexOf($scope.category.name) > -1);
-        }).sortBy(function(indexer) {
+        }).sortBy(function (indexer) {
             return indexer.name.toLowerCase();
         })
             .map(function (indexer) {
                 return {name: indexer.name, activated: isIndexerPreselected(indexer), categories: indexer.categories};
             }).value();
     }
-    
-    $scope.toggleAllIndexers = function() {
-        angular.forEach($scope.availableIndexers, function(indexer) {
-            indexer.activated = !indexer.activated; 
+
+    $scope.toggleAllIndexers = function () {
+        angular.forEach($scope.availableIndexers, function (indexer) {
+            indexer.activated = !indexer.activated;
         })
     };
 
-    $scope.searchInputChanged = function() {
+    $scope.searchInputChanged = function () {
         $scope.$broadcast("searchInputChanged", $scope.query != $stateParams.query ? $scope.query : null, $scope.minage, $scope.maxage, $scope.minsize, $scope.maxsize);
     };
 
     $scope.availableIndexers = getAvailableIndexers();
-    
+
 
     if ($scope.mode) {
         $scope.startSearch();
     }
-    
+
 }
-SearchController.$inject = ["$scope", "$http", "$stateParams", "$state", "SearchService", "focus", "ConfigService", "CategoriesService", "blockUI", "$element"];
+SearchController.$inject = ["$scope", "$http", "$stateParams", "$state", "$window", "$filter", "SearchService", "focus", "ConfigService", "CategoriesService", "blockUI", "$element", "ModalService"];
 
 angular
     .module('nzbhydraApp')

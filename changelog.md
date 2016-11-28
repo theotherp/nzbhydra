@@ -2,6 +2,12 @@
 
 ----------
 ### 0.2.175
+Added: The search page will show a popup asking you to answer a few questions in a survey. The survey is completely anonymous (I disabled IP address logging) and only about Hydra. 
+    It would help me a lot if you could participate, it will take only a few minutes. If you'd rather participate from another computer or want the URL for some reason without having to visit the page: https://www.surveymonkey.com/r/HWXLCHM
+      Thank you.
+
+Added: When "Shutdown" to restart is enabled Hydra will send exit code 6 when shutting down. Together with the correct configuration this allows linux service managers to recognize that the instance did not crash and should not be restarted. Thank you, MarMed. [#446](https://github.com/theotherp/nzbhydra/pull/446)
+
 Fixed: Don't display indexers as disabled if they're not. Also log a bit more infos when and why a disabler gets disabled and when it will be reenabled. See [#447](https://github.com/theotherp/nzbhydra/issues/445).
 
 ### 0.2.174

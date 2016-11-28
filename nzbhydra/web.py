@@ -1289,7 +1289,7 @@ def triggerRestart():
     func = request.environ.get('werkzeug.server.shutdown')
     if config.settings.main.shutdownForRestart:
         logger.info("Option to shutdown instead of restart is set. Will shutdown and expect external service manager to restart Hydra...")
-        thread = threading.Thread(target=shutdownforrestart)
+        thread = threading.Thread(target=shutdown)
     else:
         thread = threading.Thread(target=restart, args=(func, False))
     thread.daemon = True
@@ -1316,13 +1316,11 @@ def restart(func=None, afterUpdate=False):
 def shutdown():
     logger.debug("Sending shutdown signal to server")
     sleep(1)
-    os._exit(6)
-
-    
-def shutdownforrestart():
-    logger.debug("Sending restart signal to server")
-    sleep(1)
-    os._exit(0)    
+    if config.settings.main.shutdownForRestart:
+        logger.info('Shutting down with exit code 6 because "Shutdown to restart" is enabled')
+        os._exit(6)
+    else:
+        os._exit(0)
 
 
 @app.route("/internalapi/shutdown")
@@ -1355,6 +1353,20 @@ def internalapi_update():
 def internalapi_teststuff():
     # Used to trigger execution of test code
     logger.error(u"äöü")
+    return "OK"
+
+
+internalapi__pollshown_args = {
+    "selection": fields.Integer(required=True)  # the name
+}
+
+
+@requires_auth("main")
+@app.route("/internalapi/pollshown")
+@use_args(internalapi__pollshown_args)
+def internalapi_pollshown(args):
+    config.settings.main.pollShown = args["selection"]
+    config.save()
     return "OK"
 
 

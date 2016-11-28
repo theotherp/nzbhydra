@@ -151,6 +151,7 @@ initialConfig = {
         "repositoryBase": "https://github.com/theotherp",
         "runThreaded": True,
         "secret": None,
+        "pollShown": 0,
         "shutdownForRestart": False,
         "ssl": False,
         "sslcert": None,
@@ -925,5 +926,6 @@ def getSafeConfig():
         "categories": categories.getCategories(),
         "downloaders": [{"enabled": x.enabled, "name": x.name, "type": x.type, "iconCssClass": x.iconCssClass, "defaultCategory": x.defaultCategory if hasattr(x, "defaultCategory") else None} for x in settings["downloaders"]],
         "authType": settings["auth"]["authType"],
-        "dereferer": settings["main"]["dereferer"]
+        "dereferer": settings["main"]["dereferer"],
+        "pollShown": settings["main"]["pollShown"]
     }
