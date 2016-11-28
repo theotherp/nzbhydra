@@ -6,7 +6,7 @@ After=network.target
 [Service]
 User=ChangeMe
 Group=ChangeMe
-Type=simple
+Type=forking
 #
 # If you're using a Linux distribution that ships with an older version of Python
 # then you'll need to perform an "altinstall" of Python to a version greater then 
@@ -18,7 +18,7 @@ Type=simple
 # If you're not using a Red Hat based distribution, then you only need to change
 # that path to NZBHydra in the following line:
 #
-ExecStart=python /path-to/nzbhydra/nzbhydra.py --nobrowser
+ExecStart=python /path-to/nzbhydra/nzbhydra.py --daemon --nobrowser --pidfile /path-to/nzbhydra/nzbhydra.pid
 # If you're using a Red Hat based distribution then you'll need to comment out the
 # above ExecStart line to avoid service conflicts.
 #
@@ -30,7 +30,8 @@ ExecStart=python /path-to/nzbhydra/nzbhydra.py --nobrowser
 PIDFile=/path-to/nzbhydra/nzbhydra.pid
 
 KillMode=process
-Restart=on-failure
-
+Restart=on-success
+SuccessExitStatus=6
+RestartPreventExitStatus=6
 [Install]
 WantedBy=multi-user.target
