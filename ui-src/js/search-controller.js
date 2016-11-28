@@ -52,7 +52,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
     //Doesn't belong here but whatever
     if (ConfigService.getSafe().pollShown == 0) {
         ModalService.open("User query",
-            "Dear user, I would like to ask you to answer a short poll about NZB Hydra. It is absolutely anonymous and will not take more than a couple of minutes. You would help me a lot!", {
+            "Dear user, I would like to ask you to answer a short query about NZB Hydra. It is absolutely anonymous and will not take more than a couple of minutes. You would help me a lot!", {
                 yes: {
                     onYes: function () {
                         $window.open($filter("dereferer")("https://www.surveymonkey.com/r/HWXLCHM"), "_blank");
