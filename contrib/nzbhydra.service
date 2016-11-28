@@ -31,6 +31,7 @@ PIDFile=/path-to/nzbhydra/nzbhydra.pid
 
 KillMode=process
 Restart=on-success
-
+SuccessExitStatus=6
+RestartPreventExitStatus=6
 [Install]
 WantedBy=multi-user.target
