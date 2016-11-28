@@ -8,7 +8,7 @@ Added: The search page will show a popup asking you to answer a few questions in
 
 Added: When "Shutdown" to restart is enabled Hydra will send exit code 6 when shutting down. Together with the correct configuration this allows linux service managers to recognize that the instance did not crash and should not be restarted. Thank you, MarMed. [#446](https://github.com/theotherp/nzbhydra/pull/446)
 
-Fixed: Don't display indexers as disabled if they're not. Also log a bit more infos when and why a disabler gets disabled and when it will be reenabled. See [#447](https://github.com/theotherp/nzbhydra/issues/445).
+Fixed: Don't display indexers as disabled if they're not. Also log a bit more infos when and why a disabler gets disabled and when it will be reenabled. See [#447](https://github.com/theotherp/nzbhydra/issues/447).
 
 ### 0.2.174
 Fixed: What was supposed to fix duplicate indexers in the index statuses made it worse. Oops. See [#445](https://github.com/theotherp/nzbhydra/issues/445).
