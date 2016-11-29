@@ -430,7 +430,7 @@ def render_search_results_for_api(search_results, total, offset, output="xml"):
                               "total": str(total)
                           }
                       },
-                      "items": items
+                      "item": items
                   }
                   }
         return result
