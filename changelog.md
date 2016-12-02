@@ -1,6 +1,12 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.176
+Misc: Thank you everybody for answering the survey, I really appreciate it. Unfortunately I'm an idiot and SurveyMonkey only shows me the first 100 results for the free plan
+and I'm not paying 40€ to upgrade. So... if you were one of the first 100 your voice will be heard, otherwise not - so sorry about that.
+Anyway, I'll collect what I got and especially check your comments. I'll make a collection issue on GitHub to answer all questions and requests that I can see. I might make a
+new survey when I found a provider that doesn't want heaps of money...
+
 ### 0.2.175
 Added: The search page will show a popup asking you to answer a few questions in a survey. The survey is completely anonymous (I disabled IP address logging) and only about Hydra. 
     It would help me a lot if you could participate, it will take only a few minutes. If you'd rather participate from another computer or want the URL for some reason without having to visit the page: [https://www.surveymonkey.com/r/HWXLCHM](https://www.surveymonkey.com/r/HWXLCHM)

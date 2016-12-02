@@ -2609,34 +2609,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
 
     var safeConfig = ConfigService.getSafe();
 
-    //Doesn't belong here but whatever
-    if (ConfigService.getSafe().pollShown == 0) {
-        ModalService.open("User query",
-            "Dear user, I would like to ask you to answer a short query about NZB Hydra. It is absolutely anonymous and will not take more than a couple of minutes. You would help me a lot!", {
-                yes: {
-                    onYes: function () {
-                        $window.open($filter("dereferer")("https://www.surveymonkey.com/r/HWXLCHM"), "_blank");
-                        $http.get("internalapi/pollshown", {params: {selection: 1}});
-                        ConfigService.getSafe().pollShown = 1;
-                    },
-                    text: "Yes, I want to help. Take me there."
-                },
-                cancel: {
-                    onCancel: function () {
-                        $http.get("internalapi/pollshown", {params: {selection: 0}});
-                        ConfigService.getSafe().pollShown = 0;
-                    },
-                    text: "Not now"
-                },
-                no: {
-                    onNo: function () {
-                        $http.get("internalapi/pollshown", {params: {selection: -1}});
-                        ConfigService.getSafe().pollShown = -1;
-                    },
-                    text: "Nah, feck off"
-                }
-            });
-    }
+
 
 
     $scope.typeAheadWait = 300;
