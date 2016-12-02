@@ -30,7 +30,7 @@ ExecStart=python /path-to/nzbhydra/nzbhydra.py --daemon --nobrowser --pidfile /p
 PIDFile=/path-to/nzbhydra/nzbhydra.pid
 
 KillMode=process
-Restart=on-success
+Restart=always
 #Enable "Shutdown to restart" in the settings. To restart Hydra will actually shut down and let the service manager do the work.
 #To be able to actually shut down Hydra will use exit 6 to signal the service manager that it shouldn't restart this instance.
 SuccessExitStatus=6
