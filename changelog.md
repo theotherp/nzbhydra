@@ -3,7 +3,7 @@
 ----------
 ### 0.2.176
 Misc: Thank you everybody for answering the survey, I really appreciate it. Unfortunately I'm an idiot and SurveyMonkey only shows me the first 100 results for the free plan
-and I'm not paying 40€ to upgrade. So... if you were one of the first 100 your voice will be heard, otherwise not - so sorry about that.
+and I'm not paying 40 euros to upgrade. So... if you were one of the first 100 your voice will be heard, otherwise not - so sorry about that.
 Anyway, I'll collect what I got and especially check your comments. I'll make a collection issue on GitHub to answer all questions and requests that I can see. I might make a
 new survey when I found a provider that doesn't want heaps of money...
 
