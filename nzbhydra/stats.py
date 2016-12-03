@@ -103,7 +103,7 @@ def get_avg_indexer_search_results_share(afterSql, beforeSql):
             WHERE ps.search_id IN %s) AS sumAllResults
              """
             % (innerSelect, p.id, innerSelect)).fetchone()
-        avgResultsShare = int(result[0]) if result is not None and result[0] is not None else "N/A"
+        avgResultsShare = int(result[0]) if result is not None and len(result) > 0 and result[0] is not None else "N/A"
 
         result = database.db.execute_sql(
             """
@@ -122,7 +122,7 @@ def get_avg_indexer_search_results_share(afterSql, beforeSql):
             % {"id": p.id, "after": afterSql, "before": beforeSql}).fetchone()
         if p.name in ["NZBIndex", "Binsearch", "NZBClub"]:
             avgUniqueResults = "-"
-        elif result is not None and result[0] is not None:
+        elif result is not None and len(result) > 0 and result[0] is not None:
             avgUniqueResults = int(result[0])
         else:
             avgUniqueResults = "N/A"
