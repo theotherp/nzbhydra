@@ -137,6 +137,7 @@ initialConfig = {
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
+        "firstStart": arrow.utcnow().timestamp,
         "flaskReloader": False,
         "gitPath": None,
         "host": "0.0.0.0",
@@ -927,5 +928,6 @@ def getSafeConfig():
         "downloaders": [{"enabled": x.enabled, "name": x.name, "type": x.type, "iconCssClass": x.iconCssClass, "defaultCategory": x.defaultCategory if hasattr(x, "defaultCategory") else None} for x in settings["downloaders"]],
         "authType": settings["auth"]["authType"],
         "dereferer": settings["main"]["dereferer"],
-        "pollShown": settings["main"]["pollShown"]
+        "pollShown": settings["main"]["pollShown"],
+        "firstStart": settings["main"]["firstStart"]
     }

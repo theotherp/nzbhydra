@@ -2,6 +2,12 @@
 
 ----------
 ### 0.2.177
+
+Misc: I made a new survey with Google Forms (see below). If you chose to ignore the last one you will not be asked again. 
+    Otherwise a new popup will ask you take part in the new survey. Either way you can visit it here: [Google Forms survey](https://goo.gl/forms/F3PwtEor2krBxLcR2).
+     If you're privacy minded you can open that link in a private browser window.
+     I also made sure that new users will not immediately be asked to take part in the survey. Instead the popup will appear after three days.
+
 Changed: Age of search results is shown more precisely (minutes, hours, days). See [#460](https://github.com/theotherp/nzbhydra/issues/460).
 
 Added: Send indexer name, host and score with API search results. Useful for tools and scripts handling them. See [#455](https://github.com/theotherp/nzbhydra/issues/455).

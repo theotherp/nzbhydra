@@ -49,7 +49,42 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
 
     var safeConfig = ConfigService.getSafe();
 
-
+    //Doesn't belong here but whatever
+    var firstStartThreeDaysAgo = ConfigService.getSafe().firstStart < moment().subtract(3, "days").unix();
+    var doShowSurvey = (ConfigService.getSafe().pollShown == 0 && firstStartThreeDaysAgo) || ConfigService.getSafe().pollShown == 1;
+    if (doShowSurvey) {
+        var message;
+        if (ConfigService.getSafe().pollShown == 0) {
+            message = "Dear user, I would like to ask you to answer a short query about NZB Hydra. It is absolutely anonymous and will not take more than a couple of minutes. You would help me a lot!";
+        } else {
+            message = "Dear user, thank you for answering my last survey. Unfortunately I'm an idiot and didn't know that SurveyMonkey would only show me the first 100 results. Please be so kind and answer the new survey :-)";
+        }
+        ModalService.open("User query",
+            message, {
+                yes: {
+                    onYes: function () {
+                        $window.open($filter("dereferer")("https://goo.gl/forms/F3PwtEor2krBxLcR2"), "_blank");
+                        $http.get("internalapi/pollshown", {params: {selection: 1}});
+                        ConfigService.getSafe().pollShown = 2;
+                    },
+                    text: "Yes, I want to help. Take me there."
+                },
+                cancel: {
+                    onCancel: function () {
+                        $http.get("internalapi/pollshown", {params: {selection: 0}});
+                        ConfigService.getSafe().pollShown = 0;
+                    },
+                    text: "Not now. Remind me."
+                },
+                no: {
+                    onNo: function () {
+                        $http.get("internalapi/pollshown", {params: {selection: -1}});
+                        ConfigService.getSafe().pollShown = -1;
+                    },
+                    text: "Nah, feck off!"
+                }
+            });
+    }
 
 
     $scope.typeAheadWait = 300;
