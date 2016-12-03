@@ -3,49 +3,19 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from arrow.parser import ParserError
-from future import standard_library
-
-from nzbhydra import config
-
-#standard_library.install_aliases()
-from builtins import *
-import calendar
-import datetime
-import email
 import logging
-import re
-import time
 import xml.etree.ElementTree as ET
-import arrow
-from furl import furl
-import requests
-import concurrent
-from requests.exceptions import RequestException, HTTPError
 
-from nzbhydra.categories import getByNewznabCats, getCategoryByName, getCategoryByAnyInput
-from nzbhydra.config import getCategorySettingByName
+import arrow
+from builtins import *
+
+from nzbhydra.categories import getByNewznabCats
+from nzbhydra.exceptions import IndexerResultParsingException
 from nzbhydra.nzb_search_result import NzbSearchResult
-from nzbhydra.datestuff import now
-from nzbhydra import infos
-from nzbhydra.exceptions import IndexerAuthException, IndexerAccessException, IndexerResultParsingException
-from nzbhydra.search_module import SearchModule, IndexerProcessingResult
+from nzbhydra.search_module import IndexerProcessingResult
 from nzbhydra.searchmodules import newznab
 
 logger = logging.getLogger('root')
-
-
-def get_age_from_pubdate(pubdate):
-    timepub = datetime.datetime.fromtimestamp(email.utils.mktime_tz(email.utils.parsedate_tz(pubdate)))
-    timenow = now()
-    dt = timenow - timepub
-    epoch = calendar.timegm(time.gmtime(email.utils.mktime_tz(email.utils.parsedate_tz(pubdate))))
-    pubdate_utc = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(email.utils.mktime_tz(email.utils.parsedate_tz(pubdate))))
-    age_days = int(dt.days)
-    return epoch, pubdate_utc, int(age_days)
-
-
-
 
 
 class Jackett(newznab.NewzNab):
@@ -143,10 +113,7 @@ class Jackett(newznab.NewzNab):
         
         entry.pubDate = item.find("pubDate").text
         pubDate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
-        entry.epoch = pubDate.timestamp
-        entry.pubdate_utc = str(pubDate)
-        entry.age_days = (arrow.utcnow() - pubDate).days
-        entry.precise_date = True 
+        self.getDates(entry, pubDate)
         entry.downloadType = "torrent"
         # For some trackers several results with the same ID are returned (e.g. PTP so we need to make sure the ID is unique)
         entry.indexerguid += str(entry.size)

@@ -97,11 +97,8 @@ class Anizb(SearchModule):
             entry.indexerguid = elem.find("guid").text 
             entry.details_link = entry.link.replace("dl", "info")
             pubdate = arrow.get(pubdate.text, 'ddd, DD MMM YYYY HH:mm:ss Z')
-            entry.epoch = pubdate.timestamp
-            entry.pubdate_utc = str(pubdate)
-            entry.pubDate = pubdate
-            entry.age_days = (arrow.utcnow() - pubdate).days
-            
+            self.getDates(entry, pubdate)
+
             accepted, reason, ri = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:
                 entries.append(entry)

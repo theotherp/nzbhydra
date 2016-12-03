@@ -61,6 +61,7 @@ class NzbSearchResultSchema(Schema):
     link = fields.String()
     epoch = fields.Integer()
     pubdate_utc = fields.String()
+    age = fields.String()
     age_days = fields.Integer()
     age_precise = fields.Boolean()
     indexer = fields.String()
@@ -158,6 +159,9 @@ def transform_results(results, external):
             i.attributes.append({"name": "category", "value": category})
         
         i.category = i.category.pretty
+
+
+
         transformed.append(i)
 
     return transformed

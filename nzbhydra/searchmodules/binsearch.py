@@ -241,10 +241,7 @@ class Binsearch(SearchModule):
             pubdate = re.compile(r"(\d{1,2}\-\w{3}\-\d{4})").search(row.text).group(1)
             pubdate = arrow.get(pubdate, "DD-MMM-YYYY")
             entry.epoch = pubdate.timestamp
-            entry.pubdate_utc = str(pubdate)
-            entry.age_days = (arrow.utcnow() - pubdate).days
-            entry.age_precise = False
-            entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
+            self.getDates(entry, pubdate, False)
         except Exception as e:
             self.error("Unable to find age in %s" % row.find_all("td")[-1:][0].text)
             raise IndexerResultParsingRowException("Unable to parse age")

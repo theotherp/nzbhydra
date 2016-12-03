@@ -234,8 +234,10 @@ class NzbIndex(SearchModule):
             entry.epoch = pubdate.timestamp
             entry.pubdate_utc = str(pubdate)
             entry.age_days = (arrow.utcnow() - pubdate).days
+            entry.age = str(entry.age_days) + "d"
             entry.age_precise = True  # Precise to 2.4 hours, should be enough for duplicate detection
             entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
+
         else:
             self.error("Found no age info in %s" % str(agetd))
             raise IndexerResultParsingRowException("Unable to parse age")

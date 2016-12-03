@@ -127,6 +127,7 @@ class Womble(SearchModule):
             entry.pubdate_utc = str(pubdate)
             entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
             entry.age_days = (arrow.utcnow() - pubdate).days
+            entry.age = (arrow.utcnow() - pubdate).days
 
             accepted, reason, ri = self.accept_result(entry, searchRequest, self.supportedFilters)
             if accepted:

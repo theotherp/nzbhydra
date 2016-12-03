@@ -130,7 +130,7 @@ def disable_caching(response):
     response.headers["Expires"] = datetime.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
     response.cache_control.max_age = 0
     user = getattr(g, "user", None)
-    if user is not None:
+    if user is not None and user != False:
         response.headers["Hydra-MaySeeAdmin"] = user["maySeeAdmin"]
         response.headers["Hydra-MaySeeStats"] = user["maySeeStats"]
         response.headers["Hydra-Username"] = user["username"]
@@ -259,7 +259,11 @@ def getUserFromBasicAuth():
     for u in config.settings.auth.users:
         if auth.username == u.username:
             if auth.password != u.password:
-                logger.warn("Login attempt with user %s and invalid password" % u.username)
+                if config.settings.main.logging.logIpAddresses:
+                    logger.warn("Login attempt with user %s and invalid password from IP %s" % (u.username, getIp()))
+                else:
+                    logger.info("Successful login from <HIDDENIP> after failed login tries. Resetting failed login counter.")
+
                 return False
             return u
     return None
@@ -289,7 +293,7 @@ def isAllowed(authType):
     # No user found in token. Check if basic auth header is set
     if user is None:
         user = getUserFromBasicAuth()
-    if user is None:
+    if user is None or user is False:
         logger.warn("Unable to find authorization information")
         return False
     g.user = user

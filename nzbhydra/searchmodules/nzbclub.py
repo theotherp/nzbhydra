@@ -264,10 +264,7 @@ class NzbClub(SearchModule):
         try:
 
             pubdate = arrow.get(pubdate.text, 'ddd, DD MMM YYYY HH:mm:ss Z')
-            entry.epoch = pubdate.timestamp
-            entry.pubdate_utc = str(pubdate)
-            entry.age_days = (arrow.utcnow() - pubdate).days
-            entry.pubDate = pubdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
+            self.getDates(entry, pubdate)
         except Exception:
             self.error("Unable to parse pubdate %s" % pubdate.text)
             raise IndexerResultParsingRowException("Unable to parse date")

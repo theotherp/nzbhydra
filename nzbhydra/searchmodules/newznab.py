@@ -3,42 +3,27 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from arrow.parser import ParserError
-
-from nzbhydra import config
-# standard_library.install_aliases()
-from builtins import *
-import calendar
-import datetime
-import email
 import logging
 import re
-import time
 import xml.etree.ElementTree as ET
+
 import arrow
-from furl import furl
 import concurrent
+from arrow.parser import ParserError
+from builtins import *
+from furl import furl
 from requests.exceptions import RequestException, HTTPError
 
+from nzbhydra import config
+from nzbhydra import infos
 from nzbhydra import webaccess
 from nzbhydra.categories import getByNewznabCats, getCategoryByAnyInput, getNumberOfSelectableCategories
-from nzbhydra.nzb_search_result import NzbSearchResult
-from nzbhydra.datestuff import now
-from nzbhydra import infos
 from nzbhydra.exceptions import IndexerAuthException, IndexerAccessException, IndexerResultParsingException
+from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule, IndexerProcessingResult
 
 logger = logging.getLogger('root')
 
-
-def get_age_from_pubdate(pubdate):
-    timepub = datetime.datetime.fromtimestamp(email.utils.mktime_tz(email.utils.parsedate_tz(pubdate)))
-    timenow = now()
-    dt = timenow - timepub
-    epoch = calendar.timegm(time.gmtime(email.utils.mktime_tz(email.utils.parsedate_tz(pubdate))))
-    pubdate_utc = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(email.utils.mktime_tz(email.utils.parsedate_tz(pubdate))))
-    age_days = int(dt.days)
-    return epoch, pubdate_utc, int(age_days)
 
 
 def check_auth(body, indexer):
@@ -605,10 +590,7 @@ class NewzNab(SearchModule):
         if usenetdate is None:
             # Not provided by attributes, use pubDate instead
             usenetdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
-        entry.epoch = usenetdate.timestamp
-        entry.pubdate_utc = str(usenetdate)
-        entry.age_days = (arrow.utcnow() - usenetdate).days
-        entry.precise_date = True
+        self.getDates(entry, usenetdate)
         entry.category = getByNewznabCats(categories)
         return entry
 

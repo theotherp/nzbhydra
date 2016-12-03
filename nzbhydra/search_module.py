@@ -472,6 +472,21 @@ class SearchModule(object):
         except (TypeError, ValueError):
             return False
 
+    def getDates(self, entry, usenetdate, preciseDate=True):
+        entry.epoch = usenetdate.timestamp
+        entry.age = usenetdate.humanize()
+        entry.pubdate_utc = str(usenetdate)
+        age = (arrow.utcnow() - usenetdate)
+        if age.days == 0 and preciseDate:
+            if age.seconds < 3600:
+                entry.age = "%dm" % ((arrow.utcnow() - usenetdate).seconds / 60)
+            else:
+                entry.age = "%dh" % ((arrow.utcnow() - usenetdate).seconds / 3600)
+        else:
+            entry.age = str(age.days) + "d"
+        entry.age_days = age.days
+        entry.precise_date = preciseDate
+
 
 def get_instance(indexer):
     return SearchModule(indexer)
