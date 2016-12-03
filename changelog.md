@@ -18,6 +18,8 @@ Fixed: Required and forbidden words were not honored when using "Load more". See
 
 Fixed: "tuple index out of range" error in stat generation. See [#456](https://github.com/theotherp/nzbhydra/issues/456).
 
+Changed: Removed log window from windows tray tool because it caused some trouble and I didn't want to debug it... See [#453](https://github.com/theotherp/nzbhydra/issues/453).
+
 ### 0.2.176
 Misc: Thank you everybody for answering the survey, I really appreciate it. Unfortunately I'm an idiot and SurveyMonkey only shows me the first 100 results for the free plan
 and I'm not paying 40 euros to upgrade. So... if you were one of the first 100 your voice will be heard, otherwise not - so sorry about that.
