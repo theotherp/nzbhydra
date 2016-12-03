@@ -12,6 +12,8 @@ Changed: Age of search results is shown more precisely (minutes, hours, days). S
 
 Added: Send indexer name, host and score with API search results. Useful for tools and scripts handling them. See [#455](https://github.com/theotherp/nzbhydra/issues/455).
 
+Added: More presets, provided by judhat2. See [#461](https://github.com/theotherp/nzbhydra/pull/461)
+
 Fixed: Required and forbidden words were not honored when using "Load more". See [#459](https://github.com/theotherp/nzbhydra/issues/459).
 
 Fixed: "tuple index out of range" error in stat generation. See [#456](https://github.com/theotherp/nzbhydra/issues/456).
