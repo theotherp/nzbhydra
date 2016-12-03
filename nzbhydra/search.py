@@ -286,12 +286,18 @@ def search(search_request):
                 logger.debug("Found NOT terms: %s" % ",".join(forbiddenWords))
 
                 search_request.forbiddenWords.extend(forbiddenWords)
+        cache_entry["forbiddenWords"] = search_request.forbiddenWords
+        cache_entry["requiredWords"] = search_request.requiredWords
+        cache_entry["query"] = search_request.query
 
         pseudo_cache[search_hash] = cache_entry
     else:
         cache_entry = pseudo_cache[search_hash]
         indexers_to_call = [indexer for indexer, info in cache_entry["indexer_infos"].items() if info["has_more"]]
         dbsearch = cache_entry["dbsearch"]
+        search_request.forbiddenWords = cache_entry["forbiddenWords"]
+        search_request.requiredWords = cache_entry["requiredWords"]
+        search_request.query = cache_entry["query"]
         logger.debug("Found search in cache")
 
         logger.debug("Will search at indexers as long as we don't have enough results for the current offset+limit and any indexer has more results.")

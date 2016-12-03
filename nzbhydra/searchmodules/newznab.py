@@ -334,8 +334,8 @@ class NewzNab(SearchModule):
                 if " " in word or "-" in word or "." in word:
                     self.debug('Not using ignored word "%s" in query because it contains a space, dash or dot which is not supported by newznab queries' % word)
                     continue
-                if self.settings.backend.lower() in ["nntmux", "nzedb"]:
-                    query += ",-" + word
+                if self.settings.backend.lower() in ["nntmux", "nzedb"] or "omgwtf" in self.settings.host:
+                    query += ",!" + word
                 else:
                     query += " --" + word
         return query
