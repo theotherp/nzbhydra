@@ -187,7 +187,10 @@ class SearchModule(object):
         return None
 
     def create_nzb_search_result(self):
-        return NzbSearchResult(indexer=self.name, indexerscore=self.score)
+        result = NzbSearchResult(indexer=self.name, indexerscore=self.score, attributes=[{"name": "hydraIndexerName", "value": self.settings.name},
+                                                                                         {"name": "hydraIndexerHost", "value": self.settings.host},
+                                                                                         {"name": "hydraIndexerScore", "value": self.settings.score}])
+        return result
 
     @staticmethod
     def getRejectedCountDict():
@@ -486,6 +489,7 @@ class SearchModule(object):
             entry.age = str(age.days) + "d"
         entry.age_days = age.days
         entry.precise_date = preciseDate
+
 
 
 def get_instance(indexer):

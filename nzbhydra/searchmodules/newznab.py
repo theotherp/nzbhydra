@@ -523,7 +523,6 @@ class NewzNab(SearchModule):
                     entry.title = entry.title[:-len(word)]
                     break
         entry.link = item.find("link").text
-        entry.attributes = []
         entry.pubDate = item.find("pubDate").text
         guid = item.find("guid")
         entry.indexerguid = guid.text

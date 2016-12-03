@@ -160,8 +160,6 @@ def transform_results(results, external):
         
         i.category = i.category.pretty
 
-
-
         transformed.append(i)
 
     return transformed
@@ -178,6 +176,7 @@ def sizeof_fmt(num, suffix='B'):
 def process_for_external_api(results):
     logger.debug("Processing results for external search")
     results = transform_results(results["results"], True)
+
     return results
 
 

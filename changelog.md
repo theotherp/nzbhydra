@@ -4,6 +4,8 @@
 ### 0.2.177
 Changed: Age of search results is shown more precisely (minutes, hours, days). See [#460](https://github.com/theotherp/nzbhydra/issues/460).
 
+Added: Send indexer name, host and score with API search results. Useful for tools and scripts handling them. See [#455](https://github.com/theotherp/nzbhydra/issues/455).
+
 ### 0.2.176
 Misc: Thank you everybody for answering the survey, I really appreciate it. Unfortunately I'm an idiot and SurveyMonkey only shows me the first 100 results for the free plan
 and I'm not paying 40 euros to upgrade. So... if you were one of the first 100 your voice will be heard, otherwise not - so sorry about that.
