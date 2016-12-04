@@ -530,11 +530,8 @@ def testForSameness(result1, result2):
     if (group_known and not same_group) or (poster_known and not same_poster):
         return False
     if (same_group and not poster_known) or (same_poster and not group_known):
-        age_threshold = 4
-        size_threshold = 2
-    if same_group and same_poster:
-        age_threshold = 2
-        size_threshold = 1
+        age_threshold *= 2
+        size_threshold *= 2
 
     same = result1.indexer != result2.indexer
     same = same and test_for_duplicate_age(result1, result2, age_threshold)

@@ -9,6 +9,7 @@ import shutil
 
 import peewee
 from builtins import *
+from playhouse.sqlite_ext import SqliteExtDatabase
 from playhouse.sqliteq import SqliteQueueDatabase
 from retry import retry
 
@@ -17,19 +18,20 @@ from nzbhydra.database import Indexer, IndexerApiAccess, IndexerSearch, IndexerS
 
 
 def set_and_drop(dbfile="tests2.db", tables=None):
-    if tables is None:
-        tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, TvIdCache, MovieIdCache, SearchResult]
-    deleteDbFile(dbfile)
-    database.db = SqliteQueueDatabase(dbfile, autostart=True, results_timeout=2.0)
-
-    models = [
-        obj for name, obj in inspect.getmembers(
-            tables, lambda obj: type(obj) == type and issubclass(obj, peewee.Model)
-        )
-        ]
-    peewee.create_model_tables(models)
-    database.db.start()
-    x = database.Indexer.select().count()
+    # if tables is None:
+    #     tables = [Indexer, IndexerNzbDownload, Search, IndexerSearch, IndexerApiAccess, IndexerStatus, TvIdCache, MovieIdCache, SearchResult]
+    # deleteDbFile(dbfile)
+    # database.db = SqliteExtDatabase(dbfile)
+    # database.db.connect()
+    # #database.db.start()
+    #
+    # models = [
+    #     obj for name, obj in inspect.getmembers(
+    #         tables, lambda obj: type(obj) == type and issubclass(obj, peewee.Model)
+    #     )
+    #     ]
+    # peewee.create_model_tables(models)
+    # x = database.Indexer.select().count()
     if os.path.exists("testsettings.cfg"):
         os.remove("testsettings.cfg")
     shutil.copy("testsettings.cfg.orig", "testsettings.cfg")

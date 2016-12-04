@@ -1,8 +1,10 @@
 # NZB Hydra changelog
 
 ----------
-### 0.2.177
+### 0.2.178
+Fixed: Duplicate detection age and size were ignored. See [#463](https://github.com/theotherp/nzbhydra/issues/463)
 
+### 0.2.177
 Misc: I made a new survey with Google Forms (see below). If you chose to ignore the last one you will not be asked again. 
     Otherwise a new popup will ask you take part in the new survey. Either way you can visit it here: [Google Forms survey](https://goo.gl/forms/F3PwtEor2krBxLcR2).
      If you're privacy minded you can open that link in a private browser window.

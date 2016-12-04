@@ -97,52 +97,54 @@ class DuplicateDetectionTests(unittest.TestCase):
 
     @pytest.fixture
     def setUp(self):
+        pass
         set_and_drop()
-
-        getIndexerSettingByName("binsearch").enabled = False
-        getIndexerSettingByName("nzbindex").enabled = False
-        getIndexerSettingByName("womble").enabled = False
-        getIndexerSettingByName("nzbclub").enabled = False
-
-        self.newznab1 = Bunch()
-        self.newznab1.enabled = True
-        self.newznab1.name = "newznab1"
-        self.newznab1.host = "https://indexer.com"
-        self.newznab1.apikey = "apikeyindexer.com"
-        self.newznab1.timeout = None
-        self.newznab1.hitLimit = None
-        self.newznab1.score = 0
-        self.newznab1.type = "newznab"
-        self.newznab1.accessType = "both"
-        self.newznab1.search_ids = ["imdbid", "rid", "tvdbid"]
-        self.newznab1.searchTypes = ["book", "tvsearch", "movie"]
-
-        self.newznab2 = Bunch()
-        self.newznab2.enabled = True
-        self.newznab2.name = "newznab2"
-        self.newznab2.host = "https://indexer.com"
-        self.newznab2.apikey = "apikeyindexer.com"
-        self.newznab2.timeout = None
-        self.newznab2.hitLimit = None
-        self.newznab2.accessType = "both"
-        self.newznab2.score = 0
-        self.newznab2.type = "newznab"
-        self.newznab2.search_ids = ["rid", "tvdbid"]
-        self.newznab2.searchTypes = ["tvsearch", "movie"]
-
-        # config.settings.indexers = [self.newznab1, self.newznab2]
-
-        self.oldExecute_search_queries = search.start_search_futures
-        database.IndexerStatus.delete().execute()
-        database.IndexerSearch.delete().execute()
-        infos.convertId = mock
-
-        self.app = flask.Flask(__name__)
-        self.response_callbacks = []
+        #
+        # getIndexerSettingByName("binsearch").enabled = False
+        # getIndexerSettingByName("nzbindex").enabled = False
+        # getIndexerSettingByName("womble").enabled = False
+        # getIndexerSettingByName("nzbclub").enabled = False
+        #
+        # self.newznab1 = Bunch()
+        # self.newznab1.enabled = True
+        # self.newznab1.name = "newznab1"
+        # self.newznab1.host = "https://indexer.com"
+        # self.newznab1.apikey = "apikeyindexer.com"
+        # self.newznab1.timeout = None
+        # self.newznab1.hitLimit = None
+        # self.newznab1.score = 0
+        # self.newznab1.type = "newznab"
+        # self.newznab1.accessType = "both"
+        # self.newznab1.search_ids = ["imdbid", "rid", "tvdbid"]
+        # self.newznab1.searchTypes = ["book", "tvsearch", "movie"]
+        #
+        # self.newznab2 = Bunch()
+        # self.newznab2.enabled = True
+        # self.newznab2.name = "newznab2"
+        # self.newznab2.host = "https://indexer.com"
+        # self.newznab2.apikey = "apikeyindexer.com"
+        # self.newznab2.timeout = None
+        # self.newznab2.hitLimit = None
+        # self.newznab2.accessType = "both"
+        # self.newznab2.score = 0
+        # self.newznab2.type = "newznab"
+        # self.newznab2.search_ids = ["rid", "tvdbid"]
+        # self.newznab2.searchTypes = ["tvsearch", "movie"]
+        #
+        # # config.settings.indexers = [self.newznab1, self.newznab2]
+        #
+        # self.oldExecute_search_queries = search.start_search_futures
+        # database.IndexerStatus.delete().execute()
+        # database.IndexerSearch.delete().execute()
+        # infos.convertId = mock
+        #
+        # self.app = flask.Flask(__name__)
+        # self.response_callbacks = []
 
     def tearDown(self):
-        search.start_search_futures = self.oldExecute_search_queries
-        config.settings.searching.requiredWords = None
+        pass
+        #search.start_search_futures = self.oldExecute_search_queries
+        #config.settings.searching.requiredWords = None
 
    
 

@@ -30,6 +30,7 @@
         "cacheFolder": "cache",
         "debug": false,
         "cacheType": "memory",
+        "theme": "",
         "username": "",
         "sslcert": "nzbhydra.crt",
         "sslkey": "nzbhydra.key"
@@ -272,9 +273,9 @@
             "enableCategorySizes": true
         }, 
     "resultProcessing": {
-        "duplicateSizeThresholdInPercent": 0.1,
+        "duplicateSizeThresholdInPercent": 1,
         "htmlParser": "html.parser",
-        "duplicateAgeThreshold": 3600
+        "duplicateAgeThreshold": 2
     },
     "searching": {
         "ignoreTemporarilyDisabled": false,
