@@ -1,7 +1,9 @@
+You don't have to follow this template by the letter, just think about what you're trying to achieve ;-) 
+
 ## How to do a bug report
 
 * What do you expect to happen? What does happen? 
-* Have you searched for this problem? 
+* Have you searched for this problem? You don't have to answer, just make sure.
 * Can the problem be reproduced? How?
 * Use a proper title. Describe the problem succinctly, don't just copy and paste the error message.
 
@@ -11,7 +13,6 @@ The more information you provide up front the higher the chance that I can help 
 
 ## How to request a new feature
 * What do you want to happen?
-* Why do you want it?
-* Do you think it's something only you need or something that might me popular?
+* If not clear, why do you want it?
+* Do you think it's something only you need or something that might be popular?
 * If need be explain the use case.
-* Is it nice to have or a must have? I might disagree but it's still good for me to know what you think.
