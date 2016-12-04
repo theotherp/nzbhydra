@@ -4,6 +4,8 @@
 ### 0.2.178
 Fixed: Duplicate detection age and size were ignored. See [#463](https://github.com/theotherp/nzbhydra/issues/463)
 
+Fixed: When opening the browser on startup is enabled the configured host IP is used instead of 127.0.0.1. Apparently there are cases where that doesn't work for some reason. 
+
 ### 0.2.177
 Misc: I made a new survey with Google Forms (see below). If you chose to ignore the last one you will not be asked again. 
     Otherwise a new popup will ask you take part in the new survey. Either way you can visit it here: [Google Forms survey](https://goo.gl/forms/F3PwtEor2krBxLcR2).

@@ -176,7 +176,7 @@ def run(arguments):
             f = furl(config.settings.main.externalUrl)
         else:
             f = furl()
-            f.host = "127.0.0.1"
+            f.host = "127.0.0.1" if config.settings.main.host == "0.0.0.0" else config.settings.main.host
             f.port = port
             f.scheme = "https" if config.settings.main.ssl else "http"
         if not arguments.nobrowser and config.settings.main.startupBrowser:
