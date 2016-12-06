@@ -2,13 +2,17 @@ import json
 import os
 
 import requests
+import subprocess
 from bs4 import BeautifulSoup
 
 from nzbhydra import update
 
-from subprocess import call
-
-returncode = call(["git.exe", "push", "origin", "master"])
+p = subprocess.Popen("git.exe push origin master", stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+output, err = p.communicate()
+returncode = p.returncode
+if output:
+    output = output.strip()
+print("git output: " + output)
 
 if returncode == 0:
     _, version = update.get_current_version()
