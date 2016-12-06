@@ -1714,6 +1714,10 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
             scope.spinnerActive = true;
             var url = "internalapi/test_newznab";
             var settings = {host: model.host, apikey: model.apikey};
+            if (angular.isDefined(model.username)) {
+                settings["username"] = model.username;
+                settings["password"] = model.password;
+            }
             ConfigBoxService.checkConnection(url, JSON.stringify(settings)).then(function () {
                     checkCaps(scope, model).then(function () {
                         blockUI.reset();
@@ -1742,6 +1746,10 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
         var deferred = $q.defer();
         var url = "internalapi/test_caps";
         var settings = {indexer: model.name, apikey: model.apikey, host: model.host};
+        if (angular.isDefined(model.username)) {
+            settings["username"] = model.username;
+            settings["password"] = model.password;
+        }
         if (angular.isUndefined(model.search_ids) || angular.isUndefined(model.searchTypes)) {
 
             blockUI.start("New indexer found. Testing its capabilities. This may take a bit...");

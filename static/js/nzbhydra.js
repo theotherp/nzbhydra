@@ -1249,6 +1249,10 @@ function connectionTest() {
             } else if ($scope.data.type == "newznab") {
                 url = "internalapi/test_newznab";
                 params = {host: $scope.data.host, apikey: $scope.data.apikey};
+                if (angular.isDefined($scope.data.username)) {
+                    params["username"] = $scope.data.username;
+                    params["password"] = $scope.data.password;
+                }
             }
             $http.get(url, {params: params}).success(function (result) {
                 //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 
@@ -3597,6 +3601,10 @@ angular
 
                     var url = "internalapi/test_caps";
                     var params = {indexer: $scope.model.name, apikey: $scope.model.apikey, host: $scope.model.host};
+                    if (angular.isDefined($scope.model.username)) {
+                        settings["username"] = $scope.model.username;
+                        settings["password"] = $scope.model.password;
+                    }
                     ConfigBoxService.checkCaps(url, params, $scope.model).then(function (data, model) {
                         angular.element(testMessage).text("Supports: " + data.supportedIds + "," ? data.supportedIds && data.supportedTypes : "" + data.supportedTypes);
                         showSuccess();
@@ -5859,6 +5867,10 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
             scope.spinnerActive = true;
             var url = "internalapi/test_newznab";
             var settings = {host: model.host, apikey: model.apikey};
+            if (angular.isDefined(model.username)) {
+                settings["username"] = model.username;
+                settings["password"] = model.password;
+            }
             ConfigBoxService.checkConnection(url, JSON.stringify(settings)).then(function () {
                     checkCaps(scope, model).then(function () {
                         blockUI.reset();
@@ -5887,6 +5899,10 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
         var deferred = $q.defer();
         var url = "internalapi/test_caps";
         var settings = {indexer: model.name, apikey: model.apikey, host: model.host};
+        if (angular.isDefined(model.username)) {
+            settings["username"] = model.username;
+            settings["password"] = model.password;
+        }
         if (angular.isUndefined(model.search_ids) || angular.isUndefined(model.searchTypes)) {
 
             blockUI.start("New indexer found. Testing its capabilities. This may take a bit...");

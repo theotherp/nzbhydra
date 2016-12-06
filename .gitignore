@@ -26,3 +26,4 @@ Vagrantfile
 **/.cache
 nzbhydra.pid
 /buildWindowsDist.py
+/makeGithubRelease.py

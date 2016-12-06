@@ -12,6 +12,7 @@ import concurrent
 from arrow.parser import ParserError
 from builtins import *
 from furl import furl
+from requests.auth import HTTPBasicAuth
 from requests.exceptions import RequestException, HTTPError
 
 from nzbhydra import config
@@ -50,7 +51,7 @@ def check_auth(body, indexer):
         raise exception
 
 
-def test_connection(host, apikey):
+def test_connection(host, apikey, username=None, password=None):
     logger.info("Testing connection for host %s" % host)
     f = furl(host)
     f.path.add("api")
@@ -61,7 +62,7 @@ def test_connection(host, apikey):
         headers = {
             'User-Agent': config.settings.searching.userAgent
         }
-        r = webaccess.get(f.url, headers=headers, timeout=config.settings.searching.timeout)
+        r = webaccess.get(f.url, headers=headers, timeout=config.settings.searching.timeout, auth=HTTPBasicAuth(username, password) if username is not None else None)
         r.raise_for_status()
         check_auth(r.text, None)
     except RequestException as e:
@@ -73,10 +74,11 @@ def test_connection(host, apikey):
     except IndexerAccessException as e:
         logger.info("Unable to log in to indexer %s. Unknown error %s." % (host, str(e)))
         return False, "Host reachable but unknown error returned"
+    logger.info("Connection to host %s successful" % host)
     return True, ""
 
 
-def _testId(host, apikey, t, idkey, idvalue, expectedResult):
+def _testId(host, apikey, t, idkey, idvalue, expectedResult, username=None, password=None):
     logger.info("Testing for ID capability \"%s\"" % idkey)
 
     try:
@@ -86,7 +88,7 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult):
             'User-Agent': config.settings.searching.userAgent
         }
         logger.debug("Requesting %s" % url)
-        r = webaccess.get(url, timeout=config.settings.searching.timeout, headers=headers)
+        r = webaccess.get(url, timeout=config.settings.searching.timeout, headers=headers, auth=HTTPBasicAuth(username, password) if username is not None else None)
         r.raise_for_status()
         titles = []
         tree = ET.fromstring(r.content)
@@ -114,10 +116,10 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult):
     return True, t
 
 
-def checkCapsBruteForce(supportedTypes, toCheck, host, apikey):
+def checkCapsBruteForce(supportedTypes, toCheck, host, apikey, username=None, password=None):
     supportedIds = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(toCheck)) as executor:
-        futures_to_ids = {executor.submit(_testId, host, apikey, x["t"], x["id"], x["key"], x["expected"]): x["id"] for x in toCheck}
+        futures_to_ids = {executor.submit(_testId, host, apikey, x["t"], x["id"], x["key"], x["expected"], username=username, password=password): x["id"] for x in toCheck}
         for future in concurrent.futures.as_completed(futures_to_ids):
             id = futures_to_ids[future]
             try:
@@ -139,7 +141,7 @@ def getCategoryNumberOrNone(categories, ids, names):
     return None
 
 
-def check_caps(host, apikey, userAgent=None, timeout=None, skipIdsAndTypes=False):
+def check_caps(host, apikey, username=None, password=None, userAgent=None, timeout=None, skipIdsAndTypes=False):
     toCheck = [
         {"t": "tvsearch",
          "id": "tvdbid",
@@ -182,7 +184,7 @@ def check_caps(host, apikey, userAgent=None, timeout=None, skipIdsAndTypes=False
             'User-Agent': userAgent if userAgent is not None else config.settings.searching.userAgent
         }
         logger.debug("Requesting %s" % url)
-        r = webaccess.get(url, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers)
+        r = webaccess.get(url, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers, auth=HTTPBasicAuth(username, password) if username is not None else None)
         r.raise_for_status()
 
         tree = ET.fromstring(r.content)
@@ -233,7 +235,7 @@ def check_caps(host, apikey, userAgent=None, timeout=None, skipIdsAndTypes=False
 
         if not skipIdsAndTypes:
             logger.info("Checking capabilities of indexer by brute force to make sure supported search types are correctly recognized")
-            supportedIds, supportedTypes = checkCapsBruteForce(supportedTypes, toCheck, host, apikey)
+            supportedIds, supportedTypes = checkCapsBruteForce(supportedTypes, toCheck, host, apikey, username=username, password=password)
 
         #Check indexer type (nzedb, newznab, nntmux)
         url = _build_base_url(host, apikey, "tvsearch", None)
@@ -241,7 +243,7 @@ def check_caps(host, apikey, userAgent=None, timeout=None, skipIdsAndTypes=False
             'User-Agent': userAgent if userAgent is not None else config.settings.searching.userAgent
         }
         logger.debug("Requesting %s" % url)
-        r = webaccess.get(url, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers)
+        r = webaccess.get(url, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers, auth=HTTPBasicAuth(username, password) if username is not None else None)
         r.raise_for_status()
         generator = ET.fromstring(r.content).find("channel/generator")
         if generator is not None:

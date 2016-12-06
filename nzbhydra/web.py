@@ -904,6 +904,8 @@ def internalapi_testdownloader():
 internalapi__testnewznab_args = {
     "host": fields.String(missing=None),
     "apikey": fields.String(missing=None),
+    "username": fields.String(missing=None),
+    "password": fields.String(missing=None),
 }
 
 
@@ -911,14 +913,16 @@ internalapi__testnewznab_args = {
 @use_args(internalapi__testnewznab_args)
 @requires_auth("main")
 def internalapi_testnewznab(args):
-    success, message = test_connection(args["host"], args["apikey"])
+    success, message = test_connection(args["host"], args["apikey"], args["username"], args["password"])
     return jsonify({"result": success, "message": message})
 
 
 internalapi_testcaps_args = {
     "indexer": fields.String(missing=None),
     "apikey": fields.String(missing=None),
-    "host": fields.String(missing=None)
+    "host": fields.String(missing=None),
+    "username": fields.String(missing=None),
+    "password": fields.String(missing=None),
 }
 
 
@@ -928,11 +932,13 @@ internalapi_testcaps_args = {
 def internalapi_testcaps(args):
     indexer = urlparse.unquote(args["indexer"])
     apikey = args["apikey"]
+    username = args["username"]
+    password = args["password"]
     host = urlparse.unquote(args["host"])
     logger.debug("Check caps for %s" % indexer)
 
     try:
-        caps = check_caps(host, apikey)
+        caps = check_caps(host, apikey, username, password)
         caps.update({"success": True})
         return jsonify(caps)
     except Exception as e:

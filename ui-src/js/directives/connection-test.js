@@ -54,6 +54,10 @@ function connectionTest() {
             } else if ($scope.data.type == "newznab") {
                 url = "internalapi/test_newznab";
                 params = {host: $scope.data.host, apikey: $scope.data.apikey};
+                if (angular.isDefined($scope.data.username)) {
+                    params["username"] = $scope.data.username;
+                    params["password"] = $scope.data.password;
+                }
             }
             $http.get(url, {params: params}).success(function (result) {
                 //Using ng-class and a scope variable doesn't work for some reason, is only updated at second click 

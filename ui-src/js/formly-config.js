@@ -131,6 +131,10 @@ angular
 
                     var url = "internalapi/test_caps";
                     var params = {indexer: $scope.model.name, apikey: $scope.model.apikey, host: $scope.model.host};
+                    if (angular.isDefined($scope.model.username)) {
+                        settings["username"] = $scope.model.username;
+                        settings["password"] = $scope.model.password;
+                    }
                     ConfigBoxService.checkCaps(url, params, $scope.model).then(function (data, model) {
                         angular.element(testMessage).text("Supports: " + data.supportedIds + "," ? data.supportedIds && data.supportedTypes : "" + data.supportedTypes);
                         showSuccess();
