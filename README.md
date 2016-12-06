@@ -16,7 +16,7 @@ NZBHydra is a meta search for NZB indexers. It provides easy access to a number 
 * Login by HTTP basic auth or form
 * Define required and forbidden words and regexes
 * Fine tune categories with separate required and forbidden words. Completely ignore categories in search results. Map newznab categories to internal categories. Use indexers only for certain categories.
-* Reverse proxy compatible. See https://github.com/theotherp/nzbhydra/wiki/Reverse-proxy
+* Reverse proxy compatible. See https://github.com/theotherp/nzbhydra/wiki/Reverse-proxies-and-URLs
 * Basic torrent support via [Jackett](https://github.com/Jackett/Jackett) / [Cardigann](https://github.com/cardigann/cardigann/). Only for internal searches.
 * [Dark theme](http://imgur.com/a/iCzL0), grey theme and [Bright theme](https://imgur.com/a/lBq9n) (slightly out of date)
 
