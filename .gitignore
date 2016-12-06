@@ -27,4 +27,4 @@ Vagrantfile
 nzbhydra.pid
 /buildWindowsDist.py
 /makeGithubRelease.py
-pushToMasterAndRelease.py
+/pushToMasterAndRelease.py
