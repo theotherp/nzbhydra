@@ -1046,6 +1046,10 @@ function getIndexerPresets() {
             {
                 name: "Tabula-Rasa",
                 host: "https://www.tabula-rasa.pw"
+            },
+            {
+                name: "Usenet-Crawler",
+                host: "https://www.usenet-crawler.com"
             }
         ],
         [
