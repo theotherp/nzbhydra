@@ -949,7 +949,7 @@ function getIndexerPresets() {
             },
             {
                 name: "altHUB",
-                host: "https://althub.co.za"
+                host: "https://api.althub.co.za"
             },
             {
                 name: "DogNZB",
