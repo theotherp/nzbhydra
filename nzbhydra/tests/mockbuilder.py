@@ -10,6 +10,7 @@ from time import sleep
 import arrow
 from builtins import *
 from bunch import Bunch
+from flask import Response
 from flask import app, render_template, Flask
 from flask import request
 
@@ -29,7 +30,7 @@ def buildNewznabItem(title=None, guid=None, link=None, pubdate=None, description
         # "pubDate": "Fri, 18 Sep 2015 14:11:15 -0600",
         utcnow = arrow.utcnow().replace(day=random.randint(1, 28), hour=random.randint(1, 23))
         pubdate = str(utcnow.format("ddd, DD MMM YYYY HH:mm:ss Z"))
-    if size is None:
+    if not size:
         size = random.randint(10000, 10000000)
     if categories is None:
         categories = []
@@ -51,7 +52,13 @@ def buildNewznabItem(title=None, guid=None, link=None, pubdate=None, description
          },
         {"name": "comments",
          "value": random.randint(0,3)
-         }
+         },
+        {"name": "poster",
+         "value": random.randint(0, 100)
+         },
+        {"name": "group",
+         "value": random.randint(0, 10)
+         },
 
     ]
     attributes.extend([{"name": "category", "value": x} for x in categories])
@@ -62,8 +69,11 @@ def buildNewznabItem(title=None, guid=None, link=None, pubdate=None, description
         "link": link,
         "comments": "",
         "pubDate": pubdate,
+        "size": size,
         "description": description,
-        "attributes": attributes
+        "attributes": attributes,
+        "poster": str(random.randint(1, 100)),
+        "group": str(random.randint(1, 10))
 
     })
 
@@ -175,6 +185,7 @@ def serve():
     generateDuplicateGroupRange = 5
     doGenerateNewGuids = True
     doSwitchGenerateNewGuidsDependingOnQuery = True
+    doSendAll = True
 
     indexer = indexers[request.args.get("apikey")]
 
@@ -197,7 +208,12 @@ def serve():
             print("Switched generation of new GUIDs to " + str(doGenerateNewGuids))
 
     items = []
-    for i in range(offset, min(offset + 100, numberOfTotalResults)):
+
+    if doSendAll:
+        r = range(0, numberOfTotalResults)
+    else:
+        r = range(offset, min(offset + 100, numberOfTotalResults))
+    for i in r:
         if doGenerateDuplicates:
             searchResultTitle = titles[random.randint(0, generateDuplicateGroupRange - 1)]
             searchResultPubDate = pubDates[random.randint(0, generateDuplicateGroupRange - 1)]
@@ -215,7 +231,8 @@ def serve():
         item = buildNewznabItem(title=searchResultTitle, guid=searchResultguid, link=searchResultLink, pubdate=searchResultPubDate, description=searchResultDescription, size=searchResultSize, indexer_name=indexerName, categories=[["2000", "3000", "4000", "5000", "6000"][random.randint(0, 4)]])
         items.append(item)
     result = render_template("api.html", items=items, offset=offset, total=numberOfTotalResults, title=title, description=title + " - description")
-    return result
+
+    return Response(result, mimetype='text/xml')
 
 
 @mockapp.route('/download')

@@ -112,7 +112,7 @@ def getCategoryByAnyInput(cat):
 def getCategories():
     from nzbhydra import config
     for c in categories:
-        for k, v in config.settings.categories.categories.items():
+        for k, v in config.settings["categories"]["categories"].items():
             if c["name"] == k:
                 c.update(v)
     return categories

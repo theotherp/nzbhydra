@@ -494,22 +494,22 @@ def find_duplicates(results):
     grouped_by_title = groupby(sorted_results, key=lambda x: re.sub(r"[ \.\-_]", "", x.title.lower()))
     grouped_by_sameness = []
     for title, titleGroup in grouped_by_title:
-        # As we compare the results' size first we want to have the results sorted by that
+        # As we compare the results' age first we want to have the results sorted by that
         titleGroup = sorted(list(titleGroup), key=lambda x: x.pubdate_utc, reverse=True)
         grouped = [titleGroup[:1]]
-        for i in titleGroup[1:]:
+        for searchResult in titleGroup[1:]:
             foundGroup = False
             for group in grouped:
                 for other in group:
-                    same = testForSameness(i, other)
+                    same = testForSameness(searchResult, other)
                     if same:
                         foundGroup = True
-                        group.append(i)
+                        group.append(searchResult)
                         break
                 if foundGroup:
                     break
             if not foundGroup:
-                grouped.append([i])
+                grouped.append([searchResult])
         grouped_by_sameness.extend(grouped)
     uniqueResultsPerIndexer = {}
     for entry in [x[0] for x in grouped_by_sameness if len(x) == 1]:

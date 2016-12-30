@@ -24,3 +24,8 @@ if returncode == 0 and DO_RELEASE:
     data = {"tag_name": version, "target_commitish": "master", "name": version, "body": text, "draft": False, "prerelease": False}
     r = requests.post("https://api.github.com/repos/theotherp/nzbhydra-windows-releases/releases?access_token=" + token, data=json.dumps(data))
     r.raise_for_status()
+
+    token = os.environ.get("TOKEN")
+    data = {"tag_name": version, "target_commitish": "master", "name": version, "body": text, "draft": False, "prerelease": False}
+    r = requests.post("https://api.github.com/repos/theotherp/nzbhydra/releases?access_token=" + token, data=json.dumps(data))
+    r.raise_for_status()

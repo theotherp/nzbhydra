@@ -77,7 +77,13 @@ class SensitiveDataFilter(logging.Filter):
 
 def setup_custom_logger(logfile=None, quiet=False):
     global logfilename
-    logfilename = config.settings.main.logging.logfilename if logfile is None else logfile
+    logfileMessage = None
+    if logfile is None:
+        logfileMessage = "Logging to file %s as defined in the command line"
+        logfilename = config.settings.main.logging.logfilename
+    else:
+        logfileMessage = "Logging to file %s as defined in the settings"
+        logfilename = logfile
     console_log_level = config.settings.main.logging.consolelevel.upper()
     file_log_level = config.settings.main.logging.logfilelevel.upper()
     # set console log level from config file
@@ -97,6 +103,7 @@ def setup_custom_logger(logfile=None, quiet=False):
     logging.getLogger("requests").setLevel(logging.CRITICAL)
     logging.getLogger("urllib3").setLevel(logging.CRITICAL)
     logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
+    logger.info(logfileMessage)
     return logger
 
 
