@@ -1,4 +1,6 @@
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title', 'satellizer', 'LocalStorageModule', 'angular.filter', 'ngFileUpload']);
+agGrid.initialiseAgGridWithAngular1(angular);
+
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title', 'satellizer', 'LocalStorageModule', 'angular.filter', 'ngFileUpload', 'agGrid']);
 
 angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$locationProvider", "blockUIConfig", "$urlMatcherFactoryProvider", "$authProvider", "localStorageServiceProvider", "bootstrapped", function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig, $urlMatcherFactoryProvider, $authProvider, localStorageServiceProvider, bootstrapped) {
 
@@ -1705,24 +1707,21 @@ function StatsService($http) {
         });
     }
 
-    function getSearchHistory(pageNumber, limit, type) {
+    function getSearchHistory(pageNumber, limit, sortModel, filterModel) {
         if (angular.isUndefined(pageNumber)) {
             pageNumber = 1;
         }
         if (angular.isUndefined(limit)) {
             limit = 100;
         }
-        if (angular.isUndefined(type)) {
-            type = "All";
-        }
-        return $http.get("internalapi/getsearchrequests", {params: {page: pageNumber, limit: limit, type: type}}).success(function (response) {
+        return $http.post("internalapi/getsearchrequests", {page: pageNumber, limit: limit, sortModel: sortModel, filterModel: filterModel}).success(function (response) {
             return {
                 searchRequests: response.searchRequests,
                 totalRequests: response.totalRequests
             }
         });
     }
-    
+
     function getDownloadHistory(pageNumber, limit, type) {
         if (angular.isUndefined(pageNumber)) {
             pageNumber = 1;
@@ -2430,7 +2429,7 @@ angular
     .controller('SearchHistoryController', SearchHistoryController);
 
 
-function SearchHistoryController($scope, $state, StatsService, history, $sce, $filter) {
+function SearchHistoryController($scope, $state, StatsService, history, $filter) {
     $scope.type = "All";
     $scope.limit = 100;
     $scope.pagination = {
@@ -2439,6 +2438,85 @@ function SearchHistoryController($scope, $state, StatsService, history, $sce, $f
     $scope.isLoaded = true;
     $scope.searchRequests = history.data.searchRequests;
     $scope.totalRequests = history.data.totalRequests;
+
+    var columnDefs = [
+        {
+            headerName: "Date",
+            field: "time",
+            sort: "desc",
+            cellRenderer: function (date) {
+                return moment.utc(date.value, "ddd, D MMM YYYY HH:mm:ss z").local().format("YYYY-MM-DD HH:mm")
+            },
+            filterParams: {apply: true},
+            width: 150,
+            suppressSizeToFit: true
+        },
+        {
+            headerName: "Query",
+            field: "query",
+            filterParams: {apply: true, newRowsAction: "keep"}
+        },
+        {
+            headerName: "Category",
+            field: "category",
+            filterParams: {apply: true, newRowsAction: "keep"},
+            width: 110,
+            suppressSizeToFit: true
+        },
+        {
+            headerName: "Additional parameters",
+            field: "additional",
+            filterParams: {apply: true, newRowsAction: "keep"},
+            cellRenderer: function (params) {
+                return _formatAdditional(params.data);
+            },
+            suppressSorting: true
+        },
+        {
+            headerName: "Access",
+            field: "internal",
+            filterParams: {apply: true, newRowsAction: "keep"},
+            cellRenderer: function (data) {
+                return data.value ? "Internal" : "API";
+            },
+            width: 100,
+            suppressSizeToFit: true
+        },
+        {
+            headerName: "Username",
+            field: "username",
+            filterParams: {apply: true, newRowsAction: "keep"},
+        }
+    ];
+
+
+    $scope.gridOptions = {
+        columnDefs: columnDefs,
+        rowModelType: "pagination",
+        debug: false,
+        enableColResize: true,
+        enableServerSideSorting: true,
+        enableServerSideFilter: true,
+        paginationPageSize: 500,
+        suppressRowClickSelection: true,
+        datasource: {
+            getRows: function (params) {
+                var page = Math.floor(params.startRow / 500) + 1;
+                var limit = params.endRow - params.startRow;
+                console.log(params);
+                StatsService.getSearchHistory(page, limit, params.sortModel, params.filterModel).then(function (history) {
+                    // $scope.searchRequests = history.data.searchRequests;
+                    // $scope.totalRequests = history.data.totalRequests;
+                    // $scope.isLoaded = true;
+                    params.successCallback(history.data.searchRequests, history.data.totalRequests);
+                    $scope.gridOptions.api.sizeColumnsToFit();
+                    $scope.gridOptions.api.sizeColumnsToFit();
+                });
+
+            }
+        }
+    };
+
 
     $scope.pageChanged = function (newPage) {
         getSearchRequestsPage(newPage);
@@ -2516,7 +2594,9 @@ function SearchHistoryController($scope, $state, StatsService, history, $sce, $f
         return request.query;
     };
 
-    $scope.formatAdditional = function(request) {
+    $scope.formatAdditional = _formatAdditional;
+
+    function _formatAdditional(request) {
         var result = [];
         //ID key: ID value
         //season
@@ -2529,7 +2609,7 @@ function SearchHistoryController($scope, $state, StatsService, history, $sce, $f
             if (request.identifier_key == "imdbid") {
                 key = "IMDB ID";
                 href = "https://www.imdb.com/title/tt"
-            } else  if (request.identifier_key == "tvdbid") {
+            } else if (request.identifier_key == "tvdbid") {
                 key = "TVDB ID";
                 href = "https://thetvdb.com/?tab=series&id="
             } else if (request.identifier_key == "rid") {
@@ -2555,12 +2635,12 @@ function SearchHistoryController($scope, $state, StatsService, history, $sce, $f
         if (request.title) {
             result.push("Title: " + request.title);
         }
-        return $sce.trustAsHtml(result.join(", "));
-    };
+        return result.join(", ");
+    }
 
 
 }
-SearchHistoryController.$inject = ["$scope", "$state", "StatsService", "history", "$sce", "$filter"];
+SearchHistoryController.$inject = ["$scope", "$state", "StatsService", "history", "$filter"];
 
 angular
     .module('nzbhydraApp')
@@ -5146,7 +5226,7 @@ function getIndexerPresets(configuredIndexers) {
             },
             {
                 name: "altHUB",
-                host: "https://althub.co.za"
+                host: "https://api.althub.co.za"
             },
             {
                 name: "DogNZB",
@@ -6132,6 +6212,7 @@ function DownloaderCheckBeforeCloseService($q, ConfigBoxService, growl, ModalSer
 
 }
 DownloaderCheckBeforeCloseService.$inject = ["$q", "ConfigBoxService", "growl", "ModalService", "blockUI"];
+
 angular
     .module('nzbhydraApp')
     .factory('ConfigModel', function () {

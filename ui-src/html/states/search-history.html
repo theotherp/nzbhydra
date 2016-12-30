@@ -1,4 +1,9 @@
 <div class="row">
+<div ag-grid="gridOptions" class="ag-bootstrap" style="height: 600px; width: 100%; text-align: left; margin-top: 30px"></div>
+</div>
+<!--
+
+<div class="row">
     <div class="col-md-5"></div>
     <div class="col-md-10" style="text-align: center">
         <dir-pagination-controls on-page-change="pageChanged(newPageNumber)" pagination-id="searches"></dir-pagination-controls>
@@ -39,19 +44,11 @@
         </td>
         <td>{{ request.category }}</td>
         <td ng-bind-html="formatAdditional(request)"></td>
-        <!--
-        <td>{{ request.identifier_key }}</td>
-        <td>
-            <a target="_blank" ng-if="request.identifier_key=='imdbid'" href="http://www.imdb.com/title/tt{{ request.identifier_value }}/">{{ request.identifier_value }}</a>
-            <a target="_blank" ng-if="request.identifier_key=='tvdbid'" href="http://thetvdb.com/?tab=series&id={{ request.identifier_value }}/">{{ request.identifier_value }}</a>
-            <a target="_blank" ng-if="request.identifier_key=='rid'" href="internalapi/redirect_rid?rid={{ request.identifier_value }}">{{ request.identifier_value }}</a>
-        </td>
-        <td>{{ request.season }}</td>
-        <td>{{ request.episode }}</td>
-        -->
         <td>{{ request.internal ? "Internal" : "API"}}</td>
         <td>{{ request.username }}</td>
     </tr>
     </tbody>
 </table>
 <dir-pagination-controls on-page-change="pageChanged(newPageNumber)" pagination-id="searches"></dir-pagination-controls>
+
+-->

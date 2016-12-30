@@ -10,7 +10,7 @@ from itertools import groupby
 import arrow
 from builtins import *
 from dateutil import tz
-from peewee import fn, JOIN
+from peewee import fn, JOIN, SQL
 
 from nzbhydra import database
 from nzbhydra.database import Indexer, IndexerApiAccess, IndexerNzbDownload, IndexerSearch, Search, IndexerStatus, TvIdCache, MovieIdCache, SearchResult
@@ -319,7 +319,7 @@ def get_nzb_downloads(page=0, limit=100, type=None):
 
 
 # ((Search.identifier_value == MovieIdCache.imdb) & (Search.identifier_key == "imdbid"))
-def get_search_requests(page=0, limit=100, type=None):
+def get_search_requests(page=0, limit=100, sortModel=None, type=None, filterModel=None):
     query = Search().select(Search.time, Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type, Search.username, Search.title, Search.author, TvIdCache.title.alias("tvtitle"), MovieIdCache.title.alias("movietitle")).join(TvIdCache,
                                                                                                                                                                                                                                                                                      JOIN.LEFT_OUTER, on=(
             ((Search.identifier_value == TvIdCache.tvdb) & (Search.identifier_key == "tvdbid")) |
@@ -330,8 +330,30 @@ def get_search_requests(page=0, limit=100, type=None):
 
     if type is not None and type != "All":
         query = query.where(Search.internal) if type == "Internal" else query.where(~Search.internal)
+    if filterModel:
+        for column, filter in filterModel.items():
+            where = column
+            if filter["type"] == "contains":
+                where += " like '%%%s%%'" % filter["filter"]
+            elif filter["type"] == "startsWith":
+                where += " like '%s%%'" % filter["filter"]
+            elif filter["type"] == "endWith":
+                where += " like '%%%s'" % filter["filter"]
+            elif filter["type"] == "equals":
+                where += "='%s'" % filter["filter"]
+            elif filter["type"] == "notEquals":
+                where += "!='%s'" % filter["filter"]
+            query = query.where(SQL(where))
     total_requests = query.count()
-    requests = list(query.order_by(Search.time.desc()).paginate(page, limit).dicts())
+    if len(sortModel) == 0:
+        query = query.order_by(Search.time.desc())
+    else:
+        for sort in sortModel:
+            orderBy = SQL(sort["colId"])
+            if sort["sort"] == "desc":
+                orderBy = orderBy.desc()
+            query = query.order_by(orderBy)
+    requests = list(query.paginate(page, limit).dicts())
 
     search_requests = {"totalRequests": total_requests, "searchRequests": requests}
     return search_requests

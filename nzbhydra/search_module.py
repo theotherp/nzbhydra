@@ -243,9 +243,9 @@ class SearchModule(object):
                 or (config.settings.searching.forbiddenRegex and applyRestrictionsGlobal and re.search(config.settings.searching.forbiddenRegex.lower(), nzbSearchResult.title.lower())):
             return False, "Forbidden regex found in title", "Forbidden by regex"
         if config.settings.searching.forbiddenGroups:
-            for forbiddenPoster in config.settings.searching.forbiddenGroups.split(","):
-                if forbiddenPoster in nzbSearchResult.group:
-                    return False, "Posted in forbidden group '%s'" % forbiddenPoster, "Forbidden group"
+            for forbiddenGroup in config.settings.searching.forbiddenGroups.split(","):
+                if forbiddenGroup in nzbSearchResult.group:
+                    return False, "Posted in forbidden group '%s'" % forbiddenGroup, "Forbidden group"
         if config.settings.searching.forbiddenPosters:
             for forbiddenPoster in config.settings.searching.forbiddenPosters.split(","):
                 if forbiddenPoster in nzbSearchResult.group:

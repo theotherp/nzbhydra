@@ -14,6 +14,7 @@ import arrow
 import jwt
 import markdown
 from bunch import Bunch
+from marshmallow import Schema
 from werkzeug.contrib.fixers import ProxyFix
 
 from nzbhydra.categories import getCategoryByName
@@ -981,16 +982,34 @@ def internalapi_getnzb_downloads(args):
 
 internalapi__getsearchrequests_args = {
     "page": fields.Integer(missing=0),
-    "limit": fields.Integer(missing=100),
-    "type": fields.String(missing=None)
+    "limit": fields.Integer(missing=500),
+    "type": fields.String(missing=None),
+    "sortModel": fields.Nested({
+        "colId": fields.String(),
+        "sort": fields.String()
+    }, many=True)
 }
 
+class SortModelSchema(Schema):
+    colId = fields.String()
+    sort = fields.String()
 
-@app.route('/internalapi/getsearchrequests')
+class SearchSchema(Schema):
+    page = fields.Integer(missing=1)
+    limit = fields.Integer(missing=500)
+    sortModel = fields.Nested(SortModelSchema, many=True, missing=None)
+    type = fields.String(missing=None)
+
+
+@app.route('/internalapi/getsearchrequests', methods=['GET', 'POST'])
 @requires_auth("stats")
-@use_args(internalapi__getsearchrequests_args)
+@use_args(SearchSchema())
 def internalapi_search_requests(args):
-    return jsonify(get_search_requests(page=args["page"], limit=args["limit"], type=args["type"]))
+    logger.debug(args)
+    if not "sortModel" in args.keys() or args["sortModel"] is None:
+        args["sortModel"] = []
+    filterModel = request.json["filterModel"] if "filterModel" in request.json.keys() else None
+    return jsonify(get_search_requests(page=args["page"], limit=args["limit"], sortModel=args["sortModel"], filterModel=filterModel))
 
 
 internalapi__redirect_rid_args = {

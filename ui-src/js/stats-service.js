@@ -16,24 +16,21 @@ function StatsService($http) {
         });
     }
 
-    function getSearchHistory(pageNumber, limit, type) {
+    function getSearchHistory(pageNumber, limit, sortModel, filterModel) {
         if (angular.isUndefined(pageNumber)) {
             pageNumber = 1;
         }
         if (angular.isUndefined(limit)) {
             limit = 100;
         }
-        if (angular.isUndefined(type)) {
-            type = "All";
-        }
-        return $http.get("internalapi/getsearchrequests", {params: {page: pageNumber, limit: limit, type: type}}).success(function (response) {
+        return $http.post("internalapi/getsearchrequests", {page: pageNumber, limit: limit, sortModel: sortModel, filterModel: filterModel}).success(function (response) {
             return {
                 searchRequests: response.searchRequests,
                 totalRequests: response.totalRequests
             }
         });
     }
-    
+
     function getDownloadHistory(pageNumber, limit, type) {
         if (angular.isUndefined(pageNumber)) {
             pageNumber = 1;
