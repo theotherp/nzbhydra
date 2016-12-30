@@ -337,9 +337,11 @@ class SearchModule(object):
 
     def get(self, url, timeout=None, cookies=None):
         # overwrite for special handling, e.g. cookies
-        headers = {
-            'User-Agent': config.settings.searching.userAgent
-        }
+        headers = {'User-Agent': "NZBHydra"}
+        if hasattr(self.settings, "userAgent") and self.settings.userAgent:
+            headers['User-Agent'] = self.settings.userAgent
+        elif config.settings.searching.userAgent:
+            headers['User-Agent'] = config.settings.searching.userAgent
         if timeout is None:
             timeout = self.settings.timeout
         if timeout is None:

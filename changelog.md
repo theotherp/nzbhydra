@@ -4,6 +4,8 @@
 ### 0.2.180
 Added: Ignore results by certain posters and/or from certain groups. See [#478](https://github.com/theotherp/nzbhydra/issues/478).
 
+Added: Set user agent per indexer. Few will ever need this. See [#482](https://github.com/theotherp/nzbhydra/issues/482).
+
 Fixed: Manually checking indexer capabilities didn't work. See [#477](https://github.com/theotherp/nzbhydra/issues/477).
 
 ### 0.2.179

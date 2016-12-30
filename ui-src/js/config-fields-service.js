@@ -823,7 +823,8 @@ function ConfigFields($injector) {
                             accessType: "both",
                             search_ids: undefined, //["imdbid", "rid", "tvdbid"],
                             searchTypes: undefined, //["tvsearch", "movie"]
-                            backend: 'newznab'
+                            backend: 'newznab',
+                            userAgent: null
                         },
                         addNewText: 'Add new indexer',
                         entryTemplateUrl: 'indexerEntry.html',
@@ -1066,6 +1067,10 @@ function getIndexerPresets() {
             {
                 name: "Tabula-Rasa",
                 host: "https://www.tabula-rasa.pw"
+            },
+            {
+                name: "Usenet-Crawler",
+                host: "https://www.usenet-crawler.com"
             }
         ],
         [
@@ -1251,7 +1256,21 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                 }
             }
         )
+    }
 
+    if (model.type == 'newznab') {
+        fieldset.push(
+            {
+                key: 'userAgent',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'text',
+                    required: false,
+                    label: 'User agent',
+                    help: 'Rarely needed. Will supercede the one in the main searching settings'
+                }
+            }
+        )
     }
 
 
