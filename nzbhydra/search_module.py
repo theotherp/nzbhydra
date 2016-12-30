@@ -200,6 +200,8 @@ class SearchModule(object):
             "Required word missing": 0,
             "Forbidden by regex": 0,
             "Required regex not found": 0,
+            "Forbidden group": 0,
+            "Forbidden poster": 0,
             "Wrong size": 0,
             "Wrong age": 0,
             "Missing attributes": 0,
@@ -240,6 +242,14 @@ class SearchModule(object):
         if (searchRequest.category.category.forbiddenRegex and applyRestrictionsCategory and re.search(searchRequest.category.category.forbiddenRegex.lower(), nzbSearchResult.title.lower())) \
                 or (config.settings.searching.forbiddenRegex and applyRestrictionsGlobal and re.search(config.settings.searching.forbiddenRegex.lower(), nzbSearchResult.title.lower())):
             return False, "Forbidden regex found in title", "Forbidden by regex"
+        if config.settings.searching.forbiddenGroups:
+            for forbiddenPoster in config.settings.searching.forbiddenGroups.split(","):
+                if forbiddenPoster in nzbSearchResult.group:
+                    return False, "Posted in forbidden group '%s'" % forbiddenPoster, "Forbidden group"
+        if config.settings.searching.forbiddenPosters:
+            for forbiddenPoster in config.settings.searching.forbiddenPosters.split(","):
+                if forbiddenPoster in nzbSearchResult.group:
+                    return False, "Posted by forbidden poster '%s'" % forbiddenPoster, "Forbidden poster"
         if searchRequest.minsize and nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
             return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize), "Wrong size"
         if searchRequest.maxsize and nzbSearchResult.size / (1024 * 1024) > searchRequest.maxsize:

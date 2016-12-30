@@ -2,17 +2,19 @@
 
 ----------
 ### 0.2.180
-Fixed: Manually checking indexer capabilities didn't work. See [#477](https://github.com/theotherp/nzbhydra/issues/477)
+Added: Ignore results by certain posters and/or from certain groups. See [#478](https://github.com/theotherp/nzbhydra/issues/478).
+
+Fixed: Manually checking indexer capabilities didn't work. See [#477](https://github.com/theotherp/nzbhydra/issues/477).
 
 ### 0.2.179
 Added: Scripts for windows release to easily create a windows service.
 
-Fixed: Indexer username / password were not used for connection and capabilities check. See [#465](https://github.com/theotherp/nzbhydra/issues/465)
+Fixed: Indexer username / password were not used for connection and capabilities check. See [#465](https://github.com/theotherp/nzbhydra/issues/465).
 
 Misc: I've only had 70 survey responses so far compared to nearly 300 on the first survey. Please take part, if possible.
 
 ### 0.2.178
-Fixed: Duplicate detection age and size were ignored. See [#463](https://github.com/theotherp/nzbhydra/issues/463)
+Fixed: Duplicate detection age and size were ignored. See [#463](https://github.com/theotherp/nzbhydra/issues/463).
 
 Fixed: When opening the browser on startup is enabled the configured host IP is used instead of 127.0.0.1. Apparently there are cases where that doesn't work for some reason. 
 

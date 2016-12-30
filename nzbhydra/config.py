@@ -184,7 +184,9 @@ initialConfig = {
         "timeout": 20,
         "userAgent": "NZBHydra",
         "requiredRegex": None,
-        "forbiddenRegex": None
+        "forbiddenRegex": None,
+        "forbiddenGroups": None,
+        "forbiddenPosters": None
     },
     "categories": {
         "enableCategorySizes": True,

@@ -622,13 +622,33 @@ function ConfigFields($injector) {
                             key: 'applyRestrictions',
                             type: 'horizontalSelect',
                             templateOptions: {
-                                label: 'Apply restrictions',
+                                label: 'Apply word restrictions',
                                 options: [
                                     {name: 'Internal searches', value: 'internal'},
                                     {name: 'API searches', value: 'external'},
                                     {name: 'All searches', value: 'both'}
                                 ],
                                 help: "For which type of search word restrictions will be applied"
+                            }
+                        },
+                        {
+                            key: 'forbiddenGroups',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Forbidden groups',
+                                placeholder: 'separate, with, commas, like, this',
+                                help: 'Posts from any groups containing any of these words will be ignored'
+                            }
+                        },
+                        {
+                            key: 'forbiddenPosters',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Forbidden posters',
+                                placeholder: 'separate, with, commas, like, this',
+                                help: 'Posts from any posters containing any of these words will be ignored'
                             }
                         },
                         {
