@@ -90,6 +90,7 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult, username=None, pass
         logger.debug("Requesting %s" % url)
         r = webaccess.get(url, timeout=config.settings.searching.timeout, headers=headers, auth=HTTPBasicAuth(username, password) if username is not None else None)
         r.raise_for_status()
+        check_auth(r.text, None)
         titles = []
         tree = ET.fromstring(r.content)
     except Exception as e:
@@ -108,7 +109,7 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult, username=None, pass
             logger.debug("Search with t=%s and %s=%s returned \"%s\" which does not contain the expected string \"%s\"" % (t, idkey, idvalue, title, expectedResult))
             countWrong += 1
     percentWrong = (100 * countWrong) / len(titles)
-    if percentWrong > 30:
+    if percentWrong > 10:
         logger.info("%d%% wrong results, this indexer probably doesn't support %s" % (percentWrong, idkey))
         return False, t
     logger.info("%d%% wrong results, this indexer probably supports %s" % (percentWrong, idkey))
@@ -118,7 +119,7 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult, username=None, pass
 
 def checkCapsBruteForce(supportedTypes, toCheck, host, apikey, username=None, password=None):
     supportedIds = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=len(toCheck)) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=toCheck) as executor:
         futures_to_ids = {executor.submit(_testId, host, apikey, x["t"], x["id"], x["key"], x["expected"], username=username, password=password): x["id"] for x in toCheck}
         for future in concurrent.futures.as_completed(futures_to_ids):
             id = futures_to_ids[future]
@@ -129,7 +130,7 @@ def checkCapsBruteForce(supportedTypes, toCheck, host, apikey, username=None, pa
                     supportedTypes.append(t)
             except Exception as e:
                 logger.error("An error occurred while trying to test the caps of host %s: %s" % (host, e))
-                raise IndexerResultParsingException("Unable to check caps: %s" % str(e), None)
+                raise
     return sorted(list(set(supportedIds))), sorted(list(set(supportedTypes)))
 
 
@@ -266,13 +267,10 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
             "supportsAllCategories": len(supportedCategories) == getNumberOfSelectableCategories() - 1, #Without "all
             "backend": backend
         }
-
-    except HTTPError as e:
-        logger.error("Error while trying to determine caps: %s" % e)
-        raise IndexerResultParsingException("Unable to check caps: %s" % str(e), None)
     except Exception as e:
         logger.error("Error getting or parsing caps XML. Error message: %s" % e)
-        return None
+        raise IndexerResultParsingException("Unable to check caps: %s" % str(e), None)
+
 
 
 def _build_base_url(host, apikey, action, category, limit=None, offset=0):
