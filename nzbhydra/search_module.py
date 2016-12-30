@@ -248,7 +248,7 @@ class SearchModule(object):
                     return False, "Posted in forbidden group '%s'" % forbiddenGroup, "Forbidden group"
         if config.settings.searching.forbiddenPosters:
             for forbiddenPoster in config.settings.searching.forbiddenPosters.split(","):
-                if forbiddenPoster in nzbSearchResult.group:
+                if forbiddenPoster in nzbSearchResult.poster:
                     return False, "Posted by forbidden poster '%s'" % forbiddenPoster, "Forbidden poster"
         if searchRequest.minsize and nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
             return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize), "Wrong size"

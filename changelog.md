@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.181
+Fixed: Error in ignoring posters introduced in 0.2.180.
+
 ### 0.2.180
 Added: Ignore results by certain posters and/or from certain groups. See [#478](https://github.com/theotherp/nzbhydra/issues/478).
 
