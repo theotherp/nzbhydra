@@ -3744,13 +3744,14 @@ angular
         formlyConfigProvider.setType({
             name: 'arrayConfig',
             templateUrl: 'arrayConfig.html',
-            controller: function ($scope, $uibModal) {
+            controller: function ($scope, $uibModal, growl) {
                 $scope.formOptions = {formState: $scope.formState};
                 $scope._showBox = _showBox;
                 $scope.showBox = showBox;
                 $scope.isInitial = false;
 
-                $scope.presets = $scope.options.data.presets;
+                $scope.presets = $scope.options.data.presets($scope.model);
+
 
                 function _showBox(model, parentModel, isInitial, callback) {
                     var modalInstance = $uibModal.open({
@@ -3794,18 +3795,23 @@ angular
                 }
 
                 $scope.addEntry = function (entriesCollection, preset) {
-                    var model = angular.copy($scope.options.data.defaultModel);
-                    if (angular.isDefined(preset)) {
-                        _.extend(model, preset);
+                    if ($scope.options.data.checkAddingAllowed(entriesCollection, preset)) {
+                        var model = angular.copy($scope.options.data.defaultModel);
+                        if (angular.isDefined(preset)) {
+                            _.extend(model, preset);
+                        }
+
+                        $scope.isInitial = true;
+
+                        $scope._showBox(model, entriesCollection, true, function (isSubmitted) {
+                            if (isSubmitted) {
+                                entriesCollection.push(model);
+                            }
+                        });
+                    } else {
+                        growl.error("That predefined indexer is already configured."); //For now this is the only case where adding is forbidden so we use this hardcoded message "for now"... (;-))
                     }
 
-                    $scope.isInitial = true;
-
-                    $scope._showBox(model, entriesCollection, true, function (isSubmitted) {
-                        if (isSubmitted) {
-                            entriesCollection.push(model);
-                        }
-                    });
                 };
 
             }
@@ -4927,7 +4933,12 @@ function ConfigFields($injector) {
                             enabled: true
                         },
                         entryTemplateUrl: 'downloaderEntry.html',
-                        presets: getDownloaderPresets(),
+                        presets: function () {
+                            return getDownloaderPresets();
+                        },
+                        checkAddingAllowed: function () {
+                            return true;
+                        },
                         presetsOnly: true,
                         addNewText: 'Add new downloader',
                         fieldsFunction: getDownloaderBoxFields,
@@ -4980,10 +4991,21 @@ function ConfigFields($injector) {
                         },
                         addNewText: 'Add new indexer',
                         entryTemplateUrl: 'indexerEntry.html',
-                        presets: getIndexerPresets(),
+                        presets: function (model) {
+                            return getIndexerPresets(model);
+                        },
+                        checkAddingAllowed: function (existingIndexers, preset) {
+                            if (!(preset.type == "womble" || preset.type == "anizb" || preset.type == "binsearch" || preset.type == "nzbindex" || preset.type == "nzbclub")) {
+                                return true;
+                            }
+                            return !_.any(existingIndexers, function (existingEntry) {
+                                return existingEntry.name == preset.name;
+                            });
+
+                        },
                         fieldsFunction: getIndexerBoxFields,
                         allowDeleteFunction: function (model) {
-                            return model.type == 'newznab' || model.type == 'jackett';
+                            return true;
                         },
                         checkBeforeClose: function (scope, model) {
                             var IndexerCheckBeforeCloseService = $injector.get("IndexerCheckBeforeCloseService");
@@ -5110,8 +5132,9 @@ function ConfigFields($injector) {
 ConfigFields.$inject = ["$injector"];
 
 
-function getIndexerPresets() {
-    return [
+function getIndexerPresets(configuredIndexers) {
+    console.log(configuredIndexers);
+    var presets = [
         [
             {
                 name: "6box",
@@ -5235,8 +5258,106 @@ function getIndexerPresets() {
                 type: "jackett",
                 accessType: "internal"
             }
+        ],
+        [
+            {
+                accessType: "both",
+                categories: ["anime"],
+                enabled: false,
+                hitLimit: 0,
+                hitLimitResetTime: null,
+                host: "https://anizb.org",
+                name: "anizb",
+                password: null,
+                preselect: true,
+                score: 0,
+                search_ids: [],
+                searchTypes: [],
+                showOnSearch: true,
+                timeout: null,
+                type: "anizb",
+                username: null
+            },
+            {
+                accessType: "internal",
+                categories: [],
+                enabled: true,
+                hitLimit: 0,
+                hitLimitResetTime: null,
+                host: "https://binsearch.info",
+                name: "Binsearch",
+                password: null,
+                preselect: true,
+                score: 0,
+                search_ids: [],
+                searchTypes: [],
+                showOnSearch: true,
+                timeout: null,
+                type: "binsearch",
+                username: null
+            },
+            {
+                accessType: "internal",
+                categories: [],
+                enabled: true,
+                hitLimit: 0,
+                hitLimitResetTime: null,
+                host: "https://www.nzbclub.com",
+                name: "NZBClub",
+                password: null,
+                preselect: true,
+                score: 0,
+                search_ids: [],
+                searchTypes: [],
+                showOnSearch: true,
+                timeout: null,
+                type: "nzbclub",
+                username: null
+
+            },
+            {
+                accessType: "internal",
+                categories: [],
+                enabled: true,
+                generalMinSize: 1,
+                hitLimit: 0,
+                hitLimitResetTime: null,
+                host: "https://nzbindex.com",
+                name: "NZBIndex",
+                password: null,
+                preselect: true,
+                score: 0,
+                search_ids: [],
+                searchTypes: [],
+                showOnSearch: true,
+                timeout: null,
+                type: "nzbindex",
+                username: null
+
+            },
+            {
+                accessType: "external",
+                categories: ["tv", "tvhd", "tvsd"],
+                enabled: true,
+                hitLimit: 0,
+                hitLimitResetTime: null,
+                host: "https://newshost.co.za",
+                name: "Womble",
+                password: null,
+                preselect: true,
+                score: 0,
+                search_ids: [],
+                searchTypes: [],
+                showOnSearch: false,
+                timeout: null,
+                type: "womble",
+                username: null
+            }
         ]
     ];
+
+
+    return presets;
 }
 
 function getIndexerBoxFields(model, parentModel, isInitial, injector) {

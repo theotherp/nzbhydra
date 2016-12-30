@@ -87,6 +87,10 @@
                 <li ng-repeat="preset in presets[1]">
                     <a ng-click="addEntry(model, preset)">{{ preset.name }}</a>
                 </li>
+                <li ng-if="presets.length > 2" role="separator" class="divider"></li>
+                <li ng-repeat="preset in presets[2]">
+                    <a ng-click="addEntry(model, preset)">{{ preset.name }}</a>
+                </li>
             </ul>
         </div>
     </div>

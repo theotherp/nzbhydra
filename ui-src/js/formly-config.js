@@ -274,13 +274,14 @@ angular
         formlyConfigProvider.setType({
             name: 'arrayConfig',
             templateUrl: 'arrayConfig.html',
-            controller: function ($scope, $uibModal) {
+            controller: function ($scope, $uibModal, growl) {
                 $scope.formOptions = {formState: $scope.formState};
                 $scope._showBox = _showBox;
                 $scope.showBox = showBox;
                 $scope.isInitial = false;
 
-                $scope.presets = $scope.options.data.presets;
+                $scope.presets = $scope.options.data.presets($scope.model);
+
 
                 function _showBox(model, parentModel, isInitial, callback) {
                     var modalInstance = $uibModal.open({
@@ -324,18 +325,23 @@ angular
                 }
 
                 $scope.addEntry = function (entriesCollection, preset) {
-                    var model = angular.copy($scope.options.data.defaultModel);
-                    if (angular.isDefined(preset)) {
-                        _.extend(model, preset);
+                    if ($scope.options.data.checkAddingAllowed(entriesCollection, preset)) {
+                        var model = angular.copy($scope.options.data.defaultModel);
+                        if (angular.isDefined(preset)) {
+                            _.extend(model, preset);
+                        }
+
+                        $scope.isInitial = true;
+
+                        $scope._showBox(model, entriesCollection, true, function (isSubmitted) {
+                            if (isSubmitted) {
+                                entriesCollection.push(model);
+                            }
+                        });
+                    } else {
+                        growl.error("That predefined indexer is already configured."); //For now this is the only case where adding is forbidden so we use this hardcoded message "for now"... (;-))
                     }
 
-                    $scope.isInitial = true;
-
-                    $scope._showBox(model, entriesCollection, true, function (isSubmitted) {
-                        if (isSubmitted) {
-                            entriesCollection.push(model);
-                        }
-                    });
                 };
 
             }

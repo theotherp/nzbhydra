@@ -6,6 +6,8 @@ Added: Ignore results by certain posters and/or from certain groups. See [#478](
 
 Added: Set user agent per indexer. Few will ever need this. See [#482](https://github.com/theotherp/nzbhydra/issues/482).
 
+Added: Allow deleting of preconfigured indexers. Of course they can be added later again. See [#480](https://github.com/theotherp/nzbhydra/issues/480).
+
 Fixed: Manually checking indexer capabilities didn't work. See [#477](https://github.com/theotherp/nzbhydra/issues/477).
 
 ### 0.2.179
