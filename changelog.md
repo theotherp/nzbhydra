@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.180
+Fixed: Manually checking indexer capabilities didn't work. See [#477](https://github.com/theotherp/nzbhydra/issues/477)
+
 ### 0.2.179
 Added: Scripts for windows release to easily create a windows service.
 

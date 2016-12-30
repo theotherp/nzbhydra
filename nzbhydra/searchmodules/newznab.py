@@ -205,11 +205,11 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
             supportedCategories.extend(["movies", "movieshd", "moviessd"])
         if "tv" in categories:
             supportedCategories.extend(["tv", "tvhd", "tvsd"])
-        if "audio" in categories:
+        if "audio" in categories or "music" in categories:
             supportedCategories.extend(["audio", "flac", "mp3"])
         if "xxx" in categories or "adult" in categories:
             supportedCategories.append("xxx")
-        if "console" in categories or "gaming" in categories:
+        if "console" in categories or "gaming" in categories or "games" in categories:
             supportedCategories.append("console")
         if "apps" in categories or "pc" in categories:
             supportedCategories.append("pc")
