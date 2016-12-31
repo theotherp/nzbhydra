@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.181
+Fixed: NZBGeek and forbidden words don't play well together. See [#493](https://github.com/theotherp/nzbhydra/issues/493).
+
 ### 0.2.180
 Added: Ignore results by certain posters and/or from certain groups. See [#478](https://github.com/theotherp/nzbhydra/issues/478).
 
