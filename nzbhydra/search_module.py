@@ -242,11 +242,11 @@ class SearchModule(object):
         if (searchRequest.category.category.forbiddenRegex and applyRestrictionsCategory and re.search(searchRequest.category.category.forbiddenRegex.lower(), nzbSearchResult.title.lower())) \
                 or (config.settings.searching.forbiddenRegex and applyRestrictionsGlobal and re.search(config.settings.searching.forbiddenRegex.lower(), nzbSearchResult.title.lower())):
             return False, "Forbidden regex found in title", "Forbidden by regex"
-        if config.settings.searching.forbiddenGroups:
-            for forbiddenGroup in config.settings.searching.forbiddenGroups.split(","):
-                if forbiddenGroup in nzbSearchResult.group:
-                    return False, "Posted in forbidden group '%s'" % forbiddenGroup, "Forbidden group"
-        if config.settings.searching.forbiddenPosters:
+        if config.settings.searching.forbiddenGroups and nzbSearchResult.group:
+            for forbiddenPoster in config.settings.searching.forbiddenGroups.split(","):
+                if forbiddenPoster in nzbSearchResult.group:
+                    return False, "Posted in forbidden group '%s'" % forbiddenPoster, "Forbidden group"
+        if config.settings.searching.forbiddenPosters and nzbSearchResult.poster:
             for forbiddenPoster in config.settings.searching.forbiddenPosters.split(","):
                 if forbiddenPoster in nzbSearchResult.poster:
                     return False, "Posted by forbidden poster '%s'" % forbiddenPoster, "Forbidden poster"
