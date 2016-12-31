@@ -2,6 +2,8 @@
 
 ----------
 ### 0.2.181
+Fixed: NZBGeek and forbidden words don't play well together. See [#493](https://github.com/theotherp/nzbhydra/issues/493).
+
 Fixed: Error in ignoring posters introduced in 0.2.180.
 
 ### 0.2.180

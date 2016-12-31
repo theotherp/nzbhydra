@@ -328,7 +328,11 @@ class NewzNab(SearchModule):
         if not search_request.forbiddenWords:
             return query
         if "nzbgeek" in self.settings.host:  # NZBGeek isn't newznab but sticks to its standards in most ways but not in this. Instead of adding a new search module just for this small part I added this small POC here
-            query += " ".join(["--%s" % x for x in search_request.forbiddenWords if not (" " in x or "-" in x or "." in x)])
+            forbiddenWords = search_request.forbiddenWords
+            if len(forbiddenWords) + len(query.split(" ")) > 12:
+                self.info("NZBGeek does not support queries with more than 12 included / excluded words. Will limit the query accordingly")
+                forbiddenWords = forbiddenWords[:max(12 - len(query.split(" ")), 0)]
+            query += "--" + " ".join(["%s" % x for x in forbiddenWords if not (" " in x or "-" in x or "." in x)])
         else:
             for word in search_request.forbiddenWords:
                 if " " in word or "-" in word or "." in word:

@@ -215,7 +215,7 @@ class SearchModule(object):
             return False, "Passworded results shall be ignored", "Passworded"
         # Forbidden and required words are handled differently depending on if they contain a dash or dot. If yes we do a simple search, otherwise a word based comparison
         for word in searchRequest.forbiddenWords:
-            if "-" in word or "." in word:
+            if "-" in word or "." in word or "nzbgeek" in self.settings.host:  # NZBGeek must be handled here because it only allows 12 words at all so it's possible that not all words were ignored
                 if word.strip().lower() in nzbSearchResult.title.lower():
                     return False, '"%s" is in the list of ignored words or excluded by the query' % word, "Forbidden word"
             elif word.strip().lower() in titleRegex.findall(nzbSearchResult.title.lower()):
@@ -501,7 +501,6 @@ class SearchModule(object):
             entry.age = str(age.days) + "d"
         entry.age_days = age.days
         entry.precise_date = preciseDate
-
 
 
 def get_instance(indexer):
