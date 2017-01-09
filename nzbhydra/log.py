@@ -14,7 +14,7 @@ from future import standard_library
 #standard_library.install_aliases()
 from builtins import *
 import logging
-from logging.handlers import RotatingFileHandler
+from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 import sys
 import re
 from os import listdir
@@ -77,13 +77,15 @@ class SensitiveDataFilter(logging.Filter):
 
 def setup_custom_logger(logfile=None, quiet=False):
     global logfilename
+    maxBytes = config.settings.main.logging.logMaxSize * 1024
+    rotateAfterDays = config.settings.main.logging.logRotateAfterDays
+    backupCount = config.settings.main.logging.keepLogFiles
     logfileMessage = None
     if logfile is None:
         logfilename = config.settings.main.logging.logfilename
-        logfileMessage = "Logging to file %s as defined in the command line" % logfilename
     else:
         logfilename = logfile
-        logfileMessage = "Logging to file %s as defined in the settings" % logfilename
+        logfileMessage = "Logging to file %s as defined in the command line" % logfilename
     console_log_level = config.settings.main.logging.consolelevel.upper()
     file_log_level = config.settings.main.logging.logfilelevel.upper()
     # set console log level from config file
@@ -91,7 +93,10 @@ def setup_custom_logger(logfile=None, quiet=False):
         console_logger.setLevel(console_log_level)
     logger.setLevel(console_log_level)
     # add log file handler
-    file_logger = RotatingFileHandler(filename=logfilename, maxBytes=1000000, backupCount=25)
+    if rotateAfterDays is None:
+        file_logger = RotatingFileHandler(filename=logfilename, maxBytes=maxBytes, backupCount=backupCount)
+    else:
+        file_logger = TimedRotatingFileHandler(filename=logfilename, when="d", interval=rotateAfterDays, backupCount=backupCount)
     file_logger.setFormatter(logging.Formatter(LOGGER_DEFAULT_FORMAT))
     file_logger.setLevel(file_log_level)
     logger.addHandler(file_logger)
@@ -104,6 +109,9 @@ def setup_custom_logger(logfile=None, quiet=False):
     logging.getLogger("urllib3").setLevel(logging.CRITICAL)
     logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
     logger.info(logfileMessage)
+    if not config.settings.main.isFirstStart and config.settings.main.logging.rolloverAtStart:
+        logger.info("Starting new log file as configured")
+        file_logger.doRollover()
     return logger
 
 

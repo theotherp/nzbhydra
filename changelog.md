@@ -4,9 +4,11 @@
 ### 0.2.182
 Added: Button to scroll to bottom of log file and option to update log file automatically. See [#497](https://github.com/theotherp/nzbhydra/issues/497) and [#498](https://github.com/theotherp/nzbhydra/issues/498).
 
+Added: Options to control when a new log file is started (depending on size or time), how many to keep and if a new file should be started on startup. See [#496](https://github.com/theotherp/nzbhydra/issues/496).
+
 Changed: Removed womble :-(
 
-Fixed: Show better error message when connection test to indexer failed. [#500](https://github.com/theotherp/nzbhydra/issues/500).
+Fixed: Show better error message when connection test to indexer failed. See [#500](https://github.com/theotherp/nzbhydra/issues/500).
 
 ### 0.2.181
 Fixed: NZBGeek and forbidden words don't play well together. See [#493](https://github.com/theotherp/nzbhydra/issues/493).

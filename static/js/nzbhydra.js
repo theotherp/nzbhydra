@@ -4716,6 +4716,60 @@ function ConfigFields($injector) {
                             }
                         },
                         {
+                            key: 'rolloverAtStart',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                label: 'Startup rollover',
+                                help: 'Starts a new log file on start/restart'
+                            },
+                            watcher: {
+                                listener: restartListener
+                            }
+                        },
+                        {
+                            key: 'logMaxSize',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'number',
+                                label: 'Max log file size',
+                                help: 'When log file size is reached a new one is started. Set to 0 to disable.',
+                                addonRight: {
+                                    text: 'kB'
+                                }
+                            },
+                            watcher: {
+                                listener: restartListener
+                            }
+                        },
+                        {
+                            key: 'logRotateAfterDays',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'number',
+                                label: 'Rotate after',
+                                help: 'A new log file is started after this many days. Supercedes max size. Keep empty to disable.',
+                                addonRight: {
+                                    text: 'days'
+                                }
+                            },
+                            watcher: {
+                                listener: restartListener
+                            }
+                        },
+                        {
+                            key: 'keepLogFiles',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'number',
+                                label: 'Keep log files',
+                                help: 'Number of log files to keep before oldest is deleted.'
+                            },
+                            watcher: {
+                                listener: restartListener
+                            }
+                        },
+
+                        {
                             key: 'consolelevel',
                             type: 'horizontalSelect',
                             templateOptions: {

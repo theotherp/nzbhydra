@@ -187,7 +187,7 @@ def run(arguments):
                 webbrowser.open_new(f.url)
         else:
             logger.notice("Go to %s for the frontend" % f.url)
-
+        config.settings.main.isFirstStart = False
         web.run(host, port, basepath)
     except Exception:
         logger.exception("Fatal error occurred")

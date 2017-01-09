@@ -120,6 +120,7 @@ initialConfig = {
         "debug": False,
         "externalUrl": None,
         "firstStart": arrow.utcnow().timestamp,
+        "isFirstStart": True,
         "flaskReloader": False,
         "gitPath": None,
         "host": "0.0.0.0",
@@ -128,7 +129,11 @@ initialConfig = {
             "consolelevel": "INFO",
             "logfilename": "nzbhydra.log",
             "logfilelevel": "INFO",
-            "logIpAddresses": True
+            "logIpAddresses": True,
+            "logRotateAfterDays": None,
+            "logMaxSize": 1000,
+            "keepLogFiles": 25,
+            "rolloverAtStart": False
         },
         "port": 5075,
         "repositoryBase": "https://github.com/theotherp",
