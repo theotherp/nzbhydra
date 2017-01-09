@@ -12,6 +12,7 @@ Changed: Removed womble :-(
 
 Fixed: Show better error message when connection test to indexer failed. See [#500](https://github.com/theotherp/nzbhydra/issues/500).
 
+
 ### 0.2.181
 Fixed: NZBGeek and forbidden words don't play well together. See [#493](https://github.com/theotherp/nzbhydra/issues/493).
 
