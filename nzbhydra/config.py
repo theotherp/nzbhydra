@@ -110,30 +110,12 @@ initialConfig = {
             "type": "nzbindex",
             "username": None
 
-        },
-        {
-            "accessType": "external",
-            "categories": ["tv", "tvhd", "tvsd"],
-            "enabled": True,
-            "hitLimit": 0,
-            "hitLimitResetTime": None,
-            "host": "https://newshost.co.za",
-            "name": "Womble",
-            "password": None,
-            "preselect": True,
-            "score": 0,
-            "search_ids": [],
-            "searchTypes": [],
-            "showOnSearch": False,
-            "timeout": None,
-            "type": "womble",
-            "username": None
         }
     ],
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 31,
+        "configVersion": 32,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
@@ -738,6 +720,13 @@ def migrateConfig(config):
                 addLogMessage(20, "Renaming default theme to bright theme")
                 if config["main"]["theme"] == "default":
                     config["main"]["theme"] = "bright"
+
+        if config["main"]["configVersion"] == 31:
+            with version_update(config, 32):
+                addLogMessage(20, "Removing womble from config")
+                for indexer in config["indexers"]:
+                    if indexer["type"] == "womble":
+                        config["indexers"].remove(indexer)
 
 
 

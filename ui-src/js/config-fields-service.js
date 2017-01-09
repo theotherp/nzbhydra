@@ -837,7 +837,7 @@ function ConfigFields($injector) {
                             return getIndexerPresets(model);
                         },
                         checkAddingAllowed: function (existingIndexers, preset) {
-                            if (!(preset.type == "womble" || preset.type == "anizb" || preset.type == "binsearch" || preset.type == "nzbindex" || preset.type == "nzbclub")) {
+                            if (!(preset.type == "anizb" || preset.type == "binsearch" || preset.type == "nzbindex" || preset.type == "nzbclub")) {
                                 return true;
                             }
                             return !_.any(existingIndexers, function (existingEntry) {
@@ -1175,24 +1175,6 @@ function getIndexerPresets(configuredIndexers) {
                 type: "nzbindex",
                 username: null
 
-            },
-            {
-                accessType: "external",
-                categories: ["tv", "tvhd", "tvsd"],
-                enabled: true,
-                hitLimit: 0,
-                hitLimitResetTime: null,
-                host: "https://newshost.co.za",
-                name: "Womble",
-                password: null,
-                preselect: true,
-                score: 0,
-                search_ids: [],
-                searchTypes: [],
-                showOnSearch: false,
-                timeout: null,
-                type: "womble",
-                username: null
             }
         ]
     ];
@@ -1389,21 +1371,19 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
     }
 
 
-    if (model.type != "womble") {
-        fieldset.push(
-            {
-                key: 'preselect',
-                type: 'horizontalSwitch',
-                hideExpression: 'model.accessType == "external"',
-                templateOptions: {
-                    type: 'switch',
-                    label: 'Preselect',
-                    help: 'Preselect this indexer on the search page'
-                }
+    fieldset.push(
+        {
+            key: 'preselect',
+            type: 'horizontalSwitch',
+            hideExpression: 'model.accessType == "external"',
+            templateOptions: {
+                type: 'switch',
+                label: 'Preselect',
+                help: 'Preselect this indexer on the search page'
             }
-        )
-    }
-    if (model.type != "womble" && model.type != "jackett") {
+        }
+    );
+    if (model.type != "jackett") {
         fieldset.push(
             {
                 key: 'accessType',
@@ -1419,7 +1399,7 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
             }
         );
     }
-    if (model.type != "womble" && model.type != "anizb") {
+    if (model.type != "anizb") {
         fieldset.push(
             {
                 key: 'categories',

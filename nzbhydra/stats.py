@@ -81,9 +81,6 @@ def get_avg_indexer_search_results_share(afterSql, beforeSql):
             if not indexer.settings.enabled:
                 logger.debug("Skipping download stats for %s" % p.name)
                 continue
-            if indexer.settings.name == "Womble":
-                logger.debug("Skipping download stats for Womble because we exclude update queries without specific query or ID")
-                continue
         except IndexerNotFoundException:
             logger.error("Unable to find indexer %s in configuration" % p.name)
             continue

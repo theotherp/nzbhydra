@@ -24,11 +24,10 @@ logger = logging.getLogger('root')
 
 
 class Anizb(SearchModule):
-    # TODO init of config which is dynmic with its path
 
     def __init__(self, indexer):
         super(Anizb, self).__init__(indexer)
-        self.module = "Womble"
+        self.module = "anizb"
         
         self.settings.generate_queries = True
         self.needs_queries = False

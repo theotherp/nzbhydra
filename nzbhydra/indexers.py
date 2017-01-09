@@ -11,7 +11,7 @@ from peewee import fn
 from nzbhydra import config, database
 from nzbhydra.database import Indexer, IndexerStatus
 from nzbhydra.exceptions import IndexerNotFoundException
-from nzbhydra.searchmodules import anizb, binsearch, jackett, newznab, nzbclub, nzbindex, womble
+from nzbhydra.searchmodules import anizb, binsearch, jackett, newznab, nzbclub, nzbindex
 
 logger = logging.getLogger('root')
 configured_indexers = []
