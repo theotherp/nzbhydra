@@ -6,6 +6,8 @@ Added: Button to scroll to bottom of log file and option to update log file auto
 
 Added: Options to control when a new log file is started (depending on size or time), how many to keep and if a new file should be started on startup. See [#496](https://github.com/theotherp/nzbhydra/issues/496).
 
+Added: Data grid for search history which allows filtering and sorting. Not fully implemented yet but will be used for search and download history, with proper category / date filtering. See [#479](https://github.com/theotherp/nzbhydra/issues/479).  
+
 Changed: Removed womble :-(
 
 Fixed: Show better error message when connection test to indexer failed. See [#500](https://github.com/theotherp/nzbhydra/issues/500).
