@@ -4,6 +4,8 @@
 ### 0.2.182
 Added: Button to scroll to bottom of log file and option to update log file automatically. See [#497](https://github.com/theotherp/nzbhydra/issues/497) and [#498](https://github.com/theotherp/nzbhydra/issues/498).
 
+Fixed: Show better error message when connection test to indexer failed. [#500](https://github.com/theotherp/nzbhydra/issues/500).
+
 ### 0.2.181
 Fixed: NZBGeek and forbidden words don't play well together. See [#493](https://github.com/theotherp/nzbhydra/issues/493).
 

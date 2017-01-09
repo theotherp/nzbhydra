@@ -72,7 +72,7 @@ def test_connection(host, apikey, username=None, password=None):
         logger.info("Unable to log in to indexer %s due to wrong credentials: %s" % (host, e.message))
         return False, e.message
     except IndexerAccessException as e:
-        logger.info("Unable to log in to indexer %s. Unknown error %s." % (host, str(e)))
+        logger.info("Unable to log in to indexer %s. Unknown error %s." % (host, e.message))
         return False, "Host reachable but unknown error returned"
     logger.info("Connection to host %s successful" % host)
     return True, ""
