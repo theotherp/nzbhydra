@@ -79,11 +79,11 @@ def setup_custom_logger(logfile=None, quiet=False):
     global logfilename
     logfileMessage = None
     if logfile is None:
-        logfileMessage = "Logging to file %s as defined in the command line"
         logfilename = config.settings.main.logging.logfilename
+        logfileMessage = "Logging to file %s as defined in the command line" % logfilename
     else:
-        logfileMessage = "Logging to file %s as defined in the settings"
         logfilename = logfile
+        logfileMessage = "Logging to file %s as defined in the settings" % logfilename
     console_log_level = config.settings.main.logging.consolelevel.upper()
     file_log_level = config.settings.main.logging.logfilelevel.upper()
     # set console log level from config file
