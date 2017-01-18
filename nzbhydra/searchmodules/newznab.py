@@ -82,7 +82,7 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult, username=None, pass
     logger.info("Testing for ID capability \"%s\"" % idkey)
 
     try:
-        url = _build_base_url(host, apikey, t, None, 25)
+        url = _build_base_url(host, apikey, t, None, 50)
         url.query.add({idkey: idvalue})
         headers = {
             'User-Agent': config.settings.searching.userAgent

@@ -97,6 +97,10 @@ def canUseIdKey(indexer, key):
         return True
     if key == "rid" and "tvdbid" in indexer.settings.search_ids:
         return True
+    if key == "imdbid" and "tmdbid" in indexer.settings.search_ids:
+        return True
+    if key == "tmdbid" and "imdbid" in indexer.settings.search_ids:
+        return True
     return False
 
 
@@ -186,7 +190,7 @@ def pick_indexers(search_request):
         if search_request.identifier_key is not None and not canUseIdKey(p, search_request.identifier_key):
             if not (allow_query_generation and p.generate_queries):
                 logger.debug("Did not pick %s because search will be done by an identifier and the indexer or system wide settings don't allow query generation" % p)
-                add_not_picked_indexer(notPickedReasons, "Does not support ID based searches", p.name)
+                add_not_picked_indexer(notPickedReasons, "Does not support searching by the supplied ID %s and query generation is not allowed" % search_request.identifier_key, p.name)
                 continue
             else:
                 if queryCanBeGenerated is None:
@@ -201,8 +205,8 @@ def pick_indexers(search_request):
                         queryCanBeGenerated = False
                         logger.debug("Unable to get title for supplied ID. Indexers that don't support the ID will be skipped")
                 if not queryCanBeGenerated:
-                    logger.debug("Did not pick %s because search will be done by an identifier and retrieval of the title for query generation failed" % p)
-                    add_not_picked_indexer(notPickedReasons, "Does not support ID based searches", p.name)
+                    logger.debug("Did not pick %s because search will be done by an identifier and retrieval of the title for query generation or conversion of the ID failed" % p)
+                    add_not_picked_indexer(notPickedReasons, "Does not support searching by the supplied ID %s and query generation or ID conversion is not possible" % search_request.identifier_key, p.name)
                     continue
 
         logger.debug("Picked %s" % p)

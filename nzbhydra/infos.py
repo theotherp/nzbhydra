@@ -86,7 +86,7 @@ def find_movie_ids(input):
 
 
 def tmdbid_to_imdbid(tmdbid):
-    logger.info("Querying IMDB for TMDB id %s" % tmdbid)
+    logger.info("Querying TMDB for IMDB id %s" % tmdbid)
     movie = tmdbsimple.Movies(tmdbid)
     response = movie.info()
     imdbid = response["imdb_id"][2:]
@@ -96,7 +96,7 @@ def tmdbid_to_imdbid(tmdbid):
 
 
 def imdbid_to_tmdbid(imdbid):
-    logger.info("Querying TMDB for IMDB id %s" % imdbid)
+    logger.info("Querying TMDB for TMDB id %s" % imdbid)
     movie = tmdbsimple.Find("tt" + imdbid)
     response = movie.info(external_source="imdb_id")
     movie_results_ = response["movie_results"]

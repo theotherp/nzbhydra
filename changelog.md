@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.184
+Fixed: Sometimes indexers were not picked if they didn't support an ID but it would've been possible to convert the ID to a supported one (e.g. TMDB requested and IMDB supported).
+
 ### 0.2.183
 Added: Show an error if an indexer was ignored during when searching (every enabled indexer should either be picked for searching or it should be mentioned why it wasn't). See [#511](https://github.com/theotherp/nzbhydra/issues/511).
 
