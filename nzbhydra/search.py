@@ -9,6 +9,7 @@ import hashlib
 import logging
 import re
 from itertools import groupby
+from sets import Set
 from sqlite3 import OperationalError
 
 import arrow
@@ -211,6 +212,10 @@ def pick_indexers(search_request):
         for reason, notPickedIndexers in notPickedReasons.items():
             warning += "\r\n%s: %s" % (reason, ", ".join(notPickedIndexers))
         logger.warn(warning)
+    allNotPickedIndexers = Set([item for sublist in notPickedReasons.values() for item in sublist])
+    missedIndexers = Set([x.name for x in indexers.enabled_indexers]).difference(allNotPickedIndexers).difference(picked_indexers)
+    if len(missedIndexers) > 0:
+        logger.error("The following indexers were missed by code. Please report this as a bug: " + ",".join(missedIndexers))
 
     return picked_indexers
 
