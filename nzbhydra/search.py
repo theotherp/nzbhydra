@@ -207,15 +207,14 @@ def pick_indexers(search_request):
 
         logger.debug("Picked %s" % p)
         picked_indexers.append(p)
-    if len(picked_indexers) == 0:
-        warning = "No indexeres were selected for this search:"
-        for reason, notPickedIndexers in notPickedReasons.items():
-            warning += "\r\n%s: %s" % (reason, ", ".join(notPickedIndexers))
-        logger.warn(warning)
     allNotPickedIndexers = Set([item for sublist in notPickedReasons.values() for item in sublist])
-    missedIndexers = Set([x.name for x in indexers.enabled_indexers]).difference(allNotPickedIndexers).difference(picked_indexers)
-    if len(missedIndexers) > 0:
-        logger.error("The following indexers were missed by code. Please report this as a bug: " + ",".join(missedIndexers))
+    notPickedIndexersListString = ""
+    for reason, notPickedIndexers in notPickedReasons.items():
+        notPickedIndexersListString = "\r\n%s: %s" % (reason, ", ".join(notPickedIndexers))
+    if len(allNotPickedIndexers) == 0:
+        logger.warn("No indexers were selected for this search:" + notPickedIndexersListString)
+    elif len(allNotPickedIndexers) > 0:
+        logger.info("Some indexers were not selected for this search: " + notPickedIndexersListString)
 
     return picked_indexers
 
