@@ -63,6 +63,16 @@ function otherColumns($http, $templateCache, $compile, $window) {
             //href = "{{ result.link }}"
             $window.location.href = resultItem.link;
         }
+
+        $scope.getNfoTooltip = function() {
+            if ($scope.result.has_nfo == 1) {
+                return "Show NFO"
+            } else if ($scope.result.has_nfo == 2) {
+                return "Try to load NFO (may not be available)";
+            } else {
+                return "No NFO available";
+            }
+        }
     }
 }
 

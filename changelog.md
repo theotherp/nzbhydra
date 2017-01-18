@@ -4,6 +4,8 @@
 ### 0.2.183
 Added: Show an error if an indexer was ignored during when searching (every enabled indexer should either be picked for searching or it should be mentioned why it wasn't). See [#511](https://github.com/theotherp/nzbhydra/issues/511).
 
+Added: Show tooltips on search result icons and give the icons a bit more space. See [#506](https://github.com/theotherp/nzbhydra/issues/506).
+
 ### 0.2.182
 Added: Button to scroll to bottom of log file and option to update log file automatically. See [#497](https://github.com/theotherp/nzbhydra/issues/497) and [#498](https://github.com/theotherp/nzbhydra/issues/498).
 

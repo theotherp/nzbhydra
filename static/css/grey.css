@@ -7486,6 +7486,7 @@ a.disabled:hover {
 .result-links {
   font-size: 12px;
   width: 8%;
+  padding-right: 4px !important;
 }
 .title-group-first-row {
   border-width: 1px 1px 0 1px;
