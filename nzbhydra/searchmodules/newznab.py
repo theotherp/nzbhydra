@@ -592,7 +592,7 @@ class NewzNab(SearchModule):
             entry.details_link = self.get_details_link(entry.indexerguid)
         if usenetdate is None:
             # Not provided by attributes, use pubDate instead
-            usenetdate = arrow.get(entry.pubDate, 'ddd, DD MMM YYYY HH:mm:ss Z')
+            usenetdate = arrow.get(entry.pubDate, ['ddd, DD MMM YYYY HH:mm:ss Z', 'ddd, DD MMM YYYY HH:mm A Z'])
         self.getDates(entry, usenetdate)
         entry.category = getByNewznabCats(categories)
         return entry
