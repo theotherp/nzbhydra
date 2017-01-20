@@ -596,7 +596,6 @@ class NewzNab(SearchModule):
                                    ['ddd, DD MMM YYYY HH:mm:ss Z',
                                     'ddd, DD MMM YYYY HH:mm A Z',
                                     'ddd, DD MMM YYYY HH:mm Z'])
-
         self.getDates(entry, usenetdate)
         entry.category = getByNewznabCats(categories)
         return entry
