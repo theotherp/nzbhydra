@@ -9,7 +9,7 @@ import re
 try:
     from functools import lru_cache
 except ImportError:  # pragma: no cover
-    from backports.functools_lru_cache import lru_cache  # pragma: no cover
+    from functools_lru_cache import lru_cache  # pragma: no cover
 
 from arrow import locales
 
