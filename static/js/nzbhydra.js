@@ -5186,8 +5186,9 @@ function ConfigFields($injector) {
                         presets: function (model) {
                             return getIndexerPresets(model);
                         },
+
                         checkAddingAllowed: function (existingIndexers, preset) {
-                            if (!(preset.type == "anizb" || preset.type == "binsearch" || preset.type == "nzbindex" || preset.type == "nzbclub")) {
+                            if (!preset || !(preset.type == "anizb" || preset.type == "binsearch" || preset.type == "nzbindex" || preset.type == "nzbclub")) {
                                 return true;
                             }
                             return !_.any(existingIndexers, function (existingEntry) {

@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.186
+Fixed: Adding an indexer without using a preset was impossible. See [#514](https://github.com/theotherp/nzbhydra/issues/514).
+
 ### 0.2.185
 Fixed: Update library for handling dates and extended newznab time patterns to hopefully properly parse usenet dates from indexers that change their date format for no fucking reason. See [#512](https://github.com/theotherp/nzbhydra/issues/512).
 
