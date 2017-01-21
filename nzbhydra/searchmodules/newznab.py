@@ -570,7 +570,7 @@ class NewzNab(SearchModule):
                 entry.group = attribute_value
             elif attribute_name == "usenetdate":
                 try:
-                    usenetdate = arrow.get(attribute_value, 'ddd, DD MMM YYYY HH:mm:ss Z')
+                    usenetdate = arrow.get(attribute_value, ['ddd, DD MMM YYYY HH:mm:ss Z', 'ddd, DD MMM YYYY HH:mm:ss ZZZ', 'ddd, DD MMM YYYY HH:mm Z', 'ddd, DD MMM YYYY HH:mm A Z'])
                 except ParserError:
                     self.debug("Unable to parse usenet date format: %s" % attribute_value)
                     usenetdate = None
@@ -592,10 +592,7 @@ class NewzNab(SearchModule):
             entry.details_link = self.get_details_link(entry.indexerguid)
         if usenetdate is None:
             # Not provided by attributes, use pubDate instead
-            usenetdate = arrow.get(entry.pubDate,
-                                   ['ddd, DD MMM YYYY HH:mm:ss Z',
-                                    'ddd, DD MMM YYYY HH:mm A Z',
-                                    'ddd, DD MMM YYYY HH:mm Z'])
+            usenetdate = arrow.get(entry.pubDate, ['ddd, DD MMM YYYY HH:mm:ss Z', 'ddd, DD MMM YYYY HH:mm:ss ZZZ', 'ddd, DD MMM YYYY HH:mm Z', 'ddd, DD MMM YYYY HH:mm A Z'])
         self.getDates(entry, usenetdate)
         entry.category = getByNewznabCats(categories)
         return entry

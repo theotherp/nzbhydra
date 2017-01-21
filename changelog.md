@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.185
+Fixed: Update library for handling dates and extended newznab time patterns to hopefully properly parse usenet dates from indexers that change their date format for no fucking reason. See [#512](https://github.com/theotherp/nzbhydra/issues/512).
+
 ### 0.2.184
 Fixed: Sometimes indexers were not picked if they didn't support an ID but it would've been possible to convert the ID to a supported one (e.g. TMDB requested and IMDB supported).
 
