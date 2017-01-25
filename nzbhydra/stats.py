@@ -3,7 +3,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import calendar
 import logging
 from itertools import groupby
 
@@ -13,7 +12,7 @@ from dateutil import tz
 from peewee import fn, JOIN, SQL
 
 from nzbhydra import database
-from nzbhydra.database import Indexer, IndexerApiAccess, IndexerNzbDownload, IndexerSearch, Search, IndexerStatus, TvIdCache, MovieIdCache, SearchResult
+from nzbhydra.database import Indexer, IndexerApiAccess, IndexerNzbDownload, Search, IndexerStatus, TvIdCache, MovieIdCache, SearchResult
 from nzbhydra.exceptions import IndexerNotFoundException
 from nzbhydra.indexers import getIndexerByName
 
@@ -44,6 +43,7 @@ def getStats(after=None, before=None):
             "timeBasedDownloadStats": getTimeBasedDownloadStats(after, before),
             "timeBasedSearchStats": getTimeBasedSearchStats(after, before)
             }
+
 
 def get_avg_indexer_response_times(after, before):
     result = []
@@ -86,7 +86,8 @@ def get_avg_indexer_search_results_share(afterSql, beforeSql):
             continue
         innerSelect = """(SELECT ps.search_id
                                     FROM indexersearch ps, search s
-                                    WHERE ps.indexer_id == %(id)d AND ps.search_id = s.id AND ps.successful AND (s.episode NOT NULL OR s.season NOT NULL OR s.identifier_key NOT NULL OR s.query NOT NULL)) AND ps.time > %(after)s and ps.time < %(before)s""" % {"id": p.id, "after": afterSql, "before": beforeSql}
+                                    WHERE ps.indexer_id == %(id)d AND ps.search_id = s.id AND ps.successful AND (s.episode NOT NULL OR s.season NOT NULL OR s.identifier_key NOT NULL OR s.query NOT NULL)) AND ps.time > %(after)s and ps.time < %(before)s""" % {"id": p.id, "after": afterSql,
+                                                                                                                                                                                                                                                                   "before": beforeSql}
 
         result = database.db.execute_sql(
             """
@@ -211,7 +212,7 @@ def get_avg_indexer_access_success(afterSql, beforeSql):
 def getTimeBasedDownloadStats(after, before):
     downloads = IndexerNzbDownload(). \
         select(Indexer.name, IndexerApiAccess.response_successful, IndexerNzbDownload.time). \
-        where((IndexerApiAccess.time > after) & (IndexerApiAccess.time < before)) .\
+        where((IndexerApiAccess.time > after) & (IndexerApiAccess.time < before)). \
         join(IndexerApiAccess, JOIN.LEFT_OUTER). \
         join(Indexer, JOIN.LEFT_OUTER)
     downloadTimes = [arrow.get(x.time).to(tz.tzlocal()) for x in downloads]
@@ -316,12 +317,14 @@ def get_nzb_downloads(page=0, limit=100, type=None):
 
 
 # ((Search.identifier_value == MovieIdCache.imdb) & (Search.identifier_key == "imdbid"))
-def get_search_requests(page=0, limit=100, sortModel=None, type=None, filterModel=None):
-    query = Search().select(Search.time, Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type, Search.username, Search.title, Search.author, TvIdCache.title.alias("tvtitle"), MovieIdCache.title.alias("movietitle")).join(TvIdCache,
-                                                                                                                                                                                                                                                                                     JOIN.LEFT_OUTER, on=(
-            ((Search.identifier_value == TvIdCache.tvdb) & (Search.identifier_key == "tvdbid")) |
-            ((Search.identifier_value == TvIdCache.tvrage) & (Search.identifier_key == "rid"))
-        )).join(MovieIdCache, JOIN.LEFT_OUTER, on=(
+def get_search_requests(page=0, limit=100, sortModel=None, type=None, filterModel=None, distinct=False):
+    columns = [Search.time, Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type, Search.username, Search.title, Search.author, TvIdCache.title.alias("tvtitle"), MovieIdCache.title.alias("movietitle")]
+
+    query = Search().select(*columns)
+    query = query.join(TvIdCache, JOIN.LEFT_OUTER, on=(
+        ((Search.identifier_value == TvIdCache.tvdb) & (Search.identifier_key == "tvdbid")) |
+        ((Search.identifier_value == TvIdCache.tvrage) & (Search.identifier_key == "rid"))
+    )).join(MovieIdCache, JOIN.LEFT_OUTER, on=(
         ((Search.identifier_value == MovieIdCache.imdb) & (Search.identifier_key == "imdbid")) |
         ((Search.identifier_value == MovieIdCache.tmdb) & (Search.identifier_key == "tmdbid"))))
 
@@ -350,6 +353,8 @@ def get_search_requests(page=0, limit=100, sortModel=None, type=None, filterMode
             if sort["sort"] == "desc":
                 orderBy = orderBy.desc()
             query = query.order_by(orderBy)
+    if distinct:
+        query = query.group_by(Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type, Search.username, Search.title, Search.author)
     requests = list(query.paginate(page, limit).dicts())
 
     search_requests = {"totalRequests": total_requests, "searchRequests": requests}

@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.188
+Fixed: Show distinct queries in search history on search page. See [#515](https://github.com/theotherp/nzbhydra/issues/515).
+
 ### 0.2.187
 Added: You can access and repeat the latest 20 manual searches from a button on the search screen. See [#515](https://github.com/theotherp/nzbhydra/issues/515).
 

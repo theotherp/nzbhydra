@@ -989,6 +989,7 @@ class SearchSchema(Schema):
     limit = fields.Integer(missing=500)
     sortModel = fields.Nested(SortModelSchema, many=True, missing=None)
     type = fields.String(missing=None)
+    distinct = fields.Boolean(missing=False)
 
 
 @app.route('/internalapi/getsearchrequests', methods=['GET', 'POST'])
@@ -999,7 +1000,7 @@ def internalapi_search_requests(args):
     if not "sortModel" in args.keys() or args["sortModel"] is None:
         args["sortModel"] = []
     filterModel = request.json["filterModel"] if "filterModel" in request.json.keys() else None
-    return jsonify(get_search_requests(page=args["page"], limit=args["limit"], sortModel=args["sortModel"], type=args["type"], filterModel=filterModel))
+    return jsonify(get_search_requests(page=args["page"], limit=args["limit"], sortModel=args["sortModel"], type=args["type"], filterModel=filterModel, distinct=args["distinct"]))
 
 
 internalapi__redirect_rid_args = {
