@@ -308,19 +308,21 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
     $scope.availableIndexers = getAvailableIndexers();
 
 
-    if ($scope.mode) {
-        $scope.startSearch();
-    } else {
-        //Getting the search history only makes sense when we're not currently searching
-        SearchHistoryService.getSearchHistory(1, 20).then(function (data) {
+    function getAndSetSearchRequests() {
+        SearchHistoryService.getSearchHistory(1, 20, null, null, "internal").then(function (data) {
             $scope.searchHistory = data.data.searchRequests;
         });
     }
 
+    if ($scope.mode) {
+        $scope.startSearch();
+    } else {
+        //Getting the search history only makes sense when we're not currently searching
+        getAndSetSearchRequests();
+    }
+
     $scope.$on("searchResultsShown", function() {
-        SearchHistoryService.getSearchHistory(1, 20).then(function (data) {
-            $scope.searchHistory = data.data.searchRequests;
-        });
+        getAndSetSearchRequests();
     });
 
 

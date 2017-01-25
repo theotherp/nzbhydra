@@ -980,16 +980,6 @@ def internalapi_getnzb_downloads(args):
     return jsonify(get_nzb_downloads(page=args["page"], limit=args["limit"], type=args["type"]))
 
 
-internalapi__getsearchrequests_args = {
-    "page": fields.Integer(missing=0),
-    "limit": fields.Integer(missing=500),
-    "type": fields.String(missing=None),
-    "sortModel": fields.Nested({
-        "colId": fields.String(),
-        "sort": fields.String()
-    }, many=True)
-}
-
 class SortModelSchema(Schema):
     colId = fields.String()
     sort = fields.String()
@@ -1009,7 +999,7 @@ def internalapi_search_requests(args):
     if not "sortModel" in args.keys() or args["sortModel"] is None:
         args["sortModel"] = []
     filterModel = request.json["filterModel"] if "filterModel" in request.json.keys() else None
-    return jsonify(get_search_requests(page=args["page"], limit=args["limit"], sortModel=args["sortModel"], filterModel=filterModel))
+    return jsonify(get_search_requests(page=args["page"], limit=args["limit"], sortModel=args["sortModel"], type=args["type"], filterModel=filterModel))
 
 
 internalapi__redirect_rid_args = {

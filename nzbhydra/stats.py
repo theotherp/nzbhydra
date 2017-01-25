@@ -326,7 +326,7 @@ def get_search_requests(page=0, limit=100, sortModel=None, type=None, filterMode
         ((Search.identifier_value == MovieIdCache.tmdb) & (Search.identifier_key == "tmdbid"))))
 
     if type is not None and type != "All":
-        query = query.where(Search.internal) if type == "Internal" else query.where(~Search.internal)
+        query = query.where(Search.internal) if type.lower() == "internal" else query.where(~Search.internal)
     if filterModel:
         for column, filter in filterModel.items():
             where = column
