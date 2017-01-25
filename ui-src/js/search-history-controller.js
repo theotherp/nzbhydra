@@ -28,6 +28,10 @@ function SearchHistoryController($scope, $state, StatsService, history, $filter)
         {
             headerName: "Query",
             field: "query",
+            cellRenderer: function (params) {
+                console.log(params);
+                return _formatQuery(params.data);
+            },
             filterParams: {apply: true, newRowsAction: "keep"}
         },
         {
@@ -154,19 +158,6 @@ function SearchHistoryController($scope, $state, StatsService, history, $filter)
         $state.go("root.search", stateParams, {inherit: false});
     };
 
-    $scope.formatQuery = function (request) {
-        if (request.movietitle != null) {
-            return request.movietitle;
-        }
-        if (request.tvtitle != null) {
-            return request.tvtitle;
-        }
-
-        if (!request.query && !request.identifier_key && !request.season && !request.episode) {
-            return "Update query";
-        }
-        return request.query;
-    };
 
     $scope.formatAdditional = _formatAdditional;
 
@@ -210,6 +201,39 @@ function SearchHistoryController($scope, $state, StatsService, history, $filter)
             result.push("Title: " + request.title);
         }
         return result.join(", ");
+    }
+
+    $scope.formatQuery = _formatQuery;
+
+    function _formatQuery(request) {
+        var query = '';
+        var generatedTitle = true;
+        if (request.movietitle != null) {
+            query = request.movietitle;
+        } else if (request.tvtitle != null) {
+            query = request.tvtitle;
+        } else if (!request.query) {
+            if (!request.identifier_key && !request.season && !request.episode) {
+                query = "Update query";
+            }
+        } else {
+            query = request.query;
+            generatedTitle = false;
+        }
+        if (request.identifier_key && !request.tvtitle && !request.movietitle) {
+            query = "Unknown title";
+        }
+
+        var html = '<a href="" ng-click="openSearch(request)"><span class="glyphicon glyphicon-search" style="margin-right: 5px" uib-tooltip="Click to repeat search" tooltip-placement="top" tooltip-trigger="mouseenter"></span></a>';
+        if (generatedTitle) {
+            html += '<span class="history-title">' + query + '</span>';
+        } else {
+            html += query;
+        }
+
+
+        return html;
+
     }
 
 

@@ -4,6 +4,8 @@
 ### 0.2.187
 Changed: Changed start view of "History & Stats" to "Search history" because stats took a long time to be loaded before you could switch to one of the other subareas  
 
+Fixed: Restored button to repeat searches and display of metaquery for searches without query. See [#515](https://github.com/theotherp/nzbhydra/issues/515).
+
 ### 0.2.186
 Fixed: Adding an indexer without using a preset was impossible. See [#514](https://github.com/theotherp/nzbhydra/issues/514).
 
