@@ -50,7 +50,7 @@
                             <input type="checkbox" name="by-id" id="by-id" ng-model="isById.value" style="margin-top:0;">
                     </span>
 
-                        
+
                         <script type="text/ng-template" id="movieAutocompleteEntry">
                             <a>{{ match.label }}</a>
                         </script>
@@ -62,8 +62,21 @@
                                tooltip-trigger="mouseenter"
                                ng-change="searchInputChanged()"
                         >
+                        <span class="input-group-btn input-group-btn1">
+                            <div class="btn-group" uib-dropdown is-open="status.isopen">
+                              <button id="single-button" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled"
+                                      uib-tooltip="Search history"
+                                      tooltip-placement="top"
+                                      tooltip-trigger="mouseenter"
+                              >
+                                <span class="glyphicon glyphicon-time" style="margin-right: 3px"></span><span class="caret"></span>
+                              </button>
+                                <ul class="uib-dropdown-menu" template-url="static/html/search-searchhistory-dropdown.html" aria-labelledby="button-template-url">
+                                </ul>
+                            </div>
+                        </span>
 
-                        <span class="input-group-btn input-group-btn2">
+                        <span class="input-group-btn input-group-btn2" style="width:51px;">
                             <button class="btn btn-default" type="button" ng-click="goToSearchUrl()">Go!</button>
                         </span>
                     </div>
@@ -80,7 +93,7 @@
                 <div class="col-md-10">
                     <div class="input-group" style="padding-top: 10px;">
                         <button ng-click="toggleAllIndexers()" class="btn btn-default"> Invert selection</button>
-                            <span style="margin-right: 10px;"></span>
+                        <span style="margin-right: 10px;"></span>
                         <label ng-repeat="indexer in availableIndexers">
                             <input type="checkbox" ng-class="{'indexer-checkbox': $index > 0}" ng-model="indexer.activated" ng-click="availableIndexers[indexer.name].activated=!availableIndexers[indexer.name].activated"> {{ indexer.name }}
                         </label>

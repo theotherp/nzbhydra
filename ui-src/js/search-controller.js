@@ -2,7 +2,7 @@ angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
 
-function SearchController($scope, $http, $stateParams, $state, $window, $filter, SearchService, focus, ConfigService, CategoriesService, blockUI, $element, ModalService) {
+function SearchController($scope, $http, $stateParams, $state, $window, $filter, $sce, SearchService, focus, ConfigService, CategoriesService, blockUI, $element, ModalService, SearchHistoryService) {
 
     function getNumberOrUndefined(number) {
         if (_.isUndefined(number) || _.isNaN(number) || number == "") {
@@ -29,6 +29,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
     $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? CategoriesService.getDefault() : CategoriesService.getByName($stateParams.category);
     $scope.tmdbid = $stateParams.tmdbid;
     $scope.tvdbid = $stateParams.tvdbid;
+    $scope.imdbid = $stateParams.imdbid;
     $scope.rid = $stateParams.rid;
     $scope.title = $stateParams.title;
     $scope.season = $stateParams.season;
@@ -46,6 +47,8 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
     }
 
     $scope.showIndexers = {};
+
+    $scope.searchHistory = [];
 
     var safeConfig = ConfigService.getSafe();
 
@@ -172,7 +175,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
     $scope.startSearch = function () {
         blockUI.start("Searching...");
         var indexers = angular.isUndefined($scope.indexers) ? undefined : $scope.indexers.join("|");
-        SearchService.search($scope.category.name, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.rid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers, $scope.mode).then(function () {
+        SearchService.search($scope.category.name, $scope.query, $scope.tmdbid, $scope.imdbid, $scope.title, $scope.tvdbid, $scope.rid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers, $scope.mode).then(function () {
             $state.go("root.search.results", {
                 minsize: $scope.minsize,
                 maxsize: $scope.maxsize,
@@ -182,6 +185,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
                 inherit: true
             });
             $scope.tmdbid = undefined;
+            $scope.imdbid = undefined;
             $scope.tvdbid = undefined;
         });
     };
@@ -220,8 +224,11 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
         stateParams.maxage = $scope.maxage;
         stateParams.category = $scope.category.name;
         stateParams.indexers = encodeURIComponent(getSelectedIndexers());
-
         $state.go("root.search", stateParams, {inherit: false, notify: true, reload: true});
+    };
+
+    $scope.repeatSearch = function (request) {
+        $state.go("root.search", SearchHistoryService.getStateParamsForRepeatedSearch(request), {inherit: false, notify: true, reload: true});
     };
 
 
@@ -242,6 +249,8 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
         $scope.title = undefined;
         $scope.tmdbid = undefined;
         $scope.tvdbid = undefined;
+        $scope.season = undefined;
+        $scope.episode = undefined;
         $scope.goToSearchUrl();
     };
 
@@ -280,6 +289,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
             }).value();
     }
 
+
     $scope.toggleAllIndexers = function () {
         angular.forEach($scope.availableIndexers, function (indexer) {
             indexer.activated = !indexer.activated;
@@ -290,11 +300,30 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
         $scope.$broadcast("searchInputChanged", $scope.query != $stateParams.query ? $scope.query : null, $scope.minage, $scope.maxage, $scope.minsize, $scope.maxsize);
     };
 
+
+    $scope.formatRequest = function (request) {
+        return $sce.trustAsHtml(SearchHistoryService.formatRequest(request, false, true, true, true));
+    };
+
     $scope.availableIndexers = getAvailableIndexers();
 
 
     if ($scope.mode) {
         $scope.startSearch();
+    } else {
+        //Getting the search history only makes sense when we're not currently searching
+        SearchHistoryService.getSearchHistory(1, 20).then(function (data) {
+            $scope.searchHistory = data.data.searchRequests;
+        });
     }
+
+    $scope.$on("searchResultsShown", function() {
+        SearchHistoryService.getSearchHistory(1, 20).then(function (data) {
+            $scope.searchHistory = data.data.searchRequests;
+        });
+    });
+
+
+
 
 }

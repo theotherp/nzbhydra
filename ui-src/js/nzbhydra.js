@@ -261,8 +261,8 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                     controller: SearchHistoryController,
                     resolve: {
                         loginRequired: loginRequiredStats,
-                        history: function(StatsService) {
-                            return StatsService.getSearchHistory();
+                        history: function(SearchHistoryService) {
+                            return SearchHistoryService.getSearchHistory();
                         },
                         $title: function ($stateParams) {
                             return "Stats (Searches)"

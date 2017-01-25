@@ -6,28 +6,12 @@ function StatsService($http) {
 
     return {
         get: getStats,
-        getSearchHistory: getSearchHistory,
         getDownloadHistory: getDownloadHistory
     };
 
     function getStats(after, before) {
         return $http.get("internalapi/getstats", {params: {after:after, before:before}}).success(function (response) {
             return response.data;
-        });
-    }
-
-    function getSearchHistory(pageNumber, limit, sortModel, filterModel) {
-        if (angular.isUndefined(pageNumber)) {
-            pageNumber = 1;
-        }
-        if (angular.isUndefined(limit)) {
-            limit = 100;
-        }
-        return $http.post("internalapi/getsearchrequests", {page: pageNumber, limit: limit, sortModel: sortModel, filterModel: filterModel}).success(function (response) {
-            return {
-                searchRequests: response.searchRequests,
-                totalRequests: response.totalRequests
-            }
         });
     }
 
@@ -41,9 +25,7 @@ function StatsService($http) {
         if (angular.isUndefined(type)) {
             type = "All";
         }
-        console.log(1);
         return $http.get("internalapi/getnzbdownloads", {params: {page: pageNumber, limit: limit, type: type}}).success(function (response) {
-            console.log(2);
             return {
                 nzbDownloads: response.nzbDownloads,
                 totalDownloads: response.totalDownloads

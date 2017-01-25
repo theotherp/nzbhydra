@@ -56,6 +56,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.rejected = SearchService.getLastResults().rejected;
     $scope.countRejected = sumRejected($scope.rejected);
     $scope.filteredResults = sortAndFilter($scope.results);
+
+    $scope.$emit("searchResultsShown");
     stopBlocking();
 
     //Returns the content of the property (defined by the current sortPredicate) of the first group element 

@@ -261,8 +261,8 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     controller: SearchHistoryController,
                     resolve: {
                         loginRequired: loginRequiredStats,
-                        history: ["StatsService", function(StatsService) {
-                            return StatsService.getSearchHistory();
+                        history: ["SearchHistoryService", function(SearchHistoryService) {
+                            return SearchHistoryService.getSearchHistory();
                         }],
                         $title: ["$stateParams", function ($stateParams) {
                             return "Stats (Searches)"
@@ -1755,28 +1755,12 @@ function StatsService($http) {
 
     return {
         get: getStats,
-        getSearchHistory: getSearchHistory,
         getDownloadHistory: getDownloadHistory
     };
 
     function getStats(after, before) {
         return $http.get("internalapi/getstats", {params: {after:after, before:before}}).success(function (response) {
             return response.data;
-        });
-    }
-
-    function getSearchHistory(pageNumber, limit, sortModel, filterModel) {
-        if (angular.isUndefined(pageNumber)) {
-            pageNumber = 1;
-        }
-        if (angular.isUndefined(limit)) {
-            limit = 100;
-        }
-        return $http.post("internalapi/getsearchrequests", {page: pageNumber, limit: limit, sortModel: sortModel, filterModel: filterModel}).success(function (response) {
-            return {
-                searchRequests: response.searchRequests,
-                totalRequests: response.totalRequests
-            }
         });
     }
 
@@ -1790,9 +1774,7 @@ function StatsService($http) {
         if (angular.isUndefined(type)) {
             type = "All";
         }
-        console.log(1);
         return $http.get("internalapi/getnzbdownloads", {params: {page: pageNumber, limit: limit, type: type}}).success(function (response) {
-            console.log(2);
             return {
                 nzbDownloads: response.nzbDownloads,
                 totalDownloads: response.totalDownloads
@@ -2091,21 +2073,19 @@ function SearchService($http) {
     };
     
 
-    function search(category, query, tmdbid, title, tvdbid, rid, season, episode, minsize, maxsize, minage, maxage, indexers, mode) {
+    function search(category, query, tmdbid, imdbid, title, tvdbid, rid, season, episode, minsize, maxsize, minage, maxage, indexers, mode) {
         var uri;
         if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0) || mode == "movie") {
-            console.log("Search for movies");
             uri = new URI("internalapi/moviesearch");
             if (angular.isDefined(tmdbid)) {
-                console.log("moviesearch per tmdbid");
                 uri.addQuery("tmdbid", tmdbid);
+            } else if (angular.isDefined(imdbid)) {
+                uri.addQuery("imdbid", imdbid);
             } else {
-                console.log("moviesearch per query");
                 uri.addQuery("query", query);
             }
 
         } else if (category.indexOf("TV") > -1 || (category.indexOf("50") == 0) || mode == "tvsearch") {
-            console.log("Search for shows");
             uri = new URI("internalapi/tvsearch");
             if (angular.isDefined(tvdbid)) {
                 uri.addQuery("tvdbid", tvdbid);
@@ -2113,7 +2093,6 @@ function SearchService($http) {
             if (angular.isDefined(rid)) {
                 uri.addQuery("rid", rid);
             } else {
-                console.log("tvsearch per query");
                 uri.addQuery("query", query);
             }
 
@@ -2247,6 +2226,8 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.rejected = SearchService.getLastResults().rejected;
     $scope.countRejected = sumRejected($scope.rejected);
     $scope.filteredResults = sortAndFilter($scope.results);
+
+    $scope.$emit("searchResultsShown");
     stopBlocking();
 
     //Returns the content of the property (defined by the current sortPredicate) of the first group element 
@@ -2484,10 +2465,146 @@ SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "
 
 angular
     .module('nzbhydraApp')
+    .factory('SearchHistoryService', SearchHistoryService);
+
+function SearchHistoryService($filter, $http) {
+
+    return {
+        getSearchHistory: getSearchHistory,
+        formatRequest: formatRequest,
+        getStateParamsForRepeatedSearch: getStateParamsForRepeatedSearch
+    };
+
+    function getSearchHistory(pageNumber, limit, sortModel, filterModel) {
+        if (angular.isUndefined(pageNumber)) {
+            pageNumber = 1;
+        }
+        if (angular.isUndefined(limit)) {
+            limit = 100;
+        }
+        if (!sortModel) {
+            sortModel = [{colId: "time", sort: "desc"}];
+        }
+        if (!filterModel) {
+            filterModel = {}
+        }
+        return $http.post("internalapi/getsearchrequests", {page: pageNumber, limit: limit, sortModel: sortModel, filterModel: filterModel}).success(function (response) {
+            return {
+                searchRequests: response.searchRequests,
+                totalRequests: response.totalRequests
+            }
+        });
+    }
+
+    function formatRequest(request, includeIdLink, includequery, describeEmptySearch, includeTitle) {
+        var result = [];
+        //ID key: ID value
+        //season
+        //episode
+        //author
+        //title
+        if (includequery && request.query) {
+            result.push("Query: " + request.query);
+        }
+        if (request.title && includeTitle) {
+            result.push('<span class="history-title">Title: </span>' + request.title);
+        } else if (request.movietitle && includeTitle) {
+            result.push('<span class="history-title">Title: </span>' + request.movietitle);
+        } else if (request.tvtitle && includeTitle) {
+            result.push('<span class="history-title">Title: </span>' + request.tvtitle);
+        } else if (request.identifier_key) {
+            var href;
+            var key;
+            if (request.identifier_key == "imdbid") {
+                key = "IMDB ID";
+                href = "https://www.imdb.com/title/tt"
+            } else if (request.identifier_key == "tvdbid") {
+                key = "TVDB ID";
+                href = "https://thetvdb.com/?tab=series&id="
+            } else if (request.identifier_key == "rid") {
+                key = "TVRage ID";
+                href = "internalapi/redirect_rid?rid="
+            } else if (request.identifier_key == "tmdb") {
+                key = "TMDV ID";
+                href = "https://www.themoviedb.org/movie/"
+            }
+            href = href + request.identifier_value;
+            href = $filter("dereferer")(href);
+            if (includeIdLink) {
+                result.push('<span class="history-title">' + key + ': </span><a target="_blank" href="' + href + '">' + request.identifier_value + "</a>");
+            } else {
+                result.push('<span class="history-title">' + key + ": </span>" + request.identifier_value);
+            }
+        }
+        if (request.season) {
+            result.push('<span class="history-title">Season: </span>' + request.season);
+        }
+        if (request.episode) {
+            result.push('<span class="history-title">Episode: </span>' + request.episode);
+        }
+        if (request.author) {
+            result.push('<span class="history-title">Author: </span>' + request.author);
+        }
+        if (result.length == 0 && describeEmptySearch) {
+            result = ['<span class="history-title">Empty search</span>'];
+        }
+
+        return result.join(", ");
+
+    }
+
+    function getStateParamsForRepeatedSearch(request) {
+        var stateParams = {};
+        stateParams.mode = "search"
+        if (request.identifier_key == "imdbid") {
+            stateParams.mode = "movie"
+            stateParams.imdbid = request.identifier_value;
+        } else if (request.identifier_key == "tvdbid" || request.identifier_key == "rid") {
+            stateParams.mode = "tvsearch";
+            if (request.identifier_key == "rid") {
+                stateParams.rid = request.identifier_value;
+            } else {
+                stateParams.tvdbid = request.identifier_value;
+            }
+
+            if (request.season != "") {
+                stateParams.season = request.season;
+            }
+            if (request.episode != "") {
+                stateParams.episode = request.episode;
+            }
+        }
+        if (request.query != "") {
+            stateParams.query = request.query;
+        }
+
+
+        if (request.movietitle != null) {
+            stateParams.title = request.movietitle;
+        }
+        if (request.tvtitle != null) {
+            stateParams.title = request.tvtitle;
+        }
+
+        if (request.category) {
+            stateParams.category = request.category;
+        }
+
+        stateParams.category = request.category;
+
+        return stateParams;
+    }
+
+
+
+}
+SearchHistoryService.$inject = ["$filter", "$http"];
+angular
+    .module('nzbhydraApp')
     .controller('SearchHistoryController', SearchHistoryController);
 
 
-function SearchHistoryController($scope, $state, StatsService, history, $filter) {
+function SearchHistoryController($scope, $state, StatsService, history, $filter, growl, SearchHistoryService) {
     $scope.type = "All";
     $scope.limit = 100;
     $scope.pagination = {
@@ -2513,7 +2630,6 @@ function SearchHistoryController($scope, $state, StatsService, history, $filter)
             headerName: "Query",
             field: "query",
             cellRenderer: function (params) {
-                console.log(params);
                 return _formatQuery(params.data);
             },
             filterParams: {apply: true, newRowsAction: "keep"}
@@ -2561,12 +2677,12 @@ function SearchHistoryController($scope, $state, StatsService, history, $filter)
         enableServerSideFilter: true,
         paginationPageSize: 500,
         suppressRowClickSelection: true,
+        angularCompileRows: true,
         datasource: {
             getRows: function (params) {
                 var page = Math.floor(params.startRow / 500) + 1;
                 var limit = params.endRow - params.startRow;
-                console.log(params);
-                StatsService.getSearchHistory(page, limit, params.sortModel, params.filterModel).then(function (history) {
+                SearchHistoryService.getSearchHistory(page, limit, params.sortModel, params.filterModel).then(function (history) {
                     // $scope.searchRequests = history.data.searchRequests;
                     // $scope.totalRequests = history.data.totalRequests;
                     // $scope.isLoaded = true;
@@ -2590,101 +2706,27 @@ function SearchHistoryController($scope, $state, StatsService, history, $filter)
     };
 
     function getSearchRequestsPage(pageNumber) {
-        StatsService.getSearchHistory(pageNumber, $scope.limit, $scope.type).then(function (history) {
+        SearchHistoryService.getSearchHistory(pageNumber, $scope.limit, $scope.type).then(function (history) {
             $scope.searchRequests = history.data.searchRequests;
             $scope.totalRequests = history.data.totalRequests;
             $scope.isLoaded = true;
         });
     }
 
-    $scope.openSearch = function (request) {
-        var stateParams = {};
-        if (request.identifier_key == "imdbid") {
-            stateParams.imdbid = request.identifier_value;
-        } else if (request.identifier_key == "tvdbid" || request.identifier_key == "rid") {
-            if (request.identifier_key == "rid") {
-                stateParams.rid = request.identifier_value;
-            } else {
-                stateParams.tvdbid = request.identifier_value;
-            }
-
-            if (request.season != "") {
-                stateParams.season = request.season;
-            }
-            if (request.episode != "") {
-                stateParams.episode = request.episode;
-            }
-        }
-        if (request.query != "") {
-            stateParams.query = request.query;
-        }
-        if (request.type == "tv") {
-            stateParams.mode = "tvsearch"
-        } else if (request.type == "tv") {
-            stateParams.mode = "movie"
+    $scope.repeatSearch = function (searchRequestIndex) {
+        if (searchRequestIndex == -1) {
+            growl.error("Error while repeating search, sorry");
         } else {
-            stateParams.mode = "search"
+            var stateParams = SearchHistoryService.getStateParamsForRepeatedSearch($scope.searchRequests[searchRequestIndex]);
+            $state.go("root.search", stateParams, {inherit: false});
         }
-
-        if (request.movietitle != null) {
-            stateParams.title = request.movietitle;
-        }
-        if (request.tvtitle != null) {
-            stateParams.title = request.tvtitle;
-        }
-
-        if (request.category) {
-            stateParams.category = request.category;
-        }
-
-        stateParams.category = request.category;
-
-        $state.go("root.search", stateParams, {inherit: false});
     };
 
 
     $scope.formatAdditional = _formatAdditional;
 
     function _formatAdditional(request) {
-        var result = [];
-        //ID key: ID value
-        //season
-        //episode
-        //author
-        //title
-        if (request.identifier_key) {
-            var href;
-            var key;
-            if (request.identifier_key == "imdbid") {
-                key = "IMDB ID";
-                href = "https://www.imdb.com/title/tt"
-            } else if (request.identifier_key == "tvdbid") {
-                key = "TVDB ID";
-                href = "https://thetvdb.com/?tab=series&id="
-            } else if (request.identifier_key == "rid") {
-                key = "TVRage ID";
-                href = "internalapi/redirect_rid?rid="
-            } else if (request.identifier_key == "tmdb") {
-                key = "TMDV ID";
-                href = "https://www.themoviedb.org/movie/"
-            }
-            href = href + request.identifier_value;
-            href = $filter("dereferer")(href);
-            result.push(key + ": " + '<a target="_blank" href="' + href + '">' + request.identifier_value + "</a>");
-        }
-        if (request.season) {
-            result.push("Season: " + request.season);
-        }
-        if (request.episode) {
-            result.push("Episode: " + request.episode);
-        }
-        if (request.author) {
-            result.push("Author: " + request.author);
-        }
-        if (request.title) {
-            result.push("Title: " + request.title);
-        }
-        return result.join(", ");
+        return SearchHistoryService.formatRequest(request, true, false, false, false);
     }
 
     $scope.formatQuery = _formatQuery;
@@ -2708,7 +2750,13 @@ function SearchHistoryController($scope, $state, StatsService, history, $filter)
             query = "Unknown title";
         }
 
-        var html = '<a href="" ng-click="openSearch(request)"><span class="glyphicon glyphicon-search" style="margin-right: 5px" uib-tooltip="Click to repeat search" tooltip-placement="top" tooltip-trigger="mouseenter"></span></a>';
+        //The "request" object won't be available later when the function is called so we pass the index in the search requests
+        var searchRequestIndex = _.findIndex($scope.searchRequests, function (other, index) {
+            if (request.time == other.time) {
+                return true;
+            }
+        });
+        var html = '<a href="" ng-click="repeatSearch(' + searchRequestIndex + ')"><span class="glyphicon glyphicon-search" style="margin-right: 5px" uib-tooltip="Click to repeat search" tooltip-placement="top" tooltip-trigger="mouseenter"></span></a>';
         if (generatedTitle) {
             html += '<span class="history-title">' + query + '</span>';
         } else {
@@ -2722,13 +2770,13 @@ function SearchHistoryController($scope, $state, StatsService, history, $filter)
 
 
 }
-SearchHistoryController.$inject = ["$scope", "$state", "StatsService", "history", "$filter"];
+SearchHistoryController.$inject = ["$scope", "$state", "StatsService", "history", "$filter", "growl", "SearchHistoryService"];
 
 angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
 
-function SearchController($scope, $http, $stateParams, $state, $window, $filter, SearchService, focus, ConfigService, CategoriesService, blockUI, $element, ModalService) {
+function SearchController($scope, $http, $stateParams, $state, $window, $filter, $sce, SearchService, focus, ConfigService, CategoriesService, blockUI, $element, ModalService, SearchHistoryService) {
 
     function getNumberOrUndefined(number) {
         if (_.isUndefined(number) || _.isNaN(number) || number == "") {
@@ -2755,6 +2803,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
     $scope.category = (_.isUndefined($stateParams.category) || $stateParams.category == "") ? CategoriesService.getDefault() : CategoriesService.getByName($stateParams.category);
     $scope.tmdbid = $stateParams.tmdbid;
     $scope.tvdbid = $stateParams.tvdbid;
+    $scope.imdbid = $stateParams.imdbid;
     $scope.rid = $stateParams.rid;
     $scope.title = $stateParams.title;
     $scope.season = $stateParams.season;
@@ -2772,6 +2821,8 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
     }
 
     $scope.showIndexers = {};
+
+    $scope.searchHistory = [];
 
     var safeConfig = ConfigService.getSafe();
 
@@ -2898,7 +2949,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
     $scope.startSearch = function () {
         blockUI.start("Searching...");
         var indexers = angular.isUndefined($scope.indexers) ? undefined : $scope.indexers.join("|");
-        SearchService.search($scope.category.name, $scope.query, $stateParams.tmdbid, $scope.title, $scope.tvdbid, $scope.rid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers, $scope.mode).then(function () {
+        SearchService.search($scope.category.name, $scope.query, $scope.tmdbid, $scope.imdbid, $scope.title, $scope.tvdbid, $scope.rid, $scope.season, $scope.episode, $scope.minsize, $scope.maxsize, $scope.minage, $scope.maxage, indexers, $scope.mode).then(function () {
             $state.go("root.search.results", {
                 minsize: $scope.minsize,
                 maxsize: $scope.maxsize,
@@ -2908,6 +2959,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
                 inherit: true
             });
             $scope.tmdbid = undefined;
+            $scope.imdbid = undefined;
             $scope.tvdbid = undefined;
         });
     };
@@ -2946,8 +2998,11 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
         stateParams.maxage = $scope.maxage;
         stateParams.category = $scope.category.name;
         stateParams.indexers = encodeURIComponent(getSelectedIndexers());
-
         $state.go("root.search", stateParams, {inherit: false, notify: true, reload: true});
+    };
+
+    $scope.repeatSearch = function (request) {
+        $state.go("root.search", SearchHistoryService.getStateParamsForRepeatedSearch(request), {inherit: false, notify: true, reload: true});
     };
 
 
@@ -2968,6 +3023,8 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
         $scope.title = undefined;
         $scope.tmdbid = undefined;
         $scope.tvdbid = undefined;
+        $scope.season = undefined;
+        $scope.episode = undefined;
         $scope.goToSearchUrl();
     };
 
@@ -3006,6 +3063,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
             }).value();
     }
 
+
     $scope.toggleAllIndexers = function () {
         angular.forEach($scope.availableIndexers, function (indexer) {
             indexer.activated = !indexer.activated;
@@ -3016,15 +3074,34 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
         $scope.$broadcast("searchInputChanged", $scope.query != $stateParams.query ? $scope.query : null, $scope.minage, $scope.maxage, $scope.minsize, $scope.maxsize);
     };
 
+
+    $scope.formatRequest = function (request) {
+        return $sce.trustAsHtml(SearchHistoryService.formatRequest(request, false, true, true, true));
+    };
+
     $scope.availableIndexers = getAvailableIndexers();
 
 
     if ($scope.mode) {
         $scope.startSearch();
+    } else {
+        //Getting the search history only makes sense when we're not currently searching
+        SearchHistoryService.getSearchHistory(1, 20).then(function (data) {
+            $scope.searchHistory = data.data.searchRequests;
+        });
     }
 
+    $scope.$on("searchResultsShown", function() {
+        SearchHistoryService.getSearchHistory(1, 20).then(function (data) {
+            $scope.searchHistory = data.data.searchRequests;
+        });
+    });
+
+
+
+
 }
-SearchController.$inject = ["$scope", "$http", "$stateParams", "$state", "$window", "$filter", "SearchService", "focus", "ConfigService", "CategoriesService", "blockUI", "$element", "ModalService"];
+SearchController.$inject = ["$scope", "$http", "$stateParams", "$state", "$window", "$filter", "$sce", "SearchService", "focus", "ConfigService", "CategoriesService", "blockUI", "$element", "ModalService", "SearchHistoryService"];
 
 angular
     .module('nzbhydraApp')

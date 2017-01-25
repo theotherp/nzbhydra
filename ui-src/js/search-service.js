@@ -16,21 +16,19 @@ function SearchService($http) {
     };
     
 
-    function search(category, query, tmdbid, title, tvdbid, rid, season, episode, minsize, maxsize, minage, maxage, indexers, mode) {
+    function search(category, query, tmdbid, imdbid, title, tvdbid, rid, season, episode, minsize, maxsize, minage, maxage, indexers, mode) {
         var uri;
         if (category.indexOf("Movies") > -1 || (category.indexOf("20") == 0) || mode == "movie") {
-            console.log("Search for movies");
             uri = new URI("internalapi/moviesearch");
             if (angular.isDefined(tmdbid)) {
-                console.log("moviesearch per tmdbid");
                 uri.addQuery("tmdbid", tmdbid);
+            } else if (angular.isDefined(imdbid)) {
+                uri.addQuery("imdbid", imdbid);
             } else {
-                console.log("moviesearch per query");
                 uri.addQuery("query", query);
             }
 
         } else if (category.indexOf("TV") > -1 || (category.indexOf("50") == 0) || mode == "tvsearch") {
-            console.log("Search for shows");
             uri = new URI("internalapi/tvsearch");
             if (angular.isDefined(tvdbid)) {
                 uri.addQuery("tvdbid", tvdbid);
@@ -38,7 +36,6 @@ function SearchService($http) {
             if (angular.isDefined(rid)) {
                 uri.addQuery("rid", rid);
             } else {
-                console.log("tvsearch per query");
                 uri.addQuery("query", query);
             }
 

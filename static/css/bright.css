@@ -7431,6 +7431,11 @@ a.disabled:hover {
   background-color: #23a123;
   color: #fff;
 }
+.input-group-btn1 {
+  border: 1px solid #058120;
+  border-left-width: 0;
+  border-radius: 4px;
+}
 .input-group-btn2 {
   border: 1px solid #058120;
   border-radius: 4px;

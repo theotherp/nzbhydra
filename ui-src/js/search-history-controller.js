@@ -3,7 +3,7 @@ angular
     .controller('SearchHistoryController', SearchHistoryController);
 
 
-function SearchHistoryController($scope, $state, StatsService, history, $filter) {
+function SearchHistoryController($scope, $state, StatsService, history, $filter, growl, SearchHistoryService) {
     $scope.type = "All";
     $scope.limit = 100;
     $scope.pagination = {
@@ -29,7 +29,6 @@ function SearchHistoryController($scope, $state, StatsService, history, $filter)
             headerName: "Query",
             field: "query",
             cellRenderer: function (params) {
-                console.log(params);
                 return _formatQuery(params.data);
             },
             filterParams: {apply: true, newRowsAction: "keep"}
@@ -77,12 +76,12 @@ function SearchHistoryController($scope, $state, StatsService, history, $filter)
         enableServerSideFilter: true,
         paginationPageSize: 500,
         suppressRowClickSelection: true,
+        angularCompileRows: true,
         datasource: {
             getRows: function (params) {
                 var page = Math.floor(params.startRow / 500) + 1;
                 var limit = params.endRow - params.startRow;
-                console.log(params);
-                StatsService.getSearchHistory(page, limit, params.sortModel, params.filterModel).then(function (history) {
+                SearchHistoryService.getSearchHistory(page, limit, params.sortModel, params.filterModel).then(function (history) {
                     // $scope.searchRequests = history.data.searchRequests;
                     // $scope.totalRequests = history.data.totalRequests;
                     // $scope.isLoaded = true;
@@ -106,101 +105,27 @@ function SearchHistoryController($scope, $state, StatsService, history, $filter)
     };
 
     function getSearchRequestsPage(pageNumber) {
-        StatsService.getSearchHistory(pageNumber, $scope.limit, $scope.type).then(function (history) {
+        SearchHistoryService.getSearchHistory(pageNumber, $scope.limit, $scope.type).then(function (history) {
             $scope.searchRequests = history.data.searchRequests;
             $scope.totalRequests = history.data.totalRequests;
             $scope.isLoaded = true;
         });
     }
 
-    $scope.openSearch = function (request) {
-        var stateParams = {};
-        if (request.identifier_key == "imdbid") {
-            stateParams.imdbid = request.identifier_value;
-        } else if (request.identifier_key == "tvdbid" || request.identifier_key == "rid") {
-            if (request.identifier_key == "rid") {
-                stateParams.rid = request.identifier_value;
-            } else {
-                stateParams.tvdbid = request.identifier_value;
-            }
-
-            if (request.season != "") {
-                stateParams.season = request.season;
-            }
-            if (request.episode != "") {
-                stateParams.episode = request.episode;
-            }
-        }
-        if (request.query != "") {
-            stateParams.query = request.query;
-        }
-        if (request.type == "tv") {
-            stateParams.mode = "tvsearch"
-        } else if (request.type == "tv") {
-            stateParams.mode = "movie"
+    $scope.repeatSearch = function (searchRequestIndex) {
+        if (searchRequestIndex == -1) {
+            growl.error("Error while repeating search, sorry");
         } else {
-            stateParams.mode = "search"
+            var stateParams = SearchHistoryService.getStateParamsForRepeatedSearch($scope.searchRequests[searchRequestIndex]);
+            $state.go("root.search", stateParams, {inherit: false});
         }
-
-        if (request.movietitle != null) {
-            stateParams.title = request.movietitle;
-        }
-        if (request.tvtitle != null) {
-            stateParams.title = request.tvtitle;
-        }
-
-        if (request.category) {
-            stateParams.category = request.category;
-        }
-
-        stateParams.category = request.category;
-
-        $state.go("root.search", stateParams, {inherit: false});
     };
 
 
     $scope.formatAdditional = _formatAdditional;
 
     function _formatAdditional(request) {
-        var result = [];
-        //ID key: ID value
-        //season
-        //episode
-        //author
-        //title
-        if (request.identifier_key) {
-            var href;
-            var key;
-            if (request.identifier_key == "imdbid") {
-                key = "IMDB ID";
-                href = "https://www.imdb.com/title/tt"
-            } else if (request.identifier_key == "tvdbid") {
-                key = "TVDB ID";
-                href = "https://thetvdb.com/?tab=series&id="
-            } else if (request.identifier_key == "rid") {
-                key = "TVRage ID";
-                href = "internalapi/redirect_rid?rid="
-            } else if (request.identifier_key == "tmdb") {
-                key = "TMDV ID";
-                href = "https://www.themoviedb.org/movie/"
-            }
-            href = href + request.identifier_value;
-            href = $filter("dereferer")(href);
-            result.push(key + ": " + '<a target="_blank" href="' + href + '">' + request.identifier_value + "</a>");
-        }
-        if (request.season) {
-            result.push("Season: " + request.season);
-        }
-        if (request.episode) {
-            result.push("Episode: " + request.episode);
-        }
-        if (request.author) {
-            result.push("Author: " + request.author);
-        }
-        if (request.title) {
-            result.push("Title: " + request.title);
-        }
-        return result.join(", ");
+        return SearchHistoryService.formatRequest(request, true, false, false, false);
     }
 
     $scope.formatQuery = _formatQuery;
@@ -224,7 +149,13 @@ function SearchHistoryController($scope, $state, StatsService, history, $filter)
             query = "Unknown title";
         }
 
-        var html = '<a href="" ng-click="openSearch(request)"><span class="glyphicon glyphicon-search" style="margin-right: 5px" uib-tooltip="Click to repeat search" tooltip-placement="top" tooltip-trigger="mouseenter"></span></a>';
+        //The "request" object won't be available later when the function is called so we pass the index in the search requests
+        var searchRequestIndex = _.findIndex($scope.searchRequests, function (other, index) {
+            if (request.time == other.time) {
+                return true;
+            }
+        });
+        var html = '<a href="" ng-click="repeatSearch(' + searchRequestIndex + ')"><span class="glyphicon glyphicon-search" style="margin-right: 5px" uib-tooltip="Click to repeat search" tooltip-placement="top" tooltip-trigger="mouseenter"></span></a>';
         if (generatedTitle) {
             html += '<span class="history-title">' + query + '</span>';
         } else {
