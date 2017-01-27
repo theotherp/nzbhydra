@@ -18,9 +18,9 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService) {
             if ($scope.userInfos.username) {
                 $scope.showAdmin = $scope.userInfos.maySeeAdmin || !$scope.userInfos.adminRestricted;
                 $scope.showStats = $scope.userInfos.maySeeStats || !$scope.userInfos.statsRestricted;
-                $scope.loginlogoutText = "Logout";
                 $scope.showLoginout = true;
                 $scope.username = $scope.userInfos.username;
+                $scope.loginlogoutText = "Logout " + $scope.username;
             } else {
                 $scope.showAdmin = !$scope.userInfos.adminRestricted;
                 $scope.showStats = !$scope.userInfos.statsRestricted;
