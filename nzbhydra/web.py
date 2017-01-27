@@ -135,10 +135,10 @@ def disable_caching(response):
 
 @app.after_request
 def setRememberMe(response):
-    if g.get("token"):
-        response.set_cookie("rememberMe", json.dumps(g.get("token")), expires=arrow.now().datetime + datetime.timedelta(days=14))
-    elif g.get("removeToken"):
+    if "removeToken" in session.keys():
         response.set_cookie("rememberMe", '', expires=0)
+    elif "token" in session.keys():
+        response.set_cookie("rememberMe", json.dumps(session["token"]), expires=arrow.now().datetime + datetime.timedelta(days=14))
     return response
 
 
@@ -295,7 +295,6 @@ def getUserFromToken():
 def getUserFromBasicAuth():
     auth = Bunch.fromDict(request.authorization)
     if auth is None or "username" not in auth or "password" not in auth:
-        logger.warn("No username or password provided")
         return None
     for u in config.settings.auth.users:
         if auth.username == u.username:
@@ -308,7 +307,7 @@ def getUserFromBasicAuth():
                 return False
             g.user = u
             session["user"] = u
-            g.token = create_token(u)
+            session["token"] = create_token(u)
             return u
     return None
 
@@ -338,9 +337,8 @@ def isAllowed(authType):
     if user is None:
         user = getUserFromBasicAuth()
     if user is None or user is False:
-        logger.warn("Unable to find authorization information")
         return False
-    g.user = user
+    session["user"] = user
     if authType == "stats":
         maySee = user.maySeeAdmin or user.maySeeStats
         if not maySee:
@@ -400,9 +398,8 @@ def login():
             token = create_token(u)
             logger.info("Form login form user %s successful" % username)
             session["rememberMe"] = token
-            g.user = u
             session["user"] = u
-            g.token = create_token(u)
+            session["token"] = create_token(u)
             response = jsonify(token=token)
             return response
     response = jsonify(message='Wrong username or Password')
@@ -415,16 +412,16 @@ def login():
 def logout():
     session["rememberMe"] = None
     session["user"] = None
-    g.token = None
-    g.removeToken = True
+    session["token"] = None
+    session["removeToken"] = True
     request.authorization = None
     return "OK"
 
 
 @app.route('/auth/userinfos')
 def getUserInfos():
-    user = g.get("user")
-    if user is not None and user != False:
+    user = session["user"] if "user" in session.keys() else None
+    if user is not None:
         maySeeAdmin = user["maySeeAdmin"]
         maySeeStats = user["maySeeStats"]
         username = user["username"]
@@ -1074,8 +1071,8 @@ class SearchSchema(Schema):
 @requires_auth("main")
 def internalapi_search_requestsforsearching():
     limitToUser = None
-    if g.get("user"):
-        limitToUser = g.get("user").username
+    if "user" in session.keys():
+        limitToUser = session["user"].username
     return jsonify(get_search_requests(1, 20, [], "internal", None, True, limitToUser))
 
 
@@ -1087,10 +1084,7 @@ def internalapi_search_requests(args):
     if not "sortModel" in args.keys() or args["sortModel"] is None:
         args["sortModel"] = []
     filterModel = request.json["filterModel"] if "filterModel" in request.json.keys() else None
-    limitToUser = None
-    if args["onlyCurrentUser"] and g.get("user"):
-        limitToUser = g.get("user").username
-    return jsonify(get_search_requests(page=args["page"], limit=args["limit"], sortModel=args["sortModel"], type=args["type"], filterModel=filterModel, distinct=args["distinct"], onlyUser=limitToUser))
+    return jsonify(get_search_requests(page=args["page"], limit=args["limit"], sortModel=args["sortModel"], type=args["type"], filterModel=filterModel, distinct=args["distinct"], onlyUser=False))
 
 
 internalapi__redirect_rid_args = {
@@ -1219,7 +1213,7 @@ def internalapi_askforadmin(args):
         if args["old_username"]:
             logger.debug("Authorization header set and contains a username other than the one that logged out")
         user = getUserFromBasicAuth()
-        g.user = user
+        session["user"] = user
         if user:
             countAskForPasswordRequests[request.authorization.username] = 0
             return "OK"
