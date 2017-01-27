@@ -6,9 +6,19 @@ function SearchHistoryService($filter, $http) {
 
     return {
         getSearchHistory: getSearchHistory,
+        getSearchHistoryForSearching: getSearchHistoryForSearching,
         formatRequest: formatRequest,
         getStateParamsForRepeatedSearch: getStateParamsForRepeatedSearch
     };
+
+    function getSearchHistoryForSearching() {
+        return $http.post("internalapi/getsearchrequestsforsearching").success(function (response) {
+            return {
+                searchRequests: response.searchRequests,
+                totalRequests: response.totalRequests
+            }
+        });
+    }
 
     function getSearchHistory(pageNumber, limit, sortModel, filterModel, type, distinct, onlyCurrentUser) {
         if (angular.isUndefined(pageNumber)) {

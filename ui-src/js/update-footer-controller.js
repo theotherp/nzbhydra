@@ -2,15 +2,15 @@ angular
     .module('nzbhydraApp')
     .controller('UpdateFooterController', UpdateFooterController);
 
-function UpdateFooterController($scope, UpdateService, HydraAuthService, bootstrapped) {
+function UpdateFooterController($scope, UpdateService, HydraAuthService) {
 
     $scope.updateAvailable = false;
     $scope.checked = false;
 
-    $scope.mayUpdate = HydraAuthService.getUserRights().maySeeAdmin || bootstrapped.maySeeAdmin;
+    $scope.mayUpdate = HydraAuthService.getUserInfos().maySeeAdmin;
 
-    $scope.$on("user:loggedIn", function (event, data) {
-        if (data.maySeeAdmin && !$scope.checked) {
+    $scope.$on("user:loggedIn", function () {
+        if (HydraAuthService.getUserInfos().maySeeAdmin && !$scope.checked) {
             retrieveUpdateInfos();
         }
     });

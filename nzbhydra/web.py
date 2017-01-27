@@ -130,12 +130,51 @@ def disable_caching(response):
         response.cache_control.no_store = True
     response.headers["Expires"] = datetime.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
     response.cache_control.max_age = 0
-    user = getattr(g, "user", None)
-    if user is not None and user != False:
-        response.headers["Hydra-MaySeeAdmin"] = user["maySeeAdmin"]
-        response.headers["Hydra-MaySeeStats"] = user["maySeeStats"]
-        response.headers["Hydra-Username"] = user["username"]
+    return response
 
+
+@app.after_request
+def setRememberMe(response):
+    if g.get("token"):
+        response.set_cookie("rememberMe", json.dumps(g.get("token")), expires=arrow.now().datetime + datetime.timedelta(days=14))
+    elif g.get("removeToken"):
+        response.set_cookie("rememberMe", '', expires=0)
+    return response
+
+
+@app.after_request
+def setUserInfos(response):
+    user = session["user"] if "user" in session.keys() else None
+    authConfigured = len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none"
+    adminRestricted = config.settings.auth.restrictAdmin and authConfigured
+    statsRestricted = config.settings.auth.restrictStats and authConfigured
+    searchRestricted = config.settings.auth.restrictSearch and authConfigured
+    if user is not None:
+        maySeeAdmin = user["maySeeAdmin"]
+        maySeeStats = user["maySeeStats"]
+        username = user["username"]
+    elif not authConfigured:
+        maySeeAdmin = True
+        maySeeStats = True
+        username = None
+    else:
+        maySeeAdmin = False
+        maySeeStats = False
+        username = None
+
+    cookie = {}
+    cookie["maySeeAdmin"] = maySeeAdmin
+    cookie["maySeeStats"] = maySeeStats
+    cookie["username"] = username
+    cookie["authType"] = config.settings.auth.authType
+    cookie["authConfigured"] = authConfigured
+    cookie["adminRestricted"] = adminRestricted
+
+    cookie["statsRestricted"] = statsRestricted
+
+    cookie["searchRestricted"] = searchRestricted
+    cookie["maySeeSearch"] = not config.settings.auth.restrictSearch or not authConfigured or username
+    response.set_cookie("userinfos", json.dumps(cookie))
     return response
 
 
@@ -236,6 +275,7 @@ def getUserFromToken():
         for u in config.settings.auth.users:
             if u.username == payload["username"]:
                 g.user = u
+                session["user"] = u
                 user = u
                 break
 
@@ -267,6 +307,8 @@ def getUserFromBasicAuth():
 
                 return False
             g.user = u
+            session["user"] = u
+            g.token = create_token(u)
             return u
     return None
 
@@ -358,13 +400,46 @@ def login():
             token = create_token(u)
             logger.info("Form login form user %s successful" % username)
             session["rememberMe"] = token
+            g.user = u
+            session["user"] = u
+            g.token = create_token(u)
             response = jsonify(token=token)
-            response.set_cookie("rememberMe", json.dumps(token), expires=arrow.now().datetime + datetime.timedelta(days=14))
             return response
     response = jsonify(message='Wrong username or Password')
     logger.warn("Unsuccessful form login for user %s" % username)
     response.status_code = 401
     return response
+
+
+@app.route('/auth/logout', methods=['POST'])
+def logout():
+    session["rememberMe"] = None
+    session["user"] = None
+    g.token = None
+    g.removeToken = True
+    request.authorization = None
+    return "OK"
+
+
+@app.route('/auth/userinfos')
+def getUserInfos():
+    user = g.get("user")
+    if user is not None and user != False:
+        maySeeAdmin = user["maySeeAdmin"]
+        maySeeStats = user["maySeeStats"]
+        username = user["username"]
+    else:
+        maySeeAdmin = True
+        maySeeStats = True
+        username = None
+    response = {}
+    response["maySeeAdmin"] = maySeeAdmin
+    response["maySeeStats"] = maySeeStats
+    response["username"] = username
+    response["authType"] = config.settings.auth.authType
+    response["authConfigured"] = len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none"
+
+    return jsonify(response)
 
 
 @app.route('/<path:path>')
@@ -985,6 +1060,7 @@ class SortModelSchema(Schema):
     colId = fields.String()
     sort = fields.String()
 
+
 class SearchSchema(Schema):
     page = fields.Integer(missing=1)
     limit = fields.Integer(missing=500)
@@ -992,6 +1068,15 @@ class SearchSchema(Schema):
     type = fields.String(missing=None)
     distinct = fields.Boolean(missing=False)
     onlyCurrentUser = fields.Boolean(missing=False)
+
+
+@app.route('/internalapi/getsearchrequestsforsearching', methods=['GET', 'POST'])
+@requires_auth("main")
+def internalapi_search_requestsforsearching():
+    limitToUser = None
+    if g.get("user"):
+        limitToUser = g.get("user").username
+    return jsonify(get_search_requests(1, 20, [], "internal", None, True, limitToUser))
 
 
 @app.route('/internalapi/getsearchrequests', methods=['GET', 'POST'])

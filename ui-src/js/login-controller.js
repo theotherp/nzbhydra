@@ -2,11 +2,11 @@ angular
     .module('nzbhydraApp')
     .controller('LoginController', LoginController);
 
-function LoginController($scope, RequestsErrorHandler, $state, HydraAuthService, $auth, growl) {
+function LoginController($scope, RequestsErrorHandler, $state, HydraAuthService, growl) {
     $scope.user = {};
     $scope.login = function () {
         RequestsErrorHandler.specificallyHandled(function () {
-            $auth.login($scope.user).then(function (data) {
+            HydraAuthService.login($scope.user.username, $scope.user.password).then(function () {
                 HydraAuthService.setLoggedInByForm();
                 growl.info("Login successful!");
                 $state.go("root.search");

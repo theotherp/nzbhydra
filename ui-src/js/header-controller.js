@@ -2,77 +2,73 @@ angular
     .module('nzbhydraApp')
     .controller('HeaderController', HeaderController);
 
-function HeaderController($scope, $state, $http, growl, HydraAuthService, ConfigService, bootstrapped) {
+function HeaderController($scope, $state, $http, growl, HydraAuthService) {
+
 
     $scope.showLoginout = false;
 
-    if (ConfigService.getSafe().authType == "none") {
-        $scope.showAdmin = true;
-        $scope.showStats = true;
-        $scope.showLoginout = false;
-    } else {
-        if (HydraAuthService.isLoggedIn()) {
-            var rights = HydraAuthService.getUserRights();
-            $scope.showAdmin = rights.maySeeAdmin;
-            $scope.showStats = rights.maySeeStats;
-            $scope.loginlogoutText = "Logout";
-            $scope.showLoginout = true;
+    function update() {
+
+        $scope.userInfos = HydraAuthService.getUserInfos();
+        if (!$scope.userInfos.authConfigured) {
+            $scope.showAdmin = true;
+            $scope.showStats = true;
+            $scope.showLoginout = false;
         } else {
-            $scope.showAdmin = !bootstrapped.adminRestricted;
-            $scope.showStats = !bootstrapped.statsRestricted;
-            $scope.loginlogoutText = "Login";
-            $scope.showLoginout = bootstrapped.adminRestricted || bootstrapped.statsRestricted || bootstrapped.searchRestricted;
+            if ($scope.userInfos.username) {
+                $scope.showAdmin = $scope.userInfos.maySeeAdmin || !$scope.userInfos.adminRestricted;
+                $scope.showStats = $scope.userInfos.maySeeStats || !$scope.userInfos.statsRestricted;
+                $scope.loginlogoutText = "Logout";
+                $scope.showLoginout = true;
+                $scope.username = $scope.userInfos.username;
+            } else {
+                $scope.showAdmin = !$scope.userInfos.adminRestricted;
+                $scope.showStats = !$scope.userInfos.statsRestricted;
+                $scope.loginlogoutText = "Login";
+                $scope.showLoginout = $scope.userInfos.adminRestricted || $scope.userInfos.statsRestricted || $scope.userInfos.searchRestricted;
+                $scope.username = "";
+            }
         }
     }
 
-    function onLogin(data) {
-        $scope.showAdmin = data.maySeeAdmin;
-        $scope.showStats = data.maySeeStats;
-        $scope.showLoginout = true;
-        $scope.loginlogoutText = "Logout";
-    }
+    update();
+
 
     $scope.$on("user:loggedIn", function (event, data) {
-        onLogin(data);
+        update();
     });
 
-    function onLogout() {
-        $scope.showAdmin = !bootstrapped.adminRestricted;
-        $scope.showStats = !bootstrapped.statsRestricted;
-        $scope.loginlogoutText = "Login";
-        $scope.showLoginout = bootstrapped.adminRestricted || bootstrapped.statsRestricted || bootstrapped.searchRestricted;
-    }
-
     $scope.$on("user:loggedOut", function (event, data) {
-        onLogout();
+        update();
     });
 
     $scope.loginout = function () {
         if (HydraAuthService.isLoggedIn()) {
-            HydraAuthService.logout();
+            HydraAuthService.logout().then(function () {
+                if ($scope.userInfos.authType == "basic") {
+                    growl.info("Logged out. Close your browser to make sure session is closed.");
+                }
+                else if ($scope.userInfos.authType == "form") {
+                    growl.info("Logged out");
+                }
+                update();
+                $state.go("root.search", null, {reload: true});
+            });
 
-            if (ConfigService.getSafe().authType == "basic") {
-                growl.info("Logged out. Close your browser to make sure session is closed.");
-            }
-            else if (ConfigService.getSafe().authType == "form") {
-                growl.info("Logged out");
-            }
-            onLogout();
-            $state.go("root.search");
         } else {
-            if (ConfigService.getSafe().authType == "basic") {
+            if ($scope.userInfos.authType == "basic") {
                 var params = {};
-                if (HydraAuthService.getUserName()) {
+                if ($scope.userInfos.username) {
                     params = {
                         old_username: HydraAuthService.getUserName()
                     }
-                } 
+                }
                 $http.get("internalapi/askforpassword", {params: params}).then(function () {
                     growl.info("Login successful!");
-                    //onLogin();
+                    update();
                     $state.go("root.search");
                 })
-            } else if (ConfigService.getSafe().authType == "form") {
+            } else if ($scope.userInfos.authType == "form") {
                 $state.go("root.login");
             } else {
                 growl.info("You shouldn't need to login but here you go!");

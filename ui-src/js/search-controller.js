@@ -309,7 +309,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
 
 
     function getAndSetSearchRequests() {
-        SearchHistoryService.getSearchHistory(1, 20, null, null, "internal", true, true).then(function (data) {
+        SearchHistoryService.getSearchHistoryForSearching().then(function (data) {
             $scope.searchHistory = data.data.searchRequests;
         });
     }

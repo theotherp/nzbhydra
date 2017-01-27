@@ -1,8 +1,8 @@
 agGrid.initialiseAgGridWithAngular1(angular);
 
-var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title', 'satellizer', 'LocalStorageModule', 'angular.filter', 'ngFileUpload', 'agGrid']);
+var nzbhydraapp = angular.module('nzbhydraApp', ['angular-loading-bar', 'cgBusy', 'ui.bootstrap', 'ipCookie', 'angular-growl', 'angular.filter', 'filters', 'ui.router', 'blockUI', 'mgcrea.ngStrap', 'angularUtils.directives.dirPagination', 'nvd3', 'formly', 'formlyBootstrap', 'frapontillo.bootstrap-switch', 'ui.select', 'ngSanitize', 'checklist-model', 'ngAria', 'ngMessages', 'ui.router.title', 'satellizer', 'LocalStorageModule', 'angular.filter', 'ngFileUpload', 'agGrid', 'ngCookies']);
 
-angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig, $urlMatcherFactoryProvider, $authProvider, localStorageServiceProvider, bootstrapped) {
+angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvider, $locationProvider, blockUIConfig, $urlMatcherFactoryProvider, localStorageServiceProvider, bootstrapped) {
 
     blockUIConfig.autoBlock = false;
     $urlMatcherFactoryProvider.strictMode(false);
@@ -261,9 +261,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                     controller: SearchHistoryController,
                     resolve: {
                         loginRequired: loginRequiredStats,
-                        history: function(SearchHistoryService) {
+                        history: ['loginRequired', 'SearchHistoryService', function (loginRequired, SearchHistoryService) {
                             return SearchHistoryService.getSearchHistory();
-                        },
+                        }],
                         $title: function ($stateParams) {
                             return "Stats (Searches)"
                         }
@@ -469,29 +469,12 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
 
     $locationProvider.html5Mode(true);
 
-    $authProvider.httpInterceptor = function () {
-        return true;
-    };
-    $authProvider.withCredentials = true;
-    $authProvider.tokenRoot = null;
-    $authProvider.baseUrl = bootstrapped.baseUrl;
-    $authProvider.loginUrl = '/auth/login';
-    $authProvider.signupUrl = '/auth/signup';
-    $authProvider.unlinkUrl = '/unlink/';
-    $authProvider.tokenName = 'token';
-    $authProvider.tokenPrefix = 'satellizer';
-    $authProvider.authHeader = 'TokenAuthorization';
-    $authProvider.authToken = 'Bearer';
-    $authProvider.storageType = 'localStorage';
-
 
     //Because I don't know for what state the login is required / asked I have a function for each 
 
-    function loginRequiredSearch($q, $timeout, $auth, $state, bootstrapped) {
-        
+    function loginRequiredSearch($q, $timeout, $state, HydraAuthService) {
         var deferred = $q.defer();
-
-        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || !bootstrapped.searchRestricted) {
+        if (HydraAuthService.getUserRights().maySeeSearch || HydraAuthService.getUserInfos().authType != "form") {
             deferred.resolve();
         } else {
             $timeout(function () {
@@ -503,10 +486,10 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         return deferred.promise;
     }
 
-    function loginRequiredStats($q, $timeout, $auth, $state, bootstrapped) {
+    function loginRequiredStats($q, $timeout, $state, HydraAuthService) {
         var deferred = $q.defer();
 
-        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || !bootstrapped.statsRestricted) {
+        if (HydraAuthService.getUserRights().maySeeStats || HydraAuthService.getUserInfos().authType != "form") {
             deferred.resolve();
         } else {
             $timeout(function () {
@@ -518,10 +501,10 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         return deferred.promise;
     }
 
-    function loginRequiredAdmin($q, $timeout, $auth, $state, bootstrapped) {
+    function loginRequiredAdmin($q, $timeout, $state, HydraAuthService) {
         var deferred = $q.defer();
 
-        if (bootstrapped.authType != "form" || $auth.isAuthenticated() || !bootstrapped.adminRestricted) {
+        if (HydraAuthService.getUserRights().maySeeAdmin || HydraAuthService.getUserInfos().authType != "form") {
             deferred.resolve();
         } else {
             $timeout(function () {
