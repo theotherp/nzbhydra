@@ -317,7 +317,7 @@ def get_nzb_downloads(page=0, limit=100, type=None):
 
 
 # ((Search.identifier_value == MovieIdCache.imdb) & (Search.identifier_key == "imdbid"))
-def get_search_requests(page=0, limit=100, sortModel=None, type=None, filterModel=None, distinct=False):
+def get_search_requests(page=0, limit=100, sortModel=None, type=None, filterModel=None, distinct=False, onlyUser=None):
     columns = [Search.time, Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type, Search.username, Search.title, Search.author, TvIdCache.title.alias("tvtitle"), MovieIdCache.title.alias("movietitle")]
 
     query = Search().select(*columns)
@@ -330,6 +330,8 @@ def get_search_requests(page=0, limit=100, sortModel=None, type=None, filterMode
 
     if type is not None and type != "All":
         query = query.where(Search.internal) if type.lower() == "internal" else query.where(~Search.internal)
+    if onlyUser:
+        query = query.where(Search.username == onlyUser)
     if filterModel:
         for column, filter in filterModel.items():
             where = column

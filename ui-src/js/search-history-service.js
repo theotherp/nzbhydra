@@ -10,7 +10,7 @@ function SearchHistoryService($filter, $http) {
         getStateParamsForRepeatedSearch: getStateParamsForRepeatedSearch
     };
 
-    function getSearchHistory(pageNumber, limit, sortModel, filterModel, type, distinct) {
+    function getSearchHistory(pageNumber, limit, sortModel, filterModel, type, distinct, onlyCurrentUser) {
         if (angular.isUndefined(pageNumber)) {
             pageNumber = 1;
         }
@@ -23,7 +23,7 @@ function SearchHistoryService($filter, $http) {
         if (!filterModel) {
             filterModel = {}
         }
-        return $http.post("internalapi/getsearchrequests", {page: pageNumber, limit: limit, sortModel: sortModel, filterModel: filterModel, type: type, distinct: distinct}).success(function (response) {
+        return $http.post("internalapi/getsearchrequests", {page: pageNumber, limit: limit, sortModel: sortModel, filterModel: filterModel, type: type, distinct: distinct, onlyCurrentUser: onlyCurrentUser}).success(function (response) {
             return {
                 searchRequests: response.searchRequests,
                 totalRequests: response.totalRequests

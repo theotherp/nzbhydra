@@ -266,6 +266,7 @@ def getUserFromBasicAuth():
                     logger.info("Successful login from <HIDDENIP> after failed login tries. Resetting failed login counter.")
 
                 return False
+            g.user = u
             return u
     return None
 
@@ -990,6 +991,7 @@ class SearchSchema(Schema):
     sortModel = fields.Nested(SortModelSchema, many=True, missing=None)
     type = fields.String(missing=None)
     distinct = fields.Boolean(missing=False)
+    onlyCurrentUser = fields.Boolean(missing=False)
 
 
 @app.route('/internalapi/getsearchrequests', methods=['GET', 'POST'])
@@ -1000,7 +1002,10 @@ def internalapi_search_requests(args):
     if not "sortModel" in args.keys() or args["sortModel"] is None:
         args["sortModel"] = []
     filterModel = request.json["filterModel"] if "filterModel" in request.json.keys() else None
-    return jsonify(get_search_requests(page=args["page"], limit=args["limit"], sortModel=args["sortModel"], type=args["type"], filterModel=filterModel, distinct=args["distinct"]))
+    limitToUser = None
+    if args["onlyCurrentUser"] and g.get("user"):
+        limitToUser = g.get("user").username
+    return jsonify(get_search_requests(page=args["page"], limit=args["limit"], sortModel=args["sortModel"], type=args["type"], filterModel=filterModel, distinct=args["distinct"], onlyUser=limitToUser))
 
 
 internalapi__redirect_rid_args = {
