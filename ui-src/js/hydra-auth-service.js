@@ -4,14 +4,13 @@ angular
 
 function HydraAuthService($q, $rootScope, $http, $cookies, bootstrapped) {
 
-    var loggedIn = false;
-    var username;
-    var maySeeAdmin = bootstrapped.maySeeAdmin;
-    var maySeeStats = bootstrapped.maySeeStats;
+    var loggedIn = bootstrapped.username;
+
     
     return {
         isLoggedIn: isLoggedIn,
         login: login,
+        askForPassword: askForPassword,
         logout: logout,
         setLoggedInByForm: setLoggedInByForm,
         getUserRights: getUserRights,
@@ -21,26 +20,14 @@ function HydraAuthService($q, $rootScope, $http, $cookies, bootstrapped) {
     };
 
 
-    function decode_flask_cookie(val) {
-        if (val.indexOf('\\') === -1) {
-            return val;  // not encoded
-        }
-        val = val.slice(1, -1).replace(/\\"/g, '"');
-        val = val.replace(/\\(\d{3})/g, function (match, octal) {
-            return String.fromCharCode(parseInt(octal, 8));
-        });
-        return val.replace(/\\\\/g, '\\');
-    }
-
 
     function getUserInfos() {
-        var cookie = decode_flask_cookie($cookies.get("userinfos"));
-        return JSON.parse(cookie);
+        return bootstrapped;
     }
 
     
     function isLoggedIn() {
-        return JSON.parse(decode_flask_cookie($cookies.get("userinfos"))).username;
+        return bootstrapped.username;
     }
     
     function setLoggedInByForm() {
@@ -48,25 +35,33 @@ function HydraAuthService($q, $rootScope, $http, $cookies, bootstrapped) {
     }
 
     function setLoggedInByBasic(_maySeeStats, _maySeeAdmin, _username) {
-        maySeeAdmin = _maySeeAdmin;
-        maySeeStats = _maySeeStats;
-        username = _username;
-        loggedIn = true;
     }
     
     function login(username, password) {
         var deferred = $q.defer();
-        return $http.post("/auth/login", data = {username: username, password: password}).then(function () {
+        return $http.post("/auth/login", data = {username: username, password: password}).then(function (data) {
+            bootstrapped = data.data;
+            loggedIn = true;
             $rootScope.$broadcast("user:loggedIn");
            deferred.resolve();
         });
         return deferred;
     }
+
+    function askForPassword(params) {
+        return $http.get("internalapi/askforpassword", {params: params}).then(function (data) {
+            bootstrapped = data.data;
+            return bootstrapped;
+        });
+
+    }
     
     function logout() {
         var deferred = $q.defer();
-        return $http.post("/auth/logout").then(function() {
+        return $http.post("/auth/logout").then(function(data) {
             $rootScope.$broadcast("user:loggedOut");
+            bootstrapped = data.data;
+            loggedIn = false;
             deferred.resolve();
         });
         return deferred;
@@ -78,7 +73,7 @@ function HydraAuthService($q, $rootScope, $http, $cookies, bootstrapped) {
     }
     
     function getUserName() {
-        return username;
+        return bootstrapped.username;
     }
 
 

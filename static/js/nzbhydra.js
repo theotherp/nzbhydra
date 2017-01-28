@@ -35,7 +35,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     controller: "ConfigController",
                     controllerAs: 'ctrl',
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.get();
                         }],
@@ -56,7 +58,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/config.html",
                     controller: "ConfigController",
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.get();
                         }],
@@ -77,7 +81,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/config.html",
                     controller: "ConfigController",
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.get();
                         }],
@@ -98,7 +104,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/config.html",
                     controller: "ConfigController",
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.get();
                         }],
@@ -119,7 +127,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/config.html",
                     controller: "ConfigController",
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.get();
                         }],
@@ -140,7 +150,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/config.html",
                     controller: "ConfigController",
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.get();
                         }],
@@ -161,7 +173,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                 'container@': {
                     controller: "ConfigController",
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.get();
                         }],
@@ -182,7 +196,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/config.html",
                     controller: "ConfigController",
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.get();
                         }],
@@ -206,7 +222,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                         $scope.$state = $state;
                     }],
                     resolve: {
-                        loginRequired: loginRequiredStats,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "stats")
+                        }],
                         $title: ["$stateParams", function ($stateParams) {
                             return "Stats"
                         }]
@@ -222,7 +240,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/main-stats.html",
                     controller: "StatsController",
                     resolve: {
-                        loginRequired: loginRequiredStats,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "stats")
+                        }],
                         stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
                             return StatsService.get();
                         }],
@@ -240,7 +260,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/indexer-statuses.html",
                     controller: IndexerStatusesController,
                     resolve: {
-                        loginRequired: loginRequiredStats,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "stats")
+                        }],
                         statuses: ["$http", function($http) {
                             return $http.get("internalapi/getindexerstatuses").success(function (response) {
                                 return response.indexerStatuses;
@@ -260,7 +282,8 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/search-history.html",
                     controller: SearchHistoryController,
                     resolve: {
-                        loginRequired: loginRequiredStats,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function($q, $timeout, $state, HydraAuthService){
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "stats")}],
                         history: ['loginRequired', 'SearchHistoryService', function (loginRequired, SearchHistoryService) {
                             return SearchHistoryService.getSearchHistory();
                         }],
@@ -278,7 +301,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: 'static/html/states/download-history.html',
                     controller: DownloadHistoryController,
                     resolve: {
-                        loginRequired: loginRequiredStats,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "stats")
+                        }],
                         downloads: ["StatsService", function (StatsService) {
                             return StatsService.getDownloadHistory();
                         }],
@@ -296,7 +321,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/system.html",
                     controller: "SystemController",
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
@@ -317,7 +344,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/system.html",
                     controller: "SystemController",
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
@@ -335,7 +364,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/system.html",
                     controller: "SystemController",
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
@@ -353,7 +384,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/system.html",
                     controller: "SystemController",
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
@@ -371,7 +404,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/system.html",
                     controller: "SystemController",
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
@@ -389,7 +424,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/system.html",
                     controller: "SystemController",
                     resolve: {
-                        loginRequired: loginRequiredAdmin,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
@@ -407,7 +444,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                     templateUrl: "static/html/states/search.html",
                     controller: "SearchController",
                     resolve: {
-                        loginRequired: loginRequiredSearch,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "search")
+                        }],
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
@@ -428,7 +467,9 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                         inherit: true
                     },
                     resolve: {
-                        loginRequired: loginRequiredSearch,
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "search")
+                        }],
                         $title: ["$stateParams", function ($stateParams) {
                             console.log($stateParams);
                             var title = "Search results";
@@ -470,11 +511,20 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
     $locationProvider.html5Mode(true);
 
 
-    //Because I don't know for what state the login is required / asked I have a function for each 
-
-    function loginRequiredSearch($q, $timeout, $state, HydraAuthService) {
+    function loginRequired($q, $timeout, $state, HydraAuthService, type) {
         var deferred = $q.defer();
-        if (HydraAuthService.getUserRights().maySeeSearch || HydraAuthService.getUserInfos().authType != "form") {
+        var userInfos = HydraAuthService.getUserInfos();
+        var allowed = false;
+        if (type == "search") {
+            allowed = !userInfos.searchRestricted || userInfos.maySeeSearch;
+        } else if (type == "stats") {
+            allowed = !userInfos.statsRestricted || userInfos.maySeeStats;
+        } else if (type == "admin") {
+            allowed = !userInfos.adminRestricted || userInfos.maySeeAdmin;
+        } else {
+            allowed = true;
+        }
+        if (allowed || userInfos.authType != "form") {
             deferred.resolve();
         } else {
             $timeout(function () {
@@ -485,12 +535,30 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
         }
         return deferred.promise;
     }
-    loginRequiredSearch.$inject = ["$q", "$timeout", "$state", "HydraAuthService"];
+
+
+    //Because I don't know for what state the login is required / asked I have a function for each
+
+    function loginRequiredSearch($q, $timeout, $state, HydraAuthService) {
+        var deferred = $q.defer();
+        var userInfos = HydraAuthService.getUserInfos();
+        if (!userInfos.searchRestricted || userInfos.maySeeSearch || userInfos.authType != "form") {
+            deferred.resolve();
+        } else {
+            $timeout(function () {
+                // This code runs after the authentication promise has been rejected.
+                // Go to the log-in page
+                $state.go("root.login");
+            })
+        }
+        return deferred.promise;
+    }
 
     function loginRequiredStats($q, $timeout, $state, HydraAuthService) {
         var deferred = $q.defer();
 
-        if (HydraAuthService.getUserRights().maySeeStats || HydraAuthService.getUserInfos().authType != "form") {
+        var userInfos = HydraAuthService.getUserInfos();
+        if (!userInfos.statsRestricted || userInfos.maySeeStats || userInfos.authType != "form") {
             deferred.resolve();
         } else {
             $timeout(function () {
@@ -501,12 +569,12 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
         }
         return deferred.promise;
     }
-    loginRequiredStats.$inject = ["$q", "$timeout", "$state", "HydraAuthService"];
 
     function loginRequiredAdmin($q, $timeout, $state, HydraAuthService) {
         var deferred = $q.defer();
 
-        if (HydraAuthService.getUserRights().maySeeAdmin || HydraAuthService.getUserInfos().authType != "form") {
+        var userInfos = HydraAuthService.getUserInfos();
+        if (!userInfos.statsRestricted || userInfos.maySeeAdmin || userInfos.authType != "form") {
             deferred.resolve();
         } else {
             $timeout(function () {
@@ -517,7 +585,6 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
         }
         return deferred.promise;
     }
-    loginRequiredAdmin.$inject = ["$q", "$timeout", "$state", "HydraAuthService"];
 
     localStorageServiceProvider
         .setPrefix('nzbhydra');
@@ -2597,7 +2664,7 @@ angular
     .controller('SearchHistoryController', SearchHistoryController);
 
 
-function SearchHistoryController($scope, $state, StatsService, history, $filter, growl, SearchHistoryService) {
+function SearchHistoryController($scope, $state, history, growl, SearchHistoryService) {
     $scope.type = "All";
     $scope.limit = 100;
     $scope.pagination = {
@@ -2763,7 +2830,7 @@ function SearchHistoryController($scope, $state, StatsService, history, $filter,
 
 
 }
-SearchHistoryController.$inject = ["$scope", "$state", "StatsService", "history", "$filter", "growl", "SearchHistoryService"];
+SearchHistoryController.$inject = ["$scope", "$state", "history", "growl", "SearchHistoryService"];
 
 angular
     .module('nzbhydraApp')
@@ -3456,14 +3523,13 @@ angular
 
 function HydraAuthService($q, $rootScope, $http, $cookies, bootstrapped) {
 
-    var loggedIn = false;
-    var username;
-    var maySeeAdmin = bootstrapped.maySeeAdmin;
-    var maySeeStats = bootstrapped.maySeeStats;
+    var loggedIn = bootstrapped.username;
+
     
     return {
         isLoggedIn: isLoggedIn,
         login: login,
+        askForPassword: askForPassword,
         logout: logout,
         setLoggedInByForm: setLoggedInByForm,
         getUserRights: getUserRights,
@@ -3473,26 +3539,14 @@ function HydraAuthService($q, $rootScope, $http, $cookies, bootstrapped) {
     };
 
 
-    function decode_flask_cookie(val) {
-        if (val.indexOf('\\') === -1) {
-            return val;  // not encoded
-        }
-        val = val.slice(1, -1).replace(/\\"/g, '"');
-        val = val.replace(/\\(\d{3})/g, function (match, octal) {
-            return String.fromCharCode(parseInt(octal, 8));
-        });
-        return val.replace(/\\\\/g, '\\');
-    }
-
 
     function getUserInfos() {
-        var cookie = decode_flask_cookie($cookies.get("userinfos"));
-        return JSON.parse(cookie);
+        return bootstrapped;
     }
 
     
     function isLoggedIn() {
-        return JSON.parse(decode_flask_cookie($cookies.get("userinfos"))).username;
+        return bootstrapped.username;
     }
     
     function setLoggedInByForm() {
@@ -3500,25 +3554,33 @@ function HydraAuthService($q, $rootScope, $http, $cookies, bootstrapped) {
     }
 
     function setLoggedInByBasic(_maySeeStats, _maySeeAdmin, _username) {
-        maySeeAdmin = _maySeeAdmin;
-        maySeeStats = _maySeeStats;
-        username = _username;
-        loggedIn = true;
     }
     
     function login(username, password) {
         var deferred = $q.defer();
-        return $http.post("/auth/login", data = {username: username, password: password}).then(function () {
+        return $http.post("/auth/login", data = {username: username, password: password}).then(function (data) {
+            bootstrapped = data.data;
+            loggedIn = true;
             $rootScope.$broadcast("user:loggedIn");
            deferred.resolve();
         });
         return deferred;
     }
+
+    function askForPassword(params) {
+        return $http.get("internalapi/askforpassword", {params: params}).then(function (data) {
+            bootstrapped = data.data;
+            return bootstrapped;
+        });
+
+    }
     
     function logout() {
         var deferred = $q.defer();
-        return $http.post("/auth/logout").then(function() {
+        return $http.post("/auth/logout").then(function(data) {
             $rootScope.$broadcast("user:loggedOut");
+            bootstrapped = data.data;
+            loggedIn = false;
             deferred.resolve();
         });
         return deferred;
@@ -3530,7 +3592,7 @@ function HydraAuthService($q, $rootScope, $http, $cookies, bootstrapped) {
     }
     
     function getUserName() {
-        return username;
+        return bootstrapped.username;
     }
 
 
@@ -3594,7 +3656,7 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService) {
                     growl.info("Logged out");
                 }
                 update();
-                $state.go("root.search", null, {reload: true});
+                //$state.go("root.search", null, {reload: true});
             });
 
         } else {
@@ -3605,7 +3667,7 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService) {
                         old_username: HydraAuthService.getUserName()
                     }
                 }
-                $http.get("internalapi/askforpassword", {params: params}).then(function () {
+                HydraAuthService.askForPassword(params).then(function () {
                     growl.info("Login successful!");
                     update();
                     $state.go("root.search");
@@ -5371,6 +5433,18 @@ function ConfigFields($injector) {
                         type: 'switch',
                         label: 'Restrict admin',
                         help: 'Restrict access to admin functions'
+                    },
+                    hideExpression: function () {
+                        return rootModel.auth.authType == "none";
+                    }
+                },
+                {
+                    key: 'rememberUsers',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Remember users',
+                        help: 'Remember users with cookie for 14 days'
                     },
                     hideExpression: function () {
                         return rootModel.auth.authType == "none";

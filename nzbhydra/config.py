@@ -393,6 +393,7 @@ initialConfig = {
     },
     "auth": {
         "authType": "none",
+        "rememberUsers": True,
         "restrictSearch": False,
         "restrictAdmin": False,
         "restrictStats": False,

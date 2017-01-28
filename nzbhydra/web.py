@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import datetime
 import json
 import logging
+# noinspection PyUnresolvedReferences
 import os
 import urlparse
 
@@ -137,21 +138,22 @@ def disable_caching(response):
 def setRememberMe(response):
     if "removeToken" in session.keys():
         response.set_cookie("rememberMe", '', expires=0)
-    elif "token" in session.keys():
+        session.pop("removeToken", None)
+        request.authorization = None
+    elif "token" in session.keys() and config.settings.auth.rememberUsers:
         response.set_cookie("rememberMe", json.dumps(session["token"]), expires=arrow.now().datetime + datetime.timedelta(days=14))
+        session.pop("token", None)
     return response
 
 
-@app.after_request
-def setUserInfos(response):
-    user = session["user"] if "user" in session.keys() else None
+def getUserInfos(user):
     authConfigured = len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none"
     adminRestricted = config.settings.auth.restrictAdmin and authConfigured
     statsRestricted = config.settings.auth.restrictStats and authConfigured
     searchRestricted = config.settings.auth.restrictSearch and authConfigured
     if user is not None:
         maySeeAdmin = user["maySeeAdmin"]
-        maySeeStats = user["maySeeStats"]
+        maySeeStats = user["maySeeStats"] or user["maySeeAdmin"]
         username = user["username"]
     elif not authConfigured:
         maySeeAdmin = True
@@ -161,7 +163,6 @@ def setUserInfos(response):
         maySeeAdmin = False
         maySeeStats = False
         username = None
-
     cookie = {}
     cookie["maySeeAdmin"] = maySeeAdmin
     cookie["maySeeStats"] = maySeeStats
@@ -169,13 +170,10 @@ def setUserInfos(response):
     cookie["authType"] = config.settings.auth.authType
     cookie["authConfigured"] = authConfigured
     cookie["adminRestricted"] = adminRestricted
-
     cookie["statsRestricted"] = statsRestricted
-
     cookie["searchRestricted"] = searchRestricted
     cookie["maySeeSearch"] = not config.settings.auth.restrictSearch or not authConfigured or username
-    response.set_cookie("userinfos", json.dumps(cookie))
-    return response
+    return cookie
 
 
 @app.errorhandler(Exception)
@@ -274,11 +272,9 @@ def getUserFromToken():
 
         for u in config.settings.auth.users:
             if u.username == payload["username"]:
-                g.user = u
                 session["user"] = u
                 user = u
                 break
-
         if user is not None:
             return user
         else:
@@ -305,7 +301,6 @@ def getUserFromBasicAuth():
                     logger.info("Successful login from <HIDDENIP> after failed login tries. Resetting failed login counter.")
 
                 return False
-            g.user = u
             session["user"] = u
             session["token"] = create_token(u)
             return u
@@ -333,12 +328,13 @@ def isAllowed(authType):
 
     if request.cookies.get("rememberMe"):
         user = getUserFromToken()
+    if "user" in session.keys():
+        user = session["user"]
     # No user found in token. Check if basic auth header is set
     if user is None:
         user = getUserFromBasicAuth()
     if user is None or user is False:
         return False
-    session["user"] = user
     if authType == "stats":
         maySee = user.maySeeAdmin or user.maySeeStats
         if not maySee:
@@ -400,7 +396,7 @@ def login():
             session["rememberMe"] = token
             session["user"] = u
             session["token"] = create_token(u)
-            response = jsonify(token=token)
+            response = jsonify(getUserInfos(u))
             return response
     response = jsonify(message='Wrong username or Password')
     logger.warn("Unsuccessful form login for user %s" % username)
@@ -410,33 +406,16 @@ def login():
 
 @app.route('/auth/logout', methods=['POST'])
 def logout():
-    session["rememberMe"] = None
-    session["user"] = None
-    session["token"] = None
+    session.clear()
     session["removeToken"] = True
     request.authorization = None
-    return "OK"
+    return jsonify(getUserInfos(None))
 
 
-@app.route('/auth/userinfos')
-def getUserInfos():
+@app.route('/auth/getuserinfos', methods=['POST'])
+def sendUserInfos():
     user = session["user"] if "user" in session.keys() else None
-    if user is not None:
-        maySeeAdmin = user["maySeeAdmin"]
-        maySeeStats = user["maySeeStats"]
-        username = user["username"]
-    else:
-        maySeeAdmin = True
-        maySeeStats = True
-        username = None
-    response = {}
-    response["maySeeAdmin"] = maySeeAdmin
-    response["maySeeStats"] = maySeeStats
-    response["username"] = username
-    response["authType"] = config.settings.auth.authType
-    response["authConfigured"] = len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none"
-
-    return jsonify(response)
+    return jsonify(getUserInfos(user))
 
 
 @app.route('/<path:path>')
@@ -447,13 +426,8 @@ def base(path):
     base_url = ("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/"
     _, currentVersion = get_current_version()
 
-    bootstrapped = {
-        "baseUrl": base_url,
-        "authType": config.settings.auth.authType,
-        "adminRestricted": config.settings.auth.restrictAdmin and len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none",
-        "statsRestricted": config.settings.auth.restrictStats and len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none",
-        "searchRestricted": config.settings.auth.restrictSearch and len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none",
-    }
+    user = session["user"] if "user" in session.keys() else None
+    bootstrapped = getUserInfos(user)
 
     getUserFromToken()  # Just see if the token is there
     if request.authorization:
@@ -1072,7 +1046,7 @@ class SearchSchema(Schema):
 def internalapi_search_requestsforsearching():
     limitToUser = None
     if "user" in session.keys():
-        limitToUser = session["user"].username
+        limitToUser = session["user"] and session["user"].username is not None
     return jsonify(get_search_requests(1, 20, [], "internal", None, True, limitToUser))
 
 
@@ -1216,7 +1190,7 @@ def internalapi_askforadmin(args):
         session["user"] = user
         if user:
             countAskForPasswordRequests[request.authorization.username] = 0
-            return "OK"
+            return jsonify(getUserInfos(user))
         else:
             return returnBasicAuth401()
 

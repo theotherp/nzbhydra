@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.190
+Fixed: Some kinks with auth handling. If you have problems please post a detailed description of the scenario *including debugging infos*.
+
 ### 0.2.189
 Changed: Improved auth handling a bit
 

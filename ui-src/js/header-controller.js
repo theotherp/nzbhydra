@@ -52,7 +52,7 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService) {
                     growl.info("Logged out");
                 }
                 update();
-                $state.go("root.search", null, {reload: true});
+                //$state.go("root.search", null, {reload: true});
             });
 
         } else {
@@ -63,7 +63,7 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService) {
                         old_username: HydraAuthService.getUserName()
                     }
                 }
-                $http.get("internalapi/askforpassword", {params: params}).then(function () {
+                HydraAuthService.askForPassword(params).then(function () {
                     growl.info("Login successful!");
                     update();
                     $state.go("root.search");

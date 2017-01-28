@@ -3,7 +3,7 @@ angular
     .controller('SearchHistoryController', SearchHistoryController);
 
 
-function SearchHistoryController($scope, $state, StatsService, history, $filter, growl, SearchHistoryService) {
+function SearchHistoryController($scope, $state, history, growl, SearchHistoryService) {
     $scope.type = "All";
     $scope.limit = 100;
     $scope.pagination = {

@@ -969,6 +969,18 @@ function ConfigFields($injector) {
                     }
                 },
                 {
+                    key: 'rememberUsers',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Remember users',
+                        help: 'Remember users with cookie for 14 days'
+                    },
+                    hideExpression: function () {
+                        return rootModel.auth.authType == "none";
+                    }
+                },
+                {
                     type: 'repeatSection',
                     key: 'users',
                     model: rootModel.auth,
