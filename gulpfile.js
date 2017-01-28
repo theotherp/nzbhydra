@@ -12,35 +12,31 @@ var livereload = require('gulp-livereload');
 var concat = require('gulp-concat');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
-var changed = require('gulp-changed');
-var newer = require('gulp-newer');
 var git = require('gulp-git');
 var runSequence = require('run-sequence');
 var print = require('gulp-print');
 var rename = require("gulp-rename");
 var clean = require('gulp-clean');
+var cached = require('gulp-cached');
 
 
 gulp.task('vendor-scripts', function () {
     var dest = 'static/js';
     return gulp.src(wiredep().js)
+        .pipe(cached("vendor-scripts"))
         .pipe(sourcemaps.init())
         .pipe(concat('alllibs.js'))
-        .pipe(changed(dest))//Important: Put behind concat, otherwise it will always think the sources changed
-        //.pipe(uglify())
         .pipe(sourcemaps.write("./"))
-        //.pipe(newer(dest))
         .pipe(gulp.dest(dest));
 });
 
 gulp.task('vendor-css', function () {
     var dest = 'static/css';
     return gulp.src(wiredep().css)
+        .pipe(cached("vendor-libs"))
         .pipe(sourcemaps.init())
         .pipe(concat('alllibs.css'))
-        .pipe(changed(dest))
         .pipe(sourcemaps.write("."))
-        //.pipe(newer(dest))
         .pipe(gulp.dest(dest));
 
 });
@@ -48,6 +44,7 @@ gulp.task('vendor-css', function () {
 gulp.task('scripts', function () {
     var dest = 'static/js';
     return gulp.src("ui-src/js/**/*.js")
+        .pipe(cached("scripts"))
         .pipe(ngAnnotate())
         .on('error', swallowError)
         .pipe(angularFilesort())
@@ -55,10 +52,7 @@ gulp.task('scripts', function () {
         .pipe(sourcemaps.init())
         .pipe(concat('nzbhydra.js'))
         .on('error', swallowError)
-        .pipe(changed(dest))
-        //.pipe(uglify())
         .pipe(sourcemaps.write('./'))
-        //.pipe(newer(dest))
         .pipe(gulp.dest(dest));
 
 });
@@ -66,27 +60,27 @@ gulp.task('scripts', function () {
 gulp.task('less', function () {
     var dest = 'static/css';
     var brightTheme = gulp.src('ui-src/less/bright.less')
+        .pipe(cached("bright"))
         .pipe(sourcemaps.init())
         .pipe(less())
         .on('error', swallowError)
         .pipe(sourcemaps.write("."))
-        //.pipe(newer(dest))
         .pipe(gulp.dest(dest));
 
     var greyTheme = gulp.src('ui-src/less/grey.less')
+        .pipe(cached("grey"))
         .pipe(sourcemaps.init())
         .pipe(less())
         .on('error', swallowError)
         .pipe(sourcemaps.write("."))
-        //.pipe(newer(dest))
         .pipe(gulp.dest(dest));
 
     var darkTheme = gulp.src('ui-src/less/dark.less')
+        .pipe(cached("dark"))
         .pipe(sourcemaps.init())
         .pipe(less())
         .on('error', swallowError)
         .pipe(sourcemaps.write("."))
-        //.pipe(newer(dest))
         .pipe(gulp.dest(dest));
     
     return merge(brightTheme, greyTheme, darkTheme);
@@ -95,17 +89,17 @@ gulp.task('less', function () {
 gulp.task('copy-assets', function () {
     var fontDest = 'static/fonts';
     var fonts = gulp.src("bower_components/bootstrap/fonts/*")
-        .pipe(newer(fontDest))
+        .pipe(cached("fonts"))
         .pipe(gulp.dest(fontDest));
 
     var imgDest = 'static/img';
     var img = gulp.src("ui-src/img/**/*")
-        .pipe(newer(imgDest))
+        .pipe(cached("images"))
         .pipe(gulp.dest(imgDest));
 
     var htmlDest = 'static/html';
     var html = gulp.src("ui-src/html/**/*")
-        .pipe(newer(htmlDest))
+        .pipe(cached("html"))
         .pipe(gulp.dest(htmlDest));
 
     return merge(img, html, fonts);
@@ -114,6 +108,7 @@ gulp.task('copy-assets', function () {
 
 gulp.task('add', function () {
     return gulp.src('static/*')
+        .pipe(cached("add"))
         .pipe(git.add({args: '--all'}));
 });
 
@@ -125,7 +120,7 @@ gulp.task('reload', function () {
 
 
 gulp.task('index', function () {
-    runSequence(['scripts', 'less', 'vendor-scripts', 'vendor-css', 'copy-assets'],  'add', 'reload');
+    runSequence(['scripts', 'less', 'vendor-scripts', 'vendor-css', 'copy-assets'], ['reload', 'add']);
 });
 
 function swallowError(error) {
