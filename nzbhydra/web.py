@@ -399,7 +399,8 @@ def login():
             response = jsonify(getUserInfos(u))
             return response
     response = jsonify(message='Wrong username or Password')
-    logger.warn("Unsuccessful form login for user %s" % username)
+    ip = getIp() if config.settings.main.logging.logIpAddresses else "<HIDDENIP>"
+    logger.warn("Unsuccessful form login for user %s from IP %s" % (username, ip))
     response.status_code = 401
     return response
 

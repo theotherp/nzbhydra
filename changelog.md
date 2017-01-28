@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.191
+Fixed: If configured log IP for failed form logins. See [#448](https://github.com/theotherp/nzbhydra/issues/448).
+
 ### 0.2.190
 Changed: Checking capabilities of indexers was supposed to find out which categories are supported and only enabled these. That never really worked well so for now I disabled that feature. 
 Now by default all categories are enabled for new indexers.
