@@ -44,8 +44,8 @@ gulp.task('vendor-css', function () {
 gulp.task('scripts', function () {
     var dest = 'static/js';
     return gulp.src("ui-src/js/**/*.js")
-        .pipe(cached("scripts"))
         .pipe(ngAnnotate())
+        .pipe(cached("scripts"))
         .on('error', swallowError)
         .pipe(angularFilesort())
         .on('error', swallowError)
