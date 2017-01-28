@@ -39,7 +39,7 @@ function HydraAuthService($q, $rootScope, $http, $cookies, bootstrapped) {
     
     function login(username, password) {
         var deferred = $q.defer();
-        return $http.post("/auth/login", data = {username: username, password: password}).then(function (data) {
+        return $http.post("auth/login", data = {username: username, password: password}).then(function (data) {
             bootstrapped = data.data;
             loggedIn = true;
             $rootScope.$broadcast("user:loggedIn");
@@ -58,7 +58,7 @@ function HydraAuthService($q, $rootScope, $http, $cookies, bootstrapped) {
     
     function logout() {
         var deferred = $q.defer();
-        return $http.post("/auth/logout").then(function(data) {
+        return $http.post("auth/logout").then(function(data) {
             $rootScope.$broadcast("user:loggedOut");
             bootstrapped = data.data;
             loggedIn = false;
