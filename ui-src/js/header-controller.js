@@ -6,6 +6,7 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService) {
 
 
     $scope.showLoginout = false;
+    $scope.oldUserName = null;
 
     function update() {
 
@@ -21,6 +22,7 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService) {
                 $scope.showLoginout = true;
                 $scope.username = $scope.userInfos.username;
                 $scope.loginlogoutText = "Logout " + $scope.username;
+                $scope.oldUserName = $scope.username;
             } else {
                 $scope.showAdmin = !$scope.userInfos.adminRestricted;
                 $scope.showStats = !$scope.userInfos.statsRestricted;
@@ -58,14 +60,15 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService) {
         } else {
             if ($scope.userInfos.authType == "basic") {
                 var params = {};
-                if ($scope.userInfos.username) {
+                if ($scope.oldUserName) {
                     params = {
-                        old_username: HydraAuthService.getUserName()
+                        old_username: $scope.oldUserName
                     }
                 }
                 HydraAuthService.askForPassword(params).then(function () {
                     growl.info("Login successful!");
                     update();
+                    $scope.oldUserName = null;
                     $state.go("root.search");
                 })
             } else if ($scope.userInfos.authType == "form") {

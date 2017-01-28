@@ -2664,7 +2664,7 @@ angular
     .controller('SearchHistoryController', SearchHistoryController);
 
 
-function SearchHistoryController($scope, $state, history, growl, SearchHistoryService) {
+function SearchHistoryController($scope, $state, history, growl, $compile, $templateCache, SearchHistoryService) {
     $scope.type = "All";
     $scope.limit = 100;
     $scope.pagination = {
@@ -2673,6 +2673,7 @@ function SearchHistoryController($scope, $state, history, growl, SearchHistorySe
     $scope.isLoaded = true;
     $scope.searchRequests = history.data.searchRequests;
     $scope.totalRequests = history.data.totalRequests;
+
 
     var columnDefs = [
         {
@@ -2713,7 +2714,8 @@ function SearchHistoryController($scope, $state, history, growl, SearchHistorySe
         {
             headerName: "Access",
             field: "internal",
-            filterParams: {apply: true, newRowsAction: "keep"},
+            //filterParams: {apply: true, newRowsAction: "keep"},
+            filter: YearFilter,
             cellRenderer: function (data) {
                 return data.value ? "Internal" : "API";
             },
@@ -2723,7 +2725,7 @@ function SearchHistoryController($scope, $state, history, growl, SearchHistorySe
         {
             headerName: "Username",
             field: "username",
-            filterParams: {apply: true, newRowsAction: "keep"},
+            filterParams: {apply: true, newRowsAction: "keep"}
         }
     ];
 
@@ -2828,10 +2830,78 @@ function SearchHistoryController($scope, $state, history, growl, SearchHistorySe
 
     }
 
+    function YearFilter() {
+    }
+
+    function getAccessTypeFilter() {
+        return 'Hallo1<access-type-filter></access-type-filter>';
+    }
+
+    YearFilter.prototype.init = function (params) {
+        this.eGui = document.createElement('div');
+        this.eGui.innerHTML = getAccessTypeFilter();//$templateCache.get("accessTypeFilter.html");
+        // this.rbAllYears = this.eGui.querySelector('#rbAllYears');
+        // this.rbSince2010 = this.eGui.querySelector('#rbSince2010');
+        // this.rbAllYears.addEventListener('change', this.onRbChanged.bind(this));
+        // this.rbSince2010.addEventListener('change', this.onRbChanged.bind(this));
+        this.filterActive = false;
+        this.filterChangedCallback = params.filterChangedCallback;
+        $compile(this.eGui)($scope);
+        this.valueGetter = params.valueGetter;
+    };
+
+    YearFilter.prototype.onRbChanged = function () {
+        this.filterActive = this.rbSince2010.checked;
+        this.filterChangedCallback();
+    };
+
+    YearFilter.prototype.getGui = function () {
+        return this.eGui;
+    };
+
+    YearFilter.prototype.doesFilterPass = function (params) {
+        return params.data.year >= 2010;
+    };
+
+    YearFilter.prototype.isFilterActive = function () {
+        return this.filterActive;
+    };
+
+    YearFilter.prototype.getModel = function () {
+        var model = {value: this.rbSince2010.checked};
+        return model;
+    };
+
+    YearFilter.prototype.setModel = function (model) {
+        this.rbSince2010.checked = model.value;
+    };
+
+// this example isn't using getModel() and setModel(),
+// so safe to just leave these empty. don't do this in your code!!!
+    YearFilter.prototype.getModel = function () {
+    };
+    YearFilter.prototype.setModel = function () {
+    };
 
 }
-SearchHistoryController.$inject = ["$scope", "$state", "history", "growl", "SearchHistoryService"];
+SearchHistoryController.$inject = ["$scope", "$state", "history", "growl", "$compile", "$templateCache", "SearchHistoryService"];
 
+angular
+    .module('nzbhydraApp').directive("accessTypeFilter", accessTypeFilter);
+
+function accessTypeFilter() {
+    controller.$inject = ["$scope"];
+    return {
+        template: 'Hallo',
+        scope: {},
+        controller: controller
+    };
+
+    function controller($scope) {
+        console.log("accessTypeFilter");
+
+    }
+}
 angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
@@ -3610,6 +3680,7 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService) {
 
 
     $scope.showLoginout = false;
+    $scope.oldUserName = null;
 
     function update() {
 
@@ -3625,6 +3696,7 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService) {
                 $scope.showLoginout = true;
                 $scope.username = $scope.userInfos.username;
                 $scope.loginlogoutText = "Logout " + $scope.username;
+                $scope.oldUserName = $scope.username;
             } else {
                 $scope.showAdmin = !$scope.userInfos.adminRestricted;
                 $scope.showStats = !$scope.userInfos.statsRestricted;
@@ -3662,14 +3734,15 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService) {
         } else {
             if ($scope.userInfos.authType == "basic") {
                 var params = {};
-                if ($scope.userInfos.username) {
+                if ($scope.oldUserName) {
                     params = {
-                        old_username: HydraAuthService.getUserName()
+                        old_username: $scope.oldUserName
                     }
                 }
                 HydraAuthService.askForPassword(params).then(function () {
                     growl.info("Login successful!");
                     update();
+                    $scope.oldUserName = null;
                     $state.go("root.search");
                 })
             } else if ($scope.userInfos.authType == "form") {
