@@ -2,6 +2,9 @@
 
 ----------
 ### 0.2.190
+Changed: Checking capabilities of indexers was supposed to find out which categories are supported and only enabled these. That never really worked well so for now I disabled that feature. 
+Now by default all categories are enabled for new indexers.
+
 Fixed: Some kinks with auth handling. If you have problems please post a detailed description of the scenario *including debugging infos*.
 
 ### 0.2.189

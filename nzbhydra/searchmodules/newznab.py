@@ -264,7 +264,7 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
             "supportedIds": sorted(list(set(supportedIds))), 
             "supportedTypes": sorted(list(set(supportedTypes))),
             "supportedCategories": supportedCategories,
-            "supportsAllCategories": len(supportedCategories) == getNumberOfSelectableCategories() - 1, #Without "all
+            "supportsAllCategories": True,
             "backend": backend
         }
     except Exception as e:
