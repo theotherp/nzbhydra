@@ -32,7 +32,6 @@ function StatsController($scope, $filter, StatsService, blockUI) {
         opened: false
     };
 
-
     function updateStats() {
         blockUI.start("Updating stats...");
         var after = $scope.afterDate != null ? Math.floor($scope.afterDate.getTime() / 1000) : null;
@@ -45,16 +44,19 @@ function StatsController($scope, $filter, StatsService, blockUI) {
     }
 
     $scope.$watch('beforeDate', function () {
-        if (!initializingBefore) {
-            updateStats();
+        if (initializingBefore) {
             initializingBefore = false;
+        } else {
+            updateStats();
         }
     });
 
+
     $scope.$watch('afterDate', function () {
-        if (!initializingAfter) {
-            updateStats();
+        if (initializingAfter) {
             initializingAfter = false;
+        } else {
+            updateStats();
         }
     });
 
