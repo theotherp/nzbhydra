@@ -20,20 +20,27 @@ function SearchHistoryService($filter, $http) {
         });
     }
 
-    function getSearchHistory(pageNumber, limit, sortModel, filterModel, type, distinct, onlyCurrentUser) {
+    function getSearchHistory(pageNumber, limit, filterModel, sortModel, distinct, onlyCurrentUser) {
+        var params = {
+            page: pageNumber,
+            limit: limit,
+            filterModel: filterModel,
+            distinct: distinct,
+            onlyCurrentUser: onlyCurrentUser
+        };
         if (angular.isUndefined(pageNumber)) {
-            pageNumber = 1;
+            params.page = 1;
         }
         if (angular.isUndefined(limit)) {
-            limit = 100;
+            params.limit = 100;
         }
-        if (!sortModel) {
-            sortModel = [{colId: "time", sort: "desc"}];
+        if (angular.isUndefined(filterModel)) {
+            params.filterModel = {}
         }
-        if (!filterModel) {
-            filterModel = {}
+        if (!angular.isUndefined(sortModel)) {
+            params.sortModel = sortModel;
         }
-        return $http.post("internalapi/getsearchrequests", {page: pageNumber, limit: limit, sortModel: sortModel, filterModel: filterModel, type: type, distinct: distinct, onlyCurrentUser: onlyCurrentUser}).success(function (response) {
+        return $http.post("internalapi/getsearchrequests", params).success(function (response) {
             return {
                 searchRequests: response.searchRequests,
                 totalRequests: response.totalRequests
@@ -139,7 +146,6 @@ function SearchHistoryService($filter, $http) {
 
         return stateParams;
     }
-
 
 
 }

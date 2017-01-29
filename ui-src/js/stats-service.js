@@ -15,17 +15,21 @@ function StatsService($http) {
         });
     }
 
-    function getDownloadHistory(pageNumber, limit, type) {
+    function getDownloadHistory(pageNumber, limit, filterModel, sortModel) {
+        var params = {page: pageNumber, limit: limit, filterModel: filterModel};
         if (angular.isUndefined(pageNumber)) {
-            pageNumber = 1;
+            params.page = 1;
         }
         if (angular.isUndefined(limit)) {
-            limit = 100;
+            params.limit = 100;
         }
-        if (angular.isUndefined(type)) {
-            type = "All";
+        if (angular.isUndefined(filterModel)) {
+            params.filterModel = {}
         }
-        return $http.get("internalapi/getnzbdownloads", {params: {page: pageNumber, limit: limit, type: type}}).success(function (response) {
+        if (!angular.isUndefined(sortModel)) {
+            params.sortModel = sortModel;
+        }
+        return $http.post("internalapi/getnzbdownloads", params).success(function (response) {
             return {
                 nzbDownloads: response.nzbDownloads,
                 totalDownloads: response.totalDownloads

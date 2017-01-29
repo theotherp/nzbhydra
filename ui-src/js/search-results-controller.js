@@ -110,7 +110,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
 
 
     $scope.$on("searchInputChanged", function (event, query, minage, maxage, minsize, maxsize) {
-        console.log("Got event searchInputChanged");
         $scope.filteredResults = sortAndFilter($scope.results, query, minage, maxage, minsize, maxsize);
     });
 
@@ -277,7 +276,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
 
     $scope.$on("checkboxClicked", function (event, originalEvent, rowIndex, newCheckedValue) {
         if (originalEvent.shiftKey && $scope.lastClicked != null) {
-            console.log("Shift clicked from " + $scope.lastClicked + " to " + rowIndex);
             $scope.$broadcast("shiftClick", Number($scope.lastClicked), Number(rowIndex), Number($scope.lastClickedValue));
         }
         $scope.lastClicked = rowIndex;

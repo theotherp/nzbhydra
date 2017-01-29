@@ -104,7 +104,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
         //Show checkbox to ask if the user wants to search by ID (using autocomplete)
         $scope.isAskById = $scope.category.supportsById;
 
-        focus('focus-query-box');
+        focus('searchfield');
 
         //Hacky way of triggering the autocomplete loading
         var searchModel = $element.find("#searchfield").controller("ngModel");

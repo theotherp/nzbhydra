@@ -9,7 +9,7 @@ from itertools import groupby
 import arrow
 from builtins import *
 from dateutil import tz
-from peewee import fn, JOIN, SQL
+from peewee import fn, JOIN
 
 from nzbhydra import database
 from nzbhydra.database import Indexer, IndexerApiAccess, IndexerNzbDownload, Search, IndexerStatus, TvIdCache, MovieIdCache, SearchResult
@@ -36,13 +36,16 @@ def getStats(after=None, before=None):
         before = arrow.utcnow().timestamp + 10000
     beforeSql = "datetime(%d, 'unixepoch')" % before
     before = arrow.get(before).datetime
-    return {"avgResponseTimes": get_avg_indexer_response_times(after, before),
-            "avgIndexerSearchResultsShares": get_avg_indexer_search_results_share(afterSql, beforeSql),
-            "avgIndexerAccessSuccesses": get_avg_indexer_access_success(afterSql, beforeSql),
-            "indexerDownloadShares": getIndexerBasedDownloadStats(afterSql, beforeSql),
-            "timeBasedDownloadStats": getTimeBasedDownloadStats(after, before),
-            "timeBasedSearchStats": getTimeBasedSearchStats(after, before)
-            }
+    return {
+        "after": arrow.get(after).timestamp,
+        "before": arrow.get(before).timestamp,
+        "avgResponseTimes": get_avg_indexer_response_times(after, before),
+        "avgIndexerSearchResultsShares": get_avg_indexer_search_results_share(afterSql, beforeSql),
+        "avgIndexerAccessSuccesses": get_avg_indexer_access_success(afterSql, beforeSql),
+        "indexerDownloadShares": getIndexerBasedDownloadStats(afterSql, beforeSql),
+        "timeBasedDownloadStats": getTimeBasedDownloadStats(after, before),
+        "timeBasedSearchStats": getTimeBasedSearchStats(after, before)
+    }
 
 
 def get_avg_indexer_response_times(after, before):
@@ -299,25 +302,77 @@ def getIndexerBasedDownloadStats(afterSql, beforeSql):
     return stats
 
 
-def get_nzb_downloads(page=0, limit=100, type=None):
+def get_nzb_downloads(page=0, limit=100, filterModel=None, sortModel=None):
+    columnNameToEntityMap = {
+        "time": IndexerNzbDownload.time,
+        "indexer": Indexer.name,
+        "title": IndexerNzbDownload.title,
+        "access": IndexerNzbDownload.internal,
+        "successful": IndexerApiAccess.response_successful,
+        "username": IndexerApiAccess.username
+    }
+
     query = IndexerNzbDownload() \
         .select(Indexer.name.alias("indexerName"), IndexerNzbDownload.title, IndexerNzbDownload.time, IndexerNzbDownload.internal, SearchResult.id.alias('searchResultId'), SearchResult.details.alias('detailsLink'), IndexerApiAccess.response_successful, IndexerApiAccess.username) \
         .switch(IndexerNzbDownload).join(IndexerApiAccess, JOIN.LEFT_OUTER).join(Indexer, JOIN.LEFT_OUTER) \
         .switch(IndexerNzbDownload).join(SearchResult, JOIN.LEFT_OUTER)
 
-    if type == "Internal":
-        query = query.where(IndexerNzbDownload.internal)
-    elif type == "API":
-        query = query.where(~IndexerNzbDownload.internal)
+    query = extendQueryWithFilter(columnNameToEntityMap, filterModel, query)
+    query = extendQueryWithSorting(columnNameToEntityMap, query, sortModel, IndexerNzbDownload.time.desc())
 
     total_downloads = query.count()
-    nzb_downloads = list(query.order_by(IndexerNzbDownload.time.desc()).paginate(page, limit).dicts())
+    nzb_downloads = list(query.paginate(page, limit).dicts())
     downloads = {"totalDownloads": total_downloads, "nzbDownloads": nzb_downloads}
     return downloads
 
 
-# ((Search.identifier_value == MovieIdCache.imdb) & (Search.identifier_key == "imdbid"))
-def get_search_requests(page=0, limit=100, sortModel=None, type=None, filterModel=None, distinct=False, onlyUser=None):
+def extendQueryWithSorting(columnNameToEntityMap, query, sortModel, defaultSort):
+    if sortModel is not None and sortModel["sortMode"] > 0:
+        orderBy = columnNameToEntityMap[sortModel["column"]]
+        if sortModel["sortMode"] == 1:
+            orderBy = orderBy.asc()
+        else:
+            orderBy = orderBy.desc()
+        query = query.order_by(orderBy)
+    else:
+        query = query.order_by(defaultSort)
+    return query
+
+
+def extendQueryWithFilter(columnNameToEntityMap, filterModel, query):
+    if len(filterModel.keys()) > 0:
+        for column, filter in filterModel.iteritems():
+            if filter["filtertype"] == "freetext":
+                query = query.where(fn.Lower(columnNameToEntityMap[column]).contains(filter["filter"]))
+            elif filter["filtertype"] == "checkboxes":
+                if "isBoolean" in filter.keys() and filter["isBoolean"]:
+                    where = columnNameToEntityMap[column].in_([x for x in filter["filter"] if x is not None])
+                    if None in filter["filter"]:
+                        where = (where | columnNameToEntityMap[column].is_null())
+                    query = query.where(where)
+                else:
+                    query = query.where(columnNameToEntityMap[column].in_(filter["filter"]))
+            elif filter["filtertype"] == "boolean" and filter["filter"] != "all":
+                if not filter["filter"] or filter["filter"] == "false":
+                    query = query.where(~columnNameToEntityMap[column])
+                else:
+                    query = query.where(columnNameToEntityMap[column])
+            elif filter["filtertype"] == "time":
+                if filter["filter"]["before"]:
+                    query = query.where(columnNameToEntityMap[column] < filter["filter"]["before"])
+                if filter["filter"]["after"]:
+                    query = query.where(columnNameToEntityMap[column] > filter["filter"]["after"])
+    return query
+
+
+def get_search_requests(page=0, limit=100, sortModel=None, filterModel=None, distinct=False, onlyUser=None):
+    columnNameToEntityMap = {
+        "time": Search.time,
+        "query": Search.query,
+        "category": Search.category,
+        "access": Search.internal,
+        "username": Search.username
+    }
     columns = [Search.time, Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type, Search.username, Search.title, Search.author, TvIdCache.title.alias("tvtitle"), MovieIdCache.title.alias("movietitle")]
 
     query = Search().select(*columns)
@@ -328,35 +383,14 @@ def get_search_requests(page=0, limit=100, sortModel=None, type=None, filterMode
         ((Search.identifier_value == MovieIdCache.imdb) & (Search.identifier_key == "imdbid")) |
         ((Search.identifier_value == MovieIdCache.tmdb) & (Search.identifier_key == "tmdbid"))))
 
-    if type is not None and type != "All":
-        query = query.where(Search.internal) if type.lower() == "internal" else query.where(~Search.internal)
+    query = extendQueryWithFilter(columnNameToEntityMap, filterModel, query)
+    query = extendQueryWithSorting(columnNameToEntityMap, query, sortModel, Search.time.desc())
+
     if onlyUser:
         query = query.where(Search.username == onlyUser)
-    if filterModel:
-        for column, filter in filterModel.items():
-            where = column
-            if filter["type"] == "contains":
-                where += " like '%%%s%%'" % filter["filter"]
-            elif filter["type"] == "startsWith":
-                where += " like '%s%%'" % filter["filter"]
-            elif filter["type"] == "endWith":
-                where += " like '%%%s'" % filter["filter"]
-            elif filter["type"] == "equals":
-                where += "='%s'" % filter["filter"]
-            elif filter["type"] == "notEquals":
-                where += "!='%s'" % filter["filter"]
-            query = query.where(SQL(where))
-    total_requests = query.count()
-    if len(sortModel) == 0:
-        query = query.order_by(Search.time.desc())
-    else:
-        for sort in sortModel:
-            orderBy = SQL(sort["colId"])
-            if sort["sort"] == "desc":
-                orderBy = orderBy.desc()
-            query = query.order_by(orderBy)
     if distinct:
         query = query.group_by(Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type, Search.username, Search.title, Search.author)
+    total_requests = query.count()
     requests = list(query.paginate(page, limit).dicts())
 
     search_requests = {"totalRequests": total_requests, "searchRequests": requests}

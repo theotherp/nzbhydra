@@ -2,16 +2,19 @@ angular
     .module('nzbhydraApp')
     .controller('StatsController', StatsController);
 
-function StatsController($scope, $filter, StatsService, blockUI, stats) {
+function StatsController($scope, $filter, StatsService, blockUI) {
 
     $scope.dateOptions = {
         dateDisabled: false,
         formatYear: 'yy',
         startingDay: 1
     };
+    var initializingAfter = true;
+    var initializingBefore = true;
+    $scope.afterDate = moment().subtract(30, "days").toDate();
+    $scope.beforeDate = moment().toDate();
+    updateStats();
 
-    $scope.afterDate = null;
-    $scope.beforeDate = null;
 
     $scope.openAfter = function () {
         $scope.after.opened = true;
@@ -32,8 +35,8 @@ function StatsController($scope, $filter, StatsService, blockUI, stats) {
 
     function updateStats() {
         blockUI.start("Updating stats...");
-        var after = $scope.afterDate != null ? $scope.afterDate.getTime() / 1000 : null;
-        var before = $scope.beforeDate != null ? $scope.beforeDate.getTime() / 1000 : null;
+        var after = $scope.afterDate != null ? Math.floor($scope.afterDate.getTime() / 1000) : null;
+        var before = $scope.beforeDate != null ? Math.floor($scope.beforeDate.getTime() / 1000)  : null;
         StatsService.get(after, before).then(function(stats) {
             $scope.setStats(stats);
         });
@@ -42,12 +45,24 @@ function StatsController($scope, $filter, StatsService, blockUI, stats) {
     }
 
     $scope.$watch('beforeDate', function () {
-        updateStats();
+        if (!initializingBefore) {
+            updateStats();
+            initializingBefore = false;
+        }
     });
 
     $scope.$watch('afterDate', function () {
-        updateStats();
+        if (!initializingAfter) {
+            updateStats();
+            initializingAfter = false;
+        }
     });
+
+    $scope.onKeypress = function (keyEvent) {
+        if (keyEvent.which === 13) {
+            updateStats();
+        }
+    };
 
     $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
     $scope.format = $scope.formats[0];
@@ -131,8 +146,6 @@ function StatsController($scope, $filter, StatsService, blockUI, stats) {
 
         $scope.indexerDownloadSharesChart.options.chart.height = Math.min(Math.max(numIndexers * 40, 350), 900);
     };
-
-    $scope.setStats(stats);
 
 
     function getChart(chartType, values, xKey, yKey, xAxisLabel, yAxisLabel) {

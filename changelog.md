@@ -1,9 +1,11 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.193
+Changed: Removed data grid for history. Wrote a custom implementation for search and download history that allows sorting and filtering. At a later point I'll add that for search result filtering. See [#479](https://github.com/theotherp/nzbhydra/issues/479).
+
 ### 0.2.192
 Fixed: Form bases login when using reverse proxies didn't work. See [#523](https://github.com/theotherp/nzbhydra/issues/523).
-
 
 ### 0.2.191
 Fixed: If configured log IP for failed form logins. See [#448](https://github.com/theotherp/nzbhydra/issues/448).

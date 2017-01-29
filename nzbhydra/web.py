@@ -429,6 +429,7 @@ def base(path):
 
     user = session["user"] if "user" in session.keys() else None
     bootstrapped = getUserInfos(user)
+    bootstrapped["safeConfig"] = config.getSafeConfig()
 
     getUserFromToken()  # Just see if the token is there
     if request.authorization:
@@ -1021,23 +1022,29 @@ internalapi__getnzbdownloads_args = {
 }
 
 
-@app.route('/internalapi/getnzbdownloads')
-@requires_auth("stats")
-@use_args(internalapi__getnzbdownloads_args)
-def internalapi_getnzb_downloads(args):
-    return jsonify(get_nzb_downloads(page=args["page"], limit=args["limit"], type=args["type"]))
-
-
 class SortModelSchema(Schema):
-    colId = fields.String()
-    sort = fields.String()
+    column = fields.String()
+    sortMode = fields.Integer()
 
 
-class SearchSchema(Schema):
+class DownloadHistoryFilterSchema(Schema):
     page = fields.Integer(missing=1)
     limit = fields.Integer(missing=500)
-    sortModel = fields.Nested(SortModelSchema, many=True, missing=None)
-    type = fields.String(missing=None)
+    sortModel = fields.Nested(SortModelSchema, missing=None)
+
+
+@app.route('/internalapi/getnzbdownloads', methods=['POST'])
+@requires_auth("stats")
+@use_args(DownloadHistoryFilterSchema())
+def internalapi_getnzb_downloads(args):
+    filterModel = request.json["filterModel"] if request.json and "filterModel" in request.json.keys() else {}
+    return jsonify(get_nzb_downloads(page=args["page"], limit=args["limit"], filterModel=filterModel, sortModel=args["sortModel"]))
+
+
+class SearchHistoryFilterSchema(Schema):
+    page = fields.Integer(missing=1)
+    limit = fields.Integer(missing=500)
+    sortModel = fields.Nested(SortModelSchema, missing=None)
     distinct = fields.Boolean(missing=False)
     onlyCurrentUser = fields.Boolean(missing=False)
 
@@ -1048,18 +1055,16 @@ def internalapi_search_requestsforsearching():
     limitToUser = None
     if "user" in session.keys():
         limitToUser = session["user"] and session["user"].username is not None
-    return jsonify(get_search_requests(1, 20, [], "internal", None, True, limitToUser))
+    filterModel = {"access": {"filter": True, "filtertype": "boolean"}}
+    return jsonify(get_search_requests(1, 20, sortModel=None, filterModel=filterModel, distinct=True, onlyUser=limitToUser))
 
 
-@app.route('/internalapi/getsearchrequests', methods=['GET', 'POST'])
+@app.route('/internalapi/getsearchrequests', methods=['POST'])
 @requires_auth("stats")
-@use_args(SearchSchema())
+@use_args(SearchHistoryFilterSchema())
 def internalapi_search_requests(args):
-    logger.debug(args)
-    if not "sortModel" in args.keys() or args["sortModel"] is None:
-        args["sortModel"] = []
     filterModel = request.json["filterModel"] if "filterModel" in request.json.keys() else None
-    return jsonify(get_search_requests(page=args["page"], limit=args["limit"], sortModel=args["sortModel"], type=args["type"], filterModel=filterModel, distinct=args["distinct"], onlyUser=False))
+    return jsonify(get_search_requests(page=args["page"], limit=args["limit"], sortModel=args["sortModel"], filterModel=filterModel, distinct=args["distinct"], onlyUser=False))
 
 
 internalapi__redirect_rid_args = {

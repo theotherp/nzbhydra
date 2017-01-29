@@ -42,7 +42,6 @@ function ConfigController($scope, $http, ConfigService, config, DownloaderCatego
         if ($scope.form.$valid) {
             
             ConfigService.set($scope.config);
-            ConfigService.invalidateSafe();
             $scope.form.$setPristine();
             DownloaderCategoriesService.invalidate();
             if ($scope.restartRequired) {

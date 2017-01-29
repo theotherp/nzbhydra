@@ -2,9 +2,10 @@ angular
     .module('nzbhydraApp')
     .factory('ConfigService', ConfigService);
 
-function ConfigService($http, $q, $cacheFactory) {
+function ConfigService($http, $q, $cacheFactory, bootstrapped) {
 
     var cache = $cacheFactory("nzbhydra");
+    var safeConfig = bootstrapped.safeConfig;
 
     return {
         set: set,
@@ -39,21 +40,13 @@ function ConfigService($http, $q, $cacheFactory) {
     }
 
     function getSafe() {
-        var safeconfig = cache.get("safeconfig");
-        if (angular.isDefined(safeconfig)) {
-            return safeconfig;
-        }
-        
-        return $http.get('internalapi/getsafeconfig').then(function (data) {
-            cache.put("safeconfig", data.data);
-            return data.data;
-        });
-
-
+        return safeConfig;
     }
 
     function invalidateSafe() {
-        cache.remove("safeconfig");
+        $http.get('internalapi/getsafeconfig').then(function (data) {
+            safeConfig = data.data;
+        });
     }
 
     function maySeeAdminArea() {

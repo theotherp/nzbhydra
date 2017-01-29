@@ -243,9 +243,6 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                         loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
                             return loginRequired($q, $timeout, $state, HydraAuthService, "stats")
                         }],
-                        stats: ['loginRequired', 'StatsService', function (loginRequired, StatsService) {
-                            return StatsService.get();
-                        }],
                         $title: ["$stateParams", function ($stateParams) {
                             return "Stats"
                         }]
@@ -471,7 +468,6 @@ angular.module('nzbhydraApp').config(["$stateProvider", "$urlRouterProvider", "$
                             return loginRequired($q, $timeout, $state, HydraAuthService, "search")
                         }],
                         $title: ["$stateParams", function ($stateParams) {
-                            console.log($stateParams);
                             var title = "Search results";
                             var details; 
                             if ($stateParams.title) {
@@ -713,6 +709,35 @@ nzbhydraapp.directive('autoFocus', ["$timeout", function ($timeout) {
                 _element[0].focus();
             }, 0);
         }
+    };
+}]);
+
+
+nzbhydraapp.factory('focus', ["$timeout", "$window", function ($timeout, $window) {
+    return function (id) {
+        // timeout makes sure that it is invoked after any other event has been triggered.
+        // e.g. click events that need to run before the focus or
+        // inputs elements that are in a disabled state but are enabled when those events
+        // are triggered.
+        $timeout(function () {
+            var element = $window.document.getElementById(id);
+            if (element)
+                element.focus();
+        });
+    };
+}]);
+
+nzbhydraapp.directive('eventFocus', ["focus", function (focus) {
+    return function (scope, elem, attr) {
+        elem.on(attr.eventFocus, function () {
+            focus(attr.eventFocusId);
+        });
+
+        // Removes bound events in the element itself
+        // when the scope is destroyed
+        scope.$on('$destroy', function () {
+            elem.off(attr.eventFocus);
+        });
     };
 }]);
 angular
@@ -1303,6 +1328,224 @@ function downloadNzbsButton() {
 
 
 angular
+    .module('nzbhydraApp').directive("columnFilterWrapper", columnFilterWrapper);
+
+function columnFilterWrapper() {
+    controller.$inject = ["$scope"];
+    return {
+        restrict: "E",
+        templateUrl: 'static/html/dataTable/columnFilterOuter.html',
+        transclude: true,
+        controllerAs: 'columnFilterWrapperCtrl',
+        scope: true,
+        bindToController: true,
+        controller: controller
+    };
+
+    function controller($scope) {
+        var vm = this;
+
+        vm.open = false;
+        vm.isActive = false;
+
+        vm.toggle = function () {
+            vm.open = !vm.open;
+            if (vm.open) {
+                $scope.$broadcast("opened");
+            }
+        };
+
+        $scope.$on("filter", function (event, column, filterModel, isActive) {
+            vm.open = false;
+            vm.isActive = isActive;
+        })
+    }
+}
+
+
+angular
+    .module('nzbhydraApp').directive("freetextFilter", freetextFilter);
+
+function freetextFilter() {
+    controller.$inject = ["$scope", "focus"];
+    return {
+        template: '<ng-include src="\'static/html/dataTable/columnFilterFreetext.html\'"/>',
+        require: "^columnFilterWrapper",
+        controllerAs: 'innerController',
+        scope: {
+            column: "@"
+        },
+        controller: controller
+    };
+
+    function controller($scope, focus) {
+        $scope.data = {};
+
+        $scope.$on("opened", function () {
+            focus("freetext-filter-input");
+        });
+
+        $scope.onKeypress = function (keyEvent) {
+            if (keyEvent.which === 13) {
+                $scope.$emit("filter", $scope.column, {filter: $scope.data.filter, filtertype: "freetext"}, angular.isDefined($scope.data.filter) && $scope.data.filter.length > 0);
+            }
+        }
+    }
+}
+
+angular
+    .module('nzbhydraApp').directive("checkboxesFilter", checkboxesFilter);
+
+function checkboxesFilter() {
+    controller.$inject = ["$scope"];
+    return {
+        template: '<ng-include src="\'static/html/dataTable/columnFilterCheckboxes.html\'"/>',
+        controllerAs: 'checkboxesFilterController',
+        scope: {
+            column: "@",
+            entries: "<",
+            preselect: "<",
+            showInvert: "<",
+            isBoolean: "<"
+        },
+        controller: controller
+    };
+
+    function controller($scope) {
+        $scope.selected = {
+            entries: []
+        };
+
+        if ($scope.preselect) {
+            $scope.selected.entries = $scope.entries.slice();
+        }
+
+        $scope.invert = function () {
+            $scope.selected.entries = _.difference($scope.entries, $scope.selected.entries);
+        };
+
+        $scope.apply = function () {
+            console.log($scope.selected);
+            var isActive = $scope.selected.entries.length < $scope.entries.length;
+            $scope.$emit("filter", $scope.column, {filter: _.pluck($scope.selected.entries, "id"), filtertype: "checkboxes", isBoolean: $scope.isBoolean}, isActive)
+        }
+    }
+}
+
+angular
+    .module('nzbhydraApp').directive("booleanFilter", booleanFilter);
+
+function booleanFilter() {
+    controller.$inject = ["$scope"];
+    return {
+        template: '<ng-include src="\'static/html/dataTable/columnFilterBoolean.html\'"/>',
+        controllerAs: 'booleanFilterController',
+        scope: {
+            column: "@",
+            options: "<",
+            preselect: "@"
+        },
+        controller: controller
+    };
+
+
+    function controller($scope) {
+        $scope.selected = {value: $scope.options[$scope.preselect].value};
+
+        $scope.apply = function () {
+            console.log($scope.selected);
+            $scope.$emit("filter", $scope.column, {filter: $scope.selected.value, filtertype: "boolean"}, $scope.selected.value != $scope.options[0].value)
+        }
+    }
+}
+
+angular
+    .module('nzbhydraApp').directive("timeFilter", timeFilter);
+
+function timeFilter() {
+    controller.$inject = ["$scope"];
+    return {
+        template: '<ng-include src="\'static/html/dataTable/columnFilterTime.html\'"/>',
+        scope: {
+            column: "@",
+            selected: "<"
+        },
+        controller: controller
+    };
+
+    function controller($scope) {
+
+        $scope.dateOptions = {
+            dateDisabled: false,
+            formatYear: 'yy',
+            startingDay: 1
+        };
+
+
+        $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+        $scope.format = $scope.formats[0];
+        $scope.altInputFormats = ['M!/d!/yyyy'];
+
+        $scope.openAfter = function () {
+            $scope.after.opened = true;
+        };
+
+        $scope.openBefore = function () {
+            $scope.before.opened = true;
+        };
+
+        $scope.after = {
+            opened: false
+        };
+
+        $scope.before = {
+            opened: false
+        };
+
+        $scope.apply = function () {
+            var isActive = $scope.selected.beforeDate || $scope.selected.afterDate;
+            $scope.$emit("filter", $scope.column, {filter: {after: $scope.selected.afterDate, before: $scope.selected.beforeDate}, filtertype: "time"}, isActive)
+        }
+    }
+}
+
+
+angular
+    .module('nzbhydraApp').directive("columnSortable", columnSortable);
+
+function columnSortable() {
+    controller.$inject = ["$scope"];
+    return {
+        restrict: "E",
+        templateUrl: "static/html/dataTable/columnSortable.html",
+        transclude: true,
+        scope: {
+            sortMode: "@", //0: no sorting, 1: asc, 2: desc
+            column: "@"
+        },
+        controller: controller
+    };
+
+    function controller($scope) {
+
+        if (angular.isUndefined($scope.sortMode)) {
+            $scope.sortMode = 0;
+        }
+
+        $scope.$on("newSortColumn", function(event, column) {
+            if (column != $scope.column) {
+                $scope.sortMode = 0;
+            }
+        });
+
+        $scope.sort = function () {
+            $scope.sortMode = ($scope.sortMode + 1) % 3;
+            $scope.$emit("sort", $scope.column, $scope.sortMode)
+        };
+
+    }
+}
+angular
     .module('nzbhydraApp')
     .directive('connectionTest', connectionTest);
 
@@ -1814,17 +2057,21 @@ function StatsService($http) {
         });
     }
 
-    function getDownloadHistory(pageNumber, limit, type) {
+    function getDownloadHistory(pageNumber, limit, filterModel, sortModel) {
+        var params = {page: pageNumber, limit: limit, filterModel: filterModel};
         if (angular.isUndefined(pageNumber)) {
-            pageNumber = 1;
+            params.page = 1;
         }
         if (angular.isUndefined(limit)) {
-            limit = 100;
+            params.limit = 100;
         }
-        if (angular.isUndefined(type)) {
-            type = "All";
+        if (angular.isUndefined(filterModel)) {
+            params.filterModel = {}
         }
-        return $http.get("internalapi/getnzbdownloads", {params: {page: pageNumber, limit: limit, type: type}}).success(function (response) {
+        if (!angular.isUndefined(sortModel)) {
+            params.sortModel = sortModel;
+        }
+        return $http.post("internalapi/getnzbdownloads", params).success(function (response) {
             return {
                 nzbDownloads: response.nzbDownloads,
                 totalDownloads: response.totalDownloads
@@ -1839,16 +2086,19 @@ angular
     .module('nzbhydraApp')
     .controller('StatsController', StatsController);
 
-function StatsController($scope, $filter, StatsService, blockUI, stats) {
+function StatsController($scope, $filter, StatsService, blockUI) {
 
     $scope.dateOptions = {
         dateDisabled: false,
         formatYear: 'yy',
         startingDay: 1
     };
+    var initializingAfter = true;
+    var initializingBefore = true;
+    $scope.afterDate = moment().subtract(30, "days").toDate();
+    $scope.beforeDate = moment().toDate();
+    updateStats();
 
-    $scope.afterDate = null;
-    $scope.beforeDate = null;
 
     $scope.openAfter = function () {
         $scope.after.opened = true;
@@ -1869,8 +2119,8 @@ function StatsController($scope, $filter, StatsService, blockUI, stats) {
 
     function updateStats() {
         blockUI.start("Updating stats...");
-        var after = $scope.afterDate != null ? $scope.afterDate.getTime() / 1000 : null;
-        var before = $scope.beforeDate != null ? $scope.beforeDate.getTime() / 1000 : null;
+        var after = $scope.afterDate != null ? Math.floor($scope.afterDate.getTime() / 1000) : null;
+        var before = $scope.beforeDate != null ? Math.floor($scope.beforeDate.getTime() / 1000)  : null;
         StatsService.get(after, before).then(function(stats) {
             $scope.setStats(stats);
         });
@@ -1879,12 +2129,24 @@ function StatsController($scope, $filter, StatsService, blockUI, stats) {
     }
 
     $scope.$watch('beforeDate', function () {
-        updateStats();
+        if (!initializingBefore) {
+            updateStats();
+            initializingBefore = false;
+        }
     });
 
     $scope.$watch('afterDate', function () {
-        updateStats();
+        if (!initializingAfter) {
+            updateStats();
+            initializingAfter = false;
+        }
     });
+
+    $scope.onKeypress = function (keyEvent) {
+        if (keyEvent.which === 13) {
+            updateStats();
+        }
+    };
 
     $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
     $scope.format = $scope.formats[0];
@@ -1968,8 +2230,6 @@ function StatsController($scope, $filter, StatsService, blockUI, stats) {
 
         $scope.indexerDownloadSharesChart.options.chart.height = Math.min(Math.max(numIndexers * 40, 350), 900);
     };
-
-    $scope.setStats(stats);
 
 
     function getChart(chartType, values, xKey, yKey, xAxisLabel, yAxisLabel) {
@@ -2103,7 +2363,7 @@ function StatsController($scope, $filter, StatsService, blockUI, stats) {
 
 
 }
-StatsController.$inject = ["$scope", "$filter", "StatsService", "blockUI", "stats"];
+StatsController.$inject = ["$scope", "$filter", "StatsService", "blockUI"];
 
 //
 angular
@@ -2330,7 +2590,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
 
 
     $scope.$on("searchInputChanged", function (event, query, minage, maxage, minsize, maxsize) {
-        console.log("Got event searchInputChanged");
         $scope.filteredResults = sortAndFilter($scope.results, query, minage, maxage, minsize, maxsize);
     });
 
@@ -2497,7 +2756,6 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
 
     $scope.$on("checkboxClicked", function (event, originalEvent, rowIndex, newCheckedValue) {
         if (originalEvent.shiftKey && $scope.lastClicked != null) {
-            console.log("Shift clicked from " + $scope.lastClicked + " to " + rowIndex);
             $scope.$broadcast("shiftClick", Number($scope.lastClicked), Number(rowIndex), Number($scope.lastClickedValue));
         }
         $scope.lastClicked = rowIndex;
@@ -2535,20 +2793,27 @@ function SearchHistoryService($filter, $http) {
         });
     }
 
-    function getSearchHistory(pageNumber, limit, sortModel, filterModel, type, distinct, onlyCurrentUser) {
+    function getSearchHistory(pageNumber, limit, filterModel, sortModel, distinct, onlyCurrentUser) {
+        var params = {
+            page: pageNumber,
+            limit: limit,
+            filterModel: filterModel,
+            distinct: distinct,
+            onlyCurrentUser: onlyCurrentUser
+        };
         if (angular.isUndefined(pageNumber)) {
-            pageNumber = 1;
+            params.page = 1;
         }
         if (angular.isUndefined(limit)) {
-            limit = 100;
+            params.limit = 100;
         }
-        if (!sortModel) {
-            sortModel = [{colId: "time", sort: "desc"}];
+        if (angular.isUndefined(filterModel)) {
+            params.filterModel = {}
         }
-        if (!filterModel) {
-            filterModel = {}
+        if (!angular.isUndefined(sortModel)) {
+            params.sortModel = sortModel;
         }
-        return $http.post("internalapi/getsearchrequests", {page: pageNumber, limit: limit, sortModel: sortModel, filterModel: filterModel, type: type, distinct: distinct, onlyCurrentUser: onlyCurrentUser}).success(function (response) {
+        return $http.post("internalapi/getsearchrequests", params).success(function (response) {
             return {
                 searchRequests: response.searchRequests,
                 totalRequests: response.totalRequests
@@ -2656,7 +2921,6 @@ function SearchHistoryService($filter, $http) {
     }
 
 
-
 }
 SearchHistoryService.$inject = ["$filter", "$http"];
 angular
@@ -2664,173 +2928,165 @@ angular
     .controller('SearchHistoryController', SearchHistoryController);
 
 
-function SearchHistoryController($scope, $state, history, growl, SearchHistoryService) {
-    $scope.type = "All";
+function SearchHistoryController($scope, $state, SearchHistoryService, ConfigService, history, $sce, $filter) {
     $scope.limit = 100;
     $scope.pagination = {
         current: 1
     };
-    $scope.isLoaded = true;
+    $scope.sortModel = {
+        column: "time",
+        sortMode: 2
+    };
+    $scope.filterModel = {};
+
+    //Filter options
+    $scope.categoriesForFiltering = [];
+    _.forEach(ConfigService.getSafe().categories, function (category) {
+        $scope.categoriesForFiltering.push({label: category.pretty, id: category.pretty})
+    });
+    $scope.preselectedTimeInterval = {beforeDate: null, afterDate: null};
+    $scope.accessOptionsForFiltering = [{label: "All", value: "all"}, {label: "API", value: false}, {label: "Internal", value: true}];
+
+    //Preloaded data
     $scope.searchRequests = history.data.searchRequests;
     $scope.totalRequests = history.data.totalRequests;
 
-    var columnDefs = [
-        {
-            headerName: "Date",
-            field: "time",
-            sort: "desc",
-            cellRenderer: function (date) {
-                return moment.utc(date.value, "ddd, D MMM YYYY HH:mm:ss z").local().format("YYYY-MM-DD HH:mm")
-            },
-            filterParams: {apply: true},
-            width: 150,
-            suppressSizeToFit: true
-        },
-        {
-            headerName: "Query",
-            field: "query",
-            cellRenderer: function (params) {
-                return _formatQuery(params.data);
-            },
-            filterParams: {apply: true, newRowsAction: "keep"}
-        },
-        {
-            headerName: "Category",
-            field: "category",
-            filterParams: {apply: true, newRowsAction: "keep"},
-            width: 110,
-            suppressSizeToFit: true
-        },
-        {
-            headerName: "Additional parameters",
-            field: "additional",
-            filterParams: {apply: true, newRowsAction: "keep"},
-            cellRenderer: function (params) {
-                return _formatAdditional(params.data);
-            },
-            suppressSorting: true
-        },
-        {
-            headerName: "Access",
-            field: "internal",
-            filterParams: {apply: true, newRowsAction: "keep"},
-            cellRenderer: function (data) {
-                return data.value ? "Internal" : "API";
-            },
-            width: 100,
-            suppressSizeToFit: true
-        },
-        {
-            headerName: "Username",
-            field: "username",
-            filterParams: {apply: true, newRowsAction: "keep"},
-        }
-    ];
-
-
-    $scope.gridOptions = {
-        columnDefs: columnDefs,
-        rowModelType: "pagination",
-        debug: false,
-        enableColResize: true,
-        enableServerSideSorting: true,
-        enableServerSideFilter: true,
-        paginationPageSize: 500,
-        suppressRowClickSelection: true,
-        angularCompileRows: true,
-        datasource: {
-            getRows: function (params) {
-                var page = Math.floor(params.startRow / 500) + 1;
-                var limit = params.endRow - params.startRow;
-                SearchHistoryService.getSearchHistory(page, limit, params.sortModel, params.filterModel).then(function (history) {
-                    // $scope.searchRequests = history.data.searchRequests;
-                    // $scope.totalRequests = history.data.totalRequests;
-                    // $scope.isLoaded = true;
-                    params.successCallback(history.data.searchRequests, history.data.totalRequests);
-                    $scope.gridOptions.api.sizeColumnsToFit();
-                    $scope.gridOptions.api.sizeColumnsToFit();
-                });
-
-            }
-        }
-    };
-
-
-    $scope.pageChanged = function (newPage) {
-        getSearchRequestsPage(newPage);
-    };
-
-    $scope.changeType = function (type) {
-        $scope.type = type;
-        getSearchRequestsPage($scope.pagination.current);
-    };
-
-    function getSearchRequestsPage(pageNumber) {
-        SearchHistoryService.getSearchHistory(pageNumber, $scope.limit, $scope.type).then(function (history) {
+    $scope.update = function () {
+        SearchHistoryService.getSearchHistory($scope.pagination.current, $scope.limit, $scope.filterModel, $scope.sortModel).then(function (history) {
             $scope.searchRequests = history.data.searchRequests;
             $scope.totalRequests = history.data.totalRequests;
-            $scope.isLoaded = true;
         });
-    }
+    };
 
-    $scope.repeatSearch = function (searchRequestIndex) {
-        if (searchRequestIndex == -1) {
-            growl.error("Error while repeating search, sorry");
-        } else {
-            var stateParams = SearchHistoryService.getStateParamsForRepeatedSearch($scope.searchRequests[searchRequestIndex]);
-            $state.go("root.search", stateParams, {inherit: false});
+    $scope.$on("sort", function (event, column, sortMode) {
+        if (sortMode == 0) {
+            column = "time";
+            sortMode = 2;
         }
+        $scope.sortModel = {
+            column: column,
+            sortMode: sortMode
+        };
+        $scope.$broadcast("newSortColumn", column);
+        $scope.update();
+    });
+
+    $scope.$on("filter", function (event, column, filterModel, isActive) {
+        if (filterModel.filter) {
+            $scope.filterModel[column] = filterModel;
+        } else {
+            delete $scope.filterModel[column];
+        }
+        $scope.update();
+    });
+
+
+    $scope.openSearch = function (request) {
+        var stateParams = {};
+        if (request.identifier_key == "imdbid") {
+            stateParams.imdbid = request.identifier_value;
+        } else if (request.identifier_key == "tvdbid" || request.identifier_key == "rid") {
+            if (request.identifier_key == "rid") {
+                stateParams.rid = request.identifier_value;
+            } else {
+                stateParams.tvdbid = request.identifier_value;
+            }
+
+            if (request.season != "") {
+                stateParams.season = request.season;
+            }
+            if (request.episode != "") {
+                stateParams.episode = request.episode;
+            }
+        }
+        if (request.query != "") {
+            stateParams.query = request.query;
+        }
+        if (request.type == "tv") {
+            stateParams.mode = "tvsearch"
+        } else if (request.type == "tv") {
+            stateParams.mode = "movie"
+        } else {
+            stateParams.mode = "search"
+        }
+
+        if (request.movietitle != null) {
+            stateParams.title = request.movietitle;
+        }
+        if (request.tvtitle != null) {
+            stateParams.title = request.tvtitle;
+        }
+
+        if (request.category) {
+            stateParams.category = request.category;
+        }
+
+        stateParams.category = request.category;
+
+        $state.go("root.search", stateParams, {inherit: false});
+    };
+
+    $scope.formatQuery = function (request) {
+        if (request.movietitle != null) {
+            return request.movietitle;
+        }
+        if (request.tvtitle != null) {
+            return request.tvtitle;
+        }
+
+        if (!request.query && !request.identifier_key && !request.season && !request.episode) {
+            return "Update query";
+        }
+        return request.query;
+    };
+
+    $scope.formatAdditional = function (request) {
+        var result = [];
+        //ID key: ID value
+        //season
+        //episode
+        //author
+        //title
+        if (request.identifier_key) {
+            var href;
+            var key;
+            if (request.identifier_key == "imdbid") {
+                key = "IMDB ID";
+                href = "https://www.imdb.com/title/tt"
+            } else if (request.identifier_key == "tvdbid") {
+                key = "TVDB ID";
+                href = "https://thetvdb.com/?tab=series&id="
+            } else if (request.identifier_key == "rid") {
+                key = "TVRage ID";
+                href = "internalapi/redirect_rid?rid="
+            } else if (request.identifier_key == "tmdb") {
+                key = "TMDV ID";
+                href = "https://www.themoviedb.org/movie/"
+            }
+            href = href + request.identifier_value;
+            href = $filter("dereferer")(href);
+            result.push(key + ": " + '<a target="_blank" href="' + href + '">' + request.identifier_value + "</a>");
+        }
+        if (request.season) {
+            result.push("Season: " + request.season);
+        }
+        if (request.episode) {
+            result.push("Episode: " + request.episode);
+        }
+        if (request.author) {
+            result.push("Author: " + request.author);
+        }
+        if (request.title) {
+            result.push("Title: " + request.title);
+        }
+        return $sce.trustAsHtml(result.join(", "));
     };
 
 
-    $scope.formatAdditional = _formatAdditional;
-
-    function _formatAdditional(request) {
-        return SearchHistoryService.formatRequest(request, true, false, false, false);
-    }
-
-    $scope.formatQuery = _formatQuery;
-
-    function _formatQuery(request) {
-        var query = '';
-        var generatedTitle = true;
-        if (request.movietitle != null) {
-            query = request.movietitle;
-        } else if (request.tvtitle != null) {
-            query = request.tvtitle;
-        } else if (!request.query) {
-            if (!request.identifier_key && !request.season && !request.episode) {
-                query = "Update query";
-            }
-        } else {
-            query = request.query;
-            generatedTitle = false;
-        }
-        if (request.identifier_key && !request.tvtitle && !request.movietitle) {
-            query = "Unknown title";
-        }
-
-        //The "request" object won't be available later when the function is called so we pass the index in the search requests
-        var searchRequestIndex = _.findIndex($scope.searchRequests, function (other, index) {
-            if (request.time == other.time) {
-                return true;
-            }
-        });
-        var html = '<a href="" ng-click="repeatSearch(' + searchRequestIndex + ')"><span class="glyphicon glyphicon-search" style="margin-right: 5px" uib-tooltip="Click to repeat search" tooltip-placement="top" tooltip-trigger="mouseenter"></span></a>';
-        if (generatedTitle) {
-            html += '<span class="history-title">' + query + '</span>';
-        } else {
-            html += query;
-        }
-
-
-        return html;
-
-    }
 
 
 }
-SearchHistoryController.$inject = ["$scope", "$state", "history", "growl", "SearchHistoryService"];
+SearchHistoryController.$inject = ["$scope", "$state", "SearchHistoryService", "ConfigService", "history", "$sce", "$filter"];
 
 angular
     .module('nzbhydraApp')
@@ -2938,7 +3194,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
         //Show checkbox to ask if the user wants to search by ID (using autocomplete)
         $scope.isAskById = $scope.category.supportsById;
 
-        focus('focus-query-box');
+        focus('searchfield');
 
         //Hacky way of triggering the autocomplete loading
         var searchModel = $element.find("#searchfield").controller("ngModel");
@@ -4358,45 +4614,78 @@ angular
     .controller('DownloadHistoryController', DownloadHistoryController);
 
 
-function DownloadHistoryController($scope, StatsService, downloads) {
-    $scope.type = "All";
+function DownloadHistoryController($scope, StatsService, downloads, ConfigService) {
     $scope.limit = 100;
     $scope.pagination = {
         current: 1
     };
+    $scope.sortModel = {
+        column: "time",
+        sortMode: 2
+    };
+    $scope.filterModel = {};
 
+    //Filter options
+    $scope.indexersForFiltering = [];
+    _.forEach(ConfigService.getSafe().indexers, function (indexer) {
+        $scope.indexersForFiltering.push({label: indexer.name, id: indexer.name})
+    });
+    $scope.preselectedTimeInterval = {beforeDate: null, afterDate: null};
+    $scope.successfulForFiltering = [{label: "Succesful", id: true}, {label: "Unsuccesful", id: false}, {label: "Unknown", id: null}];
+    $scope.accessOptionsForFiltering = [{label: "All", value: "all"}, {label: "API", value: false}, {label: "Internal", value: true}];
+
+
+    //Preloaded data
     $scope.nzbDownloads = downloads.data.nzbDownloads;
     $scope.totalDownloads = downloads.data.totalDownloads;
 
-    $scope.changeType = function (type) {
-        $scope.type = type;
-        getDownloadsPage($scope.pagination.current);
-    };
 
-
-    $scope.pageChanged = function (newPage) {
-        getDownloadsPage(newPage);
-    };
-
-    function getDownloadsPage(pageNumber) {
-        StatsService.getDownloadHistory(pageNumber, $scope.limit, $scope.type).then(function(downloads) {
+    $scope.update = function () {
+        StatsService.getDownloadHistory($scope.pagination.current, $scope.limit, $scope.filterModel, $scope.sortModel).then(function (downloads) {
             $scope.nzbDownloads = downloads.data.nzbDownloads;
             $scope.totalDownloads = downloads.data.totalDownloads;
         });
-        
-    }
+    };
 
+
+
+
+
+    $scope.$on("sort", function (event, column, sortMode) {
+        if (sortMode == 0) {
+            column = "time";
+            sortMode = 2;
+        }
+        $scope.sortModel = {
+            column: column,
+            sortMode: sortMode
+        };
+        $scope.$broadcast("newSortColumn", column);
+        $scope.update();
+    });
+
+
+    $scope.$on("filter", function (event, column, filterModel, isActive) {
+        if (filterModel.filter) {
+            $scope.filterModel[column] = filterModel;
+        } else {
+            delete $scope.filterModel[column];
+        }
+        $scope.update();
+    })
 
 }
-DownloadHistoryController.$inject = ["$scope", "StatsService", "downloads"];
+DownloadHistoryController.$inject = ["$scope", "StatsService", "downloads", "ConfigService"];
+
 
 angular
     .module('nzbhydraApp')
     .factory('ConfigService', ConfigService);
 
-function ConfigService($http, $q, $cacheFactory) {
+function ConfigService($http, $q, $cacheFactory, bootstrapped) {
 
     var cache = $cacheFactory("nzbhydra");
+    var safeConfig = bootstrapped.safeConfig;
 
     return {
         set: set,
@@ -4431,21 +4720,13 @@ function ConfigService($http, $q, $cacheFactory) {
     }
 
     function getSafe() {
-        var safeconfig = cache.get("safeconfig");
-        if (angular.isDefined(safeconfig)) {
-            return safeconfig;
-        }
-        
-        return $http.get('internalapi/getsafeconfig').then(function (data) {
-            cache.put("safeconfig", data.data);
-            return data.data;
-        });
-
-
+        return safeConfig;
     }
 
     function invalidateSafe() {
-        cache.remove("safeconfig");
+        $http.get('internalapi/getsafeconfig').then(function (data) {
+            safeConfig = data.data;
+        });
     }
 
     function maySeeAdminArea() {
@@ -4470,7 +4751,7 @@ function ConfigService($http, $q, $cacheFactory) {
         });
     }
 }
-ConfigService.$inject = ["$http", "$q", "$cacheFactory"];
+ConfigService.$inject = ["$http", "$q", "$cacheFactory", "bootstrapped"];
 angular
     .module('nzbhydraApp')
     .factory('ConfigFields', ConfigFields);
@@ -6539,7 +6820,6 @@ function ConfigController($scope, $http, ConfigService, config, DownloaderCatego
         if ($scope.form.$valid) {
             
             ConfigService.set($scope.config);
-            ConfigService.invalidateSafe();
             $scope.form.$setPristine();
             DownloaderCategoriesService.invalidate();
             if ($scope.restartRequired) {
