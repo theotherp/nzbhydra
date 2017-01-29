@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.194
+Changed: Drunken Slug API endpoint is now https://api.drunkenslug.com. See [#526](https://github.com/theotherp/nzbhydra/issues/526).
+
 ### 0.2.193
 Changed: Removed data grid for history. Wrote a custom implementation for search and download history that allows sorting and filtering. At a later point I'll add that for search result filtering. See [#479](https://github.com/theotherp/nzbhydra/issues/479).
 

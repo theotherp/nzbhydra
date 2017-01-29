@@ -5817,7 +5817,7 @@ function getIndexerPresets(configuredIndexers) {
             },
             {
                 name: "Drunken Slug",
-                host: "https://drunkenslug.com"
+                host: "https://api.drunkenslug.com"
             },
             {
                 name: "LuluNZB",

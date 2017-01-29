@@ -187,7 +187,7 @@ def serve():
     doGenerateNewGuids = True
     doSwitchGenerateNewGuidsDependingOnQuery = True
     doSendAll = True
-    doThrowSomeErrors = True
+    doThrowSomeErrors = False
 
     if doThrowSomeErrors and random.randint(0,1) <5 :
         return "Nope"

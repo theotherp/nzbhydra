@@ -263,7 +263,7 @@ class Binsearch(SearchModule):
         return False, None, None
     
     def get_nzb_link(self, guid, title):
-        f = furl(self.host)
+        f = furl(self.host + "/")
         f.add({"action": "nzb", guid: "1"})
         return f.tostr()
     

@@ -115,7 +115,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 32,
+        "configVersion": 33,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
@@ -733,6 +733,13 @@ def migrateConfig(config):
                 for indexer in config["indexers"]:
                     if indexer["type"] == "womble":
                         config["indexers"].remove(indexer)
+
+        if config["main"]["configVersion"] == 32:
+            with version_update(config, 33):
+                addLogMessage(20, "Updating DrunkenSlug host")
+                for indexer in config["indexers"]:
+                    if "drunkenslug" in indexer["host"]:
+                        indexer["host"] = "https://api.drunkenslug.com"
 
 
 
