@@ -269,6 +269,7 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
         }
     except Exception as e:
         logger.error("Error getting or parsing caps XML. Error message: %s" % e)
+
         raise IndexerResultParsingException("Unable to check caps: %s" % str(e), None)
 
 

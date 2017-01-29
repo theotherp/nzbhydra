@@ -174,6 +174,7 @@ def serve():
 
     if request.args.get("t") == "caps":
         with open("mock/nocaps.xml") as f:
+            return "Hallo"
             return f.read()
 
     global pubDates
@@ -186,6 +187,10 @@ def serve():
     doGenerateNewGuids = True
     doSwitchGenerateNewGuidsDependingOnQuery = True
     doSendAll = True
+    doThrowSomeErrors = True
+
+    if doThrowSomeErrors and random.randint(0,1) <5 :
+        return "Nope"
 
     indexer = indexers[request.args.get("apikey")]
 

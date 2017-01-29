@@ -3,6 +3,9 @@ class NzbHydraException(Exception):
         super(NzbHydraException, self).__init__()
         self.message = message
 
+    def __str__(self):
+        return str(self.__class__.__name__) + ": " + self.message
+
 
 class ExternalApiInfoException(NzbHydraException):
     """An error occurred while contacting an external info API

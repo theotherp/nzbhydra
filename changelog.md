@@ -4,6 +4,8 @@
 ### 0.2.193
 Changed: Removed data grid for history. Wrote a custom implementation for search and download history that allows sorting and filtering. At a later point I'll add that for search result filtering. See [#479](https://github.com/theotherp/nzbhydra/issues/479).
 
+Changed: Improved error message while checking capabilities a tiny bit. 
+
 ### 0.2.192
 Fixed: Form bases login when using reverse proxies didn't work. See [#523](https://github.com/theotherp/nzbhydra/issues/523).
 
