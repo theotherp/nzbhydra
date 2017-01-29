@@ -67,7 +67,8 @@
     "satellizer": "^0.14.0",
     "angular-local-storage": "^0.2.7",
     "angular-ui-select": "^0.18.0",
-    "ng-file-upload": "~12.2.12"
+    "ng-file-upload": "~12.2.12",
+    "font-awesome": "~4.7.0"
   },
   "overrides": {
     "ag-grid": {

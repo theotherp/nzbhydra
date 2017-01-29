@@ -32,8 +32,11 @@ gulp.task('vendor-scripts', function () {
 
 gulp.task('vendor-css', function () {
     var dest = 'static/css';
-    return gulp.src(wiredep().css)
-        .pipe(cached("vendor-libs"))
+    return merge(gulp.src(wiredep().css)
+            .pipe(cached("vendor-css")),
+        gulp.src(wiredep().less)
+            .pipe(cached("vendor-less")).pipe(less())
+    )
         .pipe(sourcemaps.init())
         .pipe(concat('alllibs.css'))
         .pipe(sourcemaps.write("."))
@@ -45,7 +48,6 @@ gulp.task('scripts', function () {
     var dest = 'static/js';
     return gulp.src("ui-src/js/**/*.js")
         .pipe(ngAnnotate())
-        .pipe(cached("scripts"))
         .on('error', swallowError)
         .pipe(angularFilesort())
         .on('error', swallowError)
@@ -88,8 +90,12 @@ gulp.task('less', function () {
 
 gulp.task('copy-assets', function () {
     var fontDest = 'static/fonts';
-    var fonts = gulp.src("bower_components/bootstrap/fonts/*")
-        .pipe(cached("fonts"))
+    var fonts1 = gulp.src("bower_components/bootstrap/fonts/*")
+        .pipe(cached("fonts1"))
+        .pipe(gulp.dest(fontDest));
+
+    var fonts2 = gulp.src("bower_components/font-awesome/fonts/*")
+        .pipe(cached("fonts2"))
         .pipe(gulp.dest(fontDest));
 
     var imgDest = 'static/img';
@@ -102,7 +108,7 @@ gulp.task('copy-assets', function () {
         .pipe(cached("html"))
         .pipe(gulp.dest(htmlDest));
 
-    return merge(img, html, fonts);
+    return merge(img, html, fonts1, fonts2);
 });
 
 
@@ -118,6 +124,13 @@ gulp.task('reload', function () {
         .pipe(livereload());
 });
 
+gulp.task('delMainLessCache', function () {
+    delete cached.caches["bright"];
+    delete cached.caches["grey"];
+    delete cached.caches["dark"];
+});
+
+
 
 gulp.task('index', function () {
     runSequence(['scripts', 'less', 'vendor-scripts', 'vendor-css', 'copy-assets'], ['reload', 'add']);
@@ -131,5 +144,6 @@ function swallowError(error) {
 
 gulp.task('default', function () {
     livereload.listen();
+    gulp.watch(['ui-src/less/nzbhydra.less'], ['delMainLessCache']);
     gulp.watch(['ui-src/**/*'], ['index']);
 });
