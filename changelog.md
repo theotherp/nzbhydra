@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.195
+Changed: Don't search when no query was entered. See [#533](https://github.com/theotherp/nzbhydra/issues/533).
+
 ### 0.2.194
 Changed: Drunken Slug API endpoint is now https://api.drunkenslug.com. See [#526](https://github.com/theotherp/nzbhydra/issues/526).
 

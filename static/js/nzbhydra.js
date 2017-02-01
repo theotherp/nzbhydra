@@ -3092,7 +3092,7 @@ angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
 
-function SearchController($scope, $http, $stateParams, $state, $window, $filter, $sce, SearchService, focus, ConfigService, CategoriesService, blockUI, $element, ModalService, SearchHistoryService) {
+function SearchController($scope, $http, $stateParams, $state, $window, $filter, $sce, growl, SearchService, focus, ConfigService, CategoriesService, blockUI, $element, ModalService, SearchHistoryService) {
 
     function getNumberOrUndefined(number) {
         if (_.isUndefined(number) || _.isNaN(number) || number == "") {
@@ -3335,13 +3335,17 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
     };
 
     $scope.startQuerySearch = function () {
-        //Reset values because they might've been set from the last search
-        $scope.title = undefined;
-        $scope.tmdbid = undefined;
-        $scope.tvdbid = undefined;
-        $scope.season = undefined;
-        $scope.episode = undefined;
-        $scope.goToSearchUrl();
+        if (!$scope.query) {
+            growl.error("You didn't enter a query...");
+        } else {
+            //Reset values because they might've been set from the last search
+            $scope.title = undefined;
+            $scope.tmdbid = undefined;
+            $scope.tvdbid = undefined;
+            $scope.season = undefined;
+            $scope.episode = undefined;
+            $scope.goToSearchUrl();
+        }
     };
 
 
@@ -3419,7 +3423,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
 
 
 }
-SearchController.$inject = ["$scope", "$http", "$stateParams", "$state", "$window", "$filter", "$sce", "SearchService", "focus", "ConfigService", "CategoriesService", "blockUI", "$element", "ModalService", "SearchHistoryService"];
+SearchController.$inject = ["$scope", "$http", "$stateParams", "$state", "$window", "$filter", "$sce", "growl", "SearchService", "focus", "ConfigService", "CategoriesService", "blockUI", "$element", "ModalService", "SearchHistoryService"];
 
 angular
     .module('nzbhydraApp')
