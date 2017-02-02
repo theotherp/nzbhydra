@@ -446,7 +446,7 @@ class WindowsUpdateManager(SourceUpdateManager):
                 return False
             content_dir = os.path.join(update_dir, update_dir_contents[0])
             
-            dontUpdateThese = []#("msvcm90.dll", "msvcr90.dll", "msvcm90.dll")
+            dontUpdateThese = ["nssm.exe"]#("msvcm90.dll", "msvcr90.dll", "msvcm90.dll")
             #rename exes, pyd and dll files so they can be overwritten
             filesToRename = []
             for filename in os.listdir(main_dir):         

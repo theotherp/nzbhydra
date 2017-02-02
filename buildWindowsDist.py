@@ -5,8 +5,7 @@ from bs4 import BeautifulSoup
 from subprocess import call
 from nzbhydra import update
 
-DO_PUSH = True
-DO_RELEASE = True
+DO_PUSH = DO_RELEASE = True
 
 _, version = update.get_current_version()
 
