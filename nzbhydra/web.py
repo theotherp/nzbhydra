@@ -1053,8 +1053,8 @@ class SearchHistoryFilterSchema(Schema):
 @requires_auth("main")
 def internalapi_search_requestsforsearching():
     limitToUser = None
-    if "user" in session.keys():
-        limitToUser = session["user"] and session["user"].username is not None
+    if "user" in session.keys() and session["user"] and session["user"].username is not None:
+        limitToUser = session["user"].username
     filterModel = {"access": {"filter": True, "filtertype": "boolean"}}
     return jsonify(get_search_requests(1, 20, sortModel=None, filterModel=filterModel, distinct=True, onlyUser=limitToUser))
 

@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.197
+Fixed: Search history next to search box didn't work with authorization. See [#539](https://github.com/theotherp/nzbhydra/issues/539).
+
 ### 0.2.196
 Fixed: When running as a windows service updating would fail. For this to work you need to update manually (shutdown Hydra and overwrite all files from the latest ZIP) and change the user with which the service is started. Open the service administration, select the NZBHydra service, 
 open its properties and in the second tab enter your windows account username and password. Restart the service. The next update should work. See [#536](https://github.com/theotherp/nzbhydra/issues/536).
