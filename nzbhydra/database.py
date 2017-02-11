@@ -627,11 +627,14 @@ def update_db(dbfile):
 
         if vi.version == 16:
             logger.info("Dropping time column for NZB downloads")
-            migrator = SqliteMigrator(db)
-            with db.transaction():
-                migrate(
-                    migrator.drop_column('indexernzbdownload', 'time')
-                )
+            try:
+                migrator = SqliteMigrator(db)
+                with db.transaction():
+                    migrate(
+                        migrator.drop_column('indexernzbdownload', 'time')
+                    )
+            except: #May not exist because I fucked up
+                pass
             vi.version = 17
             vi.save()
             logger.info("Database migration completed successfully")
