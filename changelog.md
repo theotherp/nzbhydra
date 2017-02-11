@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.200
+Fixed: Forgot to migrate database, resulting in an error upon NZB download. See [#543](https://github.com/theotherp/nzbhydra/issues/543).
+
 ### 0.2.199
 Fixed: NFO display was broken with last version. Also adapted NFO and log colors to grey theme.
 

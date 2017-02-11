@@ -19,7 +19,7 @@ logger = logging.getLogger('root')
 
 db = SqliteQueueDatabase(None, autostart=False, results_timeout=20.0)
 
-DATABASE_VERSION = 16
+DATABASE_VERSION = 17
 
 
 class JSONField(TextField):
@@ -624,3 +624,11 @@ def update_db(dbfile):
             vi.version = 16
             vi.save()
             logger.info("Database migration completed successfully")
+
+        if vi.version == 16:
+            logger.info("Dropping time column for NZB downloads")
+            migrator = SqliteMigrator(db)
+            with db.transaction():
+                migrate(
+                    migrator.drop_column('indexernzbdownload', 'time')
+                )
