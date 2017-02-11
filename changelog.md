@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.198
+Fixed: Downloading NZBs not possible/easy because of blinking tooltip. See [#542](https://github.com/theotherp/nzbhydra/issues/542).
+
 ### 0.2.197
 Fixed: Search history next to search box didn't work with authorization. See [#539](https://github.com/theotherp/nzbhydra/issues/539).
 
