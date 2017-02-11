@@ -37,9 +37,6 @@ function DownloadHistoryController($scope, StatsService, downloads, ConfigServic
     };
 
 
-
-
-
     $scope.$on("sort", function (event, column, sortMode) {
         if (sortMode == 0) {
             column = "time";
@@ -65,3 +62,13 @@ function DownloadHistoryController($scope, StatsService, downloads, ConfigServic
 
 }
 
+angular
+    .module('nzbhydraApp')
+    .filter('reformatDateEpoch', reformatDateEpoch);
+
+function reformatDateEpoch() {
+    return function (date) {
+        return moment.unix(date).local().format("YYYY-MM-DD HH:mm");
+
+    }
+}

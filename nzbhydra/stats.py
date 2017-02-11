@@ -213,12 +213,12 @@ def get_avg_indexer_access_success(afterSql, beforeSql):
 
 
 def getTimeBasedDownloadStats(after, before):
-    downloads = IndexerNzbDownload(). \
-        select(Indexer.name, IndexerApiAccess.response_successful, IndexerNzbDownload.time). \
+    downloads = list(IndexerNzbDownload(). \
+        select(Indexer.name, IndexerApiAccess.response_successful, IndexerApiAccess.time). \
         where((IndexerApiAccess.time > after) & (IndexerApiAccess.time < before)). \
         join(IndexerApiAccess, JOIN.LEFT_OUTER). \
-        join(Indexer, JOIN.LEFT_OUTER)
-    downloadTimes = [arrow.get(x.time).to(tz.tzlocal()) for x in downloads]
+        join(Indexer, JOIN.LEFT_OUTER).dicts())
+    downloadTimes = [arrow.get(x["time"]).to(tz.tzlocal()) for x in downloads]
 
     perDayOfWeek, perHourOfDay = calculcateTimeBasedStats(downloadTimes)
 
@@ -284,7 +284,7 @@ def getIndexerBasedDownloadStats(afterSql, beforeSql):
          LEFT OUTER JOIN indexerapiaccess api
            ON dl.apiAccess_id = api.id
        WHERE api.indexer_id IN (%(enabledIndexerIds)s)
-       AND dl.time > %(afterSql)s AND dl.time < %(beforeSql)s
+       AND api.time > %(afterSql)s AND api.time < %(beforeSql)s
        )
       countall
       LEFT OUTER JOIN indexerapiaccess api
@@ -304,7 +304,7 @@ def getIndexerBasedDownloadStats(afterSql, beforeSql):
 
 def get_nzb_downloads(page=0, limit=100, filterModel=None, sortModel=None):
     columnNameToEntityMap = {
-        "time": IndexerNzbDownload.time,
+        "time": IndexerApiAccess.time,
         "indexer": Indexer.name,
         "title": IndexerNzbDownload.title,
         "access": IndexerNzbDownload.internal,
@@ -313,12 +313,12 @@ def get_nzb_downloads(page=0, limit=100, filterModel=None, sortModel=None):
     }
 
     query = IndexerNzbDownload() \
-        .select(Indexer.name.alias("indexerName"), IndexerNzbDownload.title, IndexerNzbDownload.time, IndexerNzbDownload.internal, SearchResult.id.alias('searchResultId'), SearchResult.details.alias('detailsLink'), IndexerApiAccess.response_successful, IndexerApiAccess.username) \
+        .select(Indexer.name.alias("indexerName"), IndexerNzbDownload.title, IndexerApiAccess.time, IndexerNzbDownload.internal, SearchResult.id.alias('searchResultId'), SearchResult.details.alias('detailsLink'), IndexerApiAccess.response_successful, IndexerApiAccess.username) \
         .switch(IndexerNzbDownload).join(IndexerApiAccess, JOIN.LEFT_OUTER).join(Indexer, JOIN.LEFT_OUTER) \
         .switch(IndexerNzbDownload).join(SearchResult, JOIN.LEFT_OUTER)
 
     query = extendQueryWithFilter(columnNameToEntityMap, filterModel, query)
-    query = extendQueryWithSorting(columnNameToEntityMap, query, sortModel, IndexerNzbDownload.time.desc())
+    query = extendQueryWithSorting(columnNameToEntityMap, query, sortModel, IndexerApiAccess.time.desc())
 
     total_downloads = query.count()
     nzb_downloads = list(query.paginate(page, limit).dicts())

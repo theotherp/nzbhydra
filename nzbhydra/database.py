@@ -135,7 +135,6 @@ class IndexerApiAccess(Model):
 class IndexerNzbDownload(Model):
     searchResult = ForeignKeyField(SearchResult, related_name="downloads")
     apiAccess = ForeignKeyField(IndexerApiAccess)
-    time = DateTimeField()
     title = CharField()  # Redundant when the search result still exists but after it's deleted we still wanna see what the title is
     mode = CharField()  # "serve" or "redirect"
     internal = BooleanField(null=True)
@@ -144,8 +143,6 @@ class IndexerNzbDownload(Model):
         database = db
 
     def save(self, *args, **kwargs):
-        if self.time is None:
-            self.time = datetime.datetime.utcnow()  # Otherwise the time at the first run of this code is taken
         super(IndexerNzbDownload, self).save(*args, **kwargs)
 
 

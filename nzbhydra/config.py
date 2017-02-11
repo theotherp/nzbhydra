@@ -115,7 +115,7 @@ initialConfig = {
     "main": {
         "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
         "branch": "master",
-        "configVersion": 33,
+        "configVersion": 34,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
@@ -740,6 +740,12 @@ def migrateConfig(config):
                 for indexer in config["indexers"]:
                     if "drunkenslug" in indexer["host"]:
                         indexer["host"] = "https://api.drunkenslug.com"
+
+        if config["main"]["configVersion"] == 33:
+            with version_update(config, 34):
+                addLogMessage(20, "Adding empty download limit to all indexers")
+                for indexer in config["indexers"]:
+                    indexer["downloadLimit"] = None
 
 
 

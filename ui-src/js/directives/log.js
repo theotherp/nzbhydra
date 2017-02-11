@@ -4,14 +4,11 @@ angular
 
 function hydralog() {
     return {
-        //template: '<div cg-busy="{promise:logPromise,message:\'Loading log file\'}"><pre ng-bind-html="log" style="text-align: left; height: 65vh; overflow-y: scroll"></pre></div>',
         templateUrl: "static/html/directives/log.html",
-
         controller: controller
     };
 
     function controller($scope, $http, $sce, $interval, localStorageService) {
-
         $scope.tailInterval = null;
         $scope.doUpdateLog = localStorageService.get("doUpdateLog") != null ? localStorageService.get("doUpdateLog") : false;
         $scope.doTailLog = localStorageService.get("doTailLog") != null ? localStorageService.get("doTailLog") : false;
@@ -26,10 +23,13 @@ function hydralog() {
         $scope.logPromise = getAndShowLog();
 
         $scope.scrollToBottom = function () {
-            //$window.scrollTo(0, 1000000);
             document.getElementById("logfile").scrollTop = 10000000;
-            document.getElementById("logfile").scrollTop = 10000001;
-            console.log("Scrolling to bottom");
+            document.getElementById("logfile").scrollTop = 100001000;
+        };
+
+        $scope.update = function () {
+            getAndShowLog();
+            $scope.scrollToBottom();
         };
 
         function startUpdateLogInterval() {

@@ -867,6 +867,7 @@ function ConfigFields($injector) {
                             ebookCategory: null,
                             enabled: true,
                             categories: [],
+                            downloadLimit: null,
                             host: null,
                             apikey: null,
                             hitLimit: null,
@@ -1170,6 +1171,7 @@ function getIndexerPresets(configuredIndexers) {
             {
                 accessType: "both",
                 categories: ["anime"],
+                downloadLimit: 0,
                 enabled: false,
                 hitLimit: 0,
                 hitLimitResetTime: null,
@@ -1188,6 +1190,7 @@ function getIndexerPresets(configuredIndexers) {
             {
                 accessType: "internal",
                 categories: [],
+                downloadLimit: 0,
                 enabled: true,
                 hitLimit: 0,
                 hitLimitResetTime: null,
@@ -1206,6 +1209,7 @@ function getIndexerPresets(configuredIndexers) {
             {
                 accessType: "internal",
                 categories: [],
+                downloadLimit: null,
                 enabled: true,
                 hitLimit: 0,
                 hitLimitResetTime: null,
@@ -1225,6 +1229,7 @@ function getIndexerPresets(configuredIndexers) {
             {
                 accessType: "internal",
                 categories: [],
+                downloadLimit: 0,
                 enabled: true,
                 generalMinSize: 1,
                 hitLimit: 0,
@@ -1360,16 +1365,25 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                     label: 'API hit limit',
                     help: 'Maximum number of API hits since "API hit reset time"'
                 }
+            },
+            {
+                key: 'downloadLimit',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'number',
+                    label: 'Download limit',
+                    help: 'When # of downloads since "Hit reset time" is reached indexer will not be searched.'
+                }
             }
         );
         fieldset.push(
             {
                 key: 'hitLimitResetTime',
                 type: 'horizontalInput',
-                hideExpression: '!model.hitLimit',
+                hideExpression: '!model.hitLimit && !model.downloadLimit',
                 templateOptions: {
                     type: 'number',
-                    label: 'API hit reset time',
+                    label: 'Hit reset time',
                     help: 'UTC hour of day at which the API hit counter is reset (0==24). Leave empty for a rolling reset counter'
                 },
                 validators: {

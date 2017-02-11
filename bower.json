@@ -27,7 +27,7 @@
     "angular-loading-bar": "~0.8.0",
     "angular-growl-v2": "angular-growl-2#~0.7.5",
     "angular-filter": "^0.5.11",
-    "angular-ui-router": "~0.2.15",
+    "angular-ui-router": "~0.4.2",
     "angular": "~1.4.7",
     "angular-route": "~1.4.7",
     "angular-schema-form": "~0.8.12",

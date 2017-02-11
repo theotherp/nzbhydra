@@ -108,6 +108,7 @@
     </div>
 </div>
 
+
 <div class="row" ng-if="indexersearches" style="margin-top: 30px">
     <div class="col-md-6" style="text-align: left;">
         <input style="margin-top:20px; margin-bottom:20px;" type="checkbox" ng-model="foo.duplicatesDisplayed" ng-click="toggleDuplicatesDisplayed()" class="btn btn-default">Include duplicates</input>
@@ -124,7 +125,7 @@
         <div class="btn-group" style="margin-top:20px; margin-bottom:20px;">
             <button type="button" ng-click="loadMore(false)" class="btn btn-default" ng-disabled="resultsCount >= total"
                     uib-tooltip="Click to load more results from the indexers"
-                    tooltip-placement="right"
+                    tooltip-placement="top"
                     tooltip-trigger="mouseenter"
             >Load more</button>
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="resultsCount >= total">
@@ -134,7 +135,7 @@
             <ul class="dropdown-menu">
                 <li><a href="#" ng-click="loadMore(true)"
                        uib-tooltip="Click to load all of the results from the indexers. May take a while and a lot of API requests..."
-                       tooltip-placement="right"
+                       tooltip-placement="top"
                        tooltip-trigger="mouseenter"
                 >Load all results</a></li>
             </ul>

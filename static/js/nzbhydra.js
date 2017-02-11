@@ -1049,14 +1049,11 @@ angular
 function hydralog() {
     controller.$inject = ["$scope", "$http", "$sce", "$interval", "localStorageService"];
     return {
-        //template: '<div cg-busy="{promise:logPromise,message:\'Loading log file\'}"><pre ng-bind-html="log" style="text-align: left; height: 65vh; overflow-y: scroll"></pre></div>',
         templateUrl: "static/html/directives/log.html",
-
         controller: controller
     };
 
     function controller($scope, $http, $sce, $interval, localStorageService) {
-
         $scope.tailInterval = null;
         $scope.doUpdateLog = localStorageService.get("doUpdateLog") != null ? localStorageService.get("doUpdateLog") : false;
         $scope.doTailLog = localStorageService.get("doTailLog") != null ? localStorageService.get("doTailLog") : false;
@@ -1071,10 +1068,13 @@ function hydralog() {
         $scope.logPromise = getAndShowLog();
 
         $scope.scrollToBottom = function () {
-            //$window.scrollTo(0, 1000000);
             document.getElementById("logfile").scrollTop = 10000000;
-            document.getElementById("logfile").scrollTop = 10000001;
-            console.log("Scrolling to bottom");
+            document.getElementById("logfile").scrollTop = 100001000;
+        };
+
+        $scope.update = function () {
+            getAndShowLog();
+            $scope.scrollToBottom();
         };
 
         function startUpdateLogInterval() {
@@ -4653,9 +4653,6 @@ function DownloadHistoryController($scope, StatsService, downloads, ConfigServic
     };
 
 
-
-
-
     $scope.$on("sort", function (event, column, sortMode) {
         if (sortMode == 0) {
             column = "time";
@@ -4682,7 +4679,16 @@ function DownloadHistoryController($scope, StatsService, downloads, ConfigServic
 }
 DownloadHistoryController.$inject = ["$scope", "StatsService", "downloads", "ConfigService"];
 
+angular
+    .module('nzbhydraApp')
+    .filter('reformatDateEpoch', reformatDateEpoch);
 
+function reformatDateEpoch() {
+    return function (date) {
+        return moment.unix(date).local().format("YYYY-MM-DD HH:mm");
+
+    }
+}
 angular
     .module('nzbhydraApp')
     .factory('ConfigService', ConfigService);
@@ -5626,6 +5632,7 @@ function ConfigFields($injector) {
                             ebookCategory: null,
                             enabled: true,
                             categories: [],
+                            downloadLimit: null,
                             host: null,
                             apikey: null,
                             hitLimit: null,
@@ -5930,6 +5937,7 @@ function getIndexerPresets(configuredIndexers) {
             {
                 accessType: "both",
                 categories: ["anime"],
+                downloadLimit: 0,
                 enabled: false,
                 hitLimit: 0,
                 hitLimitResetTime: null,
@@ -5948,6 +5956,7 @@ function getIndexerPresets(configuredIndexers) {
             {
                 accessType: "internal",
                 categories: [],
+                downloadLimit: 0,
                 enabled: true,
                 hitLimit: 0,
                 hitLimitResetTime: null,
@@ -5966,6 +5975,7 @@ function getIndexerPresets(configuredIndexers) {
             {
                 accessType: "internal",
                 categories: [],
+                downloadLimit: null,
                 enabled: true,
                 hitLimit: 0,
                 hitLimitResetTime: null,
@@ -5985,6 +5995,7 @@ function getIndexerPresets(configuredIndexers) {
             {
                 accessType: "internal",
                 categories: [],
+                downloadLimit: 0,
                 enabled: true,
                 generalMinSize: 1,
                 hitLimit: 0,
@@ -6120,16 +6131,25 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
                     label: 'API hit limit',
                     help: 'Maximum number of API hits since "API hit reset time"'
                 }
+            },
+            {
+                key: 'downloadLimit',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'number',
+                    label: 'Download limit',
+                    help: 'When # of downloads since "Hit reset time" is reached indexer will not be searched.'
+                }
             }
         );
         fieldset.push(
             {
                 key: 'hitLimitResetTime',
                 type: 'horizontalInput',
-                hideExpression: '!model.hitLimit',
+                hideExpression: '!model.hitLimit && !model.downloadLimit',
                 templateOptions: {
                     type: 'number',
-                    label: 'API hit reset time',
+                    label: 'Hit reset time',
                     help: 'UTC hour of day at which the API hit counter is reset (0==24). Leave empty for a rolling reset counter'
                 },
                 validators: {

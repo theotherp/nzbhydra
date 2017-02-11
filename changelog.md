@@ -2,7 +2,13 @@
 
 ----------
 ### 0.2.198
-Fixed: Downloading NZBs not possible/easy because of blinking tooltip. See [#542](https://github.com/theotherp/nzbhydra/issues/542).
+Added: Download limit for indexers. When the download limit is reached for an indexer it will not be picked for searching. Please note that Hydra
+will never prevent downloads from happening even when the download limit is reached. This is to make sure that external tools do not disable Hydra
+when a requested download fails. See [#247](https://github.com/theotherp/nzbhydra/issues/247).
+
+Fixed: Some hit limit related bugs.
+
+Fixed: Multiple UI issues, e.g. tooltip placement, header "active section" display, etc.
 
 ### 0.2.197
 Fixed: Search history next to search box didn't work with authorization. See [#539](https://github.com/theotherp/nzbhydra/issues/539).
