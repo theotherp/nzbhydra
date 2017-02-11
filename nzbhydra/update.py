@@ -197,8 +197,12 @@ class GitUpdateManager(UpdateManager):
         test_cmd = 'version'
 
         if config.settings.main.gitPath is not None:
-            main_git = config.settings.main.gitPath 
-            logger.debug("Using configured git executable ath %s" % main_git)
+            if os.path.exists(config.settings.main.gitPath):
+                main_git = config.settings.main.gitPath
+                logger.debug("Using configured git executable path %s" % main_git)
+            else:
+                logger.warn("Configured git path %s doesn't exist. Will try to call globally" % config.settings.main.gitPath)
+                main_git = 'git'
         else:
             logger.debug("Git executable not configured, trying to call git globally")
             main_git = 'git'
