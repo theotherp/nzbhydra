@@ -4,7 +4,7 @@
     <div class="col-md-10" style="padding-right: 0px">
         <!-- TODO: Make box smaller if no error messages exist-->
         <uib-accordion close-others="oneAtATime">
-            <uib-accordion-group panel-class="panel-indexer-statuses" is-open="foo.indexerStatusesExpanded" is-disabled="true" class="">
+            <div uib-accordion-group panel-class="panel-indexer-statuses" is-open="foo.indexerStatusesExpanded" is-disabled="true" class="">
                 <uib-accordion-heading>
                     <span class="indexer-statuses-accordion">
                         <span ng-click="toggleIndexerStatuses()">Indexer statuses</span><span ng-if="countRejected > 0"> / Rejected results</span> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': foo.indexerStatusesExpanded, 'glyphicon-chevron-right': !foo.indexerStatusesExpanded}" ng-click="toggleIndexerStatuses()"></i>
@@ -103,7 +103,7 @@
                     </tr>
                     </tbody>
                 </table>
-            </uib-accordion-group>
+            </div>
         </uib-accordion>
     </div>
 </div>

@@ -25,10 +25,10 @@ angular
     .module('nzbhydraApp')
     .controller('ConfigController', ConfigController);
 
-function ConfigController($scope, $http, ConfigService, config, DownloaderCategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl, $rootScope) {
+function ConfigController($scope, $http, activeTab, ConfigService, config, DownloaderCategoriesService, ConfigFields, ConfigModel, ModalService, RestartService, $state, growl) {
     $scope.config = config;
     $scope.submit = submit;
-    $scope.activeTab = undefined;
+    $scope.activeTab = activeTab;
 
     $scope.restartRequired = false;
     $scope.ignoreSaveNeeded = false;
@@ -89,7 +89,7 @@ function ConfigController($scope, $http, ConfigService, config, DownloaderCatego
     $scope.allTabs = [
         {
             active: false,
-            state: 'root.config',
+            state: 'root.config.main',
             name: 'Main',
             model: ConfigModel.main,
             fields: $scope.fields.main
@@ -131,22 +131,14 @@ function ConfigController($scope, $http, ConfigService, config, DownloaderCatego
         }
     ];
 
-    for (var i = 0; i < $scope.allTabs.length; i++) {
-        if ($state.is($scope.allTabs[i].state)) {
-            $scope.allTabs[i].active = true;
-            $scope.activeTab = $scope.allTabs[i];
-        }
-    }
-
     $scope.isSavingNeeded = function () {
         return $scope.form.$dirty && $scope.form.$valid && !$scope.ignoreSaveNeeded;
     };
 
     $scope.goToConfigState = function (index) {
-        $state.go($scope.allTabs[index].state);
-        $scope.activeTab = $scope.allTabs[index]; 
+        $state.go($scope.allTabs[index].state, {activeTab:index}, {inherit: false, notify: true, reload: true});
     };
-    
+
     $scope.help = function() {
         $http.get("internalapi/gethelp", {params: {id: $scope.activeTab.name}}).then(function(result) {
                 var html = '<span style="text-align: left;">' + result.data + "</span>";

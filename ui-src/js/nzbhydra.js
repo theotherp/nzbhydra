@@ -27,6 +27,11 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         })
         .state("root.config", {
             url: "/config",
+            views: {},
+            abstract: true
+        })
+        .state("root.config.main", {
+            url: "/main",
             views: {
                 'container@': {
                     templateUrl: "static/html/states/config.html",
@@ -42,8 +47,11 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
+                        activeTab: [function () {
+                            return 0;
+                        }],
                         $title: function ($stateParams) {
-                            return "Config"
+                            return "Config (Main)"
                         }
                     }
                 }
@@ -64,6 +72,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         }],
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
+                        }],
+                        activeTab: [function () {
+                            return 1;
                         }],
                         $title: function ($stateParams) {
                             return "Config (Auth)"
@@ -88,6 +99,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
+                        activeTab: [function () {
+                            return 2;
+                        }],
                         $title: function ($stateParams) {
                             return "Config (Searching)"
                         }
@@ -110,6 +124,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         }],
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
+                        }],
+                        activeTab: [function () {
+                            return 3;
                         }],
                         $title: function ($stateParams) {
                             return "Config (Categories)"
@@ -134,6 +151,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
+                        activeTab: [function () {
+                            return 4;
+                        }],
                         $title: function ($stateParams) {
                             return "Config (Downloader)"
                         }
@@ -157,54 +177,11 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
+                        activeTab: [function () {
+                            return 5;
+                        }],
                         $title: function ($stateParams) {
                             return "Config (Indexers)"
-                        }
-                    }
-                }
-            }
-        })
-        .state("root.config.system", {
-            url: "/system",
-            templateUrl: "static/html/states/config.html",
-            views: {
-                'container@': {
-                    controller: "ConfigController",
-                    resolve: {
-                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
-                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
-                        }],
-                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
-                            return ConfigService.get();
-                        }],
-                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
-                            return ConfigService.getSafe();
-                        }],
-                        $title: function ($stateParams) {
-                            return "System"
-                        }
-                    }
-                }
-            }
-        })
-        .state("root.config.log", {
-            url: "/log",
-            views: {
-                'container@': {
-                    templateUrl: "static/html/states/config.html",
-                    controller: "ConfigController",
-                    resolve: {
-                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
-                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
-                        }],
-                        config: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
-                            return ConfigService.get();
-                        }],
-                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
-                            return ConfigService.getSafe();
-                        }],
-                        $title: function ($stateParams) {
-                            return "System (Log)"
                         }
                     }
                 }
@@ -216,7 +193,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
             views: {
                 'container@': {
                     templateUrl: "static/html/states/stats.html",
-                    controller: function($scope, $state) {
+                    controller: function ($scope, $state) {
                         $scope.$state = $state;
                     },
                     resolve: {
@@ -227,9 +204,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                             return "Stats"
                         }
                     }
-                    
+
                 }
-            }            
+            }
         })
         .state("root.stats.main", {
             url: "/stats",
@@ -258,7 +235,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
                             return loginRequired($q, $timeout, $state, HydraAuthService, "stats")
                         }],
-                        statuses: function($http) {
+                        statuses: function ($http) {
                             return $http.get("internalapi/getindexerstatuses").success(function (response) {
                                 return response.indexerStatuses;
                             });
@@ -277,8 +254,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                     templateUrl: "static/html/states/search-history.html",
                     controller: SearchHistoryController,
                     resolve: {
-                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function($q, $timeout, $state, HydraAuthService){
-                            return loginRequired($q, $timeout, $state, HydraAuthService, "stats")}],
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "stats")
+                        }],
                         history: ['loginRequired', 'SearchHistoryService', function (loginRequired, SearchHistoryService) {
                             return SearchHistoryService.getSearchHistory();
                         }],
@@ -311,6 +289,11 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
         })
         .state("root.system", {
             url: "/system",
+            views: {},
+            abstract: true
+        })
+        .state("root.system.control", {
+            url: "/control",
             views: {
                 'container@': {
                     templateUrl: "static/html/states/system.html",
@@ -324,6 +307,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         }],
                         askAdmin: ['loginRequired', '$http', function (loginRequired, $http) {
                             return $http.get("internalapi/askadmin");
+                        }],
+                        activeTab: [function () {
+                            return 0;
                         }],
                         $title: function ($stateParams) {
                             return "System"
@@ -345,6 +331,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
+                        activeTab: [function () {
+                            return 1;
+                        }],
                         $title: function ($stateParams) {
                             return "System (Updates)"
                         }
@@ -364,6 +353,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         }],
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
+                        }],
+                        activeTab: [function () {
+                            return 2;
                         }],
                         $title: function ($stateParams) {
                             return "System (Log)"
@@ -385,28 +377,11 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
+                        activeTab: [function () {
+                            return 3;
+                        }],
                         $title: function ($stateParams) {
                             return "System (Backup)"
-                        }
-                    }
-                }
-            }
-        })
-        .state("root.system.about", {
-            url: "/about",
-            views: {
-                'container@': {
-                    templateUrl: "static/html/states/system.html",
-                    controller: "SystemController",
-                    resolve: {
-                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
-                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
-                        }],
-                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
-                            return ConfigService.getSafe();
-                        }],
-                        $title: function ($stateParams) {
-                            return "System (About)"
                         }
                     }
                 }
@@ -425,6 +400,9 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
                             return ConfigService.getSafe();
                         }],
+                        activeTab: [function () {
+                            return 4;
+                        }],
                         $title: function ($stateParams) {
                             return "System (Bug report)"
                         }
@@ -432,6 +410,30 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                 }
             }
         })
+        .state("root.system.about", {
+            url: "/about",
+            views: {
+                'container@': {
+                    templateUrl: "static/html/states/system.html",
+                    controller: "SystemController",
+                    resolve: {
+                        loginRequired: ['$q', '$timeout', '$state', 'HydraAuthService', function ($q, $timeout, $state, HydraAuthService) {
+                            return loginRequired($q, $timeout, $state, HydraAuthService, "admin")
+                        }],
+                        safeConfig: ['loginRequired', 'ConfigService', function (loginRequired, ConfigService) {
+                            return ConfigService.getSafe();
+                        }],
+                        activeTab: [function () {
+                            return 5;
+                        }],
+                        $title: function ($stateParams) {
+                            return "System (About)"
+                        }
+                    }
+                }
+            }
+        })
+
         .state("root.search", {
             url: "/?category&query&imdbid&tvdbid&title&season&episode&minsize&maxsize&minage&maxage&offsets&rid&mode&tmdbid&indexers",
             views: {
@@ -467,7 +469,7 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                         }],
                         $title: function ($stateParams) {
                             var title = "Search results";
-                            var details; 
+                            var details;
                             if ($stateParams.title) {
                                 details = $stateParams.title;
                             } else if ($stateParams.query) {
@@ -635,10 +637,10 @@ nzbhydraapp.run(function ($rootScope) {
         function (event, toState, toParams, fromState, fromParams) {
             try {
                 $rootScope.title = toState.views[Object.keys(toState.views)[0]].resolve.$title[1](toParams);
-            } catch(e) {
-                
+            } catch (e) {
+
             }
-                
+
         });
 });
 
@@ -648,7 +650,7 @@ nzbhydraapp.filter('unsafe', function ($sce) {
 });
 
 nzbhydraapp.filter('dereferer', function (ConfigService) {
-    return function(url) {
+    return function (url) {
         if (ConfigService.getSafe().dereferer) {
             return ConfigService.getSafe().dereferer.replace("$s", escape(url));
         }
@@ -688,7 +690,7 @@ nzbhydraapp.factory('sessionInjector', function ($injector) {
             if (response.headers("Hydra-MaySeeAdmin") != null) {
                 $injector.get("HydraAuthService").setLoggedInByBasic(response.headers("Hydra-MaySeeStats") == "True", response.headers("Hydra-MaySeeAdmin") == "True", response.headers("Hydra-Username"))
             }
-            
+
             return response;
         }
     };

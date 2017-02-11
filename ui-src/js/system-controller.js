@@ -2,8 +2,9 @@ angular
     .module('nzbhydraApp')
     .controller('SystemController', SystemController);
 
-function SystemController($scope, $state, $http, growl, RestartService, ModalService, UpdateService, NzbHydraControlService) {
+function SystemController($scope, $state, activeTab, $http, growl, RestartService, ModalService, UpdateService, NzbHydraControlService) {
 
+    $scope.activeTab = activeTab;
 
     $scope.shutdown = function () {
         NzbHydraControlService.shutdown().then(function () {
@@ -41,44 +42,42 @@ function SystemController($scope, $state, $http, growl, RestartService, ModalSer
     };
     
 
-    $scope.tabs = [
+    $scope.allTabs = [
         {
             active: false,
-            state: 'root.system'
+            state: 'root.system.control',
+            name: "Control"
         },
         {
             active: false,
-            state: 'root.system.updates'
+            state: 'root.system.updates',
+            name: "Updates"
         },
         {
             active: false,
-            state: 'root.system.log'
+            state: 'root.system.log',
+            name: "Log"
         },
         {
             active: false,
-            state: 'root.system.backup'
+            state: 'root.system.backup',
+            name: "Backup"
         },
         {
             active: false,
-            state: 'root.system.bugreport'
+            state: 'root.system.bugreport',
+            name: "Bugreport"
         },
         {
             active: false,
-            state: 'root.system.about'
+            state: 'root.system.about',
+            name: "About"
         }
     ];
 
 
-    for (var i = 0; i < $scope.tabs.length; i++) {
-        if ($state.is($scope.tabs[i].state)) {
-            $scope.tabs[i].active = true;
-        }
-    }
-
-
-    $scope.goToState = function (index) {
-        $state.go($scope.tabs[index].state);
-    
+    $scope.goToSystemState = function (index) {
+        $state.go($scope.allTabs[index].state, {activeTab: index}, {inherit: false, notify: true, reload: true});
     };
 
     $scope.downloadDebuggingInfos = function() {

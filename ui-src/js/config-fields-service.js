@@ -1041,7 +1041,6 @@ function ConfigFields($injector) {
 
 
 function getIndexerPresets(configuredIndexers) {
-    console.log(configuredIndexers);
     var presets = [
         [
             {

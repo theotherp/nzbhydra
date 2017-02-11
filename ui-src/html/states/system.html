@@ -1,39 +1,39 @@
-<uib-tabset style="text-align: center">
-    
-    <uib-tab heading="Control" active="tabs[0].active" select="goToState(0)">
+<ul class="nav nav-tabs" role="tablist">
+    <li ng-repeat="tab in allTabs" ng-class="{'active': $index == activeTab}">
+        <a href="" ng-click="goToSystemState($index)">{{ tab.name }}</a>
+    </li>
+
+</ul>
+
+<div class="tab-content" style="text-align: center">
+
+    <div class="system-tab-content" ng-if="activeTab==0">
         <button class="btn btn-default" type="button" ng-click="shutdown()">Shutdown</button>
         <button class="btn btn-default" type="button" ng-click="restart()">Restart</button>
         <br>
         <button class="btn btn-danger" type="button" ng-click="deleteLogAndDatabase()" style="margin-top: 20px">Delete log and database</button>
         <br>
         <button class="btn btn-info" type="button" ng-click="forceUpdate()" style="margin-top: 20px">Force update</button>
+    </div>
 
-    </uib-tab>
+    <div class="system-tab-content" ng-if="activeTab==1">
+        <hydraupdates></hydraupdates>
+    </div>
 
-    <uib-tab heading="Updates" active="tabs[1].active" select="goToState(1)">
-        <div class="system-tab-content">
-            <span ng-if="tabs[1].active" hydraupdates></span>
-        </div>
-    </uib-tab>
+    <div class="system-tab-content" ng-if="activeTab==2">
+        <hydralog></hydralog>
+    </div>
 
-    <uib-tab heading="Log" active="tabs[2].active" select="goToState(2)">
-        <hydralog ng-if="tabs[2].active"></hydralog>
-    </uib-tab>
+    <div class="system-tab-content" ng-if="activeTab==3">
+        <hydrabackup></hydrabackup>
+    </div>
 
-    <uib-tab heading="Backup" active="tabs[3].active" select="goToState(3)">
-        <hydrabackup ng-if="tabs[3].active"></hydrabackup>
-    </uib-tab>
+    <div class="system-tab-content" ng-if="activeTab==4">
+        <ng-include src="'static/html/bugreport.html'"></ng-include>
+    </div>
 
-    <uib-tab heading="Bugreport" active="tabs[4].active" select="goToState(4)">
-        <div class="system-tab-content">
-            <ng-include src="'static/html/bugreport.html'"></ng-include>
-        </div>
-    </uib-tab>
-
-    <uib-tab heading="About" active="tabs[5].active" select="goToState(5)">
-        <div class="system-tab-content">
+    <div class="system-tab-content" ng-if="activeTab==5">
         <ng-include src="'static/html/about.html'"></ng-include>
-            </div>
-    </uib-tab>
-</uib-tabset>
+    </div>
+</div>
 
