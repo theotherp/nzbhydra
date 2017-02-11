@@ -971,7 +971,7 @@ function otherColumns($http, $templateCache, $compile, $window) {
         function openModal(size, nfo) {
             var modalInstance = $uibModal.open({
                 template: '<pre class="nfo"><span ng-bind-html="nfo"></span></pre>',
-                controller: 'NfoModalInstanceCtrl',
+                controller: NfoModalInstanceCtrl,
                 size: size,
                 resolve: {
                     nfo: function () {
@@ -1007,19 +1007,19 @@ angular
     .module('nzbhydraApp')
     .controller('NfoModalInstanceCtrl', NfoModalInstanceCtrl);
 
-function NfoModalInstanceCtrl($scope, $modalInstance, nfo) {
+function NfoModalInstanceCtrl($scope, $uibModalInstance, nfo) {
 
     $scope.nfo = nfo;
 
     $scope.ok = function () {
-        $modalInstance.close($scope.selected.item);
+        $uibModalInstance.close($scope.selected.item);
     };
 
     $scope.cancel = function () {
-        $modalInstance.dismiss();
+        $uibModalInstance.dismiss();
     };
 }
-NfoModalInstanceCtrl.$inject = ["$scope", "$modalInstance", "nfo"];
+NfoModalInstanceCtrl.$inject = ["$scope", "$uibModalInstance", "nfo"];
 //Can be used in an ng-repeat directive to call a function when the last element was rendered
 //We use it to mark the end of sorting / filtering so we can stop blocking the UI
 

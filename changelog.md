@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.199
+Fixed: NFO display was broken with last version. Also adapted NFO and log colors to grey theme.
+
 ### 0.2.198
 Added: Download limit for indexers. When the download limit is reached for an indexer it will not be picked for searching. Please note that Hydra
 will never prevent downloads from happening even when the download limit is reached. This is to make sure that external tools do not disable Hydra
