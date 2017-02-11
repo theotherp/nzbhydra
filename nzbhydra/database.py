@@ -632,3 +632,6 @@ def update_db(dbfile):
                 migrate(
                     migrator.drop_column('indexernzbdownload', 'time')
                 )
+            vi.version = 17
+            vi.save()
+            logger.info("Database migration completed successfully")
