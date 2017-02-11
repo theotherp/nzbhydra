@@ -122,13 +122,21 @@
         <span class="badge">Loaded {{ resultsCount }} of {{ total }} results (rejected {{ countRejected }})</span>
 
         <div class="btn-group" style="margin-top:20px; margin-bottom:20px;">
-            <button type="button" ng-click="loadMore(false)" class="btn btn-default" ng-disabled="resultsCount >= total">Load more</button>
+            <button type="button" ng-click="loadMore(false)" class="btn btn-default" ng-disabled="resultsCount >= total"
+                    uib-tooltip="Click to load more results from the indexers"
+                    tooltip-placement="right"
+                    tooltip-trigger="mouseenter"
+            >Load more</button>
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="resultsCount >= total">
                 <span class="caret"></span>
                 <span class="sr-only">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu">
-                <li><a href="#" ng-click="loadMore(true)">Load all results</a></li>
+                <li><a href="#" ng-click="loadMore(true)"
+                       uib-tooltip="Click to load all of the results from the indexers. May take a while and a lot of API requests..."
+                       tooltip-placement="right"
+                       tooltip-trigger="mouseenter"
+                >Load all results</a></li>
             </ul>
         </div>
     </div>
