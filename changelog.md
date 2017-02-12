@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.201
+Fixed: Hopefully fix database error for good.
+
 ### 0.2.200
 Fixed: Forgot to migrate database, resulting in an error upon NZB download. See [#543](https://github.com/theotherp/nzbhydra/issues/543).
 
