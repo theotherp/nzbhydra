@@ -501,6 +501,7 @@ class SearchModule(object):
             entry.age = str(age.days) + "d"
         entry.age_days = age.days
         entry.precise_date = preciseDate
+        entry.pubDate = usenetdate.format("ddd, DD MMM YYYY HH:mm:ss Z")
 
 
 def get_instance(indexer):

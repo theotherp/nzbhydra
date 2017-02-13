@@ -28,8 +28,7 @@ def buildNewznabItem(title=None, guid=None, link=None, pubdate=None, description
         description = title + ".description"
     if pubdate is None:
         # "pubDate": "Fri, 18 Sep 2015 14:11:15 -0600",
-        utcnow = arrow.utcnow().replace(day=random.randint(1, 28), hour=random.randint(1, 23))
-        pubdate = str(utcnow.format("ddd, DD MMM YYYY HH:mm:ss Z"))
+        pubdate = str(arrow.get(arrow.utcnow().timestamp - random.randint(10000)).format("ddd, DD MMM YYYY HH:mm:ss Z"))
     if not size:
         size = random.randint(10000, 10000000)
     if categories is None:
@@ -182,7 +181,7 @@ def serve():
     global titles
 
     doSleep = False
-    doGenerateDuplicates = True
+    doGenerateDuplicates = False
     generateDuplicateGroupRange = 5
     doGenerateNewGuids = True
     doSwitchGenerateNewGuidsDependingOnQuery = True
