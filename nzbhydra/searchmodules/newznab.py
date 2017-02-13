@@ -90,6 +90,7 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult, username=None, pass
         logger.debug("Requesting %s" % url)
         r = webaccess.get(url, timeout=config.settings.searching.timeout, headers=headers, auth=HTTPBasicAuth(username, password) if username is not None else None)
         r.raise_for_status()
+        logger.debug("Indexer returned: " + r.text[:500])
         check_auth(r.text, None)
         titles = []
         tree = ET.fromstring(r.content)
@@ -187,6 +188,7 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
         logger.debug("Requesting %s" % url)
         r = webaccess.get(url, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers, auth=HTTPBasicAuth(username, password) if username is not None else None)
         r.raise_for_status()
+        logger.debug("Indexer returned: " + r.text[:500])
 
         tree = ET.fromstring(r.content)
 
@@ -246,6 +248,7 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
         logger.debug("Requesting %s" % url)
         r = webaccess.get(url, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers, auth=HTTPBasicAuth(username, password) if username is not None else None)
         r.raise_for_status()
+        logger.debug("Indexer returned: " + r.text[:500])
         generator = ET.fromstring(r.content).find("channel/generator")
         if generator is not None:
             backend = generator.text
