@@ -195,31 +195,31 @@ class SearchModule(object):
     @staticmethod
     def getRejectedCountDict():
         return {
-            "Passworded": 0,
-            "Forbidden word": 0,
-            "Required word missing": 0,
-            "Forbidden by regex": 0,
-            "Required regex not found": 0,
-            "Forbidden group": 0,
-            "Forbidden poster": 0,
-            "Wrong size": 0,
-            "Wrong age": 0,
-            "Missing attributes": 0,
-            "Category ignored": 0
+            "the results were passworded": 0,
+            "the title contained a forbidden word": 0,
+            "a required word was missing in the title": 0,
+            "the required regex was not found in the title": 0,
+            "the forbidden regex was found in the titl": 0,
+            "they were posted in a forbidden group": 0,
+            "they were posted by a forbidden poster": 0,
+            "tey had the wrong size": 0,
+            "tey had the wrong age": 0,
+            "they were missing necessary attributes": 0,
+            "their category is to be ignored": 0
         }
 
     def accept_result(self, nzbSearchResult, searchRequest, supportedFilters):
         global titleRegex
         # Allows the implementations to check against one general rule if the search result is ok or shall be discarded
         if config.settings.searching.ignorePassworded and nzbSearchResult.passworded:
-            return False, "Passworded results shall be ignored", "Passworded"
+            return False, "passworded results shall be ignored", "the results were passworded"
         # Forbidden and required words are handled differently depending on if they contain a dash or dot. If yes we do a simple search, otherwise a word based comparison
         for word in searchRequest.forbiddenWords:
             if "-" in word or "." in word or "nzbgeek" in self.settings.host:  # NZBGeek must be handled here because it only allows 12 words at all so it's possible that not all words were ignored
                 if word.strip().lower() in nzbSearchResult.title.lower():
-                    return False, '"%s" is in the list of ignored words or excluded by the query' % word, "Forbidden word"
+                    return False, '"%s" is in the list of ignored words or excluded by the query' % word, "the title contained a forbidden word"
             elif word.strip().lower() in titleRegex.findall(nzbSearchResult.title.lower()):
-                return False, '"%s" is in the list of ignored words or excluded by the query' % word, "Forbidden word"
+                return False, '"%s" is in the list of ignored words or excluded by the query' % word, "the title contained a forbidden word"
         if searchRequest.requiredWords and len(searchRequest.requiredWords) > 0:
             foundRequiredWord = False
             titleWords = titleRegex.findall(nzbSearchResult.title.lower())
@@ -232,34 +232,34 @@ class SearchModule(object):
                     foundRequiredWord = True
                     break
             if not foundRequiredWord:
-                return False, 'None of the required words is contained in the title "%s"' % nzbSearchResult.title, "Required word missing"
+                return False, 'None of the required words is contained in the title "%s"' % nzbSearchResult.title, "a required word was missing in the title"
 
         applyRestrictionsGlobal = config.settings.searching.applyRestrictions == "both" or (config.settings.searching.applyRestrictions == "internal" and searchRequest.internal) or (config.settings.searching.applyRestrictions == "external" and not searchRequest.internal)
         applyRestrictionsCategory = searchRequest.category.category.applyRestrictions == "both" or (searchRequest.category.category.applyRestrictions == "internal" and searchRequest.internal) or (searchRequest.category.category.applyRestrictions == "external" and not searchRequest.internal)
         if (searchRequest.category.category.requiredRegex and applyRestrictionsCategory and not re.search(searchRequest.category.category.requiredRegex.lower(), nzbSearchResult.title.lower())) \
                 or (config.settings.searching.requiredRegex and applyRestrictionsGlobal and not re.search(config.settings.searching.requiredRegex.lower(), nzbSearchResult.title.lower())):
-            return False, "Required regex not found in title", "Required regex not found"
+            return False, "Required regex not found in title", "the required regex was not found in the title"
         if (searchRequest.category.category.forbiddenRegex and applyRestrictionsCategory and re.search(searchRequest.category.category.forbiddenRegex.lower(), nzbSearchResult.title.lower())) \
                 or (config.settings.searching.forbiddenRegex and applyRestrictionsGlobal and re.search(config.settings.searching.forbiddenRegex.lower(), nzbSearchResult.title.lower())):
-            return False, "Forbidden regex found in title", "Forbidden by regex"
+            return False, "Forbidden regex found in title", "the forbidden regex was found in the title"
         if config.settings.searching.forbiddenGroups and nzbSearchResult.group:
             for forbiddenPoster in config.settings.searching.forbiddenGroups.split(","):
                 if forbiddenPoster in nzbSearchResult.group:
-                    return False, "Posted in forbidden group '%s'" % forbiddenPoster, "Forbidden group"
+                    return False, "Posted in forbidden group '%s'" % forbiddenPoster, "they were posted in a forbidden group"
         if config.settings.searching.forbiddenPosters and nzbSearchResult.poster:
             for forbiddenPoster in config.settings.searching.forbiddenPosters.split(","):
                 if forbiddenPoster in nzbSearchResult.poster:
-                    return False, "Posted by forbidden poster '%s'" % forbiddenPoster, "Forbidden poster"
+                    return False, "Posted by forbidden poster '%s'" % forbiddenPoster, "they were posted by a forbidden poster"
         if searchRequest.minsize and nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
-            return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize), "Wrong size"
+            return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize), "tey had the wrong size"
         if searchRequest.maxsize and nzbSearchResult.size / (1024 * 1024) > searchRequest.maxsize:
-            return False, "Bigger than requested maximum size: %dMB > %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.maxsize), "Wrong size"
+            return False, "Bigger than requested maximum size: %dMB > %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.maxsize), "tey had the wrong size"
         if searchRequest.minage and nzbSearchResult.age_days < searchRequest.minage:
-            return False, "Younger than requested minimum age: %dd < %dd" % (nzbSearchResult.age_days, searchRequest.minage), "Wrong age"
+            return False, "Younger than requested minimum age: %dd < %dd" % (nzbSearchResult.age_days, searchRequest.minage), "tey had the wrong age"
         if searchRequest.maxage and nzbSearchResult.age_days > searchRequest.maxage:
-            return False, "Older than requested maximum age: %dd > %dd" % (nzbSearchResult.age_days, searchRequest.maxage), "Wrong age"
+            return False, "Older than requested maximum age: %dd > %dd" % (nzbSearchResult.age_days, searchRequest.maxage), "tey had the wrong age"
         if nzbSearchResult.pubdate_utc is None:
-            return False, "Unknown age", "Missing attributes"
+            return False, "Unknown age", "they were missing necessary attributes"
         if nzbSearchResult.category:
             ignore = False
             reason = ""
@@ -276,7 +276,7 @@ class SearchModule(object):
                 reason = "by this indexer"
                 ignore = True
             if ignore:
-                return False, "Results from category %s are configured to be ignored %s" % (nzbSearchResult.category.pretty, reason), "Category ignored"
+                return False, "Results from category %s are configured to be ignored %s" % (nzbSearchResult.category.pretty, reason), "their category is to be ignored"
 
         return True, None, ""
 

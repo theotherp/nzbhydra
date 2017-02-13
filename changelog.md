@@ -4,6 +4,8 @@
 ### 0.2.202
 Changed: Reformat pubdates provided by indexers. Hopefully fixes [#489](https://github.com/theotherp/nzbhydra/issues/489).
 
+Changed: Cleaned up logging of rejection reasons 
+
 ### 0.2.201
 Fixed: Hopefully fix database error for good.
 

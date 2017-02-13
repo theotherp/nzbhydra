@@ -198,30 +198,6 @@ def pick_indexers(search_request):
         if not picked:
             add_not_picked_indexer(notPickedReasons, reason, p.name)
             continue
-        # if p.settings.hitLimit > 0:
-        #     if p.settings.hitLimitResetTime:
-        #         comparisonTime = arrow.utcnow().replace(hour=p.settings.hitLimitResetTime, minute=0, second=0)
-        #         if comparisonTime > arrow.utcnow():
-        #             comparisonTime = arrow.get(comparisonTime.datetime - datetime.timedelta(days=1))  # Arrow is too dumb to properly subtract 1 day (throws an error on every first of the month)
-        #     else:
-        #         # Use rolling time window
-        #         comparisonTime = arrow.get(arrow.utcnow().datetime - datetime.timedelta(days=1))
-        #
-        #     apiHits = IndexerApiAccess().select().where((IndexerApiAccess.indexer == p.indexer) & (IndexerApiAccess.time > comparisonTime) & IndexerApiAccess.response_successful).count()
-        #     if apiHits >= p.settings.hitLimit:
-        #         if p.settings.hitLimitResetTime:
-        #             logger.info("Did not pick %s because its API hit limit of %d was reached. Will pick again after %02d:00" % (p, p.settings.hitLimit, p.settings.hitLimitResetTime))
-        #         else:
-        #             try:
-        #                 firstHitTimeInWindow = IndexerApiAccess().select().where(IndexerApiAccess.indexer == p.indexer & IndexerApiAccess.response_successful).order_by(IndexerApiAccess.time.desc()).offset(p.settings.hitLimit).limit(1).get().time.datetime
-        #                 nextHitAfter = arrow.get(firstHitTimeInWindow + datetime.timedelta(days=1))
-        #                 logger.info("Did not pick %s because its API hit limit of %d was reached. Next possible hit at %s" % (p, p.settings.hitLimit, nextHitAfter.format('YYYY-MM-DD HH:mm')))
-        #             except IndexerApiAccess.DoesNotExist:
-        #                 logger.info("Did not pick %s because its API hit limit of %d was reached" % (p, p.settings.hitLimit))
-        #         add_not_picked_indexer(notPickedReasons, "API limit reached", p.name)
-        #         continue
-        #     else:
-        #         logger.debug("%s has had %d of a maximum of %d API hits since %02d:%02d" % (p, apiHits, p.settings.hitLimit, comparisonTime.hour, comparisonTime.minute))
 
         if (query_supplied or search_request.identifier_key is not None) and not p.supports_queries:
             logger.debug("Did not pick %s because a query was supplied but the indexer does not support queries" % p)
@@ -472,7 +448,7 @@ def search(search_request):
     cache_entry["last_access"] = arrow.utcnow()
     for k, v in cache_entry["rejected"].items():
         if v > 0:
-            logger.info("Rejected %d because: %s" % (v, k))
+            logger.info("Rejected %d results %s" % (v, k))
     logger.info("Returning %d results" % len(nzb_search_results))
     return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearchid": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset, "rejected": cache_entry["rejected"].items()}
 
