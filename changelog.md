@@ -6,7 +6,9 @@ Changed: Reformat pubdates provided by indexers. Hopefully fixes [#489](https://
 
 Changed: Cleaned up logging of rejection reasons.
 
-Fixed: Repeating a movie search from the search history would use the wrong search mode. 
+Fixed: Repeating a movie search from the search history would use the wrong search mode.
+ 
+Fixed: Use randomly generated API key instead of predefined. Thought that was already in there, oops...
 
 ### 0.2.201
 Fixed: Hopefully fix database error for good.

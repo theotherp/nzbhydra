@@ -113,7 +113,7 @@ initialConfig = {
         }
     ],
     "main": {
-        "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
+        "apikey": ''.join(random.choice('0123456789ABCDEF') for i in range(32)),
         "branch": "master",
         "configVersion": 34,
         "dereferer": "http://www.dereferer.org/?$s",
