@@ -39,6 +39,7 @@ initialConfig = {
         {
             "accessType": "both",
             "categories": ["anime"],
+            "downloadLimit": None,
             "enabled": False,
             "hitLimit": 0,
             "hitLimitResetTime": None,
@@ -57,6 +58,7 @@ initialConfig = {
         {
             "accessType": "internal",
             "categories": [],
+            "downloadLimit": None,
             "enabled": True,
             "hitLimit": 0,
             "hitLimitResetTime": None,
@@ -75,6 +77,7 @@ initialConfig = {
         {
             "accessType": "internal",
             "categories": [],
+            "downloadLimit": None,
             "enabled": True,
             "hitLimit": 0,
             "hitLimitResetTime": None,
@@ -94,6 +97,7 @@ initialConfig = {
         {
             "accessType": "internal",
             "categories": [],
+            "downloadLimit": None,
             "enabled": True,
             "generalMinSize": 1,
             "hitLimit": 0,
@@ -115,7 +119,7 @@ initialConfig = {
     "main": {
         "apikey": ''.join(random.choice('0123456789ABCDEF') for i in range(32)),
         "branch": "master",
-        "configVersion": 34,
+        "configVersion": 35,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
@@ -424,7 +428,7 @@ def logLogMessages():
     for x in logMessages:
         logger.log(x["level"], x["message"])
     oldLogMessages = copy.copy(logMessages)
-    logMessages = [] 
+    logMessages = []
     return oldLogMessages
 
 
@@ -468,7 +472,6 @@ def migrateConfig(config):
     if config["main"]["configVersion"] < initialConfig["main"]["configVersion"]:
         addLogMessage(20, "Migrating config")
 
-            
         if config["main"]["configVersion"] == 15:
             with version_update(config, 16):
                 addLogMessage(20, "Moving indexers")
@@ -571,7 +574,7 @@ def migrateConfig(config):
                 }
                 for category in categoriesToMigrate:
                     if category + "min" in config["searching"]["categorysizes"]:
-                        if category == "audiobook": #was saved as "audioookmin"
+                        if category == "audiobook":  # was saved as "audioookmin"
                             config["categories"]["categories"][category]["min"] = config["searching"]["categorysizes"]["audioookmin"]
                         else:
                             config["categories"]["categories"][category]["min"] = config["searching"]["categorysizes"][category + "min"]
@@ -585,7 +588,7 @@ def migrateConfig(config):
                 config["searching"].pop("categorysizes")
                 config["searching"]["forbiddenWords"] = config["searching"]["ignoreWords"]
                 config["searching"]["requiredWords"] = config["searching"]["requireWords"]
-    
+
         if config["main"]["configVersion"] == 19:
             with version_update(config, 20):
                 for downloader in config["downloaders"]:
@@ -619,7 +622,7 @@ def migrateConfig(config):
                     addLogMessage(20, "Setting duplicate size threshold to 1 percent")
                     config["searching"]["duplicateSizeThresholdInPercent"] = 1.0
 
-        #Make super sure they're set...
+        # Make super sure they're set...
         for indexer in config["indexers"]:
             if "categories" not in indexer.keys():
                 addLogMessage(20, "Enabling %s for all categories" % indexer["name"])
@@ -629,7 +632,7 @@ def migrateConfig(config):
             with version_update(config, 26):
                 addLogMessage(20, "Migrating API hit limit reset times to hour of day")
                 for indexer in config["indexers"]:
-                    #When the migration from version 22 didn't work and I didn't know I told some people to manually convert the hitLimitResetTime so I must check that it's not already a number
+                    # When the migration from version 22 didn't work and I didn't know I told some people to manually convert the hitLimitResetTime so I must check that it's not already a number
                     if "hitLimitResetTime" in indexer.keys() and indexer["hitLimitResetTime"] and not isinstance(indexer["hitLimitResetTime"], (int, long)):
                         t = arrow.get(indexer["hitLimitResetTime"])
                         addLogMessage(20, "Setting API hit limit reset time for indexer %s to hour of day %d" % (indexer["name"], t.hour))
@@ -742,15 +745,13 @@ def migrateConfig(config):
                     if "drunkenslug" in indexer["host"]:
                         indexer["host"] = "https://api.drunkenslug.com"
 
-        if config["main"]["configVersion"] == 33:
-            with version_update(config, 34):
+        if config["main"]["configVersion"] in [33, 34]:
+            with version_update(config, 35):
                 addLogMessage(20, "Adding empty download limit to all indexers")
                 for indexer in config["indexers"]:
-                    indexer["downloadLimit"] = None
+                    if "downloadLimit" not in indexer.keys():
+                        indexer["downloadLimit"] = None
 
-
-
-        
     return config
 
 

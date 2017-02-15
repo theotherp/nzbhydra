@@ -13,6 +13,8 @@ Fixed: Repeating a movie search from the search history would use the wrong sear
  
 Fixed: Use randomly generated API key instead of predefined. Thought that was already in there, oops...
 
+Fixed: Predefined indexers were missing config variable on new installs. See [#548](https://github.com/theotherp/nzbhydra/issues/548).
+
 ### 0.2.201
 Fixed: Hopefully fix database error for good.
 
