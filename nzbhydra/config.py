@@ -113,9 +113,9 @@ initialConfig = {
         }
     ],
     "main": {
-        "apikey": "ab00y7qye6u84lx4eqhwd0yh1wp423",
+        "apikey": os.urandom(12).encode('hex'),
         "branch": "master",
-        "configVersion": 34,
+        "configVersion": 33,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
