@@ -157,6 +157,7 @@ initialConfig = {
         "applyRestrictions": "both",
         "duplicateAgeThreshold": 2,
         "duplicateSizeThresholdInPercent": 1.0,
+        "idFallbackToTitle": [],
         "generate_queries": [
             "internal"
         ],

@@ -2,6 +2,9 @@
 
 ----------
 ### 0.2.202
+Added: Option to fallback to a query based search if no results were found for an ID based search. Note that this will increase API hits, potentially by a lot, because it will repeat the search e.g. for every search for a movie that's not yet released.
+ Hydra will also only search the indexers that were searched before, so if the indexer didn't support the ID in the first place and query generation is disabled it won't be search. See [#540](https://github.com/theotherp/nzbhydra/issues/540) 
+
 Changed: Reformat pubdates provided by indexers. Hopefully fixes [#489](https://github.com/theotherp/nzbhydra/issues/489).
 
 Changed: Cleaned up logging of rejection reasons.

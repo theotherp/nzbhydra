@@ -711,7 +711,7 @@ function ConfigFields($injector) {
                             templateOptions: {
                                 type: 'number',
                                 label: 'Maximum results age',
-                                help: 'Results older than this are ignored. Can be overwritten per search.',
+                                help: 'Results older than this are ignored. Can be overwritten per search',
                                 addonRight: {
                                     text: 'days'
                                 }
@@ -727,6 +727,18 @@ function ConfigFields($injector) {
                                     {label: 'API searches', id: 'external'}
                                 ],
                                 help: "Generate queries for indexers which do not support ID based searches"
+                            }
+                        },
+                        {
+                            key: 'idFallbackToTitle',
+                            type: 'horizontalMultiselect',
+                            templateOptions: {
+                                label: 'Fallback to title queries',
+                                options: [
+                                    {label: 'Internal searches', id: 'internal'},
+                                    {label: 'API searches', id: 'external'}
+                                ],
+                                help: "When no results were found for a query ID search again using the title"
                             }
                         },
                         {

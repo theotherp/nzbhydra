@@ -5,6 +5,8 @@ Some indexers provide information if a release is passworded. If you select to i
 
 Raw search engines like Binsearch don't support searches based on IDs (e.g. for a movie using an IMDB id). You can enable query generation for these. Hydra will then try to retrieve the movie's or show's title and generate a query, for example "showname s01e01".
  
+In some cases an ID based search will not provide any results. You can enable a fallback so that in such a case the search will be repeated with a query using the title of the show or movie.  
+ 
 Some indexers don't seem to like Hydra and disable access based on the user agent. You can change it here if you want. Please leave it as it is if you have no problems. This allows indexers to gather better statistics on how their API services are used.
 
 ### Forbidden and required words

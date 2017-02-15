@@ -279,7 +279,7 @@ def search(search_request):
     search_request.category = categoryResult
     if search_hash not in pseudo_cache.keys() or search_request.offset == 0:  # If it's a new search (which starts with offset 0) do it again instead of using the cached results
         logger.debug("Didn't find this query in cache or want to do a new search")
-        cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0, "rejected": SearchModule.getRejectedCountDict()}
+        cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0, "rejected": SearchModule.getRejectedCountDict(), "usedFallback": False}
         category = categoryResult.category
         indexers_to_call = pick_indexers(search_request)
         for p in indexers_to_call:
@@ -415,14 +415,14 @@ def search(search_request):
         search_results = allresults
 
         with databaseLock:
-            for indexer, infos in cache_entry["indexer_infos"].iteritems():
+            for indexer, result_infos in cache_entry["indexer_infos"].iteritems():
                 if indexer.name in uniqueResultsPerIndexer.keys():  # If the search failed it isn't contained in the duplicates list
-                    uniqueResultsCount = uniqueResultsPerIndexer[infos["indexer"]]
-                    processedResults = infos["processed_results"]
+                    uniqueResultsCount = uniqueResultsPerIndexer[result_infos["indexer"]]
+                    processedResults = result_infos["processed_results"]
                     logger.debug("Indexer %s had a unique results share of %d%% (%d of %d total results were only provided by this indexer)" % (indexer.name, 100 / (numberResultsBeforeDuplicateRemoval / uniqueResultsCount), uniqueResultsCount, numberResultsBeforeDuplicateRemoval))
-                    infos["indexer_search"].uniqueResults = uniqueResultsCount
-                    infos["indexer_search"].processedResults = processedResults
-                    infos["indexer_search"].save()
+                    result_infos["indexer_search"].uniqueResults = uniqueResultsCount
+                    result_infos["indexer_search"].processedResults = processedResults
+                    result_infos["indexer_search"].save()
 
         if not search_request.internal:
             countAfter = len(search_results)
@@ -433,6 +433,17 @@ def search(search_request):
 
         cache_entry["results"].extend(search_results)
         cache_entry["offset"] += limit
+
+        if len(indexers_to_call) == 0 and len(cache_entry["results"]) == 0 and search_request.identifier_key is not None and not cache_entry["usedFallback"] and ("internal" if search_request.internal else "external") in config.settings.searching.idFallbackToTitle:
+            logger.debug("No results found using ID based search. Getting title from ID to fall back")
+            title = infos.convertId(search_request.identifier_key, "title", search_request.identifier_value)
+            if title:
+                logger.info("Repeating search with title based query as fallback")
+                search_request.title = title
+                indexers_to_call = [indexer for indexer, _ in cache_entry["indexer_infos"].items()]
+                cache_entry["usedFallback"] = True
+            else:
+                logger.info("Unable to find title for ID")
 
     if len(indexers_to_call) == 0:
         logger.info("All indexers exhausted")
