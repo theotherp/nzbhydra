@@ -210,7 +210,7 @@ def pick_indexers(search_request):
             add_not_picked_indexer(notPickedReasons, "Query needed", p.name)
             continue
 
-        # If we can theoretically do that we must try to actually get the title, otherwise the indexer won't be able to search 
+        # If we can theoretically do that we must try to actually get the title, otherwise the indexer won't be able to search
         allow_query_generation = (config.InternalExternalSelection.internal in config.settings.searching.generate_queries and search_request.internal) or (config.InternalExternalSelection.external in config.settings.searching.generate_queries and not search_request.internal)
         if search_request.identifier_key is not None and not canUseIdKey(p, search_request.identifier_key):
             if not (allow_query_generation and p.generate_queries):
@@ -434,16 +434,32 @@ def search(search_request):
         cache_entry["results"].extend(search_results)
         cache_entry["offset"] += limit
 
-        if len(indexers_to_call) == 0 and len(cache_entry["results"]) == 0 and search_request.identifier_key is not None and not cache_entry["usedFallback"] and ("internal" if search_request.internal else "external") in config.settings.searching.idFallbackToTitle:
-            logger.debug("No results found using ID based search. Getting title from ID to fall back")
-            title = infos.convertId(search_request.identifier_key, "title", search_request.identifier_value)
-            if title:
-                logger.info("Repeating search with title based query as fallback")
-                search_request.title = title
-                indexers_to_call = [indexer for indexer, _ in cache_entry["indexer_infos"].items()]
-                cache_entry["usedFallback"] = True
+        if len(indexers_to_call) == 0 and not cache_entry["usedFallback"] and search_request.identifier_key is not None and ("internal" if search_request.internal else "external") in config.settings.searching.idFallbackToTitle:
+            call_fallback = False
+            if config.settings.searching.idFallbackToTitlePerIndexer:
+                indexers_to_call_fallback = [indexer for indexer, _ in cache_entry["indexer_infos"].items() if cache_entry["indexer_infos"][indexer]["processed_results"] == 0]
+                if len(indexers_to_call_fallback) > 0:
+                    logger.info("One or more indexers found no results found using ID based search. Getting title from ID to fall back")
+                    logger.info("Fallback indexers: %s" % (str(indexers_to_call_fallback)))
+                    call_fallback = True
             else:
-                logger.info("Unable to find title for ID")
+                if len(cache_entry["results"]) == 0:
+                    logger.info("No results found using ID based search. Getting title from ID to fall back")
+                    call_fallback = True
+                                            
+            if call_fallback:
+                title = infos.convertId(search_request.identifier_key, "title", search_request.identifier_value)
+                if title:
+                    logger.info("Repeating search with title based query as fallback")
+                    logger.info("Fallback title: %s" % (title))
+                    search_request.title = title
+                    if config.settings.searching.idFallbackToTitlePerIndexer:
+                        indexers_to_call = indexers_to_call_fallback
+                    else:
+                        indexers_to_call = [indexer for indexer, _ in cache_entry["indexer_infos"].items()]
+                    cache_entry["usedFallback"] = True
+                else:
+                    logger.info("Unable to find title for ID")
 
     if len(indexers_to_call) == 0:
         logger.info("All indexers exhausted")
@@ -594,7 +610,7 @@ def test_for_duplicate_age(result1, result2, age_threshold):
     if (group_known and not same_group) or (poster_known and not same_poster):
         return False
 
-    same_age = abs(result1.epoch - result2.epoch) / (60 * 60) <= age_threshold  # epoch difference (seconds) to minutes    
+    same_age = abs(result1.epoch - result2.epoch) / (60 * 60) <= age_threshold  # epoch difference (seconds) to minutes
     return same_age
 
 
