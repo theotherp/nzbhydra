@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.204
+Fixed: Prevent exception when logging failed git output. See [#555](https://github.com/theotherp/nzbhydra/issues/555).
+
 ### 0.2.203
 Added: Properly log or open browser to ipv6 address. See [#554](https://github.com/theotherp/nzbhydra/issues/554).
 

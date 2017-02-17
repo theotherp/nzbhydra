@@ -265,26 +265,26 @@ class GitUpdateManager(UpdateManager):
 
             if output:
                 output = output.strip()
-            logger.info("git output: " + output)
+            logger.info("git output: %s" % output)
 
         except OSError:
-            logger.error("Command " + cmd + " didn't work")
+            logger.error("Command %s didn't work" % cmd)
             exit_status = 1
 
         if exit_status == 0:
-            logger.debug(cmd + " : returned successful")
+            logger.debug("%s : returned successful" % cmd)
             exit_status = 0
 
         elif exit_status == 1:
-            logger.error(cmd + " returned : " + output)
+            logger.error("%s returned : %s" % (cmd, output))
             exit_status = 1
 
         elif exit_status == 128 or 'fatal:' in output or err:
-            logger.error(cmd + " returned : " + output)
+            logger.error("%s returned : %s" % (cmd, output))
             exit_status = 128
 
         else:
-            logger.error(cmd + " returned : " + output + ", treat as error for now")
+            logger.error("%s returned : %s, treat as error for now" % (cmd, output))
             exit_status = 1
 
         return output, err, exit_status
