@@ -4968,7 +4968,7 @@ function ConfigFields($injector) {
                                 type: 'text',
                                 label: 'Host',
                                 required: true,
-                                placeholder: 'IPv4 address to bind to',
+                                placeholder: 'IPv4/6 address to bind to',
                                 help: 'I strongly recommend using a reverse proxy instead of exposing this directly. Requires restart.'
                             },
                             validators: {

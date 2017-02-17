@@ -171,14 +171,23 @@ def run(arguments):
         elif config.settings.main.httpProxy:
             webaccess.set_proxies(config.settings.main.httpProxy, config.settings.main.httpsProxy)
 
-        logger.notice("Starting web app on %s:%d" % (host, port))
+
         if config.settings.main.externalUrl is not None and config.settings.main.externalUrl != "":
             f = furl(config.settings.main.externalUrl)
         else:
             f = furl()
-            f.host = "127.0.0.1" if config.settings.main.host == "0.0.0.0" else config.settings.main.host
+
+            if config.settings.main.host == "0.0.0.0":
+                f.host = "127.0.0.1"
+            elif config.settings.main.host == "::":
+                f.host = "[::1]"
+            elif ":" in config.settings.main.host:
+                f.host = "[%s]" % config.settings.main.host
+            else:
+                f.host = config.settings.main.host
             f.port = port
             f.scheme = "https" if config.settings.main.ssl else "http"
+        logger.notice("Starting web app on %s:%d" % (f.host, f.port))
         if not arguments.nobrowser and config.settings.main.startupBrowser:
             if arguments.restarted:
                 logger.info("Not opening the browser after restart")
