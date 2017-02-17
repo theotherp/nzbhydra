@@ -199,11 +199,11 @@ class SearchModule(object):
             "the title contained a forbidden word": 0,
             "a required word was missing in the title": 0,
             "the required regex was not found in the title": 0,
-            "the forbidden regex was found in the titl": 0,
+            "the forbidden regex was found in the title": 0,
             "they were posted in a forbidden group": 0,
             "they were posted by a forbidden poster": 0,
-            "tey had the wrong size": 0,
-            "tey had the wrong age": 0,
+            "they had the wrong size": 0,
+            "they had the wrong age": 0,
             "they were missing necessary attributes": 0,
             "their category is to be ignored": 0
         }
@@ -251,13 +251,13 @@ class SearchModule(object):
                 if forbiddenPoster in nzbSearchResult.poster:
                     return False, "Posted by forbidden poster '%s'" % forbiddenPoster, "they were posted by a forbidden poster"
         if searchRequest.minsize and nzbSearchResult.size / (1024 * 1024) < searchRequest.minsize:
-            return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize), "tey had the wrong size"
+            return False, "Smaller than requested minimum size: %dMB < %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.minsize), "they had the wrong size"
         if searchRequest.maxsize and nzbSearchResult.size / (1024 * 1024) > searchRequest.maxsize:
-            return False, "Bigger than requested maximum size: %dMB > %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.maxsize), "tey had the wrong size"
+            return False, "Bigger than requested maximum size: %dMB > %dMB" % (nzbSearchResult.size / (1024 * 1024), searchRequest.maxsize), "they had the wrong size"
         if searchRequest.minage and nzbSearchResult.age_days < searchRequest.minage:
-            return False, "Younger than requested minimum age: %dd < %dd" % (nzbSearchResult.age_days, searchRequest.minage), "tey had the wrong age"
+            return False, "Younger than requested minimum age: %dd < %dd" % (nzbSearchResult.age_days, searchRequest.minage), "they had the wrong age"
         if searchRequest.maxage and nzbSearchResult.age_days > searchRequest.maxage:
-            return False, "Older than requested maximum age: %dd > %dd" % (nzbSearchResult.age_days, searchRequest.maxage), "tey had the wrong age"
+            return False, "Older than requested maximum age: %dd > %dd" % (nzbSearchResult.age_days, searchRequest.maxage), "they had the wrong age"
         if nzbSearchResult.pubdate_utc is None:
             return False, "Unknown age", "they were missing necessary attributes"
         if nzbSearchResult.category:
