@@ -279,7 +279,7 @@ def search(search_request):
     search_request.category = categoryResult
     if search_hash not in pseudo_cache.keys() or search_request.offset == 0:  # If it's a new search (which starts with offset 0) do it again instead of using the cached results
         logger.debug("Didn't find this query in cache or want to do a new search")
-        cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0, "rejected": SearchModule.getRejectedCountDict(), "usedFallback": False}
+        cache_entry = {"results": [], "indexer_infos": {}, "total": 0, "last_access": arrow.utcnow(), "offset": 0, "rejected": SearchModule.getRejectedCountDict(), "usedFallback": False, "offsetFallback": 0}
         category = categoryResult.category
         indexers_to_call = pick_indexers(search_request)
         for p in indexers_to_call:
@@ -342,7 +342,11 @@ def search(search_request):
         elif search_request.loadAll:
             logger.debug("All results requested. Continuing to search.")
         logger.debug("%d indexers still have results" % len(indexers_to_call))
-        search_request.offset = cache_entry["offset"]
+        
+        if cache_entry["usedFallback"]:
+            search_request.offset = cache_entry["offsetFallback"]
+        else:
+            search_request.offset = cache_entry["offset"]
 
         logger.debug("Searching indexers with offset %d" % search_request.offset)
         result = search_and_handle_db(dbsearch, {x: search_request for x in indexers_to_call})
@@ -432,7 +436,10 @@ def search(search_request):
         search_results = sorted(search_results, key=lambda x: x.epoch, reverse=True)
 
         cache_entry["results"].extend(search_results)
-        cache_entry["offset"] += limit
+        if cache_entry["usedFallback"]:
+            cache_entry["offsetFallback"] += limit
+        else:
+            cache_entry["offset"] += limit
 
         if len(indexers_to_call) == 0 and not cache_entry["usedFallback"] and search_request.identifier_key is not None and ("internal" if search_request.internal else "external") in config.settings.searching.idFallbackToTitle:
             call_fallback = False
@@ -452,11 +459,17 @@ def search(search_request):
                 if title:
                     logger.info("Repeating search with title based query as fallback")
                     logger.info("Fallback title: %s" % (title))
+                                        
+                    # Add title and remove identifier key/value from search
                     search_request.title = title
+                    search_request.identifier_key = None
+                    search_request.identifier_value = None
+                    
                     if config.settings.searching.idFallbackToTitlePerIndexer:
                         indexers_to_call = indexers_to_call_fallback
                     else:
                         indexers_to_call = [indexer for indexer, _ in cache_entry["indexer_infos"].items()]
+                    
                     cache_entry["usedFallback"] = True
                 else:
                     logger.info("Unable to find title for ID")
