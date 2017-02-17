@@ -172,6 +172,7 @@ initialConfig = {
         "maxAge": "",
         "nzbAccessType": "redirect",
         "removeLanguage": True,
+        "removeObfuscated": True,
         "requiredWords": "",
         "timeout": 20,
         "userAgent": "NZBHydra",

@@ -815,6 +815,14 @@ function ConfigFields($injector) {
                             }
                         },
                         {
+                            key: 'removeObfuscated',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Remove "obfuscated" from nzbgeek titles'
+                            }
+                        },
+                        {
                             key: 'nzbAccessType',
                             type: 'horizontalSelect',
                             templateOptions: {

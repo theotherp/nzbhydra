@@ -2,6 +2,8 @@
 
 ----------
 ### 0.2.203
+Changed: Added option to keep "obfuscated" in NzbGeek titles. See [#553](https://github.com/theotherp/nzbhydra/issues/553).
+
 Changed: Respect min/max age/size when provided in API calls. This is not specified in the newznab API standards but might be helpful for some. See [#551](https://github.com/theotherp/nzbhydra/issues/551).
 
 ### 0.2.202
