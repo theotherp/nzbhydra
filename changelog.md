@@ -2,7 +2,7 @@
 
 ----------
 ### 0.2.203
-Added: Properly log or open browser to ipv6 address. See [#553](https://github.com/theotherp/nzbhydra/issues/553).
+Added: Properly log or open browser to ipv6 address. See [#554](https://github.com/theotherp/nzbhydra/issues/554).
 
 Changed: Added option to keep "obfuscated" in NzbGeek titles. See [#553](https://github.com/theotherp/nzbhydra/issues/553).
 
