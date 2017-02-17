@@ -592,7 +592,7 @@ def api(args):
 
 
 def api_search(args):
-    search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], query=args["q"], maxage=args["maxage"], internal=False)
+    search_request = SearchRequest(category=args["cat"], offset=args["offset"], limit=args["limit"], query=args["q"], minage=args["minage"], maxage=args["maxage"], minsize=args["minsize"], maxsize=args["maxsize"], internal=False)
     if args["t"] == "search":
         search_request.type = "general"
     elif args["t"] == "tvsearch":
