@@ -30,6 +30,18 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
     $scope.groupExpanded = {};
     $scope.selected = [];
+    if ($stateParams.title) {
+        $scope.searchTitle = $stateParams.title;
+    } else if ($stateParams.query) {
+        $scope.searchTitle = $stateParams.query;
+    } else {
+        $scope.searchTitle = undefined;
+    }
+
+    $scope.selectedIds = _.map($scope.selected, function (value) {
+        return value.searchResultId;
+    });
+
     $scope.lastClicked = null;
     $scope.lastClickedValue = null;
 
@@ -280,7 +292,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         }
         $scope.lastClicked = rowIndex;
         $scope.lastClickedValue = newCheckedValue;
-    })
+    });
 
     $scope.filterRejectedZero = function() {
         return function (entry) {

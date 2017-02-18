@@ -1,4 +1,4 @@
-<div class="row" ng-if="indexersearches" style="margin-top: 50px">
+<div class="row" ng-if="indexersearches" style="margin-top: 25px">
 
     <div class="col-md-5"></div>
     <div class="col-md-10" style="padding-right: 0px">
@@ -109,17 +109,18 @@
 </div>
 
 
-<div class="row" ng-if="indexersearches" style="margin-top: 30px">
-    <div class="col-md-6" style="text-align: left;">
+<div class="row" ng-if="indexersearches" style="margin-top: 10px">
+    <div class="col-md-8" style="text-align: left;">
         <input style="margin-top:20px; margin-bottom:20px;" type="checkbox" ng-model="foo.duplicatesDisplayed" ng-click="toggleDuplicatesDisplayed()" class="btn btn-default">Include duplicates</input>
         <button class="btn btn-default" ng-click="invertSelection()">Invert selection</button>
         <download-nzbs-button search-results="selected"></download-nzbs-button>
+        <download-nzbzip-button search-results="selected" search-title="searchTitle"></download-nzbzip-button>
     </div>
 
-    <div class="col-md-8">
+    <div class="col-md-4" style="margin-top: 20px">
         <dir-pagination-controls auto-hide="false"></dir-pagination-controls>
     </div>
-    <div class="col-md-6" style="text-align: right;">
+    <div class="col-md-8" style="text-align: right;">
         <span class="badge">Loaded {{ resultsCount }} of {{ total }} results (rejected {{ countRejected }})</span>
 
         <div class="btn-group" style="margin-top:20px; margin-bottom:20px;">

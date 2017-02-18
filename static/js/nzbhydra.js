@@ -1286,6 +1286,47 @@ function duplicateGroup() {
 }
 angular
     .module('nzbhydraApp')
+    .directive('downloadNzbzipButton', downloadNzbzipButton);
+
+function downloadNzbzipButton() {
+    controller.$inject = ["$scope", "growl", "FileDownloadService"];
+    return {
+        templateUrl: 'static/html/directives/download-nzbzip-button.html',
+        require: ['^searchResults'],
+        scope: {
+            searchResults: "<",
+            searchTitle: "<"
+        },
+        controller: controller
+    };
+
+    function controller($scope, growl, FileDownloadService) {
+
+        $scope.download = function () {
+            if (angular.isUndefined($scope.searchResults) || $scope.searchResults.length == 0) {
+                growl.info("You should select at least one result...");
+            } else {
+
+                var values = _.map($scope.searchResults, function (value) {
+                    return value.searchResultId;
+                });
+                var link = "getnzbzip?searchresultids=" + values.join("|");
+                var searchTitle;
+                if (angular.isDefined($scope.searchTitle)) {
+                    searchTitle = " for " + $scope.searchTitle;
+                } else {
+                    searchTitle = "";
+                }
+                var filename = "NZBHydra NZBs" + searchTitle + ".zip";
+                FileDownloadService.downloadFile(link, filename);
+            }
+        }
+    }
+}
+
+
+angular
+    .module('nzbhydraApp')
     .directive('downloadNzbsButton', downloadNzbsButton);
 
 function downloadNzbsButton() {
@@ -1657,13 +1698,13 @@ angular
     .directive('hydrabackup', hydrabackup);
 
 function hydrabackup() {
-    controller.$inject = ["$scope", "BackupService", "Upload", "RequestsErrorHandler", "growl", "RestartService", "$http"];
+    controller.$inject = ["$scope", "BackupService", "Upload", "FileDownloadService", "RequestsErrorHandler", "growl", "RestartService"];
     return {
         templateUrl: 'static/html/directives/backup.html',
         controller: controller
     };
 
-    function controller($scope, BackupService, Upload, RequestsErrorHandler, growl, RestartService, $http) {
+    function controller($scope, BackupService, Upload, FileDownloadService, RequestsErrorHandler, growl, RestartService) {
         $scope.refreshBackupList = function () {
             BackupService.getBackupsList().then(function (backups) {
                 $scope.backups = backups;
@@ -1676,21 +1717,7 @@ function hydrabackup() {
 
 
         $scope.createAndDownloadBackupFile = function() {
-
-                $http({method: 'GET', url: 'internalapi/getbackup', responseType: 'arraybuffer'}).success(function (data, status, headers, config) {
-                    var a = document.createElement('a');
-                    var blob = new Blob([data], {'type': "application/octet-stream"});
-                    a.href = URL.createObjectURL(blob);
-                    a.download = "nzbhydra-backup-" + moment().format("YYYY-MM-DD-HH-mm") + ".zip";
-
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    $scope.refreshBackupList();
-                }).error(function (data, status, headers, config) {
-                    console.log("Error:" + status);
-                });
-
+            FileDownloadService.downloadFile("internalapi/getbackup", "nzbhydra-backup-" + moment().format("YYYY-MM-DD-HH-mm") + ".zip");
         };
 
         $scope.uploadBackupFile = function (file, errFiles) {
@@ -2513,6 +2540,18 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
     $scope.indexerResultsInfo = {}; //Stores information about the indexer's results like how many we already retrieved
     $scope.groupExpanded = {};
     $scope.selected = [];
+    if ($stateParams.title) {
+        $scope.searchTitle = $stateParams.title;
+    } else if ($stateParams.query) {
+        $scope.searchTitle = $stateParams.query;
+    } else {
+        $scope.searchTitle = undefined;
+    }
+
+    $scope.selectedIds = _.map($scope.selected, function (value) {
+        return value.searchResultId;
+    });
+
     $scope.lastClicked = null;
     $scope.lastClickedValue = null;
 
@@ -2763,7 +2802,7 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         }
         $scope.lastClicked = rowIndex;
         $scope.lastClickedValue = newCheckedValue;
-    })
+    });
 
     $scope.filterRejectedZero = function() {
         return function (entry) {
@@ -4528,6 +4567,39 @@ filters.filter('unsafe',
 		};
 	}]
 );
+
+
+angular
+    .module('nzbhydraApp')
+    .factory('FileDownloadService', FileDownloadService);
+
+function FileDownloadService($http, growl ) {
+
+    var service = {
+        downloadFile: downloadFile
+    };
+
+    return service;
+    
+    function downloadFile(link, filename) {
+        $http({method: 'GET', url: link, responseType: 'arraybuffer'}).success(function (data, status, headers, config) {
+            var a = document.createElement('a');
+            var blob = new Blob([data], {'type': "application/octet-stream"});
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }).error(function (data, status, headers, config) {
+            growl.error(status);
+        });
+
+    }
+    
+
+}
+FileDownloadService.$inject = ["$http", "growl"];
 
 
 angular

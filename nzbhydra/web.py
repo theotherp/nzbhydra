@@ -7,17 +7,22 @@ from __future__ import unicode_literals
 import datetime
 import json
 import logging
-# noinspection PyUnresolvedReferences
 import os
+import random
+import tempfile
 import urlparse
+import zipfile
+from tempfile import TemporaryFile
 
 import arrow
 import jwt
 import markdown
 from bunch import Bunch
+from io import BytesIO
 from marshmallow import Schema
 from werkzeug.contrib.fixers import ProxyFix
 
+import nzbhydra
 from nzbhydra.categories import getCategoryByName
 
 sslImported = True
@@ -26,18 +31,25 @@ try:
 except:
     sslImported = False
     print("Unable to import SSL")
+
+try:
+    import zlib
+    compression = zipfile.ZIP_DEFLATED
+except:
+    compression = zipfile.ZIP_STORED
+
 import threading
 import urllib
 from builtins import *
 from peewee import fn
 from jwt import DecodeError, ExpiredSignature
-from nzbhydra.exceptions import DownloaderException, DownloaderNotFoundException
+from nzbhydra.exceptions import DownloaderException, DownloaderNotFoundException, NzbDownloadException
 
 # standard_library.install_aliases()
 from functools import update_wrapper
 from time import sleep
 from arrow import Arrow
-from flask import Flask, render_template, request, jsonify, Response, g, session
+from flask import Flask, render_template, request, jsonify, Response, session
 from flask import redirect, make_response, send_file
 from flask_cache import Cache
 from flask.json import JSONEncoder
@@ -47,7 +59,7 @@ from webargs.flaskparser import use_args
 from werkzeug.exceptions import Unauthorized
 from flask_session import Session
 from nzbhydra import config, search, infos, database
-from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_nzb_link_and_guid, get_entry_by_id
+from nzbhydra.api import process_for_internal_api, get_nfo, process_for_external_api, get_indexer_nzb_link, get_nzb_response, download_nzb_and_log, get_nzb_link_and_guid, get_entry_by_id, getNzbById
 from nzbhydra.config import NzbAccessTypeSelection, createSecret
 from nzbhydra.database import IndexerStatus, Indexer, SearchResult
 from nzbhydra.downloader import getInstanceBySetting, getDownloaderInstanceByName
@@ -169,6 +181,7 @@ def getUserInfos(user):
         maySeeAdmin = True
         maySeeStats = True
         maySeeDetailsDl = True
+        showIndexerSelection = True
         username = None
     else:
         maySeeAdmin = False
@@ -670,8 +683,9 @@ searchresultid_args = {
     "searchresultid": fields.String()
 }
 
+
 internalapi__getnzb_args = {
-    "searchresultid": fields.String(),
+    "searchresultid": fields.String(missing=None),
     "downloader": fields.String(missing=None),  # Name of downloader or empty if regular link
     "internal": fields.Boolean(missing=False)
 }
@@ -688,6 +702,43 @@ def getnzb(args):
     else:
         logger.info("%s request to download %s from %s" % ("Internal" if args["internal"] else "API", searchResult.title, searchResult.indexer.name))
     return extract_nzb_infos_and_return_response(args["searchresultid"], args["downloader"], args["internal"])
+
+
+internalapi__getNzbAsZip_args = {
+    "searchresultids": fields.String(missing=None)
+}
+
+
+@app.route('/getnzbzip')
+@requires_auth("main")
+@use_args(internalapi__getNzbAsZip_args)
+def getNzbAsZip(args):
+    logger.debug("Get NZB as ZIP request with args %s" % args)
+    if args["searchresultids"] is None:
+        logger.error("No search result IDs provided")
+        return "No search result IDs provided", 500
+    searchResultIds = args["searchresultids"].split("|")
+    try:
+        tempFile = tempfile.NamedTemporaryFile(delete=False)
+        zf = zipfile.ZipFile(tempFile, mode="w")
+        countDownloadedFiles = 0
+        for searchResultId in searchResultIds:
+            try:
+                nzbDownload, searchResult = getNzbById(searchResultId)
+                zf.writestr(searchResult.title + ".nzb", nzbDownload.content)
+                countDownloadedFiles += 1
+            except NzbDownloadException:
+                logger.info("Will skip NZB as download file")
+        zf.close()
+        if countDownloadedFiles == 0:
+            raise NzbDownloadException("No NZBs were successfully downloaded")
+        response = send_file(tempFile.name, mimetype='application/zip;', as_attachment=True, attachment_filename="NZBHydra NZBs.zip", add_etags=False)
+        response.headers["content-length"] = os.fstat(tempFile.fileno()).st_size
+        return response
+    except Exception as e:
+        logger.exception("An error occured while downloading NZBs as ZIP")
+        return "An error occured while downloading NZBs as ZIP: %s" % e, 500
+
 
 
 def process_and_jsonify_for_internalapi(results):

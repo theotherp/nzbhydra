@@ -11,7 +11,7 @@ import arrow
 from builtins import *
 from bunch import Bunch
 from flask import Response
-from flask import app, render_template, Flask
+from flask import render_template, Flask
 from flask import request
 
 mockapp = Flask(__name__)
@@ -50,7 +50,7 @@ def buildNewznabItem(title=None, guid=None, link=None, pubdate=None, description
          "value": random.randint(0, 100)
          },
         {"name": "comments",
-         "value": random.randint(0,3)
+         "value": random.randint(0, 3)
          },
         {"name": "poster",
          "value": random.randint(0, 100)
@@ -170,7 +170,6 @@ titles = None
 
 @mockapp.route('/api')
 def serve():
-
     if request.args.get("t") == "caps":
         with open("mock/nocaps.xml") as f:
             return "Hallo"
@@ -188,7 +187,7 @@ def serve():
     doSendAll = True
     doThrowSomeErrors = False
 
-    if doThrowSomeErrors and random.randint(0,1) <5 :
+    if doThrowSomeErrors and random.randint(0, 1) < 5:
         return "Nope"
 
     indexer = indexers[request.args.get("apikey")]
@@ -241,7 +240,11 @@ def serve():
 
 @mockapp.route('/download')
 def download():
-    return ""
+    randomNumber = random.randint(0, 100)
+    name = "Some nzb content %d" % randomNumber
+    return Response(name, mimetype="application/x-nzb",
+                    headers={"Content-disposition":
+                                 "attachment; filename=Some nzb %d.nzb" % randomNumber})
 
 
 if __name__ == '__main__':

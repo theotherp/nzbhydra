@@ -1,35 +1,23 @@
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import copy
-
-import arrow
-from builtins import range
-from builtins import str
-from builtins import *
-from future import standard_library
-from peewee import fn
-
-#standard_library.install_aliases()
-from collections import namedtuple
-from itertools import groupby
-import rison
 import logging
+from collections import namedtuple
 from io import BytesIO
-import urllib
 
+from builtins import *
 from flask import request, send_file
 from furl import furl
 from marshmallow import Schema, fields
-
 from requests import RequestException
 
 from nzbhydra import config
 from nzbhydra import indexers
-from nzbhydra.database import IndexerApiAccess, IndexerNzbDownload, Indexer, IndexerSearch, SearchResult
-from nzbhydra.exceptions import IndexerNotFoundException
+from nzbhydra.database import IndexerApiAccess, IndexerNzbDownload, SearchResult
+from nzbhydra.exceptions import IndexerNotFoundException, NzbDownloadException
 
 logger = logging.getLogger('root')
 
@@ -88,7 +76,8 @@ class IndexerApiAccessSchema(Schema):
     response_successful = fields.Boolean()
     response_time = fields.Integer()
     error = fields.String()
-    
+
+
 class RejectionCountSchema(Schema):
     passworded = fields.Integer()
     forbiddenword = fields.Integer()
@@ -98,7 +87,7 @@ class RejectionCountSchema(Schema):
     size = fields.Integer()
     age = fields.Integer()
     missing = fields.Integer()
-    category =fields.Integer()
+    category = fields.Integer()
 
 
 class IndexerSearchSchema(Schema):
@@ -110,7 +99,7 @@ class IndexerSearchSchema(Schema):
     apiAccesses = fields.Nested(IndexerApiAccessSchema, many=True)
 
 
-def get_root_url(): 
+def get_root_url():
     f = furl()
     f.scheme = request.scheme
     f.host = furl(request.host_url).host
@@ -128,7 +117,7 @@ def get_nzb_link_and_guid(searchResultId, external, downloader=None):
         f = furl(get_root_url())
     f.path.add("getnzb")
     args = {"searchresultid": searchResultId}
-        
+
     if external:
         apikey = config.settings.main.apikey
         if apikey is not None:
@@ -142,7 +131,7 @@ def get_nzb_link_and_guid(searchResultId, external, downloader=None):
 def transform_results(results, external):
     transformed = []
     for j in results:
-        if j.searchResultId is None: #Quick fix
+        if j.searchResultId is None:  # Quick fix
             continue
         i = copy.copy(j)
         i.link = get_nzb_link_and_guid(i.searchResultId, external)
@@ -150,14 +139,14 @@ def transform_results(results, external):
         attributes = {x["name"]: x["value"] for x in i.attributes}
         attributes["guid"] = i.guid
         for attribute in ["size", "poster", "group"]:
-            if getattr(i, attribute)and attribute not in attributes.keys():
+            if getattr(i, attribute) and attribute not in attributes.keys():
                 attributes[attribute] = getattr(i, attribute)
         if i.passworded is not None:
             attributes["password"] = 1 if i.passworded else 0
         i.attributes = [{"name": key, "value": value} for key, value in attributes.iteritems()]
         for category in i.category.newznabCategories:
             i.attributes.append({"name": "category", "value": category})
-        
+
         i.category = i.category.pretty
 
         transformed.append(i)
@@ -214,7 +203,6 @@ def get_nfo(searchresultid):
     except IndexerNotFoundException as e:
         logger.error(e.message)
         return {"has_nfo": False, "error": "Unable to find indexer"}
-    
 
 
 def get_details_link(indexer_name, guid):
@@ -224,8 +212,8 @@ def get_details_link(indexer_name, guid):
     else:
         logger.error("Did not find indexer with name %s" % indexer_name)
         return None
-    
-    
+
+
 def get_entry_by_id(indexer_name, guid, title):
     for p in indexers.enabled_indexers:
         if p.name == indexer_name:
@@ -294,12 +282,8 @@ def download_nzb_and_log(searchResultId):
 
 def get_nzb_response(searchResultId):
     try:
-        searchResult = SearchResult.get(SearchResult.id == searchResultId)
-    except SearchResult.DoesNotExist:
-        logger.error("Unable to find search result with ID %s" % searchResultId)
-        return "Unable to find search result with ID %s" % searchResultId, 500
-    nzbdownloadresult = download_nzb_and_log(searchResultId)
-    if nzbdownloadresult is not None:
+        nzbdownloadresult, searchResult = getNzbById(searchResultId)
+        
         bio = BytesIO(nzbdownloadresult.content)
         filename = searchResult.title + ".nzb" if searchResult.title is not None else "nzbhydra.nzb"
         response = send_file(bio, mimetype='application/x-nzb;', as_attachment=True, attachment_filename=filename, add_etags=False)
@@ -310,6 +294,23 @@ def get_nzb_response(searchResultId):
                 response.headers[header] = nzbdownloadresult.headers[header]
         logger.info("Returning downloaded NZB %s from %s" % (searchResult.title, searchResult.indexer.name))
         return response
-    else:
+            
+    except NzbDownloadException as e:
+        return e.message, 500
+
+
+def getNzbById(searchResultId):
+    # type: (int) -> (IndexerNzbDownloadResult, SearchResult)
+    """
+    :rtype: (IndexerNzbDownloadResult, SearchResult)
+    """
+    try:
+        searchResult = SearchResult.get(SearchResult.id == searchResultId)
+    except SearchResult.DoesNotExist:
+        logger.error("Unable to find search result with ID %s" % searchResultId)
+        raise NzbDownloadException("Unable to find search result with ID %s" % searchResultId)
+    nzbdownloadresult = download_nzb_and_log(searchResultId)
+    if nzbdownloadresult is None:
         logger.error("Error while trying to download NZB %s from %s" % (searchResult.title, searchResult.indexer.name))
-        return "Unable to download NZB", 500
+        raise NzbDownloadException("Unable to download NZB")
+    return nzbdownloadresult, searchResult

@@ -8,7 +8,7 @@ function hydrabackup() {
         controller: controller
     };
 
-    function controller($scope, BackupService, Upload, RequestsErrorHandler, growl, RestartService, $http) {
+    function controller($scope, BackupService, Upload, FileDownloadService, RequestsErrorHandler, growl, RestartService) {
         $scope.refreshBackupList = function () {
             BackupService.getBackupsList().then(function (backups) {
                 $scope.backups = backups;
@@ -21,21 +21,7 @@ function hydrabackup() {
 
 
         $scope.createAndDownloadBackupFile = function() {
-
-                $http({method: 'GET', url: 'internalapi/getbackup', responseType: 'arraybuffer'}).success(function (data, status, headers, config) {
-                    var a = document.createElement('a');
-                    var blob = new Blob([data], {'type': "application/octet-stream"});
-                    a.href = URL.createObjectURL(blob);
-                    a.download = "nzbhydra-backup-" + moment().format("YYYY-MM-DD-HH-mm") + ".zip";
-
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    $scope.refreshBackupList();
-                }).error(function (data, status, headers, config) {
-                    console.log("Error:" + status);
-                });
-
+            FileDownloadService.downloadFile("internalapi/getbackup", "nzbhydra-backup-" + moment().format("YYYY-MM-DD-HH-mm") + ".zip");
         };
 
         $scope.uploadBackupFile = function (file, errFiles) {

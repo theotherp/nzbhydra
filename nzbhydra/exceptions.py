@@ -76,3 +76,9 @@ class IndexerNotFoundException(NzbHydraException):
     """An indexer by the given name could not be found
     """
     pass
+
+
+class NzbDownloadException(NzbHydraException):
+    """A search result download failed
+    """
+    pass
