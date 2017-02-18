@@ -734,6 +734,7 @@ def getNzbAsZip(args):
             raise NzbDownloadException("No NZBs were successfully downloaded")
         response = send_file(tempFile.name, mimetype='application/zip;', as_attachment=True, attachment_filename="NZBHydra NZBs.zip", add_etags=False)
         response.headers["content-length"] = os.fstat(tempFile.fileno()).st_size
+        logger.info("Returning ZIP with %d NZBs" % countDownloadedFiles)
         return response
     except Exception as e:
         logger.exception("An error occured while downloading NZBs as ZIP")
