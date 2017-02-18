@@ -4789,9 +4789,11 @@ function ConfigService($http, $q, $cacheFactory, bootstrapped) {
                 cache.put("config", newConfig);
                 invalidateSafe();
             }, function (errorresponse) {
-                console.log("Error saving settings: " + errorresponse);
+                console.log("Error saving settings:");
+                console.log(errorresponse);
             });
     }
+
 
     function get() {
         var config = cache.get("config");

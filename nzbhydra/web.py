@@ -162,7 +162,7 @@ def getUserByName(username):
     for user in config.settings.auth.users:
         if user["username"] == username:
             return user
-    raise Exception("Username %s not found" % username)
+    return None
 
 def getUserInfos(user):
     authConfigured = len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none"

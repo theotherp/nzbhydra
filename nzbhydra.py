@@ -174,6 +174,7 @@ def run(arguments):
 
         if config.settings.main.externalUrl is not None and config.settings.main.externalUrl != "":
             f = furl(config.settings.main.externalUrl)
+            logger.notice("Starting web app on %s:%d" % (host, port))
         else:
             f = furl()
 
@@ -187,7 +188,7 @@ def run(arguments):
                 f.host = config.settings.main.host
             f.port = port
             f.scheme = "https" if config.settings.main.ssl else "http"
-        logger.notice("Starting web app on %s:%d" % (f.host, f.port))
+            logger.notice("Starting web app on %s:%d" % (f.host, port))
         if not arguments.nobrowser and config.settings.main.startupBrowser:
             if arguments.restarted:
                 logger.info("Not opening the browser after restart")
