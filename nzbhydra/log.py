@@ -8,6 +8,7 @@ import cgi
 import codecs
 import hashlib
 import os
+import tempfile
 import types
 
 from future import standard_library
@@ -137,15 +138,19 @@ def truncateLogFile():
             os.unlink(rotatedFilename)
 
 
-def getAnonymizedLogFile(hideThese):
-    log = getLogFile()
-    if log is None:
-        return None
-    for hideThis in hideThese:
-        if hideThis[1]:
-            obfuscated = hashlib.md5(hideThis[1]).hexdigest()
-            log = log.replace(hideThis[1], "<%s:%s>" % (hideThis[0], obfuscated))
-    return log
+def getAnonymizedLogFile(hideThese, filename):
+    global logfilename
+    if exists(logfilename):
+        logger.debug("Reading and anonymizing log file %s. This may take some time for big files..." % logfilename)
+        with codecs.open(filename, "w", "utf-8") as tempFile:
+            with codecs.open(logfilename, "r", 'utf-8') as logFile:
+                for line in logFile:
+                    line = cgi.escape(line)
+                    for hideThis in hideThese:
+                        if hideThis[1]:
+                            obfuscated = hashlib.md5(hideThis[1]).hexdigest()
+                            line = line.replace(hideThis[1], "<%s:%s>" % (hideThis[0], obfuscated))
+                    tempFile.write(line + "\n")
 
 
 def getLogs():

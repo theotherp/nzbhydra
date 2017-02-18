@@ -208,19 +208,17 @@ def getDebuggingInfos():
         os.mkdir(debug_folder)
     debuginfo_file = os.path.join(debug_folder, "nzbhydra-debuginfo-%s.zip" % arrow.now().format("YYYY-MM-DD-HH-mm"))
     logger.debug("Writing debugging info to file %s" % debuginfo_file)
-    logger.debug("Compressing ZIP file" if compression == zipfile.ZIP_DEFLATED else "zlib not found. Not compressing ZIP file")
+    logger.debug("Using compression for ZIP file" if compression == zipfile.ZIP_DEFLATED else "zlib not found. Not compressing ZIP file")
 
-    al = log.getAnonymizedLogFile(config.getSettingsToHide())
     al_file = os.path.join(debug_folder, "logfile.txt")
-    logger.debug("Writing log to temp file %s" % al_file)
-    with codecs.open(al_file, "w", "utf-8") as textfile:
-        textfile.write(al)
+    log.getAnonymizedLogFile(config.getSettingsToHide(), al_file)
 
     ac_file = os.path.join(debug_folder, "settings.txt")
     logger.debug("Writing settings to temp file %s" % ac_file)
     with codecs.open(ac_file, "w", "utf-8") as textfile:
         textfile.write(ac)
 
+    logger.debug("Writing ZIP file")
     zf = zipfile.ZipFile(debuginfo_file, mode="w")
     try:
         zf.write(filename=al_file, arcname=os.path.basename(al_file), compress_type=compression)
