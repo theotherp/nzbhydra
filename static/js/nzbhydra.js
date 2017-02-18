@@ -923,7 +923,9 @@ function searchResult() {
         }
     }
 }
-angular
+
+otherColumns.$inject = ["$http", "$templateCache", "$compile", "$window"];
+NfoModalInstanceCtrl.$inject = ["$scope", "$uibModalInstance", "nfo"];angular
     .module('nzbhydraApp')
     .directive('otherColumns', otherColumns);
 
@@ -1001,7 +1003,6 @@ function otherColumns($http, $templateCache, $compile, $window) {
         }
     }
 }
-otherColumns.$inject = ["$http", "$templateCache", "$compile", "$window"];
 
 angular
     .module('nzbhydraApp')
@@ -1019,10 +1020,10 @@ function NfoModalInstanceCtrl($scope, $uibModalInstance, nfo) {
         $uibModalInstance.dismiss();
     };
 }
-NfoModalInstanceCtrl.$inject = ["$scope", "$uibModalInstance", "nfo"];
 //Can be used in an ng-repeat directive to call a function when the last element was rendered
 //We use it to mark the end of sorting / filtering so we can stop blocking the UI
 
+onFinishRender.$inject = ["$timeout"];
 angular
     .module('nzbhydraApp')
     .directive('onFinishRender', onFinishRender);
@@ -1041,7 +1042,6 @@ function onFinishRender($timeout) {
         link: linkFunction
     }
 }
-onFinishRender.$inject = ["$timeout"];
 angular
     .module('nzbhydraApp')
     .directive('hydralog', hydralog);
@@ -1801,7 +1801,8 @@ function addableNzb() {
     }
 }
 
-angular
+
+UpdateService.$inject = ["$http", "growl", "blockUI", "RestartService"];angular
     .module('nzbhydraApp')
     .factory('UpdateService', UpdateService);
 
@@ -1891,10 +1892,10 @@ function UpdateService($http, growl, blockUI, RestartService) {
             });
     }
 }
-UpdateService.$inject = ["$http", "growl", "blockUI", "RestartService"];
 
 
-angular
+
+UpdateFooterController.$inject = ["$scope", "UpdateService", "HydraAuthService"];angular
     .module('nzbhydraApp')
     .controller('UpdateFooterController', UpdateFooterController);
 
@@ -1936,9 +1937,9 @@ function UpdateFooterController($scope, UpdateService, HydraAuthService) {
     }
 
 }
-UpdateFooterController.$inject = ["$scope", "UpdateService", "HydraAuthService"];
 
-angular
+
+SystemController.$inject = ["$scope", "$state", "activeTab", "$http", "growl", "RestartService", "ModalService", "UpdateService", "NzbHydraControlService"];angular
     .module('nzbhydraApp')
     .controller('SystemController', SystemController);
 
@@ -2037,9 +2038,9 @@ function SystemController($scope, $state, activeTab, $http, growl, RestartServic
     }
     
 }
-SystemController.$inject = ["$scope", "$state", "activeTab", "$http", "growl", "RestartService", "ModalService", "UpdateService", "NzbHydraControlService"];
 
-angular
+
+StatsService.$inject = ["$http"];angular
     .module('nzbhydraApp')
     .factory('StatsService', StatsService);
 
@@ -2080,8 +2081,8 @@ function StatsService($http) {
     }
 
 }
-StatsService.$inject = ["$http"];
-angular
+
+StatsController.$inject = ["$scope", "$filter", "StatsService", "blockUI"];angular
     .module('nzbhydraApp')
     .controller('StatsController', StatsController);
 
@@ -2364,9 +2365,9 @@ function StatsController($scope, $filter, StatsService, blockUI) {
 
 
 }
-StatsController.$inject = ["$scope", "$filter", "StatsService", "blockUI"];
 
 //
+SearchService.$inject = ["$http"];
 angular
     .module('nzbhydraApp')
     .factory('SearchService', SearchService);
@@ -2478,8 +2479,8 @@ function SearchService($http) {
         return lastResults;
     }
 }
-SearchService.$inject = ["$http"];
-angular
+
+SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "growl", "localStorageService", "SearchService", "ConfigService"];angular
     .module('nzbhydraApp')
     .controller('SearchResultsController', SearchResultsController);
 
@@ -2769,10 +2770,10 @@ function SearchResultsController($stateParams, $scope, $q, $timeout, blockUI, gr
         }
     }
 }
-SearchResultsController.$inject = ["$stateParams", "$scope", "$q", "$timeout", "blockUI", "growl", "localStorageService", "SearchService", "ConfigService"];
 
 
-angular
+
+SearchHistoryService.$inject = ["$filter", "$http"];angular
     .module('nzbhydraApp')
     .factory('SearchHistoryService', SearchHistoryService);
 
@@ -2923,8 +2924,8 @@ function SearchHistoryService($filter, $http) {
 
 
 }
-SearchHistoryService.$inject = ["$filter", "$http"];
-angular
+
+SearchHistoryController.$inject = ["$scope", "$state", "SearchHistoryService", "ConfigService", "history", "$sce", "$filter"];angular
     .module('nzbhydraApp')
     .controller('SearchHistoryController', SearchHistoryController);
 
@@ -3087,9 +3088,9 @@ function SearchHistoryController($scope, $state, SearchHistoryService, ConfigSer
 
 
 }
-SearchHistoryController.$inject = ["$scope", "$state", "SearchHistoryService", "ConfigService", "history", "$sce", "$filter"];
 
-angular
+
+SearchController.$inject = ["$scope", "$http", "$stateParams", "$state", "$window", "$filter", "$sce", "growl", "SearchService", "focus", "ConfigService", "CategoriesService", "blockUI", "$element", "ModalService", "SearchHistoryService"];angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
 
@@ -3424,9 +3425,9 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
 
 
 }
-SearchController.$inject = ["$scope", "$http", "$stateParams", "$state", "$window", "$filter", "$sce", "growl", "SearchService", "focus", "ConfigService", "CategoriesService", "blockUI", "$element", "ModalService", "SearchHistoryService"];
 
-angular
+
+RestartService.$inject = ["blockUI", "$timeout", "$window", "growl", "NzbHydraControlService"];angular
     .module('nzbhydraApp')
     .factory('RestartService', RestartService);
 
@@ -3466,9 +3467,9 @@ function RestartService(blockUI, $timeout, $window, growl, NzbHydraControlServic
         )
     }
 }
-RestartService.$inject = ["blockUI", "$timeout", "$window", "growl", "NzbHydraControlService"];
 
-angular
+
+NzbHydraControlService.$inject = ["$http"];angular
     .module('nzbhydraApp')
     .factory('NzbHydraControlService', NzbHydraControlService);
 
@@ -3492,9 +3493,9 @@ function NzbHydraControlService($http) {
         return $http.get("internalapi/deleteloganddb");
     }
 }
-NzbHydraControlService.$inject = ["$http"];
 
-angular
+
+NzbDownloadService.$inject = ["$http", "ConfigService", "DownloaderCategoriesService"];angular
     .module('nzbhydraApp')
     .factory('NzbDownloadService', NzbDownloadService);
 
@@ -3534,10 +3535,11 @@ function NzbDownloadService($http, ConfigService, DownloaderCategoriesService) {
         return _.filter(ConfigService.getSafe().downloaders, "enabled");
     }
 }
-NzbDownloadService.$inject = ["$http", "ConfigService", "DownloaderCategoriesService"];
 
 
-angular
+
+ModalService.$inject = ["$uibModal", "$q"];
+ModalInstanceCtrl.$inject = ["$scope", "$uibModalInstance", "headline", "message", "params"];angular
     .module('nzbhydraApp')
     .factory('ModalService', ModalService);
 
@@ -3593,7 +3595,6 @@ function ModalService($uibModal, $q) {
     }
     
 }
-ModalService.$inject = ["$uibModal", "$q"];
 
 angular
     .module('nzbhydraApp')
@@ -3652,7 +3653,6 @@ function ModalInstanceCtrl($scope, $uibModalInstance, headline, message, params)
         }
     });
 }
-ModalInstanceCtrl.$inject = ["$scope", "$uibModalInstance", "headline", "message", "params"];
 
 angular
     .module('nzbhydraApp')
@@ -3695,7 +3695,8 @@ function GeneralModalService() {
     
    
 }
-angular
+
+LoginController.$inject = ["$scope", "RequestsErrorHandler", "$state", "HydraAuthService", "growl"];angular
     .module('nzbhydraApp')
     .controller('LoginController', LoginController);
 
@@ -3713,9 +3714,10 @@ function LoginController($scope, RequestsErrorHandler, $state, HydraAuthService,
         });
     }
 }
-LoginController.$inject = ["$scope", "RequestsErrorHandler", "$state", "HydraAuthService", "growl"];
 
-angular
+
+    IndexerStatusesController.$inject = ["$scope", "$http", "statuses"];
+formatDate.$inject = ["dateFilter"];angular
     .module('nzbhydraApp')
     .controller('IndexerStatusesController', IndexerStatusesController);
 
@@ -3733,7 +3735,6 @@ angular
         }
 
     }
-    IndexerStatusesController.$inject = ["$scope", "$http", "statuses"];
 
 
 angular
@@ -3755,7 +3756,6 @@ function formatDate(dateFilter) {
         }
     }
 }
-formatDate.$inject = ["dateFilter"];
 
 angular
     .module('nzbhydraApp')
@@ -3768,7 +3768,8 @@ function reformatDate() {
         
     }
 }
-angular
+
+IndexController.$inject = ["$scope", "$http", "$stateParams", "$state"];angular
     .module('nzbhydraApp')
     .controller('IndexController', IndexController);
 
@@ -3776,9 +3777,9 @@ function IndexController($scope, $http, $stateParams, $state) {
     console.log("Index");
     $state.go("root.search");
 }
-IndexController.$inject = ["$scope", "$http", "$stateParams", "$state"];
 
-angular
+
+HydraAuthService.$inject = ["$q", "$rootScope", "$http", "$cookies", "bootstrapped"];angular
     .module('nzbhydraApp')
     .factory('HydraAuthService', HydraAuthService);
 
@@ -3862,8 +3863,8 @@ function HydraAuthService($q, $rootScope, $http, $cookies, bootstrapped) {
     
    
 }
-HydraAuthService.$inject = ["$q", "$rootScope", "$http", "$cookies", "bootstrapped"];
-angular
+
+HeaderController.$inject = ["$scope", "$state", "$http", "growl", "HydraAuthService"];angular
     .module('nzbhydraApp')
     .controller('HeaderController', HeaderController);
 
@@ -3944,7 +3945,6 @@ function HeaderController($scope, $state, $http, growl, HydraAuthService) {
         }
     }
 }
-HeaderController.$inject = ["$scope", "$state", "$http", "growl", "HydraAuthService"];
 
 var HEADER_NAME = 'MyApp-Handle-Errors-Generically';
 var specificallyHandleInProgress = false;
@@ -4044,7 +4044,8 @@ nzbhydraapp.config(['$provide', '$httpProvider', function ($provide, $httpProvid
         return newHttp;
     }]);
 }]);
-hashCode = function (s) {
+
+ConfigBoxService.$inject = ["$http", "$q"];hashCode = function (s) {
     return s.split("").reduce(function (a, b) {
         a = ((a << 5) - a) + b.charCodeAt(0);
         return a & a
@@ -4504,7 +4505,6 @@ function ConfigBoxService($http, $q) {
     }
 
 }
-ConfigBoxService.$inject = ["$http", "$q"];
 
 
 
@@ -4527,7 +4527,8 @@ filters.filter('unsafe',
 );
 
 
-angular
+
+DownloaderCategoriesService.$inject = ["$http", "$q", "$uibModal"];angular
     .module('nzbhydraApp')
     .factory('DownloaderCategoriesService', DownloaderCategoriesService);
 
@@ -4603,7 +4604,6 @@ function DownloaderCategoriesService($http, $q, $uibModal) {
         categories = undefined;
     }
 }
-DownloaderCategoriesService.$inject = ["$http", "$q", "$uibModal"];
 
 angular
     .module('nzbhydraApp').controller('DownloaderCategorySelectionController', ["$scope", "$uibModalInstance", "DownloaderCategoriesService", "categories", function ($scope, $uibModalInstance, DownloaderCategoriesService, categories) {
@@ -4614,7 +4614,8 @@ angular
         $uibModalInstance.close($scope);
     }
 }]);
-angular
+
+DownloadHistoryController.$inject = ["$scope", "StatsService", "downloads", "ConfigService"];angular
     .module('nzbhydraApp')
     .controller('DownloadHistoryController', DownloadHistoryController);
 
@@ -4677,7 +4678,6 @@ function DownloadHistoryController($scope, StatsService, downloads, ConfigServic
     })
 
 }
-DownloadHistoryController.$inject = ["$scope", "StatsService", "downloads", "ConfigService"];
 
 angular
     .module('nzbhydraApp')
@@ -4689,7 +4689,8 @@ function reformatDateEpoch() {
 
     }
 }
-angular
+
+ConfigService.$inject = ["$http", "$q", "$cacheFactory", "bootstrapped"];angular
     .module('nzbhydraApp')
     .factory('ConfigService', ConfigService);
 
@@ -4762,8 +4763,10 @@ function ConfigService($http, $q, $cacheFactory, bootstrapped) {
         });
     }
 }
-ConfigService.$inject = ["$http", "$q", "$cacheFactory", "bootstrapped"];
-angular
+
+ConfigFields.$inject = ["$injector"];
+IndexerCheckBeforeCloseService.$inject = ["$q", "ModalService", "ConfigBoxService", "blockUI", "growl"];
+DownloaderCheckBeforeCloseService.$inject = ["$q", "ConfigBoxService", "growl", "ModalService", "blockUI"];angular
     .module('nzbhydraApp')
     .factory('ConfigFields', ConfigFields);
 
@@ -5507,6 +5510,15 @@ function ConfigFields($injector) {
                             }
                         },
                         {
+                            key: 'idFallbackToTitlePerIndexer',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Fallback per indexer',
+                                help: "If enabled, fallback will occur on a per-indexer basis"
+                            }
+                        },
+                        {
                             key: 'userAgent',
                             type: 'horizontalInput',
                             templateOptions: {
@@ -5824,7 +5836,6 @@ function ConfigFields($injector) {
         };
     }
 }
-ConfigFields.$inject = ["$injector"];
 
 
 function getIndexerPresets(configuredIndexers) {
@@ -6778,7 +6789,6 @@ function IndexerCheckBeforeCloseService($q, ModalService, ConfigBoxService, bloc
 
     }
 }
-IndexerCheckBeforeCloseService.$inject = ["$q", "ModalService", "ConfigBoxService", "blockUI", "growl"];
 
 
 angular
@@ -6818,9 +6828,9 @@ function DownloaderCheckBeforeCloseService($q, ConfigBoxService, growl, ModalSer
     }
 
 }
-DownloaderCheckBeforeCloseService.$inject = ["$q", "ConfigBoxService", "growl", "ModalService", "blockUI"];
 
-angular
+
+ConfigController.$inject = ["$scope", "$http", "activeTab", "ConfigService", "config", "DownloaderCategoriesService", "ConfigFields", "ConfigModel", "ModalService", "RestartService", "$state", "growl"];angular
     .module('nzbhydraApp')
     .factory('ConfigModel', function () {
         return {};
@@ -7001,11 +7011,11 @@ function ConfigController($scope, $http, activeTab, ConfigService, config, Downl
             }            
         })
 }
-ConfigController.$inject = ["$scope", "$http", "activeTab", "ConfigService", "config", "DownloaderCategoriesService", "ConfigFields", "ConfigModel", "ModalService", "RestartService", "$state", "growl"];
 
 
 
-angular
+
+CategoriesService.$inject = ["ConfigService"];angular
     .module('nzbhydraApp')
     .factory('CategoriesService', CategoriesService);
 
@@ -7036,8 +7046,8 @@ function CategoriesService(ConfigService) {
     }
 
 }
-CategoriesService.$inject = ["ConfigService"];
-angular
+
+BackupService.$inject = ["$http"];angular
     .module('nzbhydraApp')
     .factory('BackupService', BackupService);
 
@@ -7062,5 +7072,4 @@ function BackupService($http) {
     }
 
 }
-BackupService.$inject = ["$http"];
 //# sourceMappingURL=nzbhydra.js.map
