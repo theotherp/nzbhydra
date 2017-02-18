@@ -1,6 +1,11 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.205
+Added: The fallback mechanism added in 0.2.202 would only activate when zero results were found. You can now configure to search indexers without results even if some results were found (by other indexers). Thanks to alamei for providing the code. See [#540](https://github.com/theotherp/nzbhydra/issues/540)  
+
+Fixed: Moving backup related files would fail if moved between filesystems. Thanks to RomRider for the code.  
+
 ### 0.2.204
 Fixed: Prevent exception when logging failed git output. See [#555](https://github.com/theotherp/nzbhydra/issues/555).
 
