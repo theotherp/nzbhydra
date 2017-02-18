@@ -2,7 +2,7 @@ angular
     .module('nzbhydraApp')
     .factory('HydraAuthService', HydraAuthService);
 
-function HydraAuthService($q, $rootScope, $http, $cookies, bootstrapped) {
+function HydraAuthService($q, $rootScope, $http, bootstrapped) {
 
     var loggedIn = bootstrapped.username;
 

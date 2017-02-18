@@ -18,8 +18,10 @@ function otherColumns($http, $templateCache, $compile, $window) {
         controller: controller
     };
 
-    function controller($scope, $http, $uibModal, growl) {
-        
+    function controller($scope, $http, $uibModal, growl, HydraAuthService) {
+
+        $scope.showDetailsDl = HydraAuthService.getUserInfos().maySeeDetailsDl;
+
         $scope.showNfo = showNfo;
         function showNfo(resultItem) {
             if (resultItem.has_nfo == 0) {

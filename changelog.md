@@ -2,7 +2,9 @@
 
 ----------
 ### 0.2.205
-Added: The fallback mechanism added in 0.2.202 would only activate when zero results were found. You can now configure to search indexers without results even if some results were found (by other indexers). Thanks to alamei for providing the code. See [#540](https://github.com/theotherp/nzbhydra/issues/540)  
+Added: The fallback mechanism added in 0.2.202 would only activate when zero results were found. You can now configure to search indexers without results even if some results were found (by other indexers). Thanks to alamei for providing the code. See [#540](https://github.com/theotherp/nzbhydra/issues/540)
+  
+Added: Option to hide details, comments & NZB links and indexer selection box for certain users. This affects the GUI only; users can theoretically still "hack" them but I consider that an acceptable risk... 
 
 Fixed: Moving backup related files would fail if moved between filesystems. Thanks to RomRider for the code.  
 

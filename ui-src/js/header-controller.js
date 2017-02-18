@@ -2,7 +2,7 @@ angular
     .module('nzbhydraApp')
     .controller('HeaderController', HeaderController);
 
-function HeaderController($scope, $state, $http, growl, HydraAuthService) {
+function HeaderController($scope, $state, growl, HydraAuthService) {
 
 
     $scope.showLoginout = false;

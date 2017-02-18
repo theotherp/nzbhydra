@@ -999,6 +999,30 @@ function ConfigFields($injector) {
                     }
                 },
                 {
+                    key: 'restrictDetailsDl',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Restrict NZB details & DL',
+                        help: 'Restrict NZB details, comments and download links'
+                    },
+                    hideExpression: function () {
+                        return rootModel.auth.authType == "none";
+                    }
+                },
+                {
+                    key: 'restrictIndexerSelection',
+                    type: 'horizontalSwitch',
+                    templateOptions: {
+                        type: 'switch',
+                        label: 'Restrict indexer selection box',
+                        help: 'Restrict visibility of indexer selection box in search. Affects only GUI'
+                    },
+                    hideExpression: function () {
+                        return rootModel.auth.authType == "none";
+                    }
+                },
+                {
                     key: 'rememberUsers',
                     type: 'horizontalSwitch',
                     templateOptions: {
@@ -1051,6 +1075,24 @@ function ConfigFields($injector) {
                                 templateOptions: {
                                     type: 'switch',
                                     label: 'May see stats'
+                                },
+                                hideExpression: 'model.maySeeAdmin'
+                            },
+                            {
+                                key: 'maySeeDetailsDl',
+                                type: 'horizontalSwitch',
+                                templateOptions: {
+                                    type: 'switch',
+                                    label: 'May see NZB details & DL links'
+                                },
+                                hideExpression: 'model.maySeeAdmin'
+                            },
+                            {
+                                key: 'showIndexerSelection',
+                                type: 'horizontalSwitch',
+                                templateOptions: {
+                                    type: 'switch',
+                                    label: 'May see indexer selection box'
                                 },
                                 hideExpression: 'model.maySeeAdmin'
                             }

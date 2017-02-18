@@ -146,32 +146,47 @@ def setRememberMe(response):
     return response
 
 
+def getUserByName(username):
+    for user in config.settings.auth.users:
+        if user["username"] == username:
+            return user
+    raise Exception("Username %s not found" % username)
+
 def getUserInfos(user):
     authConfigured = len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none"
     adminRestricted = config.settings.auth.restrictAdmin and authConfigured
     statsRestricted = config.settings.auth.restrictStats and authConfigured
     searchRestricted = config.settings.auth.restrictSearch and authConfigured
+    detailsDlRestricted = config.settings.auth.restrictDetailsDl and authConfigured
+    indexerSelectionRestricted = config.settings.auth.restrictDetailsDl and authConfigured
     if user is not None:
         maySeeAdmin = user["maySeeAdmin"]
         maySeeStats = user["maySeeStats"] or user["maySeeAdmin"]
+        maySeeDetailsDl = user["maySeeDetailsDl"] or not detailsDlRestricted
+        showIndexerSelection = user["showIndexerSelection"] or not indexerSelectionRestricted
         username = user["username"]
     elif not authConfigured:
         maySeeAdmin = True
         maySeeStats = True
+        maySeeDetailsDl = True
         username = None
     else:
         maySeeAdmin = False
         maySeeStats = False
+        maySeeDetailsDl = not detailsDlRestricted
+        showIndexerSelection = not indexerSelectionRestricted
         username = None
     cookie = {}
     cookie["maySeeAdmin"] = maySeeAdmin
     cookie["maySeeStats"] = maySeeStats
+    cookie["maySeeDetailsDl"] = maySeeDetailsDl
     cookie["username"] = username
     cookie["authType"] = config.settings.auth.authType
     cookie["authConfigured"] = authConfigured
     cookie["adminRestricted"] = adminRestricted
     cookie["statsRestricted"] = statsRestricted
     cookie["searchRestricted"] = searchRestricted
+    cookie["showIndexerSelection"] = showIndexerSelection
     cookie["maySeeSearch"] = not config.settings.auth.restrictSearch or not authConfigured or username
     return cookie
 
@@ -272,7 +287,7 @@ def getUserFromToken():
 
         for u in config.settings.auth.users:
             if u.username == payload["username"]:
-                session["user"] = u
+                session["username"] = u["username"]
                 user = u
                 break
         if user is not None:
@@ -301,7 +316,7 @@ def getUserFromBasicAuth():
                     logger.info("Successful login from <HIDDENIP> after failed login tries. Resetting failed login counter.")
 
                 return False
-            session["user"] = u
+            session["username"] = u["username"]
             session["token"] = create_token(u)
             return u
     return None
@@ -328,8 +343,8 @@ def isAllowed(authType):
 
     if request.cookies.get("rememberMe"):
         user = getUserFromToken()
-    if "user" in session.keys():
-        user = session["user"]
+    if "usenamer" in session.keys():
+        user = getUserByName(session["username"])
     # No user found in token. Check if basic auth header is set
     if user is None:
         user = getUserFromBasicAuth()
@@ -394,7 +409,7 @@ def login():
             token = create_token(u)
             logger.info("Form login form user %s successful" % username)
             session["rememberMe"] = token
-            session["user"] = u
+            session["username"] = u["username"]
             session["token"] = create_token(u)
             response = jsonify(getUserInfos(u))
             return response
@@ -415,7 +430,7 @@ def logout():
 
 @app.route('/auth/getuserinfos', methods=['POST'])
 def sendUserInfos():
-    user = session["user"] if "user" in session.keys() else None
+    user = getUserByName(session["username"]) if "username" in session.keys() else None
     return jsonify(getUserInfos(user))
 
 
@@ -427,12 +442,12 @@ def base(path):
     base_url = ("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/"
     _, currentVersion = get_current_version()
 
-    user = session["user"] if "user" in session.keys() else None
+    user = getUserByName(session["username"]) if "username" in session.keys() else None
     bootstrapped = getUserInfos(user)
     bootstrapped["safeConfig"] = config.getSafeConfig()
 
     getUserFromToken()  # Just see if the token is there
-    if request.authorization:
+    if request.authorization and config.settings.auth.authType == "basic":
         for u in config.settings.auth.users:
             if u.username == request.authorization.username:
                 if config.settings.auth.restrictAdmin:
@@ -1053,8 +1068,8 @@ class SearchHistoryFilterSchema(Schema):
 @requires_auth("main")
 def internalapi_search_requestsforsearching():
     limitToUser = None
-    if "user" in session.keys() and session["user"] and session["user"].username is not None:
-        limitToUser = session["user"].username
+    if "username" in session.keys() and session["username"] is not None:
+        limitToUser = session["username"]
     filterModel = {"access": {"filter": True, "filtertype": "boolean"}}
     return jsonify(get_search_requests(1, 20, sortModel=None, filterModel=filterModel, distinct=True, onlyUser=limitToUser))
 
@@ -1193,7 +1208,7 @@ def internalapi_askforadmin(args):
         if args["old_username"]:
             logger.debug("Authorization header set and contains a username other than the one that logged out")
         user = getUserFromBasicAuth()
-        session["user"] = user
+        session["username"] = user["username"]
         if user:
             countAskForPasswordRequests[request.authorization.username] = 0
             return jsonify(getUserInfos(user))

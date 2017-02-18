@@ -2,7 +2,7 @@ angular
     .module('nzbhydraApp')
     .controller('SearchController', SearchController);
 
-function SearchController($scope, $http, $stateParams, $state, $window, $filter, $sce, growl, SearchService, focus, ConfigService, CategoriesService, blockUI, $element, ModalService, SearchHistoryService) {
+function SearchController($scope, $http, $stateParams, $state, $window, $filter, $sce, growl, SearchService, focus, ConfigService, HydraAuthService, CategoriesService, blockUI, $element, ModalService, SearchHistoryService) {
 
     function getNumberOrUndefined(number) {
         if (_.isUndefined(number) || _.isNaN(number) || number == "") {
@@ -51,6 +51,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
     $scope.searchHistory = [];
 
     var safeConfig = ConfigService.getSafe();
+    $scope.showIndexerSelection = HydraAuthService.getUserInfos().showIndexerSelection;
 
     //Doesn't belong here but whatever
     var firstStartThreeDaysAgo = ConfigService.getSafe().firstStart < moment().subtract(3, "days").unix();

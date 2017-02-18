@@ -7207,6 +7207,9 @@ textarea.by-id-checkbox {
 .cursor-default {
   cursor: pointer;
 }
+.no-underline {
+  text-decoration: none !important;
+}
 .nzb-spinning {
   background-image: url('../img/spinner.gif');
 }
