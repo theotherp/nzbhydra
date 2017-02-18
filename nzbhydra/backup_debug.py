@@ -121,19 +121,19 @@ def restoreFromBackupData(zipData):
         logger.info("Starting to restore database file to %s" % nzbhydra.databaseFile)
         databaseFileTempBackup = nzbhydra.databaseFile + ".tempBackup"
         logger.info("Renaming database file %s to temporary backup file %s" % (nzbhydra.databaseFile, databaseFileTempBackup))
-        os.rename(nzbhydra.databaseFile, databaseFileTempBackup)
+        shutil.move(nzbhydra.databaseFile, databaseFileTempBackup)
         databaseTempFile = os.path.join(tempFolder, os.path.basename(databaseFileName))
         logger.info("Replacing database file %s with extracted file %s" % (nzbhydra.databaseFile, databaseTempFile))
-        os.rename(databaseTempFile, nzbhydra.databaseFile)
+        shutil.move(databaseTempFile, nzbhydra.databaseFile)
         databaseFileRestored = True
 
         logger.info("Starting to restore settings file to %s" % nzbhydra.configFile)
         configFileTempBackup = nzbhydra.configFile + ".tempBackup"
         logger.info("Renaming config file %s to temporary backup file %s" % (nzbhydra.configFile, configFileTempBackup))
-        os.rename(nzbhydra.configFile, configFileTempBackup)
+        shutil.move(nzbhydra.configFile, configFileTempBackup)
         configTempFile = os.path.join(tempFolder, os.path.basename(configFileName))
         logger.info("Replacing config file %s with extracted file %s" % (nzbhydra.configFile, configTempFile))
-        os.rename(configTempFile, nzbhydra.configFile)
+        shutil.move(configTempFile, nzbhydra.configFile)
 
         logger.info("Restoration completed successfully.")
     except Exception as e:
@@ -144,14 +144,14 @@ def restoreFromBackupData(zipData):
                 logger.info("Moving temporary database backup file %s back to %s" % (databaseFileTempBackup, nzbhydra.databaseFile))
                 if os.path.exists(nzbhydra.databaseFile):
                     os.unlink(nzbhydra.databaseFile)
-                os.rename(databaseFileTempBackup, nzbhydra.databaseFile)
+                shutil.move(databaseFileTempBackup, nzbhydra.databaseFile)
             else:
                 logger.error("Unable to bring back database file to state before restore")
         if configFileTempBackup is not None:
             logger.info("Moving temporary config backup file %s back to %s" % (configFileTempBackup, nzbhydra.configFile))
             if os.path.exists(nzbhydra.configFile):
                 os.unlink(nzbhydra.configFile)
-            os.rename(configFileTempBackup, nzbhydra.configFile)
+            shutil.move(configFileTempBackup, nzbhydra.configFile)
         else:
             logger.error("Unable to bring back config file to state before restore")
         return "Error while restoring files: %s. Original state was restored." % e, 500
