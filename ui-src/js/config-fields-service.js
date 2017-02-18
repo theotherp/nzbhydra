@@ -742,6 +742,15 @@ function ConfigFields($injector) {
                             }
                         },
                         {
+                            key: 'idFallbackToTitlePerIndexer',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Fallback per indexer',
+                                help: "If enabled, fallback will occur on a per-indexer basis"
+                            }
+                        },
+                        {
                             key: 'userAgent',
                             type: 'horizontalInput',
                             templateOptions: {

@@ -162,6 +162,7 @@ initialConfig = {
         "duplicateAgeThreshold": 2,
         "duplicateSizeThresholdInPercent": 1.0,
         "idFallbackToTitle": [],
+        "idFallbackToTitlePerIndexer": False,
         "generate_queries": [
             "internal"
         ],
@@ -415,7 +416,7 @@ logMessages = []
 
 def addLogMessage(level, message):
     """
-        Adds a log message to a list which can be logged after the logger was initialized 
+        Adds a log message to a list which can be logged after the logger was initialized
     """
     global logMessages
     logMessages.append({"level": level, "message": message})
@@ -423,7 +424,7 @@ def addLogMessage(level, message):
 
 def logLogMessages():
     """
-        Logs the messages that were created before the logger was initialized and then removes them from the list 
+        Logs the messages that were created before the logger was initialized and then removes them from the list
     """
     global logMessages
     for x in logMessages:
