@@ -5944,12 +5944,14 @@ function ConfigFields($injector) {
                             username: null,
                             password: null,
                             maySeeStats: true,
-                            maySeeAdmin: true
+                            maySeeAdmin: true,
+                            maySeeDetailsDl: true,
+                            showIndexerSelection: true
                         }
                     }
                 }
             ]
-        };
+        }
     }
 }
 ConfigFields.$inject = ["$injector"];

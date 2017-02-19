@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.207
+Fixed: Adding new users would in rare cases cause an incomplete configuration.
+
 ### 0.2.206
 Fixed: Hydra would crash trying to log the used port in some cases. See [#559](https://github.com/theotherp/nzbhydra/issues/559).
 
