@@ -119,7 +119,7 @@ initialConfig = {
     "main": {
         "apikey": ''.join(random.choice('0123456789ABCDEF') for i in range(32)),
         "branch": "master",
-        "configVersion": 36,
+        "configVersion": 37,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
@@ -756,12 +756,14 @@ def migrateConfig(config):
                     if "downloadLimit" not in indexer.keys():
                         indexer["downloadLimit"] = None
 
-        if config["main"]["configVersion"] == 35:
-            with version_update(config, 36):
+        if config["main"]["configVersion"] in [35, 36]:
+            with version_update(config, 37):
                 addLogMessage(20, "Adding new field to users")
                 for user in config["auth"]["users"]:
-                    user["maySeeDetailsDl"] = True
-                    user["showIndexerSelection"] = True
+                    if "maySeeDetailsDl" not in user.keys():
+                        user["maySeeDetailsDl"] = True
+                    if "showIndexerSelection" not in user.keys():
+                        user["showIndexerSelection"] = True
 
     return config
 
