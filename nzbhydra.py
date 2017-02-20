@@ -205,10 +205,13 @@ def run(arguments):
 
 @atexit.register
 def _stop_worker_threads():
-    logger.info("Exit registered. Shutting down database...")
-    database.db.stop()
-    database.db.close()
-    logger.info("Database shut down")
+    if not database.db.is_stopped() or not database.db.is_closed():
+        logger.info("Exit registered. Stopping and closing database")
+        if not database.db.is_stopped():
+            database.db.stop()
+        if not database.db.is_closed():
+            database.db.close()
+        logger.info("Database shut down")
 
 if __name__ == '__main__':
 

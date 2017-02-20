@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.208
+Fixed: Database error when calling --help. See [#563](https://github.com/theotherp/nzbhydra/issues/563).
+
 ### 0.2.207
 Fixed: Adding new users would in rare cases cause an incomplete configuration.
 
