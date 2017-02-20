@@ -13,18 +13,17 @@ from arrow.parser import ParserError
 from builtins import *
 from furl import furl
 from requests.auth import HTTPBasicAuth
-from requests.exceptions import RequestException, HTTPError
+from requests.exceptions import RequestException
 
 from nzbhydra import config
 from nzbhydra import infos
 from nzbhydra import webaccess
-from nzbhydra.categories import getByNewznabCats, getCategoryByAnyInput, getNumberOfSelectableCategories
-from nzbhydra.exceptions import IndexerAuthException, IndexerAccessException, IndexerResultParsingException
+from nzbhydra.categories import getByNewznabCats, getCategoryByAnyInput
+from nzbhydra.exceptions import IndexerAuthException, IndexerAccessException, IndexerResultParsingException, IndexerApiLimitReachedException
 from nzbhydra.nzb_search_result import NzbSearchResult
 from nzbhydra.search_module import SearchModule, IndexerProcessingResult
 
 logger = logging.getLogger('root')
-
 
 
 def check_auth(body, indexer):
@@ -43,6 +42,8 @@ def check_auth(body, indexer):
             tree = ET.fromstring(body)
             code = tree.attrib["code"]
             description = tree.attrib["description"]
+            if "Request limit reached" in body:
+                raise IndexerApiLimitReachedException("API limit reached", indexer)
             logger.error("Indexer %s returned unknown error code %s with description: %s" % (indexer, code, description))
             exception = IndexerAccessException("Unknown error while trying to access the indexer: %s" % description, indexer)
         except Exception:
@@ -64,13 +65,16 @@ def test_connection(host, apikey, username=None, password=None):
         }
         r = webaccess.get(f.url, headers=headers, timeout=config.settings.searching.timeout, auth=HTTPBasicAuth(username, password) if username is not None else None)
         r.raise_for_status()
-        check_auth(r.text, None)
+        check_auth(r.text, host)
     except RequestException as e:
         logger.info("Unable to connect to indexer using URL %s: %s" % (f.url, str(e)))
         return False, "Unable to connect to host"
     except IndexerAuthException as e:
         logger.info("Unable to log in to indexer %s due to wrong credentials: %s" % (host, e.message))
         return False, e.message
+    except IndexerApiLimitReachedException as e:
+        logger.info("Indexer %s due to wrong credentials: %s" % (host, e.message))
+        return False, e.message  # Description already contains "API limit reached" so returning the description should suffice
     except IndexerAccessException as e:
         logger.info("Unable to log in to indexer %s. Unknown error %s." % (host, e.message))
         return False, "Host reachable but unknown error returned"
@@ -95,8 +99,11 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult, username=None, pass
         titles = []
         tree = ET.fromstring(r.content)
     except Exception as e:
-        logger.error("Error getting or parsing XML: %s" % e)
-        raise IndexerAccessException("Error getting or parsing XML", None)
+        if isinstance(e, IndexerAccessException):
+            raise
+        else:
+            logger.error("Error getting or parsing XML: %s" % e)
+            raise IndexerAccessException("Error getting or parsing XML", None)
     for item in tree.find("channel").findall("item"):
         titles.append(item.find("title").text)
 
@@ -179,7 +186,7 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
     ]
     supportedIds = []
     supportedTypes = []
-    # Try to find out from caps first
+
     try:
         url = _build_base_url(host, apikey, "caps", None)
         headers = {
@@ -189,9 +196,22 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
         r = webaccess.get(url, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers, auth=HTTPBasicAuth(username, password) if username is not None else None)
         r.raise_for_status()
         logger.debug("Indexer returned: " + r.text[:500])
+    except Exception as e:
+        logger.error("Error getting caps XML. Error message: %s" % e)
+        return False, e.message, None
 
+    try:
+        check_auth(r.content, host)
+    except IndexerAccessException as e:
+        return False, e.message, None
+
+    try:
         tree = ET.fromstring(r.content)
+    except Exception as e:
+        logger.error("Unable to parse indexer response")
+        return False, e.message, None
 
+    try:
         categories = []
         subCategories = {}
         for xmlMainCategory in tree.find("categories").findall("category"):
@@ -224,7 +244,6 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
             supportedCategories.append("audiobook")
         if ebookCategory:
             supportedCategories.append("ebook")
-        
 
         searching = tree.find("searching")
         if searching is not None and not skipIdsAndTypes:
@@ -240,14 +259,19 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
             logger.info("Checking capabilities of indexer by brute force to make sure supported search types are correctly recognized")
             supportedIds, supportedTypes = checkCapsBruteForce(supportedTypes, toCheck, host, apikey, username=username, password=password)
 
-        #Check indexer type (nzedb, newznab, nntmux)
-        url = _build_base_url(host, apikey, "tvsearch", None)
-        headers = {
-            'User-Agent': userAgent if userAgent is not None else config.settings.searching.userAgent
-        }
-        logger.debug("Requesting %s" % url)
-        r = webaccess.get(url, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers, auth=HTTPBasicAuth(username, password) if username is not None else None)
-        r.raise_for_status()
+        # Check indexer type (nzedb, newznab, nntmux)
+        try:
+            url = _build_base_url(host, apikey, "tvsearch", None)
+            headers = {
+                'User-Agent': userAgent if userAgent is not None else config.settings.searching.userAgent
+            }
+            logger.debug("Requesting %s" % url)
+            r = webaccess.get(url, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers, auth=HTTPBasicAuth(username, password) if username is not None else None)
+            r.raise_for_status()
+        except Exception as e:
+            logger.error("Unable to connect to indexer to findout indexer backend type: %s" % e)
+            return False, "Unable to connect to indexer to findout indexer backend type", None
+
         logger.debug("Indexer returned: " + r.text[:500])
         generator = ET.fromstring(r.content).find("channel/generator")
         if generator is not None:
@@ -257,24 +281,22 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
             logger.info("Assuming indexer %s is a newznab based indexer" % host)
             backend = "newznab"
 
-
-        return {
-            "animeCategory": animeCategory, 
-            "comicCategory": comicCategory, 
-            "magazineCategory": magazineCategory, 
-            "audiobookCategory": audiobookCategory, 
-            "ebookCategory": ebookCategory, 
-            "supportedIds": sorted(list(set(supportedIds))), 
+        return True, None, {
+            "animeCategory": animeCategory,
+            "comicCategory": comicCategory,
+            "magazineCategory": magazineCategory,
+            "audiobookCategory": audiobookCategory,
+            "ebookCategory": ebookCategory,
+            "supportedIds": sorted(list(set(supportedIds))),
             "supportedTypes": sorted(list(set(supportedTypes))),
             "supportedCategories": supportedCategories,
             "supportsAllCategories": True,
             "backend": backend
         }
     except Exception as e:
-        logger.error("Error getting or parsing caps XML. Error message: %s" % e)
-
-        raise IndexerResultParsingException("Unable to check caps: %s" % str(e), None)
-
+        message = e.message if hasattr(e, "message") else str(e)
+        logger.error("Error getting or parsing caps XML. Error message: %s" % message)
+        return False, "Unable to check caps: %s" % message, None
 
 
 def _build_base_url(host, apikey, action, category, limit=None, offset=0):
@@ -377,7 +399,7 @@ class NewzNab(SearchModule):
     def get_moviesearch_urls(self, search_request):
         if search_request.category is None:
             search_request.category = getCategoryByAnyInput("movies")
-        
+
         # A lot of indexers seem to disregard the "q" parameter for "movie" search, so if we have a query use regular search instead 
         if search_request.query:
             url = self.build_base_url("search", search_request.category, offset=search_request.offset)
@@ -434,7 +456,7 @@ class NewzNab(SearchModule):
             search_request.category = getCategoryByAnyInput("comic")
         if hasattr(self.settings, "comicCategory") and self.settings.comicCategory:
             self.debug("Using %s as determinted newznab comic category" % self.settings.comicCategory)
-            search_request.category.category.newznabCategories = [self.settings.comicCategory] 
+            search_request.category.category.newznabCategories = [self.settings.comicCategory]
         return self.get_search_urls(search_request)
 
     def get_anime_urls(self, search_request):
@@ -568,7 +590,7 @@ class NewzNab(SearchModule):
                 entry.passworded = True
             elif attribute_name == "nfo":
                 entry.has_nfo = NzbSearchResult.HAS_NFO_YES if int(attribute_value) == 1 else NzbSearchResult.HAS_NFO_NO
-            elif attribute_name == "info" and self.settings.backend.lower() in["nzedb", "nntmux"]:
+            elif attribute_name == "info" and self.settings.backend.lower() in ["nzedb", "nntmux"]:
                 entry.has_nfo = NzbSearchResult.HAS_NFO_YES
             elif attribute_name == "group" and attribute_value != "not available":
                 entry.group = attribute_value

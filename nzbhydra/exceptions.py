@@ -42,6 +42,14 @@ class IndexerAccessException(IndexerException):
     pass
 
 
+class IndexerApiLimitReachedException(IndexerException):
+    """The API limit of the indexer was rechead.
+    We should probably wait some time until we use it again
+    but don't assume it's a permanent problem.
+    """
+    pass
+
+
 class IndexerConnectionException(IndexerException):
     """The connection to the indexer failed. We should probably wait some time
     until we use it again but don't assume it's a permanent problem.

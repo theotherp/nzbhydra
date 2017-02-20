@@ -3446,7 +3446,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
 
 
     function getAndSetSearchRequests() {
-        SearchHistoryService.getSearchHistoryForSearching().then(function (data) {
+        SearchHistoryService.getSearchHistoryForSearching().success(function (data) {
             $scope.searchHistory = data.data.searchRequests;
         });
     }
@@ -4195,7 +4195,7 @@ angular
         formlyConfigProvider.setType({
             name: 'checkCaps',
             templateUrl: 'button-check-caps.html',
-            controller: function ($scope, ConfigBoxService) {
+            controller: function ($scope, ConfigBoxService, ModalService) {
                 $scope.message = "";
                 $scope.uniqueId = hashCode($scope.model.name) + hashCode($scope.model.host);
 
@@ -4229,6 +4229,7 @@ angular
                     }, function (message) {
                         angular.element(testMessage).text(message);
                         showError();
+                        ModalService.open("Error testing capabilities", 'The capabilities of the indexer could not be checked. You can set the IDs manually. Refer to the <a href="https://github.com/theotherp/nzbhydra/wiki/Supported-Search-Types-And-Indexer-Hosts" target="_blank">Wiki</a> for the IDs supported by some indexers.<br><br>You may repeat the check at any time to try again.');
                     }).finally(function () {
                         angular.element(testButton).removeClass("glyphicon-refresh-animate");
                     });

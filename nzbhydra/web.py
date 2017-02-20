@@ -1054,12 +1054,12 @@ def internalapi_testcaps(args):
     host = urlparse.unquote(args["host"])
     logger.debug("Check caps for %s" % indexer)
 
-    try:
-        caps = check_caps(host, apikey, username, password)
+    result, message, caps = check_caps(host, apikey, username, password)
+    if result:
         caps.update({"success": True})
         return jsonify(caps)
-    except Exception as e:
-        return jsonify({"success": False, "message": e.message})
+    else:
+        return jsonify({"success": False, "message": message})
 
 
 internalapi__stats_args = {
@@ -1119,11 +1119,13 @@ class SearchHistoryFilterSchema(Schema):
 @app.route('/internalapi/getsearchrequestsforsearching', methods=['GET', 'POST'])
 @requires_auth("main")
 def internalapi_search_requestsforsearching():
+
     limitToUser = None
     if "username" in session.keys() and session["username"] is not None:
         limitToUser = session["username"]
     filterModel = {"access": {"filter": True, "filtertype": "boolean"}}
-    return jsonify(get_search_requests(1, 20, sortModel=None, filterModel=filterModel, distinct=True, onlyUser=limitToUser))
+    searchRequests = get_search_requests(1, 20, sortModel=None, filterModel=filterModel, distinct=True, onlyUser=limitToUser)
+    return jsonify(searchRequests)
 
 
 @app.route('/internalapi/getsearchrequests', methods=['POST'])

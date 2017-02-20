@@ -386,7 +386,7 @@ def get_search_requests(page=0, limit=100, sortModel=None, filterModel=None, dis
     query = extendQueryWithFilter(columnNameToEntityMap, filterModel, query)
     query = extendQueryWithSorting(columnNameToEntityMap, query, sortModel, Search.time.desc())
 
-    if onlyUser:
+    if onlyUser is not None:
         query = query.where(Search.username == onlyUser)
     if distinct:
         query = query.group_by(Search.internal, Search.query, Search.identifier_key, Search.identifier_value, Search.category, Search.season, Search.episode, Search.type, Search.username, Search.title, Search.author)

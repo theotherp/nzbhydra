@@ -2,6 +2,8 @@
 
 ----------
 ### 0.2.208
+Changed: Rewrote the caps check error handling some more because this causes problems and questions very often. Added a message saying that you can set the IDs manually and which links to the Wiki. 
+
 Fixed: Database error when calling --help. See [#563](https://github.com/theotherp/nzbhydra/issues/563).
 
 ### 0.2.207

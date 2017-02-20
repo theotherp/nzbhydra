@@ -314,7 +314,7 @@ function SearchController($scope, $http, $stateParams, $state, $window, $filter,
 
 
     function getAndSetSearchRequests() {
-        SearchHistoryService.getSearchHistoryForSearching().then(function (data) {
+        SearchHistoryService.getSearchHistoryForSearching().success(function (data) {
             $scope.searchHistory = data.data.searchRequests;
         });
     }
