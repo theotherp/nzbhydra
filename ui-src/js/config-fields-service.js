@@ -240,7 +240,7 @@ function ConfigFields($injector) {
                                 help: 'Set when using an external proxy. Call using a trailing slash, e.g. http://www.domain.com/nzbhydra/'
                             },
                             validators: {
-                                urlBase: regexValidator(/^\/[\w\/]*$/, "Base URL needs to start with a slash and must not end with one")
+                                urlBase: regexValidator(/^(\/\w+)*$/, "Base URL needs to start with a slash and must not end with one")
                             }
                         },
                         {

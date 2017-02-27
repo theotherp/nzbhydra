@@ -6,6 +6,8 @@ Changed: Rewrote the caps check error handling some more because this causes pro
 
 Fixed: Database error when calling --help. See [#563](https://github.com/theotherp/nzbhydra/issues/563).
 
+Fixed: Validation of URL base setting allowed a trailing slash. See [#569](https://github.com/theotherp/nzbhydra/issues/569).
+
 ### 0.2.207
 Fixed: Adding new users would in rare cases cause an incomplete configuration.
 
