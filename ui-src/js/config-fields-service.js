@@ -897,6 +897,7 @@ function ConfigFields($injector) {
                             enabled: true,
                             categories: [],
                             downloadLimit: null,
+                            loadLimitOnRandom: null,
                             host: null,
                             apikey: null,
                             hitLimit: null,
@@ -1249,6 +1250,7 @@ function getIndexerPresets(configuredIndexers) {
                 hitLimit: null,
                 hitLimitResetTime: null,
                 host: "https://anizb.org",
+                loadLimitOnRandom: null,
                 name: "anizb",
                 password: null,
                 preselect: true,
@@ -1268,6 +1270,7 @@ function getIndexerPresets(configuredIndexers) {
                 hitLimit: null,
                 hitLimitResetTime: null,
                 host: "https://binsearch.info",
+                loadLimitOnRandom: null,
                 name: "Binsearch",
                 password: null,
                 preselect: true,
@@ -1287,6 +1290,7 @@ function getIndexerPresets(configuredIndexers) {
                 hitLimit: null,
                 hitLimitResetTime: null,
                 host: "https://www.nzbclub.com",
+                loadLimitOnRandom: null,
                 name: "NZBClub",
                 password: null,
                 preselect: true,
@@ -1308,6 +1312,7 @@ function getIndexerPresets(configuredIndexers) {
                 hitLimit: null,
                 hitLimitResetTime: null,
                 host: "https://nzbindex.com",
+                loadLimitOnRandom: null,
                 name: "NZBIndex",
                 password: null,
                 preselect: true,
@@ -1450,6 +1455,25 @@ function getIndexerBoxFields(model, parentModel, isInitial, injector) {
             }
         );
         fieldset.push(
+            {
+                key: 'loadLimitOnRandom',
+                type: 'horizontalInput',
+                templateOptions: {
+                    type: 'number',
+                    label: 'Load limiting',
+                    help: 'If set indexer will only be picked for one out of x API searches (on average)'
+                },
+                validators: {
+                    greaterThanZero: {
+                        expression: function ($viewValue, $modelValue) {
+                            var value = $modelValue || $viewValue;
+                            return angular.isUndefined(value) || value === null || value === "" || value > 1;
+                        },
+                        message: '"Value must be greater than 1"'
+                    }
+
+                }
+            },
             {
                 key: 'hitLimitResetTime',
                 type: 'horizontalInput',

@@ -7,6 +7,7 @@ import copy
 import datetime
 import hashlib
 import logging
+import random
 import re
 from itertools import groupby
 from sets import Set
@@ -128,7 +129,7 @@ def checkHitOrDownloadLimit(p):
                 logger.info("Did not pick %s because its API hit limit of %d was reached. Will pick again after %02d:00" % (p, p.settings.hitLimit, p.settings.hitLimitResetTime))
             else:
                 try:
-                    firstHitTimeInWindow = arrow.get(list(apiHitsQuery.order_by(IndexerApiAccess.time.desc()).offset(p.settings.hitLimit-1).dicts())[0]["time"]).to("local")
+                    firstHitTimeInWindow = arrow.get(list(apiHitsQuery.order_by(IndexerApiAccess.time.desc()).offset(p.settings.hitLimit - 1).dicts())[0]["time"]).to("local")
                     nextHitAfter = arrow.get(firstHitTimeInWindow + datetime.timedelta(days=1))
                     logger.info("Did not pick %s because its API hit limit of %d was reached. Next possible hit at %s" % (p, p.settings.hitLimit, nextHitAfter.format('YYYY-MM-DD HH:mm')))
                 except IndexerApiAccess.DoesNotExist:
@@ -145,7 +146,7 @@ def checkHitOrDownloadLimit(p):
                 logger.info("Did not pick %s because its download limit of %d was reached. Will pick again after %02d:00" % (p, p.settings.downloadLimit, p.settings.hitLimitResetTime))
             else:
                 try:
-                    firstHitTimeInWindow = arrow.get(list(downloadsQuery.order_by(IndexerApiAccess.time.desc()).offset(p.settings.downloadLimit-1).limit(1).dicts())[0]["time"]).to("local")
+                    firstHitTimeInWindow = arrow.get(list(downloadsQuery.order_by(IndexerApiAccess.time.desc()).offset(p.settings.downloadLimit - 1).limit(1).dicts())[0]["time"]).to("local")
                     nextHitAfter = arrow.get(firstHitTimeInWindow + datetime.timedelta(days=1))
                     logger.info("Did not pick %s because its download limit of %d was reached. Next possible hit at %s" % (p, p.settings.downloadLimit, nextHitAfter.format('YYYY-MM-DD HH:mm')))
                 except IndexerApiAccess.DoesNotExist:
@@ -208,6 +209,11 @@ def pick_indexers(search_request):
         if not query_supplied and p.needs_queries and search_request.identifier_key is None:
             logger.debug("Did not pick %s because no query was supplied but the indexer needs queries" % p)
             add_not_picked_indexer(notPickedReasons, "Query needed", p.name)
+            continue
+
+        if p.settings.loadLimitOnRandom and not search_request.internal and not random.randint(1, p.settings.loadLimitOnRandom) == 1:
+            logger.debug("Did not pick %s because load limiting prevented it. Chances of this indexer being picked: %d/%d" % (p, 1, p.settings.loadLimitOnRandom))
+            add_not_picked_indexer(notPickedReasons, "Load limiting", p.name)
             continue
 
         # If we can theoretically do that we must try to actually get the title, otherwise the indexer won't be able to search
@@ -342,7 +348,7 @@ def search(search_request):
         elif search_request.loadAll:
             logger.debug("All results requested. Continuing to search.")
         logger.debug("%d indexers still have results" % len(indexers_to_call))
-        
+
         if cache_entry["usedFallback"]:
             search_request.offset = cache_entry["offsetFallback"]
         else:
@@ -453,23 +459,23 @@ def search(search_request):
                 if len(cache_entry["results"]) == 0:
                     logger.info("No results found using ID based search. Getting title from ID to fall back")
                     call_fallback = True
-                                            
+
             if call_fallback:
                 title = infos.convertId(search_request.identifier_key, "title", search_request.identifier_value)
                 if title:
                     logger.info("Repeating search with title based query as fallback")
                     logger.info("Fallback title: %s" % (title))
-                                        
+
                     # Add title and remove identifier key/value from search
                     search_request.title = title
                     search_request.identifier_key = None
                     search_request.identifier_value = None
-                    
+
                     if config.settings.searching.idFallbackToTitlePerIndexer:
                         indexers_to_call = indexers_to_call_fallback
                     else:
                         indexers_to_call = [indexer for indexer, _ in cache_entry["indexer_infos"].items()]
-                    
+
                     cache_entry["usedFallback"] = True
                 else:
                     logger.info("Unable to find title for ID")

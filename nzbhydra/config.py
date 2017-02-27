@@ -119,7 +119,7 @@ initialConfig = {
     "main": {
         "apikey": ''.join(random.choice('0123456789ABCDEF') for i in range(32)),
         "branch": "master",
-        "configVersion": 37,
+        "configVersion": 38,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
@@ -764,6 +764,12 @@ def migrateConfig(config):
                         user["maySeeDetailsDl"] = True
                     if "showIndexerSelection" not in user.keys():
                         user["showIndexerSelection"] = True
+
+        if config["main"]["configVersion"] == 37:
+            with version_update(config, 38):
+                addLogMessage(20, "Disabling load limiting for indexers by default")
+                for indexer in config["indexers"]:
+                    indexer["loadLimitOnRandom"] = None
 
     return config
 
