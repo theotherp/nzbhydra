@@ -1,10 +1,12 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.209
+Fixed: "loadLimitOnRandom" not set for new installations. See [#571](https://github.com/theotherp/nzbhydra/issues/571).
+
 ### 0.2.208
 Added: Poor man's load balancing. For each indexer you can define a number x and for every API call that indexer will be picked with a chance of 1/x. For example with a value of 3 it will on average be picked on every third API call (if it meets all other restrictions).
  This should allow to distribute access to indexers with a low API hit limit over a day. It's up to you to find sensible values.  
-
 
 Changed: Rewrote the caps check error handling some more because this causes problems and questions very often. Added a message saying that you can set the IDs manually and which links to the Wiki. 
 

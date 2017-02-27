@@ -44,6 +44,7 @@ initialConfig = {
             "hitLimit": 0,
             "hitLimitResetTime": None,
             "host": "https://anizb.org",
+            "loadLimitOnRandom": None,
             "name": "anizb",
             "password": None,
             "preselect": True,
@@ -63,6 +64,7 @@ initialConfig = {
             "hitLimit": 0,
             "hitLimitResetTime": None,
             "host": "https://binsearch.info",
+            "loadLimitOnRandom": None,
             "name": "Binsearch",
             "password": None,
             "preselect": True,
@@ -82,6 +84,7 @@ initialConfig = {
             "hitLimit": 0,
             "hitLimitResetTime": None,
             "host": "https://www.nzbclub.com",
+            "loadLimitOnRandom": None,
             "name": "NZBClub",
             "password": None,
             "preselect": True,
@@ -119,7 +122,7 @@ initialConfig = {
     "main": {
         "apikey": ''.join(random.choice('0123456789ABCDEF') for i in range(32)),
         "branch": "master",
-        "configVersion": 38,
+        "configVersion": 39,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
@@ -765,11 +768,12 @@ def migrateConfig(config):
                     if "showIndexerSelection" not in user.keys():
                         user["showIndexerSelection"] = True
 
-        if config["main"]["configVersion"] == 37:
-            with version_update(config, 38):
+        if config["main"]["configVersion"] in [37, 38]:
+            with version_update(config, 39):
                 addLogMessage(20, "Disabling load limiting for indexers by default")
                 for indexer in config["indexers"]:
-                    indexer["loadLimitOnRandom"] = None
+                    if "loadLimitOnRandom" not in indexer.keys():
+                        indexer["loadLimitOnRandom"] = None
 
     return config
 
