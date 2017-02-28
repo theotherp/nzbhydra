@@ -106,6 +106,7 @@ initialConfig = {
             "hitLimit": 0,
             "hitLimitResetTime": None,
             "host": "https://nzbindex.com",
+            "loadLimitOnRandom": None,
             "name": "NZBIndex",
             "password": None,
             "preselect": True,
