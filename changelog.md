@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.210
+Fixed: Search history empty. See [#574](https://github.com/theotherp/nzbhydra/issues/574).
+
 ### 0.2.209
 Fixed: "loadLimitOnRandom" not set for new installations. See [#571](https://github.com/theotherp/nzbhydra/issues/571).
 
