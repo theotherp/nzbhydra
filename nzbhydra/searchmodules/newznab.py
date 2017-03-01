@@ -201,7 +201,7 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
         return False, e.message, None
 
     try:
-        check_auth(r.content, host)
+        check_auth(r.text, host)
     except IndexerAccessException as e:
         return False, e.message, None
 
