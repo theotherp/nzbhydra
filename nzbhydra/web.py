@@ -1557,8 +1557,11 @@ def create_context():
         if not sslImported:
             logger.error("SSL could not be imported, sorry. Falling back to standard HTTP")
         else:
-            context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-            context.load_cert_chain(config.settings.main.sslcert, config.settings.main.sslkey)
+            try:
+                context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+                context.load_cert_chain(config.settings.main.sslcert, config.settings.main.sslkey)
+            except Exception:
+                logger.error("SSL could not be imported, sorry. Falling back to standard HTTP")
     return context
 
 

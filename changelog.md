@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.211
+Changed: Log error when SSL could not be imported instead of exception. See [#576](https://github.com/theotherp/nzbhydra/issues/576). 
+
 ### 0.2.210
 Fixed: Search history empty. See [#574](https://github.com/theotherp/nzbhydra/issues/574).
 
