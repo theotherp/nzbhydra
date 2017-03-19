@@ -18,7 +18,7 @@ def startTest(apikey, query):
     try:
         print("Starting request")
         before = arrow.now()
-        r = requests.get("http://127.0.0.1:8080/api?q=%s&t=search&apikey=%s" % (query, apikey))
+        r = requests.get("http://127.0.0.1:5075/api?q=%s&t=search&apikey=apikey" % (query))
         r.raise_for_status()
         after = arrow.now()
         took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
