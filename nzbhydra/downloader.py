@@ -207,7 +207,7 @@ class Sabnzbd(Downloader):
         self.logger.debug("Testing connection to sabnzbd")
         try:
             f = self.get_sab(setting.url, setting.apikey, setting.username, setting.password)
-            f.add({"mode": "qstatus"})
+            f.add({"mode": "queue"})
             r = webaccess.get(f.tostr(), timeout=15)
             r.raise_for_status()
             if ("state" in json.loads(r.text).keys()) or ("status" in json.loads(r.text).keys()):
