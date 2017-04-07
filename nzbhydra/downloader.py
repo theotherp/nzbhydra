@@ -210,7 +210,7 @@ class Sabnzbd(Downloader):
             f.add({"mode": "qstatus"})
             r = webaccess.get(f.tostr(), timeout=15)
             r.raise_for_status()
-            if "state" in json.loads(r.text).keys():
+            if ("state" in json.loads(r.text).keys()) or ("status" in json.loads(r.text).keys()):
                 self.logger.info('Connection test to sabnzbd successful')
                 return True, ""
             else:

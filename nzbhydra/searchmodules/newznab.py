@@ -157,11 +157,6 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
          "key": "121361",
          "expected": "Thrones"
          },
-        {"t": "movie",
-         "id": "imdbid",
-         "key": "0848228",
-         "expected": "Avengers"
-         },
         {"t": "tvsearch",
          "id": "rid",
          "key": "24493",
@@ -177,10 +172,15 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
          "key": "1390",
          "expected": "Thrones"
          },
-        {"t": "tvsearch",
+        {"t": "movie",
          "id": "tmdbid",
          "key": "1399",
          "expected": "Thrones"
+         },
+        {"t": "movie",
+         "id": "imdbid",
+         "key": "0848228",
+         "expected": "Avengers"
          }
 
     ]
@@ -249,7 +249,7 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
         if searching is not None and not skipIdsAndTypes:
             book_search = searching.find("book-search")
             if book_search is not None and book_search.attrib["available"] == "yes":
-                supportedTypes.append("movie")
+                supportedTypes.append("book")
                 logger.debug("Found supported book search")
 
             can_handle = [y["id"] for y in toCheck]
@@ -447,7 +447,7 @@ class NewzNab(SearchModule):
         if not search_request.category:
             search_request.category = getCategoryByAnyInput("audiobook")
         if hasattr(self.settings, "audiobookCategory") and self.settings.audiobookCategory:
-            self.debug("Using %s as determinted newznab audiobook category" % self.settings.audiobookCategory)
+            self.debug("Using %s as determined newznab audiobook category" % self.settings.audiobookCategory)
             search_request.category.category.newznabCategories = [self.settings.audiobookCategory]
         return self.get_search_urls(search_request)
 
@@ -455,7 +455,7 @@ class NewzNab(SearchModule):
         if not search_request.category:
             search_request.category = getCategoryByAnyInput("comic")
         if hasattr(self.settings, "comicCategory") and self.settings.comicCategory:
-            self.debug("Using %s as determinted newznab comic category" % self.settings.comicCategory)
+            self.debug("Using %s as determined newznab comic category" % self.settings.comicCategory)
             search_request.category.category.newznabCategories = [self.settings.comicCategory]
         return self.get_search_urls(search_request)
 
@@ -463,7 +463,7 @@ class NewzNab(SearchModule):
         if not search_request.category:
             search_request.category = getCategoryByAnyInput("anime")
         if hasattr(self.settings, "animeCategory") and self.settings.animeCategory:
-            self.debug("Using %s as determinted newznab anime category" % self.settings.animeCategory)
+            self.debug("Using %s as determined newznab anime category" % self.settings.animeCategory)
             search_request.category.category.newznabCategories = [self.settings.animeCategory]
         return self.get_search_urls(search_request)
 

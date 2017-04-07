@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.212
+Fixed: Connection check with SABnzbd 2.0RC3 would fail.
+
 ### 0.2.211
 Changed: Log error when SSL could not be imported instead of exception. See [#576](https://github.com/theotherp/nzbhydra/issues/576). 
 

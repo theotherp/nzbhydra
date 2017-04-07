@@ -58,6 +58,9 @@ def buildNewznabItem(title=None, guid=None, link=None, pubdate=None, description
         {"name": "group",
          "value": random.randint(0, 10)
          },
+        {"name": "usenetdate",
+         "value": arrow.get(random.randint(1412677738, 1475836139)).format("ddd, DD MMM YYYY HH:mm:ss Z")
+         }
 
     ]
     attributes.extend([{"name": "category", "value": x} for x in categories])
@@ -175,6 +178,8 @@ def serve():
             return "Hallo"
             return f.read()
 
+    #return Response(response='<error code="100" description="a description"/>', mimetype='text/xml')
+
     global pubDates
     global sizes
     global titles
@@ -182,7 +187,7 @@ def serve():
     doSleep = False
     doGenerateDuplicates = False
     generateDuplicateGroupRange = 5
-    doGenerateNewGuids = True
+    doGenerateNewGuids = False
     doSwitchGenerateNewGuidsDependingOnQuery = True
     doSendAll = True
     doThrowSomeErrors = False
