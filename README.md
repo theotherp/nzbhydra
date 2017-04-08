@@ -74,7 +74,7 @@ Send me an email at TheOtherP@gmx.de or a PM at https://www.reddit.com/user/TheO
 If you like to help me with any running or upcoming costs you're welcome to send money to my bitcoin: 1PnnwWfdyniojCL2kD5ZDBWBuKcFJvrq4t
 
 ### Thanks ###
-To Jetbrains for kindly providing me a license for PyCharm - I can't imagine developing without it
+<img src="https://github.com/theotherp/nzbhydra/raw/gh-pages/images/logo.png" width="60px"/> To Jetbrains for kindly providing me a license for PyCharm - I can't imagine developing without it
 
 To all testers, bug reporters, donators, all around awesome people
 
