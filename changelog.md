@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.214
+Fixed: Connection check with SABnzbd 2.x would still fail...
+
 ### 0.2.213
 Fixed: Windows service would not start with Windows 10 Creator's Update. If you're affected you'll need to uninstall the service and install it again. See [#530](https://github.com/theotherp/nzbhydra/issues/530).
 
