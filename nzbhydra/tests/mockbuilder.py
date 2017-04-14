@@ -13,9 +13,10 @@ from bunch import Bunch
 from flask import Response
 from flask import render_template, Flask
 from flask import request
+from flask_cache import Cache
 
 mockapp = Flask(__name__)
-
+cache = Cache(mockapp, config={'CACHE_TYPE': 'simple'})
 
 def buildNewznabItem(title=None, guid=None, link=None, pubdate=None, description=None, size=None, indexer_name=None, categories=None):
     if title is None:
@@ -178,12 +179,14 @@ def serve():
             return "Hallo"
             return f.read()
 
-    #return Response(response='<error code="100" description="a description"/>', mimetype='text/xml')
+    return buildResponse(request.args.get("apikey"), str(request.args.get("q")) if "q" in request.args.keys() else None, int(request.args.get("offset")) if "offset" in request.args.keys() else 0)
 
+
+@cache.memoize(20)
+def buildResponse(apikey, q, offset):
     global pubDates
     global sizes
     global titles
-
     doSleep = False
     doGenerateDuplicates = False
     generateDuplicateGroupRange = 5
@@ -191,12 +194,9 @@ def serve():
     doSwitchGenerateNewGuidsDependingOnQuery = True
     doSendAll = True
     doThrowSomeErrors = False
-
     if doThrowSomeErrors and random.randint(0, 1) < 5:
         return "Nope"
-
-    indexer = indexers[request.args.get("apikey")]
-
+    indexer = indexers[apikey]
     if doSleep:
         sleep(indexer["delay"])
     if doGenerateDuplicates and pubDates is None:  # Only generate once
@@ -205,18 +205,16 @@ def serve():
         titles = ["title%d" % x for x in xrange(0, generateDuplicateGroupRange)]
     indexerName = indexer["name"]
     title = indexer["name"]
-    query = str(request.args.get("q")) if "q" in request.args.keys() else None
+    query = q
     numberOfTotalResults = indexer["numberOfTotalResults"] if query != "0" else 0
-    offset = int(request.args.get("offset")) if "offset" in request.args.keys() else 0
+    offset = offset
     resultBaseName = "indexer%s" % indexerName
     if query:
         resultBaseName += "-" + query
         if doSwitchGenerateNewGuidsDependingOnQuery:
             doGenerateNewGuids = int(query) % 2 == 0
             print("Switched generation of new GUIDs to " + str(doGenerateNewGuids))
-
     items = []
-
     if doSendAll:
         r = range(0, numberOfTotalResults)
     else:
@@ -239,7 +237,6 @@ def serve():
         item = buildNewznabItem(title=searchResultTitle, guid=searchResultguid, link=searchResultLink, pubdate=searchResultPubDate, description=searchResultDescription, size=searchResultSize, indexer_name=indexerName, categories=[["2000", "3000", "4000", "5000", "6000"][random.randint(0, 4)]])
         items.append(item)
     result = render_template("api.html", items=items, offset=offset, total=numberOfTotalResults, title=title, description=title + " - description")
-
     return Response(result, mimetype='text/xml')
 
 
@@ -253,4 +250,4 @@ def download():
 
 
 if __name__ == '__main__':
-    mockapp.run(port=5000, use_reloader=True, threaded=True)
+    mockapp.run(port=5000, use_reloader=True, threaded=True, debug=False)

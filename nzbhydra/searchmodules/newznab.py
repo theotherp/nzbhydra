@@ -425,7 +425,7 @@ class NewzNab(SearchModule):
         if not search_request.category:
             search_request.category = getCategoryByAnyInput("ebook")
         if hasattr(self.settings, "ebookCategory") and self.settings.ebookCategory:
-            self.debug("Using %s as determinted newznab ebook category" % self.settings.ebookCategory)
+            self.debug("Using %s as determined newznab ebook category" % self.settings.ebookCategory)
             search_request.category.category.newznabCategories = [self.settings.ebookCategory]
         if search_request.author or search_request.title:
             if "book" in self.searchTypes:

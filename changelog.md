@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.215
+Fixed: Online help didn't work. 
+
 ### 0.2.214
 Fixed: Connection check with SABnzbd 2.x would still fail...
 

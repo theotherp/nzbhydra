@@ -8,21 +8,17 @@ import datetime
 import json
 import logging
 import os
-import random
 import tempfile
 import urlparse
 import zipfile
-from tempfile import TemporaryFile
 
 import arrow
 import jwt
 import markdown
 from bunch import Bunch
-from io import BytesIO
 from marshmallow import Schema
 from werkzeug.contrib.fixers import ProxyFix
 
-import nzbhydra
 from nzbhydra.categories import getCategoryByName
 
 sslImported = True
@@ -34,13 +30,13 @@ except:
 
 try:
     import zlib
+
     compression = zipfile.ZIP_DEFLATED
 except:
     compression = zipfile.ZIP_STORED
 
 import threading
 import urllib
-from builtins import *
 from peewee import fn
 from jwt import DecodeError, ExpiredSignature
 from nzbhydra.exceptions import DownloaderException, DownloaderNotFoundException, NzbDownloadException
@@ -133,6 +129,16 @@ class CustomJSONEncoder(JSONEncoder):
 app.json_encoder = CustomJSONEncoder
 
 
+#
+#
+#
+#
+# ############################################## General response/request handling ##########################################
+#
+#
+#
+#
+
 @app.after_request
 def disable_caching(response):
     if "/static" not in request.path:  # Prevent caching of control URLs
@@ -145,6 +151,41 @@ def disable_caching(response):
     response.cache_control.max_age = 0
     return response
 
+
+@app.errorhandler(Exception)
+def all_exception_handler(exception):
+    logger.exception(exception)
+    try:
+        return exception.message, 500
+    except:
+        return "Unknwon error", 500
+
+
+@app.errorhandler(422)
+def handle_bad_request(err):
+    # webargs attaches additional metadata to the `data` attribute
+    data = getattr(err, 'data')
+    if data:
+        # Get validations from the ValidationError object
+        messages = data['exc'].messages
+    else:
+        messages = ['Invalid request']
+
+    logger.error("Invalid request: %s" % json.dumps(messages))
+    return jsonify({
+        'messages': messages,
+    }), 422
+
+
+#
+#
+#
+#
+# ############################################## AUTH ##########################################
+#
+#
+#
+#
 
 @app.after_request
 def setRememberMe(response):
@@ -163,6 +204,7 @@ def getUserByName(username):
         if user["username"] == username:
             return user
     return None
+
 
 def getUserInfos(user):
     authConfigured = len(config.settings.auth.users) > 0 and config.settings.auth.authType != "none"
@@ -204,29 +246,47 @@ def getUserInfos(user):
     return cookie
 
 
-@app.errorhandler(Exception)
-def all_exception_handler(exception):
-    logger.exception(exception)
-    try:
-        return exception.message, 500
-    except:
-        return "Unknwon error", 500
+internalapi__askforpassword_args = {
+    "old_username": fields.String(missing=None)
+}
+
+countAskForPasswordRequests = {}
 
 
-@app.errorhandler(422)
-def handle_bad_request(err):
-    # webargs attaches additional metadata to the `data` attribute
-    data = getattr(err, 'data')
-    if data:
-        # Get validations from the ValidationError object
-        messages = data['exc'].messages
+@app.route('/internalapi/askforpassword')
+@use_args(internalapi__askforpassword_args)
+def internalapi_askforadmin(args):
+    """
+    When basic auth is used and a user logs out the auth information is still stored by the browser. When the user wants to login again the same information is used, but the user may want to choose another username.
+    Then we must force a 401 so the basic auth window is opened. The user enters his credentials and the browser sends a second request to this method, with the changed credentials. Now we must check them.
+    But we must also make sure that the user can login using the same username as before, so for every username we count the calls to this method. Only the first time we must return 401, after that we must check
+    the credentials.
+    :param args: 
+    :return: 
+    """
+    global countAskForPasswordRequests
+    logger.debug("Get askforpassword request")
+    if not request.authorization:
+        logger.debug("Authorization header not set, asking for credentials")
+        return Response(
+            'Asking for password', 401,
+            {'WWW-Authenticate': 'Basic realm="Login Required"'})
+    elif request.authorization.username == args["old_username"] and (request.authorization.username not in countAskForPasswordRequests or countAskForPasswordRequests[request.authorization.username] == 0):
+        countAskForPasswordRequests[request.authorization.username] = 1
+        logger.info("Authorization header contains the same username as one that logged out. Returning 401 so user can login with a different username")
+        return Response(
+            'Asking for password', 401,
+            {'WWW-Authenticate': 'Basic realm="Login Required"'})
     else:
-        messages = ['Invalid request']
-
-    logger.error("Invalid request: %s" % json.dumps(messages))
-    return jsonify({
-        'messages': messages,
-    }), 422
+        if args["old_username"]:
+            logger.debug("Authorization header set and contains a username other than the one that logged out")
+        user = getUserFromBasicAuth()
+        session["username"] = user["username"]
+        if user:
+            countAskForPasswordRequests[request.authorization.username] = 0
+            return jsonify(getUserInfos(user))
+        else:
+            return returnBasicAuth401()
 
 
 def returnBasicAuth401():
@@ -413,6 +473,20 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False, dis
     return decorator
 
 
+@app.route('/internalapi/mayseeadminarea')
+@requires_auth("main")
+def internalapi_maySeeAdminArea():
+    return jsonify({"maySeeAdminArea": isAdminLoggedIn()})
+
+
+@app.route('/internalapi/askadmin')
+@requires_auth("admin")
+def internalapi_askAdmin():
+    # Serves only so that the client make a request asking for admin when resolving the state change to protected tabs that don't have any other resolved calls that would trigger auth
+    logger.debug("Get askadmin request")
+    return "True"
+
+
 @app.route('/auth/login', methods=['POST'])
 def login():
     username = request.json['username'].encode("utf-8")
@@ -447,6 +521,29 @@ def sendUserInfos():
     return jsonify(getUserInfos(user))
 
 
+
+
+
+internalapi__askforpassword_args = {
+    "old_username": fields.String(missing=None)
+}
+
+
+
+
+
+
+#
+#
+#
+#
+# ############################################## Main web serve ##########################################
+#
+#
+#
+#
+
+
 @app.route('/<path:path>')
 @app.route('/', defaults={"path": None})
 @requires_auth("main", disableAuthForForm=True)
@@ -469,6 +566,17 @@ def base(path):
                     bootstrapped["maySeeStats"] = u.maySeeStats
 
     return render_template("index.html", base_url=base_url, onProd="false" if config.settings.main.debug else "true", theme=config.settings.main.theme + ".css", bootstrapped=json.dumps(bootstrapped))
+
+
+#
+#
+#
+#
+# ############################################## External API ##########################################
+#
+#
+#
+#
 
 
 def render_search_results_for_api(search_results, total, offset, output="xml"):
@@ -495,7 +603,7 @@ def render_search_results_for_api(search_results, total, offset, output="xml"):
                       "name": attr["name"],
                       "value": attr["value"]
                   }
-                           } for attr in item.attributes]
+                  } for attr in item.attributes]
 
                   } for item in search_results]
         result = {"@attributes": {"version": "2.0"},
@@ -684,70 +792,23 @@ searchresultid_args = {
 }
 
 
-internalapi__getnzb_args = {
-    "searchresultid": fields.String(missing=None),
-    "downloader": fields.String(missing=None),  # Name of downloader or empty if regular link
-    "internal": fields.Boolean(missing=False)
-}
-
-
-@app.route('/getnzb')
-@requires_auth("main", allowWithApiKey=True)
-@use_args(internalapi__getnzb_args)
-def getnzb(args):
-    logger.debug("Get NZB request with args %s" % args)
-    searchResult = SearchResult.get(SearchResult.id == args["searchresultid"])
-    if config.settings.main.logging.logIpAddresses:
-        logger.info("%s request from %s to download %s from %s" % ("Internal" if args["internal"] else "API", getIp(), searchResult.title, searchResult.indexer.name))
-    else:
-        logger.info("%s request to download %s from %s" % ("Internal" if args["internal"] else "API", searchResult.title, searchResult.indexer.name))
-    return extract_nzb_infos_and_return_response(args["searchresultid"], args["downloader"], args["internal"])
-
-
-internalapi__getNzbAsZip_args = {
-    "searchresultids": fields.String(missing=None)
-}
-
-
-@app.route('/getnzbzip')
-@requires_auth("main")
-@use_args(internalapi__getNzbAsZip_args)
-def getNzbAsZip(args):
-    logger.debug("Get NZB as ZIP request with args %s" % args)
-    if args["searchresultids"] is None:
-        logger.error("No search result IDs provided")
-        return "No search result IDs provided", 500
-    searchResultIds = args["searchresultids"].split("|")
-    try:
-        tempFile = tempfile.NamedTemporaryFile(delete=False)
-        zf = zipfile.ZipFile(tempFile, mode="w")
-        countDownloadedFiles = 0
-        for searchResultId in searchResultIds:
-            try:
-                nzbDownload, searchResult = getNzbById(searchResultId)
-                zf.writestr(searchResult.title + ".nzb", nzbDownload.content)
-                countDownloadedFiles += 1
-            except NzbDownloadException:
-                logger.info("Will skip NZB as download file")
-        zf.close()
-        if countDownloadedFiles == 0:
-            raise NzbDownloadException("No NZBs were successfully downloaded")
-        response = send_file(tempFile.name, mimetype='application/zip;', as_attachment=True, attachment_filename="NZBHydra NZBs.zip", add_etags=False)
-        response.headers["content-length"] = os.fstat(tempFile.fileno()).st_size
-        logger.info("Returning ZIP with %d NZBs" % countDownloadedFiles)
-        return response
-    except Exception as e:
-        logger.exception("An error occured while downloading NZBs as ZIP")
-        return "An error occured while downloading NZBs as ZIP: %s" % e, 500
-
-
-
 def process_and_jsonify_for_internalapi(results):
     if results is not None:
         results = process_for_internal_api(results)
         return jsonify(results)  # Flask cannot return lists
     else:
         return "No results", 500
+
+
+#
+#
+#
+#
+# ############################################## Internal search ##########################################
+#
+#
+#
+#
 
 
 def startSearch(search_request):
@@ -789,7 +850,9 @@ def internalapi_search(args):
     else:
         type = "general"
     indexers = urllib.unquote(args["indexers"]) if args["indexers"] is not None else None
-    search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"], maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], limit=args["limit"], loadAll=args["loadAll"], indexers=indexers)
+    search_request = SearchRequest(type=type, query=args["query"], offset=args["offset"], category=args["category"], minsize=args["minsize"],
+                                   maxsize=args["maxsize"], minage=args["minage"], maxage=args["maxage"], limit=args["limit"],
+                                   loadAll=args["loadAll"], indexers=indexers)
     before = arrow.now()
     searchResult = startSearch(search_request)
     after = arrow.now()
@@ -885,42 +948,71 @@ def internalapi_tvsearch(args):
     return searchResult
 
 
-internalapi_autocomplete_args = {
-    "input": fields.String(missing=None),
-    "type": fields.String(missing=None),
+#
+#
+#
+#
+# ############################################## NZB handling ##########################################
+#
+#
+#
+#
+
+internalapi__getnzb_args = {
+    "searchresultid": fields.String(missing=None),
+    "downloader": fields.String(missing=None),  # Name of downloader or empty if regular link
+    "internal": fields.Boolean(missing=False)
 }
 
 
-@app.route('/internalapi/autocomplete')
-@requires_auth("main")
-@use_args(internalapi_autocomplete_args, locations=['querystring'])
-@flask_cache.memoize()
-def internalapi_autocomplete(args):
-    logger.debug("Autocomplete request with args %s" % args)
-    if args["type"] == "movie":
-        results = infos.find_movie_ids(args["input"])
-        return jsonify({"results": results})
-    elif args["type"] == "tv":
-        results = infos.find_series_ids(args["input"])
-        return jsonify({"results": results})
+@app.route('/getnzb')
+@requires_auth("main", allowWithApiKey=True)
+@use_args(internalapi__getnzb_args)
+def getnzb(args):
+    logger.debug("Get NZB request with args %s" % args)
+    searchResult = SearchResult.get(SearchResult.id == args["searchresultid"])
+    if config.settings.main.logging.logIpAddresses:
+        logger.info("%s request from %s to download %s from %s" % ("Internal" if args["internal"] else "API", getIp(), searchResult.title, searchResult.indexer.name))
     else:
-        return "No results", 500
+        logger.info("%s request to download %s from %s" % ("Internal" if args["internal"] else "API", searchResult.title, searchResult.indexer.name))
+    return extract_nzb_infos_and_return_response(args["searchresultid"], args["downloader"], args["internal"])
 
 
-internalapi_autocomplete.make_cache_key = make_request_cache_key
+internalapi__getNzbAsZip_args = {
+    "searchresultids": fields.String(missing=None)
+}
 
 
-@app.route('/internalapi/getnfo')
+@app.route('/getnzbzip')
 @requires_auth("main")
-@use_args(searchresultid_args)
-@flask_cache.memoize()
-def internalapi_getnfo(args):
-    logger.debug("Get NFO request with args %s" % args)
-    nfo = get_nfo(args["searchresultid"])
-    return jsonify(nfo)
-
-
-internalapi_getnfo.make_cache_key = make_request_cache_key
+@use_args(internalapi__getNzbAsZip_args)
+def getNzbAsZip(args):
+    logger.debug("Get NZB as ZIP request with args %s" % args)
+    if args["searchresultids"] is None:
+        logger.error("No search result IDs provided")
+        return "No search result IDs provided", 500
+    searchResultIds = args["searchresultids"].split("|")
+    try:
+        tempFile = tempfile.NamedTemporaryFile(delete=False)
+        zf = zipfile.ZipFile(tempFile, mode="w")
+        countDownloadedFiles = 0
+        for searchResultId in searchResultIds:
+            try:
+                nzbDownload, searchResult = getNzbById(searchResultId)
+                zf.writestr(searchResult.title + ".nzb", nzbDownload.content)
+                countDownloadedFiles += 1
+            except NzbDownloadException:
+                logger.info("Will skip NZB as download file")
+        zf.close()
+        if countDownloadedFiles == 0:
+            raise NzbDownloadException("No NZBs were successfully downloaded")
+        response = send_file(tempFile.name, mimetype='application/zip;', as_attachment=True, attachment_filename="NZBHydra NZBs.zip", add_etags=False)
+        response.headers["content-length"] = os.fstat(tempFile.fileno()).st_size
+        logger.info("Returning ZIP with %d NZBs" % countDownloadedFiles)
+        return response
+    except Exception as e:
+        logger.exception("An error occured while downloading NZBs as ZIP")
+        return "An error occured while downloading NZBs as ZIP: %s" % e, 500
 
 
 @app.route('/internalapi/getnzb')
@@ -959,6 +1051,16 @@ def extract_nzb_infos_and_return_response(searchResultId, downloader=None, inter
     else:
         return get_nzb_response(searchResultId)
 
+
+#
+#
+#
+#
+# ############################################## Downloader ##########################################
+#
+#
+#
+#
 
 internalapi__addnzb_args = {
     "searchresultids": fields.String(missing=[]),
@@ -1026,6 +1128,17 @@ internalapi__testnewznab_args = {
 }
 
 
+#
+#
+#
+#
+# ############################################## Indexers ##########################################
+#
+#
+#
+#
+
+
 @app.route('/internalapi/test_newznab', methods=['POST'])
 @use_args(internalapi__testnewznab_args)
 @requires_auth("main")
@@ -1067,6 +1180,16 @@ internalapi__stats_args = {
     "before": fields.Integer(missing=None)
 }
 
+
+#
+#
+#
+#
+# ############################################## History & stats ##########################################
+#
+#
+#
+#
 
 @app.route('/internalapi/getstats')
 @requires_auth("stats")
@@ -1119,7 +1242,6 @@ class SearchHistoryFilterSchema(Schema):
 @app.route('/internalapi/getsearchrequestsforsearching', methods=['GET', 'POST'])
 @requires_auth("main")
 def internalapi_search_requestsforsearching():
-
     limitToUser = None
     if "username" in session.keys() and session["username"] is not None:
         limitToUser = session["username"]
@@ -1140,15 +1262,15 @@ internalapi__redirect_rid_args = {
     "rid": fields.String(required=True)
 }
 
-
-@app.route('/internalapi/redirect_rid')
-@requires_auth("main")
-@use_args(internalapi__redirect_rid_args)
-def internalapi_redirect_rid(args):
-    tvdbid = infos.convertId("tvrage", "tvdb", args["rid"])
-    if tvdbid is None:
-        return "Unable to find TVDB link for TVRage ID", 404
-    return redirect("https://thetvdb.com/?tab=series&id=%s" % tvdbid)
+#
+#
+#
+#
+# ############################################## Config ##########################################
+#
+#
+#
+#
 
 
 internalapi__enableindexer_args = {
@@ -1211,63 +1333,6 @@ def internalapi_getdebugginginfos():
     except Exception as e:
         logger.exception("Error creating debugging infos")
         return "An error occured while creating the debugging infos: %s" % e, 500
-
-
-@app.route('/internalapi/mayseeadminarea')
-@requires_auth("main")
-def internalapi_maySeeAdminArea():
-    return jsonify({"maySeeAdminArea": isAdminLoggedIn()})
-
-
-@app.route('/internalapi/askadmin')
-@requires_auth("admin")
-def internalapi_askAdmin():
-    # Serves only so that the client make a request asking for admin when resolving the state change to protected tabs that don't have any other resolved calls that would trigger auth
-    logger.debug("Get askadmin request")
-    return "True"
-
-
-internalapi__askforpassword_args = {
-    "old_username": fields.String(missing=None)
-}
-
-countAskForPasswordRequests = {}
-
-
-@app.route('/internalapi/askforpassword')
-@use_args(internalapi__askforpassword_args)
-def internalapi_askforadmin(args):
-    """
-    When basic auth is used and a user logs out the auth information is still stored by the browser. When the user wants to login again the same information is used, but the user may want to choose another username.
-    Then we must force a 401 so the basic auth window is opened. The user enters his credentials and the browser sends a second request to this method, with the changed credentials. Now we must check them.
-    But we must also make sure that the user can login using the same username as before, so for every username we count the calls to this method. Only the first time we must return 401, after that we must check
-    the credentials.
-    :param args: 
-    :return: 
-    """
-    global countAskForPasswordRequests
-    logger.debug("Get askforpassword request")
-    if not request.authorization:
-        logger.debug("Authorization header not set, asking for credentials")
-        return Response(
-            'Asking for password', 401,
-            {'WWW-Authenticate': 'Basic realm="Login Required"'})
-    elif request.authorization.username == args["old_username"] and (request.authorization.username not in countAskForPasswordRequests or countAskForPasswordRequests[request.authorization.username] == 0):
-        countAskForPasswordRequests[request.authorization.username] = 1
-        logger.info("Authorization header contains the same username as one that logged out. Returning 401 so user can login with a different username")
-        return Response(
-            'Asking for password', 401,
-            {'WWW-Authenticate': 'Basic realm="Login Required"'})
-    else:
-        if args["old_username"]:
-            logger.debug("Authorization header set and contains a username other than the one that logged out")
-        user = getUserFromBasicAuth()
-        session["username"] = user["username"]
-        if user:
-            countAskForPasswordRequests[request.authorization.username] = 0
-            return jsonify(getUserInfos(user))
-        else:
-            return returnBasicAuth401()
 
 
 @app.route('/internalapi/get_version_history')
@@ -1419,6 +1484,17 @@ def internalapi_gettheme():
     return send_file("../static/css/bright.css")
 
 
+#
+#
+#
+#
+# ############################################## Shutdown, retry, updates ##########################################
+#
+#
+#
+#
+
+
 @app.route("/internalapi/restart")
 @requires_auth("admin", True)
 def internalapi_restart():
@@ -1520,6 +1596,27 @@ internalapi__pollshown_args = {
 }
 
 
+#
+#
+#
+#
+# ############################################## MISC ##########################################
+#
+#
+#
+#
+
+
+@app.route('/internalapi/redirect_rid')
+@requires_auth("main")
+@use_args(internalapi__redirect_rid_args)
+def internalapi_redirect_rid(args):
+    tvdbid = infos.convertId("tvrage", "tvdb", args["rid"])
+    if tvdbid is None:
+        return "Unable to find TVDB link for TVRage ID", 404
+    return redirect("https://thetvdb.com/?tab=series&id=%s" % tvdbid)
+
+
 @requires_auth("main")
 @app.route("/internalapi/pollshown")
 @use_args(internalapi__pollshown_args)
@@ -1527,6 +1624,55 @@ def internalapi_pollshown(args):
     config.settings.main.pollShown = args["selection"]
     config.save()
     return "OK"
+
+
+internalapi_autocomplete_args = {
+    "input": fields.String(missing=None),
+    "type": fields.String(missing=None),
+}
+
+
+@app.route('/internalapi/autocomplete')
+@requires_auth("main")
+@use_args(internalapi_autocomplete_args, locations=['querystring'])
+@flask_cache.memoize()
+def internalapi_autocomplete(args):
+    logger.debug("Autocomplete request with args %s" % args)
+    if args["type"] == "movie":
+        results = infos.find_movie_ids(args["input"])
+        return jsonify({"results": results})
+    elif args["type"] == "tv":
+        results = infos.find_series_ids(args["input"])
+        return jsonify({"results": results})
+    else:
+        return "No results", 500
+
+
+internalapi_autocomplete.make_cache_key = make_request_cache_key
+
+
+@app.route('/internalapi/getnfo')
+@requires_auth("main")
+@use_args(searchresultid_args)
+@flask_cache.memoize()
+def internalapi_getnfo(args):
+    logger.debug("Get NFO request with args %s" % args)
+    nfo = get_nfo(args["searchresultid"])
+    return jsonify(nfo)
+
+
+internalapi_getnfo.make_cache_key = make_request_cache_key
+
+
+#
+#
+#
+#
+# ############################################## Run web app ##########################################
+#
+#
+#
+#
 
 
 def run(host, port, basepath):

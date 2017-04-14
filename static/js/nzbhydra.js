@@ -7013,11 +7013,11 @@ function ConfigController($scope, $http, activeTab, ConfigService, config, Downl
     ConfigFields.setRestartWatcher(function () {
         $scope.restartRequired = true;
     });
-    
+
 
     function submit() {
         if ($scope.form.$valid) {
-            
+
             ConfigService.set($scope.config);
             $scope.form.$setPristine();
             DownloaderCategoriesService.invalidate();
@@ -7037,7 +7037,7 @@ function ConfigController($scope, $http, activeTab, ConfigService, config, Downl
             }
         } else {
             growl.error("Config invalid. Please check your settings.");
-            
+
             //Ridiculously hacky way to make the error messages appear
             try {
                 if (angular.isDefined(form.$error.required)) {
@@ -7046,65 +7046,71 @@ function ConfigController($scope, $http, activeTab, ConfigService, config, Downl
                             _.each(item.$error.required, function (item2) {
                                 item2.$setTouched();
                             });
-                        } 
+                        }
                     });
                 }
                 angular.forEach($scope.form.$error.required, function (field) {
                     field.$setTouched();
                 });
-            } catch(err) {
+            } catch (err) {
                 //
             }
-            
+
         }
     }
 
     ConfigModel = config;
 
     $scope.fields = ConfigFields.getFields($scope.config);
-    
+
     $scope.allTabs = [
         {
             active: false,
             state: 'root.config.main',
             name: 'Main',
             model: ConfigModel.main,
-            fields: $scope.fields.main
+            fields: $scope.fields.main,
+            options: {}
         },
         {
             active: false,
             state: 'root.config.auth',
             name: 'Authorization',
             model: ConfigModel.auth,
-            fields: $scope.fields.auth
+            fields: $scope.fields.auth,
+            options: {}
         },
         {
             active: false,
             state: 'root.config.searching',
             name: 'Searching',
             model: ConfigModel.searching,
-            fields: $scope.fields.searching
+            fields: $scope.fields.searching,
+            options: {}
         },
         {
             active: false,
             state: 'root.config.categories',
             name: 'Categories',
             model: ConfigModel.categories,
-            fields: $scope.fields.categories
+            fields: $scope.fields.categories,
+            options: {}
         },
         {
             active: false,
             state: 'root.config.downloader',
             name: 'Downloaders',
             model: ConfigModel.downloaders,
-            fields: $scope.fields.downloaders
+            fields: $scope.fields.downloaders,
+            options: {}
         },
         {
             active: false,
             state: 'root.config.indexers',
             name: 'Indexers',
             model: ConfigModel.indexers,
-            fields: $scope.fields.indexers
+            fields: $scope.fields.indexers,
+            options: {}
         }
     ];
 
@@ -7113,17 +7119,18 @@ function ConfigController($scope, $http, activeTab, ConfigService, config, Downl
     };
 
     $scope.goToConfigState = function (index) {
-        $state.go($scope.allTabs[index].state, {activeTab:index}, {inherit: false, notify: true, reload: true});
+        $state.go($scope.allTabs[index].state, {activeTab: index}, {inherit: false, notify: true, reload: true});
     };
 
-    $scope.help = function() {
-        $http.get("internalapi/gethelp", {params: {id: $scope.activeTab.name}}).then(function(result) {
+    $scope.help = function () {
+        var tabName = $scope.allTabs[$scope.activeTab].name;
+        $http.get("internalapi/gethelp", {params: {id: tabName}}).then(function (result) {
                 var html = '<span style="text-align: left;">' + result.data + "</span>";
-                ModalService.open($scope.activeTab.name + " - Help", html, {}, "lg");
-        },
-        function() {
-            growl.error("Error while loading help")
-        })
+                ModalService.open(tabName + " - Help", html, {}, "lg");
+            },
+            function () {
+                growl.error("Error while loading help")
+            })
     };
 
     $scope.$on('$stateChangeStart',
@@ -7132,7 +7139,7 @@ function ConfigController($scope, $http, activeTab, ConfigService, config, Downl
                 event.preventDefault();
                 ModalService.open("Unsaved changed", "Do you want to save before leaving?", {
                     yes: {
-                        onYes: function() {
+                        onYes: function () {
                             $scope.submit();
                             $state.go(toState);
                         },
@@ -7141,7 +7148,7 @@ function ConfigController($scope, $http, activeTab, ConfigService, config, Downl
                     no: {
                         onNo: function () {
                             $scope.ignoreSaveNeeded = true;
-                            $scope.ctrl.options.resetModel();
+                            $scope.allTabs[$scope.activeTab].options.resetModel();
                             $state.go(toState);
                         },
                         text: "No"
@@ -7153,7 +7160,7 @@ function ConfigController($scope, $http, activeTab, ConfigService, config, Downl
                         text: "Cancel"
                     }
                 });
-            }            
+            }
         })
 }
 ConfigController.$inject = ["$scope", "$http", "activeTab", "ConfigService", "config", "DownloaderCategoriesService", "ConfigFields", "ConfigModel", "ModalService", "RestartService", "$state", "growl"];
