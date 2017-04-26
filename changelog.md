@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.216
+Fixed: Windows release 0.2.214/215 did not save settings. Sorry about that -.-
+
 ### 0.2.215
 Fixed: Online help didn't work. 
 
