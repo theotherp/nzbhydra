@@ -887,12 +887,9 @@ def save(filename=None):
     if filename is None:
         filename = config_file
     global settings
-    try:
-        s = json.dumps(settings.toDict(), ensure_ascii=False, indent=4, sort_keys=True)
-        with open(filename, "w", encoding="utf-8") as f:
-            f.write(s)
-    except Exception as e:
-        logger.exception("Error while saving settings")
+    s = json.dumps(settings.toDict(), ensure_ascii=False, indent=4, sort_keys=True)
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(s)
 
 
 class CacheTypeSelection(object):
