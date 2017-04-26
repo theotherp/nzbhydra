@@ -8,17 +8,21 @@ import datetime
 import json
 import logging
 import os
+import random
 import tempfile
 import urlparse
 import zipfile
+from tempfile import TemporaryFile
 
 import arrow
 import jwt
 import markdown
 from bunch import Bunch
+from io import BytesIO
 from marshmallow import Schema
 from werkzeug.contrib.fixers import ProxyFix
 
+import nzbhydra
 from nzbhydra.categories import getCategoryByName
 
 sslImported = True
@@ -37,6 +41,7 @@ except:
 
 import threading
 import urllib
+from builtins import *
 from peewee import fn
 from jwt import DecodeError, ExpiredSignature
 from nzbhydra.exceptions import DownloaderException, DownloaderNotFoundException, NzbDownloadException
