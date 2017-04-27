@@ -449,6 +449,8 @@ def requires_auth(authType, allowWithSecretKey=False, allowWithApiKey=False, dis
                 if "secretaccesskey" in request.args and request.args.get("secretaccesskey").lower() == os.environ["SECRETACCESSKEY"].lower():
                     logger.debug("Access granted by secret access key")
                     allowed = True
+                else:
+                    allowed = isAllowed(authType)
             elif allowWithApiKey and "apikey" in request.args:
                 if not config.settings.main.apikey or request.args.get("apikey") == config.settings.main.apikey:
                     logger.debug("Access granted by API key")
