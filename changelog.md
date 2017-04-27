@@ -4,6 +4,8 @@
 ### 0.2.217
 Fixed: Unable to manually shutdown or restart on windows version in some cases. See [#597](https://github.com/theotherp/nzbhydra/issues/597).
 
+Fixed: Indexer download shares was calculated wrong. See [#588](https://github.com/theotherp/nzbhydra/issues/588).
+
 ### 0.2.216
 Fixed: Windows release 0.2.214/215 did not save settings. Sorry about that -.-
 

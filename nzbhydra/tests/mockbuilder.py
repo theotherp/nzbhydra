@@ -90,47 +90,47 @@ def buildNewznabResponse(title, items, offset=0, total=None):
 
 
 indexers = {
-    "a": {
+    "0": {
         "name": "a",
         "numberOfTotalResults": 500,
         "delay": 0
     },
-    "b": {
+    "1": {
         "name": "b",
         "numberOfTotalResults": 400,
         "delay": 1
     },
-    "c": {
+    "2": {
         "name": "c",
         "numberOfTotalResults": 300,
         "delay": 2
     },
-    "d": {
+    "3": {
         "name": "d",
         "numberOfTotalResults": 200,
         "delay": 1
     },
-    "e": {
+    "4": {
         "name": "e",
         "numberOfTotalResults": 100,
         "delay": 0
     },
-    "f": {
+    "5": {
         "name": "f",
         "numberOfTotalResults": 50,
         "delay": 1
     },
-    "g": {
+    "6": {
         "name": "g",
         "numberOfTotalResults": 25,
         "delay": 2
     },
-    "h": {
+    "7": {
         "name": "h",
         "numberOfTotalResults": 50,
         "delay": 1
     },
-    "i": {
+    "8": {
         "name": "i",
         "numberOfTotalResults": 75,
         "delay": 0
@@ -250,4 +250,4 @@ def download():
 
 
 if __name__ == '__main__':
-    mockapp.run(port=5000, use_reloader=True, threaded=True, debug=False)
+    mockapp.run(port=5080, use_reloader=True, threaded=True, debug=True)

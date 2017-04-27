@@ -292,6 +292,7 @@ def getIndexerBasedDownloadStats(afterSql, beforeSql):
       LEFT OUTER JOIN indexer indexer
         ON api.indexer_id = indexer.id
     WHERE api.indexer_id IN (%(enabledIndexerIds)s)
+    AND api.time > %(afterSql)s AND api.time < %(beforeSql)s
     GROUP BY indexer.id
     """ % {"enabledIndexerIds": enabledIndexerIds, "afterSql": afterSql, "beforeSql": beforeSql}
     stats = database.db.execute_sql(query).fetchall()
