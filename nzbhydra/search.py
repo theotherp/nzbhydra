@@ -12,6 +12,7 @@ import re
 from itertools import groupby
 from sets import Set
 from sqlite3 import OperationalError
+from playhouse.sqliteq import ResultTimeout
 
 import arrow
 import concurrent
@@ -499,12 +500,12 @@ def search(search_request):
     return {"results": nzb_search_results, "indexer_infos": cache_entry["indexer_infos"], "dbsearchid": cache_entry["dbsearch"].id, "total": cache_entry["total"], "offset": external_offset, "rejected": cache_entry["rejected"].items()}
 
 
-@retry((InterfaceError, OperationalError), delay=1, tries=5, logger=logger)
+@retry((InterfaceError, OperationalError, ResultTimeout), delay=1, tries=5, logger=logger)
 def countOldSearchResults(keepFor):
     return SearchResult.select().where(SearchResult.firstFound < (datetime.date.today() - datetime.timedelta(days=keepFor))).count()
 
 
-@retry((InterfaceError, OperationalError), delay=1, tries=5, logger=logger)
+@retry((InterfaceError, OperationalError, ResultTimeout), delay=1, tries=5, logger=logger)
 def tryGetOrCreateSearchResultDbEntry(searchResultId, indexerId, result):
     try:
         return SearchResult().get(SearchResult.id == searchResultId)
@@ -512,7 +513,7 @@ def tryGetOrCreateSearchResultDbEntry(searchResultId, indexerId, result):
         return SearchResult().create(id=searchResultId, indexer_id=indexerId, guid=result.indexerguid, title=result.title, link=result.link, details=result.details_link, firstFound=datetime.datetime.utcnow())
 
 
-@retry((InterfaceError, OperationalError), delay=1, tries=5, logger=logger)
+@retry((InterfaceError, OperationalError, ResultTimeout), delay=1, tries=5, logger=logger)
 def saveSearch(dbsearch):
     with databaseLock:
         dbsearch.save()

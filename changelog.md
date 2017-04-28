@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.218
+Fixed: Previous versions were not compatible with Windows versions previous to 10... So much stuff to be careful about. See [#602](https://github.com/theotherp/nzbhydra/issues/602).
+
 ### 0.2.217
 Fixed: Unable to manually shutdown or restart on windows version in some cases. See [#597](https://github.com/theotherp/nzbhydra/issues/597).
 
