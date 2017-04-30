@@ -372,7 +372,7 @@ def search(search_request):
             took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
             logger.debug("Waited %dms for database lock" % took)
         for indexer, queries_execution_result in result["results"].items():
-
+            db.begin()
             logger.info("%s returned %d results" % (indexer, len(queries_execution_result.results)))
             for result in queries_execution_result.results:
                 if result.title is None or result.link is None or result.indexerguid is None:
@@ -385,7 +385,7 @@ def search(search_request):
                     search_results.append(result)
                 except (IntegrityError, OperationalError) as e:
                     logger.error("Error while trying to save search result to database. Skipping it. Error: %s" % e)
-
+            db.commit()
             cache_entry["indexer_infos"][indexer].update(
                 {"did_search": queries_execution_result.didsearch, "indexer": indexer.name, "search_request": search_request, "has_more": queries_execution_result.has_more, "total": queries_execution_result.total, "total_known": queries_execution_result.total_known,
                  "indexer_search": queries_execution_result.indexerSearchEntry, "rejected": queries_execution_result.rejected, "processed_results": queries_execution_result.loaded_results})
@@ -524,7 +524,7 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
     dbsearch.username = request.authorization.username if request.authorization is not None else None
     saveSearch(dbsearch)
     with databaseLock:
-
+        db.begin()
         for indexer, result in results_by_indexer.items():
             if result.didsearch:
                 indexersearchentry = result.indexerSearchEntry
@@ -540,6 +540,7 @@ def search_and_handle_db(dbsearch, indexers_and_search_requests):
                     Indexer().create(name=indexer)
                 except Exception as e:
                     logger.exception("Error saving IndexerApiAccessEntry")
+        db.commit()
 
     return {"results": results_by_indexer, "dbsearch": dbsearch}
 

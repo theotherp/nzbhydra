@@ -30,7 +30,7 @@ def startTest(apikey, query):
 
 
 runs = 5
-concurrent_searches = 5
+concurrent_searches = 2
 letters = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"]
 beforeallruns = arrow.now()
 for x in range(1, runs + 1):

@@ -24,7 +24,10 @@ def init_indexer_table_entry(indexer_name):
     except Indexer.DoesNotExist as e:
         logger.info("Unable to find indexer with name %s in database. Will add it" % indexer_name)
         indexer = Indexer().create(name=indexer_name)
-        IndexerStatus.create_or_get(indexer=indexer, first_failure=None, latest_failure=None, disabled_until=None)
+        try:
+            IndexerStatus.get(indexer=indexer)
+        except IndexerStatus.DoesNotExist:
+            IndexerStatus.create(indexer=indexer, first_failure=None, latest_failure=None, disabled_until=None)
 
 
 # Load from config and initialize all configured indexers using the loaded modules
