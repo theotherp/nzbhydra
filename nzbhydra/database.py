@@ -17,7 +17,7 @@ from playhouse.sqliteq import SqliteQueueDatabase
 
 logger = logging.getLogger('root')
 
-db = SqliteQueueDatabase(None, autostart=False, results_timeout=20.0)
+db = SqliteQueueDatabase(None, autostart=False, results_timeout=20.0, autocommit=False)
 
 DATABASE_VERSION = 18
 
@@ -613,7 +613,10 @@ def update_db(dbfile):
                 statuses = list(IndexerStatus.select().where(IndexerStatus.indexer == indexer).order_by(IndexerStatus.latest_failure.desc()))
                 if len(statuses) == 0:
                     logger.info("Adding indexer status entry for indexer %s" % indexer.name)
-                    IndexerStatus.create_or_get(indexer=indexer, first_failure=None, latest_failure=None, disabled_until=None)
+                    try:
+                        IndexerStatus.get(indexer=indexer)
+                    except IndexerStatus.DoesNotExist:
+                        IndexerStatus.create(indexer=indexer, first_failure=None, latest_failure=None, disabled_until=None)
 
                 elif len(statuses) > 1:
                     logger.info("Deleting duplicate indexer status entries for %s" % indexer.name)
