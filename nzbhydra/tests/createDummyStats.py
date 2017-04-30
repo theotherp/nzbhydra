@@ -14,27 +14,27 @@ database.init_db("nzbhydra.db")
 database.db.start()
 onlySearches = False
 for z in range(0, 100):
-    with database.db.atomic():
-        print(z)
-        for x in range(0, 1000):
-            search = database.Search.create(internal=random.randint(0, 1) == 0, time=datetime.datetime.fromtimestamp(random.randint(1477501069, arrow.utcnow().timestamp)))
-            if not onlySearches:
-                for y in range(0, random.randint(1, 26)):
-                    indexer_id = y
-                    # Create API access for search
-                    apiaccess = database.IndexerApiAccess.create(indexer_id=indexer_id, time=datetime.datetime.fromtimestamp(random.randint(1312677738, arrow.utcnow().timestamp)), response_successful=True, type="nzb", url="hallo", response_time=random.randint(50, 10000))
 
-                    # Create search
-                    resultsCount = random.randint(0, 500)
-                    uniqueResults = random.randint(0, resultsCount)
-                    processedResults = random.randint(max(int((resultsCount + 1) / 2), 1), max(resultsCount, 1))
-                    indexersearch = database.IndexerSearch.create(indexer_id=indexer_id, time=datetime.datetime.fromtimestamp(random.randint(1312677738, arrow.utcnow().timestamp)), search=search, successful=True, resultsCount=resultsCount, uniqueResults=uniqueResults,
-                                                                  processedResults=processedResults)
+    print(z)
+    for x in range(0, 1000):
+        search = database.Search.create(internal=random.randint(0, 1) == 0, time=datetime.datetime.fromtimestamp(random.randint(1477501069, arrow.utcnow().timestamp)))
+        if not onlySearches:
+            for y in range(0, random.randint(1, 26)):
+                indexer_id = y
+                # Create API access for search
+                apiaccess = database.IndexerApiAccess.create(indexer_id=indexer_id, time=datetime.datetime.fromtimestamp(random.randint(1312677738, arrow.utcnow().timestamp)), response_successful=True, type="nzb", url="hallo", response_time=random.randint(50, 10000))
 
-                    if random.randint(0, 50) == 3:
-                        # Create download
-                        apiaccess = database.IndexerApiAccess.create(indexer_id=indexer_id, time=datetime.datetime.fromtimestamp(random.randint(1312677738, arrow.utcnow().timestamp)), response_successful=True, type="download", url="hallo", response_time=random.randint(50, 10000))
-                        download = database.IndexerNzbDownload.create(searchResult_id=472, apiAccess_id=apiaccess.id, time=datetime.datetime.fromtimestamp(random.randint(1477501069, arrow.utcnow().timestamp)), title="Hallo", mode="redirect", internal=True)
+                # Create search
+                resultsCount = random.randint(0, 500)
+                uniqueResults = random.randint(0, resultsCount)
+                processedResults = random.randint(max(int((resultsCount + 1) / 2), 1), max(resultsCount, 1))
+                indexersearch = database.IndexerSearch.create(indexer_id=indexer_id, time=datetime.datetime.fromtimestamp(random.randint(1312677738, arrow.utcnow().timestamp)), search=search, successful=True, resultsCount=resultsCount, uniqueResults=uniqueResults,
+                                                              processedResults=processedResults)
+
+                if random.randint(0, 50) == 3:
+                    # Create download
+                    apiaccess = database.IndexerApiAccess.create(indexer_id=indexer_id, time=datetime.datetime.fromtimestamp(random.randint(1312677738, arrow.utcnow().timestamp)), response_successful=True, type="download", url="hallo", response_time=random.randint(50, 10000))
+                    download = database.IndexerNzbDownload.create(searchResult_id=472, apiAccess_id=apiaccess.id, time=datetime.datetime.fromtimestamp(random.randint(1477501069, arrow.utcnow().timestamp)), title="Hallo", mode="redirect", internal=True)
 
 
 

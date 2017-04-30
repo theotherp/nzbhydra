@@ -582,19 +582,19 @@ def update_db(dbfile):
                     DEFERRABLE INITIALLY DEFERRED);
                 """)
 
-                with db.atomic():
-                    countSearchResults = SearchResultOld.select().count()
-                    logger.info("Migrating %d search results" % countSearchResults)
-                    for count, sr in enumerate(SearchResultOld.select()):
-                        searchResultId = hashlib.sha1(str(sr.indexer_id) + sr.guid).hexdigest()
-                        # Slow but was unable to do this with insert_from or insert_many
-                        srMigrated = SearchResultMigration.create(**{"id": searchResultId, "indexer_id": sr.indexer_id, "firstFound": sr.firstFound, "title": sr.title, "guid": sr.guid, "link": sr.link, "details": sr.details})
 
-                        for dl in IndexerNzbDownloadOld.select().where(IndexerNzbDownloadOld.searchResult == sr):  # Find all linked downloads
-                            IndexerNzbDownloadMigration.create(searchResult=srMigrated, apiAccess=dl.apiAccess, time=dl.time, title=dl.title, mode=dl.mode, internal=dl.internal)
-                        if count > 0 and count % 250 == 0:
-                            logger.info("Migrated %d of %d search results" % (count, countSearchResults))
-                    logger.info("Successfully migrated %d search results" % countSearchResults)
+                countSearchResults = SearchResultOld.select().count()
+                logger.info("Migrating %d search results" % countSearchResults)
+                for count, sr in enumerate(SearchResultOld.select()):
+                    searchResultId = hashlib.sha1(str(sr.indexer_id) + sr.guid).hexdigest()
+                    # Slow but was unable to do this with insert_from or insert_many
+                    srMigrated = SearchResultMigration.create(**{"id": searchResultId, "indexer_id": sr.indexer_id, "firstFound": sr.firstFound, "title": sr.title, "guid": sr.guid, "link": sr.link, "details": sr.details})
+
+                    for dl in IndexerNzbDownloadOld.select().where(IndexerNzbDownloadOld.searchResult == sr):  # Find all linked downloads
+                        IndexerNzbDownloadMigration.create(searchResult=srMigrated, apiAccess=dl.apiAccess, time=dl.time, title=dl.title, mode=dl.mode, internal=dl.internal)
+                    if count > 0 and count % 250 == 0:
+                        logger.info("Migrated %d of %d search results" % (count, countSearchResults))
+                logger.info("Successfully migrated %d search results" % countSearchResults)
 
                 db.execute_sql("DROP TABLE indexernzbdownload")
                 db.execute_sql("ALTER TABLE indexernzbdownload2 RENAME TO indexernzbdownload")

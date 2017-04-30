@@ -28,22 +28,13 @@ from peewee import DecimalField as _DecimalField
 from peewee import logger
 from peewee import savepoint
 from peewee import TimeField as _TimeField
-from peewee import transaction as _transaction
+from peewee import transaction
 from playhouse.sqlite_ext import SqliteExtDatabase
 from playhouse.sqlite_ext import VirtualCharField
 from playhouse.sqlite_ext import VirtualField
 from playhouse.sqlite_ext import VirtualFloatField
 from playhouse.sqlite_ext import VirtualIntegerField
 from playhouse.sqlite_ext import VirtualModel
-
-
-class transaction(_transaction):
-    def __init__(self, db, lock_type='deferred'):
-        self.db = db
-        self.lock_type = lock_type
-
-    def _begin(self):
-        self.db.begin(self.lock_type)
 
 
 class APSWDatabase(SqliteExtDatabase):
@@ -111,7 +102,7 @@ class APSWDatabase(SqliteExtDatabase):
 
     def execute_sql(self, sql, params=None, require_commit=True):
         logger.debug((sql, params))
-        with self.exception_wrapper():
+        with self.exception_wrapper:
             cursor = self.get_cursor()
             self._execute_sql(cursor, sql, params)
         return cursor

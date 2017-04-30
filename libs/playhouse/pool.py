@@ -60,7 +60,17 @@ Execution context examples (using above `db` instance):
 """
 import heapq
 import logging
+import threading
 import time
+try:
+    from Queue import Queue
+except ImportError:
+    from queue import Queue
+
+try:
+    from psycopg2 import extensions as pg_extensions
+except ImportError:
+    pg_extensions = None
 
 from peewee import MySQLDatabase
 from peewee import PostgresqlDatabase
@@ -75,25 +85,54 @@ def make_int(val):
     return val
 
 
+class MaxConnectionsExceeded(ValueError): pass
+
+
 class PooledDatabase(object):
     def __init__(self, database, max_connections=20, stale_timeout=None,
-                 **kwargs):
+                 timeout=None, **kwargs):
         self.max_connections = make_int(max_connections)
         self.stale_timeout = make_int(stale_timeout)
+        self.timeout = make_int(timeout)
+        if self.timeout == 0:
+            self.timeout = float('inf')
+        self._closed = set()
         self._connections = []
         self._in_use = {}
-        self._closed = set()
         self.conn_key = id
+
+        if self.timeout:
+            self._event = threading.Event()
+            self._ready_queue = Queue()
 
         super(PooledDatabase, self).__init__(database, **kwargs)
 
     def init(self, database, max_connections=None, stale_timeout=None,
-             **connect_kwargs):
+             timeout=None, **connect_kwargs):
         super(PooledDatabase, self).init(database, **connect_kwargs)
         if max_connections is not None:
             self.max_connections = make_int(max_connections)
         if stale_timeout is not None:
             self.stale_timeout = make_int(stale_timeout)
+        if timeout is not None:
+            self.timeout = make_int(timeout)
+            if self.timeout == 0:
+                self.timeout = float('inf')
+
+    def connect(self):
+        if self.timeout:
+            start = time.time()
+            while start + self.timeout > time.time():
+                try:
+                    super(PooledDatabase, self).connect()
+                except MaxConnectionsExceeded:
+                    time.sleep(0.1)
+                else:
+                    return
+            raise MaxConnectionsExceeded('Max connections exceeded, timed out '
+                                         'attempting to connect.')
+        else:
+            super(PooledDatabase, self).connect()
 
     def _connect(self, *args, **kwargs):
         while True:
@@ -130,7 +169,7 @@ class PooledDatabase(object):
         if conn is None:
             if self.max_connections and (
                     len(self._in_use) >= self.max_connections):
-                raise ValueError('Exceeded maximum connections.')
+                raise MaxConnectionsExceeded('Exceeded maximum connections.')
             conn = super(PooledDatabase, self)._connect(*args, **kwargs)
             ts = time.time()
             key = self.conn_key(conn)
@@ -140,10 +179,16 @@ class PooledDatabase(object):
         return conn
 
     def _is_stale(self, timestamp):
+        # Called on check-out and check-in to ensure the connection has
+        # not outlived the stale timeout.
         return (time.time() - timestamp) > self.stale_timeout
 
     def _is_closed(self, key, conn):
         return key in self._closed
+
+    def _can_reuse(self, conn):
+        # Called on check-in to make sure the connection can be re-used.
+        return True
 
     def _close(self, conn, close_conn=False):
         key = self.conn_key(conn)
@@ -156,9 +201,11 @@ class PooledDatabase(object):
             if self.stale_timeout and self._is_stale(ts):
                 logger.debug('Closing stale connection %s.', key)
                 super(PooledDatabase, self)._close(conn)
-            else:
+            elif self._can_reuse(conn):
                 logger.debug('Returning %s to pool.', key)
                 heapq.heappush(self._connections, (ts, conn))
+            else:
+                logger.debug('Closed %s.', key)
 
     def manual_close(self):
         """
@@ -194,6 +241,14 @@ class _PooledPostgresqlDatabase(PooledDatabase):
         if not closed:
             closed = bool(conn.closed)
         return closed
+
+    def _can_reuse(self, conn):
+        txn_status = conn.get_transaction_status()
+        # Do not return connection in an error state, as subsequent queries
+        # will all fail.
+        if txn_status == pg_extensions.TRANSACTION_STATUS_INERROR:
+            conn.reset()
+        return True
 
 class PooledPostgresqlDatabase(_PooledPostgresqlDatabase, PostgresqlDatabase):
     pass

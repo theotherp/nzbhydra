@@ -122,7 +122,7 @@ def model_to_dict(model, recurse=True, backrefs=False, only=None,
                     seen=seen,
                     max_depth=max_depth - 1)
             else:
-                field_data = {}
+                field_data = None
 
         data[field.name] = field_data
 
@@ -211,7 +211,7 @@ class RetryOperationalError(object):
         except OperationalError:
             if not self.is_closed():
                 self.close()
-            with self.exception_wrapper():
+            with self.exception_wrapper:
                 cursor = self.get_cursor()
                 cursor.execute(sql, params or ())
                 if require_commit and self.get_autocommit():

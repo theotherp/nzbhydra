@@ -1,5 +1,6 @@
 import logging
 import weakref
+from threading import local as thread_local
 from threading import Event
 from threading import Thread
 try:
@@ -11,6 +12,7 @@ try:
     import gevent
     from gevent import Greenlet as GThread
     from gevent.event import Event as GEvent
+    from gevent.local import local as greenlet_local
     from gevent.queue import Queue as GQueue
 except ImportError:
     GThread = GQueue = GEvent = None
@@ -24,10 +26,16 @@ logger = logging.getLogger('peewee.sqliteq')
 class ResultTimeout(Exception):
     pass
 
+class WriterPaused(Exception):
+    pass
+
+class ShutdownException(Exception):
+    pass
+
 
 class AsyncCursor(object):
     __slots__ = ('sql', 'params', 'commit', 'timeout',
-                 '_event', '_cursor', '_exc', '_idx', '_rows')
+                 '_event', '_cursor', '_exc', '_idx', '_rows', '_ready')
 
     def __init__(self, event, sql, params, commit, timeout):
         self._event = event
@@ -36,6 +44,7 @@ class AsyncCursor(object):
         self.commit = commit
         self.timeout = timeout
         self._cursor = self._exc = self._idx = self._rows = None
+        self._ready = False
 
     def set_result(self, cursor, exc=None):
         self._cursor = cursor
@@ -51,14 +60,18 @@ class AsyncCursor(object):
             raise ResultTimeout('results not ready, timed out.')
         if self._exc is not None:
             raise self._exc
+        self._ready = True
 
     def __iter__(self):
-        self._wait()
+        if not self._ready:
+            self._wait()
         if self._exc is not None:
             raise self._exec
         return self
 
     def next(self):
+        if not self._ready:
+            self._wait()
         try:
             obj = self._rows[self._idx]
         except IndexError:
@@ -70,12 +83,14 @@ class AsyncCursor(object):
 
     @property
     def lastrowid(self):
-        self._wait()
+        if not self._ready:
+            self._wait()
         return self._cursor.lastrowid
 
     @property
     def rowcount(self):
-        self._wait()
+        if not self._ready:
+            self._wait()
         return self._cursor.rowcount
 
     @property
@@ -89,31 +104,99 @@ class AsyncCursor(object):
         return list(self)  # Iterating implies waiting until populated.
 
     def fetchone(self):
-        self._wait()
+        if not self._ready:
+            self._wait()
         try:
             return next(self)
         except StopIteration:
             return None
 
+SHUTDOWN = StopIteration
+PAUSE = object()
+UNPAUSE = object()
 
-THREADLOCAL_ERROR_MESSAGE = ('threadlocals cannot be set to True when using '
-                             'the Sqlite thread / queue database. All queries '
-                             'are serialized through a single connection, so '
-                             'allowing multiple threads to connect defeats '
-                             'the purpose of this database.')
-WAL_MODE_ERROR_MESSAGE = ('SQLite must be configured to use the WAL journal '
-                          'mode when using this feature. WAL mode allows '
-                          'one or more readers to continue reading while '
-                          'another connection writes to the database.')
+
+class Writer(object):
+    __slots__ = ('database', 'queue')
+
+    def __init__(self, database, queue):
+        self.database = database
+        self.queue = queue
+
+    def run(self):
+        conn = self.database.get_conn()
+        try:
+            while True:
+                try:
+                    if conn is None:  # Paused.
+                        if self.wait_unpause():
+                            conn = self.database.get_conn()
+                    else:
+                        conn = self.loop(conn)
+                except ShutdownException:
+                    logger.info('writer received shutdown request, exiting.')
+                    return
+        finally:
+            if conn is not None:
+                self.database._close(conn)
+                self.database._local.closed = True
+
+    def wait_unpause(self):
+        obj = self.queue.get()
+        if obj is UNPAUSE:
+            logger.info('writer unpaused - reconnecting to database.')
+            return True
+        elif obj is SHUTDOWN:
+            raise ShutdownException()
+        elif obj is PAUSE:
+            logger.error('writer received pause, but is already paused.')
+        else:
+            obj.set_result(None, WriterPaused())
+            logger.warning('writer paused, not handling %s', obj)
+
+    def loop(self, conn):
+        obj = self.queue.get()
+        if isinstance(obj, AsyncCursor):
+            self.execute(obj)
+        elif obj is PAUSE:
+            logger.info('writer paused - closing database connection.')
+            self.database._close(conn)
+            self.database._local.closed = True
+            return
+        elif obj is UNPAUSE:
+            logger.error('writer received unpause, but is already running.')
+        elif obj is SHUTDOWN:
+            raise ShutdownException()
+        else:
+            logger.error('writer received unsupported object: %s', obj)
+        return conn
+
+    def execute(self, obj):
+        logger.debug('received query %s', obj.sql)
+        try:
+            cursor = self.database._execute(obj.sql, obj.params, obj.commit)
+        except Exception as execute_err:
+            cursor = None
+            exc = execute_err  # python3 is so fucking lame.
+        else:
+            exc = None
+        return obj.set_result(cursor, exc)
 
 
 class SqliteQueueDatabase(SqliteExtDatabase):
-    def __init__(self, database, use_gevent=False, autostart=False, readers=1,
-                 queue_max_size=None, results_timeout=None, *args, **kwargs):
-        if kwargs.get('threadlocals'):
-            raise ValueError(THREADLOCAL_ERROR_MESSAGE)
+    WAL_MODE_ERROR_MESSAGE = ('SQLite must be configured to use the WAL '
+                              'journal mode when using this feature. WAL mode '
+                              'allows one or more readers to continue reading '
+                              'while another connection writes to the '
+                              'database.')
 
-        kwargs['threadlocals'] = False
+    def __init__(self, database, use_gevent=False, autostart=True,
+                 queue_max_size=None, results_timeout=None, *args, **kwargs):
+        if 'threadlocals' in kwargs and not kwargs['threadlocals']:
+            raise ValueError('"threadlocals" must be true to use the '
+                             'SqliteQueueDatabase.')
+
+        kwargs['threadlocals'] = True
         kwargs['check_same_thread'] = False
 
         # Ensure that journal_mode is WAL. This value is passed to the parent
@@ -126,18 +209,20 @@ class SqliteQueueDatabase(SqliteExtDatabase):
         # execute_sql(), this is just a handy way to reference the real
         # implementation.
         Parent = super(SqliteQueueDatabase, self)
-        self.__execute_sql = Parent.execute_sql
+        self._execute = Parent.execute_sql
 
         # Call the parent class constructor with our modified pragmas.
         Parent.__init__(database, pragmas=pragmas, *args, **kwargs)
 
         self._autostart = autostart
         self._results_timeout = results_timeout
-        self._num_readers = readers
-
         self._is_stopped = True
+
+        # Get different objects depending on the threading implementation.
         self._thread_helper = self.get_thread_impl(use_gevent)(queue_max_size)
-        self._create_queues_and_workers()
+
+        # Create the writer thread, optionally starting it.
+        self._create_write_queue()
         if self._autostart:
             self.start()
 
@@ -146,69 +231,47 @@ class SqliteQueueDatabase(SqliteExtDatabase):
 
     def _validate_journal_mode(self, journal_mode=None, pragmas=None):
         if journal_mode and journal_mode.lower() != 'wal':
-            raise ValueError(WAL_MODE_ERROR_MESSAGE)
+            raise ValueError(self.WAL_MODE_ERROR_MESSAGE)
 
         if pragmas:
             pdict = dict((k.lower(), v) for (k, v) in pragmas)
             if pdict.get('journal_mode', 'wal').lower() != 'wal':
-                raise ValueError(WAL_MODE_ERROR_MESSAGE)
+                raise ValueError(self.WAL_MODE_ERROR_MESSAGE)
 
             return [(k, v) for (k, v) in pragmas
                     if k != 'journal_mode'] + [('journal_mode', 'wal')]
         else:
             return [('journal_mode', 'wal')]
 
-    def _create_queues_and_workers(self):
+    def _create_write_queue(self):
         self._write_queue = self._thread_helper.queue()
-        self._read_queue = self._thread_helper.queue()
-
-        target = self._run_worker_loop
-        self._writer = self._thread_helper.thread(target, self._write_queue)
-        self._readers = [self._thread_helper.thread(target, self._read_queue)
-                         for _ in range(self._num_readers)]
-
-    def _run_worker_loop(self, queue):
-        while True:
-            async_cursor = queue.get()
-            if async_cursor is StopIteration:
-                logger.info('worker shutting down.')
-                return
-
-            logger.debug('received query %s', async_cursor.sql)
-            self._process_execution(async_cursor)
-
-    def _process_execution(self, async_cursor):
-        try:
-            cursor = self.__execute_sql(async_cursor.sql, async_cursor.params,
-                                        async_cursor.commit)
-        except Exception as exc:
-            cursor = None
-        else:
-            exc = None
-        return async_cursor.set_result(cursor, exc)
 
     def queue_size(self):
-        return (self._write_queue.qsize(), self._read_queue.qsize())
+        return self._write_queue.qsize()
 
     def execute_sql(self, sql, params=None, require_commit=True, timeout=None):
+        if not require_commit:
+            return self._execute(sql, params, require_commit=require_commit)
+
         cursor = AsyncCursor(
             event=self._thread_helper.event(),
             sql=sql,
             params=params,
             commit=require_commit,
             timeout=self._results_timeout if timeout is None else timeout)
-        queue = self._write_queue if require_commit else self._read_queue
-        queue.put(cursor)
+        self._write_queue.put(cursor)
         return cursor
 
     def start(self):
         with self._conn_lock:
             if not self._is_stopped:
                 return False
+            def run():
+                writer = Writer(self, self._write_queue)
+                writer.run()
+
+            self._writer = self._thread_helper.thread(run)
             self._writer.start()
-            for reader in self._readers:
-                reader.start()
-            logger.info('workers started.')
             self._is_stopped = False
             return True
 
@@ -217,17 +280,26 @@ class SqliteQueueDatabase(SqliteExtDatabase):
         with self._conn_lock:
             if self._is_stopped:
                 return False
-            self._write_queue.put(StopIteration)
-            for _ in self._readers:
-                self._read_queue.put(StopIteration)
+            self._write_queue.put(SHUTDOWN)
             self._writer.join()
-            for reader in self._readers:
-                reader.join()
+            self._is_stopped = True
             return True
 
     def is_stopped(self):
         with self._conn_lock:
             return self._is_stopped
+
+    def pause(self):
+        with self._conn_lock:
+            self._write_queue.put(PAUSE)
+
+    def unpause(self):
+        with self._conn_lock:
+            self._write_queue.put(UNPAUSE)
+
+    def __unsupported__(self, *args, **kwargs):
+        raise ValueError('This method is not supported by %r.' % type(self))
+    atomic = transaction = savepoint = __unsupported__
 
 
 class ThreadHelper(object):
@@ -249,7 +321,7 @@ class ThreadHelper(object):
 
 
 class GreenletHelper(ThreadHelper):
-    __slots__ = ('queue_max_size',)
+    __slots__ = ()
 
     def event(self): return GEvent()
 
