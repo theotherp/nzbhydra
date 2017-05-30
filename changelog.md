@@ -4,6 +4,8 @@
 ### 0.2.219
 Fixed: Use two concurrent connections when checking indexer capabilities. See [#606](https://github.com/theotherp/nzbhydra/issues/606).
 
+Fixed: Allow nonnummeric episodes for internal TV search.. See [#607](https://github.com/theotherp/nzbhydra/issues/607).
+
 ### 0.2.218
 Fixed: Previous versions were not compatible with Windows versions previous to 10... So much stuff to be careful about. See [#602](https://github.com/theotherp/nzbhydra/issues/602).
 
