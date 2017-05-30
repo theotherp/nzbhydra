@@ -127,7 +127,7 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult, username=None, pass
 
 def checkCapsBruteForce(supportedTypes, toCheck, host, apikey, username=None, password=None):
     supportedIds = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=toCheck) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
         futures_to_ids = {executor.submit(_testId, host, apikey, x["t"], x["id"], x["key"], x["expected"], username=username, password=password): x["id"] for x in toCheck}
         for future in concurrent.futures.as_completed(futures_to_ids):
             id = futures_to_ids[future]

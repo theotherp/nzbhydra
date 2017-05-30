@@ -1491,6 +1491,33 @@ def internalapi_gettheme():
     return send_file("../static/css/bright.css")
 
 
+@app.route('/internalapi/migration')
+@requires_auth("admin")
+def internalapi_getdata_for_migration():
+    from nzbhydra import databaseFile
+    configString = json.dumps(config.settings)
+    return jsonify({"config": configString, "databaseFile": databaseFile})
+
+
+def dumpToFile(model, tempDir, name):
+    with open(os.path.join(tempDir, name), mode="w") as f:
+        json.dump(list(model.select().dicts()), f, cls=ArrowJSONEncoder, indent=2)
+        filename = f.name
+    return filename
+
+
+class ArrowJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        try:
+            if isinstance(obj, arrow.Arrow):
+                return obj.timestamp
+            iterable = iter(obj)
+        except TypeError:
+            pass
+        else:
+            return list(iterable)
+        return JSONEncoder.default(self, obj)
+
 #
 #
 #
