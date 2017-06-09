@@ -30,6 +30,38 @@ Although I do my best to keep that container nice and working please [use their 
 
 ## Install as service
 ### Linux
+#### systemd
+A systemd unit file is provided in the `contrib` directory. To install:
+
+Copy the systemd unit file into place
+
+```sh
+sudo cp contrib/nzbhydra.service /usr/lib/systemd/system/
+```
+
+Edit the systemd unit file, you'll need to correct the paths to nzbhydra and the `python` path and name. You can find useful instructions inside the file.
+
+```sh
+sudo nano /usr/lib/systemd/system/nzbhydra.service
+```
+
+Reload systemd to pick up the new unit file, enable it and then start it.
+
+```sh
+sudo systemctl daemon-reload
+sudo systemctl enable nzbhydra.service
+sudo systemctl start nzbhydra.service
+```
+
+You can use `status`, `cat` and `edit` to see how the service is doing, see what the current unit file is and to override any settings with your own values.
+
+```sh
+sudo systemctl status nzbhydra.service
+sudo systemctl cat nzbhydra.service
+sudo systemctl edit nzbhydra.service
+```
+
+#### Upstart
 Install scripts are provided for Ubuntu upstart based systems in the `contrib` directory. To install:
 
 ```sh
