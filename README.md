@@ -39,7 +39,7 @@ Copy the systemd unit file into place
 sudo cp contrib/nzbhydra.service /usr/lib/systemd/system/
 ```
 
-Edit the systemd unit file, you'll need to correct the paths to nzbhydra and the `python` path and name. You can find useful instructions inside the file.
+Edit the systemd unit file, you'll need to correct the paths to `nzbhydra.py` and `python`. You can find useful instructions inside.
 
 ```sh
 sudo nano /usr/lib/systemd/system/nzbhydra.service
@@ -57,6 +57,16 @@ You can use `status`, `cat` and `edit` to see how the service is doing, see what
 
 ```sh
 sudo systemctl status nzbhydra.service
+● nzbhydra.service - NZBHydra Service
+   Loaded: loaded (/usr/lib/systemd/system/nzbhydra.service; enabled; vendor preset: disabled)
+   Active: active (running) since Thu 2017-06-08 19:25:50 PDT; 25min ago
+ Main PID: 19503 (python2)
+    Tasks: 3 (limit: 4915)
+   Memory: 112.8M
+      CPU: 37.298s
+   CGroup: /system.slice/nzbhydra.service
+           └─19503 /usr/bin/python2 /usr/lib/nzbhydra/nzbhydra.py --nobrowser --config /etc/nzbhydra/settings.cfg --database /var/lib/nzbhydra/nzbhydra.db
+
 sudo systemctl cat nzbhydra.service
 sudo systemctl edit nzbhydra.service
 ```
