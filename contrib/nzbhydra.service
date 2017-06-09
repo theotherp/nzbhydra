@@ -4,36 +4,26 @@ Documentation=https://github.com/theotherp/nzbhydra
 After=network.target
 
 [Service]
-User=ChangeMe
-Group=ChangeMe
-Type=forking
-#
-# If you're using a Linux distribution that ships with an older version of Python
-# then you'll need to perform an "altinstall" of Python to a version greater then 
-# 2.7.9 but not version 3 - this typically applies to Red Hat based distributions
-# and uncomment out the following line:
-#
-# ExecStart=/usr/local/bin/python2.7 /path-to/nzbhydra/nzbhydra.py --nobrowser
-#
-# If you're not using a Red Hat based distribution, then you only need to change
-# that path to NZBHydra in the following line:
-#
-ExecStart=python /path-to/nzbhydra/nzbhydra.py --daemon --nobrowser --pidfile /path-to/nzbhydra/nzbhydra.pid
-# If you're using a Red Hat based distribution then you'll need to comment out the
-# above ExecStart line to avoid service conflicts.
-#
-# By default, NZBHydra stores it's configuration file and database in the home
-# directory of the user account it runs under. Add the following to the command
-# line: --config /path-to/settings.cfg --database /path-to/nzbhydra.db
-#
-# Change this path to your NZBHydra installation as well
-PIDFile=/path-to/nzbhydra/nzbhydra.pid
+User=nzbhydra
+Group=nzbhydra
+Type=simple
 
-KillMode=process
+# NZBHydra requires python > 2.7.9 *and* < 3.x. Most distributions offer both,
+# often `python` is 3.x and 2.x is `python2` or `python2.7`. Use --version
+# to figure out which is correct and `which python` to find the full path to
+# correct the line below.
+
+# NZBHydra stores it's configuration file and database in the home directory
+# of the user account it runs as. Add the below options to change its behavior
+# --config /path-to/settings.cfg --database /path-to/nzbhydra.db
+ExecStart=/path-to/python2 /path-to/nzbhydra/nzbhydra.py --nobrowser
+
+# In Settings, enable "Shutdown to restart" so NZBHydra will just shut down and
+# let systemd restart it. To actually shut down, NZBHydra will exit with a
+# status of 6, signaling systemd not to restart it.
 Restart=always
-#Enable "Shutdown to restart" in the settings. To restart Hydra will actually shut down and let the service manager do the work.
-#To be able to actually shut down Hydra will use exit 6 to signal the service manager that it shouldn't restart this instance.
 SuccessExitStatus=6
 RestartPreventExitStatus=6
+
 [Install]
 WantedBy=multi-user.target
