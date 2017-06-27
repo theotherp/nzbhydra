@@ -20,7 +20,7 @@ def setSOCKSproxy(sockshost,socksport):
     socket.socket = socks.socksocket
 
     try:
-        return urllib2.urlopen('http://ipinfo.io/ip').read().rstrip()
+        return urllib2.urlopen('https://ipinfo.io/ip').read().rstrip()
     except:
         return None
 
