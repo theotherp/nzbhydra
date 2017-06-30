@@ -243,6 +243,7 @@ class NzbClub(SearchModule):
             entry.title = m.group(1)
         else:
             entry.title = title.text
+        entry.title = self.cleanUpTitle(entry.title)
         entry.link = url.attrib["url"]
         entry.size = int(url.attrib["length"])
         entry.indexer = self.name

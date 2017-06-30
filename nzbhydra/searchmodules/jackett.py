@@ -86,6 +86,7 @@ class Jackett(newznab.NewzNab):
         entry = self.create_nzb_search_result()
         # These are the values that absolutely must be contained in the response
         entry.title = item.find("title").text
+        entry.title = self.cleanUpTitle(entry.title)
         entry.link = item.find("link").text
         entry.details_link = item.find("comments").text
         entry.indexerguid = item.find("guid").text

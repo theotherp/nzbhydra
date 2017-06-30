@@ -89,6 +89,7 @@ class Anizb(SearchModule):
             
             entry = self.create_nzb_search_result()
             entry.title = title.text
+            entry.title = self.cleanUpTitle(entry.title)
             entry.link = url.attrib["url"]
             entry.size = int(url.attrib["length"])
             entry.has_nfo = NzbSearchResult.HAS_NFO_NO

@@ -190,7 +190,7 @@ class Binsearch(SearchModule):
             entry.title = m.group(1)
         else:
             entry.title = title
-
+        entry.title = self.cleanUpTitle(entry.title)
         entry.indexerguid = row.find("input", attrs={"type": "checkbox"})["name"]
         entry.link = self.get_nzb_link(entry.indexerguid, None)
         info = row.find("span", attrs={"class": "d"})

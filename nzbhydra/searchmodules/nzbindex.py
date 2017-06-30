@@ -186,6 +186,7 @@ class NzbIndex(SearchModule):
             entry.title = m.group(1)
         else:
             entry.title = title
+        entry.title = self.cleanUpTitle(entry.title)
         info = infotd.find("div", class_="fileinfo")
         if info is not None and re.compile(r"\d NFO").search(info.text):  # 1 nfo file is missing if there is no NFO
             entry.has_nfo = NzbSearchResult.HAS_NFO_YES

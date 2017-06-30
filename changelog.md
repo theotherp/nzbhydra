@@ -2,6 +2,8 @@
 
 ----------
 ### 0.2.220
+Added: Config option to define trailing words which will be removed from titles. Similar to "Obfuscated" and for languages, now it's just generic. Thanks to judhat2 for the list. See [#604](https://github.com/theotherp/nzbhydra/issues/604).
+
 Fixed: Don't convert required/forbidden regex to lowercase. See [#616](https://github.com/theotherp/nzbhydra/issues/616).
 
 Fixed: API key generation from GUI contained many zeroes when called from Chrome. See [#619](https://github.com/theotherp/nzbhydra/issues/619).

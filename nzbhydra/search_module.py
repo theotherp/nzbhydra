@@ -391,6 +391,20 @@ class SearchModule(object):
     def get_search_ids_from_indexer(self):
         return []
 
+    def cleanUpTitle(self, title):
+        try:
+            if title is None or title == "":
+                return title
+            if config.settings.searching.removeTrailing:
+                for word in config.settings.searching.removeTrailing.split(","):
+                    word = word.lower().strip()
+                    if title.lower().strip().endswith(word):
+                        self.debug("Removing trailing %s from title %s" % (word, title))
+                        return title[:-len(word)].strip()
+            return title
+        except:
+            return title
+
     def execute_queries(self, queries, searchRequest):
         if len(queries) == 0:
             return QueriesExecutionResult(didsearch=False, results=[], indexerSearchEntry=None, indexerApiAccessEntry=None, indexerStatus=None, total=0, loaded_results=0, total_known=True, has_more=False, rejected=self.getRejectedCountDict())

@@ -544,14 +544,7 @@ class NewzNab(SearchModule):
         entry = self.create_nzb_search_result()
         # These are the values that absolutely must be contained in the response
         entry.title = item.find("title").text
-        if entry.title and "nzbgeek" in self.settings.host and config.settings.searching.removeObfuscated:
-            entry.title = entry.title.replace("-Obfuscated", "")
-        if config.settings.searching.removeLanguage:
-            for word in [" English", " Korean", " Spanish", " French", " German", " Italian", " Danish", " Dutch", " Japanese", " Cantonese", " Mandarin", " Russian", " Polish", " Vietnamese", " Swedish", " Norwegian", " Finnish", " Turkish", " Portuguese", " Flemish", " Greek", " Hungarian"]:
-                if entry.title.endswith(word):
-                    self.debug("Removing trailing%s from title %s" % (word, entry.title))
-                    entry.title = entry.title[:-len(word)]
-                    break
+        entry.title = self.cleanUpTitle(entry.title)
         entry.link = item.find("link").text
         entry.pubDate = item.find("pubDate").text
         guid = item.find("guid")
