@@ -4,6 +4,8 @@
 ### 0.2.220
 Fixed: Don't convert required/forbidden regex to lowercase. See [#616](https://github.com/theotherp/nzbhydra/issues/616).
 
+Fixed: API key generation from GUI contained many zeroes when called from Chrome. See [#619](https://github.com/theotherp/nzbhydra/issues/619).
+
 ### 0.2.219
 Fixed: Use two concurrent connections when checking indexer capabilities. See [#606](https://github.com/theotherp/nzbhydra/issues/606).
 
