@@ -236,11 +236,11 @@ class SearchModule(object):
 
         applyRestrictionsGlobal = config.settings.searching.applyRestrictions == "both" or (config.settings.searching.applyRestrictions == "internal" and searchRequest.internal) or (config.settings.searching.applyRestrictions == "external" and not searchRequest.internal)
         applyRestrictionsCategory = searchRequest.category.category.applyRestrictions == "both" or (searchRequest.category.category.applyRestrictions == "internal" and searchRequest.internal) or (searchRequest.category.category.applyRestrictions == "external" and not searchRequest.internal)
-        if (searchRequest.category.category.requiredRegex and applyRestrictionsCategory and not re.search(searchRequest.category.category.requiredRegex.lower(), nzbSearchResult.title.lower())) \
-                or (config.settings.searching.requiredRegex and applyRestrictionsGlobal and not re.search(config.settings.searching.requiredRegex.lower(), nzbSearchResult.title.lower())):
+        if (searchRequest.category.category.requiredRegex and applyRestrictionsCategory and not re.search(searchRequest.category.category.requiredRegex, nzbSearchResult.title.lower())) \
+                or (config.settings.searching.requiredRegex and applyRestrictionsGlobal and not re.search(config.settings.searching.requiredRegex, nzbSearchResult.title.lower())):
             return False, "Required regex not found in title", "the required regex was not found in the title"
-        if (searchRequest.category.category.forbiddenRegex and applyRestrictionsCategory and re.search(searchRequest.category.category.forbiddenRegex.lower(), nzbSearchResult.title.lower())) \
-                or (config.settings.searching.forbiddenRegex and applyRestrictionsGlobal and re.search(config.settings.searching.forbiddenRegex.lower(), nzbSearchResult.title.lower())):
+        if (searchRequest.category.category.forbiddenRegex and applyRestrictionsCategory and re.search(searchRequest.category.category.forbiddenRegex, nzbSearchResult.title.lower())) \
+                or (config.settings.searching.forbiddenRegex and applyRestrictionsGlobal and re.search(config.settings.searching.forbiddenRegex, nzbSearchResult.title.lower())):
             return False, "Forbidden regex found in title", "the forbidden regex was found in the title"
         if config.settings.searching.forbiddenGroups and nzbSearchResult.group:
             for forbiddenPoster in config.settings.searching.forbiddenGroups.split(","):
