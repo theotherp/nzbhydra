@@ -124,7 +124,7 @@ initialConfig = {
     "main": {
         "apikey": ''.join(random.choice('0123456789ABCDEF') for i in range(32)),
         "branch": "master",
-        "configVersion": 39,
+        "configVersion": 40,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
         "externalUrl": None,
@@ -777,6 +777,10 @@ def migrateConfig(config):
                 for indexer in config["indexers"]:
                     if "loadLimitOnRandom" not in indexer.keys():
                         indexer["loadLimitOnRandom"] = None
+
+        if config["main"]["configVersion"] == 39:
+            with version_update(config, 40):
+                addLogMessage(20, "Preparing for migration to v2")
 
     return config
 
