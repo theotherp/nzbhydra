@@ -225,7 +225,7 @@ def buildResponse(apikey, q, offset):
             searchResultPubDate = pubDates[random.randint(0, generateDuplicateGroupRange - 1)]
             searchResultSize = sizes[random.randint(0, generateDuplicateGroupRange - 1)]
         else:
-            searchResultTitle = resultBaseName + " title" + str(i) + ".part01"
+            searchResultTitle = resultBaseName + " title" + str(i)
             searchResultPubDate = arrow.get(random.randint(1412677738, 1475836139)).format("ddd, DD MMM YYYY HH:mm:ss Z")
             searchResultSize = random.randint(100000, 10000000)
         if doGenerateNewGuids:

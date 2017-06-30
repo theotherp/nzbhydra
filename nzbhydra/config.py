@@ -160,6 +160,7 @@ initialConfig = {
         "theme": "grey",
         "urlBase": None,
         "useLocalUrlForApiAccess": True,
+        "verifySsl": True
     },
     "searching": {
         "alwaysShowDuplicates": False,

@@ -1,8 +1,11 @@
 import os
 
 import requests
+import logging
 from furl import furl
+from nzbhydra import config
 
+logger = logging.getLogger('root')
 
 proxies = None
 
@@ -32,10 +35,10 @@ def getCleanProxyUrl(url):
 def get(url, **kwargs):
     global proxies
     myproxies = proxies if proxies is not None and furl(url).host not in ["127.0.0.1", "localhost"] and "192.168" not in str(url) else None
-    return requests.get(url, proxies=myproxies, verify=False, **kwargs)
+    return requests.get(url, proxies=myproxies, verify=config.settings.main.verifySsl, **kwargs)
 
 
 def post(url, **kwargs):
     global proxies
     myproxies = proxies if proxies is not None and furl(url).host not in ["127.0.0.1", "localhost"] and "192.168" not in str(url) else None
-    return requests.post(url, proxies=myproxies, verify=False, **kwargs)
+    return requests.post(url, proxies=myproxies, verify=config.settings.main.verifySsl, **kwargs)

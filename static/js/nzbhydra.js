@@ -5237,6 +5237,14 @@ function ConfigFields($injector) {
                                 label: 'Dereferer',
                                 help: 'Redirect external links to hide your instance. Insert $s for target URL. Delete to disable.'
                             }
+                        },
+                        {
+                            key: 'verifySsl',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                label: 'Verify SSL certificates',
+                                help: 'If enabled only valid/known SSL certificates will be accepted when accessing indexers'
+                            }
                         }
                     ]
                 },
