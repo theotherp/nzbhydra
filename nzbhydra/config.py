@@ -151,6 +151,7 @@ initialConfig = {
         "pollShown": 0,
         "shutdownForRestart": False,
         "ssl": False,
+        "sslca": None,
         "sslcert": None,
         "sslkey": None,
         "socksProxy": None,

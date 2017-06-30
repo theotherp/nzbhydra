@@ -5111,18 +5111,6 @@ function ConfigFields($injector) {
                             }
                         },
                         {
-                            key: 'ssl',
-                            type: 'horizontalSwitch',
-                            templateOptions: {
-                                type: 'switch',
-                                label: 'Use SSL',
-                                help: 'I recommend using a reverse proxy instead of this. Requires restart.'
-                            },
-                            watcher: {
-                                listener: restartListener
-                            }
-                        },
-                        {
                             key: 'socksProxy',
                             type: 'horizontalInput',
                             templateOptions: {
@@ -5162,6 +5150,18 @@ function ConfigFields($injector) {
                             }
                         },
                         {
+                            key: 'ssl',
+                            type: 'horizontalSwitch',
+                            templateOptions: {
+                                type: 'switch',
+                                label: 'Use SSL',
+                                help: 'I recommend using a reverse proxy instead of this. Requires restart.'
+                            },
+                            watcher: {
+                                listener: restartListener
+                            }
+                        },
+                        {
                             key: 'sslcert',
                             hideExpression: '!model.ssl',
                             type: 'horizontalInput',
@@ -5188,7 +5188,21 @@ function ConfigFields($injector) {
                             watcher: {
                                 listener: restartListener
                             }
+                        },
+                        {
+                            key: 'sslca',
+                            hideExpression: '!model.ssl',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'SSL intermediate certificate (CA file)',
+                                help: 'Requires restart.'
+                            },
+                            watcher: {
+                                listener: restartListener
+                            }
                         }
+
 
                     ]
                 },

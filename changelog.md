@@ -6,6 +6,8 @@ Added: Config option to define trailing words which will be removed from titles.
 
 Added: SSL certificates will be verified by default. See [#624](https://github.com/theotherp/nzbhydra/pull/624)
 
+Added: Option to provide an SSL CA file. See [#623](https://github.com/theotherp/nzbhydra/issues/623).
+
 Fixed: Don't convert required/forbidden regex to lowercase. See [#616](https://github.com/theotherp/nzbhydra/issues/616).
 
 Fixed: API key generation from GUI contained many zeroes when called from Chrome. See [#619](https://github.com/theotherp/nzbhydra/issues/619).
