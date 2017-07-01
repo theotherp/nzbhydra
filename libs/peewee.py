@@ -41,7 +41,7 @@ from copy import deepcopy
 from functools import wraps
 from inspect import isclass
 
-__version__ = '2.9.2'
+__version__ = '2.10.1'
 __all__ = [
     'BareField',
     'BigIntegerField',
@@ -315,7 +315,10 @@ def _sqlite_regexp(regex, value, case_sensitive=False):
 
 class attrdict(dict):
     def __getattr__(self, attr):
-        return self[attr]
+        try:
+            return self[attr]
+        except KeyError:
+            raise AttributeError(attr)
 
 SENTINEL = object()
 
@@ -1300,6 +1303,7 @@ class TimeField(_BaseFormattedField):
 class TimestampField(IntegerField):
     # Support second -> microsecond resolution.
     valid_resolutions = [10**i for i in range(7)]
+    zero_value = None
 
     def __init__(self, *args, **kwargs):
         self.resolution = kwargs.pop('resolution', 1) or 1
@@ -1312,6 +1316,7 @@ class TimestampField(IntegerField):
         self._conv = _dt.utcfromtimestamp if self.utc else _dt.fromtimestamp
         _default = _dt.utcnow if self.utc else _dt.now
         kwargs.setdefault('default', _default)
+        self.zero_value = kwargs.pop('zero_value', None)
         super(TimestampField, self).__init__(*args, **kwargs)
 
     def get_db_field(self):
@@ -1344,7 +1349,7 @@ class TimestampField(IntegerField):
     def python_value(self, value):
         if value is not None and isinstance(value, (int, float, long)):
             if value == 0:
-                return
+                return self.zero_value
             elif self.resolution > 1:
                 ticks_to_microsecond = 1000000 // self.resolution
                 value, ticks = divmod(value, self.resolution)
@@ -3714,7 +3719,8 @@ class Database(object):
         return self.get_conn().cursor()
 
     def _close(self, conn):
-        conn.close()
+        if conn is not None:
+            conn.close()
 
     def _connect(self, database, **kwargs):
         raise NotImplementedError
@@ -4825,7 +4831,7 @@ class BaseModel(type):
                 model_pk, pk_name = parent_pk, parent_pk.name
             else:
                 model_pk, pk_name = PrimaryKeyField(primary_key=True), 'id'
-        elif isinstance(model_pk, CompositeKey):
+        if isinstance(model_pk, CompositeKey):
             pk_name = '_composite_key'
             composite_key = True
 
