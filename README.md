@@ -94,7 +94,8 @@ sudo service nzbhydra start
 ```
 
 ### Windows
-See the WindowsService folder in your NZB Hydra directory. It contains batch scripts to install and uninstall Hydra as a service. Run `installService.cmd` with administrator rights.
+See the WindowsService folder in your NZB Hydra directory. It contains batch scripts to install and uninstall Hydra as a service. Run `installService.cmd` with administrator rights.  
+Windows10 Creative Update users will need an updated version of nssm, [prelease build 2.2.4-101](https://nssm.cc/ci/nssm-2.24-101-g897c7ad.zip) or newer to register Hydra as a service. [NSSM Offical page](https://nssm.cc/download)
  
 ### Mac
 You might need to install homebrew python. See [this excellent guide](https://www.mattgibson.ca/getting-nzbhydra-working-macos-sierra/).
