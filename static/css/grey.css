@@ -7611,10 +7611,10 @@ input:focus + .input-group-addon {
 #banner {
   background-image: url("../img/banner-dark.png");
   background-repeat: no-repeat;
-  width: 547px;
+  background-position: center;
+  background-size: contain;
   height: 150px;
   margin: 0 auto 25px auto;
-  padding-left: 547px;
   display: block;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
