@@ -667,13 +667,13 @@ input:focus + .input-group-addon {
 #banner {
   background-image: @banner-url;
   background-repeat: no-repeat;
-  width: 547px;
   height: 150px;
   margin: 0 auto 25px auto;
-  padding-left: 547px;
   display: block;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  background-position: center;
+  background-size: contain;
 }
 
 .input-group-addon {
@@ -922,5 +922,7 @@ g.nv-multiBarHorizontalChart > g > g > g > g > g > text {
   color: @brand-success;
 }
 
-
-
+.row {
+  margin-left: 0;
+  margin-right: 0;
+}

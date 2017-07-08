@@ -7615,13 +7615,13 @@ input:focus + .input-group-addon {
 #banner {
   background-image: url("../img/banner.png");
   background-repeat: no-repeat;
-  width: 547px;
   height: 150px;
   margin: 0 auto 25px auto;
-  padding-left: 547px;
   display: block;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  background-position: center;
+  background-size: contain;
 }
 .input-group-addon {
   color: #555555;
@@ -7784,6 +7784,10 @@ g.nv-multiBarHorizontalChart > g > g > g > g > g > text {
 }
 .filter-active {
   color: #23a123;
+}
+.row {
+  margin-left: 0;
+  margin-right: 0;
 }
 .nav-tabs > li > a:hover {
   border-color: #eeeeee #eeeeee transparent;
