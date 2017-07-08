@@ -496,8 +496,8 @@ def internalapi_askAdmin():
 
 @app.route('/auth/login', methods=['POST'])
 def login():
-    username = request.json['username'].encode("utf-8")
-    password = request.json['password'].encode("utf-8")
+    username = request.form['username'].encode("utf-8")
+    password = request.form['password'].encode("utf-8")
     for u in config.settings.auth.users:
         if u.username.encode("utf-8") == username and u.password.encode("utf-8") == password:
             token = create_token(u)
@@ -505,13 +505,10 @@ def login():
             session["rememberMe"] = token
             session["username"] = u["username"]
             session["token"] = create_token(u)
-            response = jsonify(getUserInfos(u))
-            return response
-    response = jsonify(message='Wrong username or Password')
+            return redirect(("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/")
     ip = getIp() if config.settings.main.logging.logIpAddresses else "<HIDDENIP>"
     logger.warn("Unsuccessful form login for user %s from IP %s" % (username, ip))
-    response.status_code = 401
-    return response
+    return redirect(("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/" + "login")
 
 
 @app.route('/auth/logout', methods=['POST'])
@@ -572,7 +569,17 @@ def base(path):
                 if config.settings.auth.restrictStats:
                     bootstrapped["maySeeStats"] = u.maySeeStats
 
+    if not isAllowed("main") and config.settings.auth.authType == "form":
+        return redirect(base_url + "login")
+
     return render_template("index.html", base_url=base_url, onProd="false" if config.settings.main.debug else "true", theme=config.settings.main.theme + ".css", bootstrapped=json.dumps(bootstrapped))
+
+
+@app.route('/login')
+def loginview():
+    logger.debug("Sending login.html")
+    base_url = ("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/"
+    return render_template("login.html", base_url=base_url, theme=config.settings.main.theme + ".css", )
 
 
 #

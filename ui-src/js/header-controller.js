@@ -2,7 +2,7 @@ angular
     .module('nzbhydraApp')
     .controller('HeaderController', HeaderController);
 
-function HeaderController($scope, $state, growl, HydraAuthService) {
+function HeaderController($scope, $state, growl, HydraAuthService, $location) {
 
 
     $scope.showLoginout = false;
@@ -44,21 +44,29 @@ function HeaderController($scope, $state, growl, HydraAuthService) {
         update();
     });
 
+    var bases = document.getElementsByTagName('base');
+    var baseHref = null;
+
+    if (bases.length > 0) {
+        baseHref = bases[0].href;
+    }
+
     $scope.loginout = function () {
         if (HydraAuthService.isLoggedIn()) {
             HydraAuthService.logout().then(function () {
-                if ($scope.userInfos.authType == "basic") {
+                if ($scope.userInfos.authType === "basic") {
                     growl.info("Logged out. Close your browser to make sure session is closed.");
                 }
-                else if ($scope.userInfos.authType == "form") {
+                else if ($scope.userInfos.authType === "form") {
                     growl.info("Logged out");
+                    window.location.href = baseHref;
                 }
                 update();
                 //$state.go("root.search", null, {reload: true});
             });
 
         } else {
-            if ($scope.userInfos.authType == "basic") {
+            if ($scope.userInfos.authType === "basic") {
                 var params = {};
                 if ($scope.oldUserName) {
                     params = {
@@ -71,8 +79,8 @@ function HeaderController($scope, $state, growl, HydraAuthService) {
                     $scope.oldUserName = null;
                     $state.go("root.search");
                 })
-            } else if ($scope.userInfos.authType == "form") {
-                $state.go("root.login");
+            } else if ($scope.userInfos.authType === "form") {
+                window.location.href = baseHref + "login";
             } else {
                 growl.info("You shouldn't need to login but here you go!");
             }

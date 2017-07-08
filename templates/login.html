@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title >NZB Hydra</title>
+    <base href="{{ base_url }}"/>
+    <meta name="robots" content="noindex"/>
+    <meta name="referrer" content="no-referrer"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/css/alllibs.css" rel="stylesheet">
+    <link href="static/css/{{ theme }}" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="static/img/favicon.ico">
+
+</head>
+<body style="text-align: center">
+<div class="row">
+    <div class="col-md-6"></div>
+    <div class="center-form panel col-md-8">
+        <div class="panel-body">
+            <h2 class="text-center">Log in</h2>
+            <form method="post" name="loginForm" action="auth/login">
+                <div class="form-group has-feedback">
+                    <input class="form-control input-lg" type="text" name="username" placeholder="Username" required autofocus auto-focus>
+                    <span class="ion-at form-control-feedback"></span>
+                </div>
+                <div class="form-group has-feedback">
+                    <input class="form-control input-lg" type="password" name="password"  placeholder="Password" required>
+                    <span class="ion-key form-control-feedback"></span>
+                </div>
+                <button type="submit" class="btn btn-lg  btn-block btn-success">Log in</button>
+                You will be forwarded to the search area.
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+
+
+
+</html>

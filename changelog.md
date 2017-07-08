@@ -2,6 +2,8 @@
 
 ----------
 ### 0.2.221
+Changed: Use an "empty" login page that does not expose any data.
+
 Fixed: Some mobile layout issues. Thanks to nemchik. See [#629](https://github.com/theotherp/nzbhydra/pull/629).
 
 ### 0.2.220

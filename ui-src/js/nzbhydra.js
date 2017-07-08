@@ -484,23 +484,23 @@ angular.module('nzbhydraApp').config(function ($stateProvider, $urlRouterProvide
                 }
             }
         })
-        .state("root.login", {
-            url: "/login",
-            views: {
-                'container@': {
-                    templateUrl: "static/html/states/login.html",
-                    controller: "LoginController",
-                    resolve: {
-                        loginRequired: function () {
-                            return null;
-                        },
-                        $title: function ($stateParams) {
-                            return "Login"
-                        }
-                    }
-                }
-            }
-        })
+        // .state("root.login", {
+        //     url: "/login",
+        //     views: {
+        //         'container@': {
+        //             templateUrl: "static/html/states/login.html",
+        //             controller: "LoginController",
+        //             resolve: {
+        //                 loginRequired: function () {
+        //                     return null;
+        //                 },
+        //                 $title: function ($stateParams) {
+        //                     return "Login"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // })
     ;
 
 
