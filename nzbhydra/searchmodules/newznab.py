@@ -181,7 +181,8 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
          "id": "tmdbid",
          "key": "24428",
          "expected": "Avengers"
-         },
+         }
+        ,
         {"t": "movie",
          "id": "imdbid",
          "key": "0848228",
