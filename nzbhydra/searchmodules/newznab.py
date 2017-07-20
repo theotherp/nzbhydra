@@ -107,6 +107,10 @@ def _testId(host, apikey, t, idkey, idvalue, expectedResult, username=None, pass
     for item in tree.find("channel").findall("item"):
         titles.append(item.find("title").text)
 
+    #Hacky way of preventing nzb.su of shutting us down. If more than 5 requests are done in 6 seconds the indexer will block further requests for some time
+    if "nzb.su" in host.lower():
+        sleep(1)
+
     if len(titles) == 0:
         logger.debug("Search with t=%s and %s=%s returned no results" % (t, idkey, idvalue))
         return False, t
@@ -211,6 +215,28 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
         logger.error("Unable to parse indexer response")
         return False, e.message, None
 
+    # Check indexer type (nzedb, newznab, nntmux)
+    try:
+        url = _build_base_url(host, apikey, "tvsearch", None)
+        headers = {
+            'User-Agent': userAgent if userAgent is not None else config.settings.searching.userAgent
+        }
+        logger.debug("Requesting %s" % url)
+        r = webaccess.get(url, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers, auth=HTTPBasicAuth(username, password) if username is not None else None)
+        r.raise_for_status()
+    except Exception as e:
+        logger.error("Unable to connect to indexer to findout indexer backend type: %s" % e)
+        return False, "Unable to connect to indexer to findout indexer backend type", None
+
+    logger.debug("Indexer returned: " + r.text[:500])
+    generator = ET.fromstring(r.content).find("channel/generator")
+    if generator is not None:
+        backend = generator.text
+        logger.info("Found generator tag indicating that indexer %s is a %s based indexer" % (host, backend))
+    else:
+        logger.info("Assuming indexer %s is a newznab based indexer" % host)
+        backend = "newznab"
+
     try:
         categories = []
         subCategories = {}
@@ -259,27 +285,7 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
             logger.info("Checking capabilities of indexer by brute force to make sure supported search types are correctly recognized")
             supportedIds, supportedTypes = checkCapsBruteForce(supportedTypes, toCheck, host, apikey, username=username, password=password)
 
-        # Check indexer type (nzedb, newznab, nntmux)
-        try:
-            url = _build_base_url(host, apikey, "tvsearch", None)
-            headers = {
-                'User-Agent': userAgent if userAgent is not None else config.settings.searching.userAgent
-            }
-            logger.debug("Requesting %s" % url)
-            r = webaccess.get(url, timeout=timeout if timeout is not None else config.settings.searching.timeout, headers=headers, auth=HTTPBasicAuth(username, password) if username is not None else None)
-            r.raise_for_status()
-        except Exception as e:
-            logger.error("Unable to connect to indexer to findout indexer backend type: %s" % e)
-            return False, "Unable to connect to indexer to findout indexer backend type", None
 
-        logger.debug("Indexer returned: " + r.text[:500])
-        generator = ET.fromstring(r.content).find("channel/generator")
-        if generator is not None:
-            backend = generator.text
-            logger.info("Found generator tag indicating that indexer %s is a %s based indexer" % (host, backend))
-        else:
-            logger.info("Assuming indexer %s is a newznab based indexer" % host)
-            backend = "newznab"
 
         return True, None, {
             "animeCategory": animeCategory,

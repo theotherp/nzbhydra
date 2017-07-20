@@ -24,7 +24,7 @@ from nzbhydra.categories import getUnknownCategory
 from nzbhydra.exceptions import IndexerResultParsingException, IndexerAccessException, IndexerResultParsingRowException
 
 from nzbhydra.nzb_search_result import NzbSearchResult
-from nzbhydra.search_module import SearchModule, IndexerProcessingResult
+from nzbhydra.search_module import SearchModule, IndexerProcessingResult, QueriesExecutionResult
 
 logger = logging.getLogger('root')
 

@@ -6,6 +6,8 @@ Changed: Use an "empty" login page that does not expose any data.
 
 Fixed: Some mobile layout issues. Thanks to nemchik. See [#629](https://github.com/theotherp/nzbhydra/pull/629).
 
+Fixed: In some rare cases where indexers were selected for a search but could not execute it the search would crash. See [#633](https://github.com/theotherp/nzbhydra/pull/633). 
+
 ### 0.2.220
 Changed: I updated the database library and changed the handling again. This will hopefully solve some issues that some users still had but might impact performance. I haven't found a satisfactory solution yet. 
 Please let me know if you experience any problems.

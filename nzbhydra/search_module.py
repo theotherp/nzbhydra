@@ -92,7 +92,7 @@ class SearchModule(object):
         if search_request.type == "tv":
             if search_request.query is None and search_request.identifier_key is None and self.needs_queries:
                 self.error("TV search without query or id or title is not possible with this indexer")
-                return []
+                return QueriesExecutionResult(didsearch=False, results=[], indexerSearchEntry=None, indexerApiAccessEntry=None, indexerStatus=None, total=0, loaded_results=0, total_known=True, has_more=False, rejected=self.getRejectedCountDict())
             if search_request.query is None and not self.generate_queries:
                 self.error("TV search is not possible with this provideer because query generation is disabled")
             if search_request.identifier_key in self.search_ids:
@@ -111,7 +111,7 @@ class SearchModule(object):
         elif search_request.type == "movie":
             if search_request.query is None and search_request.title is None and search_request.identifier_key is None and self.needs_queries:
                 self.error("Movie search without query or IMDB id or title is not possible with this indexer")
-                return []
+                return QueriesExecutionResult(didsearch=False, results=[], indexerSearchEntry=None, indexerApiAccessEntry=None, indexerStatus=None, total=0, loaded_results=0, total_known=True, has_more=False, rejected=self.getRejectedCountDict())
             if search_request.query is None and not self.generate_queries:
                 self.error("Movie search is not possible with this provideer because query generation is disabled")
             if search_request.identifier_key is not None and "imdbid" in self.search_ids:
