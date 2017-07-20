@@ -14,6 +14,7 @@ from builtins import *
 from furl import furl
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import RequestException
+from time import sleep
 
 from nzbhydra import config
 from nzbhydra import infos
@@ -178,8 +179,8 @@ def check_caps(host, apikey, username=None, password=None, userAgent=None, timeo
          },
         {"t": "movie",
          "id": "tmdbid",
-         "key": "1399",
-         "expected": "Thrones"
+         "key": "24428",
+         "expected": "Avengers"
          },
         {"t": "movie",
          "id": "imdbid",

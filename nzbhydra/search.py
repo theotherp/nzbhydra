@@ -383,7 +383,7 @@ def search(search_request):
                     tryGetOrCreateSearchResultDbEntry(searchResultId, indexer.indexer.id, result)
                     result.searchResultId = searchResultId
                     search_results.append(result)
-                except (IntegrityError, OperationalError) as e:
+                except (IntegrityError, OperationalError, UnicodeEncodeError) as e:
                     logger.error("Error while trying to save search result to database. Skipping it. Error: %s" % e)
             db.commit()
             cache_entry["indexer_infos"][indexer].update(
