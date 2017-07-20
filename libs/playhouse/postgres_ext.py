@@ -164,11 +164,7 @@ class ArrayField(IndexedFieldMixin, Field):
 
 
 class DateTimeTZField(DateTimeField):
-    db_field = 'timestamptz'
-
-
-class IntervalField(Field):
-    db_field = 'interval'
+    db_field = 'datetime_tz'
 
 
 class HStoreField(IndexedFieldMixin, Field):
@@ -265,17 +261,12 @@ class TSVectorField(IndexedFieldMixin, TextField):
     db_field = 'tsvector'
     default_index_type = 'GIN'
 
-    def match(self, query, language=None):
-        params = (language, query) if language is not None else (query,)
-        return Expression(self, OP.TS_MATCH, fn.to_tsquery(*params))
+    def match(self, query):
+        return Expression(self, OP.TS_MATCH, fn.to_tsquery(query))
 
 
-def Match(field, query, language=None):
-    params = (language, query) if language is not None else (query,)
-    return Expression(
-        fn.to_tsvector(field),
-        OP.TS_MATCH,
-        fn.to_tsquery(*params))
+def Match(field, query):
+    return Expression(fn.to_tsvector(field), OP.TS_MATCH, fn.to_tsquery(query))
 
 
 OP.update(
@@ -373,7 +364,7 @@ class PostgresqlExtDatabase(PostgresqlDatabase):
         use_named_cursor = (named_cursor or (
                             self.server_side_cursors and
                             sql.lower().startswith('select')))
-        with self.exception_wrapper:
+        with self.exception_wrapper():
             if use_named_cursor:
                 cursor = self.get_cursor(name=str(uuid.uuid1()))
                 require_commit = False

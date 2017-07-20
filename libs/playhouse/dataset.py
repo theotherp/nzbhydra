@@ -32,8 +32,7 @@ class DataSet(object):
 
         # Introspect the database and generate models.
         self._introspector = Introspector.from_database(self._database)
-        self._models = self._introspector.generate_models(
-            skip_invalid=True, literal_column_names=True)
+        self._models = self._introspector.generate_models(skip_invalid=True)
         self._migrator = SchemaMigrator.from_database(self._database)
 
         class BaseModel(Model):
@@ -57,8 +56,6 @@ class DataSet(object):
             'json': JSONImporter}
 
     def __getitem__(self, table):
-        if table not in self._models and table in self.tables:
-            self.update_cache(table)
         return Table(self, table, self._models.get(table))
 
     @property
@@ -76,18 +73,13 @@ class DataSet(object):
 
     def update_cache(self, table=None):
         if table:
-            dependencies = [table]
-            if table in self._models:
-                model_class = self._models[table]
-                dependencies.extend([
-                    related._meta.db_table for related in
-                    model_class._meta.related_models(backrefs=True)])
+            model_class = self._models[table]
+            dependencies = model_class._meta.related_models(backrefs=True)
         else:
             dependencies = None  # Update all tables.
         updated = self._introspector.generate_models(
             skip_invalid=True,
-            table_names=dependencies,
-            literal_column_names=True)
+            table_names=[related._meta.db_table for related in dependencies])
         self._models.update(updated)
 
     def __enter__(self):

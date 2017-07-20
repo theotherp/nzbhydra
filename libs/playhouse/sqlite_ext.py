@@ -43,6 +43,11 @@ try:
 except ImportError:
     import json
 
+try:
+    from vtfunc import TableFunction
+except ImportError:
+    pass
+
 from peewee import *
 from peewee import EnclosedClause
 from peewee import Entity
@@ -67,10 +72,7 @@ if sys.version_info[0] == 3:
 
 FTS_MATCHINFO_FORMAT = 'pcnalx'
 FTS_MATCHINFO_FORMAT_SIMPLE = 'pcx'
-if sqlite3 is not None:
-    FTS_VER = sqlite3.sqlite_version_info[:3] >= (3, 7, 4) and 'FTS4' or 'FTS3'
-else:
-    FTS_VER = 'FTS3'
+FTS_VER = sqlite3.sqlite_version_info[:3] >= (3, 7, 4) and 'FTS4' or 'FTS3'
 FTS5_MIN_VERSION = (3, 9, 0)
 
 
@@ -670,12 +672,8 @@ class FTS5Model(BaseFTSModel):
         return getattr(cls, attr)
 
 
-def ClosureTable(model_class, foreign_key=None, referencing_class=None,
-                 referencing_key=None):
+def ClosureTable(model_class, foreign_key=None):
     """Model factory for the transitive closure extension."""
-    if referencing_class is None:
-        referencing_class = model_class
-
     if foreign_key is None:
         for field_obj in model_class._meta.rel.values():
             if field_obj.rel_model is model_class:
@@ -684,15 +682,13 @@ def ClosureTable(model_class, foreign_key=None, referencing_class=None,
         else:
             raise ValueError('Unable to find self-referential foreign key.')
 
-    source_key = model_class._meta.primary_key
-    if referencing_key is None:
-        referencing_key = source_key
+    primary_key = model_class._meta.primary_key
 
     class BaseClosureTable(VirtualModel):
         depth = VirtualIntegerField()
         id = VirtualIntegerField()
-        idcolumn = VirtualCharField()
-        parentcolumn = VirtualCharField()
+        idcolumn = VirtualIntegerField()
+        parentcolumn = VirtualIntegerField()
         root = VirtualIntegerField()
         tablename = VirtualCharField()
 
@@ -703,9 +699,8 @@ def ClosureTable(model_class, foreign_key=None, referencing_class=None,
         def descendants(cls, node, depth=None, include_node=False):
             query = (model_class
                      .select(model_class, cls.depth.alias('depth'))
-                     .join(cls, on=(source_key == cls.id))
-                     .where(cls.root == node)
-                     .naive())
+                     .join(cls, on=(primary_key == cls.id))
+                     .where(cls.root == node))
             if depth is not None:
                 query = query.where(cls.depth == depth)
             elif not include_node:
@@ -716,9 +711,8 @@ def ClosureTable(model_class, foreign_key=None, referencing_class=None,
         def ancestors(cls, node, depth=None, include_node=False):
             query = (model_class
                      .select(model_class, cls.depth.alias('depth'))
-                     .join(cls, on=(source_key == cls.root))
-                     .where(cls.id == node)
-                     .naive())
+                     .join(cls, on=(primary_key == cls.root))
+                     .where(cls.id == node))
             if depth:
                 query = query.where(cls.depth == depth)
             elif not include_node:
@@ -727,33 +721,17 @@ def ClosureTable(model_class, foreign_key=None, referencing_class=None,
 
         @classmethod
         def siblings(cls, node, include_node=False):
-            if referencing_class is model_class:
-                # self-join
-                fk_value = node._data.get(foreign_key.name)
-                query = model_class.select().where(foreign_key == fk_value)
-            else:
-                # siblings as given in reference_class
-                siblings = (referencing_class
-                            .select(referencing_key)
-                            .join(cls, on=(foreign_key == cls.root))
-                            .where((cls.id == node) & (cls.depth == 1)))
-
-                # the according models
-                query = (model_class
-                         .select()
-                         .where(source_key << siblings)
-                         .naive())
-
+            fk_value = node._data.get(foreign_key.name)
+            query = model_class.select().where(foreign_key == fk_value)
             if not include_node:
-                query = query.where(source_key != node)
-
+                query = query.where(primary_key != node)
             return query
 
     class Meta:
-        database = referencing_class._meta.database
+        database = model_class._meta.database
         extension_options = {
-            'tablename': referencing_class._meta.db_table,
-            'idcolumn': referencing_key.db_column,
+            'tablename': model_class._meta.db_table,
+            'idcolumn': model_class._meta.primary_key.db_column,
             'parentcolumn': foreign_key.db_column}
         primary_key = False
 
@@ -861,7 +839,7 @@ class SqliteExtDatabase(SqliteDatabase):
             self._using_c_extensions = True
             self.register_function(_c_ext.peewee_date_part, 'date_part', 2)
             self.register_function(_c_ext.peewee_date_trunc, 'date_trunc', 2)
-            self.register_function(_c_ext.peewee_regexp, 'regexp', -1)
+            self.register_function(_c_ext.peewee_regexp, 'regexp', 2)
             self.register_function(_c_ext.peewee_rank, 'fts_rank', -1)
             self.register_function(_c_ext.peewee_lucene, 'fts_lucene', -1)
             self.register_function(_c_ext.peewee_bm25, 'fts_bm25', -1)
@@ -870,7 +848,7 @@ class SqliteExtDatabase(SqliteDatabase):
             self._using_c_extensions = False
             self.register_function(_sqlite_date_part, 'date_part', 2)
             self.register_function(_sqlite_date_trunc, 'date_trunc', 2)
-            self.register_function(_sqlite_regexp, 'regexp', -1)
+            self.register_function(_sqlite_regexp, 'regexp', 2)
             self.register_function(rank, 'fts_rank', -1)
             self.register_function(bm25, 'fts_bm25', -1)
 
@@ -975,6 +953,20 @@ class SqliteExtDatabase(SqliteDatabase):
         return super(SqliteExtDatabase, self).create_index(
             model_class, field_name, unique)
 
+    def granular_transaction(self, lock_type='deferred'):
+        assert lock_type.lower() in ('deferred', 'immediate', 'exclusive')
+        return granular_transaction(self, lock_type)
+
+
+class granular_transaction(transaction):
+    def __init__(self, db, lock_type='deferred'):
+        self.db = db
+        self.conn = self.db.get_conn()
+        self.lock_type = lock_type
+
+    def _begin(self):
+        self.db.begin(self.lock_type)
+
 
 OP.MATCH = 'match'
 SqliteExtDatabase.register_ops({
@@ -990,18 +982,18 @@ def _parse_match_info(buf):
     return [struct.unpack('@I', buf[i:i+4])[0] for i in range(0, bufsize, 4)]
 
 # Ranking implementation, which parse matchinfo.
-def rank(raw_match_info, *raw_weights):
+def rank(raw_match_info, *weights):
     # Handle match_info called w/default args 'pcx' - based on the example rank
     # function http://sqlite.org/fts3.html#appendix_a
     match_info = _parse_match_info(raw_match_info)
     score = 0.0
 
     p, c = match_info[:2]
-    if not raw_weights:
+    if not weights:
         weights = [1] * c
     else:
         weights = [0] * c
-        for i, weight in enumerate(raw_weights):
+        for i, weight in enumerate(weights):
             weights[i] = weight
 
     for phrase_num in range(p):

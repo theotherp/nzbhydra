@@ -2,6 +2,8 @@
 
 ----------
 ### 0.2.221
+Changed: Reverted the database code yet again. I can't get it to work for everybody. I give up. I hope to release a new major version of Hydra in fall that won't have this problem
+
 Changed: Use an "empty" login page that does not expose any data.
 
 Fixed: Some mobile layout issues. Thanks to nemchik. See [#629](https://github.com/theotherp/nzbhydra/pull/629).

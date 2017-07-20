@@ -244,10 +244,6 @@ class SchemaMigrator(object):
                     field.rel_model._meta.db_table,
                     field.to_field.db_column))
 
-        if field.index or field.unique:
-            operations.append(
-                self.add_index(table, (column_name,), field.unique))
-
         return operations
 
     @operation
@@ -446,9 +442,7 @@ class MySQLMigrator(SchemaMigrator):
              'FROM information_schema.key_column_usage WHERE '
              'table_schema = DATABASE() AND '
              'table_name = %s AND '
-             'column_name = %s AND '
-             'referenced_table_name IS NOT NULL AND '
-             'referenced_column_name IS NOT NULL;'),
+             'column_name = %s;'),
             (table, column_name))
         result = cursor.fetchone()
         if not result:
