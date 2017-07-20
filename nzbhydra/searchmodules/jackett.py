@@ -71,7 +71,7 @@ class Jackett(newznab.NewzNab):
         entries = []
         
         try:
-            tree = ET.fromstring(xmlResponse)
+            tree = ET.fromstring(xmlResponse.encode('utf-8'))
         except Exception:
             self.exception("Error parsing XML: %s..." % xmlResponse[:500])
             raise IndexerResultParsingException("Error parsing XML", self)

@@ -10,7 +10,7 @@ DO_PUSH = DO_RELEASE = True
 _, version = update.get_current_version()
 
 html = update.getVersionHistory(sinceLastVersion=True)
-find_all = [x.text for x in BeautifulSoup(html, "lxml").findAll("p")]
+find_all = [x.text for x in BeautifulSoup(html, "html.parser").findAll("p")]
 text = '\n\n'.join(find_all)
 
 returncode = call(["buildWindowsdist.cmd", version])

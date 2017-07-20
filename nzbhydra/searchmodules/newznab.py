@@ -527,7 +527,7 @@ class NewzNab(SearchModule):
         entries = []
 
         try:
-            tree = ET.fromstring(xmlResponse)
+            tree = ET.fromstring(xmlResponse.encode('utf-8'))
         except Exception:
             self.exception("Error parsing XML: %s..." % xmlResponse[:500])
             raise IndexerResultParsingException("Error parsing XML", self)
@@ -612,7 +612,7 @@ class NewzNab(SearchModule):
 
             # Store all the attributes, we will return them later for external apis
             entry.attributes.append({"name": attribute_name, "value": attribute_value})
-        if self.settings.backend.lower() in ["nzedb", "nntmux"] and entry.has_nfo == NzbSearchResult.HAS_NFO_MAYBE:
+        if self.settings.backend is None or (self.settings.backend.lower() in ["nzedb", "nntmux"] and entry.has_nfo == NzbSearchResult.HAS_NFO_MAYBE):
             # If the "info" attribute wasn't found this entry doesn't have an NFO
             entry.has_nfo = NzbSearchResult.HAS_NFO_NO
         if not entry.details_link:

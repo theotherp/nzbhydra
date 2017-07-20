@@ -379,7 +379,7 @@ def search(search_request):
                         logger.info("Skipping result with missing data: %s" % result)
                         continue
                     try:
-                        searchResultId = hashlib.sha1(unicode(indexer.indexer.id) + result.indexerguid).hexdigest()
+                        searchResultId = hashlib.sha1(str(indexer) + result.indexerguid.encode('ascii', 'ignore').decode("utf-8")).hexdigest()
                         tryGetOrCreateSearchResultDbEntry(searchResultId, indexer.indexer.id, result)
                         result.searchResultId = searchResultId
                         search_results.append(result)

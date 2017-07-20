@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.222
+Fixed: Results with special characters in titles would cause error (mostly torrents). See [#634](https://github.com/theotherp/nzbhydra/pull/634).
+
 ### 0.2.221
 Changed: Reverted the database code yet again. I can't get it to work for everybody. I give up. I hope to release a new major version of Hydra in fall that won't have this problem
 

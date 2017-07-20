@@ -436,7 +436,7 @@ class SearchModule(object):
                     self.debug("Successfully loaded URL %s" % request.url)
                     try:
 
-                        parsed_results = self.process_query_result(request.content, searchRequest)
+                        parsed_results = self.process_query_result(request.text, searchRequest)
                         results.extend(parsed_results.entries)  # Retrieve the processed results
                         queries.extend(parsed_results.queries)  # Add queries that were added as a result of the parsing, e.g. when the next result page should also be loaded
                         total_results += parsed_results.total
