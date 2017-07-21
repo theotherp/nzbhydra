@@ -19,7 +19,7 @@ logger = logging.getLogger('root')
 
 db = SqliteQueueDatabase(None, autostart=False, results_timeout=20.0, autocommit=False)
 
-DATABASE_VERSION = 18
+DATABASE_VERSION = 20
 
 
 class JSONField(TextField):
@@ -639,5 +639,15 @@ def update_db(dbfile):
             except: #May not exist because I fucked up
                 pass
             vi.version = 18
+            vi.save()
+            logger.info("Database migration completed successfully")
+
+        if vi.version == 19 or vi-version == 20:
+            logger.info("Deleting search results since last broken update")
+            try:
+                SearchResult.raw("DELETE FROM searchresult WHERE firstFound > 1500553110").execute()
+            except:  # May not exist because I fucked up
+                logger.error("Unable to delete last search results")
+            vi.version = 20
             vi.save()
             logger.info("Database migration completed successfully")
