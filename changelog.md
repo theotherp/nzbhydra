@@ -3,6 +3,7 @@
 ----------
 ### 0.2.223
 Fixed: At least one problem introduced with 0.2.221/0.0.222: Downloading NZBs failed. See [#639](https://github.com/theotherp/nzbhydra/pull/639).
+Please note that it's possible that downloads for results that were found between updating to 0.2.221/0.2.222 and updating to this version might not work.
 
 ### 0.2.222
 Fixed: Results with special characters in titles would cause error (mostly torrents). See [#634](https://github.com/theotherp/nzbhydra/pull/634).
