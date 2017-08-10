@@ -127,6 +127,7 @@ initialConfig = {
         "configVersion": 40,
         "dereferer": "http://www.dereferer.org/?$s",
         "debug": False,
+        "downloadCounterExecuted": False,
         "externalUrl": None,
         "firstStart": arrow.utcnow().timestamp,
         "isFirstStart": True,

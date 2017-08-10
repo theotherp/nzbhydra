@@ -171,6 +171,14 @@ def run(arguments):
         elif config.settings.main.httpProxy:
             webaccess.set_proxies(config.settings.main.httpProxy, config.settings.main.httpsProxy)
 
+        # Download a very small file from github to get a good estimate how many instances of hydra are running. Only executed once per installation (well, per settings.cfg instance)
+        if not config.settings.main.downloadCounterExecuted and not config.settings.main.isFirstStart:
+            try:
+                webaccess.get("https://github.com/theotherp/apitests/releases/download/v5.0.0/downloadcounter.zip")
+            except:
+                pass
+            config.settings.main.downloadCounterExecuted = True
+
 
         if config.settings.main.externalUrl is not None and config.settings.main.externalUrl != "":
             f = furl(config.settings.main.externalUrl)
@@ -223,8 +231,8 @@ if __name__ == '__main__':
     parser.add_argument('--port', '-p', action='store', help='Port to run on', type=int)
     parser.add_argument('--nobrowser', action='store_true', help='Don\'t open URL on startup', default=False)
     parser.add_argument('--daemon', '-D', action='store_true', help='Run as daemon. *nix only', default=False)
-    parser.add_argument('--quiet', '-q', action='store_true', help='Quiet (no output)', default=False)
     parser.add_argument('--pidfile', action='store', help='PID file. Only relevant with daemon argument', default="nzbhydra.pid")
+    parser.add_argument('--quiet', '-q', action='store_true', help='Quiet (no output)', default=False)
     parser.add_argument('--restarted', action='store_true', help=argparse.SUPPRESS, default=False)
     parser.add_argument('--clearloganddb', action='store_true', help=argparse.SUPPRESS, default=False)
     parser.add_argument('--socksproxy', action='store', help='SOCKS proxy to use in format socks5://user:pass@host:port', default=None)

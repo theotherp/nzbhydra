@@ -46,7 +46,7 @@ class NzbIndex(SearchModule):
     def build_base_url(self):
         f = furl(self.host)
         f.path.add("search")
-        f = f.add({"more": "1", "max": self.limit, "hidecross": 1})
+        f = f.add({"more": "1", "max": self.limit, "hidecross": 0})
         return f
 
     def get_search_urls(self, search_request):

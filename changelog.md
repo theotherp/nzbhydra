@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.224
+Fixed: NZBIndex queries were configured to hide crossposts which doesn't make sense. Thanks to doofy666 to making me aware.
+
 ### 0.2.223
 Fixed: At least one problem introduced with 0.2.221/0.0.222: Downloading NZBs failed. See [#639](https://github.com/theotherp/nzbhydra/pull/639).
 Please note that it's possible that downloads for results that were found between updating to 0.2.221/0.2.222 and updating to this version might not work.
