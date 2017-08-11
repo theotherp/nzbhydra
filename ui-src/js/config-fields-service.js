@@ -504,7 +504,18 @@ function ConfigFields($injector) {
                                 listener: restartListener
                             }
                         },
-
+                        {
+                            key: 'logfileUmask',
+                            type: 'horizontalInput',
+                            templateOptions: {
+                                type: 'text',
+                                label: 'Log file umask',
+                                help: 'Umask for log files (linux only)'
+                            },
+                            watcher: {
+                                listener: restartListener
+                            }
+                        },
                         {
                             key: 'consolelevel',
                             type: 'horizontalSelect',

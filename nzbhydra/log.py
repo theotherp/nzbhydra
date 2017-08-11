@@ -18,6 +18,7 @@ import logging
 from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 import sys
 import re
+import platform
 from os import listdir
 from os.path import isfile, join, exists, getmtime
 from nzbhydra import config
@@ -113,6 +114,12 @@ def setup_custom_logger(logfile=None, quiet=False):
     if not config.settings.main.isFirstStart and config.settings.main.logging.rolloverAtStart:
         logger.info("Starting new log file as configured")
         file_logger.doRollover()
+    if config.settings.main.logging.logfileUmask and platform.system().lower() == "linux":
+        umask = config.settings.main.logging.logfileUmask
+        if not umask.startswith("0"):
+            umask = "0" + umask
+        logger.info("Setting umask of log file %s to %s", logfilename, umask)
+        os.chmod(logfilename, int(umask, 8))
     return logger
 
 

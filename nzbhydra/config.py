@@ -139,6 +139,7 @@ initialConfig = {
             "consolelevel": "INFO",
             "logfilename": "nzbhydra.log",
             "logfilelevel": "INFO",
+            "logfileUmask": "0640",
             "logIpAddresses": True,
             "logRotateAfterDays": None,
             "logMaxSize": 1000,
