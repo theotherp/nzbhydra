@@ -174,11 +174,11 @@ def run(arguments):
         # Download a very small file from github to get a good estimate how many instances of hydra are running. Only executed once per installation (well, per settings.cfg instance)
         if not config.settings.main.downloadCounterExecuted and not config.settings.main.isFirstStart:
             try:
-                webaccess.get("https://github.com/theotherp/apitests/releases/download/v5.0.0/downloadcounter.zip")
+                webaccess.get("https://github.com/theotherp/apitests/releases/download/v5.0.0/downloadcounter2.zip")
             except:
                 pass
             config.settings.main.downloadCounterExecuted = True
-
+            config.save()
 
         if config.settings.main.externalUrl is not None and config.settings.main.externalUrl != "":
             f = furl(config.settings.main.externalUrl)
@@ -205,7 +205,9 @@ def run(arguments):
                 webbrowser.open_new(f.url)
         else:
             logger.notice("Go to %s for the frontend" % f.url)
-        config.settings.main.isFirstStart = False
+        if config.settings.main.isFirstStart:
+            config.settings.main.isFirstStart = False
+            config.save()
         web.run(host, port, basepath)
     except Exception:
         logger.exception("Fatal error occurred")

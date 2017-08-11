@@ -1,6 +1,11 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.225
+Added: Option to set umask of log files. See [#579](https://github.com/theotherp/nzbhydra/pull/579)
+
+Fixed: Some indexers don't like colons (":") in their queries so I remove them. There shouldn't be any queries that get less specific by that. See [#645](https://github.com/theotherp/nzbhydra/pull/645)
+
 ### 0.2.224
 Fixed: NZBIndex queries were configured to hide crossposts which doesn't make sense. Thanks to doofy666 to making me aware.
 

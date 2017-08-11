@@ -352,7 +352,7 @@ class NewzNab(SearchModule):
         query = search_request.query
         if query:
             query = self.addExcludedWords(query, search_request)
-            f = f.add({"q": query})
+            f = f.add({"q": query.replace(":", "")})
         if search_request.maxage:
             f = f.add({"maxage": search_request.maxage})
 
@@ -398,7 +398,7 @@ class NewzNab(SearchModule):
         if search_request.season:
             url.add({"season": search_request.season})
         if search_request.query:
-            url.add({"q": search_request.query})
+            url.add({"q": search_request.query.replace(":", "")})
         if search_request.maxage:
             url.add({"maxage": search_request.maxage})
 
@@ -411,7 +411,7 @@ class NewzNab(SearchModule):
         # A lot of indexers seem to disregard the "q" parameter for "movie" search, so if we have a query use regular search instead 
         if search_request.query:
             url = self.build_base_url("search", search_request.category, offset=search_request.offset)
-            url.add({"q": search_request.query})
+            url.add({"q": search_request.query.replace(":", "")})
         else:
             url = self.build_base_url("movie", search_request.category, offset=search_request.offset)
             if search_request.identifier_key:
@@ -442,10 +442,10 @@ class NewzNab(SearchModule):
                 if search_request.author:
                     url.add({"author": search_request.author})
                 if search_request.title:
-                    url.add({"title": search_request.title})
+                    url.add({"title": search_request.title.replace(":", "")})
                 return [url.url]
             else:
-                search_request.query = "%s %s" % (search_request.author if search_request.author else "", search_request.title if search_request.title else "")
+                search_request.query = "%s %s" % (search_request.author if search_request.author else "", search_request.title.replace(":", "") if search_request.title else "")
                 return self.get_search_urls(search_request)
         else:
             # internal search
