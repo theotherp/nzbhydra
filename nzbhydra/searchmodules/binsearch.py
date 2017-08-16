@@ -80,18 +80,18 @@ class Binsearch(SearchModule):
             urls = []
             if search_request.episode is not None:
                 if self.isNumber(search_request.episode):
-                    search_request.query = "%s s%02de%02d" % (query, search_request.season, search_request.episode)
+                    search_request.query = "%s s%02de%02d" % (query, int(search_request.season), int(search_request.episode))
                     urls.extend(self.get_search_urls(search_request))
-                    search_request.query = "%s %dx%02d" % (query, search_request.season, search_request.episode)
+                    search_request.query = "%s %dx%02d" % (query, int(search_request.season), int(search_request.episode))
                     urls.extend(self.get_search_urls(search_request))
                 else:
-                    search_request.query = '%s "%s %s"' % (search_request.query, search_request.season, search_request.episode.replace("/", " "))
+                    search_request.query = '%s "%s %s"' % (search_request.query, str(search_request.season), search_request.episode.replace("/", " "))
                     self.debug("Assuming we're searching for a daily show. Using query: " + search_request.query)
                     urls = self.get_search_urls(search_request)
             elif self.isNumber(search_request.season):
-                search_request.query = "%s s%02d" % (query, search_request.season)
+                search_request.query = "%s s%02d" % (query, int(search_request.season))
                 urls.extend(self.get_search_urls(search_request))
-                search_request.query = '%s "season %d"' % (query, search_request.season)
+                search_request.query = '%s "season %d"' % (query, int(search_request.season))
                 urls.extend(self.get_search_urls(search_request))
         return urls
 

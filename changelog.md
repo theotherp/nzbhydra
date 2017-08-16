@@ -1,31 +1,34 @@
 # NZB Hydra changelog
 
 ----------
-### 0.2.225
-Added: Option to set umask of log files. See [#579](https://github.com/theotherp/nzbhydra/pull/579)
+### 0.2.226
+Fixed: Query generation for manual TV searches in combination with raw search engines would fail. See [#651](https://github.com/theotherp/nzbhydra/issues/651)
 
-Fixed: Some indexers don't like colons (":") in their queries so I remove them. There shouldn't be any queries that get less specific by that. See [#645](https://github.com/theotherp/nzbhydra/pull/645)
+### 0.2.225
+Added: Option to set umask of log files. See [#579](https://github.com/theotherp/nzbhydra/issues/579)
+
+Fixed: Some indexers don't like colons (":") in their queries so I remove them. There shouldn't be any queries that get less specific by that. See [#645](https://github.com/theotherp/nzbhydra/issues/645)
 
 ### 0.2.224
 Fixed: NZBIndex queries were configured to hide crossposts which doesn't make sense. Thanks to doofy666 to making me aware.
 
 ### 0.2.223
-Fixed: At least one problem introduced with 0.2.221/0.0.222: Downloading NZBs failed. See [#639](https://github.com/theotherp/nzbhydra/pull/639).
+Fixed: At least one problem introduced with 0.2.221/0.0.222: Downloading NZBs failed. See [#639](https://github.com/theotherp/nzbhydra/issues/639).
 Please note that it's possible that downloads for results that were found between updating to 0.2.221/0.2.222 and updating to this version might not work.
 
 ### 0.2.222
-Fixed: Results with special characters in titles would cause error (mostly torrents). See [#634](https://github.com/theotherp/nzbhydra/pull/634).
+Fixed: Results with special characters in titles would cause error (mostly torrents). See [#634](https://github.com/theotherp/nzbhydra/issues/634).
 
 ### 0.2.221
 Changed: Reverted the database code yet again. I can't get it to work for everybody. I give up. I hope to release a new major version of Hydra in fall that won't have this problem
 
 Changed: Use an "empty" login page that does not expose any data.
 
-Fixed: Some mobile layout issues. Thanks to nemchik. See [#629](https://github.com/theotherp/nzbhydra/pull/629).
+Fixed: Some mobile layout issues. Thanks to nemchik. See [#629](https://github.com/theotherp/nzbhydra/issues/629).
 
-Fixed: In some rare cases where indexers were selected for a search but could not execute it the search would crash. See [#633](https://github.com/theotherp/nzbhydra/pull/633).
+Fixed: In some rare cases where indexers were selected for a search but could not execute it the search would crash. See [#633](https://github.com/theotherp/nzbhydra/issues/633).
 
-Fixed: Jackett/Cardigann results with special characters in the title would break the search. For now they're skipped, working on a better solution. See [#634](https://github.com/theotherp/nzbhydra/pull/634).
+Fixed: Jackett/Cardigann results with special characters in the title would break the search. For now they're skipped, working on a better solution. See [#634](https://github.com/theotherp/nzbhydra/issues/634).
  
 Fixed: nzb.su has a limiting mechanism which stops the caps check from working. Added a pause for this indexer to keep it from blocking Hydra. Note: If you do many concurrent results it will probably still result in blocks but there's not much I can do about that. See [#635](https://github.com/theotherp/nzbhydra/issues/635). 
 

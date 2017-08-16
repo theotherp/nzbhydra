@@ -167,12 +167,12 @@ class NzbClub(SearchModule):
             # Restrict query if season and/or episode is given. Use s01e01 and 1x01 and s01 and "season 1" formats
             if search_request.episode is not None:
                 if self.isNumber(search_request.episode):
-                    search_request.query = "%s s%02de%02d or %s %dx%02d" % (search_request.query, search_request.season, search_request.episode, search_request.query, search_request.season, search_request.episode)
+                    search_request.query = "%s s%02de%02d or %s %dx%02d" % (search_request.query, int(search_request.season), int(search_request.episode), search_request.query, int(search_request.season), int(search_request.episode))
                 else:
-                    search_request.query = '%s "%s %s"' % (search_request.query, search_request.season, search_request.episode.replace("/", " "))
+                    search_request.query = '%s "%s %s"' % (search_request.query, str(search_request.season), search_request.episode.replace("/", " "))
                     self.debug("Assuming we're searching for a daily show. Using query: " + search_request.query)
             elif self.isNumber(search_request.season):
-                search_request.query = '%s s%02d or %s "season %d"' % (search_request.query, search_request.season, search_request.query, search_request.season)
+                search_request.query = '%s s%02d or %s "season %d"' % (search_request.query, int(search_request.season), search_request.query, int(search_request.season))
         return self.get_search_urls(search_request)
 
     def get_moviesearch_urls(self, search_request):
