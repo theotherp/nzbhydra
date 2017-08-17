@@ -58,7 +58,9 @@ class Nzbget(Downloader):
         f.scheme = "https" if ssl else "http"
         f.port = port
         if username is not None and password is not None:
-            f.path.add("%s:%s" % (username, password))
+            #f.path.add("%s:%s" % (username, password))
+            f.username = username
+            f.password = password
         f.path.add("xmlrpc")
 
         return xmlrpc.client.ServerProxy(f.tostr())
