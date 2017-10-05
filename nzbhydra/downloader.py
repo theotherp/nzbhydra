@@ -232,7 +232,7 @@ class Sabnzbd(Downloader):
                 title += ".nzb"
 
         f = self.get_sab()
-        f.add({"mode": "addurl", "name": link, "nzbname": title})
+        f.add({"mode": "addurl", "name": link, "nzbname": title, "priority": "-100"})
         if category is not None:
             f.add({"cat": category})
         try:
@@ -252,7 +252,7 @@ class Sabnzbd(Downloader):
                 title += ".nzb"
 
         f = self.get_sab()
-        f.add({"mode": "addfile", "nzbname": title})
+        f.add({"mode": "addfile", "nzbname": title, "priority": "-100"})
         if category is not None:
             f.add({"cat": category})
         try:

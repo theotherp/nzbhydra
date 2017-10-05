@@ -509,8 +509,8 @@ function ConfigFields($injector) {
                             type: 'horizontalInput',
                             templateOptions: {
                                 type: 'text',
-                                label: 'Log file umask',
-                                help: 'Umask for log files (linux only)'
+                                label: 'Log file chmod',
+                                help: 'chmod for log files (linux only)'
                             },
                             watcher: {
                                 listener: restartListener

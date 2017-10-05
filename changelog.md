@@ -1,6 +1,13 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.227
+Fixed: Dereferer not used for NZB details links. See [#653](https://github.com/theotherp/nzbhydra/issues/653).
+
+Fixed: Sabnzbd default category priority not applied for uploads. See [#666](https://github.com/theotherp/nzbhydra/issues/666)
+
+Changed: Renamed "umask" to "chmod". See [#659](https://github.com/theotherp/nzbhydra/issues/659)
+
 ### 0.2.226
 Fixed: Query generation for manual TV searches in combination with raw search engines would fail. See [#651](https://github.com/theotherp/nzbhydra/issues/651)
 

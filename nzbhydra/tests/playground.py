@@ -18,7 +18,7 @@ def startTest(apikey, query):
     try:
         print("Starting request")
         before = arrow.now()
-        r = requests.get("http://127.0.0.1:5075/api?q=%s&t=search&apikey=apikey" % (query))
+        r = requests.get("http://127.0.0.1:5076/api?q=%s&t=search&apikey=apikey" % (query))
         r.raise_for_status()
         after = arrow.now()
         took = (after - before).seconds * 1000 + (after - before).microseconds / 1000
@@ -30,7 +30,7 @@ def startTest(apikey, query):
 
 
 runs = 5
-concurrent_searches = 2
+concurrent_searches = 3
 letters = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"]
 beforeallruns = arrow.now()
 for x in range(1, runs + 1):
@@ -40,7 +40,7 @@ for x in range(1, runs + 1):
     print("Starting test run #%d/%d" % (x, runs))
     for i in range(1, concurrent_searches + 1):
         beforerun = arrow.now()
-        t = threading.Thread(target=startTest, args=(letters[i], i,))
+        t = threading.Thread(target=startTest, args=(letters[i], str(i)+"-"+str(x),))
         #sleep(1)
         threads.append(t)
         t.start()
