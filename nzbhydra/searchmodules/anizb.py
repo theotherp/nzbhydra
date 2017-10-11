@@ -75,7 +75,7 @@ class Anizb(SearchModule):
         entries = []
         countRejected = self.getRejectedCountDict()
         try:
-            tree = ET.fromstring(xml)
+            tree = ET.fromstring(xml.encode('utf-8'))
         except Exception:
             self.exception("Error parsing XML: %s..." % xml[:500])
             logger.debug(xml)
