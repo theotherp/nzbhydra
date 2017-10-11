@@ -28,6 +28,8 @@ logger = logging.getLogger('root')
 
 
 def check_auth(body, indexer):
+    if "Request limit reached" in body or "Daily Hits limit reached" in body:
+        raise IndexerApiLimitReachedException("API limit reached", indexer)
     if '<error code="100"' in body:
         raise IndexerAuthException("The API key seems to be incorrect.", indexer)
     if '<error code="101"' in body:

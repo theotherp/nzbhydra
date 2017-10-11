@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.228
+Changed: Properly report when API hit limit reached at omgwtfnzbs.org.
+
 ### 0.2.227
 Fixed: Dereferer not used for NZB details links. See [#653](https://github.com/theotherp/nzbhydra/issues/653).
 
