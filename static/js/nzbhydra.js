@@ -1108,6 +1108,15 @@ function hydralog() {
           startUpdateLogInterval();
         }
 
+        $scope.$on(
+            "$destroy",
+            function () {
+                if ($scope.tailInterval !== null) {
+                    $interval.cancel($scope.tailInterval);
+                }
+            }
+        );
+
     }
 }
 
