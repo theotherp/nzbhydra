@@ -28,6 +28,9 @@ If you downloaded the [windows release](https://github.com/theotherp/nzbhydra-wi
 You're also free to use the [docker container by linuxserver.io](https://hub.docker.com/r/linuxserver/hydra/). 
 Although I do my best to keep that container nice and working please [use their forum](https://forum.linuxserver.io/index.php?threads/support-linuxserver-io-hydra.499/) for support regarding that container.
 
+### Mac
+You might need to install homebrew python. See [this excellent guide](https://www.mattgibson.ca/getting-nzbhydra-working-macos-sierra/) or, if that doesn't work for you, [here](https://pay.reddit.com/r/usenet/comments/7blcar/tutorial_ive_just_found_an_easy_way_to_make/).
+
 ## Install as service
 ### Linux
 #### systemd
@@ -95,10 +98,6 @@ sudo service nzbhydra start
 
 ### Windows
 See the WindowsService folder in your NZB Hydra directory. It contains batch scripts to install and uninstall Hydra as a service. Run `installService.cmd` with administrator rights.
- 
-### Mac
-You might need to install homebrew python. See [this excellent guide](https://www.mattgibson.ca/getting-nzbhydra-working-macos-sierra/).
-
 
 ## Development and how you can help
 Generally testing and any bug reports are very welcome.
