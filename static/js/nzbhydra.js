@@ -5925,6 +5925,18 @@ function ConfigFields($injector) {
                     }
                 },
                 {
+                    key: 'rememberUsersExpiry',
+                    type: 'horizontalInput',
+                    templateOptions: {
+                        type: 'number',
+                        label: 'Cookie expiry',
+                        help: 'How long users are remembered',
+                        addonRight: {
+                            text: 'days'
+                        }
+                    }
+                },
+                {
                     type: 'repeatSection',
                     key: 'users',
                     model: rootModel.auth,

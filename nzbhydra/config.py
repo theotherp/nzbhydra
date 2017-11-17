@@ -414,6 +414,7 @@ initialConfig = {
         "restrictSearch": False,
         "restrictStats": False,
         "rememberUsers": True,
+        "rememberUsersExpiry": 14,
         "users": []
     }
 }

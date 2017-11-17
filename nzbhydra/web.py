@@ -199,7 +199,7 @@ def setRememberMe(response):
         session.pop("removeToken", None)
         request.authorization = None
     elif "token" in session.keys() and config.settings.auth.rememberUsers:
-        response.set_cookie("rememberMe", json.dumps(session["token"]), expires=arrow.now().datetime + datetime.timedelta(days=14))
+        response.set_cookie("rememberMe", json.dumps(session["token"]), expires=arrow.now().datetime + datetime.timedelta(days=int(config.settings.auth.rememberUsersExpiry)))
         session.pop("token", None)
     return response
 
