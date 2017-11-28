@@ -18,6 +18,7 @@ var print = require('gulp-print');
 var rename = require("gulp-rename");
 var clean = require('gulp-clean');
 var cached = require('gulp-cached');
+var cleancss = require('gulp-clean-css');
 
 
 gulp.task('vendor-scripts', function () {
@@ -26,6 +27,7 @@ gulp.task('vendor-scripts', function () {
         .pipe(cached("vendor-scripts"))
         .pipe(sourcemaps.init())
         .pipe(concat('alllibs.js'))
+        .pipe(uglify())
         .pipe(sourcemaps.write("./"))
         .pipe(gulp.dest(dest));
 });
@@ -39,6 +41,7 @@ gulp.task('vendor-css', function () {
     )
         .pipe(sourcemaps.init())
         .pipe(concat('alllibs.css'))
+        .pipe(cleancss())
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(dest));
 
@@ -53,6 +56,7 @@ gulp.task('scripts', function () {
         .on('error', swallowError)
         .pipe(sourcemaps.init())
         .pipe(concat('nzbhydra.js'))
+        .pipe(uglify())
         .on('error', swallowError)
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(dest));
@@ -66,6 +70,7 @@ gulp.task('less', function () {
         .pipe(sourcemaps.init())
         .pipe(less())
         .on('error', swallowError)
+        .pipe(cleancss())
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(dest));
 
@@ -74,6 +79,7 @@ gulp.task('less', function () {
         .pipe(sourcemaps.init())
         .pipe(less())
         .on('error', swallowError)
+        .pipe(cleancss())
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(dest));
 
@@ -81,6 +87,7 @@ gulp.task('less', function () {
         .pipe(cached("dark"))
         .pipe(sourcemaps.init())
         .pipe(less())
+        .pipe(cleancss())
         .on('error', swallowError)
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(dest));
