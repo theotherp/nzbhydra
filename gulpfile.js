@@ -56,7 +56,7 @@ gulp.task('scripts', function () {
         .on('error', swallowError)
         .pipe(sourcemaps.init())
         .pipe(concat('nzbhydra.js'))
-        .pipe(uglify())
+        //.pipe(uglify()) //Will cause errors
         .on('error', swallowError)
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(dest));
@@ -91,7 +91,7 @@ gulp.task('less', function () {
         .on('error', swallowError)
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(dest));
-    
+
     return merge(brightTheme, greyTheme, darkTheme);
 });
 
@@ -136,7 +136,6 @@ gulp.task('delMainLessCache', function () {
     delete cached.caches["grey"];
     delete cached.caches["dark"];
 });
-
 
 
 gulp.task('index', function () {
