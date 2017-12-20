@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.231
+Fixed: Prevent hit limit reset times from being greater than 23. See [#690](https://github.com/theotherp/nzbhydra/issues/690).
+
 ### 0.2.230
 Added: Option to define expiry of remember-me cookie. See [#676](https://github.com/theotherp/nzbhydra/issues/676).
 
