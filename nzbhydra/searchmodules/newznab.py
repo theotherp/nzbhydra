@@ -589,7 +589,7 @@ class NewzNab(SearchModule):
                     categories.append(int(attribute_value))
                 except ValueError:
                     self.error("Unable to parse category %s" % attribute_value)
-            elif attribute_name == "password" and attribute_value != "0":
+            elif attribute_name == "password" and attribute_value != "0" and attribute_value != "-1":
                 entry.passworded = True
             elif attribute_name == "nfo":
                 entry.has_nfo = NzbSearchResult.HAS_NFO_YES if int(attribute_value) == 1 else NzbSearchResult.HAS_NFO_NO

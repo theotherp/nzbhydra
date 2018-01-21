@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.232
+Fixed: Results from nzb.su were reported as passworded (not my fault)
+
 ### 0.2.231
 Fixed: Prevent hit limit reset times from being greater than 23. See [#690](https://github.com/theotherp/nzbhydra/issues/690).
 
