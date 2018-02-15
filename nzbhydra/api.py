@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import copy
 import logging
+import nzbhydra
 from collections import namedtuple
 from io import BytesIO
 
