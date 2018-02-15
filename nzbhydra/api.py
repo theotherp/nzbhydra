@@ -104,8 +104,8 @@ def get_root_url():
     f.scheme = request.scheme
     f.host = furl(request.host_url).host
     f.port = config.settings.main.port
-    if config.settings.main.urlBase:
-        f.path = config.settings.main.urlBase
+    if nzbhydra.urlBase:
+        f.path = nzbhydra.urlBase
     return str(f) + "/"
 
 

@@ -5,6 +5,7 @@ import thread
 configFile = None
 databaseFile = None
 databaseLock = thread.allocate_lock()
+urlBase = None
 
 def getBasePath():
     try:

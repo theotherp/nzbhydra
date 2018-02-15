@@ -10,7 +10,6 @@ if sys.version_info >= (3, 0) or sys.version_info < (2, 7, 9):
 import glob
 import subprocess
 import os
-import argparse
 import webbrowser
 import nzbhydra
 
@@ -28,6 +27,7 @@ from nzbhydra import webaccess
 import nzbhydra.config as config
 
 import requests
+import configargparse
 
 requests.packages.urllib3.disable_warnings()
 
@@ -164,6 +164,7 @@ def run(arguments):
 
         host = config.settings.main.host if arguments.host is None else arguments.host
         port = config.settings.main.port if arguments.port is None else arguments.port
+        nzbhydra.urlBase = config.settings.main.urlBase if arguments.urlbase is None else arguments.urlbase
 
         socksproxy = config.settings.main.socksProxy if arguments.socksproxy is None else arguments.socksproxy
         if socksproxy:
@@ -196,6 +197,8 @@ def run(arguments):
                 f.host = config.settings.main.host
             f.port = port
             f.scheme = "https" if config.settings.main.ssl else "http"
+            if nzbhydra.urlBase is not None:
+                f.path = nzbhydra.urlBase + "/"
             logger.notice("Starting web app on %s:%d" % (f.host, port))
         if not arguments.nobrowser and config.settings.main.startupBrowser:
             if arguments.restarted:
@@ -225,18 +228,19 @@ def _stop_worker_threads():
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='NZBHydra')
-    parser.add_argument('--config', action='store', help='Settings file to load', default="settings.cfg")
-    parser.add_argument('--database', action='store', help='Database file to load', default="nzbhydra.db")
+    parser = configargparse.ArgParser(description='NZBHydra')
+    parser.add_argument('--config', action='store', env_var="hydra_config", help='Settings file to load. Can also be set using the environment variable "hydra_config"', default="settings.cfg")
+    parser.add_argument('--database', action='store', env_var="hydra_database", help='Database file to load. Can also be set using the environment variable "hydra_database"', default="nzbhydra.db")
     parser.add_argument('--logfile', action='store', help='Log file. If set overwrites config value', default=None)
-    parser.add_argument('--host', '-H', action='store', help='Host to run on')
-    parser.add_argument('--port', '-p', action='store', help='Port to run on', type=int)
-    parser.add_argument('--nobrowser', action='store_true', help='Don\'t open URL on startup', default=False)
+    parser.add_argument('--host', '-H', action='store', env_var="hydra_host", help='Host to run on. Can also be set using the environment variable "hydra_host"')
+    parser.add_argument('--port', '-p', action='store', env_var="hydra_port", help='Port to run on. Can also be set using the environment variable "hydra_port"', type=int)
+    parser.add_argument('--urlbase', '-u', action='store', env_var="hydra_urlbase", help='URL base (e.g. "/nzbhydra"). Can also be set using the environment variable "hydra_urlbase"', default=None)
+    parser.add_argument('--nobrowser', action='store_true', env_var="hydra_nobrowser", help='Don\'t open URL on startup', default=False)
     parser.add_argument('--daemon', '-D', action='store_true', help='Run as daemon. *nix only', default=False)
     parser.add_argument('--pidfile', action='store', help='PID file. Only relevant with daemon argument', default="nzbhydra.pid")
     parser.add_argument('--quiet', '-q', action='store_true', help='Quiet (no output)', default=False)
-    parser.add_argument('--restarted', action='store_true', help=argparse.SUPPRESS, default=False)
-    parser.add_argument('--clearloganddb', action='store_true', help=argparse.SUPPRESS, default=False)
+    parser.add_argument('--restarted', action='store_true', help=configargparse.SUPPRESS, default=False)
+    parser.add_argument('--clearloganddb', action='store_true', help=configargparse.SUPPRESS, default=False)
     parser.add_argument('--socksproxy', action='store', help='SOCKS proxy to use in format socks5://user:pass@host:port', default=None)
 
     args, unknown = parser.parse_known_args()

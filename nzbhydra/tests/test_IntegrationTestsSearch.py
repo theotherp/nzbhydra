@@ -316,7 +316,7 @@ class IntegrationApiSearchTests(AbstractSearchTestCase):
     # @requests_mock.Mocker()
     # def testBaseUrl(self, requestsMock):
     #     web.app.template_folder = "../templates"
-    #     config.settings.main.urlBase = "/nzbhydra"
+    #     nzbhydra.urlBase = "/nzbhydra"
     #
     #     expectedItems = self.prepareSearchMocks(requestsMock, 1, 1)
     #     with web.app.test_request_context('/nzbhydra/'):

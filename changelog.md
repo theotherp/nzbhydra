@@ -1,6 +1,9 @@
 # NZB Hydra changelog
 
 ----------
+### 0.2.233
+Added: Set URL base from command line, set some of the parameters using environment variables. See [#710](https://github.com/theotherp/nzbhydra/issues/710).
+
 ### 0.2.232
 Fixed: Results from nzb.su were reported as passworded (not my fault)
 

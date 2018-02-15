@@ -79,7 +79,7 @@ class ReverseProxied(object):
         self.app = app
 
     def __call__(self, environ, start_response):
-        base_url = config.settings.main.urlBase
+        base_url = nzbhydra.urlBase # config.settings.main.urlBase
         if base_url is not None and base_url.endswith("/"):
             base_url = base_url[:-1]
         if base_url is not None and base_url != "":
@@ -505,10 +505,10 @@ def login():
             session["rememberMe"] = token
             session["username"] = u["username"]
             session["token"] = create_token(u)
-            return redirect(("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/")
+            return redirect(("/" + nzbhydra.urlBase + "/").replace("//", "/") if nzbhydra.urlBase else "/")
     ip = getIp() if config.settings.main.logging.logIpAddresses else "<HIDDENIP>"
     logger.warn("Unsuccessful form login for user %s from IP %s" % (username, ip))
-    return redirect(("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/" + "login")
+    return redirect(("/" + nzbhydra.urlBase + "/").replace("//", "/") if nzbhydra.urlBase else "/" + "login")
 
 
 @app.route('/auth/logout', methods=['POST'])
@@ -553,7 +553,7 @@ internalapi__askforpassword_args = {
 @requires_auth("main", disableAuthForForm=True)
 def base(path):
     logger.debug("Sending index.html")
-    base_url = ("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/"
+    base_url = ("/" + nzbhydra.urlBase + "/").replace("//", "/") if nzbhydra.urlBase else "/"
     _, currentVersion = get_current_version()
 
     user = getUserByName(session["username"]) if "username" in session.keys() else None
@@ -578,7 +578,7 @@ def base(path):
 @app.route('/login')
 def loginview():
     logger.debug("Sending login.html")
-    base_url = ("/" + config.settings.main.urlBase + "/").replace("//", "/") if config.settings.main.urlBase else "/"
+    base_url = ("/" + nzbhydra.urlBase + "/").replace("//", "/") if nzbhydra.urlBase else "/"
     return render_template("login.html", base_url=base_url, theme=config.settings.main.theme + ".css", )
 
 
