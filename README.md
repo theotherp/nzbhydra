@@ -1,7 +1,9 @@
 # nzbhydra  [![Build Status](https://travis-ci.org/theotherp/nzbhydra.svg?branch=master)](https://travis-ci.org/theotherp/nzbhydra) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/theotherp/nzbhydra.svg)](http://isitmaintained.com/project/theotherp/nzbhydra "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/theotherp/nzbhydra.svg)](http://isitmaintained.com/project/theotherp/nzbhydra "Percentage of issues still open")
 NZBHydra is a meta search for NZB indexers. It provides easy access to a number of raw and newznab based indexers. You can search all your indexers from one place and use it as indexer source for tools like Sonarr or CouchPotato.
 
-### Note: I don't have anything to do with www.nzbhydra.com
+### Note
+* I don't have anything to do with www.nzbhydra.com
+* While this version still runs fine I recommend using its predecessor [NZBHydra2](https://github.com/theotherp/nzbhydra2) which runs a lot faster and has more features.
 
 ## Features
 * Searches Binsearch, NZBIndex, NZBClub,  Womble and all newznab compatible indexers (see https://github.com/theotherp/nzbhydra/issues/20 and https://github.com/theotherp/nzbhydra/wiki/Supported-Search-Types-And-Indexer-Hosts )
