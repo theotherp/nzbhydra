@@ -3,7 +3,7 @@ NZBHydra is a meta search for NZB indexers. It provides easy access to a number 
 
 ### Note
 * I don't have anything to do with www.nzbhydra.com
-* While this version still runs fine I recommend using its predecessor [NZBHydra2](https://github.com/theotherp/nzbhydra2) which runs a lot faster and has more features.
+* While this version still runs fine I recommend using its successor [NZBHydra2](https://github.com/theotherp/nzbhydra2) which runs a lot faster and has more features.
 
 ## Features
 * Searches Binsearch, NZBIndex, NZBClub,  Womble and all newznab compatible indexers (see https://github.com/theotherp/nzbhydra/issues/20 and https://github.com/theotherp/nzbhydra/wiki/Supported-Search-Types-And-Indexer-Hosts )
