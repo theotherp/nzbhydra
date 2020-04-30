@@ -232,12 +232,131 @@ initialConfig = {
                 "requiredRegex": None,
                 "forbiddenRegex": None
             },
+            "gamesnds": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 4000,
+                "newznabCategories": [
+                    1010
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "gamesps3": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 20000,
+                "newznabCategories": [
+                    1080
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "gamesps4": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 50000,
+                "newznabCategories": [
+                    1080
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "gamespsp": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 10000,
+                "newznabCategories": [
+                    1020
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "gameswii": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 10000,
+                "newznabCategories": [
+                    1030,
+                    1060
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "gamesxbox": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 15000,
+                "newznabCategories": [
+                    1040
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "gamesxbox360": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 10000,
+                "newznabCategories": [
+                    1050,
+                    1070
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "gamesxboxone": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 50000,
+                "newznabCategories": [
+                    1090
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
             "tvsd": {
                 "applyRestrictions": "both",
                 "min": 50,
                 "max": 1000,
                 "newznabCategories": [
                     5030
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "tvsports": {
+                "applyRestrictions": "both",
+                "min": 250,
+                "max": 10000,
+                "newznabCategories": [
+                    5060
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
@@ -312,6 +431,84 @@ initialConfig = {
                 "requiredRegex": None,
                 "forbiddenRegex": None
             },
+            "pcgames": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 50000,
+                "newznabCategories": [
+                    4050
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "pciso": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 50000,
+                "newznabCategories": [
+                    4020
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "pcmac": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 50000,
+                "newznabCategories": [
+                    4030
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "mobileandroid": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 5000,
+                "newznabCategories": [
+                    4070
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "mobileios": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 5000,
+                "newznabCategories": [
+                    4040
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "mobileother": {
+                "applyRestrictions": "both",
+                "min": 100,
+                "max": 5000,
+                "newznabCategories": [
+                    4060
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
             "moviessd": {
                 "applyRestrictions": "both",
                 "min": 500,
@@ -332,6 +529,19 @@ initialConfig = {
                 "newznabCategories": [
                     7020,
                     8010
+                ],
+                "forbiddenWords": [],
+                "requiredWords": None,
+                "ignoreResults": "never",
+                "requiredRegex": None,
+                "forbiddenRegex": None
+            },
+            "magazines": {
+                "applyRestrictions": "both",
+                "min": None,
+                "max": 250,
+                "newznabCategories": [
+                    7010
                 ],
                 "forbiddenWords": [],
                 "requiredWords": None,
